@@ -1,0 +1,8 @@
+{
+  "shadow": {
+    "glow": {
+      "accent":   { "$type": "shadow", "$value": "{shadow.glow.indigo}", "$description": "Default accent glow (matches accent.default)" },
+      "accentSm": { "$type": "shadow", "$value": "{shadow.glow.indigoSm}" }
+    }
+  }
+}

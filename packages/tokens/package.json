@@ -1,0 +1,29 @@
+{
+  "name": "@lifegames/tokens",
+  "version": "0.0.0",
+  "description": "Design tokens for the Lifegames design system — CSS custom properties, JS constants, and JSON",
+  "type": "module",
+  "main": "dist/tokens.js",
+  "exports": {
+    ".": {
+      "import": "./dist/tokens.js",
+      "require": "./dist/tokens.json",
+      "types": "./dist/tokens.d.ts"
+    },
+    "./css": "./dist/tokens.css",
+    "./json": "./dist/tokens.json",
+    "./animations": "./src/animations.css"
+  },
+  "files": [
+    "dist",
+    "src/animations.css"
+  ],
+  "scripts": {
+    "build": "node ../../style-dictionary.config.mjs",
+    "build:tokens": "node ../../style-dictionary.config.mjs"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.4.0",
+    "@tokens-studio/sd-transforms": "^2.0.0"
+  }
+}

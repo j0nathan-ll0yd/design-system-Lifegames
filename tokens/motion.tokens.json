@@ -1,0 +1,21 @@
+{
+  "motion": {
+    "duration": {
+      "instant": { "$type": "duration", "$value": "0ms", "$description": "No animation" },
+      "fast":    { "$type": "duration", "$value": "150ms", "$description": "Micro-interactions, Watch default" },
+      "normal":  { "$type": "duration", "$value": "300ms", "$description": "Standard transitions" },
+      "slow":    { "$type": "duration", "$value": "500ms", "$description": "Page-level transitions" },
+      "slower":  { "$type": "duration", "$value": "600ms", "$description": "Card entrance" }
+    },
+    "easing": {
+      "standard":   { "$type": "cubicBezier", "$value": [0.4, 0, 0.2, 1], "$description": "General purpose" },
+      "decelerate": { "$type": "cubicBezier", "$value": [0, 0, 0.2, 1], "$description": "Enter/appear" },
+      "accelerate": { "$type": "cubicBezier", "$value": [0.4, 0, 1, 1], "$description": "Exit/disappear" },
+      "overshoot":  { "$type": "cubicBezier", "$value": [0.34, 1.56, 0.64, 1], "$description": "Bounce/spring" }
+    },
+    "delay": {
+      "short":  { "$type": "duration", "$value": "50ms" },
+      "normal": { "$type": "duration", "$value": "100ms" }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@lifegames/web",
+  "version": "0.0.0",
+  "description": "Astro components and widgets for the Lifegames design system",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "build": "echo 'No build step — Astro components are source-distributed'"
+  },
+  "dependencies": {
+    "@lifegames/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "vite": "^6.3.0"
+  }
+}

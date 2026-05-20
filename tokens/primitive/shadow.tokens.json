@@ -1,0 +1,24 @@
+{
+  "shadow": {
+    "glow": {
+      "pink":      { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(255,0,110,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(255,0,110,0.15)"}] },
+      "blue":      { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(58,134,255,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(58,134,255,0.15)"}] },
+      "green":     { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(6,214,160,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(6,214,160,0.15)"}] },
+      "amber":     { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(245,158,11,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(245,158,11,0.15)"}] },
+      "purple":    { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(168,85,247,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(168,85,247,0.15)"}] },
+      "red":       { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(239,68,68,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(239,68,68,0.15)"}] },
+      "cyan":      { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(0,212,255,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(0,212,255,0.15)"}] },
+      "orange":    { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(255,107,0,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(255,107,0,0.15)"}] },
+      "indigo":    { "$type": "shadow", "$value": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "rgba(129,140,248,0.3)"}, {"offsetX": 0, "offsetY": 0, "blur": 40, "spread": 0, "color": "rgba(129,140,248,0.15)"}] },
+      "pinkSm":    { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(255,0,110,0.25)"}, "$description": "Reduced glow for mobile performance" },
+      "blueSm":    { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(58,134,255,0.25)"} },
+      "greenSm":   { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(6,214,160,0.25)"} },
+      "amberSm":   { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(245,158,11,0.25)"} },
+      "purpleSm":  { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(168,85,247,0.25)"} },
+      "redSm":     { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(239,68,68,0.25)"} },
+      "cyanSm":    { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(0,212,255,0.25)"} },
+      "orangeSm":  { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(255,107,0,0.25)"} },
+      "indigoSm":  { "$type": "shadow", "$value": {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "rgba(129,140,248,0.25)"} }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "build:tokens": {
+      "outputs": ["dist/**", "../../Sources/LifegamesTokens/**/*.swift"]
+    },
+    "lint": {},
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "storybook:build": {
+      "dependsOn": ["build"],
+      "outputs": ["storybook-static/**"]
+    },
+    "docs:build": {
+      "dependsOn": ["build"],
+      "outputs": ["dist/**"]
+    },
+    "docs:dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

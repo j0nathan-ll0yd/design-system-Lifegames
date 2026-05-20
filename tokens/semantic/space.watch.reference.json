@@ -1,0 +1,3 @@
+{
+  "$description": "Watch spacing overrides reference. NOT included in Style Dictionary build. Values: contentMargin=4px, cardPadding=8px (tighter for Watch screens per HIG)."
+}

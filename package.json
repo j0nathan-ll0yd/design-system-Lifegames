@@ -1,0 +1,20 @@
+{
+  "name": "lifegames-design-system",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Unified cross-platform design system for Lifegames — tokens, components, and widgets for web (Astro) and iOS (SwiftUI)",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "build": "turbo run build",
+    "build:tokens": "turbo run build:tokens",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "docs:build": "turbo run docs:build",
+    "docs:dev": "turbo run docs:dev",
+    "storybook:build": "turbo run storybook:build"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "@changesets/cli": "^2.29.0"
+  }
+}

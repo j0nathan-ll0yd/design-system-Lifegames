@@ -1,0 +1,3 @@
+{
+  "$description": "Dark mode reference — values are identical to color.tokens.json (dark is the primary mode). This file is NOT included in the Style Dictionary build; it serves as documentation for future light/dark mode support."
+}

@@ -1,0 +1,22 @@
+{
+  "space": {
+    "$type": "dimension",
+    "50":   { "$value": "2px", "$description": "Micro" },
+    "100":  { "$value": "4px", "$description": "Atomic gutter" },
+    "150":  { "$value": "6px", "$description": "Tight" },
+    "200":  { "$value": "8px", "$description": "Compact inset" },
+    "250":  { "$value": "10px" },
+    "300":  { "$value": "12px" },
+    "350":  { "$value": "14px" },
+    "400":  { "$value": "16px", "$description": "Default card padding (iOS cardCornerRadius)" },
+    "450":  { "$value": "18px", "$description": "Compact card padding (iOS cardPaddingCompact)" },
+    "500":  { "$value": "20px", "$description": "Grid spacing (iOS gridSpacing)" },
+    "600":  { "$value": "24px" },
+    "700":  { "$value": "28px" },
+    "800":  { "$value": "32px", "$description": "Large card padding (iOS cardPadding)" },
+    "900":  { "$value": "36px", "$description": "Widget header height (iOS widgetHeaderHeight)" },
+    "1000": { "$value": "40px" },
+    "1200": { "$value": "48px", "$description": "Page rhythm" },
+    "1600": { "$value": "64px", "$description": "Hero spacing" }
+  }
+}

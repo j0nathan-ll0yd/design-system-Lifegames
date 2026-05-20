@@ -1,0 +1,57 @@
+{
+  "color": {
+    "$type": "color",
+    "surface": {
+      "base":        { "$value": "{color.gray.950}", "$description": "Primary background" },
+      "deep":        { "$value": "{color.gray.900}", "$description": "Secondary background" },
+      "raised":      { "$value": "rgba(255,255,255,0.07)", "$description": "Card/glass background" },
+      "raisedHover": { "$value": "rgba(255,255,255,0.05)", "$description": "Card hover state" },
+      "inset":       { "$value": "rgba(255,255,255,0.03)", "$description": "Inset/recessed surface" }
+    },
+    "border": {
+      "default":     { "$value": "rgba(255,255,255,0.06)", "$description": "Default border" },
+      "subtle":      { "$value": "rgba(255,255,255,0.1)", "$description": "Glass border" },
+      "strong":      { "$value": "rgba(255,255,255,0.18)", "$description": "Emphasized border" },
+      "interactive": { "$value": "rgba(99,102,241,0.2)", "$description": "Interactive hover border" }
+    },
+    "text": {
+      "title":    { "$value": "{color.zinc.100}", "$description": "Heading text" },
+      "primary":  {
+        "$value": "{color.zinc.200}",
+        "$description": "Body text. Converged to iOS value #e4e4e7 cross-platform (MA2)."
+      },
+      "muted":    {
+        "$value": "{color.zinc.400}",
+        "$description": "Secondary text. Uses web value #9ca3af cross-platform. Converged upward for accessibility (MA2)."
+      },
+      "subtle":   { "$value": "{color.zinc.600}", "$description": "Tertiary text" },
+      "disabled": { "$value": "{color.zinc.700}", "$description": "Disabled/arrow text" }
+    },
+    "accent": {
+      "pink":    { "$value": "{color.pink.500}" },
+      "blue":    { "$value": "{color.blue.500}" },
+      "green":   { "$value": "{color.green.500}" },
+      "amber":   { "$value": "{color.amber.500}" },
+      "purple":  { "$value": "{color.purple.500}" },
+      "red":     { "$value": "{color.red.500}" },
+      "cyan":    { "$value": "{color.cyan.500}" },
+      "orange":  { "$value": "{color.orange.500}" },
+      "indigo":  { "$value": "{color.indigo.500}" },
+      "default": { "$value": "{color.indigo.600}", "$description": "Primary accent (iOS accent)" }
+    },
+    "accent-hc": {
+      "pink":   { "$value": "{color.pink.400}", "$description": "High-contrast variant (AAA)" },
+      "purple": { "$value": "{color.purple.400}" },
+      "red":    { "$value": "{color.red.400}" }
+    },
+    "health": {
+      "red":    { "$value": "{color.red.apple}", "$description": "Apple Health move ring" },
+      "green":  { "$value": "{color.appleHealth.green}", "$description": "Apple Health exercise ring" },
+      "purple": { "$value": "{color.indigo.700}", "$description": "Apple Health stand ring" }
+    },
+    "interactive": {
+      "default": { "$value": "{color.indigo.600}", "$description": "Buttons, links" },
+      "hover":   { "$value": "{color.purple.600}", "$description": "Hover state" }
+    }
+  }
+}

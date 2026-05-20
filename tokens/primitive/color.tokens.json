@@ -1,0 +1,59 @@
+{
+  "color": {
+    "$type": "color",
+    "pink": {
+      "500": { "$value": "#ff006e", "$description": "Neon pink (web --neon-pink, iOS neonPink)" },
+      "400": { "$value": "#ff69b4", "$description": "High-contrast pink (WCAG AAA on dark)" }
+    },
+    "blue": {
+      "500": { "$value": "#3a86ff", "$description": "Neon blue (web --neon-blue, iOS neonBlue)" },
+      "600": { "$value": "#3b82f6", "$description": "Accent blue (iOS accentBlue)" }
+    },
+    "green": {
+      "500": { "$value": "#06d6a0", "$description": "Neon green (web --neon-green, iOS neonGreen)" }
+    },
+    "amber": {
+      "500": { "$value": "#f59e0b", "$description": "Neon amber (web --neon-amber, iOS neonAmber)" }
+    },
+    "purple": {
+      "500": { "$value": "#a855f7", "$description": "Neon purple (web --neon-purple, iOS neonPurple)" },
+      "400": { "$value": "#c084fc", "$description": "High-contrast purple (WCAG AAA)" },
+      "600": { "$value": "#8b5cf6", "$description": "Accent purple (iOS accentPurple)" }
+    },
+    "red": {
+      "500": { "$value": "#ef4444", "$description": "Neon red (web --neon-red)" },
+      "400": { "$value": "#f87171", "$description": "High-contrast red (WCAG AAA)" },
+      "apple": { "$value": "#ff3b30", "$description": "Apple health red (iOS healthRed)" }
+    },
+    "cyan": {
+      "500": { "$value": "#00d4ff", "$description": "Neon cyan (web --neon-cyan)" }
+    },
+    "orange": {
+      "500": { "$value": "#ff6b00", "$description": "Neon orange (web --neon-orange)" }
+    },
+    "indigo": {
+      "500": { "$value": "#818cf8", "$description": "Neon indigo (web --neon-indigo)" },
+      "600": { "$value": "#6366f1", "$description": "Accent indigo (iOS accent)" },
+      "700": { "$value": "#5e5ce6", "$description": "Apple system indigo (iOS healthPurple)" }
+    },
+    "gray": {
+      "950": { "$value": "#06060f", "$description": "Deep background (web --bg, iOS backgroundDeep)" },
+      "900": { "$value": "#0a0a0f", "$description": "Background (iOS background)" }
+    },
+    "zinc": {
+      "100": { "$value": "#fafafa", "$description": "Title text (iOS textTitle)" },
+      "200": { "$value": "#e4e4e7", "$description": "Primary text (iOS textPrimary)" },
+      "300": { "$value": "#f0f0f0", "$description": "Primary text (web --text)" },
+      "400": { "$value": "#9ca3af", "$description": "Muted text (web --text-muted)" },
+      "500": { "$value": "#71717a", "$description": "Muted text (iOS textMuted)" },
+      "600": { "$value": "#52525b", "$description": "Subtle text (iOS textSubtle)" },
+      "700": { "$value": "#3f3f46", "$description": "Card arrow (iOS cardArrow)" }
+    },
+    "white": {
+      "pure": { "$value": "#ffffff", "$description": "Pure white base for opacity variants" }
+    },
+    "appleHealth": {
+      "green": { "$value": "#34c759", "$description": "Apple health green (iOS healthGreen)" }
+    }
+  }
+}
