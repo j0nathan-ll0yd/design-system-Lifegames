@@ -11,7 +11,7 @@ public struct LanguageStackView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "LANGUAGE STACK", dotColor: .colorAccentGreen, timestamp: "repos")
+            WidgetHeaderView(label: "LANGUAGE STACK", dotColor: Color.colorAccentGreen, timestamp: "repos")
 
             GeometryReader { geo in
                 HStack(spacing: 1) {
@@ -34,7 +34,7 @@ public struct LanguageStackView: View {
                             .frame(width: 6, height: 6)
                         Text(lang.name)
                             .font(.system(size: 9))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                     }
                 }
             }
@@ -42,6 +42,6 @@ public struct LanguageStackView: View {
             .padding(.top, 8)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

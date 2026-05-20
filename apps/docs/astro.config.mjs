@@ -5,39 +5,14 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Lifegames Design System',
-      social: {
-        github: 'https://github.com/j0nathan-ll0yd/lifegames-design-system',
-      },
+      social: [
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/lifegames-design-system' },
+      ],
       sidebar: [
-        {
-          label: 'Getting Started',
-          items: [
-            { label: 'Introduction', slug: '' },
-            { label: 'Installation', slug: 'getting-started' },
-          ],
-        },
-        {
-          label: 'Tokens',
-          items: [
-            { label: 'Colors', slug: 'tokens/colors' },
-            { label: 'Spacing', slug: 'tokens/spacing' },
-            { label: 'Typography', slug: 'tokens/typography' },
-            { label: 'Motion', slug: 'tokens/motion' },
-          ],
-        },
-        {
-          label: 'Components',
-          items: [
-            { label: 'Card', slug: 'components/card' },
-            { label: 'Pill', slug: 'components/pill' },
-          ],
-        },
-        {
-          label: 'Widgets',
-          items: [
-            { label: 'Gallery', slug: 'widgets' },
-          ],
-        },
+        { label: 'Getting Started', autogenerate: { directory: '.' } },
+        { label: 'Tokens', autogenerate: { directory: 'tokens' } },
+        { label: 'Components', autogenerate: { directory: 'components' } },
+        { label: 'Widgets', autogenerate: { directory: 'widgets' } },
       ],
     }),
   ],

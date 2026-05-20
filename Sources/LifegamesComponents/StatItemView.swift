@@ -7,7 +7,7 @@ public struct StatItemView: View {
     public var valueColor: Color
     public var compact: Bool
 
-    public init(label: String, value: String, valueColor: Color = .colorTextTitle, compact: Bool = false) {
+    public init(label: String, value: String, valueColor: Color = Color.colorTextTitle, compact: Bool = false) {
         self.label = label
         self.value = value
         self.valueColor = valueColor
@@ -18,7 +18,7 @@ public struct StatItemView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label)
                 .font(.system(size: compact ? 11 : 12, weight: .medium))
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
                 .textCase(.uppercase)
                 .tracking(0.5)
 
@@ -31,13 +31,13 @@ public struct StatItemView: View {
 
 #Preview("Stat Item") {
     HStack {
-        StatItemView(label: "Steps", value: "8,432", valueColor: .colorAccentGreen)
+        StatItemView(label: "Steps", value: "8,432", valueColor: Color.colorAccentGreen)
         Spacer()
         StatItemView(label: "Distance", value: "5.2 km")
         Spacer()
-        StatItemView(label: "Calories", value: "432", valueColor: .colorHealthRed)
+        StatItemView(label: "Calories", value: "432", valueColor: Color.colorHealthRed)
     }
     .padding()
-    .background(.colorSurfaceBase)
+    .background(Color.colorSurfaceBase)
     .preferredColorScheme(.dark)
 }

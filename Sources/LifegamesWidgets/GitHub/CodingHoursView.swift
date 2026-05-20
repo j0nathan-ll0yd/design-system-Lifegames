@@ -14,23 +14,23 @@ public struct CodingHoursView: View {
     private func cellColor(level: Int) -> Color {
         switch level {
         case 0: return Color.white.opacity(0.03)
-        case 1: return .colorAccentGreen.opacity(0.2)
-        case 2: return .colorAccentGreen.opacity(0.4)
-        case 3: return .colorAccentGreen.opacity(0.65)
-        default: return .colorAccentGreen
+        case 1: return Color.colorAccentGreen.opacity(0.2)
+        case 2: return Color.colorAccentGreen.opacity(0.4)
+        case 3: return Color.colorAccentGreen.opacity(0.65)
+        default: return Color.colorAccentGreen
         }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "CODING HOURS", dotColor: .colorAccentGreen, timestamp: "punch card")
+            WidgetHeaderView(label: "CODING HOURS", dotColor: Color.colorAccentGreen, timestamp: "punch card")
 
             HStack(alignment: .top, spacing: 4) {
                 VStack(alignment: .trailing, spacing: 2) {
                     ForEach(0 ..< 7, id: \.self) { day in
                         Text(Self.dayLabels[day])
                             .font(.system(size: 8))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                             .frame(height: 10)
                     }
                 }
@@ -51,6 +51,6 @@ public struct CodingHoursView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 16)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

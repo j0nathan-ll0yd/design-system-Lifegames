@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "type": "pushed",
+      "repo": "lifegames/api",
+      "title": "Update auth middleware",
+      "date": "2h ago",
+      "detail": "3 commits"
+    },
+    {
+      "type": "opened PR",
+      "repo": "lifegames/ios",
+      "title": "Add biometric login flow",
+      "date": "5h ago",
+      "detail": "#142"
+    },
+    {
+      "type": "starred",
+      "repo": "astro-community/docs",
+      "title": "astro-community/docs",
+      "date": "8h ago",
+      "detail": ""
+    },
+    {
+      "type": "opened issue",
+      "repo": "lifegames/api",
+      "title": "Rate limiter drops WebSocket frames",
+      "date": "1d ago",
+      "detail": "#89"
+    },
+    {
+      "type": "pushed",
+      "repo": "demo-user.github.io",
+      "title": "Update profile components",
+      "date": "1d ago",
+      "detail": "1 commit"
+    },
+    {
+      "type": "created",
+      "repo": "lifegames/api",
+      "title": "branch feature/auth",
+      "date": "2d ago",
+      "detail": ""
+    },
+    {
+      "type": "opened PR",
+      "repo": "demo-user.github.io",
+      "title": "Add GitHub widget system",
+      "date": "3d ago",
+      "detail": "#7"
+    },
+    {
+      "type": "pushed",
+      "repo": "lifegames/infrastructure",
+      "title": "Terraform module updates",
+      "date": "4d ago",
+      "detail": "5 commits"
+    }
+  ]
+}

@@ -19,25 +19,25 @@ public struct DevActivityByRepoView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "ACTIVITY BY REPO", dotColor: .colorAccentGreen, timestamp: "recent")
+            WidgetHeaderView(label: "ACTIVITY BY REPO", dotColor: Color.colorAccentGreen, timestamp: "recent")
 
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(Array(groupedByRepo.enumerated()), id: \.offset) { _, group in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(group.repo)
                             .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.colorAccentBlue)
+                            .foregroundStyle(Color.colorAccentBlue)
                         ForEach(Array(group.events.enumerated()), id: \.offset) { _, event in
                             HStack(spacing: 6) {
                                 DevActivityIcon(type: event.type)
                                 Text(event.title)
                                     .font(.system(size: 10))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                                     .lineLimit(1)
                                 Spacer()
                                 Text(event.date)
                                     .font(.system(size: 9))
-                                    .foregroundStyle(.colorTextMuted.opacity(0.6))
+                                    .foregroundStyle(Color.colorTextMuted.opacity(0.6))
                             }
                         }
                     }
@@ -46,6 +46,6 @@ public struct DevActivityByRepoView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

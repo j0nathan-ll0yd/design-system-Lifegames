@@ -15,27 +15,27 @@ public struct StarredRepoCardsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "STARRED REPOS", dotColor: .colorAccentPink, timestamp: "recent")
+            WidgetHeaderView(label: "STARRED REPOS", dotColor: Color.colorAccentPink, timestamp: "recent")
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                 ForEach(Array(props.repos.prefix(6).enumerated()), id: \.offset) { _, repo in
                     VStack(alignment: .leading, spacing: 4) {
                         Text("\(repo.owner)/\(repo.name)")
                             .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.colorAccentBlue)
+                            .foregroundStyle(Color.colorAccentBlue)
                             .lineLimit(1)
                         Text(repo.description)
                             .font(.system(size: 8))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                             .lineLimit(2)
                         HStack(spacing: 8) {
                             HStack(spacing: 3) {
                                 Circle().fill(Color(hex: repo.languageColor)).frame(width: 5, height: 5)
-                                Text(repo.language).font(.system(size: 8)).foregroundStyle(.colorTextMuted)
+                                Text(repo.language).font(.system(size: 8)).foregroundStyle(Color.colorTextMuted)
                             }
                             HStack(spacing: 2) {
-                                Image(systemName: "star.fill").font(.system(size: 7)).foregroundStyle(.colorAccentAmber)
-                                Text(formatCount(repo.stars)).font(.system(size: 8)).foregroundStyle(.colorTextMuted)
+                                Image(systemName: "star.fill").font(.system(size: 7)).foregroundStyle(Color.colorAccentAmber)
+                                Text(formatCount(repo.stars)).font(.system(size: 8)).foregroundStyle(Color.colorTextMuted)
                             }
                         }
                     }
@@ -48,6 +48,6 @@ public struct StarredRepoCardsView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentPink)
+        .neonCard(accent: Color.colorAccentPink)
     }
 }

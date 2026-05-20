@@ -18,7 +18,7 @@ public struct WidgetHeaderView: View {
                 .font(.system(size: 10, weight: .medium))
                 .textCase(.uppercase)
                 .kerning(3)
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
             Spacer()
             LiveDotView(color: dotColor)
             Text(timestamp)
@@ -33,11 +33,11 @@ public struct WidgetHeaderView: View {
 
 #Preview("Widget Header") {
     VStack(spacing: 20) {
-        WidgetHeaderView(label: "HEALTH", dotColor: .colorAccentPink, timestamp: "today")
-        WidgetHeaderView(label: "LOCATION", dotColor: .colorAccentBlue, timestamp: "live")
-        WidgetHeaderView(label: "BOOKSHELF", dotColor: .colorAccentAmber, timestamp: "library")
+        WidgetHeaderView(label: "HEALTH", dotColor: Color.colorAccentPink, timestamp: "today")
+        WidgetHeaderView(label: "LOCATION", dotColor: Color.colorAccentBlue, timestamp: "live")
+        WidgetHeaderView(label: "BOOKSHELF", dotColor: Color.colorAccentAmber, timestamp: "library")
     }
     .padding()
-    .background(.colorSurfaceBase)
+    .background(Color.colorSurfaceBase)
     .preferredColorScheme(.dark)
 }

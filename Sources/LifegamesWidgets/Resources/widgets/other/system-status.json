@@ -1,0 +1,13 @@
+{
+  "system": {
+    "lines": [
+      { "key": "Health", "value": "Online", "dotClass": "sys-dot-green" },
+      { "key": "Sleep", "value": "7h 18m", "dotClass": "sys-dot-green" },
+      { "key": "Books", "value": "5 tracked", "dotClass": "sys-dot-green" },
+      { "key": "Articles", "value": "12 saved", "dotClass": "sys-dot-green" },
+      { "key": "Github Events", "value": "24 today", "dotClass": "sys-dot-green" },
+      { "key": "Github Stars", "value": "156 total", "dotClass": "sys-dot-green" },
+      { "key": "Theatre Reviews", "value": "42 reviews", "dotClass": "sys-dot-green" }
+    ]
+  }
+}

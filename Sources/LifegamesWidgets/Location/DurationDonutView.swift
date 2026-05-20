@@ -11,11 +11,11 @@ public struct DurationDonutView: View {
         self.totalHours = totalHours
     }
 
-    private static let colors: [Color] = [.colorAccentAmber, .colorAccentGreen, .colorAccentBlue, .colorAccentPink, .colorAccentPurple]
+    private static let colors: [Color] = [Color.colorAccentAmber, Color.colorAccentGreen, Color.colorAccentBlue, Color.colorAccentPink, Color.colorAccentPurple]
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "TIME SPENT", dotColor: .colorAccentAmber, timestamp: "all time")
+            WidgetHeaderView(label: "TIME SPENT", dotColor: Color.colorAccentAmber, timestamp: "all time")
 
             VStack(spacing: 10) {
                 ZStack {
@@ -46,10 +46,10 @@ public struct DurationDonutView: View {
                     VStack(spacing: 2) {
                         Text(String(format: "%.0f", totalHours))
                             .font(.system(size: 22, weight: .bold, design: .rounded))
-                            .foregroundStyle(.colorAccentAmber)
+                            .foregroundStyle(Color.colorAccentAmber)
                         Text("hours")
                             .font(.system(size: 9, weight: .medium))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                             .textCase(.uppercase)
                     }
                 }
@@ -62,7 +62,7 @@ public struct DurationDonutView: View {
                                 .frame(width: 8, height: 8)
                             Text(cat.category)
                                 .font(.system(size: 9))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                         }
                     }
                 }
@@ -70,6 +70,6 @@ public struct DurationDonutView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentAmber)
+        .neonCard(accent: Color.colorAccentAmber)
     }
 }

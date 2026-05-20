@@ -1,0 +1,26 @@
+{
+  "reading": {
+    "articles": [
+      {
+        "title": "Understanding WebSocket Performance",
+        "source": "web.dev",
+        "date": "2026-05-18"
+      },
+      {
+        "title": "Swift 6.2 Concurrency Improvements",
+        "source": "swift.org",
+        "date": "2026-05-15"
+      },
+      {
+        "title": "The State of CSS 2026",
+        "source": "survey.devographics.com",
+        "date": "2026-05-12"
+      },
+      {
+        "title": "Building Design Systems at Scale",
+        "source": "medium.com",
+        "date": "2026-05-10"
+      }
+    ]
+  }
+}

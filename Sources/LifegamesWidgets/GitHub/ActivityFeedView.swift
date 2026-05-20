@@ -11,18 +11,18 @@ public struct ActivityFeedView: View {
 
     private func iconInfo(for type: String) -> (symbol: String, color: Color) {
         switch type {
-        case "pushed": return ("arrow.right", .colorAccentGreen)
-        case "opened PR": return ("plus.circle", .colorAccentBlue)
-        case "opened issue": return ("circle.dotted", .colorAccentAmber)
-        case "starred": return ("star.fill", .colorAccentPink)
-        case "created": return ("plus", .colorAccentGreen)
-        default: return ("circle.fill", .colorAccentGreen)
+        case "pushed": return ("arrow.right", Color.colorAccentGreen)
+        case "opened PR": return ("plus.circle", Color.colorAccentBlue)
+        case "opened issue": return ("circle.dotted", Color.colorAccentAmber)
+        case "starred": return ("star.fill", Color.colorAccentPink)
+        case "created": return ("plus", Color.colorAccentGreen)
+        default: return ("circle.fill", Color.colorAccentGreen)
         }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "ACTIVITY FEED", dotColor: .colorAccentGreen, timestamp: "recent")
+            WidgetHeaderView(label: "ACTIVITY FEED", dotColor: Color.colorAccentGreen, timestamp: "recent")
 
             VStack(spacing: 0) {
                 ForEach(Array(props.events.enumerated()), id: \.offset) { index, event in
@@ -39,22 +39,22 @@ public struct ActivityFeedView: View {
                             HStack {
                                 Text(event.repo)
                                     .font(.system(size: 11, weight: .semibold))
-                                    .foregroundStyle(.colorTextTitle)
+                                    .foregroundStyle(Color.colorTextTitle)
                                     .lineLimit(1)
                                 Spacer()
                                 Text(event.date)
                                     .font(.system(size: 9))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                             }
                             HStack(spacing: 6) {
                                 Text(event.title)
                                     .font(.system(size: 10))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                                     .lineLimit(1)
                                 if !event.detail.isEmpty {
                                     Text(event.detail)
                                         .font(.system(size: 9))
-                                        .foregroundStyle(.colorAccentGreen.opacity(0.7))
+                                        .foregroundStyle(Color.colorAccentGreen.opacity(0.7))
                                 }
                             }
                         }
@@ -68,6 +68,6 @@ public struct ActivityFeedView: View {
             }
             .padding(.horizontal, 18)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

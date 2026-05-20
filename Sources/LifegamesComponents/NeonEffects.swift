@@ -108,16 +108,16 @@ public struct PulsingMapMarker: View {
 #Preview("Neon Effects") {
     VStack(spacing: 30) {
         HStack(spacing: 30) {
-            LiveDotView(color: .colorAccentGreen)
-            LiveDotView(color: .colorAccentPink)
-            LiveDotView(color: .colorAccentBlue)
+            LiveDotView(color: Color.colorAccentGreen)
+            LiveDotView(color: Color.colorAccentPink)
+            LiveDotView(color: Color.colorAccentBlue)
         }
-        PulsingMapMarker(color: .colorAccentGreen)
+        PulsingMapMarker(color: Color.colorAccentGreen)
             .frame(height: 40)
-        ECGBackgroundView(color: .colorAccentPink)
+        ECGBackgroundView(color: Color.colorAccentPink)
             .frame(height: 60)
     }
     .padding()
-    .background(.colorSurfaceBase)
+    .background(Color.colorSurfaceBase)
     .preferredColorScheme(.dark)
 }

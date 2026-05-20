@@ -1,0 +1,36 @@
+{
+  "cityBreakdown": [
+    {
+      "city": "Portland",
+      "visitCount": 342
+    },
+    {
+      "city": "Seattle",
+      "visitCount": 87
+    },
+    {
+      "city": "San Francisco",
+      "visitCount": 45
+    },
+    {
+      "city": "Los Angeles",
+      "visitCount": 23
+    },
+    {
+      "city": "Denver",
+      "visitCount": 18
+    },
+    {
+      "city": "Austin",
+      "visitCount": 12
+    },
+    {
+      "city": "Chicago",
+      "visitCount": 9
+    },
+    {
+      "city": "New York",
+      "visitCount": 7
+    }
+  ]
+}

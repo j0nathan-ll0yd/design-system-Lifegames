@@ -37,13 +37,13 @@ public struct HealthRingView: View {
 
                 Text(value)
                     .font(.system(size: size * 0.22, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.colorTextTitle)
+                    .foregroundStyle(Color.colorTextTitle)
             }
             .frame(width: size, height: size)
 
             Text(label)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
         }
     }
 }

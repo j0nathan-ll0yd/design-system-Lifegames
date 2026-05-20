@@ -11,7 +11,7 @@ public struct DevActivityLogView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "ACTIVITY LOG", dotColor: .colorAccentGreen, timestamp: "terminal")
+            WidgetHeaderView(label: "ACTIVITY LOG", dotColor: Color.colorAccentGreen, timestamp: "terminal")
 
             VStack(alignment: .leading, spacing: 2) {
                 ForEach(Array(props.events.enumerated()), id: \.offset) { _, event in
@@ -19,16 +19,16 @@ public struct DevActivityLogView: View {
                         DevActivityIcon(type: event.type)
                         Text(event.type)
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(.colorAccentGreen.opacity(0.7))
+                            .foregroundStyle(Color.colorAccentGreen.opacity(0.7))
                             .frame(width: 60, alignment: .leading)
                         Text(event.title)
                             .font(.system(size: 9, design: .monospaced))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                             .lineLimit(1)
                         Spacer()
                         Text(event.date)
                             .font(.system(size: 8, design: .monospaced))
-                            .foregroundStyle(.colorTextMuted.opacity(0.5))
+                            .foregroundStyle(Color.colorTextMuted.opacity(0.5))
                     }
                     .padding(.vertical, 2)
                 }
@@ -36,6 +36,6 @@ public struct DevActivityLogView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

@@ -1,0 +1,39 @@
+{
+  "languages": [
+    {
+      "name": "TypeScript",
+      "pct": 34.2,
+      "color": "#3178c6"
+    },
+    {
+      "name": "Python",
+      "pct": 22.1,
+      "color": "#3572A5"
+    },
+    {
+      "name": "JavaScript",
+      "pct": 15.8,
+      "color": "#f1e05a"
+    },
+    {
+      "name": "Go",
+      "pct": 10.5,
+      "color": "#00ADD8"
+    },
+    {
+      "name": "Rust",
+      "pct": 8.3,
+      "color": "#dea584"
+    },
+    {
+      "name": "CSS",
+      "pct": 5.9,
+      "color": "#563d7c"
+    },
+    {
+      "name": "Other",
+      "pct": 3.2,
+      "color": "#9ca3af"
+    }
+  ]
+}

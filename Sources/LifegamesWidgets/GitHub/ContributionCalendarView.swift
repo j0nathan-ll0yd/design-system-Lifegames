@@ -14,16 +14,16 @@ public struct ContributionCalendarView: View {
     private func cellColor(level: Int) -> Color {
         switch level {
         case 0: return Color.white.opacity(0.03)
-        case 1: return .colorAccentGreen.opacity(0.25)
-        case 2: return .colorAccentGreen.opacity(0.45)
-        case 3: return .colorAccentGreen.opacity(0.7)
-        default: return .colorAccentGreen
+        case 1: return Color.colorAccentGreen.opacity(0.25)
+        case 2: return Color.colorAccentGreen.opacity(0.45)
+        case 3: return Color.colorAccentGreen.opacity(0.7)
+        default: return Color.colorAccentGreen
         }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "CONTRIBUTIONS", dotColor: .colorAccentGreen, timestamp: "90d")
+            WidgetHeaderView(label: "CONTRIBUTIONS", dotColor: Color.colorAccentGreen, timestamp: "90d")
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 3) {
@@ -32,7 +32,7 @@ public struct ContributionCalendarView: View {
                             if dayIndex == 1 || dayIndex == 3 || dayIndex == 5 {
                                 Text(Self.dayLabels[(dayIndex - 1) / 2])
                                     .font(.system(size: 8))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                                     .frame(width: 14, height: 14)
                             } else {
                                 Color.clear.frame(width: 14, height: 14)
@@ -55,7 +55,7 @@ public struct ContributionCalendarView: View {
                     ForEach(props.months, id: \.self) { month in
                         Text(month)
                             .font(.system(size: 9))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                         Spacer()
                     }
                 }
@@ -63,6 +63,6 @@ public struct ContributionCalendarView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 16)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

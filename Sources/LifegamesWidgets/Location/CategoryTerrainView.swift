@@ -9,7 +9,7 @@ public struct CategoryTerrainView: View {
         self.categories = categories
     }
 
-    private static let categoryColors: [Color] = [.colorAccentGreen, .colorAccentBlue, .colorAccentPink, .colorAccentAmber, .colorAccentPurple]
+    private static let categoryColors: [Color] = [Color.colorAccentGreen, Color.colorAccentBlue, Color.colorAccentPink, Color.colorAccentAmber, Color.colorAccentPurple]
 
     private var totalMinutes: Int {
         categories.reduce(0) { $0 + $1.totalMinutes }
@@ -17,7 +17,7 @@ public struct CategoryTerrainView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "TIME TERRAIN", dotColor: .colorAccentGreen, timestamp: "categories")
+            WidgetHeaderView(label: "TIME TERRAIN", dotColor: Color.colorAccentGreen, timestamp: "categories")
 
             VStack(alignment: .leading, spacing: 8) {
                 GeometryReader { geo in
@@ -42,7 +42,7 @@ public struct CategoryTerrainView: View {
                                 .frame(width: 6, height: 6)
                             Text(cat.category)
                                 .font(.system(size: 10))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                         }
                     }
                 }
@@ -50,6 +50,6 @@ public struct CategoryTerrainView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

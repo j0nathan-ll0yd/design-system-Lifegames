@@ -21,7 +21,7 @@ public struct ContributionBreakdownView: View {
                     .foregroundStyle(color)
                 Text(label)
                     .font(.system(size: 9, weight: .medium))
-                    .foregroundStyle(.colorTextMuted)
+                    .foregroundStyle(Color.colorTextMuted)
                     .textCase(.uppercase)
                     .tracking(0.5)
             }
@@ -31,17 +31,17 @@ public struct ContributionBreakdownView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "CONTRIBUTIONS", dotColor: .colorAccentGreen, timestamp: "year")
+            WidgetHeaderView(label: "CONTRIBUTIONS", dotColor: Color.colorAccentGreen, timestamp: "year")
 
             HStack(spacing: 0) {
-                StatPill(label: "Commits", value: props.commits, color: .colorAccentGreen)
-                StatPill(label: "PRs", value: props.pullRequests, color: .colorAccentBlue)
-                StatPill(label: "Issues", value: props.issues, color: .colorAccentAmber)
-                StatPill(label: "Reviews", value: props.reviews, color: .colorAccentPurple)
+                StatPill(label: "Commits", value: props.commits, color: Color.colorAccentGreen)
+                StatPill(label: "PRs", value: props.pullRequests, color: Color.colorAccentBlue)
+                StatPill(label: "Issues", value: props.issues, color: Color.colorAccentAmber)
+                StatPill(label: "Reviews", value: props.reviews, color: Color.colorAccentPurple)
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 16)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

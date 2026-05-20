@@ -11,7 +11,7 @@ public struct LanguageGridView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "LANGUAGE GRID", dotColor: .colorAccentGreen, timestamp: "repos")
+            WidgetHeaderView(label: "LANGUAGE GRID", dotColor: Color.colorAccentGreen, timestamp: "repos")
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                 ForEach(Array(props.languages.enumerated()), id: \.offset) { _, lang in
@@ -22,14 +22,14 @@ public struct LanguageGridView: View {
                         VStack(alignment: .leading, spacing: 1) {
                             Text(lang.name)
                                 .font(.system(size: 10, weight: .medium))
-                                .foregroundStyle(.colorTextTitle)
+                                .foregroundStyle(Color.colorTextTitle)
                             HStack(spacing: 4) {
                                 Text(String(format: "%.1f%%", lang.pct))
                                     .font(.system(size: 9))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                                 Text("\(lang.repos) repos")
                                     .font(.system(size: 9))
-                                    .foregroundStyle(.colorTextMuted.opacity(0.6))
+                                    .foregroundStyle(Color.colorTextMuted.opacity(0.6))
                             }
                         }
                         Spacer()
@@ -42,6 +42,6 @@ public struct LanguageGridView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

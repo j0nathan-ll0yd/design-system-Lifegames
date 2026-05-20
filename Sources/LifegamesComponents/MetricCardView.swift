@@ -27,17 +27,17 @@ public struct MetricCardView: View {
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(value)
                     .font(.system(.title2, design: .rounded, weight: .bold))
-                    .foregroundStyle(.colorTextTitle)
+                    .foregroundStyle(Color.colorTextTitle)
                 if let unit {
                     Text(unit)
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.colorTextMuted)
+                        .foregroundStyle(Color.colorTextMuted)
                 }
             }
 
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(minHeight: 100)
@@ -47,10 +47,10 @@ public struct MetricCardView: View {
 
 #Preview("Metric Card") {
     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-        MetricCardView(title: "Heart Rate", value: "72", unit: "bpm", icon: "heart.fill", color: .colorAccentPink)
-        MetricCardView(title: "Steps", value: "8,247", unit: nil, icon: "figure.walk", color: .colorAccentGreen)
+        MetricCardView(title: "Heart Rate", value: "72", unit: "bpm", icon: "heart.fill", color: Color.colorAccentPink)
+        MetricCardView(title: "Steps", value: "8,247", unit: nil, icon: "figure.walk", color: Color.colorAccentGreen)
     }
     .padding()
-    .background(.colorSurfaceBase)
+    .background(Color.colorSurfaceBase)
     .preferredColorScheme(.dark)
 }

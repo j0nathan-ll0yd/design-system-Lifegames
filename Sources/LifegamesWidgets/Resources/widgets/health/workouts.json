@@ -1,0 +1,18 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Outdoor Walk",
+        "duration": 2400,
+        "energy_burned": 210,
+        "distance": 3200
+      },
+      {
+        "activity_type": "Functional Strength Training",
+        "duration": 3600,
+        "energy_burned": 320,
+        "distance": 0
+      }
+    ]
+  }
+}

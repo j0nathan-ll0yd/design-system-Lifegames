@@ -11,19 +11,19 @@ public struct DevActivityTimelineView: View {
 
     private func dotColor(for type: String) -> Color {
         switch type {
-        case "commit": return .colorAccentGreen
-        case "pr_merged": return .colorAccentPurple
-        case "pr_opened": return .colorAccentBlue
-        case "pr_closed": return .colorHealthRed
-        case "issue_opened": return .colorAccentAmber
-        case "issue_closed": return .colorAccentGreen
-        default: return .colorTextMuted
+        case "commit": return Color.colorAccentGreen
+        case "pr_merged": return Color.colorAccentPurple
+        case "pr_opened": return Color.colorAccentBlue
+        case "pr_closed": return Color.colorHealthRed
+        case "issue_opened": return Color.colorAccentAmber
+        case "issue_closed": return Color.colorAccentGreen
+        default: return Color.colorTextMuted
         }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "ACTIVITY TIMELINE", dotColor: .colorAccentGreen, timestamp: "recent")
+            WidgetHeaderView(label: "ACTIVITY TIMELINE", dotColor: Color.colorAccentGreen, timestamp: "recent")
 
             VStack(spacing: 0) {
                 ForEach(Array(props.events.enumerated()), id: \.offset) { index, event in
@@ -44,15 +44,15 @@ public struct DevActivityTimelineView: View {
                             HStack {
                                 Text(event.repo)
                                     .font(.system(size: 10, weight: .semibold))
-                                    .foregroundStyle(.colorTextTitle)
+                                    .foregroundStyle(Color.colorTextTitle)
                                 Spacer()
                                 Text(event.date)
                                     .font(.system(size: 9))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                             }
                             Text(event.title)
                                 .font(.system(size: 10))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                                 .lineLimit(1)
                         }
                         .padding(.bottom, 10)
@@ -61,6 +61,6 @@ public struct DevActivityTimelineView: View {
             }
             .padding(.horizontal, 18)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

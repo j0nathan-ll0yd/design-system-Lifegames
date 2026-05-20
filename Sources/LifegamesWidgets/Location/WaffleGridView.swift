@@ -9,11 +9,11 @@ public struct WaffleGridView: View {
         self.categories = categories
     }
 
-    private static let colors: [Color] = [.colorAccentBlue, .colorAccentGreen, .colorAccentPink, .colorAccentAmber, .colorAccentPurple]
+    private static let colors: [Color] = [Color.colorAccentBlue, Color.colorAccentGreen, Color.colorAccentPink, Color.colorAccentAmber, Color.colorAccentPurple]
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "TIME MAP", dotColor: .colorAccentBlue, timestamp: "categories")
+            WidgetHeaderView(label: "TIME MAP", dotColor: Color.colorAccentBlue, timestamp: "categories")
 
             VStack(spacing: 8) {
                 let totalVisits = categories.reduce(0) { $0 + $1.visitCount }
@@ -49,7 +49,7 @@ public struct WaffleGridView: View {
                                 .frame(width: 8, height: 8)
                             Text(cat.category)
                                 .font(.system(size: 9))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                         }
                     }
                 }
@@ -57,6 +57,6 @@ public struct WaffleGridView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentBlue)
+        .neonCard(accent: Color.colorAccentBlue)
     }
 }

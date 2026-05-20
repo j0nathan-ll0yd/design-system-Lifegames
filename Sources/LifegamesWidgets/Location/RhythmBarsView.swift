@@ -27,7 +27,7 @@ public struct RhythmBarsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "WEEKLY RHYTHM", dotColor: .colorAccentBlue, timestamp: "90d")
+            WidgetHeaderView(label: "WEEKLY RHYTHM", dotColor: Color.colorAccentBlue, timestamp: "90d")
 
             let totals = weekdayTotals
             let maxVal = max(totals.max() ?? 1, 1)
@@ -37,12 +37,12 @@ public struct RhythmBarsView: View {
                     ForEach(0 ..< 7, id: \.self) { day in
                         VStack(spacing: 4) {
                             RoundedRectangle(cornerRadius: 3)
-                                .fill(.colorAccentBlue)
+                                .fill(Color.colorAccentBlue)
                                 .frame(height: max(2, CGFloat(totals[day]) / CGFloat(maxVal) * 70))
-                                .shadow(color: .colorAccentBlue.opacity(0.3), radius: 6)
+                                .shadow(color: Color.colorAccentBlue.opacity(0.3), radius: 6)
                             Text(Self.dayLabels[day])
                                 .font(.system(size: 9))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -53,12 +53,12 @@ public struct RhythmBarsView: View {
                     HStack(spacing: 6) {
                         Text("Busiest:")
                             .font(.system(size: 10))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                             .textCase(.uppercase)
                             .tracking(0.8)
                         Text(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][busiestIdx])
                             .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.colorAccentBlue)
+                            .foregroundStyle(Color.colorAccentBlue)
                     }
                     .padding(.top, 8)
                 }
@@ -66,6 +66,6 @@ public struct RhythmBarsView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentBlue)
+        .neonCard(accent: Color.colorAccentBlue)
     }
 }

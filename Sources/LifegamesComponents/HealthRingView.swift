@@ -37,24 +37,24 @@ public struct HealthRingView: View {
 
                 Text(value)
                     .font(.system(size: size * 0.22, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.colorTextTitle)
+                    .foregroundStyle(Color.colorTextTitle)
             }
             .frame(width: size, height: size)
 
             Text(label)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
         }
     }
 }
 
 #Preview("Health Ring") {
     HStack(spacing: 20) {
-        HealthRingView(progress: 0.72, color: .colorHealthRed, label: "Move", value: "432")
-        HealthRingView(progress: 0.85, color: .colorHealthGreen, label: "Exercise", value: "26m")
-        HealthRingView(progress: 0.60, color: .colorAccentPurple, label: "Stand", value: "7h")
+        HealthRingView(progress: 0.72, color: Color.colorHealthRed, label: "Move", value: "432")
+        HealthRingView(progress: 0.85, color: Color.colorHealthGreen, label: "Exercise", value: "26m")
+        HealthRingView(progress: 0.60, color: Color.colorAccentPurple, label: "Stand", value: "7h")
     }
     .padding()
-    .background(.colorSurfaceBase)
+    .background(Color.colorSurfaceBase)
     .preferredColorScheme(.dark)
 }

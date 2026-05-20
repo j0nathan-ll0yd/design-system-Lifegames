@@ -1,0 +1,126 @@
+{
+  "current": 12,
+  "longest": 47,
+  "recentDays": [
+    {
+      "date": "2026-01-18",
+      "active": true
+    },
+    {
+      "date": "2026-01-19",
+      "active": false
+    },
+    {
+      "date": "2026-01-20",
+      "active": true
+    },
+    {
+      "date": "2026-01-21",
+      "active": true
+    },
+    {
+      "date": "2026-01-22",
+      "active": true
+    },
+    {
+      "date": "2026-01-23",
+      "active": false
+    },
+    {
+      "date": "2026-01-24",
+      "active": true
+    },
+    {
+      "date": "2026-01-25",
+      "active": false
+    },
+    {
+      "date": "2026-01-26",
+      "active": true
+    },
+    {
+      "date": "2026-01-27",
+      "active": true
+    },
+    {
+      "date": "2026-01-28",
+      "active": false
+    },
+    {
+      "date": "2026-01-29",
+      "active": true
+    },
+    {
+      "date": "2026-01-30",
+      "active": true
+    },
+    {
+      "date": "2026-01-31",
+      "active": true
+    },
+    {
+      "date": "2026-02-01",
+      "active": false
+    },
+    {
+      "date": "2026-02-02",
+      "active": true
+    },
+    {
+      "date": "2026-02-03",
+      "active": true
+    },
+    {
+      "date": "2026-02-04",
+      "active": true
+    },
+    {
+      "date": "2026-02-05",
+      "active": false
+    },
+    {
+      "date": "2026-02-06",
+      "active": true
+    },
+    {
+      "date": "2026-02-07",
+      "active": true
+    },
+    {
+      "date": "2026-02-08",
+      "active": true
+    },
+    {
+      "date": "2026-02-09",
+      "active": true
+    },
+    {
+      "date": "2026-02-10",
+      "active": false
+    },
+    {
+      "date": "2026-02-11",
+      "active": true
+    },
+    {
+      "date": "2026-02-12",
+      "active": true
+    },
+    {
+      "date": "2026-02-13",
+      "active": true
+    },
+    {
+      "date": "2026-02-14",
+      "active": true
+    },
+    {
+      "date": "2026-02-15",
+      "active": true
+    },
+    {
+      "date": "2026-02-16",
+      "active": true
+    }
+  ]
+}

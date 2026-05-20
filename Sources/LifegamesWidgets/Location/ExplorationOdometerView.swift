@@ -19,39 +19,39 @@ public struct ExplorationOdometerView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "EXPLORATION", dotColor: .colorAccentBlue, timestamp: "odometer")
+            WidgetHeaderView(label: "EXPLORATION", dotColor: Color.colorAccentBlue, timestamp: "odometer")
 
             VStack(spacing: 14) {
                 HStack {
-                    OdometerStat(value: "\(totalVisits)", label: "Visits", color: .colorAccentBlue)
+                    OdometerStat(value: "\(totalVisits)", label: "Visits", color: Color.colorAccentBlue)
                     Divider().frame(height: 28).overlay(Color.white.opacity(0.08))
-                    OdometerStat(value: "\(totalPlaces)", label: "Places", color: .colorAccentBlue)
+                    OdometerStat(value: "\(totalPlaces)", label: "Places", color: Color.colorAccentBlue)
                     Divider().frame(height: 28).overlay(Color.white.opacity(0.08))
-                    OdometerStat(value: "\(citiesVisited)", label: "Cities", color: .colorAccentBlue)
+                    OdometerStat(value: "\(citiesVisited)", label: "Cities", color: Color.colorAccentBlue)
                     Divider().frame(height: 28).overlay(Color.white.opacity(0.08))
-                    OdometerStat(value: "\(totalStates)", label: "States", color: .colorAccentBlue)
+                    OdometerStat(value: "\(totalStates)", label: "States", color: Color.colorAccentBlue)
                 }
 
                 if let city = currentCity {
                     HStack(spacing: 5) {
                         Image(systemName: "house")
                             .font(.system(size: 10))
-                            .foregroundStyle(.colorAccentBlue.opacity(0.6))
+                            .foregroundStyle(Color.colorAccentBlue.opacity(0.6))
                         Text(city)
                             .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(.colorAccentBlue)
+                            .foregroundStyle(Color.colorAccentBlue)
                         Spacer()
                     }
                     .padding(.top, 10)
                     .overlay(alignment: .top) {
-                        Rectangle().fill(.colorAccentBlue.opacity(0.12)).frame(height: 1)
+                        Rectangle().fill(Color.colorAccentBlue.opacity(0.12)).frame(height: 1)
                     }
                 }
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentBlue)
+        .neonCard(accent: Color.colorAccentBlue)
     }
 }
 
@@ -67,7 +67,7 @@ private struct OdometerStat: View {
                 .foregroundStyle(color)
             Text(label)
                 .font(.system(size: 9, weight: .medium))
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
                 .textCase(.uppercase)
                 .tracking(1)
         }

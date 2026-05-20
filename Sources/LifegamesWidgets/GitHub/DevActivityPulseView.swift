@@ -23,42 +23,41 @@ public struct DevActivityPulseView: View {
             counts[bucket, default: 0] += 1
         }
         let colorMap: [String: Color] = [
-            "Commits": .colorAccentGreen, "PRs": .colorAccentBlue,
-            "Issues": .colorAccentAmber, "Other": .colorTextMuted,
+            "Commits": Color.colorAccentGreen, "PRs": Color.colorAccentBlue,
+            "Issues": Color.colorAccentAmber, "Other": Color.colorTextMuted,
         ]
         return counts.sorted { $0.value > $1.value }
-            .map { (type: $0.key, count: $0.value, color: colorMap[$0.key] ?? .colorTextMuted) }
+            .map { (type: $0.key, count: $0.value, color: colorMap[$0.key] ?? Color.colorTextMuted) }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "ACTIVITY PULSE", dotColor: .colorAccentGreen, timestamp: "recent")
+            WidgetHeaderView(label: "ACTIVITY PULSE", dotColor: Color.colorAccentGreen, timestamp: "recent")
 
             Canvas { context, size in
-                let points = props.events.enumerated().map { index, _ in
-                    CGPoint(
-                        x: CGFloat(index) / CGFloat(max(props.events.count - 1, 1)) * size.width,
-                        y: size.height * 0.3 + sin(Double(index) * 0.8) * size.height * 0.2
-                    )
+                let count = props.events.count
+                let denominator = CGFloat(max(count - 1, 1))
+                var points: [CGPoint] = []
+                for i in 0 ..< count {
+                    let x = CGFloat(i) / denominator * size.width
+                    let y = size.height * 0.3 + sin(Double(i) * 0.8) * size.height * 0.2
+                    points.append(CGPoint(x: x, y: y))
                 }
 
                 guard points.count >= 2 else { return }
                 var path = Path()
                 path.move(to: points[0])
                 for i in 1 ..< points.count {
-                    let control1 = CGPoint(
-                        x: (points[i - 1].x + points[i].x) / 2,
-                        y: points[i - 1].y
-                    )
-                    let control2 = CGPoint(
-                        x: (points[i - 1].x + points[i].x) / 2,
-                        y: points[i].y
-                    )
+                    let midX = (points[i - 1].x + points[i].x) / 2
+                    let control1 = CGPoint(x: midX, y: points[i - 1].y)
+                    let control2 = CGPoint(x: midX, y: points[i].y)
                     path.addCurve(to: points[i], control1: control1, control2: control2)
                 }
 
-                context.addFilter(.shadow(color: .init(.colorAccentGreen.opacity(0.4)), radius: 4))
-                context.stroke(path, with: .color(.colorAccentGreen.opacity(0.6)), lineWidth: 2)
+                let glowColor = Color.colorAccentGreen.opacity(0.4)
+                context.addFilter(.shadow(color: glowColor, radius: 4))
+                let strokeColor = Color.colorAccentGreen.opacity(0.6)
+                context.stroke(path, with: .color(strokeColor), lineWidth: 2)
             }
             .frame(height: 60)
             .padding(.horizontal, 18)
@@ -71,13 +70,13 @@ public struct DevActivityPulseView: View {
                             .frame(width: 6, height: 6)
                         Text("\(item.count) \(item.type)")
                             .font(.system(size: 9))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                     }
                 }
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 10)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

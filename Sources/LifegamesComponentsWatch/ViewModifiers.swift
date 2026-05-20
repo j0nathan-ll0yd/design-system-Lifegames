@@ -5,11 +5,11 @@ public struct PortalCardModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .padding(Spacing.s800)
-            .background(.colorSurfaceRaised)
+            .background(Color.colorSurfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Spacing.s400))
             .overlay(
                 RoundedRectangle(cornerRadius: Spacing.s400)
-                    .stroke(.colorBorderDefault, lineWidth: 1)
+                    .stroke(Color.colorBorderDefault, lineWidth: 1)
             )
     }
 }
@@ -37,11 +37,11 @@ public struct NeonCardModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .padding(Spacing.s450)
-            .background(.colorSurfaceRaised)
+            .background(Color.colorSurfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(.colorBorderSubtle, lineWidth: 1)
+                    .stroke(Color.colorBorderSubtle, lineWidth: 1)
             )
             .overlay(alignment: .top) {
                 UnevenRoundedRectangle(

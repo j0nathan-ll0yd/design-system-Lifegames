@@ -18,7 +18,7 @@ public struct WidgetHeaderView: View {
                 .font(.system(size: 10, weight: .medium))
                 .textCase(.uppercase)
                 .kerning(3)
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
             Spacer()
             LiveDotView(color: dotColor)
             Text(timestamp)

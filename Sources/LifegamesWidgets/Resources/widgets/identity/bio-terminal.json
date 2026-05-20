@@ -1,0 +1,18 @@
+{
+  "profile": {
+    "terminalLines": [
+      { "type": "prompt", "text": "$ whoami" },
+      { "type": "output", "text": "engineering-director" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ cat skills.txt" },
+      { "type": "output", "text": "TypeScript, Swift, Python, Go" },
+      { "type": "output", "text": "→ Full-stack engineering leadership" },
+      { "type": "output", "text": "→ Distributed systems architecture" },
+      { "type": "output", "text": "→ Mobile + web platform development" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ uptime" },
+      { "type": "output", "text": "24+ years professionally & counting" },
+      { "type": "cursor" }
+    ]
+  }
+}

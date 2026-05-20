@@ -21,7 +21,7 @@ public struct YearInReviewView: View {
                     .foregroundStyle(color)
                 Text(label)
                     .font(.system(size: 9, weight: .medium))
-                    .foregroundStyle(.colorTextMuted)
+                    .foregroundStyle(Color.colorTextMuted)
                     .textCase(.uppercase)
                     .tracking(0.5)
             }
@@ -30,26 +30,26 @@ public struct YearInReviewView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "YEAR IN REVIEW", dotColor: .colorAccentGreen, timestamp: "annual")
+            WidgetHeaderView(label: "YEAR IN REVIEW", dotColor: Color.colorAccentGreen, timestamp: "annual")
 
             VStack(spacing: 16) {
                 HStack {
-                    ReviewStat(label: "Contributions", value: "\(props.totalContributions)", color: .colorAccentGreen)
+                    ReviewStat(label: "Contributions", value: "\(props.totalContributions)", color: Color.colorAccentGreen)
                     Spacer()
-                    ReviewStat(label: "Top Language", value: props.topLanguage, color: .colorAccentBlue)
+                    ReviewStat(label: "Top Language", value: props.topLanguage, color: Color.colorAccentBlue)
                 }
 
                 HStack {
-                    ReviewStat(label: "Most Active", value: props.mostActiveMonth, color: .colorAccentAmber)
+                    ReviewStat(label: "Most Active", value: props.mostActiveMonth, color: Color.colorAccentAmber)
                     Spacer()
-                    ReviewStat(label: "Repos Created", value: "\(props.reposCreated)", color: .colorAccentPurple)
+                    ReviewStat(label: "Repos Created", value: "\(props.reposCreated)", color: Color.colorAccentPurple)
                     Spacer()
-                    ReviewStat(label: "Longest Streak", value: "\(props.longestStreak)d", color: .colorAccentPink)
+                    ReviewStat(label: "Longest Streak", value: "\(props.longestStreak)d", color: Color.colorAccentPink)
                 }
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 16)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

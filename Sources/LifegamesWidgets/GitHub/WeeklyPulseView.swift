@@ -12,7 +12,7 @@ public struct WeeklyPulseView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "WEEKLY PULSE", dotColor: .colorAccentGreen, timestamp: "12w")
+            WidgetHeaderView(label: "WEEKLY PULSE", dotColor: Color.colorAccentGreen, timestamp: "12w")
 
             Chart {
                 ForEach(Array(props.weeks.enumerated()), id: \.offset) { index, week in
@@ -20,7 +20,7 @@ public struct WeeklyPulseView: View {
                         x: .value("Week", index),
                         y: .value("Contributions", week.total)
                     )
-                    .foregroundStyle(.colorAccentGreen.opacity(0.7))
+                    .foregroundStyle(Color.colorAccentGreen.opacity(0.7))
                     .cornerRadius(2)
                 }
             }
@@ -30,6 +30,6 @@ public struct WeeklyPulseView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

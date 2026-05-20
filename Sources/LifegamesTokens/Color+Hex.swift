@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension Color {
+public extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet(charactersIn: "#"))
         let scanner = Scanner(string: hex)

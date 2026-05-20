@@ -11,10 +11,12 @@
     "test": "turbo run test",
     "docs:build": "turbo run docs:build",
     "docs:dev": "turbo run docs:dev",
-    "storybook:build": "turbo run storybook:build"
+    "storybook:build": "turbo run storybook:build",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "turbo": "^2.5.0",
-    "@changesets/cli": "^2.29.0"
+    "@changesets/cli": "^2.29.0",
+    "husky": "^9.1.7",
+    "turbo": "^2.5.0"
   }
 }

@@ -12,16 +12,16 @@ public struct ContributionGridView: View {
     private func cellColor(level: Int) -> Color {
         switch level {
         case 0: return Color.white.opacity(0.03)
-        case 1: return .colorAccentGreen.opacity(0.2)
-        case 2: return .colorAccentGreen.opacity(0.4)
-        case 3: return .colorAccentGreen.opacity(0.65)
-        default: return .colorAccentGreen
+        case 1: return Color.colorAccentGreen.opacity(0.2)
+        case 2: return Color.colorAccentGreen.opacity(0.4)
+        case 3: return Color.colorAccentGreen.opacity(0.65)
+        default: return Color.colorAccentGreen
         }
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "CONTRIBUTIONS", dotColor: .colorAccentGreen, timestamp: "52w")
+            WidgetHeaderView(label: "CONTRIBUTIONS", dotColor: Color.colorAccentGreen, timestamp: "52w")
 
             Canvas { context, _ in
                 let cellSize: CGFloat = 5
@@ -46,12 +46,12 @@ public struct ContributionGridView: View {
             HStack(spacing: 16) {
                 StatItemView(label: "Repos", value: "\(props.stats.repos)", compact: true)
                 StatItemView(label: "Stars", value: "\(props.stats.stars)", compact: true)
-                StatItemView(label: "Total", value: "\(props.stats.contributions)", valueColor: .colorAccentGreen, compact: true)
+                StatItemView(label: "Total", value: "\(props.stats.contributions)", valueColor: Color.colorAccentGreen, compact: true)
             }
             .padding(.horizontal, 18)
             .padding(.top, 10)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

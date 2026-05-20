@@ -11,7 +11,7 @@ public struct CommitTimelineView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "COMMIT TIMELINE", dotColor: .colorAccentGreen, timestamp: "recent")
+            WidgetHeaderView(label: "COMMIT TIMELINE", dotColor: Color.colorAccentGreen, timestamp: "recent")
 
             VStack(spacing: 0) {
                 ForEach(Array(props.commits.enumerated()), id: \.offset) { index, commit in
@@ -41,11 +41,11 @@ public struct CommitTimelineView: View {
                                 Spacer()
                                 Text(commit.date)
                                     .font(.system(size: 9))
-                                    .foregroundStyle(.colorTextMuted)
+                                    .foregroundStyle(Color.colorTextMuted)
                             }
                             Text(commit.message)
                                 .font(.system(size: 10))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                                 .lineLimit(1)
                         }
                         .padding(.bottom, 12)
@@ -54,6 +54,6 @@ public struct CommitTimelineView: View {
             }
             .padding(.horizontal, 18)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

@@ -6,13 +6,13 @@ struct DevActivityIcon: View {
 
     private var config: (icon: String, color: Color) {
         switch type {
-        case "commit": return ("chevron.right", .colorAccentGreen)
-        case "pr_merged": return ("arrow.merge", .colorAccentPurple)
-        case "pr_opened": return ("arrow.triangle.branch", .colorAccentBlue)
-        case "pr_closed": return ("xmark.circle", .colorHealthRed)
-        case "issue_opened": return ("exclamationmark.circle", .colorAccentAmber)
-        case "issue_closed": return ("checkmark.circle", .colorAccentGreen)
-        default: return ("circle.fill", .colorTextMuted)
+        case "commit": return ("chevron.right", Color.colorAccentGreen)
+        case "pr_merged": return ("arrow.merge", Color.colorAccentPurple)
+        case "pr_opened": return ("arrow.triangle.branch", Color.colorAccentBlue)
+        case "pr_closed": return ("xmark.circle", Color.colorHealthRed)
+        case "issue_opened": return ("exclamationmark.circle", Color.colorAccentAmber)
+        case "issue_closed": return ("checkmark.circle", Color.colorAccentGreen)
+        default: return ("circle.fill", Color.colorTextMuted)
         }
     }
 

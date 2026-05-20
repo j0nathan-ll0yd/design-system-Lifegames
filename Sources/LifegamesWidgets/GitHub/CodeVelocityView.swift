@@ -12,7 +12,7 @@ public struct CodeVelocityView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "CODE VELOCITY", dotColor: .colorAccentGreen, timestamp: "52w")
+            WidgetHeaderView(label: "CODE VELOCITY", dotColor: Color.colorAccentGreen, timestamp: "52w")
 
             Chart {
                 ForEach(Array(props.weeks.enumerated()), id: \.offset) { index, week in
@@ -20,28 +20,28 @@ public struct CodeVelocityView: View {
                         x: .value("Week", index),
                         y: .value("Additions", week.additions)
                     )
-                    .foregroundStyle(.colorAccentGreen.opacity(0.3))
+                    .foregroundStyle(Color.colorAccentGreen.opacity(0.3))
                     .interpolationMethod(.catmullRom)
 
                     LineMark(
                         x: .value("Week", index),
                         y: .value("Additions", week.additions)
                     )
-                    .foregroundStyle(.colorAccentGreen)
+                    .foregroundStyle(Color.colorAccentGreen)
                     .interpolationMethod(.catmullRom)
 
                     AreaMark(
                         x: .value("Week", index),
                         y: .value("Deletions", -week.deletions)
                     )
-                    .foregroundStyle(.colorHealthRed.opacity(0.3))
+                    .foregroundStyle(Color.colorHealthRed.opacity(0.3))
                     .interpolationMethod(.catmullRom)
 
                     LineMark(
                         x: .value("Week", index),
                         y: .value("Deletions", -week.deletions)
                     )
-                    .foregroundStyle(.colorHealthRed)
+                    .foregroundStyle(Color.colorHealthRed)
                     .interpolationMethod(.catmullRom)
                 }
             }
@@ -54,14 +54,14 @@ public struct CodeVelocityView: View {
             HStack(spacing: 16) {
                 Label("Additions", systemImage: "plus")
                     .font(.system(size: 9))
-                    .foregroundStyle(.colorAccentGreen)
+                    .foregroundStyle(Color.colorAccentGreen)
                 Label("Deletions", systemImage: "minus")
                     .font(.system(size: 9))
-                    .foregroundStyle(.colorHealthRed)
+                    .foregroundStyle(Color.colorHealthRed)
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

@@ -11,7 +11,7 @@ public struct LanguageBarsView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "LANGUAGES", dotColor: .colorAccentGreen, timestamp: "repos")
+            WidgetHeaderView(label: "LANGUAGES", dotColor: Color.colorAccentGreen, timestamp: "repos")
 
             VStack(spacing: 6) {
                 ForEach(Array(props.languages.enumerated()), id: \.offset) { _, lang in
@@ -22,7 +22,7 @@ public struct LanguageBarsView: View {
 
                         Text(lang.name)
                             .font(.system(size: 10))
-                            .foregroundStyle(.colorTextTitle)
+                            .foregroundStyle(Color.colorTextTitle)
                             .frame(width: 70, alignment: .leading)
 
                         GeometryReader { geo in
@@ -35,7 +35,7 @@ public struct LanguageBarsView: View {
 
                         Text(String(format: "%.1f%%", lang.pct))
                             .font(.system(size: 9, design: .monospaced))
-                            .foregroundStyle(.colorTextMuted)
+                            .foregroundStyle(Color.colorTextMuted)
                             .frame(width: 40, alignment: .trailing)
                     }
                 }
@@ -43,6 +43,6 @@ public struct LanguageBarsView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }

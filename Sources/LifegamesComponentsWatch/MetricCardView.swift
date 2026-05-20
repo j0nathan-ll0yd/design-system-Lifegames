@@ -27,17 +27,17 @@ public struct MetricCardView: View {
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(value)
                     .font(.system(.title2, design: .rounded, weight: .bold))
-                    .foregroundStyle(.colorTextTitle)
+                    .foregroundStyle(Color.colorTextTitle)
                 if let unit {
                     Text(unit)
                         .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.colorTextMuted)
+                        .foregroundStyle(Color.colorTextMuted)
                 }
             }
 
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.colorTextMuted)
+                .foregroundStyle(Color.colorTextMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(minHeight: 100)

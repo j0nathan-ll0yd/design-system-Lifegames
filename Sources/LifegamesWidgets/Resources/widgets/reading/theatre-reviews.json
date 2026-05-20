@@ -1,0 +1,53 @@
+{
+  "reviews": [
+    {
+      "title": "The Great Gatsby",
+      "slug": "the-great-gatsby",
+      "url": "https://example.com/reviews/the-great-gatsby",
+      "author": "Sample Reviewer",
+      "publishedAt": "2026-04-20",
+      "rating": "A",
+      "ratingNumeric": 9,
+      "excerpt": "A stunning theatrical adaptation that captures the essence of the jazz age.",
+      "imageUrl": "https://placeholders.dev/300x450",
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null,
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "Hamilton",
+      "slug": "hamilton",
+      "url": "https://example.com/reviews/hamilton",
+      "author": "Sample Reviewer",
+      "publishedAt": "2026-03-15",
+      "rating": "A+",
+      "ratingNumeric": 10,
+      "excerpt": "Revolutionary in every sense of the word.",
+      "imageUrl": "https://placeholders.dev/300x450",
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null,
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "Wicked",
+      "slug": "wicked",
+      "url": "https://example.com/reviews/wicked",
+      "author": "Sample Reviewer",
+      "publishedAt": "2026-02-28",
+      "rating": "A-",
+      "ratingNumeric": 8,
+      "excerpt": "Defying gravity and expectations with every performance.",
+      "imageUrl": "https://placeholders.dev/300x450",
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null,
+      "imageWidth": 300,
+      "imageHeight": 450
+    }
+  ],
+  "totalReviews": 42
+}

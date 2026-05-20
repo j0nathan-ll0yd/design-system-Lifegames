@@ -29,23 +29,23 @@ public struct TopicCloudView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "TOPIC CLOUD", dotColor: .colorAccentGreen, timestamp: "topics")
+            WidgetHeaderView(label: "TOPIC CLOUD", dotColor: Color.colorAccentGreen, timestamp: "topics")
 
             FlowLayout(spacing: 6) {
                 ForEach(Array(props.topics.enumerated()), id: \.offset) { _, topic in
                     Text(topic.name)
                         .font(.system(size: fontSize(for: topic.size), weight: .medium))
-                        .foregroundStyle(.colorAccentBlue.opacity(opacity(for: topic.size)))
+                        .foregroundStyle(Color.colorAccentBlue.opacity(opacity(for: topic.size)))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(.colorAccentBlue.opacity(0.08))
+                        .background(Color.colorAccentBlue.opacity(0.08))
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentGreen)
+        .neonCard(accent: Color.colorAccentGreen)
     }
 }
 

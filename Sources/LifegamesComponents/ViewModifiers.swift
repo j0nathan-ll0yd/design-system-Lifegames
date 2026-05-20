@@ -5,11 +5,11 @@ public struct PortalCardModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .padding(Spacing.s800)
-            .background(.colorSurfaceRaised)
+            .background(Color.colorSurfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: Spacing.s400))
             .overlay(
                 RoundedRectangle(cornerRadius: Spacing.s400)
-                    .stroke(.colorBorderDefault, lineWidth: 1)
+                    .stroke(Color.colorBorderDefault, lineWidth: 1)
             )
     }
 }
@@ -32,19 +32,19 @@ public struct GradientBackgroundModifier: ViewModifier {
         content
             .background {
                 ZStack {
-                    .colorSurfaceBase
+                    Color.colorSurfaceBase
                     RadialGradient(
-                        colors: [.colorAccentDefault.opacity(0.08), .clear],
+                        colors: [Color.colorAccentDefault.opacity(0.08), .clear],
                         center: UnitPoint(x: 0.2, y: 0.5),
                         startRadius: 0, endRadius: 400
                     )
                     RadialGradient(
-                        colors: [.colorAccentPurple.opacity(0.06), .clear],
+                        colors: [Color.colorAccentPurple.opacity(0.06), .clear],
                         center: UnitPoint(x: 0.8, y: 0.2),
                         startRadius: 0, endRadius: 400
                     )
                     RadialGradient(
-                        colors: [.colorAccentBlue.opacity(0.05), .clear],
+                        colors: [Color.colorAccentBlue.opacity(0.05), .clear],
                         center: UnitPoint(x: 0.5, y: 0.8),
                         startRadius: 0, endRadius: 400
                     )
@@ -64,11 +64,11 @@ public struct NeonCardModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .padding(Spacing.s450)
-            .background(.colorSurfaceRaised)
+            .background(Color.colorSurfaceRaised)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(.colorBorderSubtle, lineWidth: 1)
+                    .stroke(Color.colorBorderSubtle, lineWidth: 1)
             )
             .overlay(alignment: .top) {
                 UnevenRoundedRectangle(

@@ -17,7 +17,7 @@ public struct PlaceLeaderboardView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "TOP PLACES", dotColor: .colorAccentBlue, timestamp: "leaderboard")
+            WidgetHeaderView(label: "TOP PLACES", dotColor: Color.colorAccentBlue, timestamp: "leaderboard")
 
             VStack(spacing: 0) {
                 VStack(spacing: 6) {
@@ -25,18 +25,18 @@ public struct PlaceLeaderboardView: View {
                         HStack(spacing: 8) {
                             Text("\(index + 1)")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(index < 3 ? Self.medalColors[index] : .colorAccentBlue.opacity(0.5))
+                                .foregroundStyle(index < 3 ? Self.medalColors[index] : Color.colorAccentBlue.opacity(0.5))
                                 .frame(width: 20, alignment: .center)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(place.name)
                                     .font(.system(size: 11, weight: index == 0 ? .semibold : .regular))
-                                    .foregroundStyle(index == 0 ? .white : .colorTextTitle)
+                                    .foregroundStyle(index == 0 ? .white : Color.colorTextTitle)
                                     .lineLimit(1)
                                 if let category = place.category {
                                     Text(category)
                                         .font(.system(size: 8, weight: .semibold))
-                                        .foregroundStyle(.colorAccentBlue.opacity(0.7))
+                                        .foregroundStyle(Color.colorAccentBlue.opacity(0.7))
                                         .textCase(.uppercase)
                                         .tracking(0.8)
                                 }
@@ -46,7 +46,7 @@ public struct PlaceLeaderboardView: View {
 
                             Text("\(place.visitCount)")
                                 .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(index == 0 ? Self.medalColors[0] : .colorAccentBlue)
+                                .foregroundStyle(index == 0 ? Self.medalColors[0] : Color.colorAccentBlue)
                         }
                         .padding(6)
                         .padding(.horizontal, 2)
@@ -70,16 +70,16 @@ public struct PlaceLeaderboardView: View {
                         HStack(spacing: 8) {
                             Text("\(index + 4)")
                                 .font(.system(size: 9, weight: .semibold))
-                                .foregroundStyle(.colorAccentBlue.opacity(0.4))
+                                .foregroundStyle(Color.colorAccentBlue.opacity(0.4))
                                 .frame(width: 18, alignment: .trailing)
                             Text(place.name)
                                 .font(.system(size: 10))
-                                .foregroundStyle(.colorTextMuted)
+                                .foregroundStyle(Color.colorTextMuted)
                                 .lineLimit(1)
                             Spacer()
                             Text("\(place.visitCount)")
                                 .font(.system(size: 9, weight: .semibold))
-                                .foregroundStyle(.colorAccentBlue.opacity(0.55))
+                                .foregroundStyle(Color.colorAccentBlue.opacity(0.55))
                         }
                     }
                 }
@@ -88,6 +88,6 @@ public struct PlaceLeaderboardView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentBlue)
+        .neonCard(accent: Color.colorAccentBlue)
     }
 }

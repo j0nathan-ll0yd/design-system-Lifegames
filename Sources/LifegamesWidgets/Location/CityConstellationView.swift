@@ -11,7 +11,7 @@ public struct CityConstellationView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "CITY CONSTELLATION", dotColor: .colorAccentDefault, timestamp: "cities")
+            WidgetHeaderView(label: "CITY CONSTELLATION", dotColor: Color.colorAccentDefault, timestamp: "cities")
 
             VStack(spacing: 8) {
                 Canvas { context, size in
@@ -45,8 +45,9 @@ public struct CityConstellationView: View {
                     for (i, point) in points.enumerated() {
                         let nodeRadius = CGFloat(4 + 4 * Double(sorted[i].visitCount) / Double(maxVisits))
                         let rect = CGRect(x: point.x - nodeRadius, y: point.y - nodeRadius, width: nodeRadius * 2, height: nodeRadius * 2)
-                        context.fill(Path(ellipseIn: rect), with: .color(.colorAccentDefault))
-                        context.addFilter(.shadow(color: .init(.colorAccentDefault.opacity(0.6)), radius: 4))
+                        context.fill(Path(ellipseIn: rect), with: .color(Color.colorAccentDefault))
+                        let shadowColor = Color.colorAccentDefault.opacity(0.6)
+                        context.addFilter(.shadow(color: shadowColor, radius: 4))
                     }
                 }
                 .frame(height: 130)
@@ -54,16 +55,16 @@ public struct CityConstellationView: View {
                 VStack(spacing: 4) {
                     ForEach(Array(cities.sorted(by: { $0.visitCount > $1.visitCount }).prefix(5).enumerated()), id: \.offset) { _, city in
                         HStack(spacing: 8) {
-                            Circle().fill(.colorAccentDefault).frame(width: 6, height: 6)
-                                .shadow(color: .colorAccentDefault.opacity(0.5), radius: 4)
+                            Circle().fill(Color.colorAccentDefault).frame(width: 6, height: 6)
+                                .shadow(color: Color.colorAccentDefault.opacity(0.5), radius: 4)
                             Text(city.city)
                                 .font(.system(size: 11))
-                                .foregroundStyle(.colorTextTitle)
+                                .foregroundStyle(Color.colorTextTitle)
                                 .lineLimit(1)
                             Spacer()
                             Text("\(city.visitCount)")
                                 .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(.colorAccentDefault)
+                                .foregroundStyle(Color.colorAccentDefault)
                         }
                     }
                 }
@@ -71,6 +72,6 @@ public struct CityConstellationView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 12)
         }
-        .neonCard(accent: .colorAccentDefault)
+        .neonCard(accent: Color.colorAccentDefault)
     }
 }

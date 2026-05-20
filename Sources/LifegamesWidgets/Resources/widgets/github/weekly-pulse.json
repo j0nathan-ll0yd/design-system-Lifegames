@@ -1,0 +1,53 @@
+{
+  "weeks": [
+    {
+      "total": 23,
+      "label": "Nov 4"
+    },
+    {
+      "total": 45,
+      "label": "Nov 11"
+    },
+    {
+      "total": 12,
+      "label": "Nov 18"
+    },
+    {
+      "total": 67,
+      "label": "Nov 25"
+    },
+    {
+      "total": 34,
+      "label": "Dec 2"
+    },
+    {
+      "total": 89,
+      "label": "Dec 9"
+    },
+    {
+      "total": 56,
+      "label": "Dec 16"
+    },
+    {
+      "total": 41,
+      "label": "Dec 23"
+    },
+    {
+      "total": 73,
+      "label": "Dec 30"
+    },
+    {
+      "total": 28,
+      "label": "Jan 6"
+    },
+    {
+      "total": 52,
+      "label": "Jan 13"
+    },
+    {
+      "total": 38,
+      "label": "Jan 20"
+    }
+  ],
+  "maxWeek": 89
+}
