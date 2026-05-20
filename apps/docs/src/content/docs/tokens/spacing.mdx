@@ -1,0 +1,37 @@
+---
+title: Spacing
+description: Spacing scale tokens for the Lifegames Design System
+---
+
+The spacing system uses a stepped numeric scale (100-800) that maps to fluid `clamp()` values on web and fixed point values on iOS with Dynamic Type scaling.
+
+## Scale
+
+| Token | CSS Variable | Web Value | iOS Value |
+|-------|-------------|-----------|-----------|
+| 100 | `--lg-spacing-100` | 4px | 4pt |
+| 200 | `--lg-spacing-200` | 8px | 8pt |
+| 300 | `--lg-spacing-300` | 12px | 12pt |
+| 400 | `--lg-spacing-400` | 16px | 16pt |
+| 500 | `--lg-spacing-500` | 20px | 20pt |
+| 600 | `--lg-spacing-600` | 24px | 24pt |
+| 700 | `--lg-spacing-700` | 28px | 28pt |
+| 800 | `--lg-spacing-800` | 32px | 32pt |
+
+## Usage
+
+```css
+.my-element {
+  padding: var(--lg-spacing-400);
+  gap: var(--lg-spacing-200);
+}
+```
+
+```swift
+import LifegamesTokens
+
+VStack(spacing: Spacing.s200) {
+    // content
+}
+.padding(Spacing.s400)
+```

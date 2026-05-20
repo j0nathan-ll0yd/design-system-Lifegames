@@ -1,0 +1,35 @@
+---
+title: Pill
+description: Neon-styled link pill with hover glow effect
+---
+
+The Pill component is a styled anchor element used for navigation links and action buttons.
+
+## Usage
+
+```astro
+---
+import { Pill } from '@lifegames/web';
+---
+<Pill href="https://github.com" label="GitHub" />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `href` | `string` | required | Link URL |
+| `label` | `string` | required | Display text |
+| `class` | `string` | -- | Additional CSS classes |
+
+## Interaction
+
+- Hover: indigo border glow effect (gated behind `@media (hover: hover)`)
+- Focus: pink outline with offset for keyboard navigation (WCAG 2.4.7)
+- Reduced motion: transitions disabled via `prefers-reduced-motion`
+
+## Accessibility
+
+- Uses semantic `<a>` element for proper link behavior
+- Focus indicator meets WCAG 2.4.7 requirements
+- Forced colors mode renders with system `LinkText` color

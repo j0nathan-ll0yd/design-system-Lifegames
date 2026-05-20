@@ -1,0 +1,115 @@
+---
+interface Props {
+  visible?: boolean;
+  class?: string;
+}
+
+const { visible = false, class: className } = Astro.props;
+---
+
+<div
+  class:list={['lg-modal-overlay', { visible }, className]}
+  role="dialog"
+  aria-modal="true"
+  data-modal-overlay
+>
+  <div class="lg-modal">
+    <button class="lg-modal-close" aria-label="Close" data-modal-close>
+      &times;
+    </button>
+    <div class="lg-modal-body">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .lg-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(6, 6, 15, 0.8);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    animation: overlayFadeIn 0.2s ease-out;
+  }
+
+  .lg-modal-overlay.visible {
+    display: flex;
+  }
+
+  .lg-modal {
+    width: clamp(320px, 50vw, 720px);
+    max-width: 90vw;
+    max-height: 90dvh;
+    overflow-y: auto;
+    background: rgba(12, 12, 24, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--lg-color-border-subtle);
+    border-radius: var(--lg-spacing-400, 16px);
+    box-shadow: 0 16px 60px rgba(0, 0, 0, 0.6);
+    animation: modalScaleIn 0.3s ease-out;
+    padding: var(--lg-spacing-500, 20px);
+    padding-left: max(var(--lg-spacing-500, 20px), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--lg-spacing-500, 20px), env(safe-area-inset-right, 0px));
+    padding-bottom: max(var(--lg-spacing-500, 20px), env(safe-area-inset-bottom, 0px));
+    position: relative;
+  }
+
+  .lg-modal-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--lg-color-border-subtle);
+    color: var(--lg-color-text-muted);
+    font-size: 1.25rem;
+    font-family: inherit;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .lg-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--lg-color-text-primary);
+  }
+
+  .lg-modal-close:focus-visible {
+    outline: 2px solid var(--lg-color-accent-blue);
+    outline-offset: 2px;
+  }
+
+  .lg-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lg-spacing-400, 16px);
+  }
+
+  @media (max-width: 767px) {
+    .lg-modal {
+      width: calc(100vw - 32px);
+      max-width: none;
+      max-height: calc(100dvh - 32px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lg-modal-overlay {
+      animation: none;
+    }
+    .lg-modal {
+      animation: none;
+    }
+  }
+</style>

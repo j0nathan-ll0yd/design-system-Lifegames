@@ -1,0 +1,52 @@
+---
+title: Lifegames Design System
+description: Unified cross-platform design system for web (Astro) and iOS (SwiftUI)
+---
+
+The Lifegames Design System provides a single source of truth for design tokens, reusable UI primitives, and page-specific widgets across web and iOS platforms.
+
+## Features
+
+- **DTCG Tokens** -- W3C Design Token Community Group format, emitted as CSS custom properties, Swift extensions, and JSON
+- **Web Primitives** -- Card, Pill, Modal, PollStatus, Skeleton as Astro components
+- **56 Widgets** -- Full extraction of portfolio widgets with web + iOS parity
+- **Accessibility** -- WCAG 2.2 AA contrast, skip-link, focus indicators, forced-colors support
+- **Cross-platform** -- Shared fixture JSON validated against both TypeScript and Swift types
+
+## Quick Start
+
+### Web (npm)
+
+```bash
+pnpm add @lifegames/tokens @lifegames/web
+```
+
+```astro
+---
+import { Card, Pill } from '@lifegames/web';
+import '@lifegames/tokens/css';
+---
+<Card accent="pink">
+  <Pill href="/github" label="GitHub" />
+</Card>
+```
+
+### iOS (Swift Package Manager)
+
+Add the repository to your `Package.swift` dependencies:
+
+```swift
+.package(path: "../lifegames-design-system")
+```
+
+```swift
+import LifegamesTokens
+import LifegamesComponents
+
+struct MyView: View {
+    var body: some View {
+        MetricCardView(title: "Steps", value: "12,345")
+            .neonCard(accent: .accentGreen)
+    }
+}
+```

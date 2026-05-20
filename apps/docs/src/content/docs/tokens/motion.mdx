@@ -1,0 +1,46 @@
+---
+title: Motion
+description: Animation and motion tokens for the Lifegames Design System
+---
+
+Motion tokens define consistent timing and easing across the system. All animations respect `prefers-reduced-motion`.
+
+## Duration
+
+| Token | CSS Variable | Value |
+|-------|-------------|-------|
+| Fast | `--lg-motion-duration-fast` | 150ms |
+| Normal | `--lg-motion-duration-normal` | 300ms |
+| Slow | `--lg-motion-duration-slow` | 500ms |
+
+## Easing
+
+| Token | CSS Variable | Value |
+|-------|-------------|-------|
+| Standard | `--lg-motion-easing-standard` | ease-in-out |
+| Decelerate | `--lg-motion-easing-decelerate` | ease-out |
+| Accelerate | `--lg-motion-easing-accelerate` | ease-in |
+
+## Keyframe Animations
+
+Import the animation library:
+
+```css
+@import '@lifegames/tokens/animations';
+```
+
+Available animations: `glowPulse`, `dotPulse`, `statusPulse`, `shimmerSlide`, `fadeIn`, `fadeSlideRight`, `overlayFadeIn`, `modalScaleIn`, `ringPulse`, `avatarGlowPulse`.
+
+## Reduced Motion
+
+All animations include a `prefers-reduced-motion: reduce` media query that effectively disables animations for users who prefer reduced motion.
+
+```swift
+import LifegamesComponents
+
+// iOS uses @Environment(\.accessibilityReduceMotion)
+// MotionTokens provides duration constants
+withAnimation(MotionTokens.standard()) {
+    // animated change
+}
+```

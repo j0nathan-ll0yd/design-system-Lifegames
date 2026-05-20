@@ -1,5 +1,9 @@
-// Primitives — populated by Lane 2
-// export { default as Card } from './components/Card.astro';
+// Primitives
+export { default as Card } from './components/Card.astro';
+export { default as Pill } from './components/Pill.astro';
+export { default as Modal } from './components/Modal.astro';
+export { default as PollStatus } from './components/PollStatus.astro';
+export { default as Skeleton } from './components/Skeleton.astro';
 
 // Widget re-exports from category barrels
 export * from './widgets/github/index';

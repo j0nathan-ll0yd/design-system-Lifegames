@@ -1,0 +1,167 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:tokens
+      - uses: actions/upload-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
+
+  lint-web:
+    needs: build-tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
+      - run: pnpm lint
+
+  build-web:
+    needs: build-tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
+      - run: pnpm --filter @lifegames/web build
+
+  storybook-build:
+    needs: build-tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
+      - run: pnpm --filter storybook storybook:build
+      # Optional Chromatic step:
+      # - uses: chromaui/action@latest
+      #   with:
+      #     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+      #     storybookBuildDir: apps/storybook/storybook-static
+
+  contrast-gate:
+    needs: build-tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
+      - run: npx a11y-color-tokens packages/tokens/dist/tokens.json --wcag-level AA
+
+  build-swift:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: sudo xcode-select -switch /Applications/Xcode_26.app || sudo xcode-select -switch /Applications/Xcode_26-beta.app
+      - name: Verify Xcode + Swift version
+        run: |
+          xcodebuild -version
+          swift --version | grep -E 'Swift version 6\.2'
+      - run: swift build
+
+  test-swift:
+    needs: build-swift
+    runs-on: macos-15
+    env:
+      SNAPSHOT_ENV: ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: sudo xcode-select -switch /Applications/Xcode_26.app || sudo xcode-select -switch /Applications/Xcode_26-beta.app
+      - name: Verify Xcode + Swift version
+        run: |
+          xcodebuild -version
+          swift --version | grep -E 'Swift version 6\.2'
+      - run: swift test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: snapshot-diffs
+          path: Tests/**/__Snapshots__/**/*.png
+
+  contract-tests:
+    needs: [build-tokens, build-swift]
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Select Xcode 26
+        run: sudo xcode-select -switch /Applications/Xcode_26.app || sudo xcode-select -switch /Applications/Xcode_26-beta.app
+      - name: TypeScript Props contract check
+        run: pnpm --filter @lifegames/web tsc --noEmit
+      - name: Swift Props contract check
+        run: swift test --filter ContractTests
+
+  docs-build:
+    needs: build-tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
+      - run: pnpm --filter docs build

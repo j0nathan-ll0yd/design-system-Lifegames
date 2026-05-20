@@ -1,0 +1,55 @@
+---
+interface Props {
+  variant?: 'bar' | 'circle';
+  width?: string;
+  height?: string;
+  class?: string;
+}
+
+const { variant = 'bar', width, height, class: className } = Astro.props;
+const style = [width && `width:${width}`, height && `height:${height}`].filter(Boolean).join(';');
+---
+
+<div
+  class:list={[variant === 'circle' ? 'lg-skeleton-circle' : 'lg-skeleton-bar', className]}
+  style={style || undefined}
+  aria-hidden="true"
+>
+</div>
+
+<style>
+  .lg-skeleton-bar {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    height: 12px;
+  }
+
+  .lg-skeleton-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 75%
+    );
+    animation: shimmerSlide 2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .lg-skeleton-circle {
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    width: 40px;
+    height: 40px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lg-skeleton-bar::after {
+      animation: none;
+    }
+  }
+</style>

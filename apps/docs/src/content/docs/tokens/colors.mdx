@@ -1,0 +1,54 @@
+---
+title: Colors
+description: Color tokens for the Lifegames Design System
+---
+
+The color system uses a four-tier architecture: primitive palette, semantic roles, component-specific values, and optional widget overrides.
+
+## Accent Colors
+
+| Token | CSS Variable | Value |
+|-------|-------------|-------|
+| Pink | `--lg-color-accent-pink` | `#ff006e` |
+| Green | `--lg-color-accent-green` | `#06d6a0` |
+| Blue | `--lg-color-accent-blue` | `#3a86ff` |
+| Purple | `--lg-color-accent-purple` | `#a855f7` |
+| Amber | `--lg-color-accent-amber` | `#f59e0b` |
+| Red | `--lg-color-accent-red` | `#ef4444` |
+| Cyan | `--lg-color-accent-cyan` | `#00d4ff` |
+| Orange | `--lg-color-accent-orange` | `#ff6b00` |
+| Indigo | `--lg-color-accent-indigo` | `#818cf8` |
+
+## Surface Colors
+
+| Token | CSS Variable | Value |
+|-------|-------------|-------|
+| Base | `--lg-color-surface-base` | `#06060f` |
+| Deep | `--lg-color-surface-deep` | `#0a0a0f` |
+| Raised | `--lg-color-surface-raised` | `rgba(255,255,255,0.07)` |
+
+## Text Colors
+
+| Token | CSS Variable | Value |
+|-------|-------------|-------|
+| Title | `--lg-color-text-title` | `#fafafa` |
+| Primary | `--lg-color-text-primary` | `#e4e4e7` |
+| Muted | `--lg-color-text-muted` | `#9ca3af` |
+| Subtle | `--lg-color-text-subtle` | `#52525b` |
+
+## Usage
+
+```css
+.my-element {
+  color: var(--lg-color-text-primary);
+  background: var(--lg-color-surface-base);
+  border: 1px solid var(--lg-color-border-default);
+}
+```
+
+```swift
+import LifegamesTokens
+
+Text("Hello")
+    .foregroundStyle(Color.textPrimary)
+```

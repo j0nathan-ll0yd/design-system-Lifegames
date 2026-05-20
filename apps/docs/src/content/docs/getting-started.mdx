@@ -1,0 +1,62 @@
+---
+title: Installation
+description: How to install and configure the Lifegames Design System
+---
+
+## Web
+
+Install the token and component packages:
+
+```bash
+pnpm add @lifegames/tokens @lifegames/web
+```
+
+Import the CSS tokens in your layout or global stylesheet:
+
+```css
+@import '@lifegames/tokens/css';
+@import '@lifegames/tokens/animations';
+```
+
+Optionally import the accessibility companion stylesheet:
+
+```css
+@import '@lifegames/web/styles/a11y.css';
+```
+
+## iOS / macOS / watchOS
+
+Add the package as a local dependency in your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(path: "../lifegames-design-system"),
+]
+```
+
+Then add the relevant libraries to your target:
+
+```swift
+.target(
+    name: "MyApp",
+    dependencies: [
+        .product(name: "LifegamesTokens", package: "LifegamesDesignSystem"),
+        .product(name: "LifegamesComponents", package: "LifegamesDesignSystem"),
+    ]
+)
+```
+
+Register fonts at app launch:
+
+```swift
+import LifegamesTokens
+
+@main
+struct MyApp: App {
+    init() {
+        LifegamesFonts.registerFonts()
+    }
+}
+```
+
+For watchOS targets, use `LifegamesComponentsWatch` instead of `LifegamesComponents` to get the Watch-safe subset (no ECGBackgroundView, no PulsingMapMarker).
