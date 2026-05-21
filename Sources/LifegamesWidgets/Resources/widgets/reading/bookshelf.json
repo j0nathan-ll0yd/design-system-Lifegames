@@ -2,7 +2,7 @@
   "books": {
     "books": [
       {
-        "asin": "B0EXAMPLE01",
+        "asin": "0525573844",
         "title": "The Pragmatic Programmer",
         "author": "David Thomas",
         "status": "in_progress",
@@ -11,7 +11,7 @@
         "notes": null
       },
       {
-        "asin": "B0EXAMPLE02",
+        "asin": "0593128508",
         "title": "Designing Data-Intensive Applications",
         "author": "Martin Kleppmann",
         "status": "completed",
@@ -20,7 +20,7 @@
         "notes": "Essential reading for distributed systems"
       },
       {
-        "asin": "B0EXAMPLE03",
+        "asin": "0593723848",
         "title": "A Philosophy of Software Design",
         "author": "John Ousterhout",
         "status": "next",
@@ -29,7 +29,7 @@
         "notes": null
       },
       {
-        "asin": "B0EXAMPLE04",
+        "asin": "1984820680",
         "title": "Staff Engineer",
         "author": "Will Larson",
         "status": "completed",
@@ -38,7 +38,7 @@
         "notes": null
       },
       {
-        "asin": "B0EXAMPLE05",
+        "asin": "1984820710",
         "title": "The Manager's Path",
         "author": "Camille Fournier",
         "status": "completed",
@@ -48,13 +48,13 @@
       }
     ],
     "bookMeta": {
-      "B0EXAMPLE01": {
+      "0525573844": {
         "pages": 352,
         "year": 2019,
         "desc": "A guide to pragmatic software craftsmanship",
         "genres": ["Software Engineering", "Programming"]
       },
-      "B0EXAMPLE02": {
+      "0593128508": {
         "pages": 616,
         "year": 2017,
         "desc": "The big ideas behind reliable, scalable, and maintainable systems",

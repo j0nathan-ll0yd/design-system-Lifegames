@@ -19,3 +19,17 @@ All fixture JSON files contain synthetic data only. No production or personal da
 | other/system-status.json | all values | Real status data | Synthetic values | Live system data |
 | reading/theatre-reviews.json | all entries | Real review data | Synthetic entries | Real review content |
 | health/*.json | all values | Real health data | Synthetic values | Personal health data |
+
+## Image Assets (Phase C -- Production Mirror)
+
+Ported image assets are PUBLIC personal content from the live portfolio:
+- Book covers: Amazon product images identified by ISBN or ASIN (public retail identifiers)
+- Theatre posters: Promotional programme images for public plays
+- Avatar: Public profile image from jonathanlloyd.me
+
+These are NOT sensitive PII. ISBNs and ASINs are public catalog numbers.
+Theatre slugs are public play names. No personal data in filenames.
+
+### Decisions
+
+- **ASINs/ISBNs in fixtures:** Real identifiers used (not scrubbed). Rationale: ISBNs (e.g., `0525573844`) and ASINs (e.g., `B07QVH2Q2K`) are public retail catalog numbers assigned by publishers/Amazon. They identify books, not people. Using real identifiers ensures image path resolution works correctly with the copied book cover files.
