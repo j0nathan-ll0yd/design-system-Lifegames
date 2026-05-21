@@ -173,27 +173,26 @@
    in the production layout, instead of a stretched-out version.
    ================================================================= */
 
-.wd-demo {
-  display: flex;
-  justify-content: center;
-}
-
 .wd-demo > .tri-card,
 .wd-demo > .identity-card,
 .wd-demo > .left-panel-status,
-.wd-demo > .left-panel-bio {
-  width: 100%;
-  max-width: 420px;
-}
-
-/* Islands wrap their widget in a div; ensure the inner widget gets the
-   same constraint when nested one level deep. */
+.wd-demo > .left-panel-bio,
 .wd-demo > div > .tri-card,
 .wd-demo > div > .identity-card,
 .wd-demo > div > .left-panel-status,
 .wd-demo > div > .left-panel-bio {
   width: 100%;
   max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Some demos wrap the widget in [data-widget-preview]; ensure that
+   wrapper takes the demo block's full width so the inner widget's
+   max-width logic functions correctly (default would be min-content). */
+.wd-demo > [data-widget-preview] {
+  display: block;
+  width: 100%;
 }
 
 /* =================================================================
