@@ -25,6 +25,7 @@ function revealLine(lines: NodeListOf<HTMLElement>, idx: number): void {
   if (cmd !== null) {
     const cmdSpan = line.querySelector<HTMLElement>('.terminal-command');
     if (cmdSpan) {
+      cmdSpan.style.opacity = '1';
       typeText(cmdSpan, cmd, () => {
         setTimeout(() => revealLine(lines, idx + 1), 200);
       });
@@ -32,6 +33,7 @@ function revealLine(lines: NodeListOf<HTMLElement>, idx: number): void {
   } else if (output !== null) {
     const outSpan = line.querySelector<HTMLElement>('.terminal-output');
     if (outSpan) {
+      outSpan.style.opacity = '1';
       typeText(outSpan, output, () => {
         setTimeout(() => revealLine(lines, idx + 1), 80);
       });
@@ -71,12 +73,14 @@ export function initBioTerminal(container: HTMLElement, _fixture: BioTerminalPro
     return;
   }
 
-  // Desktop: clear pre-rendered text so typewriter can re-type it
+  // Desktop: hide and clear pre-rendered text so typewriter can re-type it.
+  // opacity:0 prevents blank-flash on pages where the card is immediately visible
+  // (e.g. widget detail pages where compat.css forces opacity:1 on [data-widget-preview]).
   for (let k = 0; k < lines.length; k++) {
     const cmdSpan = lines[k].querySelector<HTMLElement>('.terminal-command');
     const outSpan = lines[k].querySelector<HTMLElement>('.terminal-output');
-    if (cmdSpan) cmdSpan.textContent = '';
-    if (outSpan) outSpan.textContent = '';
+    if (cmdSpan) { cmdSpan.style.opacity = '0'; cmdSpan.textContent = ''; }
+    if (outSpan) { outSpan.style.opacity = '0'; outSpan.textContent = ''; }
   }
 
   // Start the typewriter reveal after a brief delay
