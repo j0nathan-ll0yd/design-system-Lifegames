@@ -1,5 +1,9 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   integrations: [
@@ -16,4 +20,13 @@ export default defineConfig({
       ],
     }),
   ],
+  vite: {
+    resolve: {
+      alias: {
+        '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),
+        '@widgets': path.resolve(__dirname, '../../packages/web/src/widgets'),
+        '@fixtures': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets'),
+      },
+    },
+  },
 });

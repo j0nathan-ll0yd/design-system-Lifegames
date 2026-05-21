@@ -1,0 +1,228 @@
+---
+import manifest from '@manifest';
+
+const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
+const fixtureModules = import.meta.glob('/../../Sources/LifegamesWidgets/Resources/widgets/**/*.json', { eager: true });
+
+const componentMap: Record<string, any> = {};
+for (const [path, mod] of Object.entries(widgetModules)) {
+  const fileName = path.split('/').pop()!.replace('.astro', '');
+  componentMap[fileName] = (mod as any).default;
+}
+
+const fixtureMap: Record<string, any> = {};
+for (const [path, mod] of Object.entries(fixtureModules)) {
+  const rel = path.split('/widgets/').pop()!;
+  fixtureMap[rel] = (mod as any).default;
+}
+
+function resolveComponentName(manifestName: string, category: string): string {
+  if (componentMap[manifestName]) return manifestName;
+  const prefix = manifestName;
+  const match = Object.keys(componentMap).find(
+    (k) => k.startsWith(prefix) && k !== prefix
+  );
+  return match || manifestName;
+}
+
+interface ManifestEntry {
+  category: string;
+  name: string;
+  viewType: string;
+  fixturePath: string;
+}
+
+const categories = (manifest as { widgets: ManifestEntry[] }).widgets.reduce<
+  Record<string, { entry: ManifestEntry; componentName: string; fixture: any }[]>
+>((acc, w) => {
+  const componentName = resolveComponentName(w.name, w.category);
+  const fixture = fixtureMap[w.fixturePath] || {};
+  (acc[w.category] ??= []).push({ entry: w, componentName, fixture });
+  return acc;
+}, {});
+
+const categoryOrder = ['github', 'location', 'health', 'reading', 'identity', 'other'];
+const sortedCategories = categoryOrder
+  .filter((c) => categories[c])
+  .map((c) => ({ name: c, widgets: categories[c] }));
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widget Showcase — Lifegames Design System</title>
+  <style is:global>
+    :root {
+      --bg: #06060f;
+      --neon-pink: #ff006e;
+      --neon-blue: #3a86ff;
+      --neon-green: #06d6a0;
+      --neon-amber: #f59e0b;
+      --neon-purple: #a855f7;
+      --neon-red: #ef4444;
+      --neon-cyan: #00d4ff;
+      --neon-orange: #ff6b00;
+      --neon-indigo: #818cf8;
+      --glass-bg: rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.1);
+      --text: #f0f0f0;
+      --text-muted: #9ca3af;
+      --neon-pink-hc: #ff69b4;
+      --neon-purple-hc: #c084fc;
+      --neon-red-hc: #f87171;
+      --font-family: 'Space Grotesk', sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      --font-size-xs: clamp(0.625rem, 0.58rem + 0.12vw, 0.72rem);
+      --font-size-sm: clamp(0.7rem, 0.64rem + 0.14vw, 0.78rem);
+      --font-size-base: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem);
+      --font-size-md: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem);
+      --font-size-lg: clamp(0.88rem, 0.75rem + 0.34vw, 1.05rem);
+      --font-size-xl: clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem);
+      --font-size-2xl: clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem);
+      --font-size-3xl: clamp(1.90rem, 1.53rem + 1.00vw, 2.40rem);
+      --font-size-hero: clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem);
+      --space-2: clamp(1px, 0.02rem + 0.13vw, 2px);
+      --space-4: clamp(3px, 0.14rem + 0.13vw, 4px);
+      --space-6: clamp(4px, 0.16rem + 0.25vw, 6px);
+      --space-8: clamp(6px, 0.28rem + 0.25vw, 8px);
+      --space-10: clamp(7px, 0.30rem + 0.38vw, 10px);
+      --space-12: clamp(8px, 0.31rem + 0.50vw, 12px);
+      --space-14: clamp(10px, 0.44rem + 0.50vw, 14px);
+      --space-16: clamp(11px, 0.45rem + 0.63vw, 16px);
+      --space-18: clamp(12px, 0.47rem + 0.75vw, 18px);
+      --space-20: clamp(14px, 0.59rem + 0.75vw, 20px);
+      --space-24: clamp(16px, 0.63rem + 1.00vw, 24px);
+      --space-28: clamp(18px, 0.66rem + 1.25vw, 28px);
+      --space-32: clamp(22px, 0.91rem + 1.25vw, 32px);
+      --space-36: clamp(24px, 0.94rem + 1.50vw, 36px);
+      --space-40: clamp(28px, 1.19rem + 1.50vw, 40px);
+      --space-48: clamp(32px, 1.25rem + 2.00vw, 48px);
+      --radius-sm: 2px;
+      --radius-md: 8px;
+      --radius-lg: clamp(12px, 0.50rem + 0.50vw, 16px);
+      --radius-xl: clamp(14px, 0.56rem + 0.75vw, 20px);
+      --radius-pill: 50px;
+      --blur-sm: 8px;
+      --blur-md: 16px;
+      --blur-lg: 24px;
+      --blur-xl: 32px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-family);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .tri-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--blur-lg));
+      -webkit-backdrop-filter: blur(var(--blur-lg));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      container-type: inline-size;
+      opacity: 1;
+    }
+
+    .tri-card-accent-pink { border-top: 2px solid var(--neon-pink); }
+    .tri-card-accent-green { border-top: 2px solid var(--neon-green); }
+    .tri-card-accent-blue { border-top: 2px solid var(--neon-blue); }
+    .tri-card-accent-purple { border-top: 2px solid var(--neon-purple); }
+    .tri-card-accent-amber { border-top: 2px solid var(--neon-amber); }
+    .tri-card-accent-red { border-top: 2px solid var(--neon-red); }
+    .tri-card-accent-cyan { border-top: 2px solid var(--neon-cyan); }
+    .tri-card-accent-orange { border-top: 2px solid var(--neon-orange); }
+    .tri-card-accent-indigo { border-top: 2px solid var(--neon-indigo); }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-12) var(--space-18) var(--space-10);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .widget-label {
+      font-size: var(--font-size-base);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+    }
+
+    .widget-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green);
+    }
+
+    .widget-timestamp {
+      font-size: var(--font-size-sm);
+      color: rgba(255,255,255,0.47);
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+
+    .widget-body {
+      padding: var(--space-10) var(--space-18) var(--space-16);
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body>
+  <header style="padding: var(--space-32) var(--space-24); text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06);">
+    <h1 style="font-size: var(--font-size-2xl); font-weight: 700; margin: 0 0 8px;">Widget Showcase</h1>
+    <p style="font-size: var(--font-size-lg); color: var(--text-muted); margin: 0;">
+      All {(manifest as { widgets: ManifestEntry[] }).widgets.length} widgets rendered with fixture data
+    </p>
+    <a href="/" style="font-size: var(--font-size-sm); color: var(--neon-indigo); text-decoration: none; margin-top: 12px; display: inline-block;">
+      &larr; Back to docs
+    </a>
+  </header>
+  <main style="max-width: 1600px; margin: 0 auto; padding: var(--space-32) var(--space-24);">
+    {sortedCategories.map((cat) => (
+      <section style="margin-bottom: var(--space-48);">
+        <h2 style="font-size: var(--font-size-xl); font-weight: 600; text-transform: capitalize; margin: 0 0 var(--space-20); color: var(--text-muted); letter-spacing: 2px;">
+          {cat.name} <span style="font-size: var(--font-size-sm); opacity: 0.6;">({cat.widgets.length})</span>
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+          {cat.widgets.map(({ entry, componentName, fixture }) => {
+            const Comp = componentMap[componentName];
+            return Comp ? (
+              <div data-widget-preview>
+                <div style="margin-bottom: 8px;">
+                  <Comp {...fixture} />
+                </div>
+                <span style="font-size: var(--font-size-xs); color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">
+                  {entry.name}
+                </span>
+              </div>
+            ) : (
+              <div data-widget-preview style="padding: var(--space-20); border: 1px dashed rgba(255,255,255,0.1); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center;">
+                <span style="color: var(--neon-red); font-size: var(--font-size-sm);">Missing: {entry.name}</span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </main>
+</body>
+</html>
