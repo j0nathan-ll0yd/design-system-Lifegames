@@ -204,5 +204,10 @@ import PlaceLeaderboardV3 from '@lifegames/web/widgets/location/PlaceLeaderboard
       for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
     })();
   </script>
+  <script>
+    import { updatePlaceLeaderboardV3 } from '@runtime/updaters-leaderboard-variations';
+    import fixtureData from '@fixtures/location/place-leaderboard-v3.json';
+    updatePlaceLeaderboardV3(fixtureData as any);
+  </script>
 </body>
 </html>
