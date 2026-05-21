@@ -3,6 +3,7 @@
   "totalPlaces": 312,
   "totalDurationHours": 1247,
   "citiesVisited": 24,
+  "currentCity": "Portland",
   "explorationStats": {
     "totalNeighborhoods": 89,
     "totalCities": 24,

@@ -204,5 +204,10 @@ import ExplorationOdometerV3 from '@lifegames/web/widgets/location/ExplorationOd
       for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
     })();
   </script>
+  <script>
+    import { updateExplorationOdometerV3 } from '@runtime/updaters-odometer-variations';
+    import fixtureData from '@fixtures/location/exploration-odometer-v3.json';
+    updateExplorationOdometerV3(fixtureData as any);
+  </script>
 </body>
 </html>
