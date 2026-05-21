@@ -1,0 +1,122 @@
+[
+  {
+    "name": "IdentityCard",
+    "fileRelativeToWidgets": "identity/IdentityCard.astro",
+    "id": "identityCard",
+    "status": "shipped",
+    "category": "left-panel",
+    "liveSiteLayoutSlot": { "column": 0, "order": 0 }
+  },
+  {
+    "name": "BioTerminal",
+    "fileRelativeToWidgets": "identity/BioTerminal.astro",
+    "id": "cardBio",
+    "status": "shipped",
+    "category": "left-panel",
+    "liveSiteLayoutSlot": { "column": 0, "order": 1 }
+  },
+  {
+    "name": "SystemStatus",
+    "fileRelativeToWidgets": "other/SystemStatus.astro",
+    "id": "cardSystem",
+    "status": "shipped",
+    "category": "left-panel",
+    "liveSiteLayoutSlot": { "column": 0, "order": 2 }
+  },
+  {
+    "name": "HeartRate",
+    "fileRelativeToWidgets": "health/HeartRate.astro",
+    "id": "cardHR",
+    "status": "shipped",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 0 }
+  },
+  {
+    "name": "DailyActivity",
+    "fileRelativeToWidgets": "health/DailyActivity.astro",
+    "id": "cardSteps",
+    "status": "shipped",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 1 }
+  },
+  {
+    "name": "Workouts",
+    "fileRelativeToWidgets": "health/Workouts.astro",
+    "id": "cardWorkouts",
+    "status": "shipped",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 2 }
+  },
+  {
+    "name": "Hydration",
+    "fileRelativeToWidgets": "health/Hydration.astro",
+    "id": "cardHydration",
+    "status": "shipped",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 3 }
+  },
+  {
+    "name": "NightSummary",
+    "fileRelativeToWidgets": "health/NightSummary.astro",
+    "id": "cardSleep",
+    "status": "shipped",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 4 }
+  },
+  {
+    "name": "DevActivityLog",
+    "fileRelativeToWidgets": "github/DevActivityLog.astro",
+    "id": "cardDevLog",
+    "status": "shipped",
+    "category": "mind",
+    "liveSiteLayoutSlot": { "column": 2, "order": 0 }
+  },
+  {
+    "name": "ReadingFeed",
+    "fileRelativeToWidgets": "reading/ReadingFeed.astro",
+    "id": "cardReading",
+    "status": "shipped",
+    "category": "mind",
+    "liveSiteLayoutSlot": { "column": 2, "order": 1 }
+  },
+  {
+    "name": "StarredRepoList",
+    "fileRelativeToWidgets": "github/StarredRepoList.astro",
+    "id": "cardStarredRepos",
+    "status": "shipped",
+    "category": "mind",
+    "liveSiteLayoutSlot": { "column": 2, "order": 2 }
+  },
+  {
+    "name": "Bookshelf",
+    "fileRelativeToWidgets": "reading/Bookshelf.astro",
+    "id": "cardBooks",
+    "status": "shipped",
+    "category": "mind",
+    "liveSiteLayoutSlot": { "column": 2, "order": 3 }
+  },
+  {
+    "name": "TheatreReviews",
+    "fileRelativeToWidgets": "reading/TheatreReviews.astro",
+    "id": "cardTheatreReviews",
+    "status": "shipped",
+    "category": "mind",
+    "liveSiteLayoutSlot": { "column": 2, "order": 4 }
+  },
+  {
+    "name": "PlaceLeaderboardV3",
+    "fileRelativeToWidgets": "location/PlaceLeaderboardV3.astro",
+    "id": "cardPlaceLeaderboardV3",
+    "status": "dev-only",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 5 }
+  },
+  {
+    "name": "ExplorationOdometerV3",
+    "fileRelativeToWidgets": "location/ExplorationOdometerV3.astro",
+    "id": "cardExplorationOdometerV3",
+    "status": "dev-only",
+    "category": "body",
+    "liveSiteLayoutSlot": { "column": 1, "order": 6 }
+  }
+]

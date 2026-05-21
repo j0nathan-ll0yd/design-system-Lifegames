@@ -1,60 +1,452 @@
 {
   "widgets": [
-    { "category": "github", "name": "ActivityFeed", "viewType": "ActivityFeedView", "fixturePath": "github/activity-feed.json" },
-    { "category": "github", "name": "CodeVelocity", "viewType": "CodeVelocityView", "fixturePath": "github/code-velocity.json" },
-    { "category": "github", "name": "CodingHours", "viewType": "CodingHoursView", "fixturePath": "github/coding-hours.json" },
-    { "category": "github", "name": "CommitLog", "viewType": "CommitLogView", "fixturePath": "github/commit-log.json" },
-    { "category": "github", "name": "CommitTimeline", "viewType": "CommitTimelineView", "fixturePath": "github/commit-timeline.json" },
-    { "category": "github", "name": "ContributionBreakdown", "viewType": "ContributionBreakdownView", "fixturePath": "github/contribution-breakdown.json" },
-    { "category": "github", "name": "ContributionCalendar", "viewType": "ContributionCalendarView", "fixturePath": "github/contribution-calendar.json" },
-    { "category": "github", "name": "ContributionGrid", "viewType": "ContributionGridView", "fixturePath": "github/contribution-grid.json" },
-    { "category": "github", "name": "ContributionRings", "viewType": "ContributionRingsView", "fixturePath": "github/contribution-rings.json" },
-    { "category": "github", "name": "DevActivityByRepo", "viewType": "DevActivityByRepoView", "fixturePath": "github/dev-activity-by-repo.json" },
-    { "category": "github", "name": "DevActivityCards", "viewType": "DevActivityCardsView", "fixturePath": "github/dev-activity-cards.json" },
-    { "category": "github", "name": "DevActivityLog", "viewType": "DevActivityLogView", "fixturePath": "github/dev-activity-log.json" },
-    { "category": "github", "name": "DevActivityPulse", "viewType": "DevActivityPulseView", "fixturePath": "github/dev-activity-pulse.json" },
-    { "category": "github", "name": "DevActivityTimeline", "viewType": "DevActivityTimelineView", "fixturePath": "github/dev-activity-timeline.json" },
-    { "category": "github", "name": "LanguageBars", "viewType": "LanguageBarsView", "fixturePath": "github/language-bars.json" },
-    { "category": "github", "name": "LanguageGrid", "viewType": "LanguageGridView", "fixturePath": "github/language-grid.json" },
-    { "category": "github", "name": "LanguageStack", "viewType": "LanguageStackView", "fixturePath": "github/language-stack.json" },
-    { "category": "github", "name": "PinnedRepos", "viewType": "PinnedReposView", "fixturePath": "github/pinned-repos.json" },
-    { "category": "github", "name": "ProfileCard", "viewType": "ProfileCardView", "fixturePath": "github/profile-card.json" },
-    { "category": "github", "name": "RepoShowcase", "viewType": "RepoShowcaseView", "fixturePath": "github/repo-showcase.json" },
-    { "category": "github", "name": "StarredByLanguage", "viewType": "StarredByLanguageView", "fixturePath": "github/starred-by-language.json" },
-    { "category": "github", "name": "StarredRepoCards", "viewType": "StarredRepoCardsView", "fixturePath": "github/starred-repo-cards.json" },
-    { "category": "github", "name": "StarredRepoList", "viewType": "StarredRepoListView", "fixturePath": "github/starred-repo-list.json" },
-    { "category": "github", "name": "StarredTimeline", "viewType": "StarredTimelineView", "fixturePath": "github/starred-timeline.json" },
-    { "category": "github", "name": "StreakCounter", "viewType": "StreakCounterView", "fixturePath": "github/streak-counter.json" },
-    { "category": "github", "name": "TopRepos", "viewType": "TopReposView", "fixturePath": "github/top-repos.json" },
-    { "category": "github", "name": "TopicCloud", "viewType": "TopicCloudView", "fixturePath": "github/topic-cloud.json" },
-    { "category": "github", "name": "WeeklyPulse", "viewType": "WeeklyPulseView", "fixturePath": "github/weekly-pulse.json" },
-    { "category": "github", "name": "YearInReview", "viewType": "YearInReviewView", "fixturePath": "github/year-in-review.json" },
-    { "category": "location", "name": "CategoryTerrain", "viewType": "CategoryTerrainView", "fixturePath": "location/category-terrain.json" },
-    { "category": "location", "name": "CityConstellation", "viewType": "CityConstellationView", "fixturePath": "location/city-constellation.json" },
-    { "category": "location", "name": "DurationDonut", "viewType": "DurationDonutView", "fixturePath": "location/duration-donut.json" },
-    { "category": "location", "name": "ExplorationOdometer", "viewType": "ExplorationOdometerView", "fixturePath": "location/exploration-odometer-v3.json" },
-    { "category": "location", "name": "ExplorationRings", "viewType": "ExplorationRingsView", "fixturePath": "location/exploration-rings.json" },
-    { "category": "location", "name": "PlaceLeaderboard", "viewType": "PlaceLeaderboardView", "fixturePath": "location/place-leaderboard-v3.json" },
-    { "category": "location", "name": "RhythmBars", "viewType": "RhythmBarsView", "fixturePath": "location/rhythm-bars.json" },
-    { "category": "location", "name": "StreakCalendar", "viewType": "StreakCalendarView", "fixturePath": "location/streak-calendar.json" },
-    { "category": "location", "name": "StreakFlame", "viewType": "StreakFlameView", "fixturePath": "location/streak-flame.json" },
-    { "category": "location", "name": "WaffleGrid", "viewType": "WaffleGridView", "fixturePath": "location/waffle-grid.json" },
-    { "category": "health", "name": "DailyActivity", "viewType": "DailyActivityView", "fixturePath": "health/daily-activity.json" },
-    { "category": "health", "name": "HeartRate", "viewType": "HeartRateView", "fixturePath": "health/heart-rate.json" },
-    { "category": "health", "name": "Hydration", "viewType": "HydrationView", "fixturePath": "health/hydration.json" },
-    { "category": "health", "name": "NightSummary", "viewType": "NightSummaryView", "fixturePath": "health/night-summary.json" },
-    { "category": "health", "name": "Workouts", "viewType": "WorkoutsView", "fixturePath": "health/workouts.json" },
-    { "category": "reading", "name": "Bookshelf", "viewType": "BookshelfView", "fixturePath": "reading/bookshelf.json" },
-    { "category": "reading", "name": "BookModal", "viewType": "BookModalView", "fixturePath": "reading/book-modal.json" },
-    { "category": "reading", "name": "ReadingFeed", "viewType": "ReadingFeedView", "fixturePath": "reading/reading-feed.json" },
-    { "category": "reading", "name": "TheatreReviews", "viewType": "TheatreReviewsView", "fixturePath": "reading/theatre-reviews.json" },
-    { "category": "identity", "name": "BioTerminal", "viewType": "BioTerminalView", "fixturePath": "identity/bio-terminal.json" },
-    { "category": "identity", "name": "ComingSoon", "viewType": "ComingSoonView", "fixturePath": "identity/coming-soon.json" },
-    { "category": "identity", "name": "IdentityCard", "viewType": "IdentityCardView", "fixturePath": "identity/identity-card.json" },
-    { "category": "other", "name": "DndOverlay", "viewType": "DndOverlayView", "fixturePath": "other/dnd-overlay.json" },
-    { "category": "other", "name": "FocusOverlay", "viewType": "FocusOverlayView", "fixturePath": "other/focus-overlay.json" },
-    { "category": "other", "name": "GitHubHeatmap", "viewType": "GitHubHeatmapView", "fixturePath": "other/github-heatmap.json" },
-    { "category": "other", "name": "OGImage", "viewType": "OGImageView", "fixturePath": "other/og-image.json" },
-    { "category": "other", "name": "SystemStatus", "viewType": "SystemStatusView", "fixturePath": "other/system-status.json" }
+    {
+      "category": "github",
+      "name": "ActivityFeed",
+      "viewType": "ActivityFeedView",
+      "fixturePath": "github/activity-feed.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "CodeVelocity",
+      "viewType": "CodeVelocityView",
+      "fixturePath": "github/code-velocity.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "CodingHours",
+      "viewType": "CodingHoursView",
+      "fixturePath": "github/coding-hours.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "CommitLog",
+      "viewType": "CommitLogView",
+      "fixturePath": "github/commit-log.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "CommitTimeline",
+      "viewType": "CommitTimelineView",
+      "fixturePath": "github/commit-timeline.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "ContributionBreakdown",
+      "viewType": "ContributionBreakdownView",
+      "fixturePath": "github/contribution-breakdown.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "ContributionCalendar",
+      "viewType": "ContributionCalendarView",
+      "fixturePath": "github/contribution-calendar.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "ContributionGrid",
+      "viewType": "ContributionGridView",
+      "fixturePath": "github/contribution-grid.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "ContributionRings",
+      "viewType": "ContributionRingsView",
+      "fixturePath": "github/contribution-rings.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "DevActivityByRepo",
+      "viewType": "DevActivityByRepoView",
+      "fixturePath": "github/dev-activity-by-repo.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "DevActivityCards",
+      "viewType": "DevActivityCardsView",
+      "fixturePath": "github/dev-activity-cards.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "DevActivityLog",
+      "viewType": "DevActivityLogView",
+      "fixturePath": "github/dev-activity-log.json",
+      "production": true,
+      "productionCategory": "mind"
+    },
+    {
+      "category": "github",
+      "name": "DevActivityPulse",
+      "viewType": "DevActivityPulseView",
+      "fixturePath": "github/dev-activity-pulse.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "DevActivityTimeline",
+      "viewType": "DevActivityTimelineView",
+      "fixturePath": "github/dev-activity-timeline.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "LanguageBars",
+      "viewType": "LanguageBarsView",
+      "fixturePath": "github/language-bars.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "LanguageGrid",
+      "viewType": "LanguageGridView",
+      "fixturePath": "github/language-grid.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "LanguageStack",
+      "viewType": "LanguageStackView",
+      "fixturePath": "github/language-stack.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "PinnedRepos",
+      "viewType": "PinnedReposView",
+      "fixturePath": "github/pinned-repos.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "ProfileCard",
+      "viewType": "ProfileCardView",
+      "fixturePath": "github/profile-card.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "RepoShowcase",
+      "viewType": "RepoShowcaseView",
+      "fixturePath": "github/repo-showcase.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "StarredByLanguage",
+      "viewType": "StarredByLanguageView",
+      "fixturePath": "github/starred-by-language.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "StarredRepoCards",
+      "viewType": "StarredRepoCardsView",
+      "fixturePath": "github/starred-repo-cards.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "StarredRepoList",
+      "viewType": "StarredRepoListView",
+      "fixturePath": "github/starred-repo-list.json",
+      "production": true,
+      "productionCategory": "mind"
+    },
+    {
+      "category": "github",
+      "name": "StarredTimeline",
+      "viewType": "StarredTimelineView",
+      "fixturePath": "github/starred-timeline.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "StreakCounter",
+      "viewType": "StreakCounterView",
+      "fixturePath": "github/streak-counter.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "TopRepos",
+      "viewType": "TopReposView",
+      "fixturePath": "github/top-repos.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "TopicCloud",
+      "viewType": "TopicCloudView",
+      "fixturePath": "github/topic-cloud.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "WeeklyPulse",
+      "viewType": "WeeklyPulseView",
+      "fixturePath": "github/weekly-pulse.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "github",
+      "name": "YearInReview",
+      "viewType": "YearInReviewView",
+      "fixturePath": "github/year-in-review.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "CategoryTerrain",
+      "viewType": "CategoryTerrainView",
+      "fixturePath": "location/category-terrain.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "CityConstellation",
+      "viewType": "CityConstellationView",
+      "fixturePath": "location/city-constellation.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "DurationDonut",
+      "viewType": "DurationDonutView",
+      "fixturePath": "location/duration-donut.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "ExplorationOdometer",
+      "viewType": "ExplorationOdometerView",
+      "fixturePath": "location/exploration-odometer-v3.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "location",
+      "name": "ExplorationRings",
+      "viewType": "ExplorationRingsView",
+      "fixturePath": "location/exploration-rings.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "PlaceLeaderboard",
+      "viewType": "PlaceLeaderboardView",
+      "fixturePath": "location/place-leaderboard-v3.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "location",
+      "name": "RhythmBars",
+      "viewType": "RhythmBarsView",
+      "fixturePath": "location/rhythm-bars.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "StreakCalendar",
+      "viewType": "StreakCalendarView",
+      "fixturePath": "location/streak-calendar.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "StreakFlame",
+      "viewType": "StreakFlameView",
+      "fixturePath": "location/streak-flame.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "location",
+      "name": "WaffleGrid",
+      "viewType": "WaffleGridView",
+      "fixturePath": "location/waffle-grid.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "health",
+      "name": "DailyActivity",
+      "viewType": "DailyActivityView",
+      "fixturePath": "health/daily-activity.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "health",
+      "name": "HeartRate",
+      "viewType": "HeartRateView",
+      "fixturePath": "health/heart-rate.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "health",
+      "name": "Hydration",
+      "viewType": "HydrationView",
+      "fixturePath": "health/hydration.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "health",
+      "name": "NightSummary",
+      "viewType": "NightSummaryView",
+      "fixturePath": "health/night-summary.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "health",
+      "name": "Workouts",
+      "viewType": "WorkoutsView",
+      "fixturePath": "health/workouts.json",
+      "production": true,
+      "productionCategory": "body"
+    },
+    {
+      "category": "reading",
+      "name": "Bookshelf",
+      "viewType": "BookshelfView",
+      "fixturePath": "reading/bookshelf.json",
+      "production": true,
+      "productionCategory": "mind"
+    },
+    {
+      "category": "reading",
+      "name": "BookModal",
+      "viewType": "BookModalView",
+      "fixturePath": "reading/book-modal.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "reading",
+      "name": "ReadingFeed",
+      "viewType": "ReadingFeedView",
+      "fixturePath": "reading/reading-feed.json",
+      "production": true,
+      "productionCategory": "mind"
+    },
+    {
+      "category": "reading",
+      "name": "TheatreReviews",
+      "viewType": "TheatreReviewsView",
+      "fixturePath": "reading/theatre-reviews.json",
+      "production": true,
+      "productionCategory": "mind"
+    },
+    {
+      "category": "identity",
+      "name": "BioTerminal",
+      "viewType": "BioTerminalView",
+      "fixturePath": "identity/bio-terminal.json",
+      "production": true,
+      "productionCategory": "left-panel"
+    },
+    {
+      "category": "identity",
+      "name": "ComingSoon",
+      "viewType": "ComingSoonView",
+      "fixturePath": "identity/coming-soon.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "identity",
+      "name": "IdentityCard",
+      "viewType": "IdentityCardView",
+      "fixturePath": "identity/identity-card.json",
+      "production": true,
+      "productionCategory": "left-panel"
+    },
+    {
+      "category": "other",
+      "name": "DndOverlay",
+      "viewType": "DndOverlayView",
+      "fixturePath": "other/dnd-overlay.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "other",
+      "name": "FocusOverlay",
+      "viewType": "FocusOverlayView",
+      "fixturePath": "other/focus-overlay.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "other",
+      "name": "GitHubHeatmap",
+      "viewType": "GitHubHeatmapView",
+      "fixturePath": "other/github-heatmap.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "other",
+      "name": "OGImage",
+      "viewType": "OGImageView",
+      "fixturePath": "other/og-image.json",
+      "production": false,
+      "productionCategory": null
+    },
+    {
+      "category": "other",
+      "name": "SystemStatus",
+      "viewType": "SystemStatusView",
+      "fixturePath": "other/system-status.json",
+      "production": true,
+      "productionCategory": "left-panel"
+    }
   ]
 }
