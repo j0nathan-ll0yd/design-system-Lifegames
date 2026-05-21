@@ -10,6 +10,7 @@ export default defineConfig({
     starlight({
       title: 'Lifegames Design System',
       customCss: [
+        '../../packages/tokens/src/fonts.css',
         '../../packages/tokens/dist/tokens.css',
         '../../packages/tokens/src/compat.css',
         '../../packages/tokens/src/components.css',

@@ -17,7 +17,8 @@
     "./effects": "./src/effects.css",
     "./layout": "./src/layout.css",
     "./base": "./src/base.css",
-    "./compat": "./src/compat.css"
+    "./compat": "./src/compat.css",
+    "./fonts": "./src/fonts.css"
   },
   "files": [
     "dist",
@@ -26,7 +27,8 @@
     "src/effects.css",
     "src/layout.css",
     "src/base.css",
-    "src/compat.css"
+    "src/compat.css",
+    "src/fonts.css"
   ],
   "scripts": {
     "build": "node ../../style-dictionary.config.mjs",
