@@ -85,7 +85,7 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Widget Variant Browser — Lifegames Design System</title>
+  <title>Alternate Widget Variants — Lifegames Design System</title>
   <style is:global>
     html, body {
       margin: 0;
@@ -202,7 +202,6 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
       flex-direction: column;
       gap: var(--space-8);
       min-height: 200px;
-      text-decoration: none;
       color: inherit;
       border-radius: var(--radius-xl);
       border: 1px solid var(--card-border);
@@ -239,6 +238,11 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
       font-size: var(--font-size-sm);
       font-weight: 600;
       flex: 1;
+      color: inherit;
+      text-decoration: none;
+    }
+    .vb-card-name:hover {
+      color: var(--neon-green);
     }
     .vb-badge {
       font-size: var(--font-size-xs);
@@ -267,11 +271,11 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
 <body>
   <header class="vb-header">
     <div class="vb-header-row">
-      <h1>Widget Variants</h1>
+      <h1>Alternate Variants</h1>
       <span class="meta">{totalCount} widgets · {productionCount} production · {alternateCount} alternates</span>
     </div>
     <div style="margin-top: var(--space-12);">
-      <a class="nav-link" href="/showcase/">← View production layout mirror</a>
+      <a class="nav-link" href="/">← Back to production mirror</a>
     </div>
   </header>
 
@@ -301,11 +305,10 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
         const kebab = toKebab(componentName);
         const href = `/widgets/${entry.category}/${kebab}/`;
         return (
-          <a
+          <div
             class={`vb-card${isProduction ? ' vb-card--production' : ''}`}
             data-category={entry.category}
             data-production={isProduction ? 'true' : 'false'}
-            href={href}
           >
             <div class="vb-card-preview">
               {Comp ? (
@@ -319,11 +322,11 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
               )}
             </div>
             <div class="vb-card-footer">
-              <span class="vb-card-name">{entry.name}</span>
+              <a class="vb-card-name" href={href}>{entry.name}</a>
               <span class="vb-badge vb-badge--category">{entry.category}</span>
               {isProduction && <span class="vb-badge vb-badge--prod">Production</span>}
             </div>
-          </a>
+          </div>
         );
       })}
     </div>

@@ -45,7 +45,7 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Showcase — Lifegames Design System</title>
+  <title>Lifegames Design System</title>
   <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <style is:global>
     html, body {
@@ -116,12 +116,31 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
       border-radius: 50%;
       background: var(--neon-green);
     }
+    /* Ensure left-panel [data-widget-preview] wrappers provide width
+       context so children with container-type:inline-size (e.g. .tri-card)
+       don't collapse to 0px. */
+    .left-panel > [data-widget-preview] {
+      width: 100%;
+      max-width: 380px;
+    }
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      will-change: transform;
+    }
+    .showcase-banner,
+    .showcase-wrapper {
+      position: relative;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
   <div class="showcase-banner">
     <span>Production mirror of jonathanlloyd.me — 15 widgets (13 shipped + 2 dev-only) in their production layout</span>
-    <a href="/widgets/">View all 56 widget variants →</a>
+    <a href="/alternates/">View all widget variants →</a>
   </div>
 
   <div class="showcase-wrapper">
@@ -195,6 +214,23 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
   </div>
 
   <script is:inline>
+    /* Prevent BioTerminal double-typewriter: the widget's own is:inline script
+       handles the typewriter on initial render. The island wrapper's bundled
+       script would also run initBioTerminal via IntersectionObserver, causing
+       doubled characters. Strip the data-fixture attribute so the island
+       script's querySelector('[data-widget-preview][data-fixture]') skips it. */
+    (function() {
+      var bioWrapper = document.getElementById('cardBio');
+      if (bioWrapper) {
+        var parent = bioWrapper.parentElement;
+        if (parent && parent.hasAttribute('data-fixture')) {
+          parent.removeAttribute('data-fixture');
+        }
+      }
+    })();
+  </script>
+
+  <script is:inline>
     /* Dev-only widgets toggle via ?dev=1 */
     (function() {
       var params = new URLSearchParams(window.location.search);
@@ -223,8 +259,19 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
     })();
   </script>
 
+  <script>
+    /* Particle effect — matches production site */
+    window.addEventListener('load', function() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      import('@runtime/particles').then(function(m) { m.startParticles(); });
+    });
+  </script>
+
   <script is:inline>
-    /* Staggered card reveal */
+    /* Staggered card reveal — also adds .visible to inner widget elements
+       whose production CSS defaults to opacity:0 until a client updater
+       adds the class. In the showcase we SSR with fixture data so the
+       populated state is already rendered; we just need to flip visibility. */
     (function() {
       var cards = document.querySelectorAll('[data-widget-preview]');
       var leftCards = [];
@@ -244,12 +291,39 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
         allCards[j].style.transform = 'translateY(12px)';
         allCards[j].style.transition = 'opacity 0.4s ease, transform 0.4s ease';
       }
+
+      /* Helper: when a wrapper reveals, also mark inner widget elements
+         as .visible so their production CSS transitions activate. */
+      function revealInner(wrapper) {
+        var selectors = [
+          '.tri-card', '.identity-card',
+          '.left-panel-bio', '.left-panel-status'
+        ];
+        for (var s = 0; s < selectors.length; s++) {
+          var inner = wrapper.querySelectorAll(selectors[s]);
+          for (var n = 0; n < inner.length; n++) {
+            inner[n].classList.add('visible');
+          }
+        }
+        /* Issue 1: Workouts widget has hardcoded display:none — strip it */
+        var workouts = wrapper.querySelector('#cardWorkouts');
+        if (workouts) {
+          workouts.style.display = '';
+        }
+        /* Issue 2: Hydration skeleton — remove is-loading so active state shows */
+        var hydration = wrapper.querySelector('.tri-card.is-loading');
+        if (hydration) {
+          hydration.classList.remove('is-loading');
+        }
+      }
+
       var leftDelays = [100, 250, 550];
       for (var k = 0; k < leftCards.length; k++) {
         (function(el, delay) {
           setTimeout(function() {
             el.style.opacity = '1';
             el.style.transform = 'translateY(0)';
+            revealInner(el);
           }, delay);
         })(leftCards[k], leftDelays[k] || 550);
       }
@@ -258,8 +332,22 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
           setTimeout(function() {
             el.style.opacity = '1';
             el.style.transform = 'translateY(0)';
+            revealInner(el);
           }, delay);
         })(rightCards[r], 400 + (r * 100));
+      }
+
+      /* Left-panel direct children also need .visible even if they are
+         not wrapped in [data-widget-preview] (e.g. SystemStatus wrapper). */
+      if (leftPanel) {
+        setTimeout(function() {
+          var vis = leftPanel.querySelectorAll(
+            '.identity-card, .left-panel-bio, .left-panel-status'
+          );
+          for (var v = 0; v < vis.length; v++) {
+            vis[v].classList.add('visible');
+          }
+        }, 600);
       }
     })();
   </script>

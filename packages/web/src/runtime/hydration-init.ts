@@ -47,6 +47,10 @@ function countUp(el: HTMLElement | null, target: number, unit: string, reducedMo
 }
 
 export function initHydration(container: HTMLElement, fixture: HydrationProps): void {
+  // Idempotency guard: prevent duplicate count-up animations + DOM mutations.
+  if (container.dataset.hydrationInit === '1') return;
+  container.dataset.hydrationInit = '1';
+
   const hydration = fixture.health.hydration;
   const waterOz = hydration.waterOz;
   const waterMax = hydration.waterMax;

@@ -14,6 +14,10 @@ export function initTheatreReviews(
   container: HTMLElement,
   fixtureData: { reviews: TheatreReviewsExport['reviews']; totalReviews: number },
 ): void {
+  // Idempotency guard: prevent duplicate innerHTML rewrites + flicker.
+  if (container.dataset.theatreInit === '1') return;
+  container.dataset.theatreInit = '1';
+
   const countEl = container.querySelector<HTMLElement>('#theatreCount');
   if (countEl) countEl.textContent = fixtureData.totalReviews + ' reviews';
 

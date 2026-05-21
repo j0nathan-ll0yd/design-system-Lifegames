@@ -1,0 +1,211 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+
+import BioTerminal from '@widgets/identity/BioTerminal.astro';
+import fixture from '@fixtures/identity/bio-terminal.json';
+import StateMatrix from '../../components/StateMatrix.astro';
+import VariationGrid from '../../components/VariationGrid.astro';
+import BioTerminalIsland from '@islands/BioTerminalIsland.astro';
+import fixture_skeleton from '@fixtures/identity/bio-terminal.skeleton.json';
+import fixture_empty from '@fixtures/identity/bio-terminal.empty.json';
+import fixture_populated_min from '@fixtures/identity/bio-terminal.populated-min.json';
+import fixture_populated_max from '@fixtures/identity/bio-terminal.populated-max.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioTerminal — Lifegames Design System</title>
+  <style is:global>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg, #06060f);
+      color: var(--text, #e4e4e7);
+      font-family: var(--font-family, 'Space Grotesk', sans-serif);
+      min-height: 100vh;
+    }
+    .wd-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-32);
+    }
+    .wd-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-16);
+      margin-bottom: var(--space-32);
+      flex-wrap: wrap;
+    }
+    .wd-back {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: color 0.18s ease;
+    }
+    .wd-back:hover {
+      color: var(--text);
+    }
+    .wd-title {
+      font-size: var(--font-size-hero);
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .wd-badge {
+      font-size: var(--font-size-xs);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: var(--space-2) var(--space-8);
+      border-radius: var(--radius-sm);
+    }
+    .wd-badge--shipped {
+      background: rgba(6, 214, 160, 0.12);
+      color: var(--neon-green);
+      border: 1px solid rgba(6, 214, 160, 0.25);
+    }
+    .wd-badge--dev {
+      background: rgba(245, 158, 11, 0.08);
+      color: var(--neon-amber);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .wd-cat {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .wd-section {
+      margin-bottom: var(--space-32);
+    }
+    .wd-section-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      margin: 0 0 var(--space-16);
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: var(--space-8);
+    }
+    .wd-demo {
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      background: var(--card-bg);
+      padding: var(--space-20);
+      overflow: hidden;
+    }
+    .wd-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .wd-code {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-16);
+      font-size: var(--font-size-sm);
+      overflow-x: auto;
+      color: var(--text-muted);
+    }
+    .wd-code code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .wd-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .wd-list li {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      padding: var(--space-6) 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .wd-list li:last-child {
+      border-bottom: none;
+    }
+    .wd-list code {
+      font-size: var(--font-size-xs);
+      background: rgba(255, 255, 255, 0.06);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+    }
+  </style>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/">&#8592; Back to production mirror</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">BioTerminal</h1>
+      <span class="wd-badge wd-badge--shipped">Shipped</span>
+      <span class="wd-cat">identity</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <div class="wd-demo">
+      <BioTerminalIsland fixture={fixture} />
+      </div>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="BioTerminal"
+        category="identity"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/identity/BioTerminal.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import BioTerminal from '@lifegames/web/widgets/identity/BioTerminal.astro';
+---
+&lt;BioTerminal &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/identity/BioTerminal.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Identity/BioTerminalView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <script is:inline>
+    (function() {
+      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
+      for (var i = 0; i < s.length; i++) {
+        var els = document.querySelectorAll(s[i]);
+        for (var j = 0; j < els.length; j++) {
+          els[j].classList.add("visible");
+        }
+      }
+      var loading = document.querySelectorAll(".tri-card.is-loading");
+      for (var k = 0; k < loading.length; k++) {
+        loading[k].classList.remove("is-loading");
+      }
+      var wks = document.querySelectorAll("#cardWorkouts");
+      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
+    })();
+  </script>
+</body>
+</html>

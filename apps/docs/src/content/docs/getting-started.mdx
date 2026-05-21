@@ -1,62 +1,52 @@
 ---
-title: Installation
-description: How to install and configure the Lifegames Design System
+title: Lifegames Design System
+description: Unified cross-platform design system for web (Astro) and iOS (SwiftUI)
 ---
 
-## Web
+The Lifegames Design System provides a single source of truth for design tokens, reusable UI primitives, and page-specific widgets across web and iOS platforms.
 
-Install the token and component packages:
+## Features
+
+- **DTCG Tokens** -- W3C Design Token Community Group format, emitted as CSS custom properties, Swift extensions, and JSON
+- **Web Primitives** -- Card, Pill, Modal, PollStatus, Skeleton as Astro components
+- **56 Widgets** -- Full extraction of portfolio widgets with web + iOS parity
+- **Accessibility** -- WCAG 2.2 AA contrast, skip-link, focus indicators, forced-colors support
+- **Cross-platform** -- Shared fixture JSON validated against both TypeScript and Swift types
+
+## Quick Start
+
+### Web (npm)
 
 ```bash
 pnpm add @lifegames/tokens @lifegames/web
 ```
 
-Import the CSS tokens in your layout or global stylesheet:
-
-```css
-@import '@lifegames/tokens/css';
-@import '@lifegames/tokens/animations';
+```astro
+---
+import { Card, Pill } from '@lifegames/web';
+import '@lifegames/tokens/css';
+---
+<Card accent="pink">
+  <Pill href="/github" label="GitHub" />
+</Card>
 ```
 
-Optionally import the accessibility companion stylesheet:
+### iOS (Swift Package Manager)
 
-```css
-@import '@lifegames/web/styles/a11y.css';
-```
-
-## iOS / macOS / watchOS
-
-Add the package as a local dependency in your `Package.swift`:
+Add the repository to your `Package.swift` dependencies:
 
 ```swift
-dependencies: [
-    .package(path: "../lifegames-design-system"),
-]
+.package(path: "../lifegames-design-system")
 ```
-
-Then add the relevant libraries to your target:
-
-```swift
-.target(
-    name: "MyApp",
-    dependencies: [
-        .product(name: "LifegamesTokens", package: "LifegamesDesignSystem"),
-        .product(name: "LifegamesComponents", package: "LifegamesDesignSystem"),
-    ]
-)
-```
-
-Register fonts at app launch:
 
 ```swift
 import LifegamesTokens
+import LifegamesComponents
 
-@main
-struct MyApp: App {
-    init() {
-        LifegamesFonts.registerFonts()
+struct MyView: View {
+    var body: some View {
+        MetricCardView(title: "Steps", value: "12,345")
+            .neonCard(accent: .accentGreen)
     }
 }
 ```
-
-For watchOS targets, use `LifegamesComponentsWatch` instead of `LifegamesComponents` to get the Watch-safe subset (no ECGBackgroundView, no PulsingMapMarker).

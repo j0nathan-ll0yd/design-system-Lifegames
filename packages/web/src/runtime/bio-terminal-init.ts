@@ -43,6 +43,13 @@ function revealLine(lines: NodeListOf<HTMLElement>, idx: number): void {
 }
 
 export function initBioTerminal(container: HTMLElement, _fixture: BioTerminalProps): void {
+  // Idempotency guard: when multiple BioTerminalIsland instances exist on one page
+  // (Live Demo + State Matrix slots), each bundles its own IntersectionObserver and
+  // observes ALL `[data-widget-preview][data-fixture]` containers — without this
+  // guard, the typewriter loop is invoked N times per container, stacking characters.
+  if (container.dataset.bioTerminalInit === '1') return;
+  container.dataset.bioTerminalInit = '1';
+
   const termBody = container.querySelector<HTMLElement>('.terminal-body');
   if (!termBody) return;
 

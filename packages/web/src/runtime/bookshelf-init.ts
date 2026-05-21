@@ -1,6 +1,10 @@
 import type { BookshelfProps } from '../widgets/reading/Bookshelf.types';
 
 export function initBookshelf(container: HTMLElement, _fixture: BookshelfProps): void {
+  // Idempotency guard: prevent duplicate click listeners and onerror attachments.
+  if (container.dataset.bookshelfInit === '1') return;
+  container.dataset.bookshelfInit = '1';
+
   // Image fallback: if local image fails, swap to data-fallback URL
   const imgs = container.querySelectorAll<HTMLImageElement>('img[data-fallback]');
   imgs.forEach((img) => {

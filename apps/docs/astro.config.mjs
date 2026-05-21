@@ -9,6 +9,12 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Lifegames Design System',
+      head: [
+        {
+          tag: 'script',
+          content: '(function(){if(typeof localStorage!=="undefined"&&!localStorage.getItem("starlight-theme")){localStorage.setItem("starlight-theme","dark")}})();',
+        },
+      ],
       customCss: [
         '../../packages/tokens/src/fonts.css',
         '../../packages/tokens/dist/tokens.css',
@@ -26,7 +32,27 @@ export default defineConfig({
         { label: 'Getting Started', autogenerate: { directory: '.' } },
         { label: 'Tokens', autogenerate: { directory: 'tokens' } },
         { label: 'Components', autogenerate: { directory: 'components' } },
-        { label: 'Widgets', autogenerate: { directory: 'widgets' } },
+        {
+          label: 'Widgets',
+          items: [
+            { label: 'IdentityCard', link: '/widgets/identity-card/' },
+            { label: 'BioTerminal', link: '/widgets/bio-terminal/' },
+            { label: 'SystemStatus', link: '/widgets/system-status/' },
+            { label: 'HeartRate', link: '/widgets/heart-rate/' },
+            { label: 'DailyActivity', link: '/widgets/daily-activity/' },
+            { label: 'Workouts', link: '/widgets/workouts/' },
+            { label: 'Hydration', link: '/widgets/hydration/' },
+            { label: 'NightSummary', link: '/widgets/night-summary/' },
+            { label: 'DevActivityLog', link: '/widgets/dev-activity-log/' },
+            { label: 'ReadingFeed', link: '/widgets/reading-feed/' },
+            { label: 'StarredRepoList', link: '/widgets/starred-repo-list/' },
+            { label: 'Bookshelf', link: '/widgets/bookshelf/' },
+            { label: 'TheatreReviews', link: '/widgets/theatre-reviews/' },
+            { label: 'PlaceLeaderboardV3', link: '/widgets/place-leaderboard-v3/', badge: 'Dev' },
+            { label: 'ExplorationOdometerV3', link: '/widgets/exploration-odometer-v3/', badge: 'Dev' },
+            { label: 'All Alternates', link: '/alternates/' },
+          ],
+        },
       ],
     }),
   ],
@@ -37,6 +63,7 @@ export default defineConfig({
         '@widgets': path.resolve(__dirname, '../../packages/web/src/widgets'),
         '@fixtures': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets'),
         '@islands': path.resolve(__dirname, '../../packages/web/src/islands'),
+        '@runtime': path.resolve(__dirname, '../../packages/web/src/runtime'),
       },
     },
   },

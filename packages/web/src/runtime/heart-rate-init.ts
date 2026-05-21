@@ -239,6 +239,11 @@ function drawStaticWaveform(wgt: ECGWidgetState): void {
 }
 
 export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): void {
+  // Idempotency guard: prevent duplicate requestAnimationFrame loops when
+  // multiple HeartRateIsland instances observe the same container document-wide.
+  if (container.dataset.heartRateInit === '1') return;
+  container.dataset.heartRateInit = '1';
+
   const hr = Math.round(fixture.health.quantities.heartRate.value);
   const hrv = Math.round(fixture.health.quantities.hrvSDNN.value);
   const zone = classifyHeartRate(hr);
