@@ -1,26 +1,22 @@
 {
   "reading": {
     "articles": [
-      {
-        "title": "Understanding WebSocket Performance",
-        "source": "web.dev",
-        "date": "3d ago"
-      },
-      {
-        "title": "Swift 6.2 Concurrency Improvements",
-        "source": "swift.org",
-        "date": "6d ago"
-      },
-      {
-        "title": "The State of CSS 2026",
-        "source": "survey.devographics.com",
-        "date": "9d ago"
-      },
-      {
-        "title": "Building Design Systems at Scale",
-        "source": "medium.com",
-        "date": "11d ago"
-      }
+      { "title": "Understanding WebSocket Performance", "source": "web.dev", "date": "3d ago" },
+      { "title": "Swift 6.2 Concurrency Improvements", "source": "swift.org", "date": "6d ago" },
+      { "title": "The State of CSS 2026", "source": "survey.devographics.com", "date": "9d ago" },
+      { "title": "Building Design Systems at Scale", "source": "medium.com", "date": "11d ago" },
+      { "title": "Why Container Queries Change Everything", "source": "css-tricks.com", "date": "12d ago" },
+      { "title": "Rust 2026 Roadmap", "source": "blog.rust-lang.org", "date": "14d ago" },
+      { "title": "Astro 5 Server Islands Deep-Dive", "source": "astro.build", "date": "15d ago" },
+      { "title": "PostgreSQL 19 Performance Tuning", "source": "postgresql.org", "date": "17d ago" },
+      { "title": "TypeScript Type Predicates Demystified", "source": "typescriptlang.org", "date": "18d ago" },
+      { "title": "OpenAPI 3.2: What's New", "source": "openapis.org", "date": "20d ago" },
+      { "title": "GitHub Copilot Workspaces Walkthrough", "source": "github.blog", "date": "22d ago" },
+      { "title": "Designing for Glanceable Watch UIs", "source": "developer.apple.com", "date": "24d ago" },
+      { "title": "GraphQL vs tRPC in 2026", "source": "thoughtworks.com", "date": "26d ago" },
+      { "title": "WebGPU Shipping: A Practical Guide", "source": "developer.chrome.com", "date": "28d ago" },
+      { "title": "ESLint Flat Config Migration Notes", "source": "eslint.org", "date": "30d ago" },
+      { "title": "Node 24 Native Test Runner Patterns", "source": "nodejs.org", "date": "32d ago" }
     ]
   }
 }

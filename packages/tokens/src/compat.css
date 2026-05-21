@@ -133,3 +133,137 @@
   opacity: 1;
   transform: none;
 }
+
+/* =================================================================
+   WIDGET BOX-MODEL NORMALIZATION (parity with production)
+   =================================================================
+
+   Production portfolio relies on a global `* { box-sizing: border-box }`
+   reset. The design-system styles ship without that reset, so widget
+   max-width values are interpreted as content-box (excluding padding
+   and border), inflating the visual outer width.
+
+   Example: .identity-card has max-width: 380px + 32px horizontal padding
+   on each side + 1px border = 446px rendered outer width. Production
+   renders the same widget at 380px outer because of border-box.
+
+   This shim restores border-box for the production-mirror widget roots
+   only, leaving other docs-site chrome (.wd-page, .wd-section, etc.)
+   untouched.
+   ================================================================= */
+
+.tri-card,
+.identity-card,
+.left-panel-status,
+.left-panel-bio {
+  box-sizing: border-box;
+}
+
+/* =================================================================
+   DETAIL-PAGE LIVE DEMO CONSTRAINTS
+   =================================================================
+
+   Widget detail pages render the Live Demo inside .wd-demo (max 1200px).
+   Widgets that live in the production triptych mind/body columns are
+   designed for ~360-420px slot widths and their @container queries
+   collapse them gracefully below 350px. At 1200px they over-extend.
+
+   Constrain the demo block to match the production column slot width.
+   This makes the Live Demo a faithful preview of how the widget renders
+   in the production layout, instead of a stretched-out version.
+   ================================================================= */
+
+.wd-demo {
+  display: flex;
+  justify-content: center;
+}
+
+.wd-demo > .tri-card,
+.wd-demo > .identity-card,
+.wd-demo > .left-panel-status,
+.wd-demo > .left-panel-bio {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Islands wrap their widget in a div; ensure the inner widget gets the
+   same constraint when nested one level deep. */
+.wd-demo > div > .tri-card,
+.wd-demo > div > .identity-card,
+.wd-demo > div > .left-panel-status,
+.wd-demo > div > .left-panel-bio {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* =================================================================
+   COLUMN-GUTTER LINE CLAMP
+   =================================================================
+
+   The .triptych-column::before vertical line is positioned at
+   left: calc(-6px - 0.5px) (i.e., outside the column to the left,
+   into the grid gap). The line is clipped by .triptych-column's
+   overflow: hidden — but the box-shadow extends visually OUTSIDE
+   the element bounds in some browsers, leaking pink/green glow into
+   the adjacent column.
+
+   Reduce shadow blur radius so the glow stays within the gap.
+   ================================================================= */
+
+.triptych-column-body::before {
+  box-shadow: 0 0 3px rgba(255, 0, 110, 0.25);
+}
+
+.triptych-column-mind::before {
+  box-shadow: 0 0 3px rgba(6, 214, 160, 0.25);
+}
+
+/* =================================================================
+   STARRED REPO LIST — font size scaling on wider containers
+   =================================================================
+
+   The widget's own @container queries collapse below 350px but at
+   1200px the font reads larger than the production triptych
+   ~393px-column rendering. When the Live Demo is force-constrained
+   above to 420px, the font matches. This block adds a belt-and-braces
+   font shrink for any context where the widget still renders wider
+   than 500px.
+   ================================================================= */
+
+@container (min-width: 500px) {
+  .gh-starred-list {
+    font-size: var(--font-size-xs);
+  }
+  .gh-sl-stars,
+  .gh-sl-lang,
+  .gh-sl-date {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* =================================================================
+   READING FEED — tighter list padding on detail page
+   =================================================================
+
+   Match production .article-list-item visual density.
+   ================================================================= */
+
+[data-widget-preview] .article-list-item,
+.wd-demo .article-list-item {
+  padding: var(--space-6) var(--space-4);
+}
+
+/* =================================================================
+   DEV ACTIVITY LOG — tighter line spacing on detail page
+   ================================================================= */
+
+[data-widget-preview] .gh-dal-terminal,
+.wd-demo .gh-dal-terminal {
+  padding: var(--space-8) var(--space-10);
+}
+
+[data-widget-preview] .gh-dal-line,
+.wd-demo .gh-dal-line {
+  padding: 0 var(--space-4);
+  margin: 0 calc(-1 * var(--space-4));
+}

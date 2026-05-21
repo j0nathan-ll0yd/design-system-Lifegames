@@ -12,6 +12,7 @@ import fixture from '@fixtures/reading/bookshelf.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
 import BookshelfIsland from '@islands/BookshelfIsland.astro';
+import BookModal from '@widgets/reading/BookModal.astro';
 import fixture_skeleton from '@fixtures/reading/bookshelf.skeleton.json';
 import fixture_empty from '@fixtures/reading/bookshelf.empty.json';
 import fixture_populated_min from '@fixtures/reading/bookshelf.populated-min.json';
@@ -158,6 +159,7 @@ import var_all_completed from '@fixtures/reading/bookshelf.all-completed.json';
       <div class="wd-demo">
       <BookshelfIsland fixture={fixture} />
       </div>
+      <BookModal />
     </section>
 
     <section class="wd-section">
