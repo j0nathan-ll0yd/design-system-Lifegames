@@ -29,14 +29,7 @@ const ACCENT_CLASSES = [
   'tri-card-accent-cyan', 'tri-card-accent-orange', 'tri-card-accent-indigo',
 ];
 
-export function esc(s: string | null | undefined): string {
-  if (!s) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+export { esc } from './html-utils';
 
 export function updateHeartRate(data: AdaptedHealth): void {
   const hr = Math.round(data.quantities.heartRate.value);

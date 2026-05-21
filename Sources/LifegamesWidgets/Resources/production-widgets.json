@@ -5,7 +5,11 @@
     "id": "identityCard",
     "status": "shipped",
     "category": "left-panel",
-    "liveSiteLayoutSlot": { "column": 0, "order": 0 }
+    "liveSiteLayoutSlot": {
+      "column": 0,
+      "order": 0
+    },
+    "hydration": "static"
   },
   {
     "name": "BioTerminal",
@@ -13,7 +17,11 @@
     "id": "cardBio",
     "status": "shipped",
     "category": "left-panel",
-    "liveSiteLayoutSlot": { "column": 0, "order": 1 }
+    "liveSiteLayoutSlot": {
+      "column": 0,
+      "order": 1
+    },
+    "hydration": "hydrated"
   },
   {
     "name": "SystemStatus",
@@ -21,7 +29,11 @@
     "id": "cardSystem",
     "status": "shipped",
     "category": "left-panel",
-    "liveSiteLayoutSlot": { "column": 0, "order": 2 }
+    "liveSiteLayoutSlot": {
+      "column": 0,
+      "order": 2
+    },
+    "hydration": "static"
   },
   {
     "name": "HeartRate",
@@ -29,7 +41,11 @@
     "id": "cardHR",
     "status": "shipped",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 0 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 0
+    },
+    "hydration": "hydrated"
   },
   {
     "name": "DailyActivity",
@@ -37,7 +53,11 @@
     "id": "cardSteps",
     "status": "shipped",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 1 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 1
+    },
+    "hydration": "static"
   },
   {
     "name": "Workouts",
@@ -45,7 +65,11 @@
     "id": "cardWorkouts",
     "status": "shipped",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 2 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 2
+    },
+    "hydration": "static"
   },
   {
     "name": "Hydration",
@@ -53,7 +77,11 @@
     "id": "cardHydration",
     "status": "shipped",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 3 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 3
+    },
+    "hydration": "hydrated"
   },
   {
     "name": "NightSummary",
@@ -61,7 +89,11 @@
     "id": "cardSleep",
     "status": "shipped",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 4 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 4
+    },
+    "hydration": "static"
   },
   {
     "name": "DevActivityLog",
@@ -69,7 +101,11 @@
     "id": "cardDevLog",
     "status": "shipped",
     "category": "mind",
-    "liveSiteLayoutSlot": { "column": 2, "order": 0 }
+    "liveSiteLayoutSlot": {
+      "column": 2,
+      "order": 0
+    },
+    "hydration": "static"
   },
   {
     "name": "ReadingFeed",
@@ -77,7 +113,11 @@
     "id": "cardReading",
     "status": "shipped",
     "category": "mind",
-    "liveSiteLayoutSlot": { "column": 2, "order": 1 }
+    "liveSiteLayoutSlot": {
+      "column": 2,
+      "order": 1
+    },
+    "hydration": "static"
   },
   {
     "name": "StarredRepoList",
@@ -85,7 +125,11 @@
     "id": "cardStarredRepos",
     "status": "shipped",
     "category": "mind",
-    "liveSiteLayoutSlot": { "column": 2, "order": 2 }
+    "liveSiteLayoutSlot": {
+      "column": 2,
+      "order": 2
+    },
+    "hydration": "static"
   },
   {
     "name": "Bookshelf",
@@ -93,7 +137,11 @@
     "id": "cardBooks",
     "status": "shipped",
     "category": "mind",
-    "liveSiteLayoutSlot": { "column": 2, "order": 3 }
+    "liveSiteLayoutSlot": {
+      "column": 2,
+      "order": 3
+    },
+    "hydration": "hydrated"
   },
   {
     "name": "TheatreReviews",
@@ -101,7 +149,11 @@
     "id": "cardTheatreReviews",
     "status": "shipped",
     "category": "mind",
-    "liveSiteLayoutSlot": { "column": 2, "order": 4 }
+    "liveSiteLayoutSlot": {
+      "column": 2,
+      "order": 4
+    },
+    "hydration": "hydrated"
   },
   {
     "name": "PlaceLeaderboardV3",
@@ -109,7 +161,11 @@
     "id": "cardPlaceLeaderboardV3",
     "status": "dev-only",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 5 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 5
+    },
+    "hydration": "static"
   },
   {
     "name": "ExplorationOdometerV3",
@@ -117,6 +173,10 @@
     "id": "cardExplorationOdometerV3",
     "status": "dev-only",
     "category": "body",
-    "liveSiteLayoutSlot": { "column": 1, "order": 6 }
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 6
+    },
+    "hydration": "static"
   }
 ]

@@ -1,4 +1,4 @@
-import { esc } from './updaters';
+import { esc } from './html-utils';
 import { localizeImageUrl, imgFallbackAttrs } from './image-utils';
 import type { TheatreReviewsExport } from '../types/exports';
 

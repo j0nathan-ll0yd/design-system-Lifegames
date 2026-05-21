@@ -1,0 +1,24 @@
+---
+import BioTerminal from '@widgets/identity/BioTerminal.astro';
+const { fixture } = Astro.props;
+---
+<div data-widget-preview data-fixture={JSON.stringify(fixture)}>
+  <BioTerminal {...fixture} />
+</div>
+<script>
+  import { initBioTerminal } from '../runtime/bio-terminal-init';
+  const wrappers = document.querySelectorAll<HTMLElement>('[data-widget-preview][data-fixture]');
+  const io = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        const el = entry.target as HTMLElement;
+        const fixture = JSON.parse(el.dataset.fixture || '{}');
+        if (fixture.profile?.terminalLines) {
+          initBioTerminal(el, fixture);
+          io.unobserve(el);
+        }
+      }
+    }
+  });
+  wrappers.forEach((w) => io.observe(w));
+</script>
