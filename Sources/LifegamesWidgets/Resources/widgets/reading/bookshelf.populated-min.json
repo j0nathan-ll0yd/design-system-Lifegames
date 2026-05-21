@@ -1,0 +1,28 @@
+{
+  "books": {
+    "books": [
+      {
+        "asin": "0525573844",
+        "title": "Range",
+        "author": "David Epstein",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 34,
+        "notes": null
+      }
+    ],
+    "bookMeta": {
+      "0525573844": {
+        "pages": 352,
+        "year": 2019,
+        "desc": "Why generalists triumph in a specialized world",
+        "genres": ["Psychology", "Self-Help"]
+      }
+    },
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

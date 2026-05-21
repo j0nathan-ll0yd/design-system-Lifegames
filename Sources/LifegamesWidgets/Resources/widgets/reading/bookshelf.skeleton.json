@@ -1,0 +1,11 @@
+{
+  "books": {
+    "books": [],
+    "bookMeta": {},
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

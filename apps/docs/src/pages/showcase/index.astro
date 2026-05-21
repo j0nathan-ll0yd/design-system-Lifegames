@@ -1,91 +1,53 @@
 ---
+import '@lifegames/tokens/fonts';
 import '@lifegames/tokens/css';
 import '@lifegames/tokens/compat';
 import '@lifegames/tokens/components';
 import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
 import '@lifegames/tokens/base';
-import manifest from '@manifest';
 
-const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
-const fixtureModules = import.meta.glob('/../../Sources/LifegamesWidgets/Resources/widgets/**/*.json', { eager: true });
+import IdentityCard from '@widgets/identity/IdentityCard.astro';
+import SystemStatus from '@widgets/other/SystemStatus.astro';
+import DailyActivity from '@widgets/health/DailyActivity.astro';
+import Workouts from '@widgets/health/Workouts.astro';
+import NightSummary from '@widgets/health/NightSummary.astro';
+import DevActivityLog from '@widgets/github/DevActivityLog.astro';
+import ReadingFeed from '@widgets/reading/ReadingFeed.astro';
+import StarredRepoList from '@widgets/github/StarredRepoList.astro';
+import PlaceLeaderboardV3 from '@widgets/location/PlaceLeaderboardV3.astro';
+import ExplorationOdometerV3 from '@widgets/location/ExplorationOdometerV3.astro';
 
-const componentMap: Record<string, any> = {};
-for (const [path, mod] of Object.entries(widgetModules)) {
-  const fileName = path.split('/').pop()!.replace('.astro', '');
-  componentMap[fileName] = (mod as any).default;
-}
+import HeartRateIsland from '@islands/HeartRateIsland.astro';
+import HydrationIsland from '@islands/HydrationIsland.astro';
+import BioTerminalIsland from '@islands/BioTerminalIsland.astro';
+import BookshelfIsland from '@islands/BookshelfIsland.astro';
+import TheatreReviewsIsland from '@islands/TheatreReviewsIsland.astro';
 
-const fixtureMap: Record<string, any> = {};
-for (const [path, mod] of Object.entries(fixtureModules)) {
-  const rel = path.split('/widgets/').pop()!;
-  fixtureMap[rel] = (mod as any).default;
-}
-
-function resolveComponentName(manifestName: string): string {
-  if (componentMap[manifestName]) return manifestName;
-  const match = Object.keys(componentMap).find(
-    (k) => k.startsWith(manifestName) && k !== manifestName
-  );
-  return match || manifestName;
-}
-
-interface ManifestEntry {
-  category: string;
-  name: string;
-  viewType: string;
-  fixturePath: string;
-}
-
-const categories = (manifest as { widgets: ManifestEntry[] }).widgets.reduce<
-  Record<string, { entry: ManifestEntry; componentName: string; fixture: any }[]>
->((acc, w) => {
-  const componentName = resolveComponentName(w.name);
-  const fixture = fixtureMap[w.fixturePath] || {};
-  (acc[w.category] ??= []).push({ entry: w, componentName, fixture });
-  return acc;
-}, {});
-
-// Full-screen overlay widgets — they use `position: fixed; inset: 0` and
-// would cover the entire showcase grid. List them separately with links.
-const overlayWidgets = new Set([
-  'BookModal', 'FocusOverlay', 'DndOverlay', 'ComingSoon',
-]);
-
-const categoryOrder = ['github', 'location', 'health', 'reading', 'identity', 'other'];
-const sortedCategories = categoryOrder
-  .filter((c) => categories[c])
-  .map((c) => ({
-    name: c,
-    widgets: categories[c].filter((w) => !overlayWidgets.has(w.entry.name)),
-    overlays: categories[c].filter((w) => overlayWidgets.has(w.entry.name)),
-  }));
-
-const allOverlays = sortedCategories.flatMap((c) =>
-  c.overlays.map((w) => ({ category: c.name, entry: w.entry })),
-);
-
-const categoryLabel: Record<string, string> = {
-  github: 'GitHub',
-  location: 'Location',
-  health: 'Health',
-  reading: 'Reading',
-  identity: 'Identity',
-  other: 'Other',
-};
-
-const widgetSlug = (name: string) =>
-  name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '').replace(/v3$/, 'v3');
+import identityFixture from '@fixtures/identity/identity-card.json';
+import bioFixture from '@fixtures/identity/bio-terminal.json';
+import systemFixture from '@fixtures/other/system-status.json';
+import heartRateFixture from '@fixtures/health/heart-rate.json';
+import dailyActivityFixture from '@fixtures/health/daily-activity.json';
+import workoutsFixture from '@fixtures/health/workouts.json';
+import hydrationFixture from '@fixtures/health/hydration.json';
+import nightSummaryFixture from '@fixtures/health/night-summary.json';
+import devActivityFixture from '@fixtures/github/dev-activity-log.json';
+import readingFixture from '@fixtures/reading/reading-feed.json';
+import starredRepoFixture from '@fixtures/github/starred-repo-list.json';
+import bookshelfFixture from '@fixtures/reading/bookshelf.json';
+import theatreFixture from '@fixtures/reading/theatre-reviews.json';
+import placeLeaderboardFixture from '@fixtures/location/place-leaderboard-v3.json';
+import explorationOdometerFixture from '@fixtures/location/exploration-odometer-v3.json';
 ---
 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Widget Showcase — Lifegames Design System</title>
+  <title>Showcase — Lifegames Design System</title>
+  <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <style is:global>
-    /* Showcase page: flat grid layout. Bypasses the triptych (.command-layout)
-       intentionally — that layout was designed for one column of widgets +
-       a fixed identity card, not 56 widgets across 6 categories. */
     html, body {
       margin: 0;
       padding: 0;
@@ -94,181 +56,212 @@ const widgetSlug = (name: string) =>
       font-family: var(--font-family, 'Space Grotesk', sans-serif);
       min-height: 100vh;
     }
-    .showcase-header {
-      padding: var(--space-32) var(--space-32) var(--space-20);
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: var(--space-20);
-    }
-    .showcase-header h1 {
-      margin: 0;
-      font-size: var(--font-size-hero);
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .showcase-header .meta {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .showcase-nav {
-      display: flex;
-      gap: var(--space-12);
-      padding: var(--space-12) var(--space-32);
-      border-bottom: 1px solid var(--card-border);
-      flex-wrap: wrap;
-      position: sticky;
+    .showcase-banner {
+      position: fixed;
       top: 0;
-      background: rgba(6, 6, 15, 0.92);
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(6, 6, 15, 0.95);
       backdrop-filter: blur(var(--blur-md));
-      z-index: 10;
-    }
-    .showcase-nav a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: var(--font-size-sm);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: var(--space-6) var(--space-12);
-      border-radius: var(--radius-md);
-      transition: color 0.18s ease, background 0.18s ease;
-    }
-    .showcase-nav a:hover {
-      color: var(--text);
-      background: var(--card-bg-hover);
-    }
-    .showcase-nav a .count {
-      opacity: 0.6;
-      margin-left: var(--space-6);
-    }
-    main.showcase {
-      padding: var(--space-32);
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-    .category-section {
-      margin-bottom: var(--space-48);
-      scroll-margin-top: 4rem;
-    }
-    .category-section h2 {
-      margin: 0 0 var(--space-20);
-      font-size: var(--font-size-xl);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: var(--text-muted);
-      padding-bottom: var(--space-12);
       border-bottom: 1px solid var(--card-border);
-    }
-    .category-section h2 .count {
-      font-size: var(--font-size-sm);
-      opacity: 0.5;
-      margin-left: var(--space-8);
-    }
-    .widget-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: var(--space-20);
-    }
-    .widget-card-wrap {
-      min-height: 260px;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-8);
-    }
-    .widget-card-wrap > [data-widget-preview] {
-      flex: 1;
-      min-height: 240px;
-    }
-    .widget-card-wrap .label {
-      font-size: var(--font-size-xs);
-      color: var(--text-muted);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 0 var(--space-4);
-    }
-    .widget-card-wrap .missing {
-      padding: var(--space-20);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-xl);
+      padding: var(--space-8) var(--space-20);
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: var(--neon-red);
-      font-size: var(--font-size-sm);
+      justify-content: space-between;
+      gap: var(--space-12);
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+    .showcase-banner a {
+      color: var(--neon-green);
+      text-decoration: none;
+    }
+    .showcase-banner a:hover {
+      text-decoration: underline;
+    }
+    .showcase-wrapper {
+      padding-top: 36px;
+    }
+    .dev-only-widgets {
+      display: none;
+      margin-top: var(--space-12);
+    }
+    .dev-only-widgets.visible {
+      display: block;
+    }
+    .dev-badge {
+      display: inline-block;
+      font-size: var(--font-size-xs);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--neon-amber);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.08);
+      padding: var(--space-2) var(--space-8);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-8);
+    }
+    .poll-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+    }
+    .poll-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-green);
     }
   </style>
 </head>
 <body>
-  <header class="showcase-header">
-    <h1>Lifegames Design System</h1>
-    <span class="meta">Widget Showcase · v0.1.1 · {sortedCategories.reduce((s, c) => s + c.widgets.length, 0)} widgets</span>
-  </header>
+  <div class="showcase-banner">
+    <span>Production mirror of jonathanlloyd.me — 15 widgets (13 shipped + 2 dev-only) in their production layout</span>
+    <a href="/widgets/">View all 56 widget variants →</a>
+  </div>
 
-  <nav class="showcase-nav" aria-label="Category navigation">
-    {sortedCategories.map((cat) => (
-      <a href={`#cat-${cat.name}`}>
-        {categoryLabel[cat.name] ?? cat.name}
-        <span class="count">{cat.widgets.length}</span>
-      </a>
-    ))}
-  </nav>
+  <div class="showcase-wrapper">
+    <div class="command-layout">
 
-  <main class="showcase">
-    {sortedCategories.map((cat) => (
-      <section class="category-section" id={`cat-${cat.name}`}>
-        <h2>
-          {categoryLabel[cat.name] ?? cat.name}
-          <span class="count">{cat.widgets.length}</span>
-        </h2>
-        <div class="widget-grid">
-          {cat.widgets.map(({ entry, componentName, fixture }) => {
-            const Comp = componentMap[componentName];
-            return (
-              <div class="widget-card-wrap">
-                {Comp ? (
-                  <div data-widget-preview>
-                    <Comp {...fixture} />
-                  </div>
-                ) : (
-                  <div class="missing">Missing: {entry.name}</div>
-                )}
-                <span class="label">{entry.name}</span>
-              </div>
-            );
-          })}
+      <aside class="left-panel" aria-label="Profile">
+        <div data-widget-preview>
+          <IdentityCard {...identityFixture} />
         </div>
-      </section>
-    ))}
+        <BioTerminalIsland fixture={bioFixture} />
+        <div data-widget-preview>
+          <SystemStatus {...systemFixture} />
+        </div>
+      </aside>
 
-    {allOverlays.length > 0 && (
-      <section class="category-section" id="cat-overlays">
-        <h2>
-          Overlays
-          <span class="count">{allOverlays.length}</span>
-        </h2>
-        <p style="color: var(--text-muted); font-size: var(--font-size-sm); margin: 0 0 var(--space-20);">
-          Full-screen widgets — these use <code>position: fixed</code> and cover the viewport.
-          View each in isolation:
-        </p>
-        <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-12);">
-          {allOverlays.map(({ category, entry }) => (
-            <li>
-              <a
-                href={`/widgets/${category}/${widgetSlug(entry.name)}/`}
-                style="display: block; padding: var(--space-16); border: 1px solid var(--card-border); border-radius: var(--radius-xl); color: var(--text); text-decoration: none; background: var(--card-bg); transition: background 0.18s ease, border-color 0.18s ease;"
-              >
-                <div style="font-weight: 600;">{entry.name}</div>
-                <div style="font-size: var(--font-size-xs); color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: var(--space-4);">{category}</div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
-  </main>
+      <header class="top-bar">
+        <div class="top-bar-title">Human Datastream</div>
+        <span class="poll-status">
+          <span class="poll-dot"></span>
+          <span class="poll-label">Fixture data</span>
+        </span>
+        <div class="top-bar-clock" id="liveClock" aria-live="off" aria-label="Current time"></div>
+      </header>
+
+      <main id="main-content" class="right-panel">
+        <div class="triptych-grid" id="triptychGrid">
+
+          <section class="triptych-column triptych-column-body" aria-label="Body">
+            <h2 class="column-header column-header-pink">Body</h2>
+            <HeartRateIsland fixture={heartRateFixture} />
+            <div data-widget-preview>
+              <DailyActivity {...dailyActivityFixture} />
+            </div>
+            <div data-widget-preview>
+              <Workouts {...workoutsFixture} />
+            </div>
+            <HydrationIsland fixture={hydrationFixture} />
+            <div data-widget-preview>
+              <NightSummary {...nightSummaryFixture} />
+            </div>
+            <div class="dev-only-widgets" id="devOnlyWidgets">
+              <span class="dev-badge">Dev Only</span>
+              <div data-widget-preview>
+                <PlaceLeaderboardV3 {...placeLeaderboardFixture} />
+              </div>
+              <div data-widget-preview style="margin-top: var(--space-12);">
+                <ExplorationOdometerV3 {...explorationOdometerFixture} />
+              </div>
+            </div>
+          </section>
+
+          <section class="triptych-column triptych-column-mind" aria-label="Mind">
+            <h2 class="column-header column-header-green">Mind</h2>
+            <div data-widget-preview>
+              <DevActivityLog {...devActivityFixture} />
+            </div>
+            <div data-widget-preview>
+              <ReadingFeed {...readingFixture} />
+            </div>
+            <div data-widget-preview>
+              <StarredRepoList {...starredRepoFixture} />
+            </div>
+            <BookshelfIsland fixture={bookshelfFixture} />
+            <TheatreReviewsIsland fixture={theatreFixture} />
+          </section>
+
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script is:inline>
+    /* Dev-only widgets toggle via ?dev=1 */
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('dev') === '1') {
+        var el = document.getElementById('devOnlyWidgets');
+        if (el) el.className = el.className + ' visible';
+      }
+    })();
+  </script>
+
+  <script is:inline>
+    /* Live clock */
+    (function() {
+      var clock = document.getElementById('liveClock');
+      if (!clock) return;
+      function tick() {
+        var now = new Date();
+        var h = now.getHours();
+        var m = now.getMinutes();
+        var s = now.getSeconds();
+        var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+        clock.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+
+  <script is:inline>
+    /* Staggered card reveal */
+    (function() {
+      var cards = document.querySelectorAll('[data-widget-preview]');
+      var leftCards = [];
+      var rightCards = [];
+      var leftPanel = document.querySelector('.left-panel');
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        if (leftPanel && leftPanel.contains(card)) {
+          leftCards.push(card);
+        } else {
+          rightCards.push(card);
+        }
+      }
+      var allCards = leftCards.concat(rightCards);
+      for (var j = 0; j < allCards.length; j++) {
+        allCards[j].style.opacity = '0';
+        allCards[j].style.transform = 'translateY(12px)';
+        allCards[j].style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      }
+      var leftDelays = [100, 250, 550];
+      for (var k = 0; k < leftCards.length; k++) {
+        (function(el, delay) {
+          setTimeout(function() {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, delay);
+        })(leftCards[k], leftDelays[k] || 550);
+      }
+      for (var r = 0; r < rightCards.length; r++) {
+        (function(el, delay) {
+          setTimeout(function() {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, delay);
+        })(rightCards[r], 400 + (r * 100));
+      }
+    })();
+  </script>
 </body>
 </html>

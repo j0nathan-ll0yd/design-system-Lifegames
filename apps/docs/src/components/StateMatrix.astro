@@ -1,0 +1,94 @@
+---
+interface StateEntry {
+  state: string;
+  fixture: Record<string, any> | null;
+}
+
+interface Props {
+  widgetName: string;
+  category: string;
+  states: StateEntry[];
+}
+
+const { widgetName, category, states } = Astro.props;
+
+const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
+const componentMap: Record<string, any> = {};
+for (const [path, mod] of Object.entries(widgetModules)) {
+  const fileName = path.split('/').pop()!.replace('.astro', '');
+  componentMap[fileName] = (mod as any).default;
+}
+
+const Comp = componentMap[widgetName];
+
+const stateLabels: Record<string, string> = {
+  skeleton: 'Skeleton',
+  empty: 'Empty',
+  'populated-min': 'Populated (Min)',
+  'populated-max': 'Populated (Max)',
+  error: 'Error',
+  'loading-refreshing': 'Loading / Refreshing',
+};
+---
+
+<div class="state-matrix">
+  <div class="state-matrix-grid">
+    {states.map(({ state, fixture }) => (
+      <div class="state-matrix-slot" data-state={state}>
+        <div class="state-matrix-label">{stateLabels[state] ?? state}</div>
+        <div class="state-matrix-preview">
+          {fixture && Comp ? (
+            <div data-widget-preview>
+              <Comp {...fixture} />
+            </div>
+          ) : (
+            <div class="state-matrix-placeholder">
+              {fixture === null ? 'Fixture needed' : 'Component missing'}
+            </div>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .state-matrix {
+    margin: var(--space-20) 0;
+  }
+  .state-matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-16);
+  }
+  .state-matrix-slot {
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+  .state-matrix-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: var(--space-8) var(--space-12);
+    border-bottom: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .state-matrix-preview {
+    padding: var(--space-12);
+    min-height: 120px;
+  }
+  .state-matrix-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+  }
+</style>

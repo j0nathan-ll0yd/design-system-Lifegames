@@ -1,0 +1,7 @@
+{
+  "system": {
+    "lines": [
+      { "key": "Health", "value": "Online", "dotClass": "sys-dot-green" }
+    ]
+  }
+}

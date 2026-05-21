@@ -1,0 +1,14 @@
+{
+  "health": {
+    "quantities": {
+      "stepCount": { "value": 0, "unit": "count" },
+      "distanceWalkingRunning": { "value": 0, "unit": "m" },
+      "exerciseTime": { "value": 0, "unit": "min" },
+      "activeEnergyBurned": { "value": 0, "unit": "kcal" },
+      "basalEnergyBurned": { "value": 0, "unit": "kcal" }
+    },
+    "derived": {
+      "totalCalories": 0
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "reviews": [
+    {
+      "title": "Art",
+      "slug": "art",
+      "url": "https://example.com/reviews/art",
+      "author": "Sample Reviewer",
+      "publishedAt": "2026-04-20",
+      "rating": "B+",
+      "ratingNumeric": 7,
+      "excerpt": "A sharp comedy about friendship and modern art.",
+      "imageUrl": "/images/theatre/art-card.webp",
+      "imageUrlAvif": "/images/theatre/art-card.avif",
+      "imageUrlCard": "/images/theatre/art-card.webp",
+      "imageUrlCardAvif": "/images/theatre/art-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    }
+  ],
+  "totalReviews": 1
+}

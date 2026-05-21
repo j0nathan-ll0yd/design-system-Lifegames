@@ -1,0 +1,18 @@
+{
+  "system": {
+    "lines": [
+      { "key": "Health", "value": "Online", "dotClass": "sys-dot-green" },
+      { "key": "Sleep", "value": "9h 42m", "dotClass": "sys-dot-green" },
+      { "key": "Books", "value": "24 tracked", "dotClass": "sys-dot-green" },
+      { "key": "Articles", "value": "148 saved", "dotClass": "sys-dot-green" },
+      { "key": "Github Events", "value": "312 today", "dotClass": "sys-dot-green" },
+      { "key": "Github Stars", "value": "2,847 total", "dotClass": "sys-dot-green" },
+      { "key": "Theatre Reviews", "value": "186 reviews", "dotClass": "sys-dot-green" },
+      { "key": "Location", "value": "42 places", "dotClass": "sys-dot-amber" },
+      { "key": "Workouts", "value": "6 today", "dotClass": "sys-dot-green" },
+      { "key": "Hydration", "value": "Overhydrated", "dotClass": "sys-dot-red" },
+      { "key": "Heart Rate", "value": "195 bpm", "dotClass": "sys-dot-red" },
+      { "key": "API Gateway", "value": "Degraded", "dotClass": "sys-dot-amber" }
+    ]
+  }
+}

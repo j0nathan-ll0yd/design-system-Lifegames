@@ -1,0 +1,8 @@
+{
+  "health": {
+    "quantities": {
+      "heartRate": { "value": 62, "unit": "count/min" },
+      "hrvSDNN": { "value": 48, "unit": "ms" }
+    }
+  }
+}

@@ -9,12 +9,45 @@ generated-by: widget-docs-codegen
 import HeartRate from '@widgets/health/HeartRate.astro';
 import fixture from '@fixtures/health/heart-rate.json';
 
-## Live Preview
+## Live Demo
 
-<div data-widget-preview style="margin: var(--space-20) 0;">
-  <HeartRate {...fixture} />
+import HeartRateIsland from '@islands/HeartRateIsland.astro';
+
+<div style="margin: var(--space-20) 0;">
+  <HeartRateIsland fixture={fixture} />
 </div>
 
+## State Matrix
+
+import StateMatrixGrid from '../../../../components/StateMatrix.astro';
+
+import fixture_skeleton from '@fixtures/health/heart-rate.skeleton.json';
+import fixture_empty from '@fixtures/health/heart-rate.empty.json';
+import fixture_populated_min from '@fixtures/health/heart-rate.populated-min.json';
+import fixture_populated_max from '@fixtures/health/heart-rate.populated-max.json';
+
+<StateMatrixGrid
+  widgetName="HeartRate"
+  category="health"
+  states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+/>
+## Variations
+
+import VariationGrid from '../../../../components/VariationGrid.astro';
+
+import var_bradycardia from '@fixtures/health/heart-rate.bradycardia.json';
+import var_resting from '@fixtures/health/heart-rate.resting.json';
+import var_normal from '@fixtures/health/heart-rate.normal.json';
+import var_fat_burn from '@fixtures/health/heart-rate.fat-burn.json';
+import var_cardio from '@fixtures/health/heart-rate.cardio.json';
+import var_peak from '@fixtures/health/heart-rate.peak.json';
+import var_max from '@fixtures/health/heart-rate.max.json';
+
+<VariationGrid
+  widgetName="HeartRate"
+  category="health"
+  variations={[{ label: "bradycardia", fixture: var_bradycardia }, { label: "resting", fixture: var_resting }, { label: "normal", fixture: var_normal }, { label: "fat-burn", fixture: var_fat_burn }, { label: "cardio", fixture: var_cardio }, { label: "peak", fixture: var_peak }, { label: "max", fixture: var_max }]}
+/>
 ## Props
 
 | Prop | Type | Required | Description |

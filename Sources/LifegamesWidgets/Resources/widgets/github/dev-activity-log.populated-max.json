@@ -1,0 +1,82 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Implement distributed event sourcing with CQRS pattern for multi-region deployment",
+      "date": "12m ago",
+      "hash": "a1b2c3d",
+      "additions": 1842,
+      "deletions": 326
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/ios",
+      "title": "Add biometric login flow with fallback to passcode and recovery email verification",
+      "date": "1h ago",
+      "number": 1423
+    },
+    {
+      "type": "issue_opened",
+      "repo": "lifegames/infrastructure",
+      "title": "Rate limiter drops WebSocket frames under sustained load above 10k concurrent connections",
+      "date": "2h ago",
+      "number": 892
+    },
+    {
+      "type": "commit",
+      "repo": "demo-user.github.io",
+      "title": "Update profile components with new animation system and accessibility improvements",
+      "date": "3h ago",
+      "hash": "e4f5g6h",
+      "additions": 2156,
+      "deletions": 412
+    },
+    {
+      "type": "pr_opened",
+      "repo": "lifegames/infrastructure",
+      "title": "Terraform module for edge caching with CloudFront distribution and Lambda@Edge",
+      "date": "5h ago",
+      "number": 314
+    },
+    {
+      "type": "issue_closed",
+      "repo": "lifegames/api",
+      "title": "Memory leak in event loop when processing large batch operations exceeding 50MB payload",
+      "date": "6h ago",
+      "number": 741
+    },
+    {
+      "type": "pr_closed",
+      "repo": "demo-user.github.io",
+      "title": "Experimental dark mode toggle with system preference detection and smooth transitions",
+      "date": "8h ago",
+      "number": 82
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/infrastructure",
+      "title": "Add CloudFront cache invalidation with automatic purge on deployment completion",
+      "date": "10h ago",
+      "hash": "m0n1o2p",
+      "additions": 4242,
+      "deletions": 1818
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "Migrate authentication middleware to new compliance-approved session token storage",
+      "date": "12h ago",
+      "number": 1567
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/ios",
+      "title": "Refactor widget rendering pipeline for improved SwiftUI performance on older devices",
+      "date": "1d ago",
+      "hash": "q2r3s4t",
+      "additions": 890,
+      "deletions": 567
+    }
+  ]
+}

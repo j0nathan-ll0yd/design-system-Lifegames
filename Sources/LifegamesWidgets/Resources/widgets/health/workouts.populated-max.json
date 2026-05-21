@@ -1,0 +1,42 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Outdoor Run",
+        "duration": 5400,
+        "energy_burned": 680,
+        "distance": 10200
+      },
+      {
+        "activity_type": "Functional Strength Training",
+        "duration": 3600,
+        "energy_burned": 420,
+        "distance": 0
+      },
+      {
+        "activity_type": "Swimming",
+        "duration": 2700,
+        "energy_burned": 380,
+        "distance": 1800
+      },
+      {
+        "activity_type": "Yoga",
+        "duration": 3600,
+        "energy_burned": 210,
+        "distance": 0
+      },
+      {
+        "activity_type": "High Intensity Interval Training",
+        "duration": 1800,
+        "energy_burned": 350,
+        "distance": 0
+      },
+      {
+        "activity_type": "Cycling",
+        "duration": 7200,
+        "energy_burned": 920,
+        "distance": 42000
+      }
+    ]
+  }
+}

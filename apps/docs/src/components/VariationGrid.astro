@@ -1,0 +1,100 @@
+---
+interface VariationEntry {
+  label: string;
+  fixture: Record<string, any>;
+}
+
+interface Props {
+  widgetName: string;
+  category: string;
+  variations: VariationEntry[];
+}
+
+const { widgetName, category, variations } = Astro.props;
+
+const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
+const componentMap: Record<string, any> = {};
+for (const [path, mod] of Object.entries(widgetModules)) {
+  const fileName = path.split('/').pop()!.replace('.astro', '');
+  componentMap[fileName] = (mod as any).default;
+}
+
+const Comp = componentMap[widgetName];
+
+function formatLabel(label: string): string {
+  return label
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+---
+
+<div class="variation-grid">
+  {variations.map(({ label, fixture }) => (
+    <div class="variation-row">
+      <div class="variation-label">{formatLabel(label)}</div>
+      <div class="variation-preview">
+        {Comp ? (
+          <div data-widget-preview>
+            <Comp {...fixture} />
+          </div>
+        ) : (
+          <div class="variation-placeholder">Component missing</div>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .variation-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+    margin: var(--space-20) 0;
+  }
+  .variation-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--space-16);
+    align-items: start;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--card-bg);
+  }
+  .variation-label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: var(--space-16);
+    display: flex;
+    align-items: center;
+    min-height: 100%;
+    border-right: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .variation-preview {
+    padding: var(--space-12);
+    min-height: 120px;
+  }
+  .variation-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+  }
+  @media (max-width: 600px) {
+    .variation-row {
+      grid-template-columns: 1fr;
+    }
+    .variation-label {
+      border-right: none;
+      border-bottom: 1px solid var(--card-border);
+    }
+  }
+</style>

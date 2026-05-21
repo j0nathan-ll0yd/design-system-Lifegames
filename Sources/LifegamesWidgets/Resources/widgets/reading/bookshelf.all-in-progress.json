@@ -1,0 +1,58 @@
+{
+  "books": {
+    "books": [
+      {
+        "asin": "0525573844",
+        "title": "Range",
+        "author": "David Epstein",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 68,
+        "notes": null
+      },
+      {
+        "asin": "0593128508",
+        "title": "Project Hail Mary",
+        "author": "Andy Weir",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 34,
+        "notes": null
+      },
+      {
+        "asin": "0593723848",
+        "title": "Supercommunicators",
+        "author": "Charles Duhigg",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 12,
+        "notes": null
+      }
+    ],
+    "bookMeta": {
+      "0525573844": {
+        "pages": 352,
+        "year": 2019,
+        "desc": "Why generalists triumph in a specialized world",
+        "genres": ["Psychology", "Self-Help"]
+      },
+      "0593128508": {
+        "pages": 496,
+        "year": 2021,
+        "desc": "An astronaut wakes up alone on a spaceship with no memory",
+        "genres": ["Science Fiction", "Adventure"]
+      },
+      "0593723848": {
+        "pages": 320,
+        "year": 2024,
+        "desc": "The science of better conversations",
+        "genres": ["Psychology", "Communication"]
+      }
+    },
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

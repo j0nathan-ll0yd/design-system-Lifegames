@@ -1,0 +1,25 @@
+{
+  "profile": {
+    "terminalLines": [
+      { "type": "prompt", "text": "$ whoami" },
+      { "type": "output", "text": "distinguished-staff-engineer" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ cat skills.txt" },
+      { "type": "output", "text": "TypeScript, Swift, Python, Go, Rust, C++, Kotlin, Scala" },
+      { "type": "output", "text": "→ Full-stack engineering leadership across 12 product verticals" },
+      { "type": "output", "text": "→ Distributed systems architecture at planetary scale" },
+      { "type": "output", "text": "→ Mobile + web + embedded platform development" },
+      { "type": "output", "text": "→ Machine learning infrastructure and MLOps pipelines" },
+      { "type": "output", "text": "→ Developer experience and internal tooling platforms" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ uptime" },
+      { "type": "output", "text": "24+ years professionally & counting" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ cat awards.txt" },
+      { "type": "output", "text": "→ Patent holder: distributed event sourcing (US-2024-0001)" },
+      { "type": "output", "text": "→ Conference keynote: DistSys Summit 2025, KubeCon 2024" },
+      { "type": "output", "text": "→ Author: 'Resilient Systems at Scale' (O'Reilly, 2024)" },
+      { "type": "cursor" }
+    ]
+  }
+}

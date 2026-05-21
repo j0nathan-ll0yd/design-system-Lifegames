@@ -1,0 +1,106 @@
+{
+  "books": {
+    "books": [
+      {
+        "asin": "0525573844",
+        "title": "Range: Why Generalists Triumph in a Specialized World",
+        "author": "David Epstein",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 68,
+        "notes": "Compelling arguments for breadth over depth"
+      },
+      {
+        "asin": "0593128508",
+        "title": "Project Hail Mary",
+        "author": "Andy Weir",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": "Best sci-fi since The Martian"
+      },
+      {
+        "asin": "0593723848",
+        "title": "Supercommunicators: How to Unlock the Secret Language of Connection",
+        "author": "Charles Duhigg",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 42,
+        "notes": null
+      },
+      {
+        "asin": "1984820680",
+        "title": "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
+        "author": "James Clear",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": "Practical frameworks for habit formation"
+      },
+      {
+        "asin": "1984820710",
+        "title": "The Psychology of Money: Timeless Lessons on Wealth, Greed, and Happiness",
+        "author": "Morgan Housel",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "B07QVH2Q2K",
+        "title": "The Midnight Library",
+        "author": "Matt Haig",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "B0FBRJY116",
+        "title": "Intermezzo",
+        "author": "Sally Rooney",
+        "status": "next",
+        "rating": null,
+        "progress": null,
+        "notes": null
+      }
+    ],
+    "bookMeta": {
+      "0525573844": {
+        "pages": 352,
+        "year": 2019,
+        "desc": "Why generalists triumph in a specialized world",
+        "genres": ["Psychology", "Self-Help"]
+      },
+      "0593128508": {
+        "pages": 496,
+        "year": 2021,
+        "desc": "An astronaut wakes up alone on a spaceship with no memory",
+        "genres": ["Science Fiction", "Adventure"]
+      },
+      "0593723848": {
+        "pages": 320,
+        "year": 2024,
+        "desc": "The science of better conversations",
+        "genres": ["Psychology", "Communication"]
+      },
+      "1984820680": {
+        "pages": 320,
+        "year": 2018,
+        "desc": "Practical strategies for forming good habits",
+        "genres": ["Self-Help", "Psychology"]
+      },
+      "1984820710": {
+        "pages": 256,
+        "year": 2020,
+        "desc": "Timeless lessons on wealth and happiness",
+        "genres": ["Finance", "Psychology"]
+      }
+    },
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

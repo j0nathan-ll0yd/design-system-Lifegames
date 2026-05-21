@@ -1,0 +1,16 @@
+{
+  "health": {
+    "sleepScore": 0,
+    "sleepDurationFormatted": "--",
+    "sleepPhaseFormatted": {
+      "deep": "--",
+      "rem": "--",
+      "core": "--",
+      "awake": "--"
+    },
+    "derived": {
+      "deepPct": 0,
+      "remPct": 0
+    }
+  }
+}

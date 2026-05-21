@@ -1,0 +1,14 @@
+{
+  "health": {
+    "quantities": {
+      "stepCount": { "value": 28450, "unit": "count" },
+      "distanceWalkingRunning": { "value": 21200, "unit": "m" },
+      "exerciseTime": { "value": 142, "unit": "min" },
+      "activeEnergyBurned": { "value": 1280, "unit": "kcal" },
+      "basalEnergyBurned": { "value": 1820, "unit": "kcal" }
+    },
+    "derived": {
+      "totalCalories": 3100
+    }
+  }
+}

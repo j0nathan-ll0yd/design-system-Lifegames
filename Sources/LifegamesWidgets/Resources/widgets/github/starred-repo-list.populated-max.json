@@ -1,0 +1,100 @@
+{
+  "repos": [
+    {
+      "owner": "vercel",
+      "name": "next.js",
+      "stars": 128000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "1 hour ago"
+    },
+    {
+      "owner": "astro-community",
+      "name": "astro",
+      "stars": 48000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "3 hours ago"
+    },
+    {
+      "owner": "denoland",
+      "name": "deno",
+      "stars": 101000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "5 hours ago"
+    },
+    {
+      "owner": "rust-lang",
+      "name": "rust",
+      "stars": 99000,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "1 day ago"
+    },
+    {
+      "owner": "golang",
+      "name": "go",
+      "stars": 125000,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "starredAt": "1 day ago"
+    },
+    {
+      "owner": "huggingface",
+      "name": "transformers",
+      "stars": 136000,
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "starredAt": "2 days ago"
+    },
+    {
+      "owner": "tauri-apps",
+      "name": "tauri",
+      "stars": 86000,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "3 days ago"
+    },
+    {
+      "owner": "anthropics",
+      "name": "claude-code",
+      "stars": 25000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "4 days ago"
+    },
+    {
+      "owner": "facebook",
+      "name": "react",
+      "stars": 232000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "5 days ago"
+    },
+    {
+      "owner": "microsoft",
+      "name": "typescript",
+      "stars": 104000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "1 week ago"
+    },
+    {
+      "owner": "sveltejs",
+      "name": "svelte",
+      "stars": 82000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "1 week ago"
+    },
+    {
+      "owner": "docker",
+      "name": "compose",
+      "stars": 34000,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "starredAt": "2 weeks ago"
+    }
+  ]
+}

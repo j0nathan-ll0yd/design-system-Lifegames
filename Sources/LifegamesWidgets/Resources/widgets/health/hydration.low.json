@@ -1,0 +1,14 @@
+{
+  "health": {
+    "hydration": {
+      "waterOz": 40,
+      "waterMax": 120,
+      "waterRangeLo": 60,
+      "waterRangeHi": 100,
+      "caffeineMg": 120,
+      "caffeineMax": 500,
+      "caffeineRangeLo": 200,
+      "caffeineRangeHi": 400
+    }
+  }
+}

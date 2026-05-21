@@ -29,7 +29,8 @@ const ACCENT_CLASSES = [
   'tri-card-accent-cyan', 'tri-card-accent-orange', 'tri-card-accent-indigo',
 ];
 
-export { esc } from './html-utils';
+import { esc } from './html-utils';
+export { esc };
 
 export function updateHeartRate(data: AdaptedHealth): void {
   const hr = Math.round(data.quantities.heartRate.value);

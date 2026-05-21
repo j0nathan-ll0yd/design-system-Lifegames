@@ -1,0 +1,58 @@
+{
+  "books": {
+    "books": [
+      {
+        "asin": "0525573844",
+        "title": "Range",
+        "author": "David Epstein",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0593128508",
+        "title": "Project Hail Mary",
+        "author": "Andy Weir",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": "Best sci-fi since The Martian"
+      },
+      {
+        "asin": "1984820680",
+        "title": "Atomic Habits",
+        "author": "James Clear",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      }
+    ],
+    "bookMeta": {
+      "0525573844": {
+        "pages": 352,
+        "year": 2019,
+        "desc": "Why generalists triumph in a specialized world",
+        "genres": ["Psychology", "Self-Help"]
+      },
+      "0593128508": {
+        "pages": 496,
+        "year": 2021,
+        "desc": "An astronaut wakes up alone on a spaceship with no memory",
+        "genres": ["Science Fiction", "Adventure"]
+      },
+      "1984820680": {
+        "pages": 320,
+        "year": 2018,
+        "desc": "Practical strategies for forming good habits",
+        "genres": ["Self-Help", "Psychology"]
+      }
+    },
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

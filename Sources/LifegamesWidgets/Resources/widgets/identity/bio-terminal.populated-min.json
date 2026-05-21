@@ -1,0 +1,9 @@
+{
+  "profile": {
+    "terminalLines": [
+      { "type": "prompt", "text": "$ whoami" },
+      { "type": "output", "text": "dev" },
+      { "type": "cursor" }
+    ]
+  }
+}

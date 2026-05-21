@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 
 const MANIFEST_PATH = path.join(ROOT, 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json');
+const PRODUCTION_WIDGETS_PATH = path.join(ROOT, 'Sources/LifegamesWidgets/Resources/production-widgets.json');
 const WIDGETS_DIR = path.join(ROOT, 'packages/web/src/widgets');
 const FIXTURES_DIR = path.join(ROOT, 'Sources/LifegamesWidgets/Resources/widgets');
 const OUTPUT_DIR = path.join(ROOT, 'apps/docs/src/content/docs/widgets');
@@ -26,6 +27,33 @@ const SINGLE_WIDGET = (() => {
   if (eqArg) return eqArg.split('=')[1];
   return null;
 })();
+
+const HYDRATED_WIDGETS = new Set([
+  'HeartRate', 'Hydration', 'Bookshelf', 'TheatreReviews', 'BioTerminal',
+]);
+
+const VARIATION_WIDGETS = {
+  HeartRate: ['bradycardia', 'resting', 'normal', 'fat-burn', 'cardio', 'peak', 'max'],
+  Hydration: ['dehydrated', 'low', 'normal', 'hydrated', 'overhydrated'],
+  NightSummary: ['poor', 'fair', 'good', 'excellent'],
+  Bookshelf: ['all-in-progress', 'mixed', 'all-completed'],
+};
+
+const STATE_SLOTS = ['skeleton', 'empty', 'populated-min', 'populated-max'];
+
+let productionRegistry = null;
+try {
+  productionRegistry = JSON.parse(fs.readFileSync(PRODUCTION_WIDGETS_PATH, 'utf-8'));
+} catch {
+  log('[info] production-widgets.json not found -- production features will be skipped');
+}
+
+const productionNames = new Set();
+if (productionRegistry) {
+  for (const entry of productionRegistry) {
+    productionNames.add(entry.name);
+  }
+}
 
 function toKebab(name) {
   return name
@@ -122,9 +150,101 @@ function parseTopLevelFields(body) {
   }).filter(Boolean);
 }
 
-function generateDynamicMdx(widget, actualName, fields, index) {
+function fixtureExists(category, kebab, state) {
+  return fs.existsSync(path.join(FIXTURES_DIR, category, `${kebab}.${state}.json`));
+}
+
+function buildStateMatrixSection(actualName, category, kebab) {
+  const lines = [];
+  lines.push('## State Matrix\n');
+  lines.push(`import StateMatrixGrid from '../../../../components/StateMatrix.astro';\n`);
+
+  const stateImports = [];
+  const stateEntries = [];
+
+  for (const state of STATE_SLOTS) {
+    const fixturePath = `${category}/${kebab}.${state}.json`;
+    const varName = `fixture_${state.replace(/-/g, '_')}`;
+    if (fixtureExists(category, kebab, state)) {
+      stateImports.push(`import ${varName} from '@fixtures/${fixturePath}';`);
+      stateEntries.push(`{ state: "${state}", fixture: ${varName} }`);
+    } else {
+      stateEntries.push(`{ state: "${state}", fixture: null }`);
+    }
+  }
+
+  if (stateImports.length > 0) {
+    lines.push(stateImports.join('\n') + '\n');
+  }
+
+  lines.push(`<StateMatrixGrid`);
+  lines.push(`  widgetName="${actualName}"`);
+  lines.push(`  category="${category}"`);
+  lines.push(`  states={[${stateEntries.join(', ')}]}`);
+  lines.push(`/>\n`);
+
+  return lines.join('\n');
+}
+
+function buildVariationsSection(actualName, category, kebab) {
+  const variations = VARIATION_WIDGETS[actualName];
+  if (!variations) return '';
+
+  const lines = [];
+  lines.push('## Variations\n');
+  lines.push(`import VariationGrid from '../../../../components/VariationGrid.astro';\n`);
+
+  const varImports = [];
+  const varEntries = [];
+
+  for (const variation of variations) {
+    const fixturePath = `${category}/${kebab}.${variation}.json`;
+    const varName = `var_${variation.replace(/-/g, '_')}`;
+    if (fixtureExists(category, kebab, variation)) {
+      varImports.push(`import ${varName} from '@fixtures/${fixturePath}';`);
+      varEntries.push(`{ label: "${variation}", fixture: ${varName} }`);
+    }
+  }
+
+  if (varEntries.length === 0) return '';
+
+  lines.push(varImports.join('\n') + '\n');
+
+  lines.push(`<VariationGrid`);
+  lines.push(`  widgetName="${actualName}"`);
+  lines.push(`  category="${category}"`);
+  lines.push(`  variations={[${varEntries.join(', ')}]}`);
+  lines.push(`/>\n`);
+
+  return lines.join('\n');
+}
+
+function buildAlternativesSection(widget, manifest) {
+  const { category, name } = widget;
+  const siblings = manifest.widgets.filter(w =>
+    w.category === category && w.name !== name && !productionNames.has(w.name)
+  );
+  if (siblings.length === 0) return '';
+
+  const lines = [];
+  lines.push('## Alternative Versions\n');
+  lines.push(`Other ${category} widget variants:\n`);
+
+  for (const sibling of siblings) {
+    const sibActual = resolveActualFilename(sibling.category, sibling.name, '.astro');
+    const sibKebab = toKebab(sibActual || sibling.name);
+    lines.push(`- [${sibling.name}](/widgets/${sibling.category}/${sibKebab}/)`);
+  }
+  lines.push('');
+
+  return lines.join('\n');
+}
+
+function generateDynamicMdx(widget, actualName, fields, index, manifest) {
   const { category, name, viewType, fixturePath } = widget;
   const kebab = toKebab(actualName);
+  const isProduction = productionNames.has(name);
+  const isHydrated = HYDRATED_WIDGETS.has(actualName);
 
   let propsTable = '| Prop | Type | Required | Description |\n|------|------|----------|-------------|\n';
   const detailsBlocks = [];
@@ -140,6 +260,23 @@ function generateDynamicMdx(widget, actualName, fields, index) {
 
   const detailsSection = detailsBlocks.length > 0 ? '\n' + detailsBlocks.join('\n\n') + '\n' : '';
 
+  let liveDemo;
+  if (isHydrated && isProduction) {
+    liveDemo = `import ${actualName}Island from '@islands/${actualName}Island.astro';
+
+<div style="margin: var(--space-20) 0;">
+  <${actualName}Island fixture={fixture} />
+</div>`;
+  } else {
+    liveDemo = `<div data-widget-preview style="margin: var(--space-20) 0;">
+  <${actualName} {...fixture} />
+</div>`;
+  }
+
+  const stateMatrix = isProduction ? buildStateMatrixSection(actualName, category, kebab) : '';
+  const variations = isProduction ? buildVariationsSection(actualName, category, kebab) : '';
+  const alternatives = isProduction ? buildAlternativesSection(widget, manifest) : '';
+
   return `---
 title: "${name}"
 description: "${category} widget -- ${name}"
@@ -151,13 +288,11 @@ generated-by: widget-docs-codegen
 import ${actualName} from '@widgets/${category}/${actualName}.astro';
 import fixture from '@fixtures/${fixturePath}';
 
-## Live Preview
+## Live Demo
 
-<div data-widget-preview style="margin: var(--space-20) 0;">
-  <${actualName} {...fixture} />
-</div>
+${liveDemo}
 
-## Props
+${stateMatrix}${variations}${alternatives}## Props
 
 ${propsTable}${detailsSection}
 ## Usage
@@ -177,8 +312,10 @@ import ${actualName} from '@lifegames/web/widgets/${category}/${actualName}.astr
 `;
 }
 
-function generateStaticMdx(widget, actualName, fields, index) {
+function generateStaticMdx(widget, actualName, fields, index, manifest) {
   const { category, name, viewType, fixturePath } = widget;
+  const kebab = toKebab(actualName);
+  const isProduction = productionNames.has(name);
 
   let dataTable = '| Field | Type | Required | Description |\n|------|------|----------|-------------|\n';
   const detailsBlocks = [];
@@ -193,6 +330,10 @@ function generateStaticMdx(widget, actualName, fields, index) {
   }
 
   const detailsSection = detailsBlocks.length > 0 ? '\n' + detailsBlocks.join('\n\n') + '\n' : '';
+
+  const stateMatrix = isProduction ? buildStateMatrixSection(actualName, category, kebab) : '';
+  const variations = isProduction ? buildVariationsSection(actualName, category, kebab) : '';
+  const alternatives = isProduction ? buildAlternativesSection(widget, manifest) : '';
 
   return `---
 title: "${name}"
@@ -215,7 +356,7 @@ This widget does not read props at runtime. It renders hardcoded/client-hydrated
 The \`.types.ts\` file documents the data shape consumed by the codegen pipeline and fixture system only.
 :::
 
-## Data Shape (Pipeline Only)
+${stateMatrix}${variations}${alternatives}## Data Shape (Pipeline Only)
 
 ${dataTable}${detailsSection}
 ## Cross-Platform
@@ -267,7 +408,6 @@ function main() {
   const categoryCounts = {};
   let orphansDeleted = 0;
 
-  // Pre-compute order index for every widget in the full manifest
   const widgetOrderMap = new Map();
   const catCounters = {};
   for (const w of manifest.widgets) {
@@ -325,8 +465,8 @@ function main() {
 
     const isStatic = audit[actualName] === 'static';
     const mdxContent = isStatic
-      ? generateStaticMdx(widget, actualName, fields, index)
-      : generateDynamicMdx(widget, actualName, fields, index);
+      ? generateStaticMdx(widget, actualName, fields, index, manifest)
+      : generateDynamicMdx(widget, actualName, fields, index, manifest);
 
     const kebab = toKebab(actualName);
     const relPath = `${category}/${kebab}.mdx`;

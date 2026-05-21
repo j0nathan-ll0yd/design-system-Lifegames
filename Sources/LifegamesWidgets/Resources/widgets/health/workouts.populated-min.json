@@ -1,0 +1,12 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Walking",
+        "duration": 1200,
+        "energy_burned": 95,
+        "distance": 1600
+      }
+    ]
+  }
+}
