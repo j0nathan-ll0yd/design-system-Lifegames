@@ -1,0 +1,49 @@
+---
+title: "PlaceLeaderboard"
+description: "location widget -- PlaceLeaderboard"
+sidebar:
+  order: 5
+generated-by: widget-docs-codegen
+---
+
+import PlaceLeaderboardV3 from '@widgets/location/PlaceLeaderboardV3.astro';
+
+## Live Preview
+
+<div data-widget-preview style="margin: var(--space-20) 0;">
+  <PlaceLeaderboardV3 />
+</div>
+
+:::caution[Static Component]
+This widget does not read props at runtime. It renders hardcoded/client-hydrated content.
+The `.types.ts` file documents the data shape consumed by the codegen pipeline and fixture system only.
+:::
+
+## Data Shape (Pipeline Only)
+
+| Field | Type | Required | Description |
+|------|------|----------|-------------|
+| `topPlaces` | `Array<object>` | Yes | — |
+
+<details>
+<summary><code>topPlaces</code> shape</summary>
+
+```typescript
+{
+name: string;
+category: string | null;
+visitCount: number;
+totalDurationMinutes: number;
+lastVisitAt: string | null;
+}[]
+```
+
+</details>
+
+## Cross-Platform
+
+- **Web:** `packages/web/src/widgets/location/PlaceLeaderboardV3.astro`
+- **iOS:** `Sources/LifegamesWidgets/Location/PlaceLeaderboardView.swift`
+- **Fixture:** `Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.json`
+
+_Storybook stories were deleted in v0.1.1; widget documentation lives at this page._

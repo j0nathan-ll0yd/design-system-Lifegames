@@ -1,4 +1,9 @@
 ---
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/base';
 import manifest from '@manifest';
 
 const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
@@ -16,11 +21,10 @@ for (const [path, mod] of Object.entries(fixtureModules)) {
   fixtureMap[rel] = (mod as any).default;
 }
 
-function resolveComponentName(manifestName: string, category: string): string {
+function resolveComponentName(manifestName: string): string {
   if (componentMap[manifestName]) return manifestName;
-  const prefix = manifestName;
   const match = Object.keys(componentMap).find(
-    (k) => k.startsWith(prefix) && k !== prefix
+    (k) => k.startsWith(manifestName) && k !== manifestName
   );
   return match || manifestName;
 }
@@ -35,16 +39,42 @@ interface ManifestEntry {
 const categories = (manifest as { widgets: ManifestEntry[] }).widgets.reduce<
   Record<string, { entry: ManifestEntry; componentName: string; fixture: any }[]>
 >((acc, w) => {
-  const componentName = resolveComponentName(w.name, w.category);
+  const componentName = resolveComponentName(w.name);
   const fixture = fixtureMap[w.fixturePath] || {};
   (acc[w.category] ??= []).push({ entry: w, componentName, fixture });
   return acc;
 }, {});
 
+// Full-screen overlay widgets — they use `position: fixed; inset: 0` and
+// would cover the entire showcase grid. List them separately with links.
+const overlayWidgets = new Set([
+  'BookModal', 'FocusOverlay', 'DndOverlay', 'ComingSoon',
+]);
+
 const categoryOrder = ['github', 'location', 'health', 'reading', 'identity', 'other'];
 const sortedCategories = categoryOrder
   .filter((c) => categories[c])
-  .map((c) => ({ name: c, widgets: categories[c] }));
+  .map((c) => ({
+    name: c,
+    widgets: categories[c].filter((w) => !overlayWidgets.has(w.entry.name)),
+    overlays: categories[c].filter((w) => overlayWidgets.has(w.entry.name)),
+  }));
+
+const allOverlays = sortedCategories.flatMap((c) =>
+  c.overlays.map((w) => ({ category: c.name, entry: w.entry })),
+);
+
+const categoryLabel: Record<string, string> = {
+  github: 'GitHub',
+  location: 'Location',
+  health: 'Health',
+  reading: 'Reading',
+  identity: 'Identity',
+  other: 'Other',
+};
+
+const widgetSlug = (name: string) =>
+  name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, '').replace(/v3$/, 'v3');
 ---
 
 <html lang="en">
@@ -53,176 +83,192 @@ const sortedCategories = categoryOrder
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Widget Showcase — Lifegames Design System</title>
   <style is:global>
-    :root {
-      --bg: #06060f;
-      --neon-pink: #ff006e;
-      --neon-blue: #3a86ff;
-      --neon-green: #06d6a0;
-      --neon-amber: #f59e0b;
-      --neon-purple: #a855f7;
-      --neon-red: #ef4444;
-      --neon-cyan: #00d4ff;
-      --neon-orange: #ff6b00;
-      --neon-indigo: #818cf8;
-      --glass-bg: rgba(255,255,255,0.07);
-      --glass-border: rgba(255,255,255,0.1);
-      --text: #f0f0f0;
-      --text-muted: #9ca3af;
-      --neon-pink-hc: #ff69b4;
-      --neon-purple-hc: #c084fc;
-      --neon-red-hc: #f87171;
-      --font-family: 'Space Grotesk', sans-serif;
-      --font-mono: 'Space Grotesk', monospace;
-      --font-size-xs: clamp(0.625rem, 0.58rem + 0.12vw, 0.72rem);
-      --font-size-sm: clamp(0.7rem, 0.64rem + 0.14vw, 0.78rem);
-      --font-size-base: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem);
-      --font-size-md: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem);
-      --font-size-lg: clamp(0.88rem, 0.75rem + 0.34vw, 1.05rem);
-      --font-size-xl: clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem);
-      --font-size-2xl: clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem);
-      --font-size-3xl: clamp(1.90rem, 1.53rem + 1.00vw, 2.40rem);
-      --font-size-hero: clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem);
-      --space-2: clamp(1px, 0.02rem + 0.13vw, 2px);
-      --space-4: clamp(3px, 0.14rem + 0.13vw, 4px);
-      --space-6: clamp(4px, 0.16rem + 0.25vw, 6px);
-      --space-8: clamp(6px, 0.28rem + 0.25vw, 8px);
-      --space-10: clamp(7px, 0.30rem + 0.38vw, 10px);
-      --space-12: clamp(8px, 0.31rem + 0.50vw, 12px);
-      --space-14: clamp(10px, 0.44rem + 0.50vw, 14px);
-      --space-16: clamp(11px, 0.45rem + 0.63vw, 16px);
-      --space-18: clamp(12px, 0.47rem + 0.75vw, 18px);
-      --space-20: clamp(14px, 0.59rem + 0.75vw, 20px);
-      --space-24: clamp(16px, 0.63rem + 1.00vw, 24px);
-      --space-28: clamp(18px, 0.66rem + 1.25vw, 28px);
-      --space-32: clamp(22px, 0.91rem + 1.25vw, 32px);
-      --space-36: clamp(24px, 0.94rem + 1.50vw, 36px);
-      --space-40: clamp(28px, 1.19rem + 1.50vw, 40px);
-      --space-48: clamp(32px, 1.25rem + 2.00vw, 48px);
-      --radius-sm: 2px;
-      --radius-md: 8px;
-      --radius-lg: clamp(12px, 0.50rem + 0.50vw, 16px);
-      --radius-xl: clamp(14px, 0.56rem + 0.75vw, 20px);
-      --radius-pill: 50px;
-      --blur-sm: 8px;
-      --blur-md: 16px;
-      --blur-lg: 24px;
-      --blur-xl: 32px;
-    }
-
-    body {
+    /* Showcase page: flat grid layout. Bypasses the triptych (.command-layout)
+       intentionally — that layout was designed for one column of widgets +
+       a fixed identity card, not 56 widgets across 6 categories. */
+    html, body {
       margin: 0;
       padding: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-family);
-      -webkit-font-smoothing: antialiased;
+      background: var(--bg, #06060f);
+      color: var(--text, #e4e4e7);
+      font-family: var(--font-family, 'Space Grotesk', sans-serif);
+      min-height: 100vh;
     }
-
-    .tri-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(var(--blur-lg));
-      -webkit-backdrop-filter: blur(var(--blur-lg));
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-xl);
-      overflow: hidden;
-      container-type: inline-size;
-      opacity: 1;
-    }
-
-    .tri-card-accent-pink { border-top: 2px solid var(--neon-pink); }
-    .tri-card-accent-green { border-top: 2px solid var(--neon-green); }
-    .tri-card-accent-blue { border-top: 2px solid var(--neon-blue); }
-    .tri-card-accent-purple { border-top: 2px solid var(--neon-purple); }
-    .tri-card-accent-amber { border-top: 2px solid var(--neon-amber); }
-    .tri-card-accent-red { border-top: 2px solid var(--neon-red); }
-    .tri-card-accent-cyan { border-top: 2px solid var(--neon-cyan); }
-    .tri-card-accent-orange { border-top: 2px solid var(--neon-orange); }
-    .tri-card-accent-indigo { border-top: 2px solid var(--neon-indigo); }
-
-    .widget-header {
+    .showcase-header {
+      padding: var(--space-32) var(--space-32) var(--space-20);
+      border-bottom: 1px solid var(--card-border);
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
-      padding: var(--space-12) var(--space-18) var(--space-10);
-      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: var(--space-20);
     }
-
-    .widget-label {
-      font-size: var(--font-size-base);
-      font-weight: 500;
+    .showcase-header h1 {
+      margin: 0;
+      font-size: var(--font-size-hero);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .showcase-header .meta {
+      font-size: var(--font-size-sm);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .showcase-nav {
+      display: flex;
+      gap: var(--space-12);
+      padding: var(--space-12) var(--space-32);
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      background: rgba(6, 6, 15, 0.92);
+      backdrop-filter: blur(var(--blur-md));
+      z-index: 10;
+    }
+    .showcase-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: var(--space-6) var(--space-12);
+      border-radius: var(--radius-md);
+      transition: color 0.18s ease, background 0.18s ease;
+    }
+    .showcase-nav a:hover {
+      color: var(--text);
+      background: var(--card-bg-hover);
+    }
+    .showcase-nav a .count {
+      opacity: 0.6;
+      margin-left: var(--space-6);
+    }
+    main.showcase {
+      padding: var(--space-32);
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .category-section {
+      margin-bottom: var(--space-48);
+      scroll-margin-top: 4rem;
+    }
+    .category-section h2 {
+      margin: 0 0 var(--space-20);
+      font-size: var(--font-size-xl);
+      font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 3px;
       color: var(--text-muted);
+      padding-bottom: var(--space-12);
+      border-bottom: 1px solid var(--card-border);
     }
-
-    .widget-header-right {
+    .category-section h2 .count {
+      font-size: var(--font-size-sm);
+      opacity: 0.5;
+      margin-left: var(--space-8);
+    }
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--space-20);
+    }
+    .widget-card-wrap {
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .widget-card-wrap > [data-widget-preview] {
+      flex: 1;
+      min-height: 240px;
+    }
+    .widget-card-wrap .label {
+      font-size: var(--font-size-xs);
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0 var(--space-4);
+    }
+    .widget-card-wrap .missing {
+      padding: var(--space-20);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-xl);
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--neon-green);
-      box-shadow: 0 0 8px var(--neon-green);
-    }
-
-    .widget-timestamp {
+      justify-content: center;
+      color: var(--neon-red);
       font-size: var(--font-size-sm);
-      color: rgba(255,255,255,0.47);
-      font-family: var(--font-mono);
-      letter-spacing: 0.5px;
-    }
-
-    .widget-body {
-      padding: var(--space-10) var(--space-18) var(--space-16);
-    }
-
-    @keyframes dotPulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
     }
   </style>
 </head>
 <body>
-  <header style="padding: var(--space-32) var(--space-24); text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06);">
-    <h1 style="font-size: var(--font-size-2xl); font-weight: 700; margin: 0 0 8px;">Widget Showcase</h1>
-    <p style="font-size: var(--font-size-lg); color: var(--text-muted); margin: 0;">
-      All {(manifest as { widgets: ManifestEntry[] }).widgets.length} widgets rendered with fixture data
-    </p>
-    <a href="/" style="font-size: var(--font-size-sm); color: var(--neon-indigo); text-decoration: none; margin-top: 12px; display: inline-block;">
-      &larr; Back to docs
-    </a>
+  <header class="showcase-header">
+    <h1>Lifegames Design System</h1>
+    <span class="meta">Widget Showcase · v0.1.1 · {sortedCategories.reduce((s, c) => s + c.widgets.length, 0)} widgets</span>
   </header>
-  <main style="max-width: 1600px; margin: 0 auto; padding: var(--space-32) var(--space-24);">
+
+  <nav class="showcase-nav" aria-label="Category navigation">
     {sortedCategories.map((cat) => (
-      <section style="margin-bottom: var(--space-48);">
-        <h2 style="font-size: var(--font-size-xl); font-weight: 600; text-transform: capitalize; margin: 0 0 var(--space-20); color: var(--text-muted); letter-spacing: 2px;">
-          {cat.name} <span style="font-size: var(--font-size-sm); opacity: 0.6;">({cat.widgets.length})</span>
+      <a href={`#cat-${cat.name}`}>
+        {categoryLabel[cat.name] ?? cat.name}
+        <span class="count">{cat.widgets.length}</span>
+      </a>
+    ))}
+  </nav>
+
+  <main class="showcase">
+    {sortedCategories.map((cat) => (
+      <section class="category-section" id={`cat-${cat.name}`}>
+        <h2>
+          {categoryLabel[cat.name] ?? cat.name}
+          <span class="count">{cat.widgets.length}</span>
         </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+        <div class="widget-grid">
           {cat.widgets.map(({ entry, componentName, fixture }) => {
             const Comp = componentMap[componentName];
-            return Comp ? (
-              <div data-widget-preview>
-                <div style="margin-bottom: 8px;">
-                  <Comp {...fixture} />
-                </div>
-                <span style="font-size: var(--font-size-xs); color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">
-                  {entry.name}
-                </span>
-              </div>
-            ) : (
-              <div data-widget-preview style="padding: var(--space-20); border: 1px dashed rgba(255,255,255,0.1); border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center;">
-                <span style="color: var(--neon-red); font-size: var(--font-size-sm);">Missing: {entry.name}</span>
+            return (
+              <div class="widget-card-wrap">
+                {Comp ? (
+                  <div data-widget-preview>
+                    <Comp {...fixture} />
+                  </div>
+                ) : (
+                  <div class="missing">Missing: {entry.name}</div>
+                )}
+                <span class="label">{entry.name}</span>
               </div>
             );
           })}
         </div>
       </section>
     ))}
+
+    {allOverlays.length > 0 && (
+      <section class="category-section" id="cat-overlays">
+        <h2>
+          Overlays
+          <span class="count">{allOverlays.length}</span>
+        </h2>
+        <p style="color: var(--text-muted); font-size: var(--font-size-sm); margin: 0 0 var(--space-20);">
+          Full-screen widgets — these use <code>position: fixed</code> and cover the viewport.
+          View each in isolation:
+        </p>
+        <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--space-12);">
+          {allOverlays.map(({ category, entry }) => (
+            <li>
+              <a
+                href={`/widgets/${category}/${widgetSlug(entry.name)}/`}
+                style="display: block; padding: var(--space-16); border: 1px solid var(--card-border); border-radius: var(--radius-xl); color: var(--text); text-decoration: none; background: var(--card-bg); transition: background 0.18s ease, border-color 0.18s ease;"
+              >
+                <div style="font-weight: 600;">{entry.name}</div>
+                <div style="font-size: var(--font-size-xs); color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: var(--space-4);">{category}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
 </body>
 </html>

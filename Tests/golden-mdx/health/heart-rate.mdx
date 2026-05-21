@@ -1,0 +1,51 @@
+---
+title: "HeartRate"
+description: "health widget -- HeartRate"
+sidebar:
+  order: 1
+generated-by: widget-docs-codegen
+---
+
+import HeartRate from '@widgets/health/HeartRate.astro';
+import fixture from '@fixtures/health/heart-rate.json';
+
+## Live Preview
+
+<div data-widget-preview style="margin: var(--space-20) 0;">
+  <HeartRate {...fixture} />
+</div>
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `health` | `object` | Yes | — |
+
+<details>
+<summary><code>health</code> shape</summary>
+
+```typescript
+{
+quantities: {
+heartRate: { value: number; unit: string };
+hrvSDNN: { value: number; unit: string };
+};
+}
+```
+
+</details>
+
+## Usage
+
+```astro
+---
+import HeartRate from '@lifegames/web/widgets/health/HeartRate.astro';
+---
+<HeartRate {...data} />
+```
+
+## Cross-Platform
+
+- **Web:** `packages/web/src/widgets/health/HeartRate.astro`
+- **iOS:** `Sources/LifegamesWidgets/Health/HeartRateView.swift`
+- **Fixture:** `Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.json`

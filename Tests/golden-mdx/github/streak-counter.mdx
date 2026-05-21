@@ -1,0 +1,51 @@
+---
+title: "StreakCounter"
+description: "github widget -- StreakCounter"
+sidebar:
+  order: 24
+generated-by: widget-docs-codegen
+---
+
+import StreakCounter from '@widgets/github/StreakCounter.astro';
+import fixture from '@fixtures/github/streak-counter.json';
+
+## Live Preview
+
+<div data-widget-preview style="margin: var(--space-20) 0;">
+  <StreakCounter {...fixture} />
+</div>
+
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `current` | `number` | Yes | — |
+| `longest` | `number` | Yes | — |
+| `recentDays` | `Array<object>` | Yes | — |
+
+<details>
+<summary><code>recentDays</code> shape</summary>
+
+```typescript
+{
+date: string;
+active: boolean;
+}[]
+```
+
+</details>
+
+## Usage
+
+```astro
+---
+import StreakCounter from '@lifegames/web/widgets/github/StreakCounter.astro';
+---
+<StreakCounter {...data} />
+```
+
+## Cross-Platform
+
+- **Web:** `packages/web/src/widgets/github/StreakCounter.astro`
+- **iOS:** `Sources/LifegamesWidgets/Github/StreakCounterView.swift`
+- **Fixture:** `Sources/LifegamesWidgets/Resources/widgets/github/streak-counter.json`

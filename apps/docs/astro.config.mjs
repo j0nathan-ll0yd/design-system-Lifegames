@@ -9,6 +9,15 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Lifegames Design System',
+      customCss: [
+        '../../packages/tokens/dist/tokens.css',
+        '../../packages/tokens/src/compat.css',
+        '../../packages/tokens/src/components.css',
+        '../../packages/tokens/src/effects.css',
+        '../../packages/tokens/src/layout.css',
+        '../../packages/tokens/src/base.css',
+        '../../packages/web/src/styles/a11y.css',
+      ],
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/lifegames-design-system' },
       ],
