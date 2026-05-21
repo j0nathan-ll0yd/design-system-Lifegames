@@ -21,4 +21,14 @@ const { fixture } = Astro.props;
     }
   });
   wrappers.forEach((w) => io.observe(w));
+  // Fallback: init wrappers already visible (IO may not fire under overflow:hidden parents)
+  setTimeout(() => {
+    wrappers.forEach((w) => {
+      const fixture = JSON.parse(w.dataset.fixture || '{}');
+      if (fixture.reviews) {
+        initTheatreReviews(w, fixture);
+        io.unobserve(w);
+      }
+    });
+  }, 0);
 </script>
