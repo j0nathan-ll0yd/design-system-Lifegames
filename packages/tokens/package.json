@@ -12,11 +12,21 @@
     },
     "./css": "./dist/tokens.css",
     "./json": "./dist/tokens.json",
-    "./animations": "./src/animations.css"
+    "./animations": "./src/animations.css",
+    "./components": "./src/components.css",
+    "./effects": "./src/effects.css",
+    "./layout": "./src/layout.css",
+    "./base": "./src/base.css",
+    "./compat": "./src/compat.css"
   },
   "files": [
     "dist",
-    "src/animations.css"
+    "src/animations.css",
+    "src/components.css",
+    "src/effects.css",
+    "src/layout.css",
+    "src/base.css",
+    "src/compat.css"
   ],
   "scripts": {
     "build": "node ../../style-dictionary.config.mjs",

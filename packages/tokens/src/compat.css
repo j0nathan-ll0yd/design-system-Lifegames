@@ -1,0 +1,135 @@
+/* =================================================================
+   BACKWARDS-COMPATIBILITY SHIM — bare --* aliases to --lg-* tokens
+   =================================================================
+
+   The original portfolio CSS (components.css, effects.css, layout.css,
+   base.css) and widget .astro scoped styles reference bare variable
+   names like var(--neon-pink). The design system's tokens.css defines
+   only --lg-* prefixed equivalents.
+
+   This shim bridges the gap by aliasing bare names to --lg-* values.
+
+   DEPRECATED: This shim will be removed in v0.2.0 when all consumers
+   migrate to --lg-* names directly. Do not add new bare variable
+   references — always use --lg-* in new code.
+   ================================================================= */
+
+:root {
+  /* --- Color Palette (10 accent colors) --- */
+  --neon-pink: var(--lg-color-accent-pink);
+  --neon-blue: var(--lg-color-accent-blue);
+  --neon-green: var(--lg-color-accent-green);
+  --neon-amber: var(--lg-color-accent-amber);
+  --neon-purple: var(--lg-color-accent-purple);
+  --neon-red: var(--lg-color-accent-red);
+  --neon-cyan: var(--lg-color-accent-cyan);
+  --neon-orange: var(--lg-color-accent-orange);
+  --neon-indigo: var(--lg-color-accent-indigo);
+  --bg: var(--lg-color-surface-base);
+
+  /* --- High-Contrast Accent Variants --- */
+  --neon-pink-hc: var(--lg-color-accent-hc-pink);
+  --neon-purple-hc: var(--lg-color-accent-hc-purple);
+  --neon-red-hc: var(--lg-color-accent-hc-red);
+
+  /* --- Glass-morphism --- */
+  --glass-bg: var(--lg-color-surface-raised);
+  --glass-border: var(--lg-color-border-subtle);
+  --glass-bg-inset: var(--lg-color-surface-inset);
+  --glass-bg-raised: rgba(255,255,255,0.11);
+  --glass-border-strong: var(--lg-color-border-strong);
+
+  /* --- Text --- */
+  --text: var(--lg-color-text-primary);
+  --text-muted: var(--lg-color-text-muted);
+
+  /* --- Typography --- */
+  --font-family: var(--lg-font-family-brand);
+  /* --font-mono uses a literal value — --lg-font-family-brand resolves
+     to 'Space Grotesk', sans-serif which lacks the Fallback font and
+     uses the wrong generic family. */
+  --font-mono: 'Space Grotesk', 'Space Grotesk Fallback', monospace;
+  --font-size-xs: var(--lg-font-size-caption2);
+  --font-size-sm: var(--lg-font-size-caption);
+  --font-size-base: var(--lg-font-size-footnote);
+  --font-size-md: var(--lg-font-size-body);
+  --font-size-lg: var(--lg-font-size-subhead);
+  --font-size-xl: var(--lg-font-size-headline);
+  --font-size-2xl: var(--lg-font-size-title3);
+  --font-size-3xl: var(--lg-font-size-title2);
+  --font-size-hero: var(--lg-font-size-hero);
+
+  /* --- Spacing (bare --space-N to --lg-space-NNN) --- */
+  --space-2: var(--lg-space-50);
+  --space-4: var(--lg-space-100);
+  --space-6: var(--lg-space-150);
+  --space-8: var(--lg-space-200);
+  --space-10: var(--lg-space-250);
+  --space-12: var(--lg-space-300);
+  --space-14: var(--lg-space-350);
+  --space-16: var(--lg-space-400);
+  --space-18: var(--lg-space-450);
+  --space-20: var(--lg-space-500);
+  --space-24: var(--lg-space-600);
+  --space-28: var(--lg-space-700);
+  --space-32: var(--lg-space-800);
+  --space-36: var(--lg-space-900);
+  --space-40: var(--lg-space-1000);
+  --space-48: var(--lg-space-1200);
+
+  /* --- Border Radius --- */
+  --radius-sm: var(--lg-radius-sm);
+  --radius-md: var(--lg-radius-md);
+  --radius-lg: var(--lg-radius-lg);
+  --radius-xl: var(--lg-radius-xl);
+  --radius-pill: var(--lg-radius-pill);
+
+  /* --- Blur --- */
+  --blur-sm: var(--lg-blur-sm);
+  --blur-md: var(--lg-blur-md);
+  --blur-lg: var(--lg-blur-lg);
+  --blur-xl: var(--lg-blur-xl);
+
+  /* --- Glow Shadows (9 standard + 9 small) --- */
+  --glow-pink: var(--lg-shadow-glow-pink);
+  --glow-blue: var(--lg-shadow-glow-blue);
+  --glow-green: var(--lg-shadow-glow-green);
+  --glow-amber: var(--lg-shadow-glow-amber);
+  --glow-purple: var(--lg-shadow-glow-purple);
+  --glow-red: var(--lg-shadow-glow-red);
+  --glow-cyan: var(--lg-shadow-glow-cyan);
+  --glow-orange: var(--lg-shadow-glow-orange);
+  --glow-indigo: var(--lg-shadow-glow-indigo);
+  --glow-pink-sm: var(--lg-shadow-glow-pinkSm);
+  --glow-blue-sm: var(--lg-shadow-glow-blueSm);
+  --glow-green-sm: var(--lg-shadow-glow-greenSm);
+  --glow-amber-sm: var(--lg-shadow-glow-amberSm);
+  --glow-purple-sm: var(--lg-shadow-glow-purpleSm);
+  --glow-red-sm: var(--lg-shadow-glow-redSm);
+  --glow-cyan-sm: var(--lg-shadow-glow-cyanSm);
+  --glow-orange-sm: var(--lg-shadow-glow-orangeSm);
+  --glow-indigo-sm: var(--lg-shadow-glow-indigoSm);
+
+  /* --- Layout (no --lg-* equivalents; literal values from source) --- */
+  --left-width: 35%;
+  --right-width: 65%;
+  --top-bar-height: clamp(40px, 2.13rem + 1.00vw, 48px);
+  --max-site-width: 2400px;
+}
+
+/* =================================================================
+   STATIC-RENDER VISIBILITY OVERRIDE
+   =================================================================
+
+   .tri-card defaults to opacity: 0 + translateY(20px) in components.css.
+   The .visible class flips this, but .visible is added by client JS
+   (live-data.ts) that does NOT fire in static MDX previews or SSR.
+
+   This rule ensures widgets are visible in all static-render contexts
+   (docs site, Storybook) at all viewport widths.
+   ================================================================= */
+
+[data-widget-preview] .tri-card {
+  opacity: 1;
+  transform: none;
+}
