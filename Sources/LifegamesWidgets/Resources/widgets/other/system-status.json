@@ -1,13 +1,13 @@
 {
   "system": {
     "lines": [
-      { "key": "Health", "value": "Online", "dotClass": "sys-dot-green" },
-      { "key": "Sleep", "value": "7h 18m", "dotClass": "sys-dot-green" },
-      { "key": "Books", "value": "5 tracked", "dotClass": "sys-dot-green" },
-      { "key": "Articles", "value": "12 saved", "dotClass": "sys-dot-green" },
-      { "key": "Github Events", "value": "24 today", "dotClass": "sys-dot-green" },
-      { "key": "Github Stars", "value": "156 total", "dotClass": "sys-dot-green" },
-      { "key": "Theatre Reviews", "value": "42 reviews", "dotClass": "sys-dot-green" }
+      { "key": "Health", "value": "ACTIVE <span class=\"sys-val\">(7h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-red" },
+      { "key": "Sleep", "value": "ACTIVE <span class=\"sys-val\">(3h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-purple" },
+      { "key": "Books", "value": "ACTIVE <span class=\"sys-val\">(2d ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-amber" },
+      { "key": "Articles", "value": "ACTIVE <span class=\"sys-val\">(17h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-amber" },
+      { "key": "Github Events", "value": "ACTIVE <span class=\"sys-val\">(58m ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-green" },
+      { "key": "Github Stars", "value": "ACTIVE <span class=\"sys-val\">(4h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-green" },
+      { "key": "Theatre Reviews", "value": "ACTIVE <span class=\"sys-val\">(80d ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-yellow" }
     ]
   }
 }

@@ -1,18 +1,23 @@
 {
   "profile": {
     "terminalLines": [
-      { "type": "prompt", "text": "$ whoami" },
-      { "type": "output", "text": "engineering-director" },
-      { "type": "blank" },
-      { "type": "prompt", "text": "$ cat skills.txt" },
-      { "type": "output", "text": "TypeScript, Swift, Python, Go" },
-      { "type": "output", "text": "→ Full-stack engineering leadership" },
-      { "type": "output", "text": "→ Distributed systems architecture" },
-      { "type": "output", "text": "→ Mobile + web platform development" },
-      { "type": "blank" },
+      { "type": "prompt", "text": "$ cat about.txt" },
+      { "type": "output", "text": "→ Sample User" },
+      { "type": "output", "text": "→ Software Engineer" },
+      { "type": "output", "text": "→ \"Creating things I'm proud of\"" },
+      { "type": "blank", "text": "" },
+      { "type": "prompt", "text": "$ ls skills/" },
+      { "type": "output", "text": "→ aws  typescript  serverless  swift  go  perl" },
+      { "type": "blank", "text": "" },
       { "type": "prompt", "text": "$ uptime" },
-      { "type": "output", "text": "24+ years professionally & counting" },
-      { "type": "cursor" }
+      { "type": "output", "text": "→ 24+ years professionally and counting" },
+      { "type": "blank", "text": "" },
+      { "type": "prompt", "text": "$ cat philosophy.txt" },
+      { "type": "output", "text": "→ \"Enjoying the passage of time\"" },
+      { "type": "blank", "text": "" },
+      { "type": "prompt", "text": "$ wc -l interests/" },
+      { "type": "output", "text": "→ programming, pc gaming, musical theatre, edm, conversation" },
+      { "type": "cursor", "text": "" }
     ]
   }
 }
