@@ -3,38 +3,19 @@ title: Widget Gallery
 description: All 56 widgets organized by category
 ---
 
-The design system includes 56 page-specific widgets extracted from the Lifegames portfolio, each with full web (Astro) and iOS (SwiftUI) parity.
+The design system includes 56 page-specific widgets extracted from the Lifegames portfolio, each with full web (Astro) and iOS (SwiftUI) parity. Detailed documentation for each widget lives at the per-widget pages linked from the sidebar, auto-generated from the manifest and fixture data.
+
+Widget Storybook stories were removed in v0.1.1. Widget documentation lives at the per-widget pages linked from the sidebar (auto-generated from the manifest + fixture data).
 
 ## Categories
 
-### GitHub (29 widgets)
+- [GitHub](/widgets/github/) — 29 widgets (ActivityFeed, ContributionCalendar, ProfileCard, etc.)
+- [Location](/widgets/location/) — 10 widgets (CategoryTerrain, CityConstellation, WaffleGrid, etc.)
+- [Health](/widgets/health/) — 5 widgets (DailyActivity, HeartRate, Hydration, etc.)
+- [Reading](/widgets/reading/) — 4 widgets (Bookshelf, BookModal, ReadingFeed, TheatreReviews)
+- [Identity](/widgets/identity/) — 3 widgets (BioTerminal, ComingSoon, IdentityCard)
+- [Other](/widgets/other/) — 5 widgets (DndOverlay, FocusOverlay, GitHubHeatmap, OGImage, SystemStatus)
 
-ActivityFeed, CodeVelocity, CodingHours, CommitLog, CommitTimeline, ContributionBreakdown, ContributionCalendar, ContributionGrid, ContributionRings, DevActivityByRepo, DevActivityCards, DevActivityLog, DevActivityPulse, DevActivityTimeline, LanguageBars, LanguageGrid, LanguageStack, PinnedRepos, ProfileCard, RepoShowcase, StarredByLanguage, StarredRepoCards, StarredRepoList, StarredTimeline, StreakCounter, TopicCloud, TopRepos, WeeklyPulse, YearInReview
+## Cross-Platform Parity
 
-### Location (10 widgets)
-
-CategoryTerrain, CityConstellation, DurationDonut, ExplorationOdometer, ExplorationRings, PlaceLeaderboard, RhythmBars, StreakCalendar, StreakFlame, WaffleGrid
-
-### Health (5 widgets)
-
-DailyActivity, HeartRate, Hydration, NightSummary, Workouts
-
-### Reading (4 widgets)
-
-Bookshelf, BookModal, ReadingFeed, TheatreReviews
-
-### Identity (3 widgets)
-
-BioTerminal, ComingSoon, IdentityCard
-
-### Other (5 widgets)
-
-DndOverlay, FocusOverlay, GitHubHeatmap, OGImage, SystemStatus
-
-## Data Contract
-
-Every widget defines a TypeScript `Props` interface and a matching Swift `Props` struct. Both are validated against shared fixture JSON files in `Sources/LifegamesWidgets/Resources/widgets/`.
-
-## Storybook
-
-Each widget includes a Storybook CSF story for interactive development. Run `pnpm storybook` to browse all widgets.
+Every widget has a SwiftUI counterpart under `Sources/LifegamesWidgets/<Category>/`. Both platforms share fixture JSON files in `Sources/LifegamesWidgets/Resources/widgets/` and validate against the same data contract: a TypeScript `Props` interface on the web side and a matching Swift `Props` struct on iOS.
