@@ -44,7 +44,7 @@ public extension Color {
     static let colorBorderStrong = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0.18)
     static let colorBorderInteractive = Color(red: 0.388, green: 0.400, blue: 0.945, opacity: 0.2)
     static let colorTextTitle = Color(red: 0.980, green: 0.980, blue: 0.980)
-    static let colorTextPrimary = Color(red: 0.894, green: 0.894, blue: 0.906)
+    static let colorTextPrimary = Color(red: 0.941, green: 0.941, blue: 0.941)
     static let colorTextMuted = Color(red: 0.612, green: 0.639, blue: 0.686)
     static let colorTextSubtle = Color(red: 0.322, green: 0.322, blue: 0.357)
     static let colorTextDisabled = Color(red: 0.247, green: 0.247, blue: 0.275)

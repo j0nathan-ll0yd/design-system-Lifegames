@@ -17,8 +17,8 @@
     "text": {
       "title":    { "$value": "{color.zinc.100}", "$description": "Heading text" },
       "primary":  {
-        "$value": "{color.zinc.200}",
-        "$description": "Body text. Converged to iOS value #e4e4e7 cross-platform (MA2)."
+        "$value": "{color.zinc.300}",
+        "$description": "Body text. Web parity: zinc.300 = #f0f0f0 matches production --text. iOS textPrimary remains zinc.200 (#e4e4e7) via SwiftUI layer (MA2)."
       },
       "muted":    {
         "$value": "{color.zinc.400}",
