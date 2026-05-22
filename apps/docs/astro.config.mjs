@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  redirects: {
+    '/': '/getting-started/',
+  },
   integrations: [
     starlight({
       title: 'Lifegames Design System',
@@ -29,6 +32,13 @@ export default defineConfig({
         { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/lifegames-design-system' },
       ],
       sidebar: [
+        {
+          label: 'Production',
+          items: [
+            { label: 'Live Site (jonathanlloyd.me)', link: 'https://jonathanlloyd.me', attrs: { target: '_blank', rel: 'noopener' } },
+            { label: 'Local Showcase', link: '/showcase/' },
+          ],
+        },
         { label: 'Getting Started', autogenerate: { directory: '.' } },
         { label: 'Tokens', autogenerate: { directory: 'tokens' } },
         { label: 'Components', autogenerate: { directory: 'components' } },
