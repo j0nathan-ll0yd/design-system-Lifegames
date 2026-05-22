@@ -8,6 +8,33 @@ import sitemap from '@astrojs/sitemap';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const fixtureMiddleware = {
+  name: 'fixture-middleware',
+  hooks: {
+    'astro:server:setup'({ server }) {
+      const fixtureSet = process.env.FIXTURE_SET;
+      if (fixtureSet) {
+        server.middlewares.use('/api/live', (req, res, next) => {
+          const filename = req.url?.replace(/^\//, '').replace(/\?.*$/, '') ?? '';
+          const dataType = filename.replace('.json', '');
+          const candidates = [
+            join(process.cwd(), 'test/fixtures/generated', dataType, `${fixtureSet}.json`),
+            join(process.cwd(), 'test/fixtures/generated', dataType, 'baseline.json'),
+          ];
+          const match = candidates.find(p => existsSync(p));
+          if (match) {
+            console.log(`[fixtures] ${filename} → ${relative(process.cwd(), match)}`);
+            res.setHeader('Content-Type', 'application/json');
+            res.end(readFileSync(match, 'utf-8'));
+          } else {
+            next();
+          }
+        });
+      }
+    }
+  }
+};
+
 export default defineConfig({
   site: 'https://jonathanlloyd.me',
   output: 'static',
@@ -34,9 +61,60 @@ export default defineConfig({
     }
   },
   integrations: [
+    fixtureMiddleware,
     sitemap({
       filter: (page) => !page.includes('/showcase/'),
       lastmod: new Date()
     }),
+    AstroPWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'Jonathan Lloyd — Human Datastream',
+        short_name: 'Human Datastream',
+        description: 'Living data dashboard — tracking body and mind. Jack into his human datastream.',
+        start_url: '/',
+        scope: '/',
+        theme_color: '#06060f',
+        background_color: '#06060f',
+        display: 'standalone',
+        icons: [
+          { src: '/assets/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,webmanifest,woff2}'],
+        globIgnores: ['images/books/**', 'images/theatre/**'],
+        navigateFallbackDenylist: [/\.xml$/],
+        runtimeCaching: [
+          {
+            urlPattern: /\/images\/(books|theatre)\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'local-images',
+              expiration: { maxEntries: 200, maxAgeSeconds: 2592000 }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/d1pfm520aduift\.cloudfront\.net\/images\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'optimized-images-fallback',
+              expiration: { maxEntries: 50, maxAgeSeconds: 604800 }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/d1pfm520aduift\.cloudfront\.net\/(?!.*[?&]_poll=).*\.json$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'live-data',
+              networkTimeoutSeconds: 3,
+              fetchOptions: { cache: 'no-store' },
+              expiration: { maxAgeSeconds: 300 }
+            }
+          }
+        ]
+      }
+    })
   ]
 });
