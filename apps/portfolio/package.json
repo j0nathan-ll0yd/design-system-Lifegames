@@ -1,0 +1,21 @@
+{
+  "name": "portfolio",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test:visual": "npx playwright test",
+    "test:visual:update": "npx playwright test --update-snapshots"
+  },
+  "dependencies": {
+    "astro": "^6.0.0",
+    "@lifegames/tokens": "workspace:*",
+    "@lifegames/web": "workspace:*"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "@vite-pwa/astro": "^1.2.0"
+  }
+}
