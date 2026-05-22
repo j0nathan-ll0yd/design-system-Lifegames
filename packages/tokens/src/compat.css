@@ -209,12 +209,60 @@
    Reduce shadow blur radius so the glow stays within the gap.
    ================================================================= */
 
-.triptych-column-body::before {
-  box-shadow: 0 0 3px rgba(255, 0, 110, 0.25);
+/* Specificity-escalated to win the cascade vs layout.css (loaded after
+   compat.css in the docs page imports). `body` prefix raises specificity
+   from (0,1,1) — element + pseudo-class — to (0,1,2). */
+body .triptych-column-body::before {
+  box-shadow: 0 0 2px rgba(255, 0, 110, 0.2);
+  opacity: 0.08;
 }
 
-.triptych-column-mind::before {
-  box-shadow: 0 0 3px rgba(6, 214, 160, 0.25);
+body .triptych-column-mind::before {
+  box-shadow: 0 0 2px rgba(6, 214, 160, 0.2);
+  opacity: 0.08;
+}
+
+/* =================================================================
+   BOOKMODAL ANIMATION FIX
+   =================================================================
+
+   `components.css:1680` declares `animation: bookOverlayIn 0.2s ease-out`
+   on the BASE `.book-overlay` selector (which has `display: none`). The
+   animation fires once during initial page render while the element is
+   hidden, completes (or aborts), and never replays when `.visible` is
+   added later. Result: opacity stays at 0 after display flips to flex.
+
+   Fix: cancel the animation on the base selector, declare it on
+   `.book-overlay.visible` instead, with `forwards` fill-mode so the
+   final opacity:1 sticks.
+
+   Same pattern applied to .book-modal which has the parallel keyframes.
+   ================================================================= */
+
+/* `!important` is required because components.css loads AFTER compat.css
+   and re-declares `animation: bookOverlayIn 0.2s` on the base selector.
+   The animation runs while `display: none` (never restarts on display
+   flip) and leaves opacity stuck at the 0% keyframe (opacity: 0). Per
+   CSS Cascade Level 4, `!important` on a declaration beats the animation
+   keyframe value at any time. */
+.book-overlay {
+  animation: none !important;
+  opacity: 0 !important;
+  transition: opacity 0.2s ease-out !important;
+}
+
+.book-overlay.visible {
+  opacity: 1 !important;
+}
+
+.book-modal {
+  animation: none !important;
+  transform: scale(0.95) !important;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.book-overlay.visible .book-modal {
+  transform: scale(1) !important;
 }
 
 /* =================================================================
