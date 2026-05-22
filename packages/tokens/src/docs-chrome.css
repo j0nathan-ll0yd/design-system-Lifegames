@@ -187,11 +187,14 @@ body .wd-cat::before {
   flex-shrink: 0;
 }
 
-/* 12. Staggered section reveal */
+/* 12. Staggered section reveal — opacity-only (no transform). Transform
+   on .wd-section would create a containing block for position:fixed
+   descendants (e.g., BookModal overlay), preventing fullscreen overlay
+   behavior. Opacity-only reveal preserves the staged-load effect without
+   breaking fixed positioning. */
 body .wd-section {
   margin-bottom: var(--space-40);
   opacity: 0;
-  transform: translateY(12px);
   animation: wdSectionReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
@@ -204,14 +207,13 @@ body .wd-section:nth-of-type(6) { animation-delay: 0.45s; }
 body .wd-section:nth-of-type(7) { animation-delay: 0.53s; }
 
 @keyframes wdSectionReveal {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   body .wd-section {
     opacity: 1;
-    transform: none;
     animation: none;
   }
 }

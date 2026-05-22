@@ -59,6 +59,20 @@
   --font-size-3xl: var(--lg-font-size-title2);
   --font-size-hero: var(--lg-font-size-hero);
 
+  /* Bridge --lg-font-size-{xs,sm,md,lg,xl,2xl,3xl,base} → Apple-style tokens.
+     Several production widgets (StarredRepoList, PlaceLeaderboardV3,
+     ExplorationOdometerV3, LanguageGrid/Bars/Stack, etc.) reference the
+     legacy `--lg-font-size-*` naming. Without these aliases the variables
+     are undefined and fonts render at browser default (16px = TOO LARGE). */
+  --lg-font-size-xs: var(--lg-font-size-caption2);
+  --lg-font-size-sm: var(--lg-font-size-caption);
+  --lg-font-size-base: var(--lg-font-size-footnote);
+  --lg-font-size-md: var(--lg-font-size-body);
+  --lg-font-size-lg: var(--lg-font-size-subhead);
+  --lg-font-size-xl: var(--lg-font-size-headline);
+  --lg-font-size-2xl: var(--lg-font-size-title3);
+  --lg-font-size-3xl: var(--lg-font-size-title2);
+
   /* --- Spacing (bare --space-N to --lg-space-NNN) --- */
   --space-2: var(--lg-space-50);
   --space-4: var(--lg-space-100);
@@ -209,17 +223,14 @@
    Reduce shadow blur radius so the glow stays within the gap.
    ================================================================= */
 
-/* Specificity-escalated to win the cascade vs layout.css (loaded after
-   compat.css in the docs page imports). `body` prefix raises specificity
-   from (0,1,1) — element + pseudo-class — to (0,1,2). */
-body .triptych-column-body::before {
-  box-shadow: 0 0 2px rgba(255, 0, 110, 0.2);
-  opacity: 0.08;
-}
-
+/* Production has these decorative neon gutter lines BUT they consistently
+   read as visual noise overlapping content in the docs site rendering
+   context (different viewport widths, different scrollbar behavior).
+   Disable them entirely in docs. Production layout.css keeps the original
+   behavior since this only affects the docs `<body>` consuming compat.css. */
+body .triptych-column-body::before,
 body .triptych-column-mind::before {
-  box-shadow: 0 0 2px rgba(6, 214, 160, 0.2);
-  opacity: 0.08;
+  display: none;
 }
 
 /* =================================================================
@@ -297,7 +308,7 @@ body .triptych-column-mind::before {
 
 [data-widget-preview] .article-list-item,
 .wd-demo .article-list-item {
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-10) var(--space-4);
 }
 
 /* =================================================================
