@@ -34,9 +34,23 @@
   display: none;
 }
 
-/* .left-panel::after removed: production jonathanlloyd.me has no such
-   separator. Earlier ports added a 1px pink gradient line that does not
-   exist in production. */
+.left-panel::after {
+  content: '';
+  position: absolute;
+  top: 5%;
+  right: 0;
+  width: 1px;
+  height: 90%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255,0,110,0.4) 20%,
+    rgba(255,0,110,0.6) 50%,
+    rgba(255,0,110,0.4) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 8px rgba(255,0,110,0.3), 0 0 20px rgba(255,0,110,0.1);
+}
 
 /* ===== TOP BAR ===== */
 .top-bar {
