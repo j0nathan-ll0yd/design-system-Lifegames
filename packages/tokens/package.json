@@ -18,7 +18,8 @@
     "./layout": "./src/layout.css",
     "./base": "./src/base.css",
     "./compat": "./src/compat.css",
-    "./fonts": "./src/fonts.css"
+    "./fonts": "./src/fonts.css",
+    "./docs-chrome": "./src/docs-chrome.css"
   },
   "files": [
     "dist",
@@ -28,7 +29,8 @@
     "src/layout.css",
     "src/base.css",
     "src/compat.css",
-    "src/fonts.css"
+    "src/fonts.css",
+    "src/docs-chrome.css"
   ],
   "scripts": {
     "build": "node ../../style-dictionary.config.mjs",
