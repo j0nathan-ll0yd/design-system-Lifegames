@@ -12,28 +12,32 @@
 
   var triggerElement = null;
 
-  var cardBooks = document.getElementById('cardBooks');
-  if (cardBooks) {
-    cardBooks.addEventListener('click', function(e) {
-      var book = e.target.closest('.shelf-book[data-book]');
-      if (book) {
-        triggerElement = book;
-        var data = JSON.parse(book.getAttribute('data-book'));
-        openModal(data);
-      }
-    });
-    cardBooks.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        var book = e.target.closest('.shelf-book[data-book]');
-        if (book) {
-          e.preventDefault();
-          triggerElement = book;
-          var data = JSON.parse(book.getAttribute('data-book'));
-          openModal(data);
-        }
-      }
-    });
-  }
+  document.body.addEventListener('click', function(e) {
+    var book = e.target.closest && e.target.closest('.shelf-book[data-book]');
+    if (!book) return;
+    if (!book.closest('.tri-card, [data-widget-preview]')) return;
+    triggerElement = book;
+    try {
+      var data = JSON.parse(book.getAttribute('data-book'));
+      openModal(data);
+    } catch (err) {
+      if (window.console && console.error) console.error('[BookModal] bad data-book JSON', err);
+    }
+  });
+  document.body.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var book = e.target.closest && e.target.closest('.shelf-book[data-book]');
+    if (!book) return;
+    if (!book.closest('.tri-card, [data-widget-preview]')) return;
+    e.preventDefault();
+    triggerElement = book;
+    try {
+      var data = JSON.parse(book.getAttribute('data-book'));
+      openModal(data);
+    } catch (err) {
+      if (window.console && console.error) console.error('[BookModal] bad data-book JSON', err);
+    }
+  });
 
   function esc(s) {
     if (!s) return '';

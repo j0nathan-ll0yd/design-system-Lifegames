@@ -48,7 +48,7 @@ const { repos } = Astro.props;
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(6, 214, 160, 0.1);
     border-radius: 8px;
-    padding: 8px 12px;
+    padding: var(--space-8) var(--space-12);
     font-family: 'Space Grotesk', monospace;
     font-size: var(--lg-font-size-sm);
     display: flex;
@@ -58,8 +58,8 @@ const { repos } = Astro.props;
   .gh-sl-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 5px 0;
+    gap: var(--space-10);
+    padding: var(--space-4) 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   }
 
@@ -98,16 +98,17 @@ const { repos } = Astro.props;
   .gh-sl-lang {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-4);
     color: var(--lg-color-text-muted);
     font-size: var(--lg-font-size-xs);
     flex-shrink: 0;
+    /* W2-exempt: structural flex-item min-width, no token at this size */
     min-width: 80px;
   }
 
   .gh-sl-lang-dot {
-    width: 6px;
-    height: 6px;
+    width: var(--space-6);
+    height: var(--space-6);
     border-radius: 50%;
     flex-shrink: 0;
   }
@@ -116,12 +117,13 @@ const { repos } = Astro.props;
     color: var(--lg-color-text-muted);
     font-size: var(--lg-font-size-xs);
     flex-shrink: 0;
+    /* W2-exempt: structural flex-item min-width, no token at this size */
     min-width: 72px;
     text-align: right;
   }
 
   @container (max-width: 350px) {
-    .gh-sl-row { flex-wrap: wrap; gap: 4px 10px; }
+    .gh-sl-row { flex-wrap: wrap; gap: var(--space-4) var(--space-10); }
     .gh-sl-name { flex-basis: 100%; }
     .gh-sl-lang { min-width: auto; }
     .gh-sl-date { min-width: auto; margin-left: auto; }
@@ -129,5 +131,28 @@ const { repos } = Astro.props;
 
   @container (max-width: 250px) {
     .gh-sl-lang, .gh-sl-date { display: none; }
+  }
+
+  /* Detail-page tri-card (>500px) shows tighter rows. */
+  @container (min-width: 500px) {
+    .gh-starred-list,
+    .gh-sl-name,
+    .gh-sl-owner,
+    .gh-sl-stars,
+    .gh-sl-lang,
+    .gh-sl-date {
+      font-size: var(--lg-font-size-xs);
+    }
+    .gh-sl-row {
+      padding: var(--space-2) 0;
+    }
+    .gh-sl-lang {
+      /* W2-exempt: structural flex-item min-width, no token at this size */
+      min-width: 60px;
+    }
+    .gh-sl-date {
+      /* W2-exempt: structural flex-item min-width, no token at this size */
+      min-width: 56px;
+    }
   }
 </style>

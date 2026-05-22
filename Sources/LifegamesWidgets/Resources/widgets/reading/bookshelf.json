@@ -4,7 +4,7 @@
       {
         "asin": "0525573844",
         "title": "The Pragmatic Programmer",
-        "author": "David Thomas",
+        "author": "David Thomas, Andrew Hunt",
         "status": "in_progress",
         "rating": null,
         "progress": 68,
@@ -17,7 +17,7 @@
         "status": "completed",
         "rating": 5,
         "progress": null,
-        "notes": "Essential reading for distributed systems"
+        "notes": "Essential reading for distributed systems. The chapter on consensus algorithms is the clearest explanation I've found."
       },
       {
         "asin": "0593723848",
@@ -35,7 +35,7 @@
         "status": "completed",
         "rating": 4,
         "progress": null,
-        "notes": null
+        "notes": "Great frameworks for thinking about the staff-plus career path."
       },
       {
         "asin": "1984820710",
@@ -51,14 +51,40 @@
       "0525573844": {
         "pages": 352,
         "year": 2019,
-        "desc": "A guide to pragmatic software craftsmanship",
-        "genres": ["Software Engineering", "Programming"]
+        "publicationDate": "2019-09-13",
+        "desc": "TWENTIETH ANNIVERSARY EDITION · The best programming book ever written, fully updated for a new generation. Through anecdotes, hands-on exercises, and Tips & Lists, you'll learn how to fight software rot, write flexible code, debug with confidence, capture real requirements, and ship better software faster — whether you're a new coder, an experienced programmer, or a manager responsible for software projects.",
+        "genres": ["Software Engineering", "Programming", "Craftsmanship"],
+        "seriesName": "The Pragmatic Bookshelf",
+        "seriesNumber": null,
+        "seriesTotal": null
       },
       "0593128508": {
         "pages": 616,
         "year": 2017,
-        "desc": "The big ideas behind reliable, scalable, and maintainable systems",
-        "genres": ["Distributed Systems", "Data Engineering"]
+        "publicationDate": "2017-04-02",
+        "desc": "Data is at the center of many challenges in system design today. Difficult issues like scalability, consistency, reliability, efficiency, and maintainability need to be figured out. In this practical guide, author Martin Kleppmann helps you navigate this diverse and fast-paced landscape by examining the pros and cons of various technologies for processing and storing data.",
+        "genres": ["Distributed Systems", "Data Engineering", "Databases"]
+      },
+      "0593723848": {
+        "pages": 196,
+        "year": 2018,
+        "publicationDate": "2018-04-06",
+        "desc": "The complexity of software systems is the limiting factor in what we can build. This book introduces deep modules, information hiding, and the cost of shallow abstractions — a 'red flags' guide that will make you a better designer the moment you internalize it.",
+        "genres": ["Software Design", "Architecture", "Computer Science"]
+      },
+      "1984820680": {
+        "pages": 256,
+        "year": 2021,
+        "publicationDate": "2021-02-28",
+        "desc": "At most technology companies, you'll reach Senior Software Engineer, the so-called 'terminal level,' in about five years. Beyond that point, growth becomes nonlinear. Staff Engineer provides concrete advice for navigating the principal-track career path — from forging a path to staff, sharpening the skills required, and operating across organizational boundaries.",
+        "genres": ["Leadership", "Career", "Software Engineering"]
+      },
+      "1984820710": {
+        "pages": 244,
+        "year": 2017,
+        "publicationDate": "2017-03-19",
+        "desc": "Managing people is difficult wherever you work. This book takes you through every stage of the journey from engineer to tech lead to senior leader. Author Camille Fournier draws on her experience as engineering manager at companies like Microsoft, Goldman Sachs, and Rent The Runway to lay out the responsibilities and expectations at each level.",
+        "genres": ["Leadership", "Management", "Career"]
       }
     },
     "statusLabels": {

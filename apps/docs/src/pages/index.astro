@@ -23,6 +23,7 @@ import HydrationIsland from '@islands/HydrationIsland.astro';
 import BioTerminalIsland from '@islands/BioTerminalIsland.astro';
 import BookshelfIsland from '@islands/BookshelfIsland.astro';
 import TheatreReviewsIsland from '@islands/TheatreReviewsIsland.astro';
+import BookModal from '@widgets/reading/BookModal.astro';
 
 import identityFixture from '@fixtures/identity/identity-card.json';
 import bioFixture from '@fixtures/identity/bio-terminal.json';
@@ -213,6 +214,8 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
     </div>
   </div>
 
+  <BookModal />
+
   <script is:inline>
     /* Prevent BioTerminal double-typewriter: the widget's own is:inline script
        handles the typewriter on initial render. The island wrapper's bundled
@@ -265,6 +268,12 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       import('@runtime/particles').then(function(m) { m.startParticles(); });
     });
+  </script>
+
+  <script>
+    /* Reading Feed pagination — production-mirror behavior */
+    import { initReadingFeedPagination } from '@runtime/reading-feed-init';
+    initReadingFeedPagination('#cardReading');
   </script>
 
   <script is:inline>

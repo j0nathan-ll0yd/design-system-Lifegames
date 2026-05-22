@@ -277,41 +277,6 @@ body .triptych-column-mind::before {
 }
 
 /* =================================================================
-   STARRED REPO LIST — font size scaling on wider containers
-   =================================================================
-
-   The widget's own @container queries collapse below 350px but at
-   1200px the font reads larger than the production triptych
-   ~393px-column rendering. When the Live Demo is force-constrained
-   above to 420px, the font matches. This block adds a belt-and-braces
-   font shrink for any context where the widget still renders wider
-   than 500px.
-   ================================================================= */
-
-@container (min-width: 500px) {
-  .gh-starred-list {
-    font-size: var(--font-size-xs);
-  }
-  .gh-sl-stars,
-  .gh-sl-lang,
-  .gh-sl-date {
-    font-size: var(--font-size-xs);
-  }
-}
-
-/* =================================================================
-   READING FEED — tighter list padding on detail page
-   =================================================================
-
-   Match production .article-list-item visual density.
-   ================================================================= */
-
-[data-widget-preview] .article-list-item,
-.wd-demo .article-list-item {
-  padding: var(--space-10) var(--space-4);
-}
-
-/* =================================================================
    DEV ACTIVITY LOG — tighter line spacing on detail page
    ================================================================= */
 
