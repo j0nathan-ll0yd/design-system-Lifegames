@@ -5,13 +5,15 @@
         "activity_type": "Cycling",
         "duration": 5400,
         "energy_burned": 740,
-        "distance": 38000
+        "distance": 38000,
+        "link": "https://www.strava.com/activities/example-endurance-ride"
       },
       {
         "activity_type": "Outdoor Run",
         "duration": 3600,
         "energy_burned": 480,
-        "distance": 9800
+        "distance": 9800,
+        "link": "https://www.strava.com/activities/example-endurance-run"
       }
     ]
   }

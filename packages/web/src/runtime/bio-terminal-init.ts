@@ -83,6 +83,12 @@ export function initBioTerminal(container: HTMLElement, _fixture: BioTerminalPro
     if (outSpan) { outSpan.style.opacity = '0'; outSpan.textContent = ''; }
   }
 
-  // Stagger start (0-250ms) so multiple tiles on StateMatrix pages don't type simultaneously
-  setTimeout(() => revealLine(lines, 0), Math.random() * 250);
+  // Deterministic per-tile stagger: guarantees ≥150ms between tiles (above the
+  // ~80ms perceptibility threshold), unlike Math.random() which can cluster.
+  const allContainers = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-widget-preview][data-fixture]'),
+  );
+  const tileIndex = Math.max(0, allContainers.indexOf(container));
+  const delay = 100 + tileIndex * 150;
+  setTimeout(() => revealLine(lines, 0), delay);
 }
