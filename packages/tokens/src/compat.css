@@ -1,3 +1,4 @@
+@layer lifegames { @layer compat {
 /* =================================================================
    BACKWARDS-COMPATIBILITY SHIM — bare --* aliases to --lg-* tokens
    =================================================================
@@ -290,3 +291,4 @@ body .triptych-column-mind::before {
   padding: 0 var(--space-4);
   margin: 0 calc(-1 * var(--space-4));
 }
+} }

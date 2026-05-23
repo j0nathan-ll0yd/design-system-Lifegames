@@ -1,0 +1,109 @@
+consumer_var,ds_var,notes
+# Audit performed 2026-05-23 against j0nathan-ll0yd.github.io@56da36cc
+# Source: grep -rhoE 'var\(--[a-z0-9_-]+\)' src/ public/css/
+# Result: 66 unique consumer var(--*) refs; 65 globally-scoped; 1 element-scoped JS-set.
+# All 65 globally-scoped refs are already aliased in compat.css.
+# This CSV is the input source-of-truth for compat.css; if the alias set ever
+# needs regeneration, drive codegen from this file.
+
+# --- Color palette (10 accents + 3 high-contrast variants) ---
+--neon-pink,--lg-color-accent-pink,
+--neon-blue,--lg-color-accent-blue,
+--neon-green,--lg-color-accent-green,
+--neon-amber,--lg-color-accent-amber,
+--neon-purple,--lg-color-accent-purple,
+--neon-red,--lg-color-accent-red,
+--neon-cyan,--lg-color-accent-cyan,
+--neon-orange,--lg-color-accent-orange,
+--neon-indigo,--lg-color-accent-indigo,
+--neon-pink-hc,--lg-color-accent-hc-pink,
+--neon-purple-hc,--lg-color-accent-hc-purple,
+--neon-red-hc,--lg-color-accent-hc-red,
+--bg,--lg-color-surface-base,
+
+# --- Glass / surface ---
+--glass-bg,--lg-color-surface-raised,
+--glass-bg-inset,--lg-color-surface-inset,
+--glass-bg-raised,rgba(255\,255\,255\,0.11),literal value (no DS equivalent)
+--glass-border,--lg-color-border-subtle,
+--glass-border-strong,--lg-color-border-strong,
+
+# --- Text ---
+--text,--lg-color-text-primary,
+--text-muted,--lg-color-text-muted,
+
+# --- Typography ---
+--font-family,--lg-font-family-brand,
+--font-mono,'Space Grotesk'\, 'Space Grotesk Fallback'\, monospace,literal (Apple-style monospace fallback chain)
+--font-size-xs,--lg-font-size-caption2,
+--font-size-sm,--lg-font-size-caption,
+--font-size-base,--lg-font-size-footnote,
+--font-size-md,--lg-font-size-body,
+--font-size-lg,--lg-font-size-subhead,
+--font-size-xl,--lg-font-size-headline,
+--font-size-2xl,--lg-font-size-title3,
+--font-size-3xl,--lg-font-size-title2,
+--font-size-hero,--lg-font-size-hero,
+
+# --- Spacing (bare --space-N to fluid --lg-space-NNN) ---
+--space-2,--lg-space-50,
+--space-4,--lg-space-100,
+--space-6,--lg-space-150,
+--space-8,--lg-space-200,
+--space-10,--lg-space-250,
+--space-12,--lg-space-300,
+--space-14,--lg-space-350,
+--space-16,--lg-space-400,
+--space-18,--lg-space-450,
+--space-20,--lg-space-500,
+--space-24,--lg-space-600,
+--space-28,--lg-space-700,
+--space-32,--lg-space-800,
+--space-36,--lg-space-900,
+--space-40,--lg-space-1000,
+--space-48,--lg-space-1200,
+
+# --- Border radius ---
+--radius-sm,--lg-radius-sm,
+--radius-md,--lg-radius-md,
+--radius-lg,--lg-radius-lg,
+--radius-xl,--lg-radius-xl,
+--radius-pill,--lg-radius-pill,
+
+# --- Blur ---
+--blur-sm,--lg-blur-sm,
+--blur-md,--lg-blur-md,
+--blur-lg,--lg-blur-lg,
+--blur-xl,--lg-blur-xl,
+
+# --- Glow shadows (9 base) ---
+--glow-pink,--lg-shadow-glow-pink,
+--glow-blue,--lg-shadow-glow-blue,
+--glow-green,--lg-shadow-glow-green,
+--glow-amber,--lg-shadow-glow-amber,
+--glow-purple,--lg-shadow-glow-purple,
+--glow-red,--lg-shadow-glow-red,
+--glow-cyan,--lg-shadow-glow-cyan,
+--glow-orange,--lg-shadow-glow-orange,
+--glow-indigo,--lg-shadow-glow-indigo,
+
+# --- Glow shadows (9 small) ---
+--glow-pink-sm,--lg-shadow-glow-pinkSm,
+--glow-blue-sm,--lg-shadow-glow-blueSm,
+--glow-green-sm,--lg-shadow-glow-greenSm,
+--glow-amber-sm,--lg-shadow-glow-amberSm,
+--glow-purple-sm,--lg-shadow-glow-purpleSm,
+--glow-red-sm,--lg-shadow-glow-redSm,
+--glow-cyan-sm,--lg-shadow-glow-cyanSm,
+--glow-orange-sm,--lg-shadow-glow-orangeSm,
+--glow-indigo-sm,--lg-shadow-glow-indigoSm,
+
+# --- Layout literals (no DS equivalents — site-specific) ---
+--left-width,35%,literal
+--right-width,65%,literal
+--top-bar-height,clamp(40px\, 2.13rem + 1.00vw\, 48px),literal
+--max-site-width,2400px,literal
+
+# --- NOT aliased (intentional) ---
+# --drift: runtime-set inline by JS in 404-ghost-in-the-machine showcase preview.
+#          Scoped to a single element; not a global theme token. No alias needed.
