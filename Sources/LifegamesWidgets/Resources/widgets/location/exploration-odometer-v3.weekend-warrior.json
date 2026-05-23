@@ -1,0 +1,12 @@
+{
+  "totalVisits": 687,
+  "totalPlaces": 94,
+  "totalDurationHours": 340,
+  "citiesVisited": 6,
+  "currentCity": "Seattle",
+  "explorationStats": {
+    "totalNeighborhoods": 31,
+    "totalCities": 6,
+    "totalStates": 3
+  }
+}

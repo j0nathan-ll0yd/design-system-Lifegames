@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Fix typo in error message",
+      "date": "6h ago",
+      "hash": "b2c3d4e",
+      "additions": 2,
+      "deletions": 2
+    },
+    {
+      "type": "issue_opened",
+      "repo": "lifegames/ios",
+      "title": "Widget flickers on low-battery mode",
+      "date": "1d ago",
+      "number": 103
+    }
+  ]
+}

@@ -12,10 +12,17 @@ import StarredRepoList from '@widgets/github/StarredRepoList.astro';
 import fixture from '@fixtures/github/starred-repo-list.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/github/starred-repo-list.skeleton.json';
 import fixture_empty from '@fixtures/github/starred-repo-list.empty.json';
 import fixture_populated_min from '@fixtures/github/starred-repo-list.populated-min.json';
 import fixture_populated_max from '@fixtures/github/starred-repo-list.populated-max.json';
+import fixture_one_language from '@fixtures/github/starred-repo-list.one-language.json';
+import fixture_polyglot from '@fixtures/github/starred-repo-list.polyglot.json';
+import fixture_freshly_starred from '@fixtures/github/starred-repo-list.freshly-starred.json';
+import fixture_archived_mix from '@fixtures/github/starred-repo-list.archived-mix.json';
+import fixture_org_starred from '@fixtures/github/starred-repo-list.org-starred.json';
 ---
 
 <html lang="en">
@@ -152,11 +159,7 @@ import fixture_populated_max from '@fixtures/github/starred-repo-list.populated-
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <StarredRepoList {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="StarredRepoList" category="github" fixture={fixture} Comp={StarredRepoList} />
     </section>
 
     <section class="wd-section">
@@ -184,6 +187,21 @@ import StarredRepoList from '@lifegames/web/widgets/github/StarredRepoList.astro
     </section>
 
     <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="StarredRepoList"
+        category="github"
+        variations={[
+          { label: "one-language", fixture: fixture_one_language, caption: "All repos share a single language — shows homogeneous stack." },
+          { label: "polyglot", fixture: fixture_polyglot, caption: "Six repos across six languages — maximum language-dot variety." },
+          { label: "freshly-starred", fixture: fixture_freshly_starred, caption: "Recently starred items with sub-hour timestamps." },
+          { label: "archived-mix", fixture: fixture_archived_mix, caption: "Active and archived repos interleaved — tests archived badge rendering." },
+          { label: "org-starred", fixture: fixture_org_starred, caption: "All repos from major organisations — wide owner name variety." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
       <h2 class="wd-section-title">Cross-Platform</h2>
       <ul class="wd-list">
         <li><strong>Web:</strong> <code>packages/web/src/widgets/github/StarredRepoList.astro</code></li>
@@ -192,22 +210,6 @@ import StarredRepoList from '@lifegames/web/widgets/github/StarredRepoList.astro
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

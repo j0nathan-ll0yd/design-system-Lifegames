@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "Add rate-limit headers to all endpoints",
+      "date": "1h ago",
+      "number": 201
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/ios",
+      "title": "Widget timeline smooth scroll",
+      "date": "2h ago",
+      "number": 158
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/infrastructure",
+      "title": "Enable WAF on prod ALB",
+      "date": "3h ago",
+      "number": 44
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "Migrate auth to Cognito hosted UI",
+      "date": "5h ago",
+      "number": 198
+    },
+    {
+      "type": "pr_opened",
+      "repo": "lifegames/ios",
+      "title": "Redesign onboarding flow",
+      "date": "6h ago",
+      "number": 162
+    }
+  ]
+}

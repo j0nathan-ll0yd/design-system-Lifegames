@@ -1,0 +1,27 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Barry's Bootcamp",
+        "duration": 3300,
+        "energy_burned": 512,
+        "distance": 0,
+        "link": "https://share.barrys.com/jsvsl"
+      },
+      {
+        "activity_type": "Outdoor Run",
+        "duration": 2580,
+        "energy_burned": 310,
+        "distance": 5120,
+        "link": "https://www.strava.com/activities/example-run"
+      },
+      {
+        "activity_type": "Yoga",
+        "duration": 2700,
+        "energy_burned": 175,
+        "distance": 0,
+        "link": "https://www.apple.com/apple-fitness-plus/"
+      }
+    ]
+  }
+}

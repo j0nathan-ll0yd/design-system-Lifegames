@@ -9,9 +9,21 @@ import '@lifegames/tokens/base';
 import '@lifegames/tokens/docs-chrome';
 
 import PlaceLeaderboardV3 from '@widgets/location/PlaceLeaderboardV3.astro';
+import PlaceLeaderboardV3Island from '@islands/PlaceLeaderboardV3Island.astro';
 import fixture from '@fixtures/location/place-leaderboard-v3.json';
+import fixture_skeleton from '@fixtures/location/place-leaderboard-v3.skeleton.json';
+import fixture_empty from '@fixtures/location/place-leaderboard-v3.empty.json';
+import fixture_populated_min from '@fixtures/location/place-leaderboard-v3.populated-min.json';
+import fixture_populated_max from '@fixtures/location/place-leaderboard-v3.populated-max.json';
+import fixture_cafe_loyal from '@fixtures/location/place-leaderboard-v3.cafe-loyal.json';
+import fixture_gym_loyal from '@fixtures/location/place-leaderboard-v3.gym-loyal.json';
+import fixture_gym_vs_cafe from '@fixtures/location/place-leaderboard-v3.gym-vs-cafe.json';
+import fixture_tourist_week from '@fixtures/location/place-leaderboard-v3.tourist-week.json';
+import fixture_even_spread from '@fixtures/location/place-leaderboard-v3.even-spread.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 ---
 
 <html lang="en">
@@ -148,11 +160,7 @@ import VariationGrid from '../../components/VariationGrid.astro';
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <PlaceLeaderboardV3 {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="PlaceLeaderboardV3" category="location" fixture={fixture} island={PlaceLeaderboardV3Island} />
     </section>
 
     <section class="wd-section">
@@ -160,7 +168,29 @@ import VariationGrid from '../../components/VariationGrid.astro';
       <StateMatrix
         widgetName="PlaceLeaderboardV3"
         category="location"
-        states={[{ state: "skeleton", fixture: null }, { state: "empty", fixture: null }, { state: "populated-min", fixture: null }, { state: "populated-max", fixture: null }]}
+        island={PlaceLeaderboardV3Island}
+        states={[
+          { state: "skeleton", fixture: fixture_skeleton },
+          { state: "empty", fixture: fixture_empty },
+          { state: "populated-min", fixture: fixture_populated_min },
+          { state: "populated-max", fixture: fixture_populated_max }
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="PlaceLeaderboardV3"
+        category="location"
+        island={PlaceLeaderboardV3Island}
+        variations={[
+          { label: "cafe-loyal", fixture: fixture_cafe_loyal, caption: "Top 5 all coffee shops — creature of habit" },
+          { label: "gym-loyal", fixture: fixture_gym_loyal, caption: "Gym dominates with 84 visits — fitness-first" },
+          { label: "gym-vs-cafe", fixture: fixture_gym_vs_cafe, caption: "Gym vs cafe split — balanced routine" },
+          { label: "tourist-week", fixture: fixture_tourist_week, caption: "Tokyo trip — all new places, low visit counts" },
+          { label: "even-spread", fixture: fixture_even_spread, caption: "Diverse categories, tight visit counts" }
+        ]}
       />
     </section>
 
@@ -188,27 +218,6 @@ import PlaceLeaderboardV3 from '@lifegames/web/widgets/location/PlaceLeaderboard
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
-  <script>
-    import { updatePlaceLeaderboardV3 } from '@runtime/updaters-leaderboard-variations';
-    import fixtureData from '@fixtures/location/place-leaderboard-v3.json';
-    updatePlaceLeaderboardV3(fixtureData as any);
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

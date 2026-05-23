@@ -12,10 +12,17 @@ import DevActivityLog from '@widgets/github/DevActivityLog.astro';
 import fixture from '@fixtures/github/dev-activity-log.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/github/dev-activity-log.skeleton.json';
 import fixture_empty from '@fixtures/github/dev-activity-log.empty.json';
 import fixture_populated_min from '@fixtures/github/dev-activity-log.populated-min.json';
 import fixture_populated_max from '@fixtures/github/dev-activity-log.populated-max.json';
+import var_quiet from '@fixtures/github/dev-activity-log.quiet-day.json';
+import var_pr_burst from '@fixtures/github/dev-activity-log.pr-burst.json';
+import var_merge_marathon from '@fixtures/github/dev-activity-log.merge-marathon.json';
+import var_bot_noise from '@fixtures/github/dev-activity-log.bot-noise.json';
+import var_mixed from '@fixtures/github/dev-activity-log.mixed-repos.json';
 ---
 
 <html lang="en">
@@ -152,11 +159,7 @@ import fixture_populated_max from '@fixtures/github/dev-activity-log.populated-m
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <DevActivityLog {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="DevActivityLog" category="github" fixture={fixture} Comp={DevActivityLog} />
     </section>
 
     <section class="wd-section">
@@ -165,6 +168,22 @@ import fixture_populated_max from '@fixtures/github/dev-activity-log.populated-m
         widgetName="DevActivityLog"
         category="github"
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="DevActivityLog"
+        category="github"
+        variations={[
+          { label: "quiet", fixture: var_quiet,         caption: "Quiet day — one fix commit and an issue filed" },
+          { label: "pr-burst", fixture: var_pr_burst,      caption: "PR burst — four merges across three repos in a session" },
+          { label: "merge-marathon", fixture: var_merge_marathon, caption: "Merge marathon — streaming API feature lands after conflict resolution" },
+          { label: "bot-noise", fixture: var_bot_noise,     caption: "Bot noise — feed dominated by Dependabot bumps" },
+          { label: "mixed", fixture: var_mixed,         caption: "Mixed repos — activity spread across design-system, api, ios, and infrastructure" },
+        ]}
+        Comp={DevActivityLog}
       />
     </section>
 
@@ -192,22 +211,6 @@ import DevActivityLog from '@lifegames/web/widgets/github/DevActivityLog.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

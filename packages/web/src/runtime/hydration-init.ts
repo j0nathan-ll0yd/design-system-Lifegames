@@ -88,6 +88,9 @@ export function initHydration(container: HTMLElement, fixture: HydrationProps): 
     });
   }
 
+  // Skeleton/empty tiles opt out of range overlay via data-no-range
+  if (container.closest('[data-no-range]')) return;
+
   // Range markers
   const bottleBody = container.querySelector<HTMLElement>('.hydra-bottle-body');
   if (bottleBody) {

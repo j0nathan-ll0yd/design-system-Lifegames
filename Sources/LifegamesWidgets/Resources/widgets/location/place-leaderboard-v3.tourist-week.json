@@ -1,0 +1,39 @@
+{
+  "topPlaces": [
+    {
+      "name": "Senso-ji Temple",
+      "category": "Arts & Entertainment",
+      "visitCount": 2,
+      "totalDurationMinutes": 180,
+      "lastVisitAt": "2026-05-18T10:00:00Z"
+    },
+    {
+      "name": "Tsukiji Outer Market",
+      "category": "Food & Drink",
+      "visitCount": 2,
+      "totalDurationMinutes": 90,
+      "lastVisitAt": "2026-05-17T07:30:00Z"
+    },
+    {
+      "name": "Shinjuku Gyoen",
+      "category": "Outdoors & Recreation",
+      "visitCount": 1,
+      "totalDurationMinutes": 150,
+      "lastVisitAt": "2026-05-16T13:00:00Z"
+    },
+    {
+      "name": "teamLab Borderless",
+      "category": "Arts & Entertainment",
+      "visitCount": 1,
+      "totalDurationMinutes": 240,
+      "lastVisitAt": "2026-05-15T16:00:00Z"
+    },
+    {
+      "name": "Akihabara Electric Town",
+      "category": "Shopping",
+      "visitCount": 1,
+      "totalDurationMinutes": 120,
+      "lastVisitAt": "2026-05-14T14:00:00Z"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Barry's Bootcamp",
+        "duration": 3300,
+        "energy_burned": 512,
+        "distance": 0,
+        "link": "https://share.barrys.com/jsvsl"
+      }
+    ]
+  }
+}

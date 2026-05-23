@@ -1,0 +1,52 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "lifegames/design-system",
+      "title": "Add HeartRate empty state",
+      "date": "1h ago",
+      "hash": "a9b0c1d",
+      "additions": 18,
+      "deletions": 4
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "Fix CORS preflight on /v2/auth",
+      "date": "3h ago",
+      "number": 194
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/ios",
+      "title": "Tweak widget header spacing for Dynamic Island",
+      "date": "5h ago",
+      "hash": "e2f3g4h",
+      "additions": 6,
+      "deletions": 6
+    },
+    {
+      "type": "issue_closed",
+      "repo": "lifegames/infrastructure",
+      "title": "ALB idle timeout causes WebSocket drops",
+      "date": "7h ago",
+      "number": 38
+    },
+    {
+      "type": "pr_opened",
+      "repo": "lifegames/design-system",
+      "title": "Token pipeline: add motion tier",
+      "date": "1d ago",
+      "number": 77
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Optimise cold-start: lazy-load Prisma client",
+      "date": "2d ago",
+      "hash": "i5j6k7l",
+      "additions": 34,
+      "deletions": 22
+    }
+  ]
+}

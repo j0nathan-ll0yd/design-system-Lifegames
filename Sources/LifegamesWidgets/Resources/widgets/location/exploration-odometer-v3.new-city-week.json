@@ -1,0 +1,12 @@
+{
+  "totalVisits": 47,
+  "totalPlaces": 23,
+  "totalDurationHours": 38,
+  "citiesVisited": 1,
+  "currentCity": "Austin",
+  "explorationStats": {
+    "totalNeighborhoods": 8,
+    "totalCities": 1,
+    "totalStates": 1
+  }
+}

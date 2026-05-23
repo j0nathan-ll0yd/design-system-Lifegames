@@ -1,0 +1,16 @@
+{
+  "reading": {
+    "articles": [
+      {
+        "title": "ESLint Flat Config Migration: The Complete Guide",
+        "source": "eslint.org",
+        "date": "2026-05-19"
+      },
+      {
+        "title": "Node 24 Native Test Runner Patterns",
+        "source": "nodejs.org",
+        "date": "2026-05-16"
+      }
+    ]
+  }
+}

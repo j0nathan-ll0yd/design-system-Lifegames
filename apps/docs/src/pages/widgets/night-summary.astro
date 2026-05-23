@@ -12,6 +12,8 @@ import NightSummary from '@widgets/health/NightSummary.astro';
 import fixture from '@fixtures/health/night-summary.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/health/night-summary.skeleton.json';
 import fixture_empty from '@fixtures/health/night-summary.empty.json';
 import fixture_populated_min from '@fixtures/health/night-summary.populated-min.json';
@@ -20,6 +22,9 @@ import var_poor from '@fixtures/health/night-summary.poor.json';
 import var_fair from '@fixtures/health/night-summary.fair.json';
 import var_good from '@fixtures/health/night-summary.good.json';
 import var_excellent from '@fixtures/health/night-summary.excellent.json';
+import var_restless from '@fixtures/health/night-summary.restless.json';
+import var_nap from '@fixtures/health/night-summary.nap.json';
+import var_oversleep from '@fixtures/health/night-summary.oversleep.json';
 ---
 
 <html lang="en">
@@ -156,11 +161,7 @@ import var_excellent from '@fixtures/health/night-summary.excellent.json';
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <NightSummary {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="NightSummary" category="health" fixture={fixture} Comp={NightSummary} />
     </section>
 
     <section class="wd-section">
@@ -177,7 +178,15 @@ import var_excellent from '@fixtures/health/night-summary.excellent.json';
       <VariationGrid
         widgetName="NightSummary"
         category="health"
-        variations={[{ label: "poor", fixture: var_poor }, { label: "fair", fixture: var_fair }, { label: "good", fixture: var_good }, { label: "excellent", fixture: var_excellent }]}
+        variations={[
+          { label: "poor", fixture: var_poor, caption: "Rough night — low score, minimal deep and REM." },
+          { label: "fair", fixture: var_fair, caption: "Middling rest: enough to function, not enough to thrive." },
+          { label: "good", fixture: var_good, caption: "Solid night's sleep with healthy phase distribution." },
+          { label: "excellent", fixture: var_excellent, caption: "Peak recovery — deep sleep and REM both strong." },
+          { label: "restless", fixture: var_restless, caption: "Fragmented sleep with nearly an hour of wakefulness." },
+          { label: "nap", fixture: var_nap, caption: "Short afternoon nap — tests compact duration display." },
+          { label: "oversleep", fixture: var_oversleep, caption: "Ten-plus hours in bed — weekend recovery mode." },
+        ]}
       />
     </section>
     <section class="wd-section">
@@ -204,22 +213,6 @@ import NightSummary from '@lifegames/web/widgets/health/NightSummary.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

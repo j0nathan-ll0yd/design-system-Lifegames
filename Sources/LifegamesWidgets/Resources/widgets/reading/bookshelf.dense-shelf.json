@@ -1,0 +1,133 @@
+{
+  "books": {
+    "books": [
+      {
+        "asin": "0525573844",
+        "title": "The Pragmatic Programmer",
+        "author": "David Thomas, Andrew Hunt",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0593128508",
+        "title": "Designing Data-Intensive Applications",
+        "author": "Martin Kleppmann",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0593723848",
+        "title": "A Philosophy of Software Design",
+        "author": "John Ousterhout",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "1984820680",
+        "title": "Staff Engineer",
+        "author": "Will Larson",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "1984820710",
+        "title": "The Manager's Path",
+        "author": "Camille Fournier",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0735224293",
+        "title": "Accelerate",
+        "author": "Nicole Forsgren, Jez Humble, Gene Kim",
+        "status": "completed",
+        "rating": 5,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0062301357",
+        "title": "The Hard Thing About Hard Things",
+        "author": "Ben Horowitz",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0307887898",
+        "title": "Zero to One",
+        "author": "Peter Thiel",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0374275637",
+        "title": "Thinking, Fast and Slow",
+        "author": "Daniel Kahneman",
+        "status": "completed",
+        "rating": 4,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0385333498",
+        "title": "The Double Helix",
+        "author": "James D. Watson",
+        "status": "completed",
+        "rating": 3,
+        "progress": null,
+        "notes": null
+      },
+      {
+        "asin": "0062316117",
+        "title": "Sapiens",
+        "author": "Yuval Noah Harari",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 61,
+        "notes": null
+      },
+      {
+        "asin": "0374529388",
+        "title": "The Structure of Scientific Revolutions",
+        "author": "Thomas S. Kuhn",
+        "status": "next",
+        "rating": null,
+        "progress": null,
+        "notes": null
+      }
+    ],
+    "bookMeta": {
+      "0525573844": { "pages": 352, "year": 2019, "desc": "The best programming book ever written.", "genres": ["Software Engineering"] },
+      "0593128508": { "pages": 616, "year": 2017, "desc": "Data systems design at scale.", "genres": ["Distributed Systems"] },
+      "0593723848": { "pages": 196, "year": 2018, "desc": "Deep modules and information hiding.", "genres": ["Software Design"] },
+      "1984820680": { "pages": 256, "year": 2021, "desc": "Navigating the staff-plus career path.", "genres": ["Leadership"] },
+      "1984820710": { "pages": 244, "year": 2017, "desc": "From engineer to tech lead to senior leader.", "genres": ["Management"] },
+      "0735224293": { "pages": 288, "year": 2018, "desc": "Science behind high-performing DevOps teams.", "genres": ["DevOps", "Leadership"] },
+      "0062301357": { "pages": 304, "year": 2014, "desc": "Lessons from building and running startups.", "genres": ["Business", "Leadership"] },
+      "0307887898": { "pages": 224, "year": 2014, "desc": "Notes on startups, or how to build the future.", "genres": ["Business"] },
+      "0374275637": { "pages": 499, "year": 2011, "desc": "Two systems that shape the way we think.", "genres": ["Psychology", "Behavioural Economics"] },
+      "0385333498": { "pages": 226, "year": 1968, "desc": "Personal account of the discovery of DNA structure.", "genres": ["Science", "History"] },
+      "0062316117": { "pages": 443, "year": 2015, "desc": "A brief history of humankind.", "genres": ["History", "Anthropology"] },
+      "0374529388": { "pages": 212, "year": 1962, "desc": "How scientific revolutions happen.", "genres": ["Science", "Philosophy"] }
+    },
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

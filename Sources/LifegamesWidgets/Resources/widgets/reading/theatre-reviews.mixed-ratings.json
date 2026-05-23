@@ -1,0 +1,69 @@
+{
+  "reviews": [
+    {
+      "title": "The Effect",
+      "slug": "the-effect",
+      "url": "/reviews/the-effect",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-11-08",
+      "rating": "A",
+      "ratingNumeric": 9,
+      "excerpt": "Lucy Prebble's play about love and brain chemistry crackles with intelligence and warmth.",
+      "imageUrl": "/images/theatre/death-becomes-her.webp",
+      "imageUrlAvif": "/images/theatre/death-becomes-her.avif",
+      "imageUrlCard": "/images/theatre/death-becomes-her-card.webp",
+      "imageUrlCardAvif": "/images/theatre/death-becomes-her-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "Guys and Dolls",
+      "slug": "guys-and-dolls-2025",
+      "url": "/reviews/guys-and-dolls-2025",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-10-12",
+      "rating": "B",
+      "ratingNumeric": 6,
+      "excerpt": "Charming enough but the production never quite catches fire in the way the material demands.",
+      "imageUrl": "/images/theatre/dead-outlaw.webp",
+      "imageUrlAvif": "/images/theatre/dead-outlaw.avif",
+      "imageUrlCard": "/images/theatre/dead-outlaw-card.webp",
+      "imageUrlCardAvif": "/images/theatre/dead-outlaw-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "The Notebook",
+      "slug": "the-notebook-musical",
+      "url": "/reviews/the-notebook-musical",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-09-25",
+      "rating": "C+",
+      "ratingNumeric": 4,
+      "excerpt": "Earnest but overwrought — the adaptation loses the novel's quiet restraint.",
+      "imageUrl": "/images/theatre/just-in-time.webp",
+      "imageUrlAvif": "/images/theatre/just-in-time.avif",
+      "imageUrlCard": "/images/theatre/just-in-time-card.webp",
+      "imageUrlCardAvif": "/images/theatre/just-in-time-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "Merrily We Roll Along",
+      "slug": "merrily-we-roll-along-2025",
+      "url": "/reviews/merrily-we-roll-along-2025",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-08-18",
+      "rating": "A+",
+      "ratingNumeric": 10,
+      "excerpt": "The definitive production of Sondheim's unjustly maligned masterpiece. A triumph.",
+      "imageUrl": "/images/theatre/stranger-things-the-first-shadow.webp",
+      "imageUrlAvif": "/images/theatre/stranger-things-the-first-shadow.avif",
+      "imageUrlCard": "/images/theatre/stranger-things-the-first-shadow-card.webp",
+      "imageUrlCardAvif": "/images/theatre/stranger-things-the-first-shadow-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    }
+  ],
+  "totalReviews": 4
+}

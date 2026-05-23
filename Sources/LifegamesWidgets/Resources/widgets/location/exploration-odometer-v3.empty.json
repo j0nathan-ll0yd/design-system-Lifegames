@@ -1,0 +1,12 @@
+{
+  "totalVisits": 0,
+  "totalPlaces": 0,
+  "totalDurationHours": 0,
+  "citiesVisited": 0,
+  "currentCity": "",
+  "explorationStats": {
+    "totalNeighborhoods": 0,
+    "totalCities": 0,
+    "totalStates": 0
+  }
+}

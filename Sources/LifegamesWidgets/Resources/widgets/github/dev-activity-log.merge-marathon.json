@@ -1,0 +1,47 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Merge branch 'feature/streaming-api'",
+      "date": "30m ago",
+      "hash": "f7g8h9i",
+      "additions": 842,
+      "deletions": 310
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Resolve conflicts in middleware layer",
+      "date": "1h ago",
+      "hash": "j0k1l2m",
+      "additions": 128,
+      "deletions": 94
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "Streaming API v2 — server-sent events",
+      "date": "2h ago",
+      "number": 187
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Add integration tests for SSE endpoint",
+      "date": "4h ago",
+      "hash": "n3o4p5q",
+      "additions": 214,
+      "deletions": 0
+    },
+    {
+      "type": "commit",
+      "repo": "lifegames/api",
+      "title": "Backfill OpenAPI spec for v2 routes",
+      "date": "6h ago",
+      "hash": "r6s7t8u",
+      "additions": 76,
+      "deletions": 12
+    }
+  ]
+}

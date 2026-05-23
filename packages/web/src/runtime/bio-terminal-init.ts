@@ -83,6 +83,6 @@ export function initBioTerminal(container: HTMLElement, _fixture: BioTerminalPro
     if (outSpan) { outSpan.style.opacity = '0'; outSpan.textContent = ''; }
   }
 
-  // Start the typewriter reveal after a brief delay
-  setTimeout(() => revealLine(lines, 0), 500);
+  // Stagger start (0-250ms) so multiple tiles on StateMatrix pages don't type simultaneously
+  setTimeout(() => revealLine(lines, 0), Math.random() * 250);
 }

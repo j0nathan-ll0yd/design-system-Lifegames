@@ -12,6 +12,8 @@ import Bookshelf from '@widgets/reading/Bookshelf.astro';
 import fixture from '@fixtures/reading/bookshelf.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import BookshelfIsland from '@islands/BookshelfIsland.astro';
 import BookModal from '@widgets/reading/BookModal.astro';
 import fixture_skeleton from '@fixtures/reading/bookshelf.skeleton.json';
@@ -21,6 +23,8 @@ import fixture_populated_max from '@fixtures/reading/bookshelf.populated-max.jso
 import var_all_in_progress from '@fixtures/reading/bookshelf.all-in-progress.json';
 import var_mixed from '@fixtures/reading/bookshelf.mixed.json';
 import var_all_completed from '@fixtures/reading/bookshelf.all-completed.json';
+import var_mostly_empty from '@fixtures/reading/bookshelf.mostly-empty.json';
+import var_dense_shelf from '@fixtures/reading/bookshelf.dense-shelf.json';
 ---
 
 <html lang="en">
@@ -157,9 +161,7 @@ import var_all_completed from '@fixtures/reading/bookshelf.all-completed.json';
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <BookshelfIsland fixture={fixture} />
-      </div>
+      <ResponsiveDemo widgetName="Bookshelf" category="reading" fixture={fixture} island={BookshelfIsland} />
     </section>
 
     <section class="wd-section">
@@ -167,6 +169,7 @@ import var_all_completed from '@fixtures/reading/bookshelf.all-completed.json';
       <StateMatrix
         widgetName="Bookshelf"
         category="reading"
+        island={BookshelfIsland}
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
       />
     </section>
@@ -176,7 +179,14 @@ import var_all_completed from '@fixtures/reading/bookshelf.all-completed.json';
       <VariationGrid
         widgetName="Bookshelf"
         category="reading"
-        variations={[{ label: "all-in-progress", fixture: var_all_in_progress }, { label: "mixed", fixture: var_mixed }, { label: "all-completed", fixture: var_all_completed }]}
+        island={BookshelfIsland}
+        variations={[
+          { label: "all-in-progress", fixture: var_all_in_progress, caption: "All books actively in progress — the focused reader mid-sprint." },
+          { label: "mixed", fixture: var_mixed, caption: "A healthy mix: finished, reading, and queued up next." },
+          { label: "all-completed", fixture: var_all_completed, caption: "Every book checked off — the satisfaction of a cleared queue." },
+          { label: "mostly-empty", fixture: var_mostly_empty, caption: "Just started: a single book on an otherwise bare shelf." },
+          { label: "dense-shelf", fixture: var_dense_shelf, caption: "Twelve books deep — stress-tests wrapping, scroll, and layout density." },
+        ]}
       />
     </section>
     <section class="wd-section">
@@ -204,22 +214,6 @@ import Bookshelf from '@lifegames/web/widgets/reading/Bookshelf.astro';
     </section>
   </div>
   <BookModal />
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

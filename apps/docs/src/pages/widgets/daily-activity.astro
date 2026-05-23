@@ -12,10 +12,17 @@ import DailyActivity from '@widgets/health/DailyActivity.astro';
 import fixture from '@fixtures/health/daily-activity.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/health/daily-activity.skeleton.json';
 import fixture_empty from '@fixtures/health/daily-activity.empty.json';
 import fixture_populated_min from '@fixtures/health/daily-activity.populated-min.json';
 import fixture_populated_max from '@fixtures/health/daily-activity.populated-max.json';
+import var_low from '@fixtures/health/daily-activity.low.json';
+import var_average from '@fixtures/health/daily-activity.average.json';
+import var_goal_met from '@fixtures/health/daily-activity.goal-met.json';
+import var_marathon from '@fixtures/health/daily-activity.marathon.json';
+import var_rest from '@fixtures/health/daily-activity.rest.json';
 ---
 
 <html lang="en">
@@ -152,11 +159,7 @@ import fixture_populated_max from '@fixtures/health/daily-activity.populated-max
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <DailyActivity {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="DailyActivity" category="health" fixture={fixture} Comp={DailyActivity} />
     </section>
 
     <section class="wd-section">
@@ -165,6 +168,22 @@ import fixture_populated_max from '@fixtures/health/daily-activity.populated-max
         widgetName="DailyActivity"
         category="health"
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="DailyActivity"
+        category="health"
+        variations={[
+          { label: "rest", fixture: var_rest,     caption: "Rest day — barely moved, no exercise logged" },
+          { label: "low", fixture: var_low,      caption: "Low — light activity, under 2,000 steps" },
+          { label: "average", fixture: var_average,  caption: "Average — solid day, approaching the step goal" },
+          { label: "goal-met", fixture: var_goal_met, caption: "Goal met — step and exercise targets hit" },
+          { label: "marathon", fixture: var_marathon, caption: "Marathon — extreme output, all rings crushed" },
+        ]}
+        Comp={DailyActivity}
       />
     </section>
 
@@ -192,22 +211,6 @@ import DailyActivity from '@lifegames/web/widgets/health/DailyActivity.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

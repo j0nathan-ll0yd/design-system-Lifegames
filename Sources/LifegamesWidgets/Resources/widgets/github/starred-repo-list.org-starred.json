@@ -1,0 +1,58 @@
+{
+  "repos": [
+    {
+      "owner": "microsoft",
+      "name": "vscode",
+      "url": "https://github.com/microsoft/vscode",
+      "stars": 167000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "1 day ago"
+    },
+    {
+      "owner": "google",
+      "name": "material-design-icons",
+      "url": "https://github.com/google/material-design-icons",
+      "stars": 50000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "3 days ago"
+    },
+    {
+      "owner": "apple",
+      "name": "swift",
+      "url": "https://github.com/apple/swift",
+      "stars": 68000,
+      "language": "Swift",
+      "languageColor": "#F05138",
+      "starredAt": "1 week ago"
+    },
+    {
+      "owner": "mozilla",
+      "name": "firefox",
+      "url": "https://github.com/mozilla/firefox",
+      "stars": 9800,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "2 weeks ago"
+    },
+    {
+      "owner": "grafana",
+      "name": "grafana",
+      "url": "https://github.com/grafana/grafana",
+      "stars": 66000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "3 weeks ago"
+    },
+    {
+      "owner": "hashicorp",
+      "name": "terraform",
+      "url": "https://github.com/hashicorp/terraform",
+      "stars": 44000,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "starredAt": "1 month ago"
+    }
+  ]
+}

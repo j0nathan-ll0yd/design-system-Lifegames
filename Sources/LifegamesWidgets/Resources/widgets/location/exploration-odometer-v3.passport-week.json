@@ -1,0 +1,12 @@
+{
+  "totalVisits": 93,
+  "totalPlaces": 61,
+  "totalDurationHours": 72,
+  "citiesVisited": 5,
+  "currentCity": "Tokyo",
+  "explorationStats": {
+    "totalNeighborhoods": 18,
+    "totalCities": 5,
+    "totalStates": 0
+  }
+}

@@ -12,10 +12,17 @@ import ReadingFeed from '@widgets/reading/ReadingFeed.astro';
 import fixture from '@fixtures/reading/reading-feed.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/reading/reading-feed.skeleton.json';
 import fixture_empty from '@fixtures/reading/reading-feed.empty.json';
 import fixture_populated_min from '@fixtures/reading/reading-feed.populated-min.json';
 import fixture_populated_max from '@fixtures/reading/reading-feed.populated-max.json';
+import fixture_single_entry from '@fixtures/reading/reading-feed.single-entry.json';
+import fixture_recent_burst from '@fixtures/reading/reading-feed.recent-burst.json';
+import fixture_mixed_types from '@fixtures/reading/reading-feed.mixed-types.json';
+import fixture_quiet_week from '@fixtures/reading/reading-feed.quiet-week.json';
+import fixture_binge_week from '@fixtures/reading/reading-feed.binge-week.json';
 ---
 
 <html lang="en">
@@ -152,11 +159,7 @@ import fixture_populated_max from '@fixtures/reading/reading-feed.populated-max.
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <ReadingFeed {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="ReadingFeed" category="reading" fixture={fixture} Comp={ReadingFeed} />
     </section>
 
     <section class="wd-section">
@@ -184,6 +187,21 @@ import ReadingFeed from '@lifegames/web/widgets/reading/ReadingFeed.astro';
     </section>
 
     <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="ReadingFeed"
+        category="reading"
+        variations={[
+          { label: "single-entry", fixture: fixture_single_entry, caption: "One article — minimum realistic reading activity." },
+          { label: "recent-burst", fixture: fixture_recent_burst, caption: "Five articles all read today — a focused reading sprint." },
+          { label: "mixed-types", fixture: fixture_mixed_types, caption: "Six articles spread across weeks from varied sources." },
+          { label: "quiet-week", fixture: fixture_quiet_week, caption: "Only two articles — a slow reading week." },
+          { label: "binge-week", fixture: fixture_binge_week, caption: "Twelve articles in five days — maximum realistic reading load." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
       <h2 class="wd-section-title">Cross-Platform</h2>
       <ul class="wd-list">
         <li><strong>Web:</strong> <code>packages/web/src/widgets/reading/ReadingFeed.astro</code></li>
@@ -197,22 +215,6 @@ import ReadingFeed from '@lifegames/web/widgets/reading/ReadingFeed.astro';
     import { initReadingFeedPagination } from '@runtime/reading-feed-init';
     initReadingFeedPagination('.wd-demo #cardReading');
   </script>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

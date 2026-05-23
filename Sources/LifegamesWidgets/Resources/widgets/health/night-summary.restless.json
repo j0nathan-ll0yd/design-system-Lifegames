@@ -1,0 +1,16 @@
+{
+  "health": {
+    "sleepScore": 38,
+    "sleepDurationFormatted": "5h 12m",
+    "sleepPhaseFormatted": {
+      "deep": "0h 24m",
+      "rem": "0h 42m",
+      "core": "3h 06m",
+      "awake": "1h 00m"
+    },
+    "derived": {
+      "deepPct": 8,
+      "remPct": 13
+    }
+  }
+}

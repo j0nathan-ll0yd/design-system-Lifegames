@@ -1,0 +1,58 @@
+{
+  "repos": [
+    {
+      "owner": "rust-lang",
+      "name": "rust",
+      "url": "https://github.com/rust-lang/rust",
+      "stars": 99000,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "1 day ago"
+    },
+    {
+      "owner": "golang",
+      "name": "go",
+      "url": "https://github.com/golang/go",
+      "stars": 125000,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "starredAt": "3 days ago"
+    },
+    {
+      "owner": "python",
+      "name": "cpython",
+      "url": "https://github.com/python/cpython",
+      "stars": 64000,
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "starredAt": "5 days ago"
+    },
+    {
+      "owner": "denoland",
+      "name": "deno",
+      "url": "https://github.com/denoland/deno",
+      "stars": 101000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "1 week ago"
+    },
+    {
+      "owner": "apple",
+      "name": "swift",
+      "url": "https://github.com/apple/swift",
+      "stars": 68000,
+      "language": "Swift",
+      "languageColor": "#F05138",
+      "starredAt": "2 weeks ago"
+    },
+    {
+      "owner": "elixir-lang",
+      "name": "elixir",
+      "url": "https://github.com/elixir-lang/elixir",
+      "stars": 25000,
+      "language": "Elixir",
+      "languageColor": "#6e4a7e",
+      "starredAt": "3 weeks ago"
+    }
+  ]
+}

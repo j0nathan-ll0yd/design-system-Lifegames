@@ -1,0 +1,12 @@
+{
+  "totalVisits": 1204,
+  "totalPlaces": 188,
+  "totalDurationHours": 612,
+  "citiesVisited": 38,
+  "currentCity": "Denver",
+  "explorationStats": {
+    "totalNeighborhoods": 67,
+    "totalCities": 38,
+    "totalStates": 14
+  }
+}

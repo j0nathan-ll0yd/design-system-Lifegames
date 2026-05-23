@@ -1,0 +1,74 @@
+---
+interface Props {
+  widgetName?: string;
+  category?: string;
+  fixture: Record<string, any>;
+  island?: any;
+  Comp?: any;
+}
+
+const { fixture, island, Comp } = Astro.props;
+
+const Island = island;
+const Component = Comp;
+
+const frames = [
+  { label: '320px', maxWidth: '320px' },
+  { label: '480px', maxWidth: '480px' },
+  { label: '720px', maxWidth: '720px' },
+];
+---
+
+<div class="rd-stack">
+  {frames.map(({ label, maxWidth }) => (
+    <div class="rd-frame-wrap">
+      <div class="rd-demo" style={`max-width: ${maxWidth};`}>
+        <div class="rd-demo-width-label">{label}</div>
+        <div class="rd-demo-content" style="container-type: inline-size;">
+          {Island ? (
+            <Island fixture={fixture} />
+          ) : Component ? (
+            <div data-widget-preview>
+              <Component {...fixture} />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .rd-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+    margin: var(--space-20) 0;
+  }
+  .rd-frame-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rd-demo {
+    width: 100%;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    background: var(--card-bg);
+    overflow: hidden;
+    position: relative;
+  }
+  .rd-demo-width-label {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    padding: var(--space-6) var(--space-12);
+    border-bottom: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .rd-demo-content {
+    padding: var(--space-16);
+  }
+</style>

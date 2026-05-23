@@ -1,0 +1,54 @@
+{
+  "repos": [
+    {
+      "owner": "vercel",
+      "name": "next.js",
+      "url": "https://github.com/vercel/next.js",
+      "stars": 128000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "1 week ago",
+      "archived": false
+    },
+    {
+      "owner": "facebook",
+      "name": "create-react-app",
+      "url": "https://github.com/facebook/create-react-app",
+      "stars": 103000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "2 years ago",
+      "archived": true
+    },
+    {
+      "owner": "denoland",
+      "name": "deno",
+      "url": "https://github.com/denoland/deno",
+      "stars": 101000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "1 month ago",
+      "archived": false
+    },
+    {
+      "owner": "jquery",
+      "name": "jquery",
+      "url": "https://github.com/jquery/jquery",
+      "stars": 59000,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "starredAt": "5 years ago",
+      "archived": true
+    },
+    {
+      "owner": "rust-lang",
+      "name": "rust",
+      "url": "https://github.com/rust-lang/rust",
+      "stars": 99000,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "3 weeks ago",
+      "archived": false
+    }
+  ]
+}

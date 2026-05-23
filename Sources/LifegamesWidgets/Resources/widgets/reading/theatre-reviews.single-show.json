@@ -1,0 +1,21 @@
+{
+  "reviews": [
+    {
+      "title": "Cabaret",
+      "slug": "cabaret",
+      "url": "/reviews/cabaret",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-12-01",
+      "rating": "A",
+      "ratingNumeric": 9,
+      "excerpt": "A chilling, visceral revival that makes the Weimar decadence feel urgently contemporary.",
+      "imageUrl": "/images/theatre/death-becomes-her.webp",
+      "imageUrlAvif": "/images/theatre/death-becomes-her.avif",
+      "imageUrlCard": "/images/theatre/death-becomes-her-card.webp",
+      "imageUrlCardAvif": "/images/theatre/death-becomes-her-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    }
+  ],
+  "totalReviews": 1
+}

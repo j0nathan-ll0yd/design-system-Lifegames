@@ -8,7 +8,7 @@
         "distance": 10200
       },
       {
-        "activity_type": "Functional Strength Training",
+        "activity_type": "Strength",
         "duration": 3600,
         "energy_burned": 420,
         "distance": 0
@@ -26,7 +26,7 @@
         "distance": 0
       },
       {
-        "activity_type": "High Intensity Interval Training",
+        "activity_type": "HIIT",
         "duration": 1800,
         "energy_burned": 350,
         "distance": 0

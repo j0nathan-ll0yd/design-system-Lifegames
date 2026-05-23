@@ -12,10 +12,16 @@ import IdentityCard from '@widgets/identity/IdentityCard.astro';
 import fixture from '@fixtures/identity/identity-card.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/identity/identity-card.skeleton.json';
 import fixture_empty from '@fixtures/identity/identity-card.empty.json';
 import fixture_populated_min from '@fixtures/identity/identity-card.populated-min.json';
 import fixture_populated_max from '@fixtures/identity/identity-card.populated-max.json';
+import var_minimal from '@fixtures/identity/identity-card.minimal.json';
+import var_engineer_lead from '@fixtures/identity/identity-card.engineer-lead.json';
+import var_creator from '@fixtures/identity/identity-card.creator.json';
+import var_long_bio from '@fixtures/identity/identity-card.long-bio.json';
 ---
 
 <html lang="en">
@@ -152,11 +158,7 @@ import fixture_populated_max from '@fixtures/identity/identity-card.populated-ma
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <IdentityCard {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="IdentityCard" category="identity" fixture={fixture} Comp={IdentityCard} />
     </section>
 
     <section class="wd-section">
@@ -165,6 +167,20 @@ import fixture_populated_max from '@fixtures/identity/identity-card.populated-ma
         widgetName="IdentityCard"
         category="identity"
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="IdentityCard"
+        category="identity"
+        variations={[
+          { label: "minimal", fixture: var_minimal, caption: "Name and tagline only — no avatar or links." },
+          { label: "engineer-lead", fixture: var_engineer_lead, caption: "Engineering manager with a three-line bio." },
+          { label: "creator", fixture: var_creator, caption: "Personal site plus Mastodon and Bluesky links." },
+          { label: "long-bio", fixture: var_long_bio, caption: "Extended biography that clamps to three lines at narrow widths." },
+        ]}
       />
     </section>
 
@@ -192,22 +208,6 @@ import IdentityCard from '@lifegames/web/widgets/identity/IdentityCard.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

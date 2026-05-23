@@ -1,0 +1,66 @@
+{
+  "reading": {
+    "articles": [
+      {
+        "title": "Understanding WebSocket Performance Optimization in High-Throughput Systems",
+        "source": "web.dev",
+        "date": "2026-05-22"
+      },
+      {
+        "title": "Zero-Downtime Deployments with Kubernetes Rolling Updates",
+        "source": "kubernetes.io",
+        "date": "2026-05-22"
+      },
+      {
+        "title": "The Art of Code Review: Building Engineering Culture",
+        "source": "engineering.atspotify.com",
+        "date": "2026-05-21"
+      },
+      {
+        "title": "Astro 6.0 Server Islands Deep-Dive",
+        "source": "astro.build",
+        "date": "2026-05-21"
+      },
+      {
+        "title": "Swift 6.2 Concurrency Improvements",
+        "source": "swift.org",
+        "date": "2026-05-20"
+      },
+      {
+        "title": "TypeScript 6.0 Pattern Matching and Effect System",
+        "source": "devblogs.microsoft.com",
+        "date": "2026-05-20"
+      },
+      {
+        "title": "Building Design Systems at Scale: Lessons from Google and Apple",
+        "source": "medium.com",
+        "date": "2026-05-19"
+      },
+      {
+        "title": "PostgreSQL 19 Performance Tuning Guide",
+        "source": "postgresql.org",
+        "date": "2026-05-19"
+      },
+      {
+        "title": "Rust 2026 Roadmap: What's Coming",
+        "source": "blog.rust-lang.org",
+        "date": "2026-05-18"
+      },
+      {
+        "title": "Edge Computing with CloudFront Functions",
+        "source": "aws.amazon.com",
+        "date": "2026-05-18"
+      },
+      {
+        "title": "WebGPU Shipping: A Practical Guide for Web Developers",
+        "source": "developer.chrome.com",
+        "date": "2026-05-17"
+      },
+      {
+        "title": "GitHub Copilot Workspaces: A Week of Real-World Use",
+        "source": "github.blog",
+        "date": "2026-05-16"
+      }
+    ]
+  }
+}

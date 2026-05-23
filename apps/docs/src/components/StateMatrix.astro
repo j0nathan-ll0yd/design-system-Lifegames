@@ -8,9 +8,11 @@ interface Props {
   widgetName: string;
   category: string;
   states: StateEntry[];
+  island?: any;
+  noRangeStates?: string[];
 }
 
-const { widgetName, category, states } = Astro.props;
+const { widgetName, category, states, island, noRangeStates = [] } = Astro.props;
 
 const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
 const componentMap: Record<string, any> = {};
@@ -20,6 +22,7 @@ for (const [path, mod] of Object.entries(widgetModules)) {
 }
 
 const Comp = componentMap[widgetName];
+const Island = island;
 
 const stateLabels: Record<string, string> = {
   skeleton: 'Skeleton',
@@ -37,7 +40,13 @@ const stateLabels: Record<string, string> = {
       <div class="state-matrix-slot" data-state={state}>
         <div class="state-matrix-label">{stateLabels[state] ?? state}</div>
         <div class="state-matrix-preview">
-          {fixture && Comp ? (
+          {fixture && Island && state !== 'skeleton' ? (
+            noRangeStates.includes(state) ? (
+              <div data-no-range><Island fixture={fixture} /></div>
+            ) : (
+              <Island fixture={fixture} />
+            )
+          ) : fixture && Comp ? (
             <div data-widget-preview>
               <Comp {...fixture} />
             </div>

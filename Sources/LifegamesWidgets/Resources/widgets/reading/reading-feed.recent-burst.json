@@ -1,0 +1,31 @@
+{
+  "reading": {
+    "articles": [
+      {
+        "title": "Astro 6.0 Release: Server Islands and the Future of MPA Frameworks",
+        "source": "astro.build",
+        "date": "2026-05-22"
+      },
+      {
+        "title": "Why Container Queries Change Everything About Responsive Design",
+        "source": "css-tricks.com",
+        "date": "2026-05-22"
+      },
+      {
+        "title": "Swift 6.2 Concurrency: Structured Task Groups at Scale",
+        "source": "swift.org",
+        "date": "2026-05-22"
+      },
+      {
+        "title": "TypeScript 6.0 Pattern Matching Deep Dive",
+        "source": "devblogs.microsoft.com",
+        "date": "2026-05-22"
+      },
+      {
+        "title": "Building Design Tokens That Scale Across Platforms",
+        "source": "zeroheight.com",
+        "date": "2026-05-21"
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "books": {
+    "books": [
+      {
+        "asin": "0525573844",
+        "title": "The Pragmatic Programmer",
+        "author": "David Thomas, Andrew Hunt",
+        "status": "in_progress",
+        "rating": null,
+        "progress": 12,
+        "notes": null
+      }
+    ],
+    "bookMeta": {
+      "0525573844": {
+        "pages": 352,
+        "year": 2019,
+        "publicationDate": "2019-09-13",
+        "desc": "The best programming book ever written, fully updated for a new generation.",
+        "genres": ["Software Engineering", "Programming"]
+      }
+    },
+    "statusLabels": {
+      "in_progress": "Reading",
+      "completed": "Completed",
+      "next": "Up Next"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "totalVisits": 3,
+  "totalPlaces": 2,
+  "totalDurationHours": 4,
+  "citiesVisited": 1,
+  "currentCity": "Portland",
+  "explorationStats": {
+    "totalNeighborhoods": 2,
+    "totalCities": 1,
+    "totalStates": 1
+  }
+}

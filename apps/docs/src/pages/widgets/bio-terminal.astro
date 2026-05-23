@@ -12,11 +12,17 @@ import BioTerminal from '@widgets/identity/BioTerminal.astro';
 import fixture from '@fixtures/identity/bio-terminal.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import BioTerminalIsland from '@islands/BioTerminalIsland.astro';
 import fixture_skeleton from '@fixtures/identity/bio-terminal.skeleton.json';
 import fixture_empty from '@fixtures/identity/bio-terminal.empty.json';
 import fixture_populated_min from '@fixtures/identity/bio-terminal.populated-min.json';
 import fixture_populated_max from '@fixtures/identity/bio-terminal.populated-max.json';
+import fixture_minimal from '@fixtures/identity/bio-terminal.minimal.json';
+import fixture_skills from '@fixtures/identity/bio-terminal.skills.json';
+import fixture_uptime from '@fixtures/identity/bio-terminal.uptime.json';
+import fixture_dense from '@fixtures/identity/bio-terminal.dense.json';
 ---
 
 <html lang="en">
@@ -153,9 +159,7 @@ import fixture_populated_max from '@fixtures/identity/bio-terminal.populated-max
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <BioTerminalIsland fixture={fixture} />
-      </div>
+      <ResponsiveDemo widgetName="BioTerminal" category="identity" fixture={fixture} island={BioTerminalIsland} />
     </section>
 
     <section class="wd-section">
@@ -163,7 +167,24 @@ import fixture_populated_max from '@fixtures/identity/bio-terminal.populated-max
       <StateMatrix
         widgetName="BioTerminal"
         category="identity"
+        island={BioTerminalIsland}
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="BioTerminal"
+        category="identity"
+        island={BioTerminalIsland}
+        variations={[
+          { label: "minimal", fixture: fixture_minimal, caption: "3 lines — just a name, role, and cursor" },
+          { label: "skills", fixture: fixture_skills, caption: "Focused on ls skills/ tree" },
+          { label: "uptime", fixture: fixture_uptime, caption: "Uptime + philosophy + values" },
+          { label: "dense", fixture: fixture_dense, caption: "12+ lines — full terminal scroll" },
+          { label: "populated-max", fixture: fixture_populated_max, caption: "Distinguished engineer showcase" }
+        ]}
       />
     </section>
 
@@ -191,22 +212,6 @@ import BioTerminal from '@lifegames/web/widgets/identity/BioTerminal.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

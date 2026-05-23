@@ -1,0 +1,39 @@
+{
+  "topPlaces": [
+    {
+      "name": "Forest Park",
+      "category": "Outdoors & Recreation",
+      "visitCount": 14,
+      "totalDurationMinutes": 4200,
+      "lastVisitAt": "2026-05-17T09:00:00Z"
+    },
+    {
+      "name": "Powell's Books",
+      "category": "Shopping",
+      "visitCount": 13,
+      "totalDurationMinutes": 2340,
+      "lastVisitAt": "2026-05-15T14:00:00Z"
+    },
+    {
+      "name": "Coava Coffee",
+      "category": "Food & Drink",
+      "visitCount": 13,
+      "totalDurationMinutes": 780,
+      "lastVisitAt": "2026-05-21T08:30:00Z"
+    },
+    {
+      "name": "Planet Fitness Pearl",
+      "category": "Health & Fitness",
+      "visitCount": 12,
+      "totalDurationMinutes": 1080,
+      "lastVisitAt": "2026-05-22T06:30:00Z"
+    },
+    {
+      "name": "Alberta Arts District",
+      "category": "Arts & Entertainment",
+      "visitCount": 11,
+      "totalDurationMinutes": 1980,
+      "lastVisitAt": "2026-05-10T16:00:00Z"
+    }
+  ]
+}

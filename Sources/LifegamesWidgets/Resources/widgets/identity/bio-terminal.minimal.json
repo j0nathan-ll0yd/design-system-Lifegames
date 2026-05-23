@@ -1,0 +1,10 @@
+{
+  "profile": {
+    "terminalLines": [
+      { "type": "prompt", "text": "$ cat about.txt" },
+      { "type": "output", "text": "→ Jonathan Lloyd" },
+      { "type": "output", "text": "→ Software Engineer" },
+      { "type": "cursor" }
+    ]
+  }
+}

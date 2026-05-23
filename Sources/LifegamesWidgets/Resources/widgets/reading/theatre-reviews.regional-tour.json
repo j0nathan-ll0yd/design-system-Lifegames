@@ -1,0 +1,53 @@
+{
+  "reviews": [
+    {
+      "title": "Blood Brothers",
+      "slug": "blood-brothers-tour",
+      "url": "/reviews/blood-brothers-tour",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-11-02",
+      "rating": "A-",
+      "ratingNumeric": 8,
+      "excerpt": "Willy Russell's working-class tragedy hits just as hard on the road as it does in the West End.",
+      "imageUrl": "/images/theatre/art.webp",
+      "imageUrlAvif": "/images/theatre/art.avif",
+      "imageUrlCard": "/images/theatre/art-card.webp",
+      "imageUrlCardAvif": "/images/theatre/art-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "Calendar Girls",
+      "slug": "calendar-girls-tour",
+      "url": "/reviews/calendar-girls-tour",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-09-30",
+      "rating": "B+",
+      "ratingNumeric": 7,
+      "excerpt": "Warm-hearted and funny, with a company that clearly loves performing this show.",
+      "imageUrl": "/images/theatre/call-me-izzy.webp",
+      "imageUrlAvif": "/images/theatre/call-me-izzy.avif",
+      "imageUrlCard": "/images/theatre/call-me-izzy-card.webp",
+      "imageUrlCardAvif": "/images/theatre/call-me-izzy-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    },
+    {
+      "title": "Grease",
+      "slug": "grease-tour-2025",
+      "url": "/reviews/grease-tour-2025",
+      "author": "Theatre Critic",
+      "publishedAt": "2025-08-10",
+      "rating": "B",
+      "ratingNumeric": 6,
+      "excerpt": "Slick and energetic — exactly what a Saturday night touring production should be.",
+      "imageUrl": "/images/theatre/prince-fggot.webp",
+      "imageUrlAvif": "/images/theatre/prince-fggot.avif",
+      "imageUrlCard": "/images/theatre/prince-fggot-card.webp",
+      "imageUrlCardAvif": "/images/theatre/prince-fggot-card.avif",
+      "imageWidth": 300,
+      "imageHeight": 450
+    }
+  ],
+  "totalReviews": 3
+}

@@ -1,0 +1,39 @@
+{
+  "topPlaces": [
+    {
+      "name": "Planet Fitness Pearl",
+      "category": "Health & Fitness",
+      "visitCount": 44,
+      "totalDurationMinutes": 3960,
+      "lastVisitAt": "2026-05-22T06:30:00Z"
+    },
+    {
+      "name": "Coava Coffee",
+      "category": "Food & Drink",
+      "visitCount": 41,
+      "totalDurationMinutes": 2460,
+      "lastVisitAt": "2026-05-21T08:30:00Z"
+    },
+    {
+      "name": "Water Avenue Coffee",
+      "category": "Food & Drink",
+      "visitCount": 22,
+      "totalDurationMinutes": 1320,
+      "lastVisitAt": "2026-05-19T09:00:00Z"
+    },
+    {
+      "name": "24 Hour Fitness",
+      "category": "Health & Fitness",
+      "visitCount": 18,
+      "totalDurationMinutes": 1620,
+      "lastVisitAt": "2026-05-15T07:00:00Z"
+    },
+    {
+      "name": "Powell's Books",
+      "category": "Shopping",
+      "visitCount": 11,
+      "totalDurationMinutes": 990,
+      "lastVisitAt": "2026-05-12T14:00:00Z"
+    }
+  ]
+}

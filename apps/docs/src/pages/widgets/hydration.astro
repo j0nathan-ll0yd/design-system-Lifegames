@@ -12,6 +12,8 @@ import Hydration from '@widgets/health/Hydration.astro';
 import fixture from '@fixtures/health/hydration.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import HydrationIsland from '@islands/HydrationIsland.astro';
 import fixture_skeleton from '@fixtures/health/hydration.skeleton.json';
 import fixture_empty from '@fixtures/health/hydration.empty.json';
@@ -22,6 +24,8 @@ import var_low from '@fixtures/health/hydration.low.json';
 import var_normal from '@fixtures/health/hydration.normal.json';
 import var_hydrated from '@fixtures/health/hydration.hydrated.json';
 import var_overhydrated from '@fixtures/health/hydration.overhydrated.json';
+import var_morning_coffee from '@fixtures/health/hydration.morning-coffee.json';
+import var_caffeine_crash from '@fixtures/health/hydration.caffeine-crash.json';
 ---
 
 <html lang="en">
@@ -158,9 +162,7 @@ import var_overhydrated from '@fixtures/health/hydration.overhydrated.json';
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <HydrationIsland fixture={fixture} />
-      </div>
+      <ResponsiveDemo widgetName="Hydration" category="health" fixture={fixture} island={HydrationIsland} />
     </section>
 
     <section class="wd-section">
@@ -168,6 +170,8 @@ import var_overhydrated from '@fixtures/health/hydration.overhydrated.json';
       <StateMatrix
         widgetName="Hydration"
         category="health"
+        island={HydrationIsland}
+        noRangeStates={["skeleton", "empty", "populated-min"]}
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
       />
     </section>
@@ -177,7 +181,16 @@ import var_overhydrated from '@fixtures/health/hydration.overhydrated.json';
       <VariationGrid
         widgetName="Hydration"
         category="health"
-        variations={[{ label: "dehydrated", fixture: var_dehydrated }, { label: "low", fixture: var_low }, { label: "normal", fixture: var_normal }, { label: "hydrated", fixture: var_hydrated }, { label: "overhydrated", fixture: var_overhydrated }]}
+        island={HydrationIsland}
+        variations={[
+          { label: "dehydrated", fixture: var_dehydrated, caption: "Desert march: 12oz water, 0mg caffeine." },
+          { label: "low", fixture: var_low, caption: "Slow morning: 24oz water, 80mg caffeine." },
+          { label: "normal", fixture: var_normal, caption: "Balanced day in range." },
+          { label: "hydrated", fixture: var_hydrated, caption: "Hard training: 80oz water, 240mg caffeine." },
+          { label: "overhydrated", fixture: var_overhydrated, caption: "Excessive intake — past range cap." },
+          { label: "morning-coffee", fixture: var_morning_coffee, caption: "8oz water, 240mg caffeine — coffee-first morning." },
+          { label: "caffeine-crash", fixture: var_caffeine_crash, caption: "24oz water, 480mg caffeine — deep into red caffeine zone." },
+        ]}
       />
     </section>
     <section class="wd-section">
@@ -204,22 +217,6 @@ import Hydration from '@lifegames/web/widgets/health/Hydration.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

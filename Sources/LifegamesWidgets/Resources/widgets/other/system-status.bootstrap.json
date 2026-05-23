@@ -1,0 +1,13 @@
+{
+  "system": {
+    "lines": [
+      { "key": "Health", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" },
+      { "key": "Sleep", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" },
+      { "key": "Books", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" },
+      { "key": "Articles", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" },
+      { "key": "Github Events", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" },
+      { "key": "Github Stars", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" },
+      { "key": "Theatre Reviews", "value": "PENDING", "valClass": "sys-val", "dotClass": "sys-dot-purple" }
+    ]
+  }
+}

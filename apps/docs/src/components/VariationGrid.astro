@@ -2,15 +2,17 @@
 interface VariationEntry {
   label: string;
   fixture: Record<string, any>;
+  caption?: string;
 }
 
 interface Props {
   widgetName: string;
   category: string;
   variations: VariationEntry[];
+  island?: any;
 }
 
-const { widgetName, category, variations } = Astro.props;
+const { widgetName, category, variations, island } = Astro.props;
 
 const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
 const componentMap: Record<string, any> = {};
@@ -20,6 +22,7 @@ for (const [path, mod] of Object.entries(widgetModules)) {
 }
 
 const Comp = componentMap[widgetName];
+const Island = island;
 
 function formatLabel(label: string): string {
   return label
@@ -30,11 +33,16 @@ function formatLabel(label: string): string {
 ---
 
 <div class="variation-grid">
-  {variations.map(({ label, fixture }) => (
+  {variations.map(({ label, fixture, caption }) => (
     <div class="variation-row">
-      <div class="variation-label">{formatLabel(label)}</div>
+      <div class="variation-label">
+        {formatLabel(label)}
+        {caption && <div class="variation-caption">{caption}</div>}
+      </div>
       <div class="variation-preview">
-        {Comp ? (
+        {Island ? (
+          <Island fixture={fixture} />
+        ) : Comp ? (
           <div data-widget-preview>
             <Comp {...fixture} />
           </div>
@@ -55,7 +63,7 @@ function formatLabel(label: string): string {
   }
   .variation-row {
     display: grid;
-    grid-template-columns: 140px 1fr;
+    grid-template-columns: 160px 1fr;
     gap: var(--space-16);
     align-items: start;
     border: 1px solid var(--card-border);
@@ -71,10 +79,20 @@ function formatLabel(label: string): string {
     color: var(--text-muted);
     padding: var(--space-16);
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--space-6);
     min-height: 100%;
     border-right: 1px solid var(--card-border);
     background: rgba(255, 255, 255, 0.02);
+  }
+  .variation-caption {
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-muted);
+    opacity: 0.7;
+    line-height: 1.4;
   }
   .variation-preview {
     padding: var(--space-12);

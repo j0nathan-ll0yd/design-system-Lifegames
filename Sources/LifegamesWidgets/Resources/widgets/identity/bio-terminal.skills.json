@@ -1,0 +1,16 @@
+{
+  "profile": {
+    "terminalLines": [
+      { "type": "prompt", "text": "$ ls skills/" },
+      { "type": "output", "text": "aws/          typescript/   serverless/" },
+      { "type": "output", "text": "swift/        go/           perl/" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ ls skills/typescript/" },
+      { "type": "output", "text": "react  astro  node  bun  zod  trpc  drizzle" },
+      { "type": "blank" },
+      { "type": "prompt", "text": "$ ls skills/aws/" },
+      { "type": "output", "text": "lambda  apigw  dynamodb  s3  cloudfront  cdk" },
+      { "type": "cursor" }
+    ]
+  }
+}

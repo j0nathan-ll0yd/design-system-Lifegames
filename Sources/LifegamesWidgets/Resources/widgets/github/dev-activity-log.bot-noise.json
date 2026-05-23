@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "chore(deps): bump lodash from 4.17.20 to 4.17.21",
+      "date": "2h ago",
+      "number": 210
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/ios",
+      "title": "chore(deps): bump swift-collections to 1.1.2",
+      "date": "3h ago",
+      "number": 167
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/infrastructure",
+      "title": "chore(deps): bump terraform-aws-modules/vpc to 5.9.0",
+      "date": "4h ago",
+      "number": 51
+    },
+    {
+      "type": "pr_merged",
+      "repo": "lifegames/api",
+      "title": "chore(deps): bump esbuild from 0.24.0 to 0.24.2",
+      "date": "5h ago",
+      "number": 208
+    },
+    {
+      "type": "issue_opened",
+      "repo": "lifegames/api",
+      "title": "Dependabot: bump jose from 5.2.3 to 5.3.0",
+      "date": "6h ago",
+      "number": 212
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Barry's Bootcamp",
+        "duration": 3300,
+        "energy_burned": 512,
+        "distance": 0,
+        "link": "https://share.barrys.com/jsvsl"
+      },
+      {
+        "activity_type": "Outdoor Run",
+        "duration": 2580,
+        "energy_burned": 310,
+        "distance": 5120,
+        "link": "https://www.strava.com/activities/example-run"
+      },
+      {
+        "activity_type": "Strength",
+        "duration": 3600,
+        "energy_burned": 420,
+        "distance": 0
+      },
+      {
+        "activity_type": "HIIT",
+        "duration": 1800,
+        "energy_burned": 350,
+        "distance": 0
+      },
+      {
+        "activity_type": "Swimming",
+        "duration": 2700,
+        "energy_burned": 380,
+        "distance": 1800
+      },
+      {
+        "activity_type": "Cycling",
+        "duration": 7200,
+        "energy_burned": 920,
+        "distance": 42000,
+        "link": "https://www.strava.com/activities/example-ride"
+      }
+    ]
+  }
+}

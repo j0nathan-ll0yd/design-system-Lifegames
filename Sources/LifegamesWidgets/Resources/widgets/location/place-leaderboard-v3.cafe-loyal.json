@@ -1,0 +1,39 @@
+{
+  "topPlaces": [
+    {
+      "name": "Coava Coffee",
+      "category": "Food & Drink",
+      "visitCount": 62,
+      "totalDurationMinutes": 3720,
+      "lastVisitAt": "2026-05-21T08:30:00Z"
+    },
+    {
+      "name": "Water Avenue Coffee",
+      "category": "Food & Drink",
+      "visitCount": 41,
+      "totalDurationMinutes": 2460,
+      "lastVisitAt": "2026-05-19T09:00:00Z"
+    },
+    {
+      "name": "Stumptown Coffee",
+      "category": "Food & Drink",
+      "visitCount": 28,
+      "totalDurationMinutes": 1680,
+      "lastVisitAt": "2026-05-14T08:00:00Z"
+    },
+    {
+      "name": "Heart Coffee",
+      "category": "Food & Drink",
+      "visitCount": 17,
+      "totalDurationMinutes": 1020,
+      "lastVisitAt": "2026-05-10T10:00:00Z"
+    },
+    {
+      "name": "Barista",
+      "category": "Food & Drink",
+      "visitCount": 12,
+      "totalDurationMinutes": 720,
+      "lastVisitAt": "2026-05-05T09:30:00Z"
+    }
+  ]
+}

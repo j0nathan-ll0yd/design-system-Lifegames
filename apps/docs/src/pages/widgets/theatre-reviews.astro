@@ -12,11 +12,18 @@ import TheatreReviews from '@widgets/reading/TheatreReviews.astro';
 import fixture from '@fixtures/reading/theatre-reviews.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import TheatreReviewsIsland from '@islands/TheatreReviewsIsland.astro';
 import fixture_skeleton from '@fixtures/reading/theatre-reviews.skeleton.json';
 import fixture_empty from '@fixtures/reading/theatre-reviews.empty.json';
 import fixture_populated_min from '@fixtures/reading/theatre-reviews.populated-min.json';
 import fixture_populated_max from '@fixtures/reading/theatre-reviews.populated-max.json';
+import var_single_show from '@fixtures/reading/theatre-reviews.single-show.json';
+import var_subscription_season from '@fixtures/reading/theatre-reviews.subscription-season.json';
+import var_mixed_ratings from '@fixtures/reading/theatre-reviews.mixed-ratings.json';
+import var_regional_tour from '@fixtures/reading/theatre-reviews.regional-tour.json';
+import var_west_end_season from '@fixtures/reading/theatre-reviews.west-end-season.json';
 ---
 
 <html lang="en">
@@ -153,9 +160,7 @@ import fixture_populated_max from '@fixtures/reading/theatre-reviews.populated-m
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <TheatreReviewsIsland fixture={fixture} />
-      </div>
+      <ResponsiveDemo widgetName="TheatreReviews" category="reading" fixture={fixture} island={TheatreReviewsIsland} />
     </section>
 
     <section class="wd-section">
@@ -163,7 +168,24 @@ import fixture_populated_max from '@fixtures/reading/theatre-reviews.populated-m
       <StateMatrix
         widgetName="TheatreReviews"
         category="reading"
+        island={TheatreReviewsIsland}
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="TheatreReviews"
+        category="reading"
+        island={TheatreReviewsIsland}
+        variations={[
+          { label: "single-show", fixture: var_single_show, caption: "One review only — just back from opening night." },
+          { label: "subscription-season", fixture: var_subscription_season, caption: "Full subscription season — 5 shows across the year." },
+          { label: "mixed-ratings", fixture: var_mixed_ratings, caption: "A+ to C+ spread — demonstrates the full rating range." },
+          { label: "regional-tour", fixture: var_regional_tour, caption: "UK touring productions — Blood Brothers, Calendar Girls, Grease." },
+          { label: "west-end-season", fixture: var_west_end_season, caption: "London West End and Almeida season — all highly rated." },
+        ]}
       />
     </section>
 
@@ -191,22 +213,6 @@ import TheatreReviews from '@lifegames/web/widgets/reading/TheatreReviews.astro'
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

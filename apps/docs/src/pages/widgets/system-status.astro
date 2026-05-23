@@ -12,10 +12,17 @@ import SystemStatus from '@widgets/other/SystemStatus.astro';
 import fixture from '@fixtures/other/system-status.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/other/system-status.skeleton.json';
 import fixture_empty from '@fixtures/other/system-status.empty.json';
 import fixture_populated_min from '@fixtures/other/system-status.populated-min.json';
 import fixture_populated_max from '@fixtures/other/system-status.populated-max.json';
+import var_all_green from '@fixtures/other/system-status.all-green.json';
+import var_one_stale from '@fixtures/other/system-status.one-stale.json';
+import var_mixed from '@fixtures/other/system-status.mixed.json';
+import var_degraded from '@fixtures/other/system-status.degraded.json';
+import var_bootstrap from '@fixtures/other/system-status.bootstrap.json';
 ---
 
 <html lang="en">
@@ -152,11 +159,7 @@ import fixture_populated_max from '@fixtures/other/system-status.populated-max.j
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <SystemStatus {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="SystemStatus" category="other" fixture={fixture} Comp={SystemStatus} />
     </section>
 
     <section class="wd-section">
@@ -165,6 +168,21 @@ import fixture_populated_max from '@fixtures/other/system-status.populated-max.j
         widgetName="SystemStatus"
         category="other"
         states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="SystemStatus"
+        category="other"
+        variations={[
+          { label: "all-green", fixture: var_all_green, caption: "Every source ACTIVE within the last hour — ideal state." },
+          { label: "one-stale", fixture: var_one_stale, caption: "Theatre Reviews 80d ago, all other sources ACTIVE." },
+          { label: "mixed", fixture: var_mixed, caption: "Mix of ACTIVE, OFFLINE, ERROR, and STALE sources." },
+          { label: "degraded", fixture: var_degraded, caption: "Multiple ERROR statuses — data pipeline partially down." },
+          { label: "bootstrap", fixture: var_bootstrap, caption: "Every source PENDING — cold-start before first sync." },
+        ]}
       />
     </section>
 
@@ -192,22 +210,6 @@ import SystemStatus from '@lifegames/web/widgets/other/SystemStatus.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

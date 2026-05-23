@@ -1,0 +1,13 @@
+{
+  "system": {
+    "lines": [
+      { "key": "Health", "value": "ACTIVE <span class=\"sys-val\">(1h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-red" },
+      { "key": "Sleep", "value": "ACTIVE <span class=\"sys-val\">(2h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-purple" },
+      { "key": "Books", "value": "ACTIVE <span class=\"sys-val\">(6h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-amber" },
+      { "key": "Articles", "value": "ACTIVE <span class=\"sys-val\">(30m ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-amber" },
+      { "key": "Github Events", "value": "ACTIVE <span class=\"sys-val\">(15m ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-green" },
+      { "key": "Github Stars", "value": "ACTIVE <span class=\"sys-val\">(4h ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-green" },
+      { "key": "Theatre Reviews", "value": "STALE <span class=\"sys-val\">(80d ago)</span>", "valClass": "sys-val-amber", "dotClass": "sys-dot-amber" }
+    ]
+  }
+}

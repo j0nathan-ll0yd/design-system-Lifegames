@@ -1,0 +1,13 @@
+{
+  "system": {
+    "lines": [
+      { "key": "Health", "value": "ERROR <span class=\"sys-val\">(parse failed)</span>", "valClass": "sys-val-red", "dotClass": "sys-dot-red" },
+      { "key": "Sleep", "value": "ERROR <span class=\"sys-val\">(no device)</span>", "valClass": "sys-val-red", "dotClass": "sys-dot-red" },
+      { "key": "Books", "value": "OFFLINE", "valClass": "sys-val-red", "dotClass": "sys-dot-red" },
+      { "key": "Articles", "value": "ERROR <span class=\"sys-val\">(timeout)</span>", "valClass": "sys-val-red", "dotClass": "sys-dot-red" },
+      { "key": "Github Events", "value": "ACTIVE <span class=\"sys-val\">(8m ago)</span>", "valClass": "sys-val-green", "dotClass": "sys-dot-green" },
+      { "key": "Github Stars", "value": "ERROR <span class=\"sys-val\">(fetch failed)</span>", "valClass": "sys-val-red", "dotClass": "sys-dot-red" },
+      { "key": "Theatre Reviews", "value": "OFFLINE", "valClass": "sys-val-red", "dotClass": "sys-dot-red" }
+    ]
+  }
+}

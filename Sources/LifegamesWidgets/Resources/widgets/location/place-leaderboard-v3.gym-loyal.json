@@ -1,0 +1,39 @@
+{
+  "topPlaces": [
+    {
+      "name": "Planet Fitness Pearl",
+      "category": "Health & Fitness",
+      "visitCount": 84,
+      "totalDurationMinutes": 7560,
+      "lastVisitAt": "2026-05-22T06:30:00Z"
+    },
+    {
+      "name": "24 Hour Fitness",
+      "category": "Health & Fitness",
+      "visitCount": 12,
+      "totalDurationMinutes": 1080,
+      "lastVisitAt": "2026-04-30T07:00:00Z"
+    },
+    {
+      "name": "Whole Foods Pearl",
+      "category": "Shopping",
+      "visitCount": 9,
+      "totalDurationMinutes": 540,
+      "lastVisitAt": "2026-05-20T17:30:00Z"
+    },
+    {
+      "name": "Coava Coffee",
+      "category": "Food & Drink",
+      "visitCount": 7,
+      "totalDurationMinutes": 420,
+      "lastVisitAt": "2026-05-18T07:45:00Z"
+    },
+    {
+      "name": "Forest Park",
+      "category": "Outdoors & Recreation",
+      "visitCount": 5,
+      "totalDurationMinutes": 900,
+      "lastVisitAt": "2026-05-11T08:00:00Z"
+    }
+  ]
+}

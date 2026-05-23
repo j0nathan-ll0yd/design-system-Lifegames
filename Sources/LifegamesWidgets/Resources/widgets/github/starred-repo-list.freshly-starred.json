@@ -1,0 +1,31 @@
+{
+  "repos": [
+    {
+      "owner": "anthropics",
+      "name": "claude-code",
+      "url": "https://github.com/anthropics/claude-code",
+      "stars": 25000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "just now"
+    },
+    {
+      "owner": "astro-community",
+      "name": "astro",
+      "url": "https://github.com/astro-community/astro",
+      "stars": 48000,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2 hours ago"
+    },
+    {
+      "owner": "tauri-apps",
+      "name": "tauri",
+      "url": "https://github.com/tauri-apps/tauri",
+      "stars": 86000,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "5 hours ago"
+    }
+  ]
+}

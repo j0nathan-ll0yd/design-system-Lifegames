@@ -12,10 +12,16 @@ import Workouts from '@widgets/health/Workouts.astro';
 import fixture from '@fixtures/health/workouts.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 import fixture_skeleton from '@fixtures/health/workouts.skeleton.json';
 import fixture_empty from '@fixtures/health/workouts.empty.json';
 import fixture_populated_min from '@fixtures/health/workouts.populated-min.json';
 import fixture_populated_max from '@fixtures/health/workouts.populated-max.json';
+import fixture_barrys_only from '@fixtures/health/workouts.barrys-only.json';
+import fixture_multi_link from '@fixtures/health/workouts.multi-link.json';
+import fixture_endurance from '@fixtures/health/workouts.endurance.json';
+import fixture_heavy_day from '@fixtures/health/workouts.heavy-day.json';
 ---
 
 <html lang="en">
@@ -152,11 +158,7 @@ import fixture_populated_max from '@fixtures/health/workouts.populated-max.json'
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <Workouts {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="Workouts" category="health" fixture={fixture} Comp={Workouts} />
     </section>
 
     <section class="wd-section">
@@ -184,6 +186,20 @@ import Workouts from '@lifegames/web/widgets/health/Workouts.astro';
     </section>
 
     <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="Workouts"
+        category="health"
+        variations={[
+          { label: "barrys-only", fixture: fixture_barrys_only, caption: "Single Barry's Bootcamp session with linked class URL." },
+          { label: "multi-link", fixture: fixture_multi_link, caption: "Three linked workouts: Barry's, Strava run, and Apple Fitness+ Yoga." },
+          { label: "endurance", fixture: fixture_endurance, caption: "90-min cycling block followed by a 60-min outdoor run." },
+          { label: "heavy-day", fixture: fixture_heavy_day, caption: "Six mixed workouts including linked activities — stress-tests narrow-width stat grid." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
       <h2 class="wd-section-title">Cross-Platform</h2>
       <ul class="wd-list">
         <li><strong>Web:</strong> <code>packages/web/src/widgets/health/Workouts.astro</code></li>
@@ -192,22 +208,6 @@ import Workouts from '@lifegames/web/widgets/health/Workouts.astro';
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

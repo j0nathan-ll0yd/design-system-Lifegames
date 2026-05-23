@@ -1,0 +1,36 @@
+{
+  "reading": {
+    "articles": [
+      {
+        "title": "PostgreSQL 19 Performance Tuning: Index Strategies That Matter",
+        "source": "postgresql.org",
+        "date": "2026-05-20"
+      },
+      {
+        "title": "Rust 2026 Edition Roadmap: What's Coming and Why",
+        "source": "blog.rust-lang.org",
+        "date": "2026-05-18"
+      },
+      {
+        "title": "Designing for Glanceable Watch UIs in watchOS 12",
+        "source": "developer.apple.com",
+        "date": "2026-05-15"
+      },
+      {
+        "title": "GraphQL vs tRPC in 2026: A Production Perspective",
+        "source": "thoughtworks.com",
+        "date": "2026-05-10"
+      },
+      {
+        "title": "Machine Learning in the Browser with WebGPU",
+        "source": "developer.chrome.com",
+        "date": "2026-05-03"
+      },
+      {
+        "title": "OpenAPI 3.2: What's New and What It Means for Your API Workflow",
+        "source": "openapis.org",
+        "date": "2026-04-28"
+      }
+    ]
+  }
+}

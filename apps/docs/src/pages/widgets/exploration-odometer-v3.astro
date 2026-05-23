@@ -9,9 +9,21 @@ import '@lifegames/tokens/base';
 import '@lifegames/tokens/docs-chrome';
 
 import ExplorationOdometerV3 from '@widgets/location/ExplorationOdometerV3.astro';
+import ExplorationOdometerV3Island from '@islands/ExplorationOdometerV3Island.astro';
 import fixture from '@fixtures/location/exploration-odometer-v3.json';
+import fixture_skeleton from '@fixtures/location/exploration-odometer-v3.skeleton.json';
+import fixture_empty from '@fixtures/location/exploration-odometer-v3.empty.json';
+import fixture_populated_min from '@fixtures/location/exploration-odometer-v3.populated-min.json';
+import fixture_populated_max from '@fixtures/location/exploration-odometer-v3.populated-max.json';
+import fixture_homebody from '@fixtures/location/exploration-odometer-v3.homebody.json';
+import fixture_weekend_warrior from '@fixtures/location/exploration-odometer-v3.weekend-warrior.json';
+import fixture_roadtripper from '@fixtures/location/exploration-odometer-v3.roadtripper.json';
+import fixture_new_city_week from '@fixtures/location/exploration-odometer-v3.new-city-week.json';
+import fixture_passport_week from '@fixtures/location/exploration-odometer-v3.passport-week.json';
 import StateMatrix from '../../components/StateMatrix.astro';
 import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
 ---
 
 <html lang="en">
@@ -148,11 +160,7 @@ import VariationGrid from '../../components/VariationGrid.astro';
 
     <section class="wd-section">
       <h2 class="wd-section-title">Live Demo</h2>
-      <div class="wd-demo">
-      <div data-widget-preview>
-        <ExplorationOdometerV3 {...fixture} />
-      </div>
-      </div>
+      <ResponsiveDemo widgetName="ExplorationOdometerV3" category="location" fixture={fixture} island={ExplorationOdometerV3Island} />
     </section>
 
     <section class="wd-section">
@@ -160,7 +168,29 @@ import VariationGrid from '../../components/VariationGrid.astro';
       <StateMatrix
         widgetName="ExplorationOdometerV3"
         category="location"
-        states={[{ state: "skeleton", fixture: null }, { state: "empty", fixture: null }, { state: "populated-min", fixture: null }, { state: "populated-max", fixture: null }]}
+        island={ExplorationOdometerV3Island}
+        states={[
+          { state: "skeleton", fixture: fixture_skeleton },
+          { state: "empty", fixture: fixture_empty },
+          { state: "populated-min", fixture: fixture_populated_min },
+          { state: "populated-max", fixture: fixture_populated_max }
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="ExplorationOdometerV3"
+        category="location"
+        island={ExplorationOdometerV3Island}
+        variations={[
+          { label: "homebody", fixture: fixture_homebody, caption: "Single city, 412 visits — neighbourhood-deep explorer" },
+          { label: "weekend-warrior", fixture: fixture_weekend_warrior, caption: "6 cities across 3 states — regular day-tripper" },
+          { label: "roadtripper", fixture: fixture_roadtripper, caption: "38 cities, 14 states — year-long road trip" },
+          { label: "new-city-week", fixture: fixture_new_city_week, caption: "First week in Austin — rapid place discovery" },
+          { label: "passport-week", fixture: fixture_passport_week, caption: "Tokyo week — international travel, 5 cities" }
+        ]}
       />
     </section>
 
@@ -188,27 +218,6 @@ import ExplorationOdometerV3 from '@lifegames/web/widgets/location/ExplorationOd
       </ul>
     </section>
   </div>
-  <script is:inline>
-    (function() {
-      var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
-      for (var i = 0; i < s.length; i++) {
-        var els = document.querySelectorAll(s[i]);
-        for (var j = 0; j < els.length; j++) {
-          els[j].classList.add("visible");
-        }
-      }
-      var loading = document.querySelectorAll(".tri-card.is-loading");
-      for (var k = 0; k < loading.length; k++) {
-        loading[k].classList.remove("is-loading");
-      }
-      var wks = document.querySelectorAll("#cardWorkouts");
-      for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
-    })();
-  </script>
-  <script>
-    import { updateExplorationOdometerV3 } from '@runtime/updaters-odometer-variations';
-    import fixtureData from '@fixtures/location/exploration-odometer-v3.json';
-    updateExplorationOdometerV3(fixtureData as any);
-  </script>
+  <WidgetPageScript />
 </body>
 </html>

@@ -1,0 +1,24 @@
+---
+import ExplorationOdometerV3 from '@widgets/location/ExplorationOdometerV3.astro';
+const { fixture } = Astro.props;
+---
+<div data-widget-preview data-fixture={JSON.stringify(fixture)}>
+  <ExplorationOdometerV3 />
+</div>
+<script>
+  import { initExplorationOdometerV3 } from '../runtime/exploration-odometer-init';
+  const wrappers = document.querySelectorAll<HTMLElement>('[data-widget-preview][data-fixture]');
+  const io = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        const el = entry.target as HTMLElement;
+        const fixture = JSON.parse(el.dataset.fixture || '{}');
+        if (fixture.totalVisits !== undefined) {
+          initExplorationOdometerV3(el, fixture);
+          io.unobserve(el);
+        }
+      }
+    }
+  });
+  wrappers.forEach((w) => io.observe(w));
+</script>

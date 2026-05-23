@@ -24,21 +24,25 @@ const keyColorMap: Record<string, string> = {
   'Theatre Reviews': 'sys-key-yellow',
 };
 ---
-<div class="left-panel-status" id="cardSystem">
-  <div class="left-status-header">
-    <h2 class="widget-label">System Status</h2>
+<div class="tri-card tri-card-accent-blue" id="cardSystem">
+  <div class="widget-header">
+    <h3 class="widget-label">System Status</h3>
     <div class="widget-header-right">
-      <div class="live-dot"></div>
+      <div class="live-dot live-dot-blue"></div>
       <span class="widget-timestamp">realtime</span>
     </div>
   </div>
-  <div id="systemStatus">
-    {lines.filter((line: any) => import.meta.env.DEV || line.key !== 'Location').map((line: any, idx: number) => (
-      <div class="sys-line" data-source={sourceMap[line.key] || ''} style={`animation-delay: ${idx * 0.1}s`}>
-        <div class={`sys-dot ${line.dotClass}`} style={`animation-delay: ${idx * 0.3}s`}></div>
-        <span class={`sys-key${keyColorMap[line.key] ? ' ' + keyColorMap[line.key] : ''}`}>{line.key}:</span>
-        <span class={line.valClass || 'sys-val'} set:html={line.value}></span>
+  <div class="widget-body">
+    <div class="left-panel-status">
+      <div id="systemStatus">
+        {lines.filter((line: any) => import.meta.env.DEV || line.key !== 'Location').map((line: any, idx: number) => (
+          <div class="sys-line" data-source={sourceMap[line.key] || ''} style={`animation-delay: ${idx * 0.1}s`}>
+            <div class={`sys-dot ${line.dotClass}`} style={`animation-delay: ${idx * 0.3}s`}></div>
+            <span class={`sys-key${keyColorMap[line.key] ? ' ' + keyColorMap[line.key] : ''}`}>{line.key}:</span>
+            <span class={line.valClass || 'sys-val'} set:html={line.value}></span>
+          </div>
+        ))}
       </div>
-    ))}
+    </div>
   </div>
 </div>

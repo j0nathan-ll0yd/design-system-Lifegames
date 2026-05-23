@@ -1,0 +1,18 @@
+{
+  "health": {
+    "workouts": [
+      {
+        "activity_type": "Cycling",
+        "duration": 5400,
+        "energy_burned": 740,
+        "distance": 38000
+      },
+      {
+        "activity_type": "Outdoor Run",
+        "duration": 3600,
+        "energy_burned": 480,
+        "distance": 9800
+      }
+    ]
+  }
+}
