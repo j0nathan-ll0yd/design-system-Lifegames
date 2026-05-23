@@ -10,6 +10,13 @@ dist/
 !.env.example
 .omc/
 
+# Astro type-generation + content cache
+.astro/
+
+# Playwright artifacts
+playwright-report/
+test-results/
+
 # Generated widget docs (recreated by scripts/generate-widget-docs.mjs)
 apps/docs/src/content/docs/widgets/*/
 !apps/docs/src/content/docs/widgets/*/index.mdx
