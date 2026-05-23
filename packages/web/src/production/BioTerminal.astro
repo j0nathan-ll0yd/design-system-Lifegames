@@ -1,0 +1,29 @@
+---
+// Production-shaped BioTerminal: typed-props widget + bundled runtime init.
+// Drop-in replacement for the prior `import BioTerminal from '../components/BioTerminal.astro'`
+// pattern in consumers like j0nathan-ll0yd.github.io.
+//
+// Differences vs the showcase-shaped BioTerminalIsland.astro:
+// - Accepts typed props directly (no `fixture` wrapper)
+// - Does NOT inject a `[data-widget-preview]` wrapper
+// - Bundles its runtime init script (no IntersectionObserver-of-showcase-wrappers ceremony)
+// - Targets its own widget's known ID (`#cardBio`) which the underlying widget renders
+//
+// Multi-instance safety: initBioTerminal has an idempotency guard
+// (`container.dataset.bioTerminalInit === '1'`) so re-running is safe.
+
+import BioTerminal from '../widgets/identity/BioTerminal.astro';
+import type { BioTerminalProps } from '../widgets/identity/BioTerminal.types';
+
+const props = Astro.props as BioTerminalProps;
+---
+<BioTerminal {...props} />
+<script>
+  import { initBioTerminal } from '../runtime/bio-terminal-init';
+  // The widget root carries id="cardBio" (see BioTerminal.astro template).
+  // We init when the DOM is ready; the runtime handles reduced-motion / mobile branches.
+  const target = document.getElementById('cardBio');
+  if (target) {
+    initBioTerminal(target);
+  }
+</script>

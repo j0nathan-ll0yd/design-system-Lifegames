@@ -17,7 +17,9 @@
     "./widgets/reading": "./src/widgets/reading/index.ts",
     "./runtime/*": "./src/runtime/*",
     "./islands/*": "./src/islands/*",
-    "./styles/*": "./src/styles/*"
+    "./styles/*": "./src/styles/*",
+    "./production": "./src/production/index.ts",
+    "./production/*": "./src/production/*"
   },
   "files": [
     "src"

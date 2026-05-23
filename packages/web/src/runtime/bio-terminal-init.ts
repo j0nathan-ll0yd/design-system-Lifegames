@@ -44,7 +44,9 @@ function revealLine(lines: NodeListOf<HTMLElement>, idx: number): void {
   }
 }
 
-export function initBioTerminal(container: HTMLElement, _fixture: BioTerminalProps): void {
+// _fixture is reserved for showcase-time type narrowing; production callers pass
+// nothing and rely on the SSR-rendered HTML being the source of truth.
+export function initBioTerminal(container: HTMLElement, _fixture?: BioTerminalProps): void {
   // Idempotency guard: when multiple BioTerminalIsland instances exist on one page
   // (Live Demo + State Matrix slots), each bundles its own IntersectionObserver and
   // observes ALL `[data-widget-preview][data-fixture]` containers — without this
