@@ -1,0 +1,19 @@
+---
+// Production-shaped Hydration: typed-props widget + bundled runtime for the
+// count-up animation + range overlay rendering.
+//
+// initHydration needs the fixture values to compute count-up targets, so we
+// pass props through to the runtime via Astro's define:vars on the bundled
+// module script.
+import Hydration from '../widgets/health/Hydration.astro';
+import type { HydrationProps } from '../widgets/health/Hydration.types';
+
+const props = Astro.props as HydrationProps;
+---
+<Hydration {...props} />
+<script define:vars={{ fixture: props }}>
+  import('../runtime/hydration-init').then(({ initHydration }) => {
+    const target = document.getElementById('cardHydration');
+    if (target) initHydration(target, fixture);
+  });
+</script>

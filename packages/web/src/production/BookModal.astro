@@ -1,0 +1,12 @@
+---
+// Production-shaped BookModal: renders the modal overlay + bundles the click /
+// keyboard / focus-trap runtime. Pairs with Bookshelf (looks up #cardBooks).
+//
+// No props (the modal is empty initially; openModal is fired on Bookshelf clicks).
+import BookModal from '../widgets/reading/BookModal.astro';
+---
+<BookModal />
+<script>
+  import { initBookModal } from '../runtime/book-modal-init';
+  initBookModal();
+</script>

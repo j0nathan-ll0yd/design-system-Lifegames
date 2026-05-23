@@ -1,0 +1,15 @@
+---
+// Production-shaped ComingSoon: random dossier ID stamped client-side on load.
+// The inline script is small enough that no runtime module is justified.
+import ComingSoon from '../widgets/identity/ComingSoon.astro';
+import type { ComingSoonProps } from '../widgets/identity/ComingSoon.types';
+
+const props = Astro.props as ComingSoonProps;
+---
+<ComingSoon {...props} />
+<script>
+  const year = new Date().getFullYear();
+  const id = `CC-${year}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const el = document.getElementById('dossierId');
+  if (el) el.textContent = id;
+</script>

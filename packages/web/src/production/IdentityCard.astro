@@ -1,0 +1,13 @@
+---
+// Production-shaped IdentityCard: typed-props passthrough, no script.
+// The consumer-side fork carries a tiny Simple Analytics tracking script
+// (window.sa_event('social_click', {platform})) but that's analytics tooling,
+// not widget behavior — production islands ship scriptless. Consumers that
+// want click tracking should attach their own analytics listener at the page
+// level (e.g., delegated on .id-links a in Dashboard.astro or similar).
+import IdentityCard from '../widgets/identity/IdentityCard.astro';
+import type { IdentityCardProps } from '../widgets/identity/IdentityCard.types';
+
+const props = Astro.props as IdentityCardProps;
+---
+<IdentityCard {...props} />
