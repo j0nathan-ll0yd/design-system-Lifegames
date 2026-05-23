@@ -2,7 +2,7 @@
 
 All fixture JSON files contain synthetic data only. No production or personal data has been copied.
 
-**Enforcement:** The pre-commit hook (`scripts/scan-personal-data.sh`) scans staged JSON files for known personal data markers and blocks commits if any are found.
+**Enforcement:** The pre-commit hook (`scripts/scan-personal-data.sh`) scans staged JSON files **within this directory** (`Sources/LifegamesWidgets/Resources/widgets/`) for known personal data markers and blocks commits if any are found. The hook is intentionally scoped to the widget fixture pool — it does NOT scan `apps/site/`, which is the user's actual portfolio and is expected to contain real identity.
 
 ## Scrubbing Records
 

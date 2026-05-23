@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
-# Scans staged JSON files for known personal data markers.
-# Exits non-zero if any unscrubbed marker is found.
+# Scans staged widget-fixture JSON files for known personal data markers.
+# Scope: Sources/LifegamesWidgets/Resources/widgets/ — the fixture pool documented
+# in Sources/LifegamesWidgets/Resources/widgets/SCRUBBING.md. The hook intentionally
+# does NOT scan apps/site/, which is the user's actual portfolio and is expected
+# to contain real identity.
+# Exits non-zero if any unscrubbed marker is found in the fixture pool.
 
 MARKERS=(
   "j0nathan-ll0yd"
   "j0nathan_ll0yd"
 )
 
-STAGED_JSON=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.json$')
+STAGED_JSON=$(git diff --cached --name-only --diff-filter=ACM \
+  | grep -E '^Sources/LifegamesWidgets/Resources/widgets/.*\.json$')
 
 if [ -z "$STAGED_JSON" ]; then
   exit 0
