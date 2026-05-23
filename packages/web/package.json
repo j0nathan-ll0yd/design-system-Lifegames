@@ -3,8 +3,21 @@
   "version": "0.1.0",
   "description": "Astro components and widgets for the Lifegames design system",
   "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.astro"
+  ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./widgets/github": "./src/widgets/github/index.ts",
+    "./widgets/health": "./src/widgets/health/index.ts",
+    "./widgets/identity": "./src/widgets/identity/index.ts",
+    "./widgets/location": "./src/widgets/location/index.ts",
+    "./widgets/other": "./src/widgets/other/index.ts",
+    "./widgets/reading": "./src/widgets/reading/index.ts",
+    "./runtime/*": "./src/runtime/*",
+    "./islands/*": "./src/islands/*",
+    "./styles/*": "./src/styles/*"
   },
   "files": [
     "src"

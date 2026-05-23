@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Design tokens for the Lifegames design system — CSS custom properties, JS constants, and JSON",
   "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "main": "dist/tokens.js",
   "exports": {
     ".": {
