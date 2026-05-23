@@ -34,6 +34,28 @@
 - Local-only — no `git push`, no npm publish, no GitHub Pages deploy
 - CI workflow files exist but are gated behind `vars.REMOTE_ENABLED`
 
+## Cross-Repo Consumption (Phase 1)
+
+The portfolio site `j0nathan-ll0yd.github.io` consumes `@lifegames/tokens`
+and `@lifegames/web` via **yalc** (a local npm registry simulator).
+
+Workflow when DS packages change:
+
+```bash
+# From DS repo root
+pnpm yalc:publish        # rebuilds tokens + pushes both packages to ~/.yalc/
+
+# In github.io repo (first-time setup only)
+yalc add @lifegames/tokens @lifegames/web
+pnpm install             # or npm install
+
+# In github.io repo (after subsequent DS changes)
+# Automatic — `yalc publish --push` propagates updates to all consumers
+```
+
+In Phase 2, the same `yalc` consumption flips to npm `^X.Y.Z` from GitHub
+Packages without any source changes.
+
 ## Commits
 
 - Conventional commit format with trailers
