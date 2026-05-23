@@ -259,6 +259,13 @@ css += '  --lg-blur-xl: 32px;\n';
 css += '}\n';
 writeFileSync(resolve(distDir, 'tokens.css'), css);
 
+// Layered variant: same content wrapped in nested @layer for cascade-layer consumers.
+// Public contract is @layer lifegames, site; internal sub-layer 'tokens' is private.
+// Consumers should import @lifegames/tokens/preamble (declares the parent order)
+// and then @lifegames/tokens/css.layered (which slots into @layer lifegames > tokens).
+const cssLayered = `@layer lifegames { @layer tokens {\n${css.trimEnd()}\n} }\n`;
+writeFileSync(resolve(distDir, 'tokens.css.layered'), cssLayered);
+
 // --- JS/JSON ---
 const jsonTokens = {};
 for (const t of tokens) {
@@ -347,6 +354,7 @@ writeFileSync(resolve(swiftDir, 'Shadow+Tokens.swift'), swiftShadows);
 console.log('Token build complete.');
 console.log(`  ${tokens.length} tokens processed`);
 console.log('  CSS:   packages/tokens/dist/tokens.css');
+console.log('  CSS:   packages/tokens/dist/tokens.css.layered');
 console.log('  JS:    packages/tokens/dist/tokens.js');
 console.log('  JSON:  packages/tokens/dist/tokens.json');
 console.log('  Swift: Sources/LifegamesTokens/Color+Tokens.swift');

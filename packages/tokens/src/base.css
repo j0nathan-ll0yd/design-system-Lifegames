@@ -1,3 +1,4 @@
+@layer lifegames { @layer base {
 /* Ported from jonathanlloyd.me — DO NOT rewrite variable names.
    Bare --* vars resolve via compat.css shim. See visual-parity plan. */
 
@@ -127,3 +128,4 @@
   outline: 2px solid var(--neon-blue);
   outline-offset: 2px;
 }
+} }

@@ -11,6 +11,8 @@
       "types": "./dist/tokens.d.ts"
     },
     "./css": "./dist/tokens.css",
+    "./css.layered": "./dist/tokens.css.layered",
+    "./preamble": "./src/preamble.css",
     "./json": "./dist/tokens.json",
     "./animations": "./src/animations.css",
     "./components": "./src/components.css",
@@ -30,7 +32,8 @@
     "src/base.css",
     "src/compat.css",
     "src/fonts.css",
-    "src/docs-chrome.css"
+    "src/docs-chrome.css",
+    "src/preamble.css"
   ],
   "scripts": {
     "build": "node ../../style-dictionary.config.mjs",

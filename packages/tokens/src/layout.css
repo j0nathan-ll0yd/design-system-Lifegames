@@ -1,3 +1,4 @@
+@layer lifegames { @layer layout {
 /* Ported from jonathanlloyd.me — DO NOT rewrite variable names.
    Bare --* vars resolve via compat.css shim. See visual-parity plan. */
 
@@ -800,3 +801,4 @@
     letter-spacing: 2px;
   }
 }
+} }

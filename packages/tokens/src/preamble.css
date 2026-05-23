@@ -1,0 +1,7 @@
+/* Public cascade-layer contract for @lifegames/tokens.
+   Import this as the FIRST stylesheet in any consumer app, then declare
+   site-specific overrides inside @layer site { ... }.
+   Internal sub-layers (reset, base, tokens, fonts, components, effects,
+   layout, animations, compat) are private implementation detail nested
+   inside @layer lifegames and MUST NOT be referenced by consumers. */
+@layer lifegames, site;

@@ -1,3 +1,4 @@
+@layer lifegames { @layer docs-chrome {
 /* =================================================================
    DOCS CHROME — design-quality refinement of `.wd-*` selectors
    =================================================================
@@ -375,3 +376,4 @@ body .wd-list code {
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-sm);
 }
+} }

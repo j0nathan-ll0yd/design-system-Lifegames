@@ -1,3 +1,4 @@
+@layer lifegames { @layer effects {
 /* Ported from jonathanlloyd.me — DO NOT rewrite variable names.
    Bare --* vars resolve via compat.css shim. See visual-parity plan. */
 
@@ -209,3 +210,4 @@
   .right-panel { margin-left: 0; width: 100%; height: auto; overflow: visible; }
   .tri-card { opacity: 1 !important; transform: none !important; break-inside: avoid; border: 1px solid #ccc; background: white; color: black; backdrop-filter: none; }
 }
+} }
