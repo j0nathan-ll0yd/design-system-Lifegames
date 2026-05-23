@@ -14,7 +14,7 @@
       "types": "./dist/tokens.d.ts"
     },
     "./css": "./dist/tokens.css",
-    "./css.layered": "./dist/tokens.css.layered",
+    "./css.layered": "./dist/tokens-layered.css",
     "./preamble": "./src/preamble.css",
     "./json": "./dist/tokens.json",
     "./animations": "./src/animations.css",

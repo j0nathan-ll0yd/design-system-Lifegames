@@ -19,13 +19,18 @@ export default defineConfig({
         },
       ],
       customCss: [
+        // Public cascade-layer contract MUST load first — declares @layer lifegames, site;
+        '../../packages/tokens/src/preamble.css',
+        // Layered tokens variant (wrapped in @layer lifegames > tokens)
+        '../../packages/tokens/dist/tokens-layered.css',
+        // Source CSS files (all wrapped in @layer lifegames > <name> as of Step 5)
         '../../packages/tokens/src/fonts.css',
-        '../../packages/tokens/dist/tokens.css',
         '../../packages/tokens/src/compat.css',
         '../../packages/tokens/src/components.css',
         '../../packages/tokens/src/effects.css',
         '../../packages/tokens/src/layout.css',
         '../../packages/tokens/src/base.css',
+        // Web package styles (intentionally unlayered — overrides DS defaults)
         '../../packages/web/src/styles/a11y.css',
       ],
       social: [
