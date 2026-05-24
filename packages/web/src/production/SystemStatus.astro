@@ -1,9 +1,12 @@
 ---
-// Production-shaped SystemStatus: typed-props widget passthrough.
-// Drop-in replacement for consumer-side SystemStatus forks.
+// Production-shaped SystemStatus: typed-props passthrough, compact=true default.
+//
+// compact=true renders the consumer-shaped flat .left-panel-status root
+// (matching pre-migration DOM shape) instead of full .tri-card chrome.
+// Consumers wanting the full tri-card widget can pass compact={false}.
 import SystemStatus from '../widgets/other/SystemStatus.astro';
 import type { SystemStatusProps } from '../widgets/other/SystemStatus.types';
 
-const props = Astro.props as SystemStatusProps;
+const { compact = true, ...rest } = Astro.props as SystemStatusProps;
 ---
-<SystemStatus {...props} />
+<SystemStatus {...rest} compact={compact} />
