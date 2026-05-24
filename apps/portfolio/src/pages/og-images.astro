@@ -1,0 +1,62 @@
+---
+import Variant from '../layouts/Variant.astro';
+import OGImage from '@lifegames/web/components/OGImage.astro';
+
+const avatarUrl = '/assets/avatar.jpg';
+---
+<Variant title="OG Image Preview">
+  <div class="og-page">
+    <h1 class="og-title">OG Image</h1>
+    <p class="og-desc">
+      Open Graph preview image (1200&times;630). Export as PNG for production use.
+    </p>
+    <div class="og-section-title">Minimal Photo + Metrics</div>
+    <div class="og-frame">
+      <OGImage avatarUrl={avatarUrl} />
+    </div>
+  </div>
+</Variant>
+
+<style>
+  .og-page {
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 32px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text);
+  }
+  .og-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--neon-pink);
+  }
+  .og-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  .og-section-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--neon-pink);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,0,110,0.2);
+  }
+  .og-frame {
+    background: var(--bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 800px;
+  }
+  .og-frame svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>
