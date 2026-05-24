@@ -1,0 +1,17 @@
+---
+// Production-shaped HeartRate: typed-props widget + bundled runtime ECG animation.
+//
+// initHeartRate needs the fixture values to drive the ECG canvas and zone classification,
+// so props are passed through to the runtime via Astro's define:vars on the bundled script.
+import HeartRate from '../widgets/health/HeartRate.astro';
+import type { HeartRateProps } from '../widgets/health/HeartRate.types';
+
+const props = Astro.props as HeartRateProps;
+---
+<HeartRate {...props} />
+<script define:vars={{ fixture: props }}>
+  import('../runtime/heart-rate-init').then(({ initHeartRate }) => {
+    const target = document.getElementById('cardHR');
+    if (target) initHeartRate(target, fixture);
+  });
+</script>

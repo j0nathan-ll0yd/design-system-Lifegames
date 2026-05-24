@@ -1,0 +1,9 @@
+---
+// Production-shaped NightSummary: typed-props widget passthrough.
+// Drop-in replacement for consumer-side NightSummary forks.
+import NightSummary from '../widgets/health/NightSummary.astro';
+import type { NightSummaryProps } from '../widgets/health/NightSummary.types';
+
+const props = Astro.props as NightSummaryProps;
+---
+<NightSummary {...props} />

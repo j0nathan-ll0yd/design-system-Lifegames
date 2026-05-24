@@ -1,0 +1,9 @@
+---
+// Production-shaped StarredRepoList: typed-props widget passthrough.
+// Drop-in replacement for consumer-side StarredRepoList forks.
+import StarredRepoList from '../widgets/github/StarredRepoList.astro';
+import type { StarredRepoListProps } from '../widgets/github/StarredRepoList.types';
+
+const props = Astro.props as StarredRepoListProps;
+---
+<StarredRepoList {...props} />

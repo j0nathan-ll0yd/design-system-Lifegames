@@ -1,0 +1,9 @@
+---
+// Production-shaped SystemStatus: typed-props widget passthrough.
+// Drop-in replacement for consumer-side SystemStatus forks.
+import SystemStatus from '../widgets/other/SystemStatus.astro';
+import type { SystemStatusProps } from '../widgets/other/SystemStatus.types';
+
+const props = Astro.props as SystemStatusProps;
+---
+<SystemStatus {...props} />

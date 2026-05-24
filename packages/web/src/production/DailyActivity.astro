@@ -1,0 +1,9 @@
+---
+// Production-shaped DailyActivity: typed-props widget passthrough.
+// Drop-in replacement for consumer-side DailyActivity forks.
+import DailyActivity from '../widgets/health/DailyActivity.astro';
+import type { DailyActivityProps } from '../widgets/health/DailyActivity.types';
+
+const props = Astro.props as DailyActivityProps;
+---
+<DailyActivity {...props} />

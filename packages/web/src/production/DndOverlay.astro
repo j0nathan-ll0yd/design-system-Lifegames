@@ -1,0 +1,10 @@
+---
+// Production-shaped DndOverlay: typed-props widget passthrough.
+// DndOverlay is a full-page overlay (not a tri-card widget); it renders id="dndOverlay"
+// and is activated by live-data.ts via updateFocusOverlay() when currentFocus === 'Do Not Disturb'.
+import DndOverlay from '../widgets/other/DndOverlay.astro';
+import type { DndOverlayProps } from '../widgets/other/DndOverlay.types';
+
+const props = Astro.props as DndOverlayProps;
+---
+<DndOverlay {...props} />

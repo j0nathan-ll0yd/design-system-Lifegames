@@ -1,0 +1,17 @@
+---
+// Production-shaped TheatreReviews: typed-props widget + bundled theatre runtime.
+//
+// initTheatreReviews needs the reviews array and totalReviews count to render
+// the poster carousel, so props are passed through via Astro's define:vars.
+import TheatreReviews from '../widgets/reading/TheatreReviews.astro';
+import type { TheatreReviewsProps } from '../widgets/reading/TheatreReviews.types';
+
+const props = Astro.props as TheatreReviewsProps;
+---
+<TheatreReviews {...props} />
+<script define:vars={{ fixture: props }}>
+  import('../runtime/theatre-init').then(({ initTheatreReviews }) => {
+    const target = document.getElementById('cardTheatreReviews');
+    if (target) initTheatreReviews(target, fixture);
+  });
+</script>

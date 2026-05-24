@@ -1,0 +1,9 @@
+---
+// Production-shaped DevActivityLog: typed-props widget passthrough.
+// Drop-in replacement for consumer-side DevActivityLog forks.
+import DevActivityLog from '../widgets/github/DevActivityLog.astro';
+import type { DevActivityLogProps } from '../widgets/github/DevActivityLog.types';
+
+const props = Astro.props as DevActivityLogProps;
+---
+<DevActivityLog {...props} />

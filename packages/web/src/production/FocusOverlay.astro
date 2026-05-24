@@ -1,0 +1,10 @@
+---
+// Production-shaped FocusOverlay: typed-props widget passthrough.
+// FocusOverlay is a full-page overlay (not a tri-card widget); it renders id="focusOverlay"
+// and is activated by live-data.ts via updateFocusOverlay() when currentFocus === 'Work'.
+import FocusOverlay from '../widgets/other/FocusOverlay.astro';
+import type { FocusOverlayProps } from '../widgets/other/FocusOverlay.types';
+
+const props = Astro.props as FocusOverlayProps;
+---
+<FocusOverlay {...props} />

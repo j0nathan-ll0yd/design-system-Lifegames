@@ -1,0 +1,9 @@
+---
+// Production-shaped Workouts: typed-props widget passthrough.
+// Drop-in replacement for consumer-side Workouts forks.
+import Workouts from '../widgets/health/Workouts.astro';
+import type { WorkoutsProps } from '../widgets/health/Workouts.types';
+
+const props = Astro.props as WorkoutsProps;
+---
+<Workouts {...props} />

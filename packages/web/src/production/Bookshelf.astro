@@ -1,0 +1,18 @@
+---
+// Production-shaped Bookshelf: typed-props widget + bundled click/keyboard runtime.
+//
+// initBookshelf wires click and keyboard handlers on book items and attaches
+// image fallback logic. The fixture param is accepted but unused by the runtime
+// (all data is embedded in data-book attributes by the widget's SSR template).
+import Bookshelf from '../widgets/reading/Bookshelf.astro';
+import type { BookshelfProps } from '../widgets/reading/Bookshelf.types';
+
+const props = Astro.props as BookshelfProps;
+---
+<Bookshelf {...props} />
+<script>
+  import { initBookshelf } from '../runtime/bookshelf-init';
+  // The widget root carries id="cardBooks" (see Bookshelf.astro template).
+  const target = document.getElementById('cardBooks');
+  if (target) initBookshelf(target, {} as any);
+</script>
