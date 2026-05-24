@@ -287,11 +287,17 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
     @import '@lifegames/tokens/layout';
     @import '@lifegames/tokens/base';
 
-    /* Universal reset excludes margin: that would clobber margin-left on
-       layout primitives like .right-panel (unlayered always wins over the
-       @layer lifegames > layout rules in tokens/layout.css). */
-    *, *::before, *::after { padding: 0; box-sizing: border-box; }
-    body { margin: 0; }
+    /* Reset: universal `* { margin: 0 }` would unlayer-beat .right-panel's
+       margin-left: var(--left-width) in tokens/layout.css and collapse the
+       layout. Instead reset margins explicitly on the standard text/list
+       elements that ship with browser-default margins, and keep the
+       universal box-sizing + padding reset which doesn't conflict. */
+    *, *::before, *::after { box-sizing: border-box; }
+    body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd, blockquote, figure, pre {
+      margin: 0;
+      padding: 0;
+    }
+    ul, ol { list-style: none; }
 
     html, body {
       height: 100%;
