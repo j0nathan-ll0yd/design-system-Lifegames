@@ -1,8 +1,32 @@
 ---
 const { profile, compact = false } = Astro.props;
 ---
-<div class="tri-card tri-card-accent-indigo" id="identityCard">
-  {!compact && (
+{compact ? (
+  <div class="identity-card" id="identityCard">
+    {profile.github || profile.linkedin ? (
+      <picture>
+        <source srcset="/assets/avatar.webp" type="image/webp">
+        <img class="id-avatar" src="/assets/avatar.jpg" alt={profile.name + ' profile photo'} fetchpriority="high" width="200" height="200">
+      </picture>
+    ) : null}
+    <div class="id-info-inline">
+      <h1 class="id-name">{profile.name}</h1>
+      {profile.title && <div class="id-title">{profile.title}</div>}
+    </div>
+    {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
+    {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
+    {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
+      <nav class="id-links" aria-label="Social">
+        {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">GitHub</a>}
+        {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">LinkedIn</a>}
+        {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">Site</a>}
+        {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">Mastodon</a>}
+        {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">Bluesky</a>}
+      </nav>
+    )}
+  </div>
+) : (
+  <div class="tri-card tri-card-accent-indigo" id="identityCard">
     <div class="widget-header">
       <h3 class="widget-label">Identity</h3>
       <div class="widget-header-right">
@@ -10,9 +34,7 @@ const { profile, compact = false } = Astro.props;
         <span class="widget-timestamp">profile</span>
       </div>
     </div>
-  )}
-  <div class="widget-body">
-    {!compact && (
+    <div class="widget-body">
       <div class="skeleton-state">
         <div class="id-skeleton-layout">
           <div class="skeleton-circle" style="width: 64px; height: 64px;"></div>
@@ -23,32 +45,32 @@ const { profile, compact = false } = Astro.props;
           </div>
         </div>
       </div>
-    )}
-    <div class="identity-card">
-      {profile.github || profile.linkedin ? (
-        <picture>
-          <source srcset="/assets/avatar.webp" type="image/webp">
-          <img class="id-avatar" src="/assets/avatar.jpg" alt={profile.name + ' profile photo'} fetchpriority="high" width="200" height="200">
-        </picture>
-      ) : null}
-      <div class="id-info-inline">
-        <h1 class="id-name">{profile.name}</h1>
-        {profile.title && <div class="id-title">{profile.title}</div>}
+      <div class="identity-card">
+        {profile.github || profile.linkedin ? (
+          <picture>
+            <source srcset="/assets/avatar.webp" type="image/webp">
+            <img class="id-avatar" src="/assets/avatar.jpg" alt={profile.name + ' profile photo'} fetchpriority="high" width="200" height="200">
+          </picture>
+        ) : null}
+        <div class="id-info-inline">
+          <h1 class="id-name">{profile.name}</h1>
+          {profile.title && <div class="id-title">{profile.title}</div>}
+        </div>
+        {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
+        {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
+        {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
+          <nav class="id-links" aria-label="Social">
+            {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">GitHub</a>}
+            {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">LinkedIn</a>}
+            {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">Site</a>}
+            {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">Mastodon</a>}
+            {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">Bluesky</a>}
+          </nav>
+        )}
       </div>
-      {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
-      {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
-      {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
-        <nav class="id-links" aria-label="Social">
-          {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">GitHub</a>}
-          {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">LinkedIn</a>}
-          {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">Site</a>}
-          {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">Mastodon</a>}
-          {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">Bluesky</a>}
-        </nav>
-      )}
     </div>
   </div>
-</div>
+)}
 
 <style>
   .id-skeleton-layout {
