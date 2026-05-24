@@ -3,13 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import Dashboard from '../layouts/Dashboard.astro';
 import IdentityCard from '@widgets/identity/IdentityCard.astro';
-import BioTerminal from '@widgets/identity/BioTerminal.astro';
+import BioTerminal from '@lifegames/web/production/BioTerminal.astro';
 import SystemStatus from '@widgets/other/SystemStatus.astro';
 import HeartRate from '@widgets/health/HeartRate.astro';
 import DailyActivity from '@widgets/health/DailyActivity.astro';
 import Workouts from '@widgets/health/Workouts.astro';
 import NightSummary from '@widgets/health/NightSummary.astro';
-import Hydration from '@widgets/health/Hydration.astro';
+import Hydration from '@lifegames/web/production/Hydration.astro';
 import StarredRepoList from '@widgets/github/StarredRepoList.astro';
 import { CLOUDFRONT_BASE, ENDPOINTS } from '@runtime/constants';
 import { adaptStarredRepos, type AdaptedStarredRepo } from '@runtime/adapters';
@@ -507,8 +507,9 @@ if (process.env.USE_FIXTURES === 'true') {
   })();
   </script>
 
-  <!-- Live Data Integration -->
-  <script>
-    import '@runtime/live-data';
-  </script>
+  {/* Live-data polling intentionally disabled in the portfolio: this page is a
+      static design-system showcase using fixture data baked into SSR. The
+      production CloudFront `/health.json` does not include dietaryWater /
+      dietaryCaffeine, so adaptHealth zeroes them and updateHydration would
+      otherwise clobber the fixture values (88 oz / 240 mg) back to 0. */}
 </Dashboard>
