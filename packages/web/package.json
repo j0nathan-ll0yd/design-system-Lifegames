@@ -9,6 +9,8 @@
   ],
   "exports": {
     ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./components/OGImage.astro": "./src/components/OGImage.astro",
     "./widgets/github": "./src/widgets/github/index.ts",
     "./widgets/health": "./src/widgets/health/index.ts",
     "./widgets/identity": "./src/widgets/identity/index.ts",
