@@ -126,9 +126,9 @@ export function initHydration(container: HTMLElement, fixture: HydrationProps): 
   countUp(waterValEl, waterOz, 'oz', prefersReducedMotion);
   countUp(coffeeValEl, caffeineMg, 'mg', prefersReducedMotion);
 
-  // Remove loading state
-  const card = container.querySelector<HTMLElement>('.tri-card');
-  if (card) {
-    card.classList.remove('is-loading');
-  }
+  // Remove loading state. The container IS the .tri-card root (the widget
+  // renders `<div class="tri-card ..." id="cardHydration">`), so target the
+  // container directly. A querySelector('.tri-card') would search descendants
+  // and miss the root, leaving the skeleton overlay visible forever.
+  container.classList.remove('is-loading');
 }
