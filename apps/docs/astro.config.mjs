@@ -79,6 +79,7 @@ export default defineConfig({
       alias: {
         '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),
         '@widgets': path.resolve(__dirname, '../../packages/web/src/widgets'),
+        '@components': path.resolve(__dirname, '../../packages/web/src/components'),
         '@fixtures': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets'),
         '@islands': path.resolve(__dirname, '../../packages/web/src/islands'),
         '@runtime': path.resolve(__dirname, '../../packages/web/src/runtime'),

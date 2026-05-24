@@ -49,7 +49,6 @@
   "DndOverlay": "static",
   "FocusOverlay": "static",
   "GitHubHeatmap": "props",
-  "OGImage": "props",
   "SystemStatus": "props",
   "BookModal": "static",
   "Bookshelf": "props",

@@ -1,0 +1,111 @@
+---
+import Variant from '../../layouts/Variant.astro';
+---
+<Variant title="Access Suspended — Work Mode">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body { background: var(--bg); font-family: 'Space Grotesk', sans-serif; color: var(--text); display: flex; align-items: center; justify-content: center; }
+  .overlay {
+    display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+    align-items: center; justify-content: center;
+  }
+  .terminal {
+    width: min(540px,90vw);
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(239,68,68,0.15);
+    border-radius: 12px; overflow: hidden;
+  }
+  .terminal-header {
+    padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .terminal-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .terminal-dot.red   { background: var(--neon-red); }
+  .terminal-dot.amber { background: var(--neon-amber); }
+  .terminal-dot.green { background: var(--neon-green); }
+  .terminal-title { flex: 1; text-align: center; font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  .terminal-body { padding: 32px 28px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .error-code { font-size: clamp(4rem,12vw,7rem); font-weight: 700; color: var(--neon-red); line-height: 1; text-shadow: 0 0 40px rgba(239,68,68,0.3); }
+  .error-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--neon-red); }
+  .error-message { font-size: 0.75rem; font-weight: 300; color: var(--text-muted); text-align: center; line-height: 1.5; max-width: 380px; }
+  .divider { width: 100%; height: 1px; background: rgba(255,255,255,0.06); }
+  .log-section { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+  .log-line { font-size: 0.65rem; font-weight: 400; font-variant-numeric: tabular-nums; opacity: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .log-line.visible { opacity: 1; transition: opacity 0.2s ease; }
+  .log-ts { color: var(--text-muted); }
+  .log-err { color: var(--neon-red); }
+  .log-warn { color: var(--neon-amber); }
+  .log-ok { color: var(--neon-green); }
+  .countdown-section { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .countdown-label { font-size: 0.55rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+  .countdown-time { font-size: 1.8rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--neon-green); }
+  .cursor { display: inline-block; width: 7px; height: 12px; background: var(--neon-green); animation: blink 1s step-end infinite; vertical-align: text-bottom; margin-left: 4px; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  @media (max-width: 600px) { .terminal-body { padding: 24px 20px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; opacity: 1; }
+    .log-line { opacity: 1; }
+  }
+</style>
+<div class="overlay" id="overlay">
+  <div class="terminal">
+    <div class="terminal-header">
+      <div class="terminal-dot red"></div>
+      <div class="terminal-dot amber"></div>
+      <div class="terminal-dot green"></div>
+      <div class="terminal-title">Access Control</div>
+    </div>
+    <div class="terminal-body">
+      <div class="error-code">403</div>
+      <div class="error-label">Access Suspended</div>
+      <div class="error-message">Dashboard access is temporarily suspended during work hours. System will auto-restore at end of shift.</div>
+      <div class="divider"></div>
+      <div class="log-section" id="logSection"></div>
+      <div class="divider"></div>
+      <div class="countdown-section">
+        <span class="countdown-label">Auto-Restore In</span>
+        <span class="countdown-time" id="countdown">--:--:--</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function() {
+    var countdownEl = document.getElementById('countdown');
+    var logSection = document.getElementById('logSection');
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var logLines = [
+      { ts: '07:00:01', cls: 'log-warn', text: 'Shift schedule triggered' },
+      { ts: '07:00:02', cls: 'log-err',  text: 'ACCESS DENIED — work hours active' },
+      { ts: '07:00:03', cls: 'log-warn', text: 'Suspending public endpoints' },
+      { ts: '07:00:04', cls: 'log-ok',   text: 'Countdown timer initialized' },
+      { ts: '07:00:05', cls: 'log-ok',   text: 'Auto-restore scheduled for 15:00 PST' }
+    ];
+    for (var i = 0; i < logLines.length; i++) {
+      var el = document.createElement('div');
+      el.className = 'log-line';
+      el.innerHTML = '<span class="log-ts">[' + logLines[i].ts + ']</span> <span class="' + logLines[i].cls + '">' + logLines[i].text + '</span>';
+      logSection.appendChild(el);
+    }
+    var allLogLines = logSection.querySelectorAll('.log-line');
+    if (allLogLines.length > 0) { allLogLines[allLogLines.length - 1].innerHTML += '<span class="cursor"></span>'; }
+    for (var j = 0; j < allLogLines.length; j++) {
+      (function(line, idx) {
+        if (prefersReducedMotion) { line.classList.add('visible'); }
+        else { setTimeout(function() { line.classList.add('visible'); }, 400 + idx * 500); }
+      })(allLogLines[j], j);
+    }
+    function getPSTDate() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', hour12: false })); }
+    function updateCountdown() {
+      var pst = getPSTDate();
+      var remaining = Math.max(0, 15 * 3600 - (pst.getHours() * 3600 + pst.getMinutes() * 60 + pst.getSeconds()));
+      var rH = Math.floor(remaining / 3600);
+      var rM = Math.floor((remaining % 3600) / 60);
+      var rS = remaining % 60;
+      countdownEl.textContent = (rH < 10 ? '0' : '') + rH + ':' + (rM < 10 ? '0' : '') + rM + ':' + (rS < 10 ? '0' : '') + rS;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  })();
+</script>
+</Variant>

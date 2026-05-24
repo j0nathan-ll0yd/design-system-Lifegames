@@ -10,6 +10,7 @@ const ROOT = path.resolve(__dirname, '..');
 const MANIFEST_PATH = path.join(ROOT, 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json');
 const PRODUCTION_WIDGETS_PATH = path.join(ROOT, 'Sources/LifegamesWidgets/Resources/production-widgets.json');
 const WIDGETS_DIR = path.join(ROOT, 'packages/web/src/widgets');
+const COMPONENTS_DIR = path.join(ROOT, 'packages/web/src/components');
 const FIXTURES_DIR = path.join(ROOT, 'Sources/LifegamesWidgets/Resources/widgets');
 const OUTPUT_DIR = path.join(ROOT, 'apps/docs/src/content/docs/widgets');
 const AUDIT_PATH = path.join(ROOT, 'tests/widget-props-audit.json');
@@ -74,7 +75,19 @@ function resolveActualFilename(category, manifestName, ext) {
   const files = fs.readdirSync(catDir).filter(f => f.endsWith(ext));
   const match = files.find(f => f.startsWith(manifestName));
   if (match) return match.replace(ext, '');
+  // Fallback: check components/ directory for widgets promoted out of widgets/
+  if (fs.existsSync(path.join(COMPONENTS_DIR, exact))) return manifestName;
   return null;
+}
+
+function resolveActualDir(category, manifestName, ext) {
+  const catDir = path.join(WIDGETS_DIR, category);
+  const exact = manifestName + ext;
+  if (fs.existsSync(path.join(catDir, exact))) return catDir;
+  const files = fs.readdirSync(catDir).filter(f => f.endsWith(ext));
+  if (files.find(f => f.startsWith(manifestName))) return catDir;
+  if (fs.existsSync(path.join(COMPONENTS_DIR, exact))) return COMPONENTS_DIR;
+  return catDir;
 }
 
 function auditPropsUsage() {
@@ -240,9 +253,26 @@ function buildAlternativesSection(widget, manifest) {
   return lines.join('\n');
 }
 
+function resolveImportAlias(category, actualName) {
+  const inComponents = fs.existsSync(path.join(COMPONENTS_DIR, `${actualName}.astro`));
+  if (inComponents) {
+    return {
+      importAlias: `@components/${actualName}.astro`,
+      webPath: `packages/web/src/components/${actualName}.astro`,
+      pkgAlias: `@lifegames/web/components/${actualName}.astro`,
+    };
+  }
+  return {
+    importAlias: `@widgets/${category}/${actualName}.astro`,
+    webPath: `packages/web/src/widgets/${category}/${actualName}.astro`,
+    pkgAlias: `@lifegames/web/widgets/${category}/${actualName}.astro`,
+  };
+}
+
 function generateDynamicMdx(widget, actualName, fields, index, manifest) {
   const { category, name, viewType, fixturePath } = widget;
   const kebab = toKebab(actualName);
+  const { importAlias, webPath, pkgAlias } = resolveImportAlias(category, actualName);
   const isProduction = productionNames.has(name);
   const isHydrated = HYDRATED_WIDGETS.has(actualName);
 
@@ -285,7 +315,7 @@ sidebar:
 generated-by: widget-docs-codegen
 ---
 
-import ${actualName} from '@widgets/${category}/${actualName}.astro';
+import ${actualName} from '${importAlias}';
 import fixture from '@fixtures/${fixturePath}';
 
 ## Live Demo
@@ -299,14 +329,14 @@ ${propsTable}${detailsSection}
 
 \`\`\`astro
 ---
-import ${actualName} from '@lifegames/web/widgets/${category}/${actualName}.astro';
+import ${actualName} from '${pkgAlias}';
 ---
 <${actualName} {...data} />
 \`\`\`
 
 ## Cross-Platform
 
-- **Web:** \`packages/web/src/widgets/${category}/${actualName}.astro\`
+- **Web:** \`${webPath}\`
 - **iOS:** \`Sources/LifegamesWidgets/${toPascalCategory(category)}/${viewType}.swift\`
 - **Fixture:** \`Sources/LifegamesWidgets/Resources/widgets/${fixturePath}\`
 `;
@@ -315,6 +345,7 @@ import ${actualName} from '@lifegames/web/widgets/${category}/${actualName}.astr
 function generateStaticMdx(widget, actualName, fields, index, manifest) {
   const { category, name, viewType, fixturePath } = widget;
   const kebab = toKebab(actualName);
+  const { importAlias, webPath } = resolveImportAlias(category, actualName);
   const isProduction = productionNames.has(name);
 
   let dataTable = '| Field | Type | Required | Description |\n|------|------|----------|-------------|\n';
@@ -343,7 +374,7 @@ sidebar:
 generated-by: widget-docs-codegen
 ---
 
-import ${actualName} from '@widgets/${category}/${actualName}.astro';
+import ${actualName} from '${importAlias}';
 
 ## Live Preview
 
@@ -361,7 +392,7 @@ ${stateMatrix}${variations}${alternatives}## Data Shape (Pipeline Only)
 ${dataTable}${detailsSection}
 ## Cross-Platform
 
-- **Web:** \`packages/web/src/widgets/${category}/${actualName}.astro\`
+- **Web:** \`${webPath}\`
 - **iOS:** \`Sources/LifegamesWidgets/${toPascalCategory(category)}/${viewType}.swift\`
 - **Fixture:** \`Sources/LifegamesWidgets/Resources/widgets/${fixturePath}\`
 
@@ -448,7 +479,8 @@ function main() {
 
     let fields = [];
     if (typesName) {
-      const typesPath = path.join(WIDGETS_DIR, category, `${typesName}.types.ts`);
+      const typesDir = resolveActualDir(category, typesName, '.types.ts');
+      const typesPath = path.join(typesDir, `${typesName}.types.ts`);
       try {
         const typesSource = fs.readFileSync(typesPath, 'utf-8');
         const body = extractPropsInterface(typesSource, interfaceName);
