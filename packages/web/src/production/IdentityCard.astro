@@ -5,9 +5,14 @@
 // not widget behavior — production islands ship scriptless. Consumers that
 // want click tracking should attach their own analytics listener at the page
 // level (e.g., delegated on .id-links a in Dashboard.astro or similar).
+//
+// compact defaults to true: suppresses widget-header chrome (live-dot,
+// timestamp, label) and skeleton-state, matching consumer's pre-migration
+// flat identity-card shape. Consumers wanting full chrome can pass
+// compact={false} explicitly.
 import IdentityCard from '../widgets/identity/IdentityCard.astro';
 import type { IdentityCardProps } from '../widgets/identity/IdentityCard.types';
 
-const props = Astro.props as IdentityCardProps;
+const { compact = true, ...rest } = Astro.props as IdentityCardProps;
 ---
-<IdentityCard {...props} />
+<IdentityCard {...rest} compact={compact} />

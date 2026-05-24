@@ -5,5 +5,10 @@ export interface IdentityCardProps {
     bio: string;
     github: string;
     linkedin: string;
+    tagline?: string;
+    site?: string;
+    mastodon?: string;
+    bluesky?: string;
   };
+  compact?: boolean;
 }
