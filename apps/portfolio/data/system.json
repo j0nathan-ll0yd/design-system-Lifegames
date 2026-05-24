@@ -2,51 +2,51 @@
   "lines": [
     {
       "key": "Health",
-      "value": "PENDING",
-      "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "value": "ACTIVE <span class=\"sys-val\">(3m ago)</span>",
+      "dotClass": "sys-dot-red",
+      "valClass": "sys-val-green"
     },
     {
       "key": "Sleep",
-      "value": "PENDING",
-      "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "value": "ACTIVE <span class=\"sys-val\">(8h ago)</span>",
+      "dotClass": "sys-dot-purple",
+      "valClass": "sys-val-green"
     },
     {
       "key": "Location",
-      "value": "PENDING",
-      "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "value": "ACTIVE <span class=\"sys-val\">(12m ago)</span>",
+      "dotClass": "sys-dot-blue",
+      "valClass": "sys-val-green"
     },
     {
       "key": "Books",
-      "value": "PENDING",
+      "value": "ACTIVE <span class=\"sys-val\">(2h ago)</span>",
       "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "valClass": "sys-val-green"
     },
     {
       "key": "Articles",
-      "value": "PENDING",
+      "value": "ACTIVE <span class=\"sys-val\">(47m ago)</span>",
       "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "valClass": "sys-val-green"
     },
     {
       "key": "Github Events",
-      "value": "PENDING",
-      "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "value": "ACTIVE <span class=\"sys-val\">(6m ago)</span>",
+      "dotClass": "sys-dot-green",
+      "valClass": "sys-val-green"
     },
     {
       "key": "Github Stars",
-      "value": "PENDING",
-      "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "value": "ACTIVE <span class=\"sys-val\">(1d ago)</span>",
+      "dotClass": "sys-dot-green",
+      "valClass": "sys-val-green"
     },
     {
       "key": "Theatre Reviews",
-      "value": "PENDING",
-      "dotClass": "sys-dot-amber",
-      "valClass": "sys-val-amber"
+      "value": "ACTIVE <span class=\"sys-val\">(4d ago)</span>",
+      "dotClass": "sys-dot-yellow",
+      "valClass": "sys-val-green"
     }
   ]
 }

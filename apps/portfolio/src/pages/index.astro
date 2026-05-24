@@ -11,7 +11,6 @@ import Workouts from '@widgets/health/Workouts.astro';
 import NightSummary from '@widgets/health/NightSummary.astro';
 import Hydration from '@lifegames/web/production/Hydration.astro';
 import StarredRepoList from '@widgets/github/StarredRepoList.astro';
-import { CLOUDFRONT_BASE, ENDPOINTS } from '@runtime/constants';
 import { adaptStarredRepos, type AdaptedStarredRepo } from '@runtime/adapters';
 import DevActivityLog from '@widgets/github/DevActivityLog.astro';
 import ReadingFeed from '@widgets/reading/ReadingFeed.astro';
@@ -30,26 +29,13 @@ const github = JSON.parse(fs.readFileSync(path.join(dataDir, 'github.json'), 'ut
 const reading = JSON.parse(fs.readFileSync(path.join(dataDir, 'reading.json'), 'utf-8'));
 const books = JSON.parse(fs.readFileSync(path.join(dataDir, 'books.json'), 'utf-8'));
 const system = JSON.parse(fs.readFileSync(path.join(dataDir, 'system.json'), 'utf-8'));
-
-let starredRepos: AdaptedStarredRepo[] = [];
-if (process.env.USE_FIXTURES === 'true') {
-  const fixturePath = path.join(process.cwd(), 'test', 'fixtures', 'generated', 'github-starred-repos', 'baseline.json');
-  try {
-    const json = JSON.parse(fs.readFileSync(fixturePath, 'utf-8'));
-    const fixtureNow = json.generatedAt ? new Date(json.generatedAt).getTime() : undefined;
-    starredRepos = adaptStarredRepos(json, fixtureNow);
-  } catch (err) {
-    console.warn('[build] Failed to read starred repos fixture:', (err as Error).message);
-  }
-} else {
-  try {
-    const res = await fetch(`${CLOUDFRONT_BASE}${ENDPOINTS.starredRepos}`);
-    const json = await res.json();
-    starredRepos = adaptStarredRepos(json);
-  } catch (err) {
-    console.warn('[build] Failed to fetch starred repos:', (err as Error).message);
-  }
-}
+const location = JSON.parse(fs.readFileSync(path.join(dataDir, 'location.json'), 'utf-8'));
+const theatre = JSON.parse(fs.readFileSync(path.join(dataDir, 'theatre.json'), 'utf-8'));
+const starredReposRaw = JSON.parse(fs.readFileSync(path.join(dataDir, 'starred-repos.json'), 'utf-8'));
+const starredRepos: AdaptedStarredRepo[] = adaptStarredRepos(
+  starredReposRaw,
+  starredReposRaw.generatedAt ? new Date(starredReposRaw.generatedAt).getTime() : undefined,
+);
 ---
 <Dashboard>
   <FocusOverlay />
@@ -512,4 +498,26 @@ if (process.env.USE_FIXTURES === 'true') {
       production CloudFront `/health.json` does not include dietaryWater /
       dietaryCaffeine, so adaptHealth zeroes them and updateHydration would
       otherwise clobber the fixture values (88 oz / 240 mg) back to 0. */}
+
+  {/* Fixture-driven runtime init for widgets whose SSR template ships only a
+      skeleton (PlaceLeaderboardV3, ExplorationOdometerV3, TheatreReviews).
+      Split-script pattern: inline define:vars stashes fixtures on window so the
+      bundled module can statically import the runtime (Vite resolves the path
+      at dev + build). Same dev-mode pitfall documented on Hydration's island. */}
+  <script define:vars={{ location, theatre }} is:inline>
+    window.__lgPortfolioFixtures = { location: location, theatre: theatre };
+  </script>
+  <script>
+    import { initPlaceLeaderboardV3 } from '@runtime/place-leaderboard-init';
+    import { initExplorationOdometerV3 } from '@runtime/exploration-odometer-init';
+    import { updateTheatreReviews } from '@runtime/updaters-theatre';
+    const fx = (window as any).__lgPortfolioFixtures;
+    if (fx) {
+      const lb = document.getElementById('cardPlaceLeaderboardV3');
+      if (lb) initPlaceLeaderboardV3(lb, fx.location);
+      const odo = document.getElementById('cardExplorationOdometerV3');
+      if (odo) initExplorationOdometerV3(odo, fx.location);
+      if (fx.theatre) updateTheatreReviews(fx.theatre);
+    }
+  </script>
 </Dashboard>

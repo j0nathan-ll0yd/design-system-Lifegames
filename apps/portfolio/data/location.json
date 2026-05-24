@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-05-24T10:30:00Z",
+  "totalVisits": 1842,
+  "totalPlaces": 247,
+  "totalDurationHours": 3174,
+  "citiesVisited": 8,
+  "currentCity": "San Francisco",
+  "lastSeen": "2026-05-24T10:14:00Z",
+  "last90Days": [],
+  "topPlaces": [
+    { "name": "Sightglass Coffee", "category": "cafe",       "visitCount": 84, "totalDurationMinutes": 4200, "lastVisitAt": "2026-05-24T08:42:00Z" },
+    { "name": "Mission Cliffs",    "category": "gym",        "visitCount": 71, "totalDurationMinutes": 6390, "lastVisitAt": "2026-05-23T19:05:00Z" },
+    { "name": "Dolores Park",      "category": "park",       "visitCount": 58, "totalDurationMinutes": 3480, "lastVisitAt": "2026-05-22T16:30:00Z" },
+    { "name": "Tartine Manufactory","category": "restaurant","visitCount": 47, "totalDurationMinutes": 2820, "lastVisitAt": "2026-05-21T13:10:00Z" },
+    { "name": "Bi-Rite Market",    "category": "market",     "visitCount": 39, "totalDurationMinutes": 1170, "lastVisitAt": "2026-05-24T09:55:00Z" },
+    { "name": "Trick Dog",         "category": "bar",        "visitCount": 33, "totalDurationMinutes": 2640, "lastVisitAt": "2026-05-18T22:15:00Z" },
+    { "name": "Four Barrel Coffee","category": "cafe",       "visitCount": 28, "totalDurationMinutes": 1400, "lastVisitAt": "2026-05-20T07:48:00Z" },
+    { "name": "SFMOMA",            "category": "museum",     "visitCount": 22, "totalDurationMinutes": 2640, "lastVisitAt": "2026-05-15T14:00:00Z" }
+  ],
+  "cityBreakdown": [
+    { "city": "San Francisco", "visitCount": 1602 },
+    { "city": "Oakland",       "visitCount": 89 },
+    { "city": "Berkeley",      "visitCount": 52 },
+    { "city": "New York",      "visitCount": 41 },
+    { "city": "Los Angeles",   "visitCount": 28 },
+    { "city": "Portland",      "visitCount": 16 },
+    { "city": "Seattle",       "visitCount": 9 },
+    { "city": "Austin",        "visitCount": 5 }
+  ],
+  "categoryBreakdown": [
+    { "category": "cafe",       "visitCount": 312, "totalMinutes": 15600 },
+    { "category": "restaurant", "visitCount": 248, "totalMinutes": 14880 },
+    { "category": "gym",        "visitCount": 187, "totalMinutes": 16830 },
+    { "category": "park",       "visitCount": 156, "totalMinutes": 9360 },
+    { "category": "market",     "visitCount": 142, "totalMinutes": 4260 },
+    { "category": "bar",        "visitCount": 98,  "totalMinutes": 7840 }
+  ],
+  "streaks": {
+    "currentStreak": 12,
+    "longestStreak": 47,
+    "totalActiveDays": 83
+  },
+  "explorationStats": {
+    "totalNeighborhoods": 34,
+    "totalCities": 8,
+    "totalStates": 6
+  }
+}
