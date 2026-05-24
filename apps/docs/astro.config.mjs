@@ -32,6 +32,8 @@ export default defineConfig({
         '../../packages/tokens/src/base.css',
         // Web package styles (intentionally unlayered — overrides DS defaults)
         '../../packages/web/src/styles/a11y.css',
+        // Brand guide page styles
+        './src/styles/brand.css',
       ],
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/lifegames-design-system' },
@@ -45,6 +47,7 @@ export default defineConfig({
           ],
         },
         { label: 'Getting Started', autogenerate: { directory: '.' } },
+        { label: 'Brand', autogenerate: { directory: 'brand' } },
         { label: 'Tokens', autogenerate: { directory: 'tokens' } },
         { label: 'Components', autogenerate: { directory: 'components' } },
         {

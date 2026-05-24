@@ -1,0 +1,185 @@
+/* ===== BRAND GUIDE STYLES ===== */
+/* Ported from j0nathan-ll0yd.github.io/src/showcase/showcase.css */
+
+/* Brand section */
+.brand-section {
+  margin-bottom: 56px;
+}
+
+.brand-section-title {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--neon-pink);
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,0,110,0.2);
+}
+
+/* Color swatches */
+.swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.swatch {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.swatch-color {
+  height: 80px;
+}
+
+.swatch-info {
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+.swatch-name {
+  font-size: 0.68rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.swatch-hex {
+  font-size: 0.58rem;
+  font-family: 'Space Grotesk', monospace;
+  color: var(--text-muted);
+}
+
+.swatch-var {
+  font-size: 0.52rem;
+  font-family: 'Space Grotesk', monospace;
+  color: rgba(255,255,255,0.3);
+  margin-top: 2px;
+}
+
+/* Typography specimens */
+.type-specimen {
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.type-specimen-label {
+  font-size: 0.52rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* Glass effect demos */
+.glass-demo {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.glass-panel {
+  width: 180px;
+  height: 100px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* Glow demos */
+.glow-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.glow-sample {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Spacing ruler */
+.spacing-ruler {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spacing-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spacing-bar {
+  height: 8px;
+  background: var(--neon-blue);
+  border-radius: 4px;
+  opacity: 0.5;
+}
+
+.spacing-label {
+  font-size: 0.58rem;
+  font-family: 'Space Grotesk', monospace;
+  color: var(--text-muted);
+  min-width: 80px;
+}
+
+/* Skeleton/shimmer bars */
+.skeleton-bar {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Animation catalog */
+.anim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.anim-demo {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.anim-label {
+  font-size: 0.52rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
