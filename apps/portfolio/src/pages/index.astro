@@ -60,9 +60,9 @@ if (process.env.USE_FIXTURES === 'true') {
 
     <!-- LEFT PANEL: Identity -->
     <aside class="left-panel" aria-label="Profile">
-      <IdentityCard profile={profile} />
+      <IdentityCard profile={profile} compact={true} />
       <BioTerminal profile={profile} />
-      <SystemStatus system={system} />
+      <SystemStatus system={system} compact={true} />
     </aside>
 
 
