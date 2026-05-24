@@ -1,16 +1,13 @@
 ---
-// Production-shaped ReadingFeed: typed-props widget + bundled pagination runtime.
+// Production-shaped ReadingFeed: typed-props passthrough only.
 //
-// initReadingFeedPagination takes a CSS selector (not container+fixture) and
-// paginates the article list when item count exceeds PAGE_SIZE (10).
+// The consumer fork has no inline script; pagination + live updates are
+// handled by the consumer's page-level updaters in src/lib/updaters.ts +
+// live-data.ts. Bundling initReadingFeedPagination here would conflict
+// with the page-level pagination wiring.
 import ReadingFeed from '../widgets/reading/ReadingFeed.astro';
 import type { ReadingFeedProps } from '../widgets/reading/ReadingFeed.types';
 
 const props = Astro.props as ReadingFeedProps;
 ---
 <ReadingFeed {...props} />
-<script>
-  import { initReadingFeedPagination } from '../runtime/reading-feed-init';
-  // The widget root carries id="cardReading" (see ReadingFeed.astro template).
-  initReadingFeedPagination('#cardReading');
-</script>

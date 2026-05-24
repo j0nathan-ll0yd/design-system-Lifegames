@@ -1,17 +1,13 @@
 ---
-// Production-shaped ExplorationOdometerV3: typed-props widget + bundled odometer runtime.
+// Production-shaped ExplorationOdometerV3: typed-props passthrough only.
 //
-// initExplorationOdometerV3 needs the location data to populate visit/place/city/state
-// counts and the homebase city, so props are passed through via Astro's define:vars.
+// The consumer fork has no inline script; rendering is driven by build-time
+// SSR data plus page-level updaters-odometer-variations.ts + live-data.ts.
+// Bundling initExplorationOdometerV3 here would race with the page-level
+// updaters.
 import ExplorationOdometerV3 from '../widgets/location/ExplorationOdometerV3.astro';
 import type { ExplorationOdometerV3Props } from '../widgets/location/ExplorationOdometerV3.types';
 
 const props = Astro.props as ExplorationOdometerV3Props;
 ---
 <ExplorationOdometerV3 {...props} />
-<script define:vars={{ fixture: props }}>
-  import('../runtime/exploration-odometer-init').then(({ initExplorationOdometerV3 }) => {
-    const target = document.getElementById('cardExplorationOdometerV3');
-    if (target) initExplorationOdometerV3(target, fixture);
-  });
-</script>

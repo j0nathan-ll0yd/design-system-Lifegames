@@ -265,7 +265,7 @@ export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): 
     badge.style.border = '1px solid ' + zone.badgeBorder;
   }
 
-  const hrvEl = container.querySelector<HTMLElement>('#hrvValue');
+  const hrvEl = container.querySelector<HTMLElement>('#hrHrvValue');
   if (hrvEl) {
     hrvEl.textContent = String(hrv);
     hrvEl.style.color = hrvStyle.color;

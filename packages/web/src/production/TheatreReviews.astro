@@ -1,17 +1,12 @@
 ---
-// Production-shaped TheatreReviews: typed-props widget + bundled theatre runtime.
+// Production-shaped TheatreReviews: typed-props passthrough only.
 //
-// initTheatreReviews needs the reviews array and totalReviews count to render
-// the poster carousel, so props are passed through via Astro's define:vars.
+// The consumer fork has no inline script; the poster carousel is driven by
+// page-level updaters-theatre.ts + live-data.ts. Bundling initTheatreReviews
+// here would double-bind the carousel handlers.
 import TheatreReviews from '../widgets/reading/TheatreReviews.astro';
 import type { TheatreReviewsProps } from '../widgets/reading/TheatreReviews.types';
 
 const props = Astro.props as TheatreReviewsProps;
 ---
 <TheatreReviews {...props} />
-<script define:vars={{ fixture: props }}>
-  import('../runtime/theatre-init').then(({ initTheatreReviews }) => {
-    const target = document.getElementById('cardTheatreReviews');
-    if (target) initTheatreReviews(target, fixture);
-  });
-</script>

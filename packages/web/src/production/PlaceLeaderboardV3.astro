@@ -1,17 +1,13 @@
 ---
-// Production-shaped PlaceLeaderboardV3: typed-props widget + bundled leaderboard runtime.
+// Production-shaped PlaceLeaderboardV3: typed-props passthrough only.
 //
-// initPlaceLeaderboardV3 needs the location data to render the podium and list rows,
-// so props are passed through to the runtime via Astro's define:vars on the bundled script.
+// The consumer fork has no inline script; rendering is driven by build-time
+// SSR data plus page-level updaters-leaderboard-variations.ts + live-data.ts.
+// Bundling initPlaceLeaderboardV3 here would re-render the same DOM, racing
+// with the page-level updaters.
 import PlaceLeaderboardV3 from '../widgets/location/PlaceLeaderboardV3.astro';
 import type { PlaceLeaderboardV3Props } from '../widgets/location/PlaceLeaderboardV3.types';
 
 const props = Astro.props as PlaceLeaderboardV3Props;
 ---
 <PlaceLeaderboardV3 {...props} />
-<script define:vars={{ fixture: props }}>
-  import('../runtime/place-leaderboard-init').then(({ initPlaceLeaderboardV3 }) => {
-    const target = document.getElementById('cardPlaceLeaderboardV3');
-    if (target) initPlaceLeaderboardV3(target, fixture);
-  });
-</script>
