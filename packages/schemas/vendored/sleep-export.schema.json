@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string"
+    },
+    "generatedAt": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "date",
+    "generatedAt"
+  ],
+  "additionalProperties": {
+    "anyOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "seconds": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "seconds"
+        ],
+        "additionalProperties": false
+      }
+    ]
+  }
+}
