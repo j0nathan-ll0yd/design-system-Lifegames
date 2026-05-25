@@ -307,6 +307,63 @@ function generateDynamicMdx(widget, actualName, fields, index, manifest) {
   const variations = isProduction ? buildVariationsSection(actualName, category, kebab) : '';
   const alternatives = isProduction ? buildAlternativesSection(widget, manifest) : '';
 
+  // Add Fixture example, Accessibility, and Storybook sections for production widgets
+  let fixtureAccessibilityStorybook = '';
+  if (isProduction) {
+    // Load fixture for example
+    let fixtureJSON = '{}';
+    const fixtureJsonPath = path.join(FIXTURES_DIR, category, `${kebab}.json`);
+    try {
+      if (fs.existsSync(fixtureJsonPath)) {
+        const fixtureData = JSON.parse(fs.readFileSync(fixtureJsonPath, 'utf-8'));
+        fixtureJSON = JSON.stringify(fixtureData, null, 2);
+      }
+    } catch (e) {
+      // silently fail if fixture isn't valid JSON
+    }
+
+    // Accessibility notes by widget
+    const a11yMap = {
+      'DevActivityLog': 'Renders semantic list markup; keyboard navigation supported via arrow keys and Enter.',
+      'StarredRepoList': 'List items are keyboard accessible; external links open in new tab with proper aria-label.',
+      'DailyActivity': 'Displays numeric values with unit labels; color contrast meets WCAG AA standards.',
+      'HeartRate': 'Large numeric display optimized for readability; includes accessible value descriptions.',
+      'Hydration': 'Progress bars use both color and numeric indicators for accessibility.',
+      'NightSummary': 'Sleep metrics presented with text labels and percentages; no color-only information.',
+      'Workouts': 'Activity types and metrics rendered as accessible text with numeric values.',
+      'BioTerminal': 'Terminal-style output rendered as semantic markup; cursor simulation is visual only.',
+      'ComingSoon': 'Static placeholder with descriptive heading and semantic markup.',
+      'IdentityCard': 'Profile links open externally with proper aria-labels; compact mode uses CSS media queries.',
+      'ExplorationOdometerV3': 'Large numeric displays with accessible labels; odometer effect is visual enhancement.',
+      'PlaceLeaderboardV3': 'Ranked list with clear row headers; visit count and duration render as accessible text.',
+      'DndOverlay': 'Fullscreen overlay; closes via Escape key and maintains focus management.',
+      'FocusOverlay': 'Fullscreen overlay with keyboard dismissal; hidden from screen readers (uses inert attribute).',
+      'SystemStatus': 'Status indicators use text labels in addition to color; compact mode adapts to viewport.',
+      'BookModal': 'Modal dialog with focus trap and proper role="dialog"; close button accessible.',
+      'Bookshelf': 'Grid layout with semantic image alt text; book title and author render as text.',
+      'ReadingFeed': 'Article titles and sources render as accessible text; timestamps are semantic time elements.',
+      'TheatreReviews': 'Review cards use semantic article markup; ratings display as numeric text and star glyphs.',
+    };
+
+    const a11yText = a11yMap[actualName] || 'Renders semantic markup with standard browser accessibility features.';
+
+    fixtureAccessibilityStorybook = `
+## Fixture example
+
+\`\`\`json
+${fixtureJSON}
+\`\`\`
+
+## Accessibility
+
+- ${a11yText}
+
+## Storybook
+
+[View live stories](/storybook/?path=/story/production-${category}-${kebab}--default)
+`;
+  }
+
   return `---
 title: "${name}"
 description: "${category} widget -- ${name}"
@@ -324,7 +381,7 @@ ${liveDemo}
 
 ${stateMatrix}${variations}${alternatives}## Props
 
-${propsTable}${detailsSection}
+${propsTable}${detailsSection}${fixtureAccessibilityStorybook}
 ## Usage
 
 \`\`\`astro
