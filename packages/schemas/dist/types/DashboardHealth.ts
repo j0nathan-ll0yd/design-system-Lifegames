@@ -9,7 +9,7 @@ export interface DashboardHealth {
    * ISO 8601 date string for which the health data applies.
    */
   date: string;
-  quantities: Quantities;
+  quantities: HealthQuantities;
   /**
    * Sleep phase breakdown keyed by phase name, each with a duration in seconds.
    */
@@ -300,7 +300,7 @@ export interface DashboardHealth {
 /**
  * Map of HealthKit quantity identifiers to their latest value and unit. Structure matches LP health-export quantities.
  */
-export interface Quantities {
+export interface HealthQuantities {
   [k: string]: {
     value: number;
     unit: string;

@@ -62,6 +62,7 @@
         "required": ["type", "text"],
         "properties": {
           "type": {
+            "title": "TerminalLineType",
             "type": "string",
             "description": "Line role: 'prompt' renders a shell prompt, 'output' renders response text, 'blank' renders an empty line, 'cursor' renders the blinking cursor.",
             "enum": ["prompt", "output", "blank", "cursor"]

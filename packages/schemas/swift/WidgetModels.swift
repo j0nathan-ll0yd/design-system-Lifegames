@@ -1528,7 +1528,7 @@ struct TerminalLine: Codable {
     let text: String
     /// Line role: 'prompt' renders a shell prompt, 'output' renders response text, 'blank'
     /// renders an empty line, 'cursor' renders the blinking cursor.
-    let type: TypeEnum
+    let type: TerminalLineType
 }
 
 // MARK: TerminalLine convenience initializers and mutators
@@ -1551,7 +1551,7 @@ extension TerminalLine {
 
     func with(
         text: String? = nil,
-        type: TypeEnum? = nil
+        type: TerminalLineType? = nil
     ) -> TerminalLine {
         return TerminalLine(
             text: text ?? self.text,
@@ -1570,7 +1570,7 @@ extension TerminalLine {
 
 /// Line role: 'prompt' renders a shell prompt, 'output' renders response text, 'blank'
 /// renders an empty line, 'cursor' renders the blinking cursor.
-enum TypeEnum: String, Codable {
+enum TerminalLineType: String, Codable {
     case blank = "blank"
     case cursor = "cursor"
     case output = "output"

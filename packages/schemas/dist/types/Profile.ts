@@ -2,6 +2,11 @@
 // Source: authored/profile.schema.json
 
 /**
+ * Line role: 'prompt' renders a shell prompt, 'output' renders response text, 'blank' renders an empty line, 'cursor' renders the blinking cursor.
+ */
+export type TerminalLineType = 'prompt' | 'output' | 'blank' | 'cursor';
+
+/**
  * Personal profile data displayed in the portfolio hero and terminal widget, including contact links, bio copy, and the animated terminal line sequence.
  */
 export interface Profile {
@@ -48,10 +53,7 @@ export interface Profile {
    * Ordered sequence of lines rendered in the animated terminal widget.
    */
   terminalLines: {
-    /**
-     * Line role: 'prompt' renders a shell prompt, 'output' renders response text, 'blank' renders an empty line, 'cursor' renders the blinking cursor.
-     */
-    type: 'prompt' | 'output' | 'blank' | 'cursor';
+    type: TerminalLineType;
     /**
      * Raw text content of the line. Empty string for blank and cursor lines.
      */

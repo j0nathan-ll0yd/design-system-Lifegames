@@ -13,6 +13,7 @@
       "examples": ["2026-02-10"]
     },
     "quantities": {
+      "title": "HealthQuantities",
       "$ref": "../vendored/health-export.schema.json#/properties/quantities",
       "description": "Map of HealthKit quantity identifiers to their latest value and unit. Structure matches LP health-export quantities."
     },
