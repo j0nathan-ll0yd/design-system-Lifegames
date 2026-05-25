@@ -1,6 +1,56 @@
 import { classifyHeartRate, classifyHRV, generateECGSamples } from './heart-rate';
 import type { HeartRateProps } from '../widgets/health/HeartRate.types';
 
+/**
+ * Options for initHeartRateInline. All fields optional; defaults match the
+ * consumer's inline IIFE (index.astro:158-481) or canvas data-* attributes.
+ */
+export interface HeartRateInlineOptions {
+  /** Beats per minute. Default: canvas data-bpm attribute, or 72. */
+  bpm?: number;
+  /** HRV SDNN in ms. Default: canvas data-hrv attribute, or 40. */
+  sdnn?: number;
+  /** ECG stroke colour. Default: canvas data-stroke attribute, or '#f59e0b'. */
+  stroke?: string;
+}
+
+/**
+ * ECGSYN Gaussian model — ported verbatim from consumer index.astro:167-196.
+ * NOTE: differs from generateECGSamples() in heart-rate.ts by one detail:
+ * this version clamps the T-wave center to a minimum of 0.42 (the `if (center
+ * < 0.42) center = 0.42` guard). generateECGSamples lacks that clamp.
+ * Used only by initHeartRateInline; initHeartRate continues to use
+ * generateECGSamples so its behaviour is unchanged.
+ */
+function ecgBeat(bpm: number, numSamples: number): number[] {
+  const hrFact = Math.sqrt(bpm / 60);
+  const waves: [number, number, number, boolean][] = [
+    [0.15,  0.12, 0.040, false],
+    [-0.10, 0.28, 0.015, true],
+    [1.00,  0.32, 0.018, true],
+    [-0.25, 0.38, 0.020, true],
+    [0.30,  0.58, 0.070, false],
+  ];
+  const samples: number[] = [];
+  for (let i = 0; i < numSamples; i++) {
+    const t = i / numSamples;
+    let val = 0;
+    for (let j = 0; j < waves.length; j++) {
+      const w = waves[j];
+      const width = w[3] ? w[2] : w[2] / hrFact;
+      let center = w[1];
+      if (j === 4) {
+        center = 0.58 - (hrFact - 1) * 0.08;
+        if (center < 0.42) center = 0.42;
+      }
+      const exponent = (t - center) / width;
+      val += w[0] * Math.exp(-0.5 * exponent * exponent);
+    }
+    samples[i] = val;
+  }
+  return samples;
+}
+
 interface ECGWidgetState {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -348,6 +398,109 @@ export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): 
   });
 
   // Animation loop
+  function animLoop(timestamp: number): void {
+    if (wgt.isVisible) {
+      renderFrame(wgt, timestamp);
+    }
+    requestAnimationFrame(animLoop);
+  }
+  requestAnimationFrame(animLoop);
+}
+
+/**
+ * Self-bootstrapping ECG canvas animator. Finds a canvas by id and renders
+ * a synthetic ECG waveform. Used by the consumer's pre-D2b inline script
+ * pattern (extracted via D2b).
+ *
+ * For the typed-props variant used by production islands, see initHeartRate().
+ *
+ * Ported verbatim (ES5 → TS only) from consumer index.astro:158-481.
+ * Algorithm is identical to the inline IIFE; shared module-scope helpers
+ * (nextRR, drawGrid, redrawGridStrip, resizeCanvas, renderFrame,
+ * drawStaticWaveform) are reused directly. ecgBeat() is a module-scope
+ * duplicate of the inline's ecgBeat — NOT generateECGSamples — because the
+ * inline includes a T-wave center clamp (center < 0.42) absent from
+ * generateECGSamples.
+ */
+export function initHeartRateInline(canvasId: string, opts?: Partial<HeartRateInlineOptions>): void {
+  const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null;
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d', { alpha: false });
+  if (!ctx) return;
+
+  const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Read data-* attributes from canvas element, matching inline IIFE behaviour.
+  const bpm = opts?.bpm ?? (parseInt(canvas.getAttribute('data-bpm') ?? '', 10) || 72);
+  const hrv  = opts?.sdnn ?? (parseInt(canvas.getAttribute('data-hrv') ?? '', 10) || 40);
+  const stroke = opts?.stroke ?? (canvas.getAttribute('data-stroke') || '#f59e0b');
+
+  const now = performance.now();
+
+  const wgt: ECGWidgetState = {
+    canvas,
+    ctx,
+    bpm,
+    hrv,
+    stroke,
+    beatSamples: ecgBeat(bpm, 64),
+    samplesPerBeat: 64,
+    cursorX: 0,
+    canvasW: 0,
+    canvasH: 0,
+    pixelsPerSecond: 50,
+    meanRR: 60000 / bpm,
+    nextBeatTime: now + Math.random() * (60000 / bpm),
+    beatStartTime: now - 9999,
+    beatDurationMs: 0,
+    currentRR: 60000 / bpm,
+    lastFrameTime: now,
+    prevX: 0,
+    prevY: 0,
+    isVisible: false,
+  };
+
+  // Live-data bridge — matches inline window.__ecgUpdate verbatim.
+  (window as Window & { __ecgUpdate?: (newBpm: number, newHrv: number, newStroke: string) => void }).__ecgUpdate = function(newBpm: number, newHrv: number, newStroke: string): void {
+    wgt.bpm = newBpm;
+    wgt.hrv = newHrv;
+    wgt.stroke = newStroke;
+    wgt.meanRR = 60000 / newBpm;
+    wgt.beatSamples = ecgBeat(newBpm, 64);
+  };
+
+  if (motionReduced) {
+    resizeCanvas(wgt);
+    drawStaticWaveform(wgt);
+    return;
+  }
+
+  // IntersectionObserver — matches inline behaviour.
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.target === wgt.canvas) {
+          wgt.isVisible = entry.isIntersecting;
+          if (entry.isIntersecting) {
+            if (!wgt.canvasW) resizeCanvas(wgt);
+            wgt.lastFrameTime = performance.now();
+          }
+        }
+      }
+    },
+    { threshold: 0.1 },
+  );
+  observer.observe(wgt.canvas);
+
+  // Debounced resize — matches inline behaviour.
+  let resizeTimer: ReturnType<typeof setTimeout>;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => resizeCanvas(wgt), 200);
+  });
+
+  // Animation loop — matches inline behaviour.
   function animLoop(timestamp: number): void {
     if (wgt.isVisible) {
       renderFrame(wgt, timestamp);
