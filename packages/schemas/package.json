@@ -18,7 +18,7 @@
     "sync": "tsx scripts/sync-from-lp.ts",
     "codegen": "tsx scripts/codegen.ts",
     "validate": "tsx scripts/validate.ts",
-    "build": "pnpm sync && pnpm codegen && pnpm validate"
+    "build": "pnpm codegen && pnpm validate"
   },
   "devDependencies": {
     "ajv": "^8.20.0",
