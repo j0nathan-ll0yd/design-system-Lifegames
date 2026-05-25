@@ -16,6 +16,18 @@
    All recommendations from /tmp/parity-design-review.md (12 total).
    ================================================================= */
 
+/* 0. Page-level reset (was previously duplicated in each page's inline
+      <style is:global> block; centralized here so scaffold-generated
+      alternate pages render with the dark theme without per-page CSS). */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg, #06060f);
+  color: var(--text, #e4e4e7);
+  font-family: var(--font-family, 'Space Grotesk', sans-serif);
+  min-height: 100vh;
+}
+
 /* 1. Ambient dot-grid background */
 body .wd-page {
   max-width: 1200px;
