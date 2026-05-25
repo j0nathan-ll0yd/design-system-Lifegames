@@ -1,0 +1,4 @@
+# Generated artifacts in dist/ are intentionally committed (plan decision #6).
+# Negate the root dist/ ignore for this package only.
+!dist/
+!dist/**
