@@ -12,7 +12,8 @@
     "docs:build": "turbo run docs:build",
     "docs:dev": "turbo run docs:dev",
     "storybook:build": "turbo run storybook:build",
-    "yalc:publish": "pnpm build:tokens && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push",
+    "sync:schemas": "pnpm -F @lifegames/schemas sync",
+    "yalc:publish": "pnpm build:tokens && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push && pnpm --filter @lifegames/schemas exec yalc publish --push",
     "yalc:update": "pnpm yalc:publish",
     "prepare": "husky"
   },

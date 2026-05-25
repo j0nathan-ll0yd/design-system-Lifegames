@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "swift/**", "vendored/**"]
     },
     "build:tokens": {
       "outputs": ["dist/**", "../../Sources/LifegamesTokens/**/*.swift"]
