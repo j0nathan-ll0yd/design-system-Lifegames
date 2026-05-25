@@ -17,7 +17,10 @@
     "./widgets/location": "./src/widgets/location/index.ts",
     "./widgets/other": "./src/widgets/other/index.ts",
     "./widgets/reading": "./src/widgets/reading/index.ts",
-    "./runtime/*": "./src/runtime/*",
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "import": "./src/runtime/*.ts"
+    },
     "./islands/*": "./src/islands/*",
     "./styles/*": "./src/styles/*",
     "./production": "./src/production/index.ts",
