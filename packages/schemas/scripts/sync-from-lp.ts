@@ -23,16 +23,19 @@ if (!HOME) {
 const LP_PATH = resolve(HOME, "Repositories", "mantle-LifegamesPortal");
 const LP_SCHEMAS_DIR = join(LP_PATH, "schemas");
 
-// Check LP path exists
+// Check LP path exists — soft warning in CI/non-dev environments where LP is not checked out.
+// When LP is absent, vendored/ is the source of truth and we skip the sync step entirely.
 if (!existsSync(LP_PATH)) {
-  console.error(`ERROR: LP path does not exist: ${LP_PATH}`);
-  console.error("Ensure mantle-LifegamesPortal is cloned at ~/Repositories/mantle-LifegamesPortal");
-  process.exit(1);
+  console.warn(`WARNING: LP path does not exist: ${LP_PATH}`);
+  console.warn("Skipping sync — vendored/ retains its current contents.");
+  console.warn("To sync from LP, clone mantle-LifegamesPortal at ~/Repositories/mantle-LifegamesPortal");
+  process.exit(0);
 }
 
 if (!existsSync(LP_SCHEMAS_DIR)) {
-  console.error(`ERROR: LP schemas directory does not exist: ${LP_SCHEMAS_DIR}`);
-  process.exit(1);
+  console.warn(`WARNING: LP schemas directory does not exist: ${LP_SCHEMAS_DIR}`);
+  console.warn("Skipping sync — vendored/ retains its current contents.");
+  process.exit(0);
 }
 
 // Check for uncommitted LP schema changes (warn only, do not fail)
