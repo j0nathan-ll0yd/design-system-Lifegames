@@ -21,7 +21,9 @@
     "build": "pnpm sync && pnpm codegen && pnpm validate"
   },
   "devDependencies": {
+    "ajv": "^8.20.0",
     "ajv-cli": "^5.0.0",
+    "ajv-formats": "^3.0.1",
     "json-schema-to-typescript": "^15.0.0",
     "quicktype": "^23.0.0",
     "tsx": "^4.21.0"
