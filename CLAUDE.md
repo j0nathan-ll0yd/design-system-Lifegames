@@ -60,3 +60,15 @@ Packages without any source changes.
 
 - Conventional commit format with trailers
 - No AI attribution in commit messages
+
+## Widget Conventions (W-series)
+
+### W16: Production-Widget Props Extends Schema [INFORMATIONAL]
+
+**Goal:** When a production-widget `Props` interface in `packages/web/src/widgets/**/*.types.ts` is shaped identically to a consumer-aggregate fixture validated by `@lifegames/schemas`, it SHOULD extend that schema-derived type. The branded `SchemaDerived<T>` from `@lifegames/schemas` makes the relationship explicit at the type level.
+
+**Discovery (2026-05-25):** Most existing widget Props are DS-internal narrow shapes that DO NOT match consumer-aggregate fixtures directly. The fixture-validation seam (ajv strict mode against `data/*.json`) is at the consumer-prebuild level, not at the widget Props level. Per-widget DS schemas are a deferred follow-up plan.
+
+**Current enforcement:** ESLint rule `lifegames-local/widget-props-extends-schema` runs as a `warn` (not `error`). All 55 existing `.types.ts` files carry a leading `// schema-exempt: <reason>` comment. New widgets that consume a consumer-aggregate fixture directly SHOULD drop the exemption and extend `SchemaDerived<X>` from `@lifegames/schemas`.
+
+**Escape hatch:** Leading comment `// schema-exempt: <reason>` opts a file out. Already applied to all current widgets pending the follow-up plan.
