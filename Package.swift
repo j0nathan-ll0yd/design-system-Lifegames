@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.iOS(.v26), .watchOS(.v26), .macOS(.v13)],
     products: [
         .library(name: "LifegamesTokens", targets: ["LifegamesTokens"]),
+        .library(name: "LifegamesSchemas", targets: ["LifegamesSchemas"]),
         .library(name: "LifegamesComponents", targets: ["LifegamesComponents"]),
         .library(name: "LifegamesComponentsWatch", targets: ["LifegamesComponentsWatch"]),
         .library(name: "LifegamesWidgets", targets: ["LifegamesWidgets"]),
@@ -17,9 +18,10 @@ let package = Package(
     ],
     targets: [
         .target(name: "LifegamesTokens", resources: [.process("Resources")]),
+        .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
         .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens"]),
         .target(name: "LifegamesComponentsWatch", dependencies: ["LifegamesTokens"]),
-        .target(name: "LifegamesWidgets", dependencies: ["LifegamesComponents"],
+        .target(name: "LifegamesWidgets", dependencies: ["LifegamesComponents", "LifegamesSchemas"],
                 resources: [.process("Resources")]),
         .target(name: "LifegamesWidgetsWatch", dependencies: ["LifegamesComponentsWatch"]),
         .testTarget(name: "LifegamesTokensTests", dependencies: ["LifegamesTokens"]),
