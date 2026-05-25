@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/dashboard-books.schema.json",
+  "title": "DashboardBooks",
+  "description": "Books dashboard data consumed by the books widget. The books array is a simplified display projection of LP books-export data with DS-added fields (isbn, link, progress). bookMeta, statusLabels, and stats are DS-owned additions with no LP equivalent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["books", "bookMeta", "statusLabels", "stats"],
+  "properties": {
+    "books": {
+      "type": "array",
+      "description": "List of books projected from LP books-export, augmented with DS display fields. Field set is a subset of LP's books items plus DS-specific additions (isbn, link, progress).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "author", "asin", "status"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Book title.",
+            "examples": ["Foundryside"]
+          },
+          "author": {
+            "type": "string",
+            "description": "Author full name.",
+            "examples": ["Robert Jackson Bennett"]
+          },
+          "isbn": {
+            "type": "string",
+            "description": "ISBN-13 (or Kindle ASIN when no ISBN exists) used as a stable key into bookMeta.",
+            "examples": ["9780525573844", "B0FBRJY116"]
+          },
+          "asin": {
+            "type": "string",
+            "description": "Amazon ASIN used for affiliate link construction and as an alternate key into bookMeta.",
+            "examples": ["0525573844"]
+          },
+          "link": {
+            "type": "string",
+            "description": "Affiliate or direct purchase URL.",
+            "examples": ["https://amzn.to/3Mr9KEO"]
+          },
+          "status": {
+            "type": "string",
+            "description": "Reading status key. Must match a key in statusLabels.",
+            "enum": ["next", "in_progress", "completed"]
+          },
+          "rating": {
+            "anyOf": [
+              { "type": "integer", "minimum": 1, "maximum": 5 },
+              { "type": "null" }
+            ],
+            "description": "User rating 1–5 stars, or null if unrated."
+          },
+          "progress": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Reading progress as a percentage (0–100). 0 for unstarted, 100 for completed."
+          }
+        }
+      }
+    },
+    "bookMeta": {
+      "type": "object",
+      "description": "Supplementary metadata keyed by isbn (or ASIN for Kindle-only titles). Provides series, genre, page count, year, and description for each book in the books array.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["pages", "genres", "year", "desc"],
+        "properties": {
+          "seriesName": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "description": "Series name if part of a series, null otherwise.",
+            "examples": ["The Founders Trilogy"]
+          },
+          "seriesNumber": {
+            "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }],
+            "description": "Position within the series, null if standalone."
+          },
+          "seriesTotal": {
+            "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }],
+            "description": "Total number of books in the series, null if standalone or unknown."
+          },
+          "pages": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Total page count."
+          },
+          "genres": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Genre tags.",
+            "examples": [["Fantasy", "Mystery"]]
+          },
+          "year": {
+            "type": "integer",
+            "description": "Publication year.",
+            "examples": [2024]
+          },
+          "desc": {
+            "type": "string",
+            "description": "Short plot or synopsis description used in the book detail panel."
+          }
+        }
+      }
+    },
+    "statusLabels": {
+      "type": "object",
+      "description": "Human-readable display labels keyed by status value. Maps status enum values to UI strings.",
+      "additionalProperties": false,
+      "required": ["next", "in_progress", "completed"],
+      "properties": {
+        "next": { "type": "string", "description": "Label for books queued to read next.", "examples": ["Up Next"] },
+        "in_progress": { "type": "string", "description": "Label for the book currently being read.", "examples": ["Reading"] },
+        "completed": { "type": "string", "description": "Label for recently finished books.", "examples": ["Recently Finished"] }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "description": "Aggregate reading statistics computed by the DS pipeline.",
+      "additionalProperties": false,
+      "required": ["totalRead", "currentlyReading", "upNext", "avgRating", "booksThisYear"],
+      "properties": {
+        "totalRead": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of books with completed status.",
+          "examples": [3]
+        },
+        "currentlyReading": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of books currently in-progress.",
+          "examples": [1]
+        },
+        "upNext": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of books queued with next status.",
+          "examples": [1]
+        },
+        "avgRating": {
+          "type": "number",
+          "description": "Average star rating across all rated books.",
+          "examples": [4.3]
+        },
+        "booksThisYear": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total books started or completed in the current calendar year.",
+          "examples": [4]
+        }
+      }
+    }
+  }
+}

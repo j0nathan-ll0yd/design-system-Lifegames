@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/dashboard-github.schema.json",
+  "title": "DashboardGithub",
+  "description": "GitHub contribution-graph aggregate consumed by the GitHub dashboard widget. This is a DS-owned shape with no LP equivalent — it is computed from the GitHub API by the DS pipeline rather than exported by LP.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contributions", "totalContributions", "contributionTypes", "streak"],
+  "properties": {
+    "contributions": {
+      "type": "array",
+      "description": "52-week contribution grid as an array of weekly buckets, each containing 7 daily contribution counts (Sun–Sat). Used to render the GitHub-style heatmap calendar.",
+      "items": {
+        "type": "array",
+        "items": { "type": "integer", "minimum": 0 },
+        "minItems": 7,
+        "maxItems": 7,
+        "description": "Seven daily contribution counts for a single week, starting Sunday."
+      }
+    },
+    "totalContributions": {
+      "type": "integer",
+      "description": "Total contribution count across the entire grid period.",
+      "minimum": 0,
+      "examples": [1847]
+    },
+    "contributionTypes": {
+      "type": "object",
+      "description": "Breakdown of total contributions by type.",
+      "additionalProperties": false,
+      "required": ["commits", "pullRequests", "issues", "reviews", "repositories"],
+      "properties": {
+        "commits": { "type": "integer", "minimum": 0, "description": "Number of commits." },
+        "pullRequests": { "type": "integer", "minimum": 0, "description": "Number of pull requests opened or merged." },
+        "issues": { "type": "integer", "minimum": 0, "description": "Number of issues opened." },
+        "reviews": { "type": "integer", "minimum": 0, "description": "Number of code reviews submitted." },
+        "repositories": { "type": "integer", "minimum": 0, "description": "Number of distinct repositories contributed to." }
+      }
+    },
+    "streak": {
+      "type": "object",
+      "description": "Current and longest consecutive-day contribution streaks.",
+      "additionalProperties": false,
+      "required": ["current", "longest"],
+      "properties": {
+        "current": { "type": "integer", "minimum": 0, "description": "Active consecutive-day streak count." },
+        "longest": { "type": "integer", "minimum": 0, "description": "All-time longest consecutive-day streak count." }
+      }
+    },
+    "languages": {
+      "type": "object",
+      "description": "Map of programming language names to total bytes of code written across all repos.",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "devActivity": {
+      "type": "array",
+      "description": "Recent developer activity feed — commits, PRs, and other events ordered newest-first.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "repo", "title", "date", "url"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Event type discriminant.",
+            "examples": ["commit", "pr_opened", "pr_merged", "issue_opened"]
+          },
+          "repo": { "type": "string", "description": "Short repository name.", "examples": ["mantle"] },
+          "title": { "type": "string", "description": "Commit message subject or PR/issue title." },
+          "date": { "type": "string", "description": "Human-readable relative date string.", "examples": ["2h ago", "1d ago"] },
+          "hash": { "type": "string", "description": "Short commit SHA. Present for commit events only.", "examples": ["a9421b5"] },
+          "number": { "type": "integer", "description": "PR or issue number. Present for pull request and issue events only." },
+          "additions": { "type": "integer", "minimum": 0, "description": "Lines added. Present for commit and PR events." },
+          "deletions": { "type": "integer", "minimum": 0, "description": "Lines deleted. Present for commit and PR events." },
+          "url": { "type": "string", "description": "Full URL to the commit, PR, or issue on GitHub." }
+        }
+      }
+    },
+    "commitHours": {
+      "type": "array",
+      "description": "24-element array of commit counts indexed by hour of day (0 = midnight, 23 = 11 pm). Used to render the commit-hours histogram.",
+      "items": { "type": "integer", "minimum": 0 },
+      "minItems": 24,
+      "maxItems": 24
+    },
+    "weeklyCommits": {
+      "type": "array",
+      "description": "Commit counts for each of the past N weeks, ordered oldest-first.",
+      "items": { "type": "integer", "minimum": 0 }
+    },
+    "stats": {
+      "type": "object",
+      "description": "High-level summary statistics displayed in the widget header.",
+      "additionalProperties": false,
+      "required": ["repos", "stars", "contributions"],
+      "properties": {
+        "repos": { "type": "integer", "minimum": 0, "description": "Total number of public repositories." },
+        "stars": { "type": "integer", "minimum": 0, "description": "Total stargazers across all repositories." },
+        "contributions": { "type": "integer", "minimum": 0, "description": "Total contribution count (mirrors totalContributions)." }
+      }
+    },
+    "topRepos": {
+      "type": "array",
+      "description": "Short list of the most-starred repositories for display in the repos panel.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "stars", "language", "description"],
+        "properties": {
+          "name": { "type": "string", "description": "Repository name (without owner prefix)." },
+          "stars": { "type": "integer", "minimum": 0, "description": "Stargazer count." },
+          "language": { "type": "string", "description": "Primary language detected by GitHub." },
+          "description": { "type": "string", "description": "Short repository description." }
+        }
+      }
+    }
+  }
+}

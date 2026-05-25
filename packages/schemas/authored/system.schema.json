@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/system.schema.json",
+  "title": "System",
+  "description": "System status board data rendered by the system-status widget, listing each data source with its current health state and display styling classes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["lines"],
+  "properties": {
+    "lines": {
+      "type": "array",
+      "description": "Ordered list of status rows, one per data source.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "value", "dotClass", "valClass"],
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Human-readable label for the data source.",
+            "examples": ["Health", "Sleep", "Github Events"]
+          },
+          "value": {
+            "type": "string",
+            "description": "Current status string, e.g. 'PENDING', 'OK', or a formatted metric.",
+            "examples": ["PENDING", "OK"]
+          },
+          "dotClass": {
+            "type": "string",
+            "description": "CSS class applied to the status indicator dot (controls color).",
+            "examples": ["sys-dot-amber", "sys-dot-green"]
+          },
+          "valClass": {
+            "type": "string",
+            "description": "CSS class applied to the value text (controls color).",
+            "examples": ["sys-val-amber", "sys-val-green"]
+          }
+        }
+      }
+    }
+  }
+}

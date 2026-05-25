@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/profile.schema.json",
+  "title": "Profile",
+  "description": "Personal profile data displayed in the portfolio hero and terminal widget, including contact links, bio copy, and the animated terminal line sequence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "title", "location", "bio", "tagline", "avatar", "terminalLines"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full display name.",
+      "examples": ["Jonathan Lloyd"]
+    },
+    "title": {
+      "type": "string",
+      "description": "Current job title or professional role.",
+      "examples": ["Engineering Director"]
+    },
+    "location": {
+      "type": "string",
+      "description": "Human-readable city/region string.",
+      "examples": ["San Francisco, CA"]
+    },
+    "coordinates": {
+      "type": "array",
+      "description": "Geographic coordinates as [latitude, longitude].",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "linkedin": {
+      "type": "string",
+      "description": "Full URL to LinkedIn profile.",
+      "examples": ["https://www.linkedin.com/in/lifegames/"]
+    },
+    "github": {
+      "type": "string",
+      "description": "Full URL to GitHub profile.",
+      "examples": ["https://github.com/j0nathan-ll0yd"]
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short biography sentence used in the about section."
+    },
+    "tagline": {
+      "type": "string",
+      "description": "Short punchy tagline displayed as a subtitle.",
+      "examples": ["Welcome to my human datastream."]
+    },
+    "avatar": {
+      "type": "string",
+      "description": "Relative or absolute URL to the avatar image.",
+      "examples": ["/assets/avatar.webp"]
+    },
+    "terminalLines": {
+      "type": "array",
+      "description": "Ordered sequence of lines rendered in the animated terminal widget.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "text"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Line role: 'prompt' renders a shell prompt, 'output' renders response text, 'blank' renders an empty line, 'cursor' renders the blinking cursor.",
+            "enum": ["prompt", "output", "blank", "cursor"]
+          },
+          "text": {
+            "type": "string",
+            "description": "Raw text content of the line. Empty string for blank and cursor lines."
+          }
+        }
+      }
+    }
+  }
+}

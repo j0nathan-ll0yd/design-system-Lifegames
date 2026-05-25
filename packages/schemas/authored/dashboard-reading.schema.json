@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/dashboard-reading.schema.json",
+  "title": "DashboardReading",
+  "description": "Reading dashboard data consumed by the reading widget. The articles array is a simplified display projection of LP articles-export data; fields are renamed and reduced for consumer-site rendering. The stats object is DS-computed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["articles", "stats"],
+  "properties": {
+    "articles": {
+      "type": "array",
+      "description": "Recently saved articles projected from LP articles-export. Field names are simplified relative to the LP export (e.g. 'title' instead of 'articleTitle').",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "source", "date", "category", "starred"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title.",
+            "examples": ["Why SQLite Is So Great for the Edge"]
+          },
+          "source": {
+            "type": "string",
+            "description": "Source domain or publication name.",
+            "examples": ["fly.io/blog"]
+          },
+          "date": {
+            "type": "string",
+            "description": "Human-readable relative or formatted date string.",
+            "examples": ["Today", "Yesterday", "2 days ago"]
+          },
+          "category": {
+            "type": "string",
+            "description": "Topic category label for display filtering.",
+            "examples": ["Tech", "AI", "Web", "Databases", "Languages"]
+          },
+          "starred": {
+            "type": "boolean",
+            "description": "Whether the article has been starred/highlighted by the user."
+          }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "description": "Aggregate reading statistics computed by the DS pipeline from LP articles-export data.",
+      "additionalProperties": false,
+      "required": ["totalSubscriptions", "unreadCount", "articlesThisWeek", "articlesLastWeek", "starredCount"],
+      "properties": {
+        "totalSubscriptions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of active feed subscriptions.",
+          "examples": [47]
+        },
+        "unreadCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of unread articles across all subscriptions.",
+          "examples": [128]
+        },
+        "articlesThisWeek": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of articles saved or read in the current calendar week.",
+          "examples": [23]
+        },
+        "articlesLastWeek": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of articles saved or read in the previous calendar week.",
+          "examples": [19]
+        },
+        "starredCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of starred articles.",
+          "examples": [34]
+        }
+      }
+    }
+  }
+}
