@@ -1,0 +1,58 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "feat: open feature branch for v3 API",
+      "date": "14d ago",
+      "hash": "a1b2c3d",
+      "additions": 23,
+      "deletions": 0
+    },
+    {
+      "type": "commit",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "feat: start sensor v2 protocol work",
+      "date": "13d ago",
+      "hash": "b2c3d4e",
+      "additions": 89,
+      "deletions": 12
+    },
+    {
+      "type": "pr_opened",
+      "repo": "kelvin-foundry/cli-tools",
+      "title": "Add interactive mode to deploy command",
+      "date": "12d ago",
+      "hash": "c3d4e5f",
+      "additions": 234,
+      "deletions": 0
+    },
+    {
+      "type": "pr_merged",
+      "repo": "acme-corp/api-gateway",
+      "title": "v3 API: implement backwards compat shim",
+      "date": "7d ago",
+      "hash": "d4e5f6g",
+      "additions": 567,
+      "deletions": 89
+    },
+    {
+      "type": "pr_merged",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Sensor v2: full protocol implementation",
+      "date": "4d ago",
+      "hash": "e5f6g7h",
+      "additions": 1203,
+      "deletions": 312
+    },
+    {
+      "type": "pr_merged",
+      "repo": "kelvin-foundry/cli-tools",
+      "title": "Deploy command interactive mode",
+      "date": "1d ago",
+      "hash": "f6g7h8i",
+      "additions": 312,
+      "deletions": 34
+    }
+  ]
+}

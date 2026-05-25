@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import WaffleGrid from '@widgets/location/WaffleGrid.astro';
+import fixture from '@fixtures/location/waffle-grid.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/location/waffle-grid.skeleton.json';
+import fixture_empty from '@fixtures/location/waffle-grid.empty.json';
+import fixture_populated_min from '@fixtures/location/waffle-grid.populated-min.json';
+import fixture_populated_max from '@fixtures/location/waffle-grid.populated-max.json';
+import var_a from '@fixtures/location/waffle-grid.variation-a.json';
+import var_b from '@fixtures/location/waffle-grid.variation-b.json';
+import var_c from '@fixtures/location/waffle-grid.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WaffleGrid — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">WaffleGrid</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">location</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="WaffleGrid" category="location" fixture={fixture} Comp={WaffleGrid} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="WaffleGrid"
+        category="location"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="WaffleGrid"
+        category="location"
+        variations={[
+          { label: "dense-year", fixture: var_a, caption: "Highly active mosaic — 824 visits across 7 categories, rich tile density across Riverton." },
+          { label: "sparse-year", fixture: var_b, caption: "Low activity grid — 72 visits mostly empty with occasional bursts, casual user in Northgate." },
+          { label: "cultural-explorer", fixture: var_c, caption: "Arts, outdoors, and nightlife lead — 323 visits from a Westend cultural explorer." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/location/WaffleGrid.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import WaffleGrid from '@lifegames/web/widgets/location/WaffleGrid.astro';
+---
+&lt;WaffleGrid &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/location/WaffleGrid.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Location/WaffleGridView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/location/waffle-grid.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

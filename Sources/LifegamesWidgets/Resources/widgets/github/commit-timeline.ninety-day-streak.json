@@ -1,0 +1,14 @@
+{
+  "commits": [
+    {"hash": "a1b2c3d", "message": "feat: add batch export endpoint", "repo": "acme-corp/api-gateway", "date": "2025-05-24", "repoColor": "#7c3aed"},
+    {"hash": "b2c3d4e", "message": "fix: correct pagination offset calculation", "repo": "acme-corp/api-gateway", "date": "2025-05-23", "repoColor": "#7c3aed"},
+    {"hash": "c3d4e5f", "message": "refactor: move auth helpers to shared package", "repo": "acme-corp/api-gateway", "date": "2025-05-22", "repoColor": "#7c3aed"},
+    {"hash": "d4e5f6a", "message": "chore: clean up unused imports", "repo": "acme-corp/api-gateway", "date": "2025-05-21", "repoColor": "#7c3aed"},
+    {"hash": "e5f6a7b", "message": "docs: update contributing guide", "repo": "acme-corp/api-gateway", "date": "2025-05-20", "repoColor": "#7c3aed"},
+    {"hash": "f6a7b8c", "message": "test: add coverage for edge cases in token refresh", "repo": "acme-corp/api-gateway", "date": "2025-05-19", "repoColor": "#7c3aed"},
+    {"hash": "a7b8c9d", "message": "feat: implement cursor-based pagination", "repo": "acme-corp/api-gateway", "date": "2025-05-18", "repoColor": "#7c3aed"},
+    {"hash": "b8c9d0e", "message": "fix: prevent double-fire on form submit", "repo": "acme-corp/api-gateway", "date": "2025-05-17", "repoColor": "#7c3aed"},
+    {"hash": "c9d0e1f", "message": "chore: bump CI runner to ubuntu-24.04", "repo": "acme-corp/api-gateway", "date": "2025-05-16", "repoColor": "#7c3aed"},
+    {"hash": "d0e1f2a", "message": "feat: add webhook signature verification", "repo": "acme-corp/api-gateway", "date": "2025-05-15", "repoColor": "#7c3aed"}
+  ]
+}

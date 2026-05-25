@@ -1,0 +1,10 @@
+{
+  "cityBreakdown": [
+    { "city": "Riverton", "visitCount": 52 },
+    { "city": "Northgate", "visitCount": 48 },
+    { "city": "Westend", "visitCount": 44 },
+    { "city": "Marbury", "visitCount": 41 },
+    { "city": "Solburg", "visitCount": 38 },
+    { "city": "Kelvin Heights", "visitCount": 35 }
+  ]
+}

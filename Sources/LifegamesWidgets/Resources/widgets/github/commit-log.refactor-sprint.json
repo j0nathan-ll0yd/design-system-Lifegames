@@ -1,0 +1,44 @@
+{
+  "commits": [
+    {
+      "hash": "f1e3c5a",
+      "message": "refactor: split sensor handler into domain-specific modules",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-24",
+      "additions": 456,
+      "deletions": 612
+    },
+    {
+      "hash": "d7b2a4f",
+      "message": "refactor: replace global state with dependency injection",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-23",
+      "additions": 234,
+      "deletions": 298
+    },
+    {
+      "hash": "c3e8f1b",
+      "message": "refactor: extract config parsing into typed struct",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-22",
+      "additions": 145,
+      "deletions": 189
+    },
+    {
+      "hash": "a9d4c2e",
+      "message": "refactor: remove unused telemetry shim layer",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-21",
+      "additions": 12,
+      "deletions": 378
+    },
+    {
+      "hash": "8b1f3a7",
+      "message": "refactor: consolidate error types into errors package",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-20",
+      "additions": 89,
+      "deletions": 145
+    }
+  ]
+}

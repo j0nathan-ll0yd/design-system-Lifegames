@@ -1,0 +1,12 @@
+{
+  "commits": [
+    {"hash": "a1b2c3d", "message": "feat: add CLI flag for verbose output", "repo": "kelvin-foundry/cli-tools", "date": "2025-05-24", "repoColor": "#d97706"},
+    {"hash": "b2c3d4e", "message": "fix: dashboard chart flicker on resize", "repo": "solstice-systems/dashboard", "date": "2025-05-23", "repoColor": "#059669"},
+    {"hash": "c3d4e5f", "message": "chore: update sensor calibration constants", "repo": "northbridge-labs/sensor-mesh", "date": "2025-05-22", "repoColor": "#0891b2"},
+    {"hash": "d4e5f6a", "message": "docs: add API usage examples", "repo": "acme-corp/api-gateway", "date": "2025-05-21", "repoColor": "#7c3aed"},
+    {"hash": "e5f6a7b", "message": "fix: handle empty stdin in pipe mode", "repo": "kelvin-foundry/cli-tools", "date": "2025-05-20", "repoColor": "#d97706"},
+    {"hash": "f6a7b8c", "message": "feat: add dark mode toggle to dashboard", "repo": "solstice-systems/dashboard", "date": "2025-05-19", "repoColor": "#059669"},
+    {"hash": "a7b8c9d", "message": "test: add unit tests for sensor aggregator", "repo": "northbridge-labs/sensor-mesh", "date": "2025-05-18", "repoColor": "#0891b2"},
+    {"hash": "b8c9d0e", "message": "refactor: simplify auth middleware", "repo": "acme-corp/api-gateway", "date": "2025-05-17", "repoColor": "#7c3aed"}
+  ]
+}

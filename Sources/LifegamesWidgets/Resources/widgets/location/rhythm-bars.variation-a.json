@@ -1,0 +1,18 @@
+{
+  "last90Days": [
+    { "date": "2026-03-01", "count": 5, "uniquePlaces": 3, "totalDurationMinutes": 285 },
+    { "date": "2026-03-02", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 240 },
+    { "date": "2026-03-03", "count": 6, "uniquePlaces": 4, "totalDurationMinutes": 330 },
+    { "date": "2026-03-04", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 180 },
+    { "date": "2026-03-05", "count": 5, "uniquePlaces": 3, "totalDurationMinutes": 300 },
+    { "date": "2026-03-06", "count": 0, "uniquePlaces": 0, "totalDurationMinutes": 0 },
+    { "date": "2026-03-07", "count": 0, "uniquePlaces": 0, "totalDurationMinutes": 0 },
+    { "date": "2026-03-08", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 210 },
+    { "date": "2026-03-09", "count": 5, "uniquePlaces": 3, "totalDurationMinutes": 270 },
+    { "date": "2026-03-10", "count": 4, "uniquePlaces": 2, "totalDurationMinutes": 225 },
+    { "date": "2026-03-11", "count": 6, "uniquePlaces": 4, "totalDurationMinutes": 360 },
+    { "date": "2026-03-12", "count": 5, "uniquePlaces": 3, "totalDurationMinutes": 290 },
+    { "date": "2026-03-13", "count": 0, "uniquePlaces": 0, "totalDurationMinutes": 0 },
+    { "date": "2026-03-14", "count": 0, "uniquePlaces": 0, "totalDurationMinutes": 0 }
+  ]
+}

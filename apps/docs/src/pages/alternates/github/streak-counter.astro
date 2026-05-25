@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import StreakCounter from '@widgets/github/StreakCounter.astro';
+import fixture from '@fixtures/github/streak-counter.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/streak-counter.skeleton.json';
+import fixture_empty from '@fixtures/github/streak-counter.empty.json';
+import fixture_populated_min from '@fixtures/github/streak-counter.populated-min.json';
+import fixture_populated_max from '@fixtures/github/streak-counter.populated-max.json';
+import var_a from '@fixtures/github/streak-counter.variation-a.json';
+import var_b from '@fixtures/github/streak-counter.variation-b.json';
+import var_c from '@fixtures/github/streak-counter.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StreakCounter — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">StreakCounter</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="StreakCounter" category="github" fixture={fixture} Comp={StreakCounter} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="StreakCounter"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="StreakCounter"
+        category="github"
+        variations={[
+          { label: "long-streak", fixture: var_a, caption: "Active 127-day streak with a personal best of 203 days — all 15 recent days contributed." },
+          { label: "broken-streak", fixture: var_b, caption: "Streak reset after a 9-day vacation gap; back on track for 4 consecutive days, prior best 89 days." },
+          { label: "just-started", fixture: var_c, caption: "12-day first streak — current equals longest, 12 consecutive days of contributions so far." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/StreakCounter.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import StreakCounter from '@lifegames/web/widgets/github/StreakCounter.astro';
+---
+&lt;StreakCounter &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/StreakCounter.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/StreakCounterView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/streak-counter.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

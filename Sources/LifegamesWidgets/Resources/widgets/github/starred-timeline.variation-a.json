@@ -1,0 +1,49 @@
+{
+  "repos": [
+    {
+      "owner": "acme-corp",
+      "name": "api-gateway",
+      "description": "High-performance API gateway with rate limiting, auth middleware, and observability hooks.",
+      "stars": 1240,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-03-14"
+    },
+    {
+      "owner": "solstice-systems",
+      "name": "dashboard",
+      "description": "Monorepo analytics dashboard with Turborepo, Prisma, and tRPC.",
+      "stars": 312,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-03-13"
+    },
+    {
+      "owner": "mira-c",
+      "name": "react-hooks-lab",
+      "description": "Experimental React hooks for data fetching, animation, and form validation.",
+      "stars": 204,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-03-13"
+    },
+    {
+      "owner": "northbridge-labs",
+      "name": "vite-plugin-tokens",
+      "description": "Vite plugin for automatic design token injection at build time.",
+      "stars": 88,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-03-12"
+    },
+    {
+      "owner": "kelvin-foundry",
+      "name": "cli-tools",
+      "description": "A curated collection of command-line utilities for developer productivity.",
+      "stars": 780,
+      "language": "Go",
+      "languageColor": "#00add8",
+      "starredAt": "2025-01-20"
+    }
+  ]
+}

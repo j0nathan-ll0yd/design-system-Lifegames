@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "type": "pushed",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add rate limiting middleware to all public endpoints",
+      "date": "1h ago",
+      "detail": "4 commits"
+    },
+    {
+      "type": "opened PR",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Refactor telemetry pipeline for batch ingestion",
+      "date": "2h ago",
+      "detail": "#218"
+    },
+    {
+      "type": "merged PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add OpenAPI spec generation to CI pipeline",
+      "date": "4h ago",
+      "detail": "#205"
+    },
+    {
+      "type": "opened issue",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "WebSocket connections drop under high load",
+      "date": "6h ago",
+      "detail": "#89"
+    },
+    {
+      "type": "reviewed PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Migrate session store to Redis cluster",
+      "date": "8h ago",
+      "detail": "#201"
+    },
+    {
+      "type": "pushed",
+      "repo": "solstice-systems/dashboard",
+      "title": "Update chart color tokens",
+      "date": "1d ago",
+      "detail": "2 commits"
+    },
+    {
+      "type": "closed issue",
+      "repo": "acme-corp/api-gateway",
+      "title": "Pagination cursor breaks on empty result sets",
+      "date": "1d ago",
+      "detail": "#76"
+    },
+    {
+      "type": "created",
+      "repo": "acme-corp/api-gateway",
+      "title": "branch feature/batch-export",
+      "date": "2d ago",
+      "detail": ""
+    },
+    {
+      "type": "starred",
+      "repo": "kelvin-foundry/cli-tools",
+      "title": "kelvin-foundry/cli-tools",
+      "date": "2d ago",
+      "detail": ""
+    },
+    {
+      "type": "pushed",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Bump protobuf schema version",
+      "date": "3d ago",
+      "detail": "1 commit"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "repos": [
+    {
+      "name": "api-gateway",
+      "description": "High-performance API gateway with built-in rate limiting and auth middleware.",
+      "stars": 1240,
+      "forks": 89,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "url": "#"
+    },
+    {
+      "name": "cli-tools",
+      "description": "Developer workflow automation CLI suite.",
+      "stars": 780,
+      "forks": 120,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "url": "#"
+    },
+    {
+      "name": "learn-rust-together",
+      "description": "Structured Rust learning path with annotated exercises.",
+      "stars": 340,
+      "forks": 0,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "url": "#"
+    },
+    {
+      "name": "dotfiles",
+      "description": "Shell, editor, and terminal config managed with GNU stow.",
+      "stars": 312,
+      "forks": 41,
+      "language": "Shell",
+      "languageColor": "#89e051",
+      "url": "#"
+    },
+    {
+      "name": "sensor-mesh",
+      "description": "Edge sensor data collection framework in Rust.",
+      "stars": 198,
+      "forks": 23,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "url": "#"
+    },
+    {
+      "name": "dashboard",
+      "description": "Personal analytics dashboard with live data feeds.",
+      "stars": 87,
+      "forks": 14,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "url": "#"
+    }
+  ]
+}

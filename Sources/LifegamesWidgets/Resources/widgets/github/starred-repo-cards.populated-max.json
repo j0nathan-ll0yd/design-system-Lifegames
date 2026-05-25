@@ -1,0 +1,64 @@
+{
+  "repos": [
+    {
+      "owner": "acme-corp",
+      "name": "api-gateway",
+      "description": "High-performance API gateway with rate limiting, auth middleware, and observability hooks.",
+      "stars": 1240,
+      "forks": 89,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "url": "https://github.com/acme-corp/api-gateway"
+    },
+    {
+      "owner": "kelvin-foundry",
+      "name": "cli-tools",
+      "description": "A curated collection of command-line utilities for developer productivity.",
+      "stars": 780,
+      "forks": 120,
+      "language": "Go",
+      "languageColor": "#00add8",
+      "url": "https://github.com/kelvin-foundry/cli-tools"
+    },
+    {
+      "owner": "northbridge-labs",
+      "name": "sensor-mesh",
+      "description": "Distributed sensor coordination layer built on MQTT and Rust async.",
+      "stars": 445,
+      "forks": 67,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "url": "https://github.com/northbridge-labs/sensor-mesh"
+    },
+    {
+      "owner": "solstice-systems",
+      "name": "dashboard",
+      "description": "Monorepo analytics dashboard with Turborepo, Prisma, and tRPC.",
+      "stars": 312,
+      "forks": 44,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "url": "https://github.com/solstice-systems/dashboard"
+    },
+    {
+      "owner": "r-mendez",
+      "name": "embedded-rtos",
+      "description": "Minimal real-time OS experiments for ARM Cortex-M boards.",
+      "stars": 198,
+      "forks": 28,
+      "language": "C",
+      "languageColor": "#555555",
+      "url": "https://github.com/r-mendez/embedded-rtos"
+    },
+    {
+      "owner": "j-howard",
+      "name": "learn-rust-together",
+      "description": "Collaborative Rust learning repo with exercises and annotated examples.",
+      "stars": 340,
+      "forks": 230,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "url": "https://github.com/j-howard/learn-rust-together"
+    }
+  ]
+}

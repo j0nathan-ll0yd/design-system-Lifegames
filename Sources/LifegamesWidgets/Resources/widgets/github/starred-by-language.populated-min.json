@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "repos": [
+        { "owner": "northbridge-labs", "name": "sensor-mesh", "stars": 198, "starredAt": "2 weeks ago" }
+      ]
+    }
+  ]
+}

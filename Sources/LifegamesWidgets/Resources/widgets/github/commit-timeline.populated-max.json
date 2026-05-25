@@ -1,0 +1,60 @@
+{
+  "commits": [
+    {
+      "hash": "f2e8a1b",
+      "message": "feat: add structured audit logging to all write operations",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-24",
+      "repoColor": "#7c3aed"
+    },
+    {
+      "hash": "c9d3f7e",
+      "message": "fix: resolve race condition in concurrent token refresh",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-23",
+      "repoColor": "#7c3aed"
+    },
+    {
+      "hash": "b7a2c5d",
+      "message": "refactor: extract middleware chain into composable units",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-22",
+      "repoColor": "#0891b2"
+    },
+    {
+      "hash": "e4f1b8a",
+      "message": "chore: upgrade dependencies and update lockfile",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-21",
+      "repoColor": "#0891b2"
+    },
+    {
+      "hash": "d6c3e9f",
+      "message": "docs: add architecture decision record for event sourcing",
+      "repo": "solstice-systems/dashboard",
+      "date": "2025-05-20",
+      "repoColor": "#059669"
+    },
+    {
+      "hash": "a1b4d7c",
+      "message": "test: add integration tests for payment webhook handler",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-19",
+      "repoColor": "#7c3aed"
+    },
+    {
+      "hash": "9e2f5a8",
+      "message": "fix: handle empty response in upstream health checks",
+      "repo": "kelvin-foundry/cli-tools",
+      "date": "2025-05-18",
+      "repoColor": "#d97706"
+    },
+    {
+      "hash": "7c1b3d6",
+      "message": "feat: expose Prometheus metrics endpoint at /metrics",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-17",
+      "repoColor": "#7c3aed"
+    }
+  ]
+}

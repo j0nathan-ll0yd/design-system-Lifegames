@@ -1,0 +1,8 @@
+{
+  "languages": [
+    { "name": "Python", "pct": 68.4, "color": "#3572a5" },
+    { "name": "Jupyter Notebook", "pct": 18.7, "color": "#da5b0b" },
+    { "name": "R", "pct": 7.9, "color": "#198ce7" },
+    { "name": "Shell", "pct": 5.0, "color": "#89e051" }
+  ]
+}

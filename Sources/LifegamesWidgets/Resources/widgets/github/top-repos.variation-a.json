@@ -1,0 +1,39 @@
+{
+  "repos": [
+    {
+      "rank": 1,
+      "name": "acme-corp/api-gateway",
+      "stars": 1240,
+      "language": "TypeScript",
+      "languageColor": "#3178c6"
+    },
+    {
+      "rank": 2,
+      "name": "kelvin-foundry/cli-tools",
+      "stars": 780,
+      "language": "Go",
+      "languageColor": "#00add8"
+    },
+    {
+      "rank": 3,
+      "name": "northbridge-labs/sensor-mesh",
+      "stars": 445,
+      "language": "Rust",
+      "languageColor": "#dea584"
+    },
+    {
+      "rank": 4,
+      "name": "j-howard/learn-rust-together",
+      "stars": 340,
+      "language": "Rust",
+      "languageColor": "#dea584"
+    },
+    {
+      "rank": 5,
+      "name": "ada-dev/dotfiles",
+      "stars": 312,
+      "language": "Shell",
+      "languageColor": "#89e051"
+    }
+  ]
+}

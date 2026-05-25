@@ -1,0 +1,14 @@
+{
+  "repos": [
+    {
+      "owner": "ada-dev",
+      "name": "dotfiles",
+      "description": "Personal shell and editor configuration.",
+      "stars": 12,
+      "forks": 3,
+      "language": "Shell",
+      "languageColor": "#89e051",
+      "url": "https://github.com/ada-dev/dotfiles"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "categoryBreakdown": [
+    { "category": "Food & Drink", "visitCount": 8, "totalMinutes": 480 },
+    { "category": "Fitness", "visitCount": 5, "totalMinutes": 300 }
+  ],
+  "totalVisits": 13
+}

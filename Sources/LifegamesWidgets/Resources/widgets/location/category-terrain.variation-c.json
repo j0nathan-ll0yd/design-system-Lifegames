@@ -1,0 +1,9 @@
+{
+  "categoryBreakdown": [
+    { "category": "Work & Coworking", "visitCount": 68, "totalMinutes": 8160 },
+    { "category": "Food & Drink", "visitCount": 61, "totalMinutes": 3660 },
+    { "category": "Travel & Transport", "visitCount": 44, "totalMinutes": 1320 },
+    { "category": "Fitness", "visitCount": 16, "totalMinutes": 960 },
+    { "category": "Outdoors & Recreation", "visitCount": 10, "totalMinutes": 1800 }
+  ]
+}

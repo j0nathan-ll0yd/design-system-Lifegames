@@ -1,0 +1,67 @@
+{
+  "events": [
+    {
+      "type": "pushed",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Implement event batching for telemetry ingestion",
+      "date": "Mon 9am",
+      "detail": "8 commits"
+    },
+    {
+      "type": "opened PR",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Add sensor health check endpoint",
+      "date": "Mon 11am",
+      "detail": "#312"
+    },
+    {
+      "type": "merged PR",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Fix MQTT reconnect loop on network timeout",
+      "date": "Mon 2pm",
+      "detail": "#309"
+    },
+    {
+      "type": "pushed",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Add integration tests for batch processor",
+      "date": "Tue 10am",
+      "detail": "5 commits"
+    },
+    {
+      "type": "opened issue",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Memory leak in long-running worker processes",
+      "date": "Tue 3pm",
+      "detail": "#315"
+    },
+    {
+      "type": "pushed",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Hotfix: cap worker pool to 32 goroutines",
+      "date": "Wed 8am",
+      "detail": "2 commits"
+    },
+    {
+      "type": "reviewed PR",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Prometheus metrics for pipeline stages",
+      "date": "Wed 1pm",
+      "detail": "#314"
+    },
+    {
+      "type": "merged PR",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Add sensor health check endpoint",
+      "date": "Thu 9am",
+      "detail": "#312"
+    },
+    {
+      "type": "pushed",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Update README with hackathon architecture diagram",
+      "date": "Thu 4pm",
+      "detail": "3 commits"
+    }
+  ]
+}

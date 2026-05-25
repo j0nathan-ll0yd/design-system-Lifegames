@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import CityConstellation from '@widgets/location/CityConstellation.astro';
+import fixture from '@fixtures/location/city-constellation.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/location/city-constellation.skeleton.json';
+import fixture_empty from '@fixtures/location/city-constellation.empty.json';
+import fixture_populated_min from '@fixtures/location/city-constellation.populated-min.json';
+import fixture_populated_max from '@fixtures/location/city-constellation.populated-max.json';
+import var_a from '@fixtures/location/city-constellation.variation-a.json';
+import var_b from '@fixtures/location/city-constellation.variation-b.json';
+import var_c from '@fixtures/location/city-constellation.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CityConstellation — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">CityConstellation</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">location</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="CityConstellation" category="location" fixture={fixture} Comp={CityConstellation} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="CityConstellation"
+        category="location"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="CityConstellation"
+        category="location"
+        variations={[
+          { label: "regional-orbit", fixture: var_a, caption: "Riverton as dominant hub with rare spoke trips to Northgate and Marbury." },
+          { label: "national-circuit", fixture: var_b, caption: "Six cities with near-equal visit counts — balanced explorer mobility profile." },
+          { label: "commuter-triangle", fixture: var_c, caption: "Three-node tight cluster — home, office, and a third anchor visited daily." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/location/CityConstellation.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import CityConstellation from '@lifegames/web/widgets/location/CityConstellation.astro';
+---
+&lt;CityConstellation &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/location/CityConstellation.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Location/CityConstellationView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/location/city-constellation.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

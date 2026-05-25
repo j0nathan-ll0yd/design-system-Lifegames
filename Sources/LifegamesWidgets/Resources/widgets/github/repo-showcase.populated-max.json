@@ -1,0 +1,44 @@
+{
+  "repos": [
+    {
+      "name": "api-gateway",
+      "description": "High-performance API gateway with rate limiting, auth middleware, and distributed tracing built in.",
+      "stars": 1240,
+      "forks": 89,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "topics": ["api", "gateway", "typescript", "observability", "rate-limiting"],
+      "url": "#"
+    },
+    {
+      "name": "cli-tools",
+      "description": "Collection of command-line utilities for developer workflow automation. Weekly downloads tracked in README.",
+      "stars": 780,
+      "forks": 120,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "topics": ["cli", "golang", "developer-tools", "automation"],
+      "url": "#"
+    },
+    {
+      "name": "sensor-mesh",
+      "description": "Distributed sensor data collection framework revived after 3 years dormant. Now with async support.",
+      "stars": 198,
+      "forks": 23,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "topics": ["rust", "iot", "embedded", "async"],
+      "url": "#"
+    },
+    {
+      "name": "learn-rust-together",
+      "description": "Structured Rust learning path with numbered chapters and annotated exercises. 340 stars, 45 watchers.",
+      "stars": 340,
+      "forks": 0,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "topics": ["rust", "learning", "tutorial", "beginner-friendly"],
+      "url": "#"
+    }
+  ]
+}

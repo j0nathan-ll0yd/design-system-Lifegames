@@ -1,0 +1,13 @@
+{
+  "events": [
+    {
+      "type": "pr_merged",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add health check endpoint",
+      "date": "2d ago",
+      "hash": "a1b2c3d",
+      "additions": 45,
+      "deletions": 12
+    }
+  ]
+}

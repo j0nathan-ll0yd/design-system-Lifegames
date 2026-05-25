@@ -1,0 +1,11 @@
+{
+  "repos": [
+    {
+      "rank": 1,
+      "name": "acme-corp/api-gateway",
+      "stars": 1240,
+      "language": "TypeScript",
+      "languageColor": "#3178c6"
+    }
+  ]
+}

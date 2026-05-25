@@ -1,0 +1,39 @@
+{
+  "repos": [
+    {
+      "rank": 1,
+      "name": "j-howard/learn-rust-together",
+      "stars": 340,
+      "language": "Rust",
+      "languageColor": "#dea584"
+    },
+    {
+      "rank": 2,
+      "name": "northbridge-labs/sensor-mesh",
+      "stars": 445,
+      "language": "Rust",
+      "languageColor": "#dea584"
+    },
+    {
+      "rank": 3,
+      "name": "kelvin-foundry/no-std-alloc",
+      "stars": 112,
+      "language": "Rust",
+      "languageColor": "#dea584"
+    },
+    {
+      "rank": 4,
+      "name": "ada-dev/raft-rs",
+      "stars": 89,
+      "language": "Rust",
+      "languageColor": "#dea584"
+    },
+    {
+      "rank": 5,
+      "name": "r-mendez/embedded-rtos",
+      "stars": 198,
+      "language": "C",
+      "languageColor": "#555555"
+    }
+  ]
+}

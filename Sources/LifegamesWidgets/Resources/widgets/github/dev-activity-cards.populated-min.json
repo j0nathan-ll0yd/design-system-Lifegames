@@ -1,0 +1,13 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "Fix null pointer in user session handler",
+      "date": "2h ago",
+      "hash": "a1b2c3d",
+      "additions": 9,
+      "deletions": 3
+    }
+  ]
+}

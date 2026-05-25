@@ -1,0 +1,52 @@
+{
+  "commits": [
+    {
+      "hash": "3f9c1a2",
+      "message": "wip",
+      "repo": "r-mendez/side-project",
+      "date": "2025-05-24",
+      "additions": 234,
+      "deletions": 18
+    },
+    {
+      "hash": "7a2b4c5",
+      "message": "fix stuff",
+      "repo": "r-mendez/side-project",
+      "date": "2025-05-23",
+      "additions": 56,
+      "deletions": 89
+    },
+    {
+      "hash": "1d3e5f7",
+      "message": "asdf",
+      "repo": "r-mendez/side-project",
+      "date": "2025-05-23",
+      "additions": 12,
+      "deletions": 4
+    },
+    {
+      "hash": "9b1c3e4",
+      "message": "ok now it works",
+      "repo": "r-mendez/side-project",
+      "date": "2025-05-22",
+      "additions": 78,
+      "deletions": 67
+    },
+    {
+      "hash": "5e7f2a1",
+      "message": "more fixes",
+      "repo": "r-mendez/side-project",
+      "date": "2025-05-21",
+      "additions": 34,
+      "deletions": 29
+    },
+    {
+      "hash": "2c4d6b8",
+      "message": "finally",
+      "repo": "r-mendez/side-project",
+      "date": "2025-05-20",
+      "additions": 145,
+      "deletions": 132
+    }
+  ]
+}

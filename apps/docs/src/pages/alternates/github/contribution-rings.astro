@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import ContributionRings from '@widgets/github/ContributionRings.astro';
+import fixture from '@fixtures/github/contribution-rings.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/contribution-rings.skeleton.json';
+import fixture_empty from '@fixtures/github/contribution-rings.empty.json';
+import fixture_populated_min from '@fixtures/github/contribution-rings.populated-min.json';
+import fixture_populated_max from '@fixtures/github/contribution-rings.populated-max.json';
+import var_a from '@fixtures/github/contribution-rings.variation-a.json';
+import var_b from '@fixtures/github/contribution-rings.variation-b.json';
+import var_c from '@fixtures/github/contribution-rings.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContributionRings — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">ContributionRings</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="ContributionRings" category="github" fixture={fixture} Comp={ContributionRings} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="ContributionRings"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="ContributionRings"
+        category="github"
+        variations={[
+          { label: "commit-dominant", fixture: var_a, caption: "94% commit ring nearly full — ada-dev solo maintainer with 1,203 commits and minimal review overhead." },
+          { label: "review-specialist", fixture: var_b, caption: "Reviews ring at 96% with 512 reviews — senior contributor spending most time on others' PRs at acme-corp." },
+          { label: "new-developer", fixture: var_c, caption: "All rings at 8–18% fill — mira-c three months into her first developer job, small but genuine progress." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/ContributionRings.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import ContributionRings from '@lifegames/web/widgets/github/ContributionRings.astro';
+---
+&lt;ContributionRings &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/ContributionRings.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/ContributionRingsView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/contribution-rings.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "r-mendez/dotfiles",
+      "title": "Update neovim config with LSP keybindings",
+      "date": "6h ago",
+      "hash": "a1b2c3d",
+      "additions": 34,
+      "deletions": 12
+    },
+    {
+      "type": "commit",
+      "repo": "r-mendez/scripts",
+      "title": "Add backup sync script for remote servers",
+      "date": "1d ago",
+      "hash": "b2c3d4e",
+      "additions": 89,
+      "deletions": 0
+    },
+    {
+      "type": "pr_merged",
+      "repo": "kelvin-foundry/cli-tools",
+      "title": "Add fish shell completion for all subcommands",
+      "date": "3d ago",
+      "hash": "c3d4e5f",
+      "additions": 134,
+      "deletions": 18
+    }
+  ]
+}

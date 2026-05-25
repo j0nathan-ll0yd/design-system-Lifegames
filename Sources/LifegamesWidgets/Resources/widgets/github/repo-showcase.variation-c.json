@@ -1,0 +1,34 @@
+{
+  "repos": [
+    {
+      "name": "dashboard",
+      "description": "Monorepo with 12 packages built on turborepo. 56 contributors, 2,100 files across services.",
+      "stars": 412,
+      "forks": 67,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "topics": ["monorepo", "turborepo", "typescript", "fullstack"],
+      "url": "#"
+    },
+    {
+      "name": "learn-rust-together",
+      "description": "Educational repo structured as a course with numbered chapters. Template-style — no forks by design.",
+      "stars": 340,
+      "forks": 0,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "topics": ["rust", "education", "tutorial"],
+      "url": "#"
+    },
+    {
+      "name": "cli-tools",
+      "description": "Library-style CLI suite with npm weekly downloads badge and maintained changelog.",
+      "stars": 780,
+      "forks": 120,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "topics": ["cli", "library", "golang", "devtools"],
+      "url": "#"
+    }
+  ]
+}

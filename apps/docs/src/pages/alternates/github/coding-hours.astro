@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import CodingHours from '@widgets/github/CodingHours.astro';
+import fixture from '@fixtures/github/coding-hours.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/coding-hours.skeleton.json';
+import fixture_empty from '@fixtures/github/coding-hours.empty.json';
+import fixture_populated_min from '@fixtures/github/coding-hours.populated-min.json';
+import fixture_populated_max from '@fixtures/github/coding-hours.populated-max.json';
+import var_nine_to_five from '@fixtures/github/coding-hours.nine-to-five.json';
+import var_night_owl from '@fixtures/github/coding-hours.night-owl.json';
+import var_weekend_warrior from '@fixtures/github/coding-hours.weekend-warrior.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodingHours — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">CodingHours</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="CodingHours" category="github" fixture={fixture} Comp={CodingHours} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="CodingHours"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="CodingHours"
+        category="github"
+        variations={[
+          { label: "nine-to-five", fixture: var_nine_to_five, caption: "Peak activity 9am–5pm Mon–Fri, almost zero after 6pm or weekends — j-howard on a corporate schedule." },
+          { label: "night-owl", fixture: var_night_owl, caption: "Primary activity window 9pm–2am with minimal daytime commits — mira-c freelancing across solstice-systems and personal repos." },
+          { label: "weekend-warrior", fixture: var_weekend_warrior, caption: "Nearly zero Mon–Fri, large spikes Sat–Sun — r-mendez contributing to kelvin-foundry/cli-tools as a side project." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/CodingHours.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import CodingHours from '@lifegames/web/widgets/github/CodingHours.astro';
+---
+&lt;CodingHours &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/CodingHours.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/CodingHoursView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/coding-hours.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

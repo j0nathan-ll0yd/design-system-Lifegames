@@ -1,0 +1,44 @@
+{
+  "repos": [
+    {
+      "owner": "ada-dev",
+      "name": "dotfiles",
+      "description": "Personal shell and editor configuration.",
+      "stars": 312,
+      "forks": 45,
+      "language": "Shell",
+      "languageColor": "#89e051",
+      "url": "https://github.com/ada-dev/dotfiles"
+    },
+    {
+      "owner": "ada-dev",
+      "name": "zsh-plugins",
+      "description": "Modular zsh plugin loader with lazy evaluation.",
+      "stars": 89,
+      "forks": 12,
+      "language": "Shell",
+      "languageColor": "#89e051",
+      "url": "https://github.com/ada-dev/zsh-plugins"
+    },
+    {
+      "owner": "kelvin-foundry",
+      "name": "cli-tools",
+      "description": "A curated collection of command-line utilities for developer productivity.",
+      "stars": 780,
+      "forks": 120,
+      "language": "Go",
+      "languageColor": "#00add8",
+      "url": "https://github.com/kelvin-foundry/cli-tools"
+    },
+    {
+      "owner": "j-howard",
+      "name": "tmux-config",
+      "description": "Minimal tmux configuration optimized for keyboard-driven workflows.",
+      "stars": 56,
+      "forks": 8,
+      "language": "Shell",
+      "languageColor": "#89e051",
+      "url": "https://github.com/j-howard/tmux-config"
+    }
+  ]
+}

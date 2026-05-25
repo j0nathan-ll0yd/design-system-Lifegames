@@ -1,0 +1,99 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import BookModal from '@widgets/reading/BookModal.astro';
+import fixture from '@fixtures/reading/book-modal.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/reading/book-modal.skeleton.json';
+import fixture_empty from '@fixtures/reading/book-modal.empty.json';
+import fixture_populated_min from '@fixtures/reading/book-modal.populated-min.json';
+import fixture_populated_max from '@fixtures/reading/book-modal.populated-max.json';
+import var_currently_reading from '@fixtures/reading/book-modal.currently-reading.json';
+import var_completed_with_rating from '@fixtures/reading/book-modal.completed-with-rating.json';
+import var_wishlist from '@fixtures/reading/book-modal.wishlist.json';
+import var_series_book from '@fixtures/reading/book-modal.series-book.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookModal — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">BookModal</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">reading</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <p class="wd-text">BookModal is a client-side modal triggered by clicking a <code>.shelf-book[data-book]</code> element. It has no props — the modal shell renders hidden by default and is populated via <code>openModal(data)</code>. The variations below showcase the modal in its open state with representative book data.</p>
+      <ResponsiveDemo widgetName="BookModal" category="reading" fixture={fixture} Comp={BookModal} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <p class="wd-text">BookModal is presentational — it renders as a hidden overlay shell with no configurable props. State is driven entirely by the <code>data-book</code> JSON attribute on the triggering element.</p>
+      <StateMatrix
+        widgetName="BookModal"
+        category="reading"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="BookModal"
+        category="reading"
+        variations={[
+          { label: "currently-reading", fixture: var_currently_reading, caption: "In-progress book with progress bar (61%) and series metadata." },
+          { label: "completed-with-rating", fixture: var_completed_with_rating, caption: "Finished book with 5-star rating and reader notes section." },
+          { label: "wishlist", fixture: var_wishlist, caption: "Want-to-read entry — no progress bar, no stars, no notes." },
+          { label: "series-book", fixture: var_series_book, caption: "Mid-series entry showing Book 2 of 4 with full series name display." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/reading/BookModal.types.ts</code> for the full interface. BookModal accepts no props — book data is passed via <code>data-book</code> JSON on <code>.shelf-book</code> trigger elements.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import BookModal from '@lifegames/web/widgets/reading/BookModal.astro';
+---
+&lt;BookModal /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/reading/BookModal.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Reading/BookModalView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

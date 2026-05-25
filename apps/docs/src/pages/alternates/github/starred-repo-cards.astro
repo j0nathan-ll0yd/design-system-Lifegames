@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import StarredRepoCards from '@widgets/github/StarredRepoCards.astro';
+import fixture from '@fixtures/github/starred-repo-cards.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/starred-repo-cards.skeleton.json';
+import fixture_empty from '@fixtures/github/starred-repo-cards.empty.json';
+import fixture_populated_min from '@fixtures/github/starred-repo-cards.populated-min.json';
+import fixture_populated_max from '@fixtures/github/starred-repo-cards.populated-max.json';
+import var_curated_recent from '@fixtures/github/starred-repo-cards.variation-a.json';
+import var_themed_batch from '@fixtures/github/starred-repo-cards.variation-b.json';
+import var_diverse_mix from '@fixtures/github/starred-repo-cards.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StarredRepoCards — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">StarredRepoCards</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="StarredRepoCards" category="github" fixture={fixture} Comp={StarredRepoCards} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="StarredRepoCards"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="StarredRepoCards"
+        category="github"
+        variations={[
+          { label: "curated-recent", fixture: var_curated_recent, caption: "Six cards starred in the past 2 weeks — active bookmarking across TypeScript, Go, and Rust." },
+          { label: "themed-batch", fixture: var_themed_batch, caption: "Four cards all starred the same weekend — a deep-dive into CLI tooling and shell utilities." },
+          { label: "diverse-mix", fixture: var_diverse_mix, caption: "Six cards spanning embedded systems, Rust async, and collaborative learning repos — no common theme." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/StarredRepoCards.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import StarredRepoCards from '@lifegames/web/widgets/github/StarredRepoCards.astro';
+---
+&lt;StarredRepoCards &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/StarredRepoCards.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/StarredRepoCardsView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-cards.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "languages": [
+    { "name": "TypeScript", "pct": 28.4, "color": "#3178c6", "repos": 8 },
+    { "name": "Go", "pct": 18.2, "color": "#00ADD8", "repos": 5 },
+    { "name": "Python", "pct": 16.1, "color": "#3572A5", "repos": 4 },
+    { "name": "Rust", "pct": 12.7, "color": "#dea584", "repos": 3 },
+    { "name": "Ruby", "pct": 8.9, "color": "#701516", "repos": 2 },
+    { "name": "Swift", "pct": 6.3, "color": "#F05138", "repos": 2 },
+    { "name": "Kotlin", "pct": 5.1, "color": "#A97BFF", "repos": 1 },
+    { "name": "C#", "pct": 2.8, "color": "#178600", "repos": 1 },
+    { "name": "Shell", "pct": 1.5, "color": "#89e051", "repos": 3 }
+  ]
+}

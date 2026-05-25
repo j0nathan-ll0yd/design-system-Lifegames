@@ -1,0 +1,16 @@
+{
+  "topics": [
+    { "name": "typescript", "count": 14, "size": "xl" },
+    { "name": "python", "count": 11, "size": "lg" },
+    { "name": "cli", "count": 9, "size": "lg" },
+    { "name": "web", "count": 8, "size": "md" },
+    { "name": "api", "count": 7, "size": "md" },
+    { "name": "devops", "count": 6, "size": "md" },
+    { "name": "testing", "count": 5, "size": "sm" },
+    { "name": "documentation", "count": 4, "size": "sm" },
+    { "name": "rust", "count": 4, "size": "sm" },
+    { "name": "go", "count": 3, "size": "sm" },
+    { "name": "open-source", "count": 3, "size": "sm" },
+    { "name": "tooling", "count": 2, "size": "xs" }
+  ]
+}

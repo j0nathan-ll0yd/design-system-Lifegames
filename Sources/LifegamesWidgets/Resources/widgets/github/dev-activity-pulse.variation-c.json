@@ -1,0 +1,40 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "northbridge-labs/hackathon-2025",
+      "title": "feat: real-time sensor dashboard MVP",
+      "date": "2h ago",
+      "hash": "a1b2c3d",
+      "additions": 847,
+      "deletions": 23
+    },
+    {
+      "type": "commit",
+      "repo": "northbridge-labs/hackathon-2025",
+      "title": "feat: add websocket broadcast to all connected clients",
+      "date": "3h ago",
+      "hash": "b2c3d4e",
+      "additions": 312,
+      "deletions": 45
+    },
+    {
+      "type": "commit",
+      "repo": "northbridge-labs/hackathon-2025",
+      "title": "chore: init project with Vite + Go backend",
+      "date": "8h ago",
+      "hash": "c3d4e5f",
+      "additions": 234,
+      "deletions": 0
+    },
+    {
+      "type": "pr_opened",
+      "repo": "northbridge-labs/hackathon-2025",
+      "title": "Hackathon day 1 progress: sensor ingestion pipeline",
+      "date": "10h ago",
+      "hash": "d4e5f6g",
+      "additions": 0,
+      "deletions": 0
+    }
+  ]
+}

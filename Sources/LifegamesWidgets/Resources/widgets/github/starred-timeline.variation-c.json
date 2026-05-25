@@ -1,0 +1,58 @@
+{
+  "repos": [
+    {
+      "owner": "r-mendez",
+      "name": "embedded-rtos",
+      "description": "Minimal real-time OS experiments for ARM Cortex-M boards.",
+      "stars": 198,
+      "language": "C",
+      "languageColor": "#555555",
+      "starredAt": "2025-04-28"
+    },
+    {
+      "owner": "northbridge-labs",
+      "name": "sensor-mesh",
+      "description": "Distributed sensor coordination layer built on MQTT and Rust async.",
+      "stars": 445,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-04-27"
+    },
+    {
+      "owner": "kelvin-foundry",
+      "name": "no-std-alloc",
+      "description": "Custom allocator for no_std Rust targets with arena and bump strategies.",
+      "stars": 112,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-04-27"
+    },
+    {
+      "owner": "j-howard",
+      "name": "learn-rust-together",
+      "description": "Collaborative Rust learning repo with exercises and annotated examples.",
+      "stars": 340,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-04-26"
+    },
+    {
+      "owner": "ada-dev",
+      "name": "raft-rs",
+      "description": "A readable Raft consensus implementation in Rust for educational use.",
+      "stars": 89,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-04-25"
+    },
+    {
+      "owner": "mira-c",
+      "name": "wasm-sandbox",
+      "description": "Sandbox experiments running Rust compiled to WebAssembly.",
+      "stars": 67,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-04-24"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "repos": [
+    {
+      "owner": "acme-corp",
+      "name": "api-gateway",
+      "description": "High-performance API gateway with rate limiting, auth middleware, and observability hooks.",
+      "stars": 1240,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-11-18"
+    },
+    {
+      "owner": "kelvin-foundry",
+      "name": "cli-tools",
+      "description": "A curated collection of command-line utilities for developer productivity.",
+      "stars": 780,
+      "language": "Go",
+      "languageColor": "#00add8",
+      "starredAt": "2025-11-15"
+    },
+    {
+      "owner": "northbridge-labs",
+      "name": "sensor-mesh",
+      "description": "Distributed sensor coordination layer built on MQTT and Rust async.",
+      "stars": 445,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-11-12"
+    },
+    {
+      "owner": "solstice-systems",
+      "name": "dashboard",
+      "description": "Monorepo analytics dashboard with Turborepo, Prisma, and tRPC.",
+      "stars": 312,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-11-09"
+    },
+    {
+      "owner": "r-mendez",
+      "name": "embedded-rtos",
+      "description": "Minimal real-time OS experiments for ARM Cortex-M boards.",
+      "stars": 198,
+      "language": "C",
+      "languageColor": "#555555",
+      "starredAt": "2025-11-05"
+    },
+    {
+      "owner": "j-howard",
+      "name": "learn-rust-together",
+      "description": "Collaborative Rust learning repo with exercises and annotated examples.",
+      "stars": 340,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "starredAt": "2025-11-02"
+    },
+    {
+      "owner": "mira-c",
+      "name": "react-hooks-lab",
+      "description": "Experimental React hooks for data fetching, animation, and form validation.",
+      "stars": 204,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "starredAt": "2025-10-28"
+    },
+    {
+      "owner": "ada-dev",
+      "name": "go-scheduler",
+      "description": "Lightweight task scheduler with cron-like syntax for Go services.",
+      "stars": 167,
+      "language": "Go",
+      "languageColor": "#00add8",
+      "starredAt": "2025-10-22"
+    }
+  ]
+}

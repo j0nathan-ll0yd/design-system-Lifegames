@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import CommitTimeline from '@widgets/github/CommitTimeline.astro';
+import fixture from '@fixtures/github/commit-timeline.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/commit-timeline.skeleton.json';
+import fixture_empty from '@fixtures/github/commit-timeline.empty.json';
+import fixture_populated_min from '@fixtures/github/commit-timeline.populated-min.json';
+import fixture_populated_max from '@fixtures/github/commit-timeline.populated-max.json';
+import var_streak from '@fixtures/github/commit-timeline.ninety-day-streak.json';
+import var_gap from '@fixtures/github/commit-timeline.gap-and-recovery.json';
+import var_scatter from '@fixtures/github/commit-timeline.multi-repo-scatter.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CommitTimeline — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">CommitTimeline</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="CommitTimeline" category="github" fixture={fixture} Comp={CommitTimeline} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="CommitTimeline"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="CommitTimeline"
+        category="github"
+        variations={[
+          { label: "ninety-day-streak", fixture: var_streak, caption: "Daily commits for 90 consecutive days — ada-dev with slight density increase toward day 60–90 as momentum builds." },
+          { label: "gap-and-recovery", fixture: var_gap, caption: "30 active days, then a 21-day gap for vacation, then a 25-day recovery — the break is clearly visible in timestamp spacing." },
+          { label: "multi-repo-scatter", fixture: var_scatter, caption: "Commits spread across 8 repos with no single dominant repo — j-howard maintaining several small tools simultaneously." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/CommitTimeline.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import CommitTimeline from '@lifegames/web/widgets/github/CommitTimeline.astro';
+---
+&lt;CommitTimeline &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/CommitTimeline.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/CommitTimelineView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

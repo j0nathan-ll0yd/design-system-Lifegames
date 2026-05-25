@@ -1,0 +1,16 @@
+{
+  "weeks": [
+    {"additions": 34,  "deletions": 12},
+    {"additions": 41,  "deletions": 15},
+    {"additions": 58,  "deletions": 23},
+    {"additions": 72,  "deletions": 28},
+    {"additions": 89,  "deletions": 31},
+    {"additions": 118, "deletions": 42},
+    {"additions": 145, "deletions": 54},
+    {"additions": 167, "deletions": 61},
+    {"additions": 198, "deletions": 72},
+    {"additions": 223, "deletions": 84},
+    {"additions": 256, "deletions": 93},
+    {"additions": 289, "deletions": 107}
+  ]
+}

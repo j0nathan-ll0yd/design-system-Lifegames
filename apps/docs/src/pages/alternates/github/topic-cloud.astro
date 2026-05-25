@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import TopicCloud from '@widgets/github/TopicCloud.astro';
+import fixture from '@fixtures/github/topic-cloud.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/topic-cloud.skeleton.json';
+import fixture_empty from '@fixtures/github/topic-cloud.empty.json';
+import fixture_populated_min from '@fixtures/github/topic-cloud.populated-min.json';
+import fixture_populated_max from '@fixtures/github/topic-cloud.populated-max.json';
+import var_a from '@fixtures/github/topic-cloud.variation-a.json';
+import var_b from '@fixtures/github/topic-cloud.variation-b.json';
+import var_c from '@fixtures/github/topic-cloud.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TopicCloud — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">TopicCloud</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="TopicCloud" category="github" fixture={fixture} Comp={TopicCloud} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="TopicCloud"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="TopicCloud"
+        category="github"
+        variations={[
+          { label: "focused-specialist", fixture: var_a, caption: "Embedded systems engineer — rust, embedded, no-std, rtos, firmware, bare-metal form a tight coherent cluster." },
+          { label: "trending-cluster", fixture: var_b, caption: "AI tooling focus — ai, llm, machine-learning, rag, vector-search, embeddings dominate the cloud." },
+          { label: "ecosystem-cluster", fixture: var_c, caption: "T3 stack devotee — nextjs, vercel, prisma, trpc, tailwind, turborepo all from one tightly coupled ecosystem." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/TopicCloud.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import TopicCloud from '@lifegames/web/widgets/github/TopicCloud.astro';
+---
+&lt;TopicCloud &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/TopicCloud.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/TopicCloudView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/topic-cloud.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

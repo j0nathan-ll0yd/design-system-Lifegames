@@ -1,0 +1,94 @@
+{
+  "events": [
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "feat: implement circuit breaker pattern",
+      "date": "1h ago",
+      "hash": "a1b2c3d",
+      "additions": 134,
+      "deletions": 28
+    },
+    {
+      "type": "pr_merged",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add structured logging with correlation IDs",
+      "date": "4h ago",
+      "hash": "b2c3d4e",
+      "additions": 267,
+      "deletions": 89
+    },
+    {
+      "type": "commit",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "fix: sensor heartbeat not clearing on disconnect",
+      "date": "6h ago",
+      "hash": "c3d4e5f",
+      "additions": 14,
+      "deletions": 7
+    },
+    {
+      "type": "pr_opened",
+      "repo": "kelvin-foundry/cli-tools",
+      "title": "Introduce interactive config wizard",
+      "date": "10h ago",
+      "hash": "d4e5f6g",
+      "additions": 312,
+      "deletions": 0
+    },
+    {
+      "type": "issue_closed",
+      "repo": "acme-corp/api-gateway",
+      "title": "Timeout not propagated through middleware chain",
+      "date": "1d ago",
+      "hash": "e5f6g7h",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "type": "commit",
+      "repo": "solstice-systems/dashboard",
+      "title": "perf: memoize expensive selector computations",
+      "date": "1d ago",
+      "hash": "f6g7h8i",
+      "additions": 34,
+      "deletions": 18
+    },
+    {
+      "type": "pr_merged",
+      "repo": "northbridge-labs/sensor-mesh",
+      "title": "Replace polling with push-based sensor updates",
+      "date": "2d ago",
+      "hash": "g7h8i9j",
+      "additions": 445,
+      "deletions": 312
+    },
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "chore: upgrade Go to 1.22 and refresh deps",
+      "date": "2d ago",
+      "hash": "h8i9j0k",
+      "additions": 12,
+      "deletions": 14
+    },
+    {
+      "type": "issue_opened",
+      "repo": "kelvin-foundry/cli-tools",
+      "title": "Support XDG base directory spec for config paths",
+      "date": "3d ago",
+      "hash": "i9j0k1l",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "type": "commit",
+      "repo": "solstice-systems/dashboard",
+      "title": "style: align metric card padding with design tokens",
+      "date": "3d ago",
+      "hash": "j0k1l2m",
+      "additions": 23,
+      "deletions": 41
+    }
+  ]
+}

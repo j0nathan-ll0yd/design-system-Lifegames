@@ -1,0 +1,11 @@
+{
+  "topics": [
+    { "name": "nextjs", "count": 12, "size": "xl" },
+    { "name": "vercel", "count": 9, "size": "lg" },
+    { "name": "prisma", "count": 8, "size": "lg" },
+    { "name": "trpc", "count": 7, "size": "md" },
+    { "name": "tailwind", "count": 6, "size": "md" },
+    { "name": "turborepo", "count": 5, "size": "sm" },
+    { "name": "typescript", "count": 5, "size": "sm" }
+  ]
+}

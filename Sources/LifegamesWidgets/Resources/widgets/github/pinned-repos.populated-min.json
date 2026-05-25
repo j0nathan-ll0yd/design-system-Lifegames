@@ -1,0 +1,13 @@
+{
+  "repos": [
+    {
+      "name": "sensor-mesh",
+      "description": "Distributed sensor data collection for edge devices.",
+      "stars": 12,
+      "forks": 2,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "url": "#"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "weeks": [
+    {
+      "firstDay": "2025-03-02",
+      "days": [
+        {"date": "2025-03-02", "count": 3, "level": 2},
+        {"date": "2025-03-03", "count": 5, "level": 3},
+        {"date": "2025-03-04", "count": 7, "level": 4},
+        {"date": "2025-03-05", "count": 4, "level": 2},
+        {"date": "2025-03-06", "count": 6, "level": 3},
+        {"date": "2025-03-07", "count": 2, "level": 1},
+        {"date": "2025-03-08", "count": 1, "level": 1}
+      ]
+    },
+    {
+      "firstDay": "2025-03-09",
+      "days": [
+        {"date": "2025-03-09", "count": 0, "level": 0},
+        {"date": "2025-03-10", "count": 8, "level": 4},
+        {"date": "2025-03-11", "count": 9, "level": 4},
+        {"date": "2025-03-12", "count": 5, "level": 3},
+        {"date": "2025-03-13", "count": 3, "level": 2},
+        {"date": "2025-03-14", "count": 1, "level": 1},
+        {"date": "2025-03-15", "count": 0, "level": 0}
+      ]
+    },
+    {
+      "firstDay": "2025-03-16",
+      "days": [
+        {"date": "2025-03-16", "count": 4, "level": 2},
+        {"date": "2025-03-17", "count": 6, "level": 3},
+        {"date": "2025-03-18", "count": 7, "level": 4},
+        {"date": "2025-03-19", "count": 5, "level": 3},
+        {"date": "2025-03-20", "count": 8, "level": 4},
+        {"date": "2025-03-21", "count": 3, "level": 2},
+        {"date": "2025-03-22", "count": 2, "level": 1}
+      ]
+    },
+    {
+      "firstDay": "2025-03-23",
+      "days": [
+        {"date": "2025-03-23", "count": 1, "level": 1},
+        {"date": "2025-03-24", "count": 4, "level": 2},
+        {"date": "2025-03-25", "count": 6, "level": 3},
+        {"date": "2025-03-26", "count": 9, "level": 4},
+        {"date": "2025-03-27", "count": 7, "level": 4},
+        {"date": "2025-03-28", "count": 2, "level": 1},
+        {"date": "2025-03-29", "count": 0, "level": 0}
+      ]
+    }
+  ],
+  "months": ["Mar"]
+}

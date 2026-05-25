@@ -1,0 +1,10 @@
+{
+  "commits": [
+    {"hash": "f1e2d3c", "message": "feat: resume work on search indexer after vacation", "repo": "acme-corp/api-gateway", "date": "2025-05-22", "repoColor": "#7c3aed"},
+    {"hash": "e2d3c4b", "message": "fix: re-sync after 3-week gap", "repo": "acme-corp/api-gateway", "date": "2025-05-21", "repoColor": "#7c3aed"},
+    {"hash": "d3c4b5a", "message": "chore: merge main into feature branch post-vacation", "repo": "acme-corp/api-gateway", "date": "2025-05-20", "repoColor": "#7c3aed"},
+    {"hash": "c4b5a69", "message": "feat: add user preferences API", "repo": "acme-corp/api-gateway", "date": "2025-04-28", "repoColor": "#7c3aed"},
+    {"hash": "b5a6978", "message": "fix: correct CORS headers on preflight", "repo": "acme-corp/api-gateway", "date": "2025-04-27", "repoColor": "#7c3aed"},
+    {"hash": "a697887", "message": "docs: document rate limiting behavior", "repo": "acme-corp/api-gateway", "date": "2025-04-26", "repoColor": "#7c3aed"}
+  ]
+}

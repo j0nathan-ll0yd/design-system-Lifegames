@@ -1,0 +1,49 @@
+{
+  "events": [
+    {
+      "type": "pr_opened",
+      "repo": "acme-corp/api-gateway",
+      "title": "Migrate auth layer to OAuth 2.1",
+      "date": "18d ago",
+      "hash": "a1b2c3d",
+      "additions": 312,
+      "deletions": 67
+    },
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "Awaiting design review sign-off",
+      "date": "17d ago",
+      "hash": "b2c3d4e",
+      "additions": 0,
+      "deletions": 0
+    },
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "Address review feedback: scope validation",
+      "date": "10d ago",
+      "hash": "c3d4e5f",
+      "additions": 45,
+      "deletions": 23
+    },
+    {
+      "type": "commit",
+      "repo": "acme-corp/api-gateway",
+      "title": "Address review feedback: token rotation edge cases",
+      "date": "8d ago",
+      "hash": "d4e5f6g",
+      "additions": 78,
+      "deletions": 34
+    },
+    {
+      "type": "pr_merged",
+      "repo": "acme-corp/api-gateway",
+      "title": "Migrate auth layer to OAuth 2.1",
+      "date": "2d ago",
+      "hash": "e5f6g7h",
+      "additions": 0,
+      "deletions": 0
+    }
+  ]
+}

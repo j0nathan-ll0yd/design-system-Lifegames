@@ -1,0 +1,68 @@
+{
+  "commits": [
+    {
+      "hash": "f2e8a1b",
+      "message": "feat: add structured audit logging to all write operations",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-24",
+      "additions": 234,
+      "deletions": 18
+    },
+    {
+      "hash": "c9d3f7e",
+      "message": "fix: resolve race condition in concurrent token refresh",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-23",
+      "additions": 67,
+      "deletions": 43
+    },
+    {
+      "hash": "b7a2c5d",
+      "message": "refactor: extract middleware chain into composable units",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-22",
+      "additions": 312,
+      "deletions": 287
+    },
+    {
+      "hash": "e4f1b8a",
+      "message": "chore: upgrade dependencies and update lockfile",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-21",
+      "additions": 89,
+      "deletions": 74
+    },
+    {
+      "hash": "d6c3e9f",
+      "message": "docs: add architecture decision record for event sourcing",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-20",
+      "additions": 156,
+      "deletions": 0
+    },
+    {
+      "hash": "a1b4d7c",
+      "message": "test: add integration tests for payment webhook handler",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-19",
+      "additions": 198,
+      "deletions": 12
+    },
+    {
+      "hash": "9e2f5a8",
+      "message": "fix: handle empty response body in upstream health checks",
+      "repo": "northbridge-labs/sensor-mesh",
+      "date": "2025-05-18",
+      "additions": 23,
+      "deletions": 8
+    },
+    {
+      "hash": "7c1b3d6",
+      "message": "feat: expose Prometheus metrics endpoint at /metrics",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-17",
+      "additions": 178,
+      "deletions": 5
+    }
+  ]
+}

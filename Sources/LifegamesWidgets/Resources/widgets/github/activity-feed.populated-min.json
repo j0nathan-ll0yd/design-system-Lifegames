@@ -1,0 +1,11 @@
+{
+  "events": [
+    {
+      "type": "pushed",
+      "repo": "acme-corp/api-gateway",
+      "title": "Fix auth token refresh",
+      "date": "3h ago",
+      "detail": "1 commit"
+    }
+  ]
+}

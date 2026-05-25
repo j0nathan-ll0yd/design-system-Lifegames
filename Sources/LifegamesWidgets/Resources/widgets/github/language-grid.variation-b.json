@@ -1,0 +1,9 @@
+{
+  "languages": [
+    { "name": "Python", "pct": 42.1, "color": "#3572A5", "repos": 5 },
+    { "name": "Go", "pct": 31.7, "color": "#00ADD8", "repos": 4 },
+    { "name": "TypeScript", "pct": 14.6, "color": "#3178c6", "repos": 2 },
+    { "name": "Rust", "pct": 8.3, "color": "#dea584", "repos": 2 },
+    { "name": "Shell", "pct": 3.3, "color": "#89e051", "repos": 4 }
+  ]
+}

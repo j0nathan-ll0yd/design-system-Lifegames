@@ -1,0 +1,12 @@
+{
+  "cityBreakdown": [
+    { "city": "Riverton", "visitCount": 312 },
+    { "city": "Northgate", "visitCount": 98 },
+    { "city": "Westend", "visitCount": 74 },
+    { "city": "Marbury", "visitCount": 51 },
+    { "city": "Solburg", "visitCount": 33 },
+    { "city": "Kelvin Heights", "visitCount": 19 },
+    { "city": "Harlow", "visitCount": 11 },
+    { "city": "Eastfield", "visitCount": 7 }
+  ]
+}

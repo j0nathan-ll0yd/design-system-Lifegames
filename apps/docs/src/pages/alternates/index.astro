@@ -53,7 +53,7 @@ const PRODUCTION_NAMES = new Set([
   'PlaceLeaderboard', 'ExplorationOdometer',
 ]);
 
-const overlayWidgets = new Set([
+const overlayWidgetNames = new Set([
   'BookModal', 'FocusOverlay', 'DndOverlay', 'ComingSoon',
 ]);
 
@@ -67,12 +67,12 @@ const categoryLabel: Record<string, string> = {
 };
 
 const widgets = (manifest as { widgets: ManifestEntry[] }).widgets
-  .filter((w) => !overlayWidgets.has(w.name))
   .map((w) => {
     const componentName = resolveComponentName(w.name);
     const fixture = fixtureMap[w.fixturePath] || {};
     const isProduction = w.production === true || PRODUCTION_NAMES.has(w.name);
-    return { entry: w, componentName, fixture, isProduction };
+    const isOverlay = overlayWidgetNames.has(w.name);
+    return { entry: w, componentName, fixture, isProduction, isOverlay };
   });
 
 const totalCount = widgets.length;
@@ -261,6 +261,11 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
       color: var(--neon-green);
       border: 1px solid rgba(6, 214, 160, 0.25);
     }
+    .vb-badge--overlay {
+      background: color-mix(in srgb, var(--neon-purple) 12%, transparent);
+      color: var(--neon-purple);
+      border: 1px solid color-mix(in srgb, var(--neon-purple) 25%, transparent);
+    }
     @media (max-width: 720px) {
       .vb-card--production {
         grid-column: span 1;
@@ -300,10 +305,12 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
 
   <main class="vb-main">
     <div class="vb-grid">
-      {widgets.map(({ entry, componentName, fixture, isProduction }) => {
+      {widgets.map(({ entry, componentName, fixture, isProduction, isOverlay }) => {
         const Comp = componentMap[componentName];
         const kebab = toKebab(componentName);
-        const href = `/widgets/${entry.category}/${kebab}/`;
+        const href = isProduction
+          ? `/widgets/${kebab}/`
+          : `/alternates/${entry.category}/${kebab}/`;
         return (
           <div
             class={`vb-card${isProduction ? ' vb-card--production' : ''}`}
@@ -324,6 +331,7 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
             <div class="vb-card-footer">
               <a class="vb-card-name" href={href}>{entry.name}</a>
               <span class="vb-badge vb-badge--category">{entry.category}</span>
+              {isOverlay && <span class="vb-badge vb-badge--overlay">Overlay</span>}
               {isProduction && <span class="vb-badge vb-badge--prod">Production</span>}
             </div>
           </div>

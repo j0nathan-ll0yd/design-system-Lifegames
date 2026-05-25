@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "type": "reviewed PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add structured logging to all handlers",
+      "date": "2h ago",
+      "detail": "#287"
+    },
+    {
+      "type": "reviewed PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Migrate from REST to gRPC for internal services",
+      "date": "5h ago",
+      "detail": "#283"
+    },
+    {
+      "type": "reviewed PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add request tracing with OpenTelemetry",
+      "date": "1d ago",
+      "detail": "#281"
+    },
+    {
+      "type": "pushed",
+      "repo": "acme-corp/api-gateway",
+      "title": "Fix review nit: use context cancellation",
+      "date": "1d ago",
+      "detail": "1 commit"
+    },
+    {
+      "type": "reviewed PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Refactor database connection pooling",
+      "date": "2d ago",
+      "detail": "#278"
+    },
+    {
+      "type": "reviewed PR",
+      "repo": "acme-corp/api-gateway",
+      "title": "Add circuit breaker to upstream calls",
+      "date": "3d ago",
+      "detail": "#274"
+    }
+  ]
+}

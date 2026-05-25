@@ -1,0 +1,10 @@
+{
+  "totalDurationHours": 71,
+  "categoryBreakdown": [
+    { "category": "Travel & Transport", "visitCount": 98, "totalMinutes": 2940 },
+    { "category": "Work & Coworking", "visitCount": 41, "totalMinutes": 1640 },
+    { "category": "Home", "visitCount": 18, "totalMinutes": 540 },
+    { "category": "Food & Drink", "visitCount": 28, "totalMinutes": 560 },
+    { "category": "Other", "visitCount": 9, "totalMinutes": 180 }
+  ]
+}

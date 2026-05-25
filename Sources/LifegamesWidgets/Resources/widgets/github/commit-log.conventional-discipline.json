@@ -1,0 +1,52 @@
+{
+  "commits": [
+    {
+      "hash": "f3a9c2d",
+      "message": "feat(auth): add OAuth2 PKCE flow for mobile clients",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-24",
+      "additions": 187,
+      "deletions": 14
+    },
+    {
+      "hash": "e1b7a4f",
+      "message": "fix(ratelimit): prevent burst overflow on concurrent requests",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-23",
+      "additions": 45,
+      "deletions": 32
+    },
+    {
+      "hash": "d8c2e5a",
+      "message": "chore(deps): bump go-chi from 5.0.8 to 5.0.12",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-22",
+      "additions": 12,
+      "deletions": 12
+    },
+    {
+      "hash": "c5f3b1d",
+      "message": "docs(api): add OpenAPI annotations to user endpoints",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-21",
+      "additions": 134,
+      "deletions": 0
+    },
+    {
+      "hash": "b2a4c7e",
+      "message": "refactor(middleware): extract logging into decorator pattern",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-20",
+      "additions": 98,
+      "deletions": 112
+    },
+    {
+      "hash": "a9d1f4b",
+      "message": "test(auth): add table-driven tests for token validation",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-19",
+      "additions": 167,
+      "deletions": 8
+    }
+  ]
+}

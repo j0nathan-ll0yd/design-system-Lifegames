@@ -1,0 +1,12 @@
+{
+  "weeks": [
+    { "total": 48, "label": "Mon" },
+    { "total": 35, "label": "Tue" },
+    { "total": 28, "label": "Wed" },
+    { "total": 19, "label": "Thu" },
+    { "total": 11, "label": "Fri" },
+    { "total": 2, "label": "Sat" },
+    { "total": 1, "label": "Sun" }
+  ],
+  "maxWeek": 48
+}

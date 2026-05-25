@@ -1,0 +1,7 @@
+{
+  "languages": [
+    { "name": "TypeScript", "pct": 91.2, "color": "#3178c6" },
+    { "name": "JavaScript", "pct": 5.3, "color": "#f1e05a" },
+    { "name": "CSS", "pct": 3.5, "color": "#563d7c" }
+  ]
+}

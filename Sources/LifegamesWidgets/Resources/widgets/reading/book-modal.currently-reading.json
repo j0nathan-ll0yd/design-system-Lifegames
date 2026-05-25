@@ -1,0 +1,15 @@
+{
+  "title": "The Pragmatic Terminus",
+  "author": "A. Vasquez",
+  "asin": "B0AAPRAG01",
+  "series": "Systems Thinking Trilogy",
+  "seriesNumber": 2,
+  "seriesTotal": 3,
+  "status": "in_progress",
+  "statusLabel": "Reading",
+  "progress": 61,
+  "pages": 412,
+  "year": 2023,
+  "genres": ["Software Engineering", "Systems Design"],
+  "desc": "A practitioner's guide to building systems that outlast their authors. Covers failure modes, evolutionary architecture, and the sociotechnical dynamics that determine whether a codebase thrives or rots."
+}

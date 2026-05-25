@@ -1,0 +1,7 @@
+{
+  "cityBreakdown": [
+    { "city": "Riverton", "visitCount": 22 },
+    { "city": "Northgate", "visitCount": 22 },
+    { "city": "Marbury", "visitCount": 22 }
+  ]
+}

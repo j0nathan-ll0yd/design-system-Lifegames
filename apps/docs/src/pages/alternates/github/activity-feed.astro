@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import ActivityFeed from '@widgets/github/ActivityFeed.astro';
+import fixture from '@fixtures/github/activity-feed.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/activity-feed.skeleton.json';
+import fixture_empty from '@fixtures/github/activity-feed.empty.json';
+import fixture_populated_min from '@fixtures/github/activity-feed.populated-min.json';
+import fixture_populated_max from '@fixtures/github/activity-feed.populated-max.json';
+import var_burst_week from '@fixtures/github/activity-feed.burst-week.json';
+import var_review_heavy from '@fixtures/github/activity-feed.review-heavy-month.json';
+import var_new_contributor from '@fixtures/github/activity-feed.new-contributor.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ActivityFeed — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">ActivityFeed</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="ActivityFeed" category="github" fixture={fixture} Comp={ActivityFeed} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="ActivityFeed"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="ActivityFeed"
+        category="github"
+        variations={[
+          { label: "burst-week", fixture: var_burst_week, caption: "40+ events in 7 days after a hackathon — push, PR open, PR merge, issue close clustered Mon–Thu on northbridge-labs/sensor-mesh." },
+          { label: "review-heavy-month", fixture: var_review_heavy, caption: "60% of events are PR reviews and comments — r-mendez acting as team lead reviewer on acme-corp/api-gateway with only 5 pushes." },
+          { label: "new-contributor", fixture: var_new_contributor, caption: "Sparse feed with 3 events: one fork, one issue opened, one PR submitted — mira-c's first open-source activity on solstice-systems/dashboard." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/ActivityFeed.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import ActivityFeed from '@lifegames/web/widgets/github/ActivityFeed.astro';
+---
+&lt;ActivityFeed &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/ActivityFeed.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/ActivityFeedView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

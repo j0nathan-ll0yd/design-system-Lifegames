@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import LanguageStack from '@widgets/github/LanguageStack.astro';
+import fixture from '@fixtures/github/language-stack.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/language-stack.skeleton.json';
+import fixture_empty from '@fixtures/github/language-stack.empty.json';
+import fixture_populated_min from '@fixtures/github/language-stack.populated-min.json';
+import fixture_populated_max from '@fixtures/github/language-stack.populated-max.json';
+import var_frontend_heavy from '@fixtures/github/language-stack.variation-a.json';
+import var_systems_heavy from '@fixtures/github/language-stack.variation-b.json';
+import var_stable_polyglot from '@fixtures/github/language-stack.variation-c.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LanguageStack — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">LanguageStack</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="LanguageStack" category="github" fixture={fixture} Comp={LanguageStack} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="LanguageStack"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="LanguageStack"
+        category="github"
+        variations={[
+          { label: "frontend-heavy", fixture: var_frontend_heavy, caption: "TypeScript 62%, CSS 21%, HTML 11% — a UI-focused engineer on a web product." },
+          { label: "systems-heavy", fixture: var_systems_heavy, caption: "Rust 55%, C 28%, Assembly 12% — embedded systems engineer at kelvin-foundry." },
+          { label: "stable-polyglot", fixture: var_stable_polyglot, caption: "Five languages each in the 18–22% band for the full period — deliberately balanced." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/LanguageStack.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import LanguageStack from '@lifegames/web/widgets/github/LanguageStack.astro';
+---
+&lt;LanguageStack &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/LanguageStack.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/LanguageStackView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/language-stack.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

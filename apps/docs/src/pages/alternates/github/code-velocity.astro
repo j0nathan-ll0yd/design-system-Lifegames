@@ -1,0 +1,95 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import CodeVelocity from '@widgets/github/CodeVelocity.astro';
+import fixture from '@fixtures/github/code-velocity.json';
+import StateMatrix from '../../../components/StateMatrix.astro';
+import VariationGrid from '../../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+import fixture_skeleton from '@fixtures/github/code-velocity.skeleton.json';
+import fixture_empty from '@fixtures/github/code-velocity.empty.json';
+import fixture_populated_min from '@fixtures/github/code-velocity.populated-min.json';
+import fixture_populated_max from '@fixtures/github/code-velocity.populated-max.json';
+import var_acceleration_ramp from '@fixtures/github/code-velocity.acceleration-ramp.json';
+import var_post_launch_dip from '@fixtures/github/code-velocity.post-launch-dip.json';
+import var_sprint_cycle from '@fixtures/github/code-velocity.sprint-cycle.json';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeVelocity — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">CodeVelocity</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">github</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Live Demo</h2>
+      <ResponsiveDemo widgetName="CodeVelocity" category="github" fixture={fixture} Comp={CodeVelocity} />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">State Matrix</h2>
+      <StateMatrix
+        widgetName="CodeVelocity"
+        category="github"
+        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Variations</h2>
+      <VariationGrid
+        widgetName="CodeVelocity"
+        category="github"
+        variations={[
+          { label: "acceleration-ramp", fixture: var_acceleration_ramp, caption: "Weekly commit velocity rises from 8 to 45 over 12 weeks as j-howard joins acme-corp/api-gateway and gets productive." },
+          { label: "post-launch-dip", fixture: var_post_launch_dip, caption: "Velocity peaks at 60 commits/week during feature crunch, drops to 12 after v2.0 ships, stabilizes at ~20." },
+          { label: "sprint-cycle", fixture: var_sprint_cycle, caption: "Alternating high (35–40) and low (8–12) weeks in a 2-week rhythm — r-mendez on a team with cleanup gaps between sprints." },
+        ]}
+      />
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>packages/web/src/widgets/github/CodeVelocity.types.ts</code> for the full interface.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Usage</h2>
+      <pre class="wd-code"><code>---
+import CodeVelocity from '@lifegames/web/widgets/github/CodeVelocity.astro';
+---
+&lt;CodeVelocity &#123;...data&#125; /&gt;</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/CodeVelocity.astro</code></li>
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/CodeVelocityView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/code-velocity.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

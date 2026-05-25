@@ -1,0 +1,11 @@
+{
+  "commits": [
+    {
+      "hash": "a3f9c1d",
+      "message": "feat: add pagination to user list endpoint",
+      "repo": "acme-corp/api-gateway",
+      "date": "2025-05-20",
+      "repoColor": "#7c3aed"
+    }
+  ]
+}

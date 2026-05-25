@@ -1,0 +1,14 @@
+{
+  "categoryBreakdown": [
+    { "category": "Food & Drink", "visitCount": 312, "totalMinutes": 18720 },
+    { "category": "Travel & Transport", "visitCount": 287, "totalMinutes": 8610 },
+    { "category": "Fitness", "visitCount": 198, "totalMinutes": 11880 },
+    { "category": "Outdoors & Recreation", "visitCount": 174, "totalMinutes": 31320 },
+    { "category": "Work & Coworking", "visitCount": 143, "totalMinutes": 17160 },
+    { "category": "Retail", "visitCount": 98, "totalMinutes": 4900 },
+    { "category": "Arts & Entertainment", "visitCount": 67, "totalMinutes": 10050 },
+    { "category": "Health & Medical", "visitCount": 41, "totalMinutes": 2460 },
+    { "category": "Nightlife", "visitCount": 29, "totalMinutes": 3480 }
+  ],
+  "totalVisits": 1349
+}

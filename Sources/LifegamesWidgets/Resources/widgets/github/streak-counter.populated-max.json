@@ -1,0 +1,21 @@
+{
+  "current": 127,
+  "longest": 203,
+  "recentDays": [
+    { "date": "2025-11-04", "active": true },
+    { "date": "2025-11-05", "active": true },
+    { "date": "2025-11-06", "active": true },
+    { "date": "2025-11-07", "active": true },
+    { "date": "2025-11-08", "active": true },
+    { "date": "2025-11-09", "active": true },
+    { "date": "2025-11-10", "active": true },
+    { "date": "2025-11-11", "active": true },
+    { "date": "2025-11-12", "active": true },
+    { "date": "2025-11-13", "active": true },
+    { "date": "2025-11-14", "active": true },
+    { "date": "2025-11-15", "active": true },
+    { "date": "2025-11-16", "active": true },
+    { "date": "2025-11-17", "active": true },
+    { "date": "2025-11-18", "active": true }
+  ]
+}

@@ -1,0 +1,64 @@
+---
+import '@lifegames/tokens/fonts';
+import '@lifegames/tokens/css';
+import '@lifegames/tokens/compat';
+import '@lifegames/tokens/components';
+import '@lifegames/tokens/effects';
+import '@lifegames/tokens/layout';
+import '@lifegames/tokens/base';
+import '@lifegames/tokens/docs-chrome';
+
+import WidgetPageScript from '../../../components/WidgetPageScript.astro';
+---
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OGImage — Lifegames Design System</title>
+</head>
+<body>
+  <div class="wd-page">
+    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+
+    <div class="wd-header">
+      <h1 class="wd-title">OGImage</h1>
+      <span class="wd-badge wd-badge--dev">Alternate</span>
+      <span class="wd-cat">other</span>
+    </div>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Overview</h2>
+      <p class="wd-text">
+        OGImage is a server-rendered Open Graph image template. It generates static social preview images (1200&times;630) for the portfolio site rather than rendering as an interactive widget.
+      </p>
+      <p class="wd-text">
+        Because it produces a raster image output rather than DOM content, it has no interactive live demo. The output is consumed by the portfolio's OG image generation pipeline.
+      </p>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Props</h2>
+      <p class="wd-text">
+        See <code>Sources/LifegamesWidgets/Resources/widgets/other/og-image.json</code> for the fixture schema.
+      </p>
+      <pre class="wd-code"><code>{JSON.stringify({
+  avatarUrl: "https://placeholders.dev/200x200",
+  name: "Sample User",
+  title: "SOFTWARE ENGINEER",
+  quote: "Building the future, one commit at a time",
+  experience: "10+ years professionally & counting"
+}, null, 2)}</code></pre>
+    </section>
+
+    <section class="wd-section">
+      <h2 class="wd-section-title">Cross-Platform</h2>
+      <ul class="wd-list">
+        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Other/OGImageView.swift</code></li>
+        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/other/og-image.json</code></li>
+      </ul>
+    </section>
+  </div>
+  <WidgetPageScript />
+</body>
+</html>

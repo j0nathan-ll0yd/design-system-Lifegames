@@ -1,0 +1,40 @@
+{
+  "repos": [
+    {
+      "name": "paste-bin",
+      "description": "Dead-simple encrypted paste sharing over HTTPS.",
+      "stars": 28,
+      "forks": 4,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "url": "#"
+    },
+    {
+      "name": "timelog",
+      "description": "Plain-text time tracking CLI with weekly summaries.",
+      "stars": 17,
+      "forks": 1,
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "url": "#"
+    },
+    {
+      "name": "feedreader",
+      "description": "Minimal RSS/Atom reader that outputs to terminal.",
+      "stars": 9,
+      "forks": 0,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "url": "#"
+    },
+    {
+      "name": "portwatch",
+      "description": "Watch for port changes and notify via webhook.",
+      "stars": 6,
+      "forks": 0,
+      "language": "Shell",
+      "languageColor": "#89e051",
+      "url": "#"
+    }
+  ]
+}

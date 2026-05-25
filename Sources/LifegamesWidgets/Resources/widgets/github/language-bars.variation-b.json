@@ -1,0 +1,8 @@
+{
+  "languages": [
+    { "name": "Rust", "pct": 52.1, "color": "#dea584" },
+    { "name": "C", "pct": 28.4, "color": "#555555" },
+    { "name": "Assembly", "pct": 12.3, "color": "#6e4c13" },
+    { "name": "Shell", "pct": 7.2, "color": "#89e051" }
+  ]
+}

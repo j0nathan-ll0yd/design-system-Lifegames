@@ -1,0 +1,9 @@
+{
+  "languages": [
+    { "name": "Python", "pct": 22.1, "color": "#3572A5" },
+    { "name": "TypeScript", "pct": 20.8, "color": "#3178c6" },
+    { "name": "Go", "pct": 19.4, "color": "#00ADD8" },
+    { "name": "Rust", "pct": 18.7, "color": "#dea584" },
+    { "name": "Ruby", "pct": 19.0, "color": "#701516" }
+  ]
+}

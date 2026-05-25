@@ -1,0 +1,40 @@
+{
+  "repos": [
+    {
+      "name": "api-gateway",
+      "description": "High-performance API gateway. ARCHIVED — see api-gateway-v2.",
+      "stars": 980,
+      "forks": 74,
+      "language": "TypeScript",
+      "languageColor": "#3178c6",
+      "url": "#"
+    },
+    {
+      "name": "cmd-center-2019",
+      "description": "Personal dashboard (legacy). ARCHIVED.",
+      "stars": 145,
+      "forks": 19,
+      "language": "JavaScript",
+      "languageColor": "#f1e05a",
+      "url": "#"
+    },
+    {
+      "name": "learn-rust-together",
+      "description": "Structured Rust learning path.",
+      "stars": 340,
+      "forks": 0,
+      "language": "Rust",
+      "languageColor": "#dea584",
+      "url": "#"
+    },
+    {
+      "name": "cli-tools",
+      "description": "Developer automation CLI suite.",
+      "stars": 780,
+      "forks": 120,
+      "language": "Go",
+      "languageColor": "#00ADD8",
+      "url": "#"
+    }
+  ]
+}

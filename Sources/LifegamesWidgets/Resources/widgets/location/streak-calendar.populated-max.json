@@ -1,0 +1,39 @@
+{
+  "last90Days": [
+    { "date": "2026-02-23", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 120 },
+    { "date": "2026-02-24", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 195 },
+    { "date": "2026-02-25", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 80 },
+    { "date": "2026-02-26", "count": 5, "uniquePlaces": 4, "totalDurationMinutes": 290 },
+    { "date": "2026-02-27", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 140 },
+    { "date": "2026-02-28", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 200 },
+    { "date": "2026-03-01", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 90 },
+    { "date": "2026-03-02", "count": 6, "uniquePlaces": 4, "totalDurationMinutes": 360 },
+    { "date": "2026-03-03", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 150 },
+    { "date": "2026-03-04", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 220 },
+    { "date": "2026-03-05", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 95 },
+    { "date": "2026-03-06", "count": 5, "uniquePlaces": 4, "totalDurationMinutes": 285 },
+    { "date": "2026-03-07", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 135 },
+    { "date": "2026-03-08", "count": 0, "uniquePlaces": 0, "totalDurationMinutes": 0 },
+    { "date": "2026-03-09", "count": 0, "uniquePlaces": 0, "totalDurationMinutes": 0 },
+    { "date": "2026-03-10", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 210 },
+    { "date": "2026-03-11", "count": 5, "uniquePlaces": 4, "totalDurationMinutes": 280 },
+    { "date": "2026-03-12", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 130 },
+    { "date": "2026-03-13", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 200 },
+    { "date": "2026-03-14", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 85 },
+    { "date": "2026-03-15", "count": 6, "uniquePlaces": 5, "totalDurationMinutes": 370 },
+    { "date": "2026-03-16", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 145 },
+    { "date": "2026-03-17", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 195 },
+    { "date": "2026-03-18", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 90 },
+    { "date": "2026-03-19", "count": 5, "uniquePlaces": 4, "totalDurationMinutes": 295 },
+    { "date": "2026-03-20", "count": 3, "uniquePlaces": 3, "totalDurationMinutes": 165 },
+    { "date": "2026-03-21", "count": 4, "uniquePlaces": 3, "totalDurationMinutes": 215 },
+    { "date": "2026-03-22", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 80 },
+    { "date": "2026-03-23", "count": 5, "uniquePlaces": 4, "totalDurationMinutes": 305 },
+    { "date": "2026-03-24", "count": 3, "uniquePlaces": 2, "totalDurationMinutes": 140 }
+  ],
+  "streaks": {
+    "currentStreak": 19,
+    "longestStreak": 24,
+    "totalActiveDays": 67
+  }
+}

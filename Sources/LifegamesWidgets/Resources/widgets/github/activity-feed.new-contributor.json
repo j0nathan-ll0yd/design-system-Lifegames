@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "type": "opened PR",
+      "repo": "solstice-systems/dashboard",
+      "title": "Fix typo in onboarding tooltip copy",
+      "date": "2d ago",
+      "detail": "#44"
+    },
+    {
+      "type": "opened issue",
+      "repo": "solstice-systems/dashboard",
+      "title": "Sidebar collapses unexpectedly on mobile Safari",
+      "date": "4d ago",
+      "detail": "#43"
+    },
+    {
+      "type": "created",
+      "repo": "solstice-systems/dashboard",
+      "title": "forked repository",
+      "date": "5d ago",
+      "detail": ""
+    }
+  ]
+}
