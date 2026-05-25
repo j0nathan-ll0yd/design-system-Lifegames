@@ -1,0 +1,35 @@
+{
+  "consumer": {
+    "data/books.json": {
+      "schema": "DashboardBooks",
+      "strategy": "single"
+    },
+    "data/github.json": {
+      "schema": "DashboardGithub",
+      "strategy": "single"
+    },
+    "data/health.json": {
+      "schema": "DashboardHealth",
+      "strategy": "single"
+    },
+    "data/profile.json": {
+      "schema": "Profile",
+      "strategy": "single"
+    },
+    "data/reading.json": {
+      "schema": "DashboardReading",
+      "strategy": "single"
+    },
+    "data/system.json": {
+      "schema": "System",
+      "strategy": "single"
+    },
+    "data/theatre-reviews-sample.json": {
+      "schema": "TheatreReviewsExport",
+      "strategy": "single"
+    }
+  },
+  "ds": {
+    "_comment": "DS-side widget showcase fixtures (Sources/LifegamesWidgets/Resources/widgets/) need per-widget schemas; see .omc/research/2026-05-25-schema-mismatches.md for the deferred follow-up plan."
+  }
+}
