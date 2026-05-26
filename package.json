@@ -19,7 +19,6 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.0",
     "@playwright/test": "^1.60.0",
     "husky": "^9.1.7",
     "turbo": "^2.5.0",

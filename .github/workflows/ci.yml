@@ -10,26 +10,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changeset-phase1-gate:
-    # Phase 1 forbids accumulating changesets — version bumps begin at Phase 2 kickoff.
-    # See packages/tokens/CLAUDE.md cross-repo consumption notes and the consumer-integration plan §4.2.
-    # Once vars.REMOTE_ENABLED is flipped on for Phase 2, this gate auto-disables itself.
-    if: ${{ !vars.REMOTE_ENABLED }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Reject .changeset/*.md while REMOTE_ENABLED is unset
-        run: |
-          shopt -s nullglob
-          files=(.changeset/*.md)
-          if [ ${#files[@]} -gt 0 ]; then
-            echo "::error::Changesets are not allowed in Phase 1 (REMOTE_ENABLED unset)."
-            echo "::error::Found: ${files[*]}"
-            echo "Remove the changeset(s), or enable vars.REMOTE_ENABLED to flip to Phase 2."
-            exit 1
-          fi
-          echo "OK: no .changeset/*.md present."
-
   schemas-freshness:
     # Verifies vendored LP schemas + generated TS/Swift artifacts are not stale.
     # Soft on missing LP (CI has no LP checkout) — vendored/ is the source of truth in CI.
