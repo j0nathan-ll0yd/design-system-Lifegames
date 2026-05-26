@@ -20,3 +20,9 @@ test-results/
 # Generated widget docs (recreated by scripts/generate-widget-docs.mjs)
 apps/docs/src/content/docs/widgets/*/
 !apps/docs/src/content/docs/widgets/*/index.mdx
+
+# IDE
+.idea/
+
+# Storybook static build output
+apps/storybook/storybook-static/
