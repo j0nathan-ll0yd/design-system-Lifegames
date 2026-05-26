@@ -36,7 +36,7 @@ export default defineConfig({
         './src/styles/brand.css',
       ],
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/lifegames-design-system' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames' },
       ],
       sidebar: [
         {

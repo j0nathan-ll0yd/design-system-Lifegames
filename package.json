@@ -1,5 +1,5 @@
 {
-  "name": "lifegames-design-system",
+  "name": "design-system-lifegames",
   "private": true,
   "version": "0.0.0",
   "description": "Unified cross-platform design system for Lifegames — tokens, components, and widgets for web (Astro) and iOS (SwiftUI)",

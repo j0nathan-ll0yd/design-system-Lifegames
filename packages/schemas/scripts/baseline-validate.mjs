@@ -7,7 +7,7 @@ import addFormats from 'ajv-formats';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, basename } from 'node:path';
 
-const DS = '/Users/jlloyd/Repositories/lifegames-design-system';
+const DS = '/Users/jlloyd/Repositories/design-system-Lifegames';
 const CONSUMER = '/Users/jlloyd/Repositories/j0nathan-ll0yd.github.io';
 
 const ajv = new Ajv({ strict: false, allErrors: true, allowUnionTypes: true });

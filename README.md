@@ -28,7 +28,7 @@ pnpm build           # Build all packages
 ```swift
 // Package.swift
 dependencies: [
-    .package(path: "../lifegames-design-system")
+    .package(path: "../design-system-Lifegames")
 ]
 ```
 
