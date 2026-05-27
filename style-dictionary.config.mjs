@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
 
@@ -487,6 +487,27 @@ for (const root of [...componentRoots].sort()) {
   md += '\n';
 }
 
+md += '## Widget Catalog\n\n';
+const manifestPath = resolve(__dirname, 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json');
+if (existsSync(manifestPath)) {
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+  const byCategory = {};
+  for (const w of manifest.widgets || []) {
+    (byCategory[w.category] ||= []).push(w);
+  }
+  const categories = Object.keys(byCategory).sort();
+  md += `Single-purpose UI surfaces sharing a common dark/neon aesthetic. ${manifest.widgets.length} widgets across ${categories.length} categories. Each widget consumes a JSON fixture and renders identically on web (Astro) and iOS (SwiftUI).\n\n`;
+  for (const category of categories) {
+    md += `### ${category}\n\n| Widget | View Type | Fixture | Production |\n|---|---|---|---|\n`;
+    const sorted = [...byCategory[category]].sort((a, b) => a.name.localeCompare(b.name));
+    for (const w of sorted) {
+      const prod = w.production ? `yes (${w.productionCategory || 'unspecified'})` : 'no';
+      md += `| \`${w.name}\` | \`${w.viewType}\` | \`${w.fixturePath}\` | ${prod} |\n`;
+    }
+    md += '\n';
+  }
+}
+
 md += '## Authoring Rules\n\n';
 md += '- **No raw hex** in component or widget source files. Use semantic tokens.\n';
 md += '- **No raw `Color(hex:)` or `Color(red:green:blue:)`** in Swift component files — use generated `LifegamesTokens` constants.\n';
@@ -504,7 +525,10 @@ md += '- Build: `pnpm build:tokens`\n';
 md += '- Outputs: `packages/tokens/dist/{tokens.css,tokens.js,tokens.json}`, `Sources/LifegamesTokens/*.swift`\n';
 md += '- This file: `packages/tokens/dist/DESIGN.md` — regenerated on every build.\n';
 
-writeFileSync(resolve(distDir, 'DESIGN.md'), md);
+const designMdPath = resolve(distDir, 'DESIGN.md');
+const previousMd = existsSync(designMdPath) ? readFileSync(designMdPath, 'utf-8') : '';
+writeFileSync(designMdPath, md);
+const designMdChanged = previousMd !== md;
 
 console.log('Token build complete.');
 console.log(`  ${tokens.length} tokens processed`);
@@ -517,3 +541,8 @@ console.log('  Swift: Sources/LifegamesTokens/Color+Tokens.swift');
 console.log('  Swift: Sources/LifegamesTokens/Spacing.swift');
 console.log('  Swift: Sources/LifegamesTokens/Font+Tokens.swift');
 console.log('  Swift: Sources/LifegamesTokens/Shadow+Tokens.swift');
+
+if (designMdChanged && previousMd !== '') {
+  console.log('');
+  console.log('  ⚠  DESIGN.md changed — re-upload to Claude Design with `pnpm sync:claude-design`');
+}
