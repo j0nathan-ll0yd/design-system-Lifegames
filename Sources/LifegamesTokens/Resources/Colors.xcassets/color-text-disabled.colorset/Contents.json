@@ -1,0 +1,20 @@
+{
+  "colors": [
+    {
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0.2470588235",
+          "green": "0.2470588235",
+          "blue": "0.2745098039",
+          "alpha": "1.000000000"
+        }
+      },
+      "idiom": "universal"
+    }
+  ],
+  "info": {
+    "author": "style-dictionary",
+    "version": 1
+  }
+}

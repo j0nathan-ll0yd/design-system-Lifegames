@@ -17,7 +17,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
     ],
     targets: [
-        .target(name: "LifegamesTokens", resources: [.process("Resources")]),
+        .target(name: "LifegamesTokens", exclude: ["_Legacy"], resources: [.process("Resources")]),
         .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
         .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens"]),
         .target(name: "LifegamesComponentsWatch", dependencies: ["LifegamesTokens"]),

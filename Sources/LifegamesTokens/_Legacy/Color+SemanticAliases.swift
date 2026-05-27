@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Forwarding aliases — kept for source compatibility during _Legacy/ transition.
-/// After C3 visual approval, this file moves to _Legacy/ and callers migrate to LGColor.*
+/// After C3 visual approval, this file is deleted and callers migrate to LGColor.*
 public extension Color {
     // MARK: - Surface
 
