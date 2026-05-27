@@ -12,7 +12,8 @@ concurrency:
 
 jobs:
   contrast:
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

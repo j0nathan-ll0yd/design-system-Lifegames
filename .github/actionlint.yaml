@@ -3,3 +3,4 @@ self-hosted-runner:
     - macOS
     - arm64
     - xcode-26
+    - node

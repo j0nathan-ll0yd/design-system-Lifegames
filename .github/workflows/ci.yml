@@ -13,7 +13,8 @@ jobs:
   schemas-freshness:
     # Verifies vendored LP schemas + generated TS/Swift artifacts are not stale.
     # Soft on missing LP (CI has no LP checkout) — vendored/ is the source of truth in CI.
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -25,7 +26,8 @@ jobs:
       - run: pnpm check:schemas-freshness
 
   build-tokens:
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -44,7 +46,8 @@ jobs:
 
   lint-web:
     needs: build-tokens
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -61,7 +64,8 @@ jobs:
 
   build-web:
     needs: build-tokens
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -78,7 +82,8 @@ jobs:
 
   storybook-build:
     needs: build-tokens
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -186,7 +191,8 @@ jobs:
         run: swift test --filter ContractTests
 
   widget-inventory:
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -200,7 +206,8 @@ jobs:
 
   docs-build:
     needs: build-tokens
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
