@@ -1,0 +1,85 @@
+---
+title: Deprecated Token Governance
+description: How deprecated design tokens are tracked, flagged, and retired in the Lifegames design system.
+---
+
+import { Aside, Code } from '@astrojs/starlight/components';
+
+# Deprecated Token Governance
+
+The Lifegames design system uses a structured deprecation pipeline to retire tokens safely across all platforms (CSS, JS, Swift) without breaking consumers.
+
+## How Deprecation Works
+
+Tokens are marked deprecated in the DTCG source using the `$deprecated` field:
+
+```json
+{
+  "color": {
+    "old-surface": {
+      "$value": "{color.zinc.900}",
+      "$type": "color",
+      "$deprecated": true
+    }
+  }
+}
+```
+
+During the token build (`pnpm build:tokens`), Style Dictionary emits `packages/tokens/dist/deprecated-tokens.json` — an array of all deprecated token entries with their CSS var name, Swift accessor name, and suggested replacement.
+
+## ESLint Rule: `lifegames-local/no-deprecated-tokens` (D4)
+
+The ESLint rule `lifegames-local/no-deprecated-tokens` enforces deprecation at the source level. It is registered in `packages/web/eslint.config.js` as a **warning** (non-blocking).
+
+### What it catches
+
+| Pattern | Example | Message ID |
+|---|---|---|
+| CSS var reference | `var(--lg-color-old-surface)` | `deprecatedCssVar` |
+| Swift accessor | `Color.oldSurface` or `LGColor.oldSurface` | `deprecatedSwiftAccess` |
+
+The rule checks string literals and template literals in `.ts`, `.tsx`, `.js`, `.jsx`, and `.css` files under `packages/web/src/`.
+
+### Severity
+
+`warn` — violations surface in CI lint output but do not block merges. This mirrors the W16 (`widget-props-extends-schema`) pattern: advisory enforcement with a clear remediation path.
+
+<Aside type="note">
+The rule reads `packages/tokens/dist/deprecated-tokens.json` at lint time. If the build output does not exist (fresh checkout, pre-build), the rule silently no-ops rather than erroring.
+</Aside>
+
+## Deprecation Lifecycle
+
+1. **Mark `$deprecated: true`** in the DTCG token source (`tokens/*.tokens.json`)
+2. **Run `pnpm build:tokens`** — `deprecated-tokens.json` is regenerated
+3. **ESLint warns** on all uses of the deprecated token in `packages/web/src/**`
+4. **Fix all callsites** — update to the replacement token
+5. **Remove the token** from the DTCG source in the next major version bump
+
+## Adding a Replacement Hint
+
+The `deprecated-tokens.json` entries include a `replacement` field sourced from the token source. Set it explicitly to help consumers migrate:
+
+```json
+{
+  "color": {
+    "old-surface": {
+      "$value": "{color.zinc.900}",
+      "$type": "color",
+      "$deprecated": true,
+      "$description": "Replaced by color.surface.base"
+    }
+  }
+}
+```
+
+The `replacement` field in the emitted JSON is derived from `$description` when present.
+
+## Files
+
+| File | Purpose |
+|---|---|
+| `packages/tokens/dist/deprecated-tokens.json` | Build artifact — list of all deprecated tokens |
+| `eslint-local-rules/no-deprecated-tokens.js` | ESLint rule implementation |
+| `eslint-local-rules/__tests__/no-deprecated-tokens.test.js` | Rule unit tests (Node RuleTester) |
+| `packages/web/eslint.config.js` | Rule registration + severity config |

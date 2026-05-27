@@ -17,4 +17,13 @@ export default [
       'lifegames-local/widget-props-extends-schema': 'warn',  // W16: advisory only — see CLAUDE.md
     },
   },
+  {
+    files: ['src/**/*.{ts,tsx,js,jsx,css}'],
+    plugins: {
+      'lifegames-local': lifegamesLocal,
+    },
+    rules: {
+      'lifegames-local/no-deprecated-tokens': 'warn',  // D4: warn on deprecated token refs
+    },
+  },
 ];

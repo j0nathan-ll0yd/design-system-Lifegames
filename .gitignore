@@ -26,3 +26,6 @@ apps/docs/src/content/docs/widgets/*/
 
 # Storybook static build output
 apps/storybook/storybook-static/
+
+# Visual regression diff images (CI uploads these as artifacts; only baselines are committed)
+apps/storybook/__snapshots__/__diff__/

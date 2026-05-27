@@ -1,0 +1,84 @@
+name: Visual Regression
+
+on:
+  # Manual trigger for baseline updates and one-off verification runs.
+  workflow_dispatch:
+    inputs:
+      update_snapshots:
+        description: 'Update snapshot baselines (commit result manually)'
+        type: boolean
+        default: false
+
+  pull_request:
+    paths:
+      - 'tokens/**'
+      - 'packages/tokens/**'
+      - 'packages/web/**'
+      - 'apps/storybook/src/**'
+      - 'apps/storybook/.storybook/**'
+      - 'packages/web/stories/**'
+
+concurrency:
+  group: visual-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build tokens
+        run: pnpm build:tokens
+
+      - name: Build web package
+        run: pnpm --filter @lifegames/web build
+
+      - name: Build Storybook
+        run: pnpm --filter storybook storybook:build
+
+      - name: Install Playwright browsers
+        run: pnpm --filter storybook exec playwright install --with-deps chromium
+
+      - name: Serve Storybook static build
+        run: |
+          pnpm dlx serve -l 6006 apps/storybook/storybook-static &
+          echo $! > /tmp/serve.pid
+          # Wait for server to be ready
+          timeout 30 bash -c 'until curl -sf http://localhost:6006 > /dev/null; do sleep 1; done'
+
+      - name: Run visual regression (update mode)
+        if: ${{ inputs.update_snapshots == true }}
+        run: pnpm --filter storybook storybook:visual:update
+        # storybook:visual:update uses -u flag (jest-image-snapshot baseline refresh)
+        env:
+          TARGET_URL: http://localhost:6006
+
+      - name: Run visual regression (check mode)
+        if: ${{ inputs.update_snapshots != true }}
+        run: pnpm --filter storybook storybook:visual
+        env:
+          TARGET_URL: http://localhost:6006
+
+      - name: Stop Storybook server
+        if: always()
+        run: kill $(cat /tmp/serve.pid) 2>/dev/null || true
+
+      - name: Upload diff images on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: visual-regression-diffs-${{ github.run_id }}
+          path: apps/storybook/__snapshots__/__diff__/
+          retention-days: 14
