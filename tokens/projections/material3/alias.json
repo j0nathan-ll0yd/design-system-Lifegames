@@ -1,0 +1,65 @@
+{
+  "_comment": "Material 3 color role → Lifegames semantic token reference. Mapping tables only — NOT DTCG tokens.",
+  "_authority": "Lifegames semantic layer is authoritative. M3 role names are aliases into our layer. Policy: when M3 adds a role we lack a semantic for, (a) add semantic primitive in tokens/semantic/, (b) add alias entry here — never reverse. M3 deprecations are a no-op; we keep emitting until removal is safe.",
+  "_spec": "https://m3.material.io/styles/color/roles (Material 3 Expressive, 2025)",
+
+  "color-roles": {
+    "primary":                   "{color.accent.indigo}",
+    "on-primary":                "{color.zinc.100}",
+    "primary-container":         "{color.surface.raised}",
+    "on-primary-container":      "{color.text.title}",
+
+    "secondary":                 "{color.accent.pink}",
+    "on-secondary":              "{color.zinc.100}",
+    "secondary-container":       "{color.surface.inset}",
+    "on-secondary-container":    "{color.text.primary}",
+
+    "tertiary":                  "{color.accent.cyan}",
+    "on-tertiary":               "{color.zinc.100}",
+    "tertiary-container":        "{color.surface.raised}",
+    "on-tertiary-container":     "{color.text.primary}",
+
+    "error":                     "{color.accent.red}",
+    "on-error":                  "{color.zinc.100}",
+    "error-container":           "rgba(239,68,68,0.15)",
+    "on-error-container":        "{color.accent-hc.red}",
+
+    "background":                "{color.surface.base}",
+    "on-background":             "{color.text.primary}",
+
+    "surface":                   "{color.surface.base}",
+    "on-surface":                "{color.text.primary}",
+    "surface-variant":           "{color.surface.raised}",
+    "on-surface-variant":        "{color.text.muted}",
+
+    "outline":                   "{color.border.default}",
+    "outline-variant":           "{color.border.subtle}",
+
+    "shadow":                    "rgba(0,0,0,0.5)",
+    "scrim":                     "rgba(0,0,0,0.6)",
+
+    "inverse-surface":           "{color.zinc.100}",
+    "inverse-on-surface":        "{color.gray.950}",
+    "inverse-primary":           "{color.accent.indigo}",
+
+    "surface-tint":              "{color.accent.indigo}"
+  },
+
+  "state-layers": {
+    "hover-state-layer-opacity":    "0.08",
+    "pressed-state-layer-opacity":  "0.12",
+    "focused-state-layer-opacity":  "0.12",
+    "dragged-state-layer-opacity":  "0.16"
+  },
+
+  "fixed-tones": {
+    "primary-fixed":             "{color.accent.indigo}",
+    "primary-fixed-dim":         "{color.accent.indigo}",
+    "on-primary-fixed":          "{color.zinc.100}",
+    "on-primary-fixed-variant":  "{color.text.muted}",
+    "secondary-fixed":           "{color.accent.pink}",
+    "secondary-fixed-dim":       "{color.accent.pink}",
+    "on-secondary-fixed":        "{color.zinc.100}",
+    "on-secondary-fixed-variant": "{color.text.muted}"
+  }
+}

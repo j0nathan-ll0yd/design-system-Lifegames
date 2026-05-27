@@ -1,0 +1,113 @@
+---
+title: AI Platform Integration Overview
+description: How to consume Lifegames Design System tokens in Claude Artifacts (shadcn/ui), Gemini/MDC (Material 3), and Figma/Tokens Studio (raw DTCG).
+---
+
+The Lifegames Design System ships three integration pathways for AI-native consumers. Each pathway builds from the same DTCG token source — no manual color copying required.
+
+```
+tokens/**/*.tokens.json  (canonical source)
+         │
+         ▼
+  pnpm build:tokens
+         │
+  ┌──────┼──────────────────┐
+  │      │                  │
+  ▼      ▼                  ▼
+shadcn  m3.css        tokens.dtcg.json
+.css   (M3 roles)    (raw DTCG output)
+  │      │                  │
+  ▼      ▼                  ▼
+Claude  Gemini /       Figma Variables
+Artifacts  MWC         Tokens Studio
+           MDC         Penpot
+                       Supernova
+```
+
+## Pathway 1: Claude Artifacts (shadcn/ui + OKLCH)
+
+**File:** `packages/tokens/dist/shadcn.css`
+
+Claude Artifacts run on React 18 + Tailwind + shadcn/ui. Importing `shadcn.css` gives you Lifegames brand colors in OKLCH — the default color space for shadcn/ui v0.9+.
+
+```css
+/* Paste into your Claude Artifact's globals.css */
+@import '@lifegames/tokens/dist/shadcn.css';
+```
+
+This sets all 10 shadcn role vars (`--primary`, `--secondary`, `--accent`, `--destructive`, `--muted`, `--card`, `--popover`, `--border`, `--input`, `--ring`) in OKLCH, plus `--radius` and native `--lg-color-surface-*` AI-surface vars.
+
+→ [Claude Artifacts integration guide](/integration/claude-artifacts)
+
+**Evidence:** `apps/docs/public/integration-evidence/`
+
+## Pathway 2: Gemini / Material Web Components (Material 3)
+
+**File:** `packages/tokens/dist/m3.css`
+
+Gemini-generated Material Design Expressive UIs consume `--md-sys-color-*` CSS custom properties. Importing `m3.css` themes all 29 M3 color roles off Lifegames semantic tokens.
+
+```css
+/* Paste into your MWC/MDC host page */
+@import '@lifegames/tokens/dist/m3.css';
+```
+
+This emits:
+- 29 `--md-sys-color-*` color role vars (+ `surface-tint`)
+- 8 fixed-tone variants (`--md-sys-color-primary-fixed`, etc.)
+- 4 state-layer opacity tokens (`--md-sys-state-hover-state-layer-opacity`, etc.)
+
+**Authority policy:** Lifegames semantic layer is authoritative → M3 (unidirectional). See [Material 3 integration guide](/integration/material3) for the full mapping table.
+
+→ [Material 3 integration guide](/integration/material3)
+
+**Evidence:** `apps/docs/public/integration-evidence/material3-mwc-2026-05-26.failed-attempt.md`
+
+## Pathway 3: Figma / Tokens Studio / Penpot (raw DTCG)
+
+**File:** `packages/tokens/dist/tokens.json` (resolved flat JSON)
+
+For design tool plugins that import Design Token Community Group (DTCG) format, use the raw DTCG-conformant output. All tokens are DTCG 2025.10 compliant (see [conformance audit](/reference/dtcg-audit)).
+
+```json
+// tokens.json structure
+{
+  "color": {
+    "accent": {
+      "pink": "#ff006e",
+      ...
+    }
+  },
+  ...
+}
+```
+
+**Tools that consume this pathway:**
+- Figma Variables (via [Tokens Studio for Figma](https://tokens.studio/) plugin)
+- Penpot (native DTCG import)
+- Supernova (token sync)
+- Style Dictionary consumers
+
+→ [DTCG conformance audit](/reference/widget-inventory)
+
+## AI-surface tokens (all pathways)
+
+The `color.surface.*` AI-surface tokens ship natively as `--lg-color-surface-*` vars in all pathways — regardless of whether shadcn or M3 have equivalents.
+
+| Token | CSS property | Description |
+|---|---|---|
+| `color.surface.thinking` | `--lg-color-surface-thinking` | AI reasoning indicator |
+| `color.surface.citation` | `--lg-color-surface-citation` | Citation reference surface |
+| `color.surface.tool-use` | `--lg-color-surface-tool-use` | Tool-use disclosure (indigo tint) |
+| `color.surface.artifact-frame` | `--lg-color-surface-artifact-frame` | Artifact frame container |
+| `color.surface.code-block` | `--lg-color-surface-code-block` | Code block background |
+
+See [AI-surface token reference](/tokens/ai-surfaces) for full details.
+
+## Quick reference
+
+| Consumer | Import | Docs |
+|---|---|---|
+| Claude Artifacts | `@lifegames/tokens/dist/shadcn.css` | [/integration/claude-artifacts](/integration/claude-artifacts) |
+| Gemini / MWC | `@lifegames/tokens/dist/m3.css` | [/integration/material3](/integration/material3) |
+| Figma / Tokens Studio | `@lifegames/tokens/dist/tokens.json` | [/tokens/colors](/tokens/colors) |
