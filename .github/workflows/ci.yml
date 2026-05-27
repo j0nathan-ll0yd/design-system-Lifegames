@@ -97,17 +97,19 @@ jobs:
       #     storybookBuildDir: apps/storybook/storybook-static
 
   # Swift jobs run on a self-hosted Mac (shared with ios-LifegamesPortal).
-  # Security: repo must have "Require approval for all outside collaborators"
-  # enabled (Settings → Actions → General) so fork PRs cannot trigger the
-  # runner without maintainer approval.
+  # Security: the `if` guard below skips these jobs for fork PRs so untrusted
+  # code from forks never executes on the host Mac. Internal-branch PRs and
+  # pushes to main still run normally. External contributors: maintainer must
+  # re-push the PR to a branch in this repo to get Swift coverage.
   build-swift:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode 26
         run: |
-          XCODE=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode.app 2>/dev/null | sort -V | tail -1)
+          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
           if [ -z "$XCODE" ]; then
             echo "::error::Xcode 26 not found. Available versions:"
             ls /Applications/Xcode*.app
@@ -121,6 +123,7 @@ jobs:
 
   test-swift:
     needs: [build-swift, build-tokens]
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
     env:
@@ -133,7 +136,7 @@ jobs:
           path: packages/tokens/dist/
       - name: Select Xcode 26
         run: |
-          XCODE=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode.app 2>/dev/null | sort -V | tail -1)
+          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
           if [ -z "$XCODE" ]; then
             echo "::error::Xcode 26 not found. Available versions:"
             ls /Applications/Xcode*.app
@@ -152,6 +155,7 @@ jobs:
 
   contract-tests:
     needs: [build-tokens, build-swift]
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
     steps:
@@ -164,7 +168,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Select Xcode 26
         run: |
-          XCODE=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode.app 2>/dev/null | sort -V | tail -1)
+          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
           if [ -z "$XCODE" ]; then
             echo "::error::Xcode 26 not found. Available versions:"
             ls /Applications/Xcode*.app
