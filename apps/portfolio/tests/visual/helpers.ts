@@ -78,6 +78,11 @@ export interface NavigateOptions {
   waitForScrollHeight?: boolean;
 }
 
+// Wall-clock budget for widget hydration. Under fullyParallel + 50% workers
+// the host can be heavily CPU-contended, so the gate must tolerate slow
+// boot without masking a real hang. 30s in CI, 10s locally.
+const HYDRATION_TIMEOUT_MS = process.env.CI ? 30_000 : 10_000;
+
 export async function navigateAndWait(page: Page, options: NavigateOptions = {}): Promise<void> {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
@@ -85,11 +90,11 @@ export async function navigateAndWait(page: Page, options: NavigateOptions = {})
 
   await page.waitForFunction(
     () => document.querySelectorAll('.is-loading').length === 0,
-    { timeout: 10000 },
+    { timeout: HYDRATION_TIMEOUT_MS },
   );
 
   if (options.waitForWorkouts) {
-    await page.locator('#cardWorkouts').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('#cardWorkouts').waitFor({ state: 'visible', timeout: HYDRATION_TIMEOUT_MS });
   }
 
   if (options.waitForScrollHeight) {
@@ -102,7 +107,7 @@ export async function navigateAndWait(page: Page, options: NavigateOptions = {})
           }, 200);
         });
       },
-      { timeout: 10000 },
+      { timeout: HYDRATION_TIMEOUT_MS },
     );
   }
 }
