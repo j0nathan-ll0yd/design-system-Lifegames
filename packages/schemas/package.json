@@ -12,6 +12,7 @@
     "swift",
     "vendored",
     "authored",
+    "scripts/validate.ts",
     "fixture-map.json"
   ],
   "scripts": {
@@ -20,10 +21,12 @@
     "validate": "tsx scripts/validate.ts",
     "build": "pnpm codegen && pnpm validate"
   },
-  "devDependencies": {
+  "dependencies": {
     "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
     "ajv-cli": "^5.0.0",
-    "ajv-formats": "^3.0.1",
     "json-schema-to-typescript": "^15.0.0",
     "quicktype": "^23.0.0",
     "tsx": "^4.21.0"
