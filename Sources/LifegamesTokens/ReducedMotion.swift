@@ -12,16 +12,18 @@ public enum ReducedMotion {
         public static let linear: Animation = .linear(duration: 0)
     }
     /// Returns 0 if reduce-motion is enabled, otherwise returns the provided duration.
+    @MainActor
     public static func duration(_ full: Double) -> Double {
-        #if canImport(UIKit)
+        #if os(iOS) || os(tvOS)
         return UIAccessibility.isReduceMotionEnabled ? 0.0 : full
         #else
         return full
         #endif
     }
     /// Returns `.linear(duration: 0)` if reduce-motion is enabled, otherwise returns provided animation.
+    @MainActor
     public static func animation(_ full: Animation) -> Animation {
-        #if canImport(UIKit)
+        #if os(iOS) || os(tvOS)
         return UIAccessibility.isReduceMotionEnabled ? .linear(duration: 0) : full
         #else
         return full
