@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifegames.dev/schemas/dtcg-2025-10.json",
+  "title": "DTCG 2025.10 Token File",
+  "description": "JSON Schema for Design Tokens Community Group (DTCG) format, stable spec 2025-10. Validates both source token files and emitted DTCG JSON artifacts. Ref: https://tr.designtokens.org/format/",
+
+  "$defs": {
+    "dtcgValue": {
+      "description": "Any valid $value: scalar, array (cubicBezier/gradient), or composite object (shadow/typography/transition/border/strokeStyle)"
+    },
+
+    "tokenLeaf": {
+      "type": "object",
+      "required": ["$value"],
+      "properties": {
+        "$value": true,
+        "$type": { "$ref": "#/$defs/tokenType" },
+        "$description": { "type": "string" },
+        "$deprecated": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string" }
+          ]
+        },
+        "$extensions": { "type": "object" }
+      },
+      "not": {
+        "anyOf": [
+          { "required": ["value"] },
+          { "required": ["type"] }
+        ]
+      },
+      "additionalProperties": false,
+      "patternProperties": {}
+    },
+
+    "tokenType": {
+      "type": "string",
+      "enum": [
+        "color",
+        "dimension",
+        "fontFamily",
+        "fontWeight",
+        "duration",
+        "cubicBezier",
+        "number",
+        "string",
+        "boolean",
+        "null",
+        "shadow",
+        "typography",
+        "transition",
+        "gradient",
+        "strokeStyle",
+        "border",
+        "composite"
+      ]
+    },
+
+    "tokenGroup": {
+      "type": "object",
+      "properties": {
+        "$type": { "$ref": "#/$defs/tokenType" },
+        "$description": { "type": "string" },
+        "$extensions": { "type": "object" }
+      },
+      "not": {
+        "anyOf": [
+          { "required": ["value"] },
+          { "required": ["type"] }
+        ]
+      }
+    }
+  },
+
+  "type": "object",
+  "description": "A DTCG token file is a JSON object whose top-level and nested keys are either token groups or token leaf nodes. Token leaf nodes are identified by the presence of the $value key.",
+
+  "not": {
+    "anyOf": [
+      { "required": ["value"] },
+      { "required": ["type"] }
+    ]
+  }
+}

@@ -1,0 +1,447 @@
+{
+  "generatedAt": "2026-05-27T05:33:57.655Z",
+  "totalCount": 55,
+  "portfolioConsumedCount": 18,
+  "widgets": [
+    {
+      "id": "ActivityFeed",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "CodeVelocity",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "CodingHours",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "CommitLog",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "CommitTimeline",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "ContributionBreakdown",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "ContributionCalendar",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "ContributionGrid",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "ContributionRings",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DevActivityByRepo",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DevActivityCards",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DevActivityLog",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "DevActivityPulse",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DevActivityTimeline",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "LanguageBars",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "LanguageGrid",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "LanguageStack",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "PinnedRepos",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "ProfileCard",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "RepoShowcase",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "StarredByLanguage",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "StarredRepoCards",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "StarredRepoList",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "StarredTimeline",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "StreakCounter",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "TopRepos",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "TopicCloud",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "WeeklyPulse",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "YearInReview",
+      "category": "github",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DailyActivity",
+      "category": "health",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "HeartRate",
+      "category": "health",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "Hydration",
+      "category": "health",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "NightSummary",
+      "category": "health",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "Workouts",
+      "category": "health",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "BioTerminal",
+      "category": "identity",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "ComingSoon",
+      "category": "identity",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "IdentityCard",
+      "category": "identity",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "CategoryTerrain",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "CityConstellation",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DurationDonut",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "ExplorationOdometerV3",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": false,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "ExplorationRings",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "PlaceLeaderboardV3",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": false,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "RhythmBars",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "StreakCalendar",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "StreakFlame",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "WaffleGrid",
+      "category": "location",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "DndOverlay",
+      "category": "other",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "FocusOverlay",
+      "category": "other",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "GitHubHeatmap",
+      "category": "other",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": false
+    },
+    {
+      "id": "SystemStatus",
+      "category": "other",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "BookModal",
+      "category": "reading",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "Bookshelf",
+      "category": "reading",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "ReadingFeed",
+      "category": "reading",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    },
+    {
+      "id": "TheatreReviews",
+      "category": "reading",
+      "hasStory": false,
+      "hasSwiftMirror": true,
+      "schemaExempt": true,
+      "consumedByPortfolio": true
+    }
+  ]
+}
