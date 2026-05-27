@@ -1,0 +1,187 @@
+---
+title: Phase 2 Cutover — yalc → GitHub Packages
+description: Step-by-step guide for switching all consumers from yalc to npm packages hosted on GitHub Packages once REMOTE_ENABLED flips.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+# Phase 2 Cutover: yalc → GitHub Packages
+
+When `vars.REMOTE_ENABLED` flips to `true`, the publish workflow will start pushing
+`@lifegames/tokens`, `@lifegames/web`, and `@lifegames/schemas` to GitHub Packages
+(`npm.pkg.github.com`). At that point, every consumer can switch from `yalc` links
+to real npm version ranges — **no source changes required**.
+
+<Aside type="caution">
+Do not perform this cutover until the npm publish workflow has successfully published
+at least one version. Confirm with `npm view @lifegames/tokens --registry https://npm.pkg.github.com`.
+</Aside>
+
+---
+
+## Prerequisites
+
+Before starting the cutover:
+
+- [ ] `vars.REMOTE_ENABLED` has been set to `true` in GitHub repo settings
+- [ ] At least one successful run of `.github/workflows/publish.yml` (non-dry-run)
+- [ ] GitHub Personal Access Token with `read:packages` scope available for consumers
+- [ ] Confirm published version: `npm view @lifegames/tokens --registry https://npm.pkg.github.com`
+
+---
+
+## Consumer 1: `j0nathan-ll0yd.github.io` (portfolio site)
+
+<Steps>
+
+1. **Remove yalc links**
+
+   ```bash
+   cd ~/Repositories/j0nathan-ll0yd.github.io
+   yalc remove @lifegames/tokens @lifegames/web @lifegames/schemas
+   ```
+
+2. **Add GitHub Packages registry config**
+
+   Create or update `.npmrc` at the repo root:
+
+   ```ini
+   @lifegames:registry=https://npm.pkg.github.com
+   //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+   ```
+
+3. **Install from GitHub Packages**
+
+   ```bash
+   pnpm add @lifegames/tokens@^0.1.0 @lifegames/web@^0.1.0 @lifegames/schemas@^0.1.0
+   ```
+
+   Replace `^0.1.0` with the actual published version from the prerequisite check.
+
+4. **Remove yalc artifacts**
+
+   ```bash
+   # Remove yalc.lock and yalc-specific entries from package.json if present
+   rm -f yalc.lock
+   # Remove .yalc directory if it exists
+   rm -rf .yalc
+   ```
+
+5. **Verify build**
+
+   ```bash
+   pnpm build
+   ```
+
+6. **Rollback if needed**
+
+   If the build fails, restore yalc links:
+
+   ```bash
+   cd ~/Repositories/design-system-Lifegames
+   pnpm yalc:publish
+   cd ~/Repositories/j0nathan-ll0yd.github.io
+   yalc add @lifegames/tokens @lifegames/web @lifegames/schemas
+   pnpm install
+   ```
+
+</Steps>
+
+---
+
+## Consumer 2: `ios-LifegamesPortal` (iOS app)
+
+The iOS app consumes `LifegamesTokens`, `LifegamesComponents`, `LifegamesWidgets`, and
+`LifegamesSchemas` as a local Swift Package Manager dependency (local path reference added
+in Phase C). In Phase 2 this becomes a remote SPM dependency.
+
+<Steps>
+
+1. **Confirm the DS Swift package is published to GitHub**
+
+   The Swift package resides at the `design-system-Lifegames` repo root. In Phase 2,
+   `Package.swift` consumers point at the GitHub repo URL instead of a local path.
+
+2. **Update `Package.swift` in `ios-LifegamesPortal`**
+
+   Find the local path dependency added in Phase C:
+
+   ```swift
+   // Before (Phase 1 local path):
+   .package(path: "../../design-system-Lifegames")
+   ```
+
+   Replace with a version-tagged remote reference:
+
+   ```swift
+   // After (Phase 2 remote):
+   .package(
+     url: "https://github.com/j0nathan-ll0yd/design-system-Lifegames.git",
+     from: "0.1.0"
+   )
+   ```
+
+   Replace `"0.1.0"` with the actual tagged version.
+
+3. **Resolve packages**
+
+   ```bash
+   cd ~/Repositories/ios-LifegamesPortal
+   xcodebuild -resolvePackageDependencies
+   ```
+
+   Or open the project in Xcode and let SPM resolve automatically.
+
+4. **Verify build**
+
+   ```bash
+   swift build
+   ```
+
+5. **Rollback if needed**
+
+   Revert `Package.swift` to the local path reference and re-resolve.
+
+</Steps>
+
+---
+
+## Rollback Procedure (General)
+
+If a publish goes sideways and consumers pull a broken version:
+
+1. **Yalc fallback (web consumers)**
+
+   ```bash
+   # In design-system-Lifegames
+   pnpm yalc:publish
+   # In each consumer
+   yalc add @lifegames/tokens @lifegames/web @lifegames/schemas
+   pnpm install
+   ```
+
+2. **Retract the bad npm version** (requires write access to GitHub Packages):
+
+   ```bash
+   npm unpublish @lifegames/tokens@<bad-version> --registry https://npm.pkg.github.com
+   ```
+
+   Note: GitHub Packages does not allow re-publishing the same version. Publish a patch
+   bump with the fix instead.
+
+3. **SPM rollback (iOS)**: revert `Package.swift` to the previous version tag or local path.
+
+---
+
+## Version Alignment Table
+
+After cutover, keep these versions in sync:
+
+| Package | npm (GitHub Packages) | SPM tag |
+|---------|----------------------|---------|
+| `@lifegames/tokens` | `^X.Y.Z` | `X.Y.Z` |
+| `@lifegames/web` | `^X.Y.Z` | — (web-only) |
+| `@lifegames/schemas` | `^X.Y.Z` | `X.Y.Z` |
+
+SPM and npm versions are kept in lock-step via Changesets: `pnpm changeset:version`
+bumps all three `package.json` versions, then the release workflow tags and publishes.
