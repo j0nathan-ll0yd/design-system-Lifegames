@@ -35,6 +35,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:tokens
+      - name: DTCG 2025.10 conformance check
+        run: node scripts/validate-dtcg.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: token-dist
@@ -120,6 +122,8 @@ jobs:
           xcodebuild -version
           swift --version
       - run: swift build
+      - name: S22 preview scheme audit
+        run: bash scripts/check-preview-scheme.sh
 
   test-swift:
     needs: [build-swift, build-tokens]
@@ -180,6 +184,19 @@ jobs:
         run: pnpm --filter @lifegames/web tsc --noEmit
       - name: Swift Props contract check
         run: swift test --filter ContractTests
+
+  widget-inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check widget inventory drift
+        run: node scripts/widget-inventory.mjs --check
 
   docs-build:
     needs: build-tokens
