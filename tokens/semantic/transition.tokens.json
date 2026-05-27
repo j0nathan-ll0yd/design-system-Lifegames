@@ -1,0 +1,49 @@
+{
+  "transition": {
+    "default": {
+      "$type": "transition",
+      "$value": {
+        "duration": "{motion.duration.normal}",
+        "timingFunction": "{motion.easing.standard}",
+        "delay": "{motion.delay.short}"
+      },
+      "$description": "Standard UI transition for most interactive elements"
+    },
+    "fast": {
+      "$type": "transition",
+      "$value": {
+        "duration": "{motion.duration.fast}",
+        "timingFunction": "{motion.easing.standard}",
+        "delay": "0ms"
+      },
+      "$description": "Fast transition for micro-interactions (hover states, focus rings)"
+    },
+    "enter": {
+      "$type": "transition",
+      "$value": {
+        "duration": "{motion.duration.normal}",
+        "timingFunction": "{motion.easing.decelerate}",
+        "delay": "{motion.delay.short}"
+      },
+      "$description": "Entering/appearing elements — decelerated easing"
+    },
+    "exit": {
+      "$type": "transition",
+      "$value": {
+        "duration": "{motion.duration.fast}",
+        "timingFunction": "{motion.easing.accelerate}",
+        "delay": "0ms"
+      },
+      "$description": "Exiting/disappearing elements — accelerated easing"
+    },
+    "spring": {
+      "$type": "transition",
+      "$value": {
+        "duration": "{motion.duration.slow}",
+        "timingFunction": "{motion.easing.overshoot}",
+        "delay": "0ms"
+      },
+      "$description": "Playful spring/bounce transition for expressive affordances"
+    }
+  }
+}

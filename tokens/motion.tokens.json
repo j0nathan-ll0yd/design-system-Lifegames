@@ -16,6 +16,14 @@
     "delay": {
       "short":  { "$type": "duration", "$value": "50ms" },
       "normal": { "$type": "duration", "$value": "100ms" }
+    },
+    "reduced": {
+      "duration": { "$type": "duration", "$value": "0ms", "$description": "All durations collapse to 0 under prefers-reduced-motion" },
+      "easing":   { "$type": "cubicBezier", "$value": [0, 0, 1, 1], "$description": "Linear easing under prefers-reduced-motion" }
+    },
+    "pulse": {
+      "breathing": { "$type": "duration", "$value": "2000ms", "$description": "Slow ease-in-out breathing cycle for AI thinking indicators" },
+      "streaming": { "$type": "duration", "$value": "500ms", "$description": "Fast linear cycle for AI streaming/token-generation indicators" }
     }
   }
 }
