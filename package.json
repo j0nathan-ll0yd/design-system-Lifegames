@@ -16,6 +16,7 @@
     "check:schemas-freshness": "bash packages/schemas/scripts/check-freshness.sh",
     "yalc:publish": "pnpm build:tokens && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push && pnpm --filter @lifegames/schemas exec yalc publish --push",
     "yalc:update": "pnpm yalc:publish",
+    "sync:claude-design": "node scripts/sync-claude-design.mjs",
     "prepare": "husky"
   },
   "devDependencies": {
