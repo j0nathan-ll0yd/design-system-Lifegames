@@ -351,12 +351,168 @@ for (const t of shadowTokens) {
 }
 writeFileSync(resolve(swiftDir, 'Shadow+Tokens.swift'), swiftShadows);
 
+// --- DESIGN.md (Claude Design import artifact) ---
+//
+// Single-file markdown brief consumed by claude.ai/design. The format follows
+// the community DESIGN.md convention (Google Stitch / VoltAgent awesome-claude-design):
+// tokens + rules + rationale in one human-readable file, deterministic so diffs
+// are reviewable. Re-upload to Claude Design after each meaningful token change.
+
+function tokensOfType(type) {
+  return tokens.filter(t => t.$type === type);
+}
+
+function tokensUnderPath(prefix) {
+  return tokens.filter(t => t.path[0] === prefix);
+}
+
+function fmtRef(t) {
+  return t.path.join('.');
+}
+
+function fmtValue(v) {
+  if (v === undefined || v === null) return '';
+  if (typeof v === 'object') return JSON.stringify(v);
+  return String(v);
+}
+
+let md = '';
+md += '# Lifegames Design System\n\n';
+md += '> Generated from `tokens/*.tokens.json` — do not edit by hand.\n';
+md += '> Re-upload to claude.ai/design after every meaningful token change.\n\n';
+
+md += '## Brand & Voice\n\n';
+md += 'Lifegames is a dark-first, neon-accented, cross-platform design system spanning web (Astro) and iOS (SwiftUI). ';
+md += 'Visual language: deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), ';
+md += 'fluid typography that scales with viewport, and motion that favors decelerated easing.\n\n';
+
+md += '## Token Architecture\n\n';
+md += 'Four tiers, applied in order of specificity:\n\n';
+md += '1. **Primitive** — raw values (`color.pink.500 = #ff006e`). Never reference these directly from components.\n';
+md += '2. **Semantic** — role-based aliases (`color.accent.pink → {color.pink.500}`). The consumer-facing layer.\n';
+md += '3. **Component** — component-scoped overrides (`card.background`).\n';
+md += '4. **Widget** — widget-scoped overrides (optional tier).\n\n';
+md += '**Rule:** Token names encode ROLE, not value. Use `color.accent.pink`, never `color.ff006e`.\n\n';
+
+md += '## Color Palette\n\n';
+md += '### Primitive colors\n\n';
+md += '| Token | Value |\n|---|---|\n';
+for (const t of tokensOfType('color')) {
+  if (t.path[0] !== 'color') continue;
+  if (t.path.length < 2) continue;
+  if (t.path[1] === 'surface' || t.path[1] === 'border' || t.path[1] === 'text' ||
+      t.path[1] === 'accent' || t.path[1] === 'accent-hc' || t.path[1] === 'health' ||
+      t.path[1] === 'interactive' || t.path[1] === 'status' || t.path[1] === 'overlay') continue;
+  md += `| \`${fmtRef(t)}\` | \`${fmtValue(t.resolvedValue)}\` |\n`;
+}
+md += '\n';
+
+md += '### Semantic roles\n\n';
+const semanticGroups = ['surface', 'border', 'text', 'accent', 'accent-hc', 'health', 'interactive', 'status', 'overlay'];
+for (const group of semanticGroups) {
+  const groupTokens = tokens.filter(t => t.$type === 'color' && t.path[0] === 'color' && t.path[1] === group);
+  if (groupTokens.length === 0) continue;
+  md += `#### color.${group}\n\n`;
+  md += '| Token | Resolves to | Description |\n|---|---|---|\n';
+  for (const t of groupTokens) {
+    const desc = t.$description ? t.$description.replace(/\|/g, '\\|').replace(/\n/g, ' ') : '';
+    md += `| \`${fmtRef(t)}\` | \`${fmtValue(t.resolvedValue)}\` | ${desc} |\n`;
+  }
+  md += '\n';
+}
+
+md += '## Typography\n\n';
+md += 'Fluid type scale via `clamp()` on web; SwiftUI `Font.custom(..., relativeTo:)` on iOS for Dynamic Type. ';
+md += 'Font family: **Space Grotesk** (PostScript names: `SpaceGrotesk-Regular`, `-Medium`, `-SemiBold`, `-Bold`, `-Light`).\n\n';
+md += '| Style | Fluid size (web) | iOS text style | Weight |\n|---|---|---|---|\n';
+for (const t of tokensOfType('typography')) {
+  const name = t.path[t.path.length - 1];
+  const val = t.resolvedValue;
+  if (!val || typeof val !== 'object') continue;
+  const fluid = FLUID_TYPOGRAPHY[name] || '';
+  const iosStyle = IOS_TEXT_STYLE[name] || '';
+  const weight = SWIFT_FONT_WEIGHT[val.fontWeight] || 'Regular';
+  md += `| \`${name}\` | \`${fluid}\` | \`${iosStyle}\` | ${weight} (${val.fontWeight || 400}) |\n`;
+}
+md += '\n';
+
+md += '## Spacing\n\n';
+md += 'Fluid spacing scale. Web uses `clamp()`; iOS uses the max pixel value as `CGFloat`.\n\n';
+md += '| Token | Web (fluid) | iOS (CGFloat) |\n|---|---|---|\n';
+for (const t of tokensOfType('dimension')) {
+  if (t.path[0] !== 'space') continue;
+  const key = t.path[t.path.length - 1];
+  const fluid = FLUID_SPACING[key] || fmtValue(t.resolvedValue);
+  md += `| \`${fmtRef(t)}\` | \`${fluid}\` | \`${fmtValue(t.resolvedValue)}\` |\n`;
+}
+md += '\n';
+
+md += '## Motion\n\n';
+md += '### Duration\n\n| Token | Value |\n|---|---|\n';
+for (const t of tokensOfType('duration')) {
+  md += `| \`${fmtRef(t)}\` | \`${fmtValue(t.resolvedValue)}\` |\n`;
+}
+md += '\n### Easing (cubic-bezier)\n\n| Token | Curve |\n|---|---|\n';
+for (const t of tokensOfType('cubicBezier')) {
+  const v = t.resolvedValue;
+  const curve = Array.isArray(v) ? `cubic-bezier(${v.join(', ')})` : fmtValue(v);
+  md += `| \`${fmtRef(t)}\` | \`${curve}\` |\n`;
+}
+md += '\n**Default behavior:** prefer `standard` for most transitions, `decelerate` for entering elements, `overshoot` for playful affordances.\n\n';
+
+md += '## Shadows\n\n';
+md += '| Token | Layers |\n|---|---|\n';
+for (const t of tokensOfType('shadow')) {
+  const v = t.resolvedValue;
+  if (!v) continue;
+  const layers = Array.isArray(v) ? v : [v];
+  const summary = layers.map(l =>
+    `${l.offsetX || 0}px ${l.offsetY || 0}px ${l.blur || 0}px ${l.spread || 0}px ${l.color}`
+  ).join(' / ');
+  md += `| \`${fmtRef(t)}\` | \`${summary}\` |\n`;
+}
+md += '\n';
+
+md += '## Component Tokens\n\n';
+const componentRoots = new Set();
+for (const t of tokens) {
+  if (['color', 'space', 'motion', 'typography', 'shadow', 'font'].includes(t.path[0])) continue;
+  if (t.path[0]) componentRoots.add(t.path[0]);
+}
+for (const root of [...componentRoots].sort()) {
+  md += `### ${root}\n\n| Token | Value |\n|---|---|\n`;
+  for (const t of tokensUnderPath(root)) {
+    md += `| \`${fmtRef(t)}\` | \`${fmtValue(t.resolvedValue)}\` |\n`;
+  }
+  md += '\n';
+}
+
+md += '## Authoring Rules\n\n';
+md += '- **No raw hex** in component or widget source files. Use semantic tokens.\n';
+md += '- **No raw `Color(hex:)` or `Color(red:green:blue:)`** in Swift component files — use generated `LifegamesTokens` constants.\n';
+md += '- **No raw hex in CSS** — use `var(--lg-*)` custom properties from `@lifegames/tokens`.\n';
+md += '- All neon colors MUST resolve to **identical hex values** across web and iOS.\n';
+md += '- All SwiftUI `#Preview` blocks MUST include `.preferredColorScheme(.dark)`.\n';
+md += '- Fluid typography and spacing via `clamp()` on web; SwiftUI uses `relativeTo:` for Dynamic Type on iOS.\n\n';
+
+md += '## CSS Custom Property Naming\n\n';
+md += 'All web-consumed tokens are exposed as CSS custom properties prefixed `--lg-`. Example: `color.accent.pink → var(--lg-color-accent-pink)`.\n\n';
+
+md += '## Source of Truth\n\n';
+md += '- DTCG JSON: `tokens/*.tokens.json` in [design-system-Lifegames](https://github.com/) (canonical)\n';
+md += '- Build: `pnpm build:tokens`\n';
+md += '- Outputs: `packages/tokens/dist/{tokens.css,tokens.js,tokens.json}`, `Sources/LifegamesTokens/*.swift`\n';
+md += '- This file: `packages/tokens/dist/DESIGN.md` — regenerated on every build.\n';
+
+writeFileSync(resolve(distDir, 'DESIGN.md'), md);
+
 console.log('Token build complete.');
 console.log(`  ${tokens.length} tokens processed`);
 console.log('  CSS:   packages/tokens/dist/tokens.css');
 console.log('  CSS:   packages/tokens/dist/tokens-layered.css');
 console.log('  JS:    packages/tokens/dist/tokens.js');
 console.log('  JSON:  packages/tokens/dist/tokens.json');
+console.log('  MD:    packages/tokens/dist/DESIGN.md');
 console.log('  Swift: Sources/LifegamesTokens/Color+Tokens.swift');
 console.log('  Swift: Sources/LifegamesTokens/Spacing.swift');
 console.log('  Swift: Sources/LifegamesTokens/Font+Tokens.swift');

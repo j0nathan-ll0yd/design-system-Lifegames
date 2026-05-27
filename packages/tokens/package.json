@@ -17,6 +17,7 @@
     "./css.layered": "./dist/tokens-layered.css",
     "./preamble": "./src/preamble.css",
     "./json": "./dist/tokens.json",
+    "./design-md": "./dist/DESIGN.md",
     "./animations": "./src/animations.css",
     "./components": "./src/components.css",
     "./effects": "./src/effects.css",
