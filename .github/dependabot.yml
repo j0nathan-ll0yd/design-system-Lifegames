@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # Group ajv + ajv-formats so they update together. They share a
+      # versioning cadence and historically a mismatched pair has broken
+      # validation (8.18 -> 8.20 incident, May 2026).
+      ajv:
+        patterns:
+          - ajv
+          - ajv-formats
+          - ajv-cli
+    ignore:
+      # ajv majors require coordinated migration of validate.ts and all
+      # consumer schemas. Bump manually after testing.
+      - dependency-name: ajv
+        update-types: [version-update:semver-major]
+      - dependency-name: ajv-formats
+        update-types: [version-update:semver-major]
+      - dependency-name: ajv-cli
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
