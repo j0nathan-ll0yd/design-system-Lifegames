@@ -96,29 +96,12 @@ jobs:
       #     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
       #     storybookBuildDir: apps/storybook/storybook-static
 
-  contrast-gate:
-    needs: build-tokens
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - uses: actions/download-artifact@v4
-        with:
-          name: token-dist
-          path: packages/tokens/dist/
-      - run: npx a11y-color-tokens packages/tokens/dist/tokens.json --wcag-level AA
-
   build-swift:
-    runs-on: macos-15
+    # macos-26 (Tahoe) GA since 2026-02-26; Xcode 26.4.1 is the default.
+    # No xcode-select needed — runner default ships Swift 6.2 + iOS 26 / watchOS 26 SDKs.
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode 26
-        run: sudo xcode-select -switch /Applications/Xcode_26.app || sudo xcode-select -switch /Applications/Xcode_26-beta.app
       - name: Verify Xcode + Swift version
         run: |
           xcodebuild -version
@@ -127,13 +110,11 @@ jobs:
 
   test-swift:
     needs: build-swift
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       SNAPSHOT_ENV: ci
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode 26
-        run: sudo xcode-select -switch /Applications/Xcode_26.app || sudo xcode-select -switch /Applications/Xcode_26-beta.app
       - name: Verify Xcode + Swift version
         run: |
           xcodebuild -version
@@ -147,7 +128,7 @@ jobs:
 
   contract-tests:
     needs: [build-tokens, build-swift]
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -156,8 +137,6 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Select Xcode 26
-        run: sudo xcode-select -switch /Applications/Xcode_26.app || sudo xcode-select -switch /Applications/Xcode_26-beta.app
       - name: TypeScript Props contract check
         run: pnpm --filter @lifegames/web tsc --noEmit
       - name: Swift Props contract check

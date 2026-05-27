@@ -458,6 +458,9 @@ _Storybook stories were deleted in v0.1.1; widget documentation lives at this pa
 }
 
 function cleanOrphans(manifest, outputDir) {
+  // Output dir is gitignored (recreated each build); nothing to clean on fresh checkout.
+  if (!fs.existsSync(outputDir)) return 0;
+
   const expectedFiles = new Set();
   for (const w of manifest.widgets) {
     const actualName = resolveActualFilename(w.category, w.name, '.astro');
