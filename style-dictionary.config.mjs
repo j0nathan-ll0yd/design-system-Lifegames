@@ -74,13 +74,25 @@ function resolveAllTokens(tokens) {
   const tokenMap = new Map();
   for (const t of tokens) tokenMap.set(t.path.join('.'), t);
 
+  // Recursively resolve references — composite token values (typography,
+  // transition, gradient, …) are objects whose inner properties can hold
+  // `{path.to.token}` references that must also be resolved.
+  function resolveDeep(val) {
+    if (typeof val === 'string' && val.startsWith('{') && val.endsWith('}')) {
+      return resolveReference(val, tokenMap);
+    }
+    if (Array.isArray(val)) return val.map(resolveDeep);
+    if (val && typeof val === 'object') {
+      const out = {};
+      for (const [k, v] of Object.entries(val)) out[k] = resolveDeep(v);
+      return out;
+    }
+    return val;
+  }
+
   const resolved = [];
   for (const t of tokens) {
-    let val = t.$value;
-    if (typeof val === 'string' && val.startsWith('{')) {
-      val = resolveReference(val, tokenMap);
-    }
-    resolved.push({ ...t, resolvedValue: val });
+    resolved.push({ ...t, resolvedValue: resolveDeep(t.$value) });
   }
   return resolved;
 }
@@ -272,13 +284,19 @@ for (const t of tokens) {
 }
 
 css += '\n  /* Transition composite vars */\n';
+function easingToCss(ease) {
+  if (Array.isArray(ease) && ease.length === 4) {
+    return `cubic-bezier(${ease.join(', ')})`;
+  }
+  return ease ?? '';
+}
 for (const t of tokens) {
   if (t.$type !== 'transition') continue;
   const val = t.resolvedValue;
   if (!val || typeof val !== 'object') continue;
   const prefix = `  --lg-${t.path.join('-')}`;
   const dur = val.duration ?? '';
-  const ease = val.timingFunction ?? '';
+  const ease = easingToCss(val.timingFunction);
   const delay = val.delay ?? '0ms';
   css += `${prefix}: ${dur} ${ease} ${delay};\n`;
 }
