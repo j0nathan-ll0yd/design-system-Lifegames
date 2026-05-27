@@ -12,17 +12,30 @@
     "docs:build": "turbo run docs:build",
     "docs:dev": "turbo run docs:dev",
     "storybook:build": "turbo run storybook:build",
+    "storybook:test": "turbo run storybook:test",
     "sync:schemas": "pnpm -F @lifegames/schemas sync",
     "check:schemas-freshness": "bash packages/schemas/scripts/check-freshness.sh",
     "yalc:publish": "pnpm build:tokens && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push && pnpm --filter @lifegames/schemas exec yalc publish --push",
     "yalc:update": "pnpm yalc:publish",
+    "widget:inventory": "node scripts/widget-inventory.mjs",
+    "dtcg:validate": "node scripts/validate-dtcg.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "build:m3": "node scripts/build-m3.mjs",
+    "build:shadcn": "node scripts/build-shadcn.mjs",
     "sync:claude-design": "node scripts/sync-claude-design.mjs",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@playwright/test": "^1.60.0",
     "husky": "^9.1.7",
     "turbo": "^2.5.0",
     "yalc": "1.0.0-pre.53"
+  },
+  "dependencies": {
+    "culori": "^4.0.2"
   }
 }
