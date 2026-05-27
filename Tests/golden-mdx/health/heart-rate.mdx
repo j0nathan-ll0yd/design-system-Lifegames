@@ -68,6 +68,33 @@ hrvSDNN: { value: number; unit: string };
 
 </details>
 
+## Fixture example
+
+```json
+{
+  "health": {
+    "quantities": {
+      "heartRate": {
+        "value": 62,
+        "unit": "count/min"
+      },
+      "hrvSDNN": {
+        "value": 48,
+        "unit": "ms"
+      }
+    }
+  }
+}
+```
+
+## Accessibility
+
+- Large numeric display optimized for readability; includes accessible value descriptions.
+
+## Storybook
+
+[View live stories](/storybook/?path=/story/production-health-heart-rate--default)
+
 ## Usage
 
 ```astro
