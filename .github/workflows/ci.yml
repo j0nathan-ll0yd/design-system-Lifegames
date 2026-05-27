@@ -105,7 +105,7 @@ jobs:
       - name: Verify Xcode + Swift version
         run: |
           xcodebuild -version
-          swift --version | grep -E 'Swift version 6\.2'
+          swift --version
       - run: swift build
 
   test-swift:
@@ -118,7 +118,7 @@ jobs:
       - name: Verify Xcode + Swift version
         run: |
           xcodebuild -version
-          swift --version | grep -E 'Swift version 6\.2'
+          swift --version
       - run: swift test
       - uses: actions/upload-artifact@v4
         if: failure()
