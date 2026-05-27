@@ -109,12 +109,16 @@ jobs:
       - run: swift build
 
   test-swift:
-    needs: build-swift
+    needs: [build-swift, build-tokens]
     runs-on: macos-26
     env:
       SNAPSHOT_ENV: ci
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
       - name: Verify Xcode + Swift version
         run: |
           xcodebuild -version
