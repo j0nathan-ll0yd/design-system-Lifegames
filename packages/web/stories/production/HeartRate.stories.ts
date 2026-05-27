@@ -4,7 +4,7 @@ import { html } from 'lit';
 // DS-internal fixture: health/heart-rate.json
 const meta: Meta = {
   title: 'Production/Health/HeartRate',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     heartRate: { control: 'number' },
     hrv: { control: 'number' },
@@ -45,4 +45,9 @@ export const Empty: Story = {
 
 export const Loading: Story = {
   args: { heartRate: null, hrv: null },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

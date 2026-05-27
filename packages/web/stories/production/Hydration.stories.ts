@@ -4,7 +4,7 @@ import { html } from 'lit';
 // DS-internal fixture: health/hydration.json
 const meta: Meta = {
   title: 'Production/Health/Hydration',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     waterOz: { control: 'number' },
     waterMax: { control: 'number' },
@@ -54,4 +54,9 @@ export const Empty: Story = {
 
 export const Loading: Story = {
   args: { waterOz: 0, waterMax: 120, caffeineMg: 0, caffeineMax: 500 },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

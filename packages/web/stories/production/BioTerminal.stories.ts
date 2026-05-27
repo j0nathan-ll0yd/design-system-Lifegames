@@ -32,7 +32,7 @@ function renderTerminal(lines: typeof defaultLines) {
 
 const meta: Meta = {
   title: 'Production/Identity/BioTerminal',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     lines: { control: 'object' },
   },
@@ -53,4 +53,9 @@ export const Empty: Story = {
 export const Loading: Story = {
   // DS-internal skeleton: identity/bio-terminal.skeleton.json (terminalLines: [])
   args: { lines: [] },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

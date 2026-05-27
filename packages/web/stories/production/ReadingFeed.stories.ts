@@ -35,7 +35,7 @@ function renderFeed(articles: typeof defaultArticles) {
 
 const meta: Meta = {
   title: 'Production/Reading/ReadingFeed',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { articles: { control: 'object' } },
   render: (args) => renderFeed(args.articles),
 };
@@ -46,3 +46,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { articles: defaultArticles } };
 export const Empty: Story = { args: { articles: [] } };
 export const Loading: Story = { args: { articles: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

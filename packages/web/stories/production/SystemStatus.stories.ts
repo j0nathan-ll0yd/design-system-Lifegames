@@ -46,7 +46,7 @@ function renderStatus(lines: typeof defaultLines) {
 
 const meta: Meta = {
   title: 'Production/Other/SystemStatus',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { lines: { control: 'object' } },
   render: (args) => renderStatus(args.lines),
 };
@@ -57,3 +57,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { lines: defaultLines } };
 export const Empty: Story = { args: { lines: [] } };
 export const Loading: Story = { args: { lines: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

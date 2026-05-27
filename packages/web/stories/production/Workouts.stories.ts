@@ -33,7 +33,7 @@ function renderWorkouts(workouts: typeof defaultWorkouts) {
 
 const meta: Meta = {
   title: 'Production/Health/Workouts',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     workouts: { control: 'object' },
   },
@@ -48,3 +48,8 @@ export const Default: Story = { args: { workouts: defaultWorkouts } };
 export const Empty: Story = { args: { workouts: [] } };
 
 export const Loading: Story = { args: { workouts: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

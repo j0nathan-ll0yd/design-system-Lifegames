@@ -46,7 +46,7 @@ function renderLeaderboard(places: typeof defaultPlaces) {
 
 const meta: Meta = {
   title: 'Production/Location/PlaceLeaderboardV3',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { places: { control: 'object' } },
   render: (args) => renderLeaderboard(args.places),
 };
@@ -57,3 +57,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { places: defaultPlaces } };
 export const Empty: Story = { args: { places: [] } };
 export const Loading: Story = { args: { places: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

@@ -23,6 +23,10 @@
     "docs:dev": {
       "cache": false,
       "persistent": true
+    },
+    "storybook:test": {
+      "dependsOn": ["build"],
+      "cache": false
     }
   }
 }

@@ -25,7 +25,9 @@
     "./base": "./src/base.css",
     "./compat": "./src/compat.css",
     "./fonts": "./src/fonts.css",
-    "./docs-chrome": "./src/docs-chrome.css"
+    "./docs-chrome": "./src/docs-chrome.css",
+    "./shadcn": "./dist/shadcn.css",
+    "./m3": "./dist/m3.css"
   },
   "files": [
     "dist",

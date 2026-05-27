@@ -4,7 +4,7 @@ import { html } from 'lit';
 // DS-internal fixture: health/night-summary.json
 const meta: Meta = {
   title: 'Production/Health/NightSummary',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     sleepScore: { control: 'number' },
     sleepDuration: { control: 'text' },
@@ -45,4 +45,9 @@ export const Empty: Story = {
 
 export const Loading: Story = {
   args: { sleepScore: null, sleepDuration: '—', deepPct: 0, remPct: 0 },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

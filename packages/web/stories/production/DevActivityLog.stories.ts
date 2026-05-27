@@ -47,7 +47,7 @@ function renderLog(events: typeof defaultEvents) {
 
 const meta: Meta = {
   title: 'Production/Github/DevActivityLog',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { events: { control: 'object' } },
   render: (args) => renderLog(args.events),
 };
@@ -58,3 +58,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { events: defaultEvents } };
 export const Empty: Story = { args: { events: [] } };
 export const Loading: Story = { args: { events: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

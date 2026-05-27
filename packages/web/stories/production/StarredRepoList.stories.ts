@@ -44,7 +44,7 @@ function renderRepos(repos: typeof defaultRepos) {
 
 const meta: Meta = {
   title: 'Production/Github/StarredRepoList',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { repos: { control: 'object' } },
   render: (args) => renderRepos(args.repos),
 };
@@ -55,3 +55,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { repos: defaultRepos } };
 export const Empty: Story = { args: { repos: [] } };
 export const Loading: Story = { args: { repos: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

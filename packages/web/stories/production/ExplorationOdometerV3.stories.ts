@@ -4,7 +4,7 @@ import { html } from 'lit';
 // DS-internal fixture: location/exploration-odometer-v3.json
 const meta: Meta = {
   title: 'Production/Location/ExplorationOdometerV3',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     totalVisits: { control: 'number' },
     totalPlaces: { control: 'number' },
@@ -53,4 +53,9 @@ export const Empty: Story = {
 
 export const Loading: Story = {
   args: { totalVisits: null, totalPlaces: null, citiesVisited: null, currentCity: null },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

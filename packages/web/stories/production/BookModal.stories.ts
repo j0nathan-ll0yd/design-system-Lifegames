@@ -5,7 +5,7 @@ import { html } from 'lit';
 // Synthetic fixture: show modal in open state with a sample book
 const meta: Meta = {
   title: 'Production/Reading/BookModal',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     visible: { control: 'boolean' },
     bookTitle: { control: 'text' },
@@ -39,4 +39,9 @@ export const Empty: Story = {
 
 export const Loading: Story = {
   args: { visible: false, bookTitle: '', bookAuthor: '', rating: null },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

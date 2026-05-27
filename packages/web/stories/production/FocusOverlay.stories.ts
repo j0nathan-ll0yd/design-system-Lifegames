@@ -5,7 +5,7 @@ import { html } from 'lit';
 // Synthetic fixture: show overlay with active/inactive state
 const meta: Meta = {
   title: 'Production/Other/FocusOverlay',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     active: { control: 'boolean' },
     label: { control: 'text' },
@@ -36,3 +36,8 @@ type Story = StoryObj;
 
 export const Default: Story = { args: { active: true, label: 'Work', focusMode: 'Deep Focus' } };
 export const Empty: Story = { args: { active: false, label: '', focusMode: null } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

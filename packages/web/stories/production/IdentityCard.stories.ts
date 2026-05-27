@@ -12,7 +12,7 @@ const defaultArgs = {
 
 const meta: Meta = {
   title: 'Production/Identity/IdentityCard',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     name: { control: 'text' },
     title: { control: 'text' },
@@ -45,4 +45,9 @@ export const Default: Story = { args: defaultArgs };
 
 export const Empty: Story = {
   args: { name: '', title: '', bio: '', github: null, linkedin: null },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

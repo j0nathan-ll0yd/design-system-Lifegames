@@ -41,7 +41,7 @@ function renderBookshelf(books: typeof defaultBooks) {
 
 const meta: Meta = {
   title: 'Production/Reading/Bookshelf',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { books: { control: 'object' } },
   render: (args) => renderBookshelf(args.books),
 };
@@ -52,3 +52,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { books: defaultBooks } };
 export const Empty: Story = { args: { books: [] } };
 export const Loading: Story = { args: { books: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};

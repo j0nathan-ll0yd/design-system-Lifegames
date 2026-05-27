@@ -4,7 +4,7 @@ import { html } from 'lit';
 // DS-internal fixture: identity/coming-soon.json (empty object — synthetic below)
 const meta: Meta = {
   title: 'Production/Identity/ComingSoon',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     label: { control: 'text' },
     dossierYear: { control: 'number' },
@@ -31,4 +31,9 @@ export const Default: Story = {
 
 export const Empty: Story = {
   args: { label: '', dossierYear: 2026 },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

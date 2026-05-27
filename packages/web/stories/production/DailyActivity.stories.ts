@@ -4,7 +4,7 @@ import { html } from 'lit';
 // DS-internal fixture: health/daily-activity.json
 const meta: Meta = {
   title: 'Production/Health/DailyActivity',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: {
     stepCount: { control: 'number' },
     distanceM: { control: 'number' },
@@ -44,4 +44,9 @@ export const Empty: Story = {
 export const Loading: Story = {
   // skeleton: all zeroes, is-loading class applied
   args: { stepCount: null, distanceM: null, exerciseMin: null, activeKcal: null, totalKcal: null },
+};
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
 };

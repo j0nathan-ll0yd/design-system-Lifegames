@@ -39,7 +39,7 @@ function renderReviews(reviews: typeof defaultReviews) {
 
 const meta: Meta = {
   title: 'Production/Reading/TheatreReviews',
-  tags: ['autodocs'],
+  tags: ['stable', 'autodocs'],
   argTypes: { reviews: { control: 'object' } },
   render: (args) => renderReviews(args.reviews),
 };
@@ -50,3 +50,8 @@ type Story = StoryObj;
 export const Default: Story = { args: { reviews: defaultReviews } };
 export const Empty: Story = { args: { reviews: [] } };
 export const Loading: Story = { args: { reviews: [] } };
+
+export const Dark: Story = {
+  ...Default,
+  parameters: { backgrounds: { default: 'dark' } },
+};
