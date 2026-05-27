@@ -30,9 +30,6 @@
   "files": [
     "src"
   ],
-  "scripts": {
-    "build": "echo 'No build step — Astro components are source-distributed'"
-  },
   "dependencies": {
     "@lifegames/tokens": "workspace:*"
   },
