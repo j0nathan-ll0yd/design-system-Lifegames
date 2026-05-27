@@ -96,21 +96,33 @@ jobs:
       #     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
       #     storybookBuildDir: apps/storybook/storybook-static
 
+  # Swift jobs run on a self-hosted Mac (shared with ios-LifegamesPortal).
+  # Security: repo must have "Require approval for all outside collaborators"
+  # enabled (Settings → Actions → General) so fork PRs cannot trigger the
+  # runner without maintainer approval.
   build-swift:
-    # macos-26 (Tahoe) GA since 2026-02-26; Xcode 26.4.1 is the default.
-    # No xcode-select needed — runner default ships Swift 6.2 + iOS 26 / watchOS 26 SDKs.
-    runs-on: macos-26
+    runs-on: [self-hosted, macOS, arm64, xcode-26]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Xcode + Swift version
+      - name: Select Xcode 26
         run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then
+            echo "::error::Xcode 26 not found. Available versions:"
+            ls /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
           xcodebuild -version
           swift --version
       - run: swift build
 
   test-swift:
     needs: [build-swift, build-tokens]
-    runs-on: macos-26
+    runs-on: [self-hosted, macOS, arm64, xcode-26]
+    timeout-minutes: 20
     env:
       SNAPSHOT_ENV: ci
     steps:
@@ -119,8 +131,16 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
-      - name: Verify Xcode + Swift version
+      - name: Select Xcode 26
         run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then
+            echo "::error::Xcode 26 not found. Available versions:"
+            ls /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
           xcodebuild -version
           swift --version
       - run: swift test
@@ -132,7 +152,8 @@ jobs:
 
   contract-tests:
     needs: [build-tokens, build-swift]
-    runs-on: macos-26
+    runs-on: [self-hosted, macOS, arm64, xcode-26]
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -141,6 +162,16 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Select Xcode 26
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app /Applications/Xcode.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then
+            echo "::error::Xcode 26 not found. Available versions:"
+            ls /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
       - name: TypeScript Props contract check
         run: pnpm --filter @lifegames/web tsc --noEmit
       - name: Swift Props contract check
