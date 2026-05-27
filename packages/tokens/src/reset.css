@@ -1,0 +1,27 @@
+/* Layout-safe CSS reset for the Lifegames design system.
+
+   Un-layered intentionally — the reset needs to override browser defaults
+   without participating in cascade-layer ordering.
+
+   Critically: this MUST NOT use a universal `* { margin: 0; padding: 0 }`
+   reset. Un-layered styles win over layered styles regardless of specificity,
+   so a universal margin/padding reset would clobber `.right-panel`'s
+   `margin-left: var(--left-width)` in `tokens/layout.css` (which lives inside
+   `@layer lifegames { @layer layout }`) and collapse the dashboard layout —
+   the BIO/profile fixed panel ends up overlapping the BODY column.
+
+   Instead: keep the universal selector for `box-sizing` (no widget depends
+   on a specific box-sizing model), and reset margin/padding only on the
+   text/list elements that ship with browser-default margins.
+
+   Consumers that want the reset import `@lifegames/tokens/reset`. Starlight
+   (which ships its own reset) intentionally does NOT import this file. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd, blockquote, figure, pre {
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol { list-style: none; }
