@@ -37,7 +37,7 @@ jobs:
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
         run: node scripts/validate-dtcg.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: token-dist
           path: packages/tokens/dist/
@@ -151,7 +151,7 @@ jobs:
           xcodebuild -version
           swift --version
       - run: swift test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: snapshot-diffs
