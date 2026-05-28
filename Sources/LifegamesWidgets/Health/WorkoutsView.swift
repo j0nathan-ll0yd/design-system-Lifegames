@@ -3,52 +3,114 @@ import LifegamesTokens
 import SwiftUI
 
 public struct WorkoutsView: View {
-    public let props: WorkoutsProps
+    private let state: WidgetState<WorkoutsProps>
+
+    public init(state: WidgetState<WorkoutsProps>) {
+        self.state = state
+    }
 
     public init(props: WorkoutsProps) {
-        self.props = props
+        state = props.workouts.isEmpty ? .empty : .populated(props)
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "WORKOUTS", dotColor: Color.colorAccentPink, timestamp: "today")
+        switch state {
+        case .loading:
+            WorkoutsSkeletonView()
+        case .empty:
+            WorkoutsRestDayView()
+        case let .populated(props):
+            WorkoutsPopulatedView(props: props)
+        }
+    }
+}
 
-            if props.workouts.isEmpty {
-                restDayView
-            } else {
-                VStack(spacing: 10) {
-                    ForEach(Array(props.workouts.enumerated()), id: \.offset) { _, workout in
-                        WorkoutCard(workout: workout)
-                    }
+private struct WorkoutsPopulatedView: View {
+    let props: WorkoutsProps
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: "WORKOUTS", dotColor: LGColor.accentPink, timestamp: "today")
+
+            VStack(spacing: 10) {
+                ForEach(Array(props.workouts.enumerated()), id: \.offset) { _, workout in
+                    WorkoutCard(workout: workout)
                 }
-                .padding(.horizontal, 18)
-                .padding(.bottom, 16)
+            }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
+        }
+        .neonCard(accent: LGColor.accentPink)
+    }
+}
+
+private struct WorkoutsRestDayView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: "WORKOUTS", dotColor: LGColor.accentPink, timestamp: "today")
+
+            VStack(spacing: 12) {
+                Image(systemName: "figure.mind.and.body")
+                    .font(.system(size: 32))
+                    .foregroundStyle(LGColor.accentPink.opacity(0.6))
+
+                Text("Recovery Day")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(LGColor.textTitle)
+
+                Text("No workouts recorded")
+                    .font(.system(size: 11))
+                    .foregroundStyle(LGColor.textMuted)
+
+                Text("Your body recovers while you rest")
+                    .font(.system(size: 10))
+                    .foregroundStyle(LGColor.textMuted.opacity(0.7))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .padding(.horizontal, 18)
+        }
+        .neonCard(accent: LGColor.accentPink)
+    }
+}
+
+private struct WorkoutsSkeletonView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: "WORKOUTS", dotColor: LGColor.accentPink, timestamp: "today")
+
+            VStack(spacing: 10) {
+                ForEach(0 ..< 2, id: \.self) { _ in
+                    WorkoutCardSkeleton()
+                }
+            }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
+        }
+        .neonCard(accent: LGColor.accentPink)
+    }
+}
+
+private struct WorkoutCardSkeleton: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                SkeletonBar(width: 28, height: 28, cornerRadius: 6)
+                SkeletonBar(width: 120, height: 12)
+            }
+            HStack(spacing: 16) {
+                SkeletonBar(width: 64, height: 10)
+                SkeletonBar(width: 64, height: 10)
+                SkeletonBar(width: 64, height: 10)
             }
         }
-        .neonCard(accent: Color.colorAccentPink)
-    }
-
-    private var restDayView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "figure.mind.and.body")
-                .font(.system(size: 32))
-                .foregroundStyle(Color.colorAccentPink.opacity(0.6))
-
-            Text("Recovery Day")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.colorTextTitle)
-
-            Text("No workouts recorded")
-                .font(.system(size: 11))
-                .foregroundStyle(Color.colorTextMuted)
-
-            Text("Your body recovers while you rest")
-                .font(.system(size: 10))
-                .foregroundStyle(Color.colorTextMuted.opacity(0.7))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
-        .padding(.horizontal, 18)
+        .padding(12)
+        .background(Color.white.opacity(0.03))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+        )
     }
 }
 
@@ -72,14 +134,14 @@ private struct WorkoutCard: View {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.system(size: 14))
-                    .foregroundStyle(Color.colorAccentPink.opacity(0.8))
+                    .foregroundStyle(LGColor.accentPink.opacity(0.8))
                     .frame(width: 28, height: 28)
-                    .background(Color.colorAccentPink.opacity(0.1))
+                    .background(LGColor.accentPink.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 6))
 
                 Text(workout.activityType)
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color.colorTextTitle)
+                    .foregroundStyle(LGColor.textTitle)
             }
 
             HStack(spacing: 16) {
@@ -108,23 +170,43 @@ private struct StatPill: View {
         VStack(spacing: 2) {
             Text(label)
                 .font(.system(size: 9))
-                .foregroundStyle(Color.colorTextMuted)
+                .foregroundStyle(LGColor.textMuted)
             Text(value)
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
-                .foregroundStyle(Color.colorTextTitle)
+                .foregroundStyle(LGColor.textTitle)
         }
     }
 }
 
-#Preview("Workouts") {
-    VStack(spacing: 16) {
-        WorkoutsView(props: WorkoutsProps(workouts: [
-            .init(activityType: "Outdoor Walk", duration: 2400, energyBurned: 180, distance: 3200),
-            .init(activityType: "Barry's Bootcamp", duration: 3300, energyBurned: 520, distance: 0),
-        ]))
-        WorkoutsView(props: WorkoutsProps(workouts: []))
-    }
+#Preview("Workouts — Loading") {
+    WorkoutsView(state: .loading)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Workouts — Empty (Rest Day)") {
+    WorkoutsView(state: .empty)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Workouts — Single") {
+    WorkoutsView(state: .populated(WorkoutsProps(workouts: [
+        .init(activityType: "Outdoor Walk", duration: 2400, energyBurned: 180, distance: 3200),
+    ])))
     .padding()
-    .background(Color.colorSurfaceBase)
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Workouts — Multi") {
+    WorkoutsView(state: .populated(WorkoutsProps(workouts: [
+        .init(activityType: "Outdoor Walk", duration: 2400, energyBurned: 180, distance: 3200),
+        .init(activityType: "Barry's Bootcamp", duration: 3300, energyBurned: 520, distance: 0),
+    ])))
+    .padding()
+    .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
 }

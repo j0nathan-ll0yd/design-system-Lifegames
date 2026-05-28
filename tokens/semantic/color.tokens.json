@@ -52,6 +52,13 @@
     "interactive": {
       "default": { "$value": "{color.indigo.600}", "$description": "Buttons, links" },
       "hover":   { "$value": "{color.purple.600}", "$description": "Hover state" }
+    },
+    "sleep": {
+      "deep": {
+        "$type": "color",
+        "$value": "#1e40af",
+        "$description": "Deep sleep phase (web NightSummary deep pill)"
+      }
     }
   }
 }

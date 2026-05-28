@@ -11,6 +11,11 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
         self.zone = zone
     }
 
+    public var heartRateZone: HeartRateZone {
+        HeartRateZone.classify(bpm: bpm)
+    }
+
+    /// Legacy — kept for backward compatibility pending consumer audit
     public var zoneColor: String {
         switch zone.lowercased() {
         case "resting": return "green"

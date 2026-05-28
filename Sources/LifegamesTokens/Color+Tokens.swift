@@ -76,4 +76,5 @@ public enum LGColor {
     public static let healthPurple = Color("color-health-purple", bundle: .module)
     public static let interactiveDefault = Color("color-interactive-default", bundle: .module)
     public static let interactiveHover = Color("color-interactive-hover", bundle: .module)
+    public static let sleepDeep = Color("color-sleep-deep", bundle: .module)
 }
