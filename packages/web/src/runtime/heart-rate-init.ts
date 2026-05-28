@@ -24,12 +24,15 @@ export interface HeartRateInlineOptions {
  */
 function ecgBeat(bpm: number, numSamples: number): number[] {
   const hrFact = Math.sqrt(bpm / 60);
-  const waves: [number, number, number, boolean][] = [
-    [0.15,  0.12, 0.040, false],
-    [-0.10, 0.28, 0.015, true],
-    [1.00,  0.32, 0.018, true],
-    [-0.25, 0.38, 0.020, true],
-    [0.30,  0.58, 0.070, false],
+  const tCenter = Math.max(0.44, 0.6 - (hrFact - 1) * 0.1);
+  // [amplitude, center, width] — kept in sync with generateECGSamples and the iOS
+  // ECGBackgroundView: R dominant, Q/S sharp flanks, P/T small broad bumps.
+  const waves: [number, number, number][] = [
+    [0.1,   0.16,    0.022],
+    [-0.13, 0.30,    0.013],
+    [1.0,   0.335,   0.013],
+    [-0.30, 0.365,   0.016],
+    [0.22,  tCenter, 0.060],
   ];
   const samples: number[] = [];
   for (let i = 0; i < numSamples; i++) {
@@ -37,13 +40,7 @@ function ecgBeat(bpm: number, numSamples: number): number[] {
     let val = 0;
     for (let j = 0; j < waves.length; j++) {
       const w = waves[j];
-      const width = w[3] ? w[2] : w[2] / hrFact;
-      let center = w[1];
-      if (j === 4) {
-        center = 0.58 - (hrFact - 1) * 0.08;
-        if (center < 0.42) center = 0.42;
-      }
-      const exponent = (t - center) / width;
+      const exponent = (t - w[1]) / w[2];
       val += w[0] * Math.exp(-0.5 * exponent * exponent);
     }
     samples[i] = val;
@@ -344,8 +341,8 @@ export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): 
     bpm: hr,
     hrv,
     stroke: zone.ecgStroke,
-    beatSamples: generateECGSamples(hr, 64),
-    samplesPerBeat: 64,
+    beatSamples: generateECGSamples(hr, 256),
+    samplesPerBeat: 256,
     cursorX: 0,
     canvasW: 0,
     canvasH: 0,
@@ -444,8 +441,8 @@ export function initHeartRateInline(canvasId: string, opts?: Partial<HeartRateIn
     bpm,
     hrv,
     stroke,
-    beatSamples: ecgBeat(bpm, 64),
-    samplesPerBeat: 64,
+    beatSamples: ecgBeat(bpm, 256),
+    samplesPerBeat: 256,
     cursorX: 0,
     canvasW: 0,
     canvasH: 0,
@@ -467,7 +464,7 @@ export function initHeartRateInline(canvasId: string, opts?: Partial<HeartRateIn
     wgt.hrv = newHrv;
     wgt.stroke = newStroke;
     wgt.meanRR = 60000 / newBpm;
-    wgt.beatSamples = ecgBeat(newBpm, 64);
+    wgt.beatSamples = ecgBeat(newBpm, 256);
   };
 
   if (motionReduced) {

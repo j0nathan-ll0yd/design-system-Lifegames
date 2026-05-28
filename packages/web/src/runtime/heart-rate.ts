@@ -117,13 +117,16 @@ export function buildECGPath(heartRate: number): string {
  */
 export function generateECGSamples(bpm: number, samplesPerBeat: number): number[] {
   const hrFact = Math.sqrt(bpm / 60);
-  // [amplitude, center, baseWidth, isQRS]
-  const waves: [number, number, number, boolean][] = [
-    [0.15,  0.12, 0.040, false],  // P
-    [-0.10, 0.28, 0.015, true],   // Q
-    [1.00,  0.32, 0.018, true],   // R
-    [-0.25, 0.38, 0.020, true],   // S
-    [0.30,  0.58, 0.070, false],  // T
+  // T-wave center shifts earlier at high HR (Bazett QT shortening).
+  const tCenter = Math.max(0.44, 0.6 - (hrFact - 1) * 0.1);
+  // [amplitude, center, width] — R normalized to 1.0 and dominant; P/T small broad
+  // bumps; Q/S sharp negative flanks. Kept in sync with the iOS ECGBackgroundView.
+  const waves: [number, number, number][] = [
+    [0.1,   0.16,    0.022],  // P
+    [-0.13, 0.30,    0.013],  // Q
+    [1.0,   0.335,   0.013],  // R
+    [-0.30, 0.365,   0.016],  // S
+    [0.22,  tCenter, 0.060],  // T
   ];
 
   const samples: number[] = new Array(samplesPerBeat);
@@ -131,10 +134,7 @@ export function generateECGSamples(bpm: number, samplesPerBeat: number): number[
     const t = i / samplesPerBeat;
     let val = 0;
     for (let j = 0; j < waves.length; j++) {
-      const [amp, baseCenter, baseWidth, isQRS] = waves[j];
-      const width = isQRS ? baseWidth : baseWidth / hrFact;
-      // T-wave center shifts earlier at high HR (QT shortening)
-      const center = j === 4 ? 0.58 - (hrFact - 1) * 0.08 : baseCenter;
+      const [amp, center, width] = waves[j];
       const exponent = (t - center) / width;
       val += amp * Math.exp(-0.5 * exponent * exponent);
     }
