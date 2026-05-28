@@ -37,16 +37,16 @@ public extension Font {
             .custom("SpaceGrotesk-Bold", size: 35.2, relativeTo: .largeTitle)
         }
         public static func display() -> Font {
-            .custom("SpaceGrotesk-Regular", size: 17, relativeTo: .body)
+            .custom("SpaceGrotesk-Bold", size: 17, relativeTo: .body)
         }
         public static func heading1() -> Font {
-            .custom("SpaceGrotesk-Regular", size: 17, relativeTo: .body)
+            .custom("SpaceGrotesk-Bold", size: 17, relativeTo: .body)
         }
         public static func heading2() -> Font {
-            .custom("SpaceGrotesk-Regular", size: 17, relativeTo: .body)
+            .custom("SpaceGrotesk-SemiBold", size: 17, relativeTo: .body)
         }
         public static func label() -> Font {
-            .custom("SpaceGrotesk-Regular", size: 17, relativeTo: .body)
+            .custom("SpaceGrotesk-Medium", size: 17, relativeTo: .body)
         }
         public static func code() -> Font {
             .custom("SpaceGrotesk-Regular", size: 17, relativeTo: .body)
