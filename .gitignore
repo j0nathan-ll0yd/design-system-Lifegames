@@ -17,6 +17,9 @@ dist/
 playwright-report/
 test-results/
 
+# Vitest coverage output
+coverage/
+
 # Generated widget docs (recreated by scripts/generate-widget-docs.mjs)
 apps/docs/src/content/docs/widgets/*/
 !apps/docs/src/content/docs/widgets/*/index.mdx
