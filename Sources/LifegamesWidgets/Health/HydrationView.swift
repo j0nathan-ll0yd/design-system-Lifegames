@@ -21,7 +21,7 @@ public struct HydrationView: View {
             case .loading:
                 HydrationSkeletonView()
             case .empty:
-                HydrationEmptyView()
+                HydrationPopulatedView(props: .zero)
             case let .populated(props):
                 HydrationPopulatedView(props: props)
             }
@@ -36,275 +36,277 @@ private struct HydrationPopulatedView: View {
     let props: HydrationProps
 
     var body: some View {
-        HStack(spacing: 0) {
-            WaterBottleView(fillPercent: props.waterPercent, value: "\(props.waterOz) oz")
-            Rectangle()
-                .fill(Color.white.opacity(0.06))
-                .frame(width: 1, height: 80)
-            CoffeeMugView(fillPercent: props.caffeinePercent, value: "\(props.caffeineMg) mg")
+        HStack(alignment: .bottom, spacing: 0) {
+            WaterBottleColumn(fillPercent: props.waterPercent, value: "\(props.waterOz) oz")
+                .frame(maxWidth: .infinity)
+
+            VesselDivider()
+                .padding(.bottom, 28)
+
+            CoffeeMugColumn(fillPercent: props.caffeinePercent, value: "\(props.caffeineMg) mg")
+                .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 18)
+        .padding(.top, 14)
         .padding(.bottom, 16)
     }
 }
 
-// MARK: - Skeleton
-
-private struct HydrationSkeletonView: View {
+private struct VesselDivider: View {
     var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 8) {
-                SkeletonBar(width: 44, height: 80, cornerRadius: 8)
-                SkeletonBar(width: 44, height: 10)
-                SkeletonBar(width: 30, height: 8)
-            }
-            .frame(maxWidth: .infinity)
-
-            Rectangle()
-                .fill(Color.white.opacity(0.06))
-                .frame(width: 1, height: 60)
-
-            VStack(spacing: 8) {
-                SkeletonBar(width: 44, height: 60, cornerRadius: 8)
-                SkeletonBar(width: 44, height: 10)
-                SkeletonBar(width: 30, height: 8)
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .padding(.horizontal, 18)
-        .padding(.bottom, 16)
-    }
-}
-
-// MARK: - Empty
-
-private struct HydrationEmptyView: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            WaterBottleView(fillPercent: 0, value: "0 oz")
-            Rectangle()
-                .fill(Color.white.opacity(0.06))
-                .frame(width: 1, height: 80)
-            CoffeeMugView(fillPercent: 0, value: "0 mg")
-        }
-        .padding(.horizontal, 18)
-        .padding(.bottom, 16)
+        Rectangle()
+            .fill(LinearGradient(
+                colors: [.clear, Color.white.opacity(0.10), .clear],
+                startPoint: .top, endPoint: .bottom
+            ))
+            .frame(width: 1, height: 96)
     }
 }
 
 // MARK: - Water Bottle
 
-private struct WaterBottleView: View {
+private struct WaterBottleColumn: View {
     let fillPercent: Double
     let value: String
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var waveOffset: Double = 0
-    @State private var bubbleOffset: Double = 0
-
-    private let bottleBodyHeight: CGFloat = 72
-    private let bottleBodyWidth: CGFloat = 36
-    private let bottleNeckHeight: CGFloat = 10
-    private let bottleNeckWidth: CGFloat = 20
-    private let bottleCapHeight: CGFloat = 6
+    private let bodyWidth: CGFloat = 48
+    private let bodyHeight: CGFloat = 100
 
     var body: some View {
         VStack(spacing: 8) {
-            // Bottle shape
             VStack(spacing: 0) {
                 // Cap
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(LGColor.accentBlue.opacity(0.4))
-                    .frame(width: bottleNeckWidth, height: bottleCapHeight)
-
-                // Neck
-                Rectangle()
-                    .fill(Color.white.opacity(0.06))
-                    .frame(width: bottleNeckWidth, height: bottleNeckHeight)
+                UnevenRoundedRectangle(topLeadingRadius: 6, topTrailingRadius: 6)
+                    .fill(LGColor.accentBlue.opacity(0.06))
                     .overlay(
-                        Rectangle()
-                            .fill(LGColor.accentBlue.opacity(fillPercent > 0.95 ? 0.5 : 0))
-                            .frame(width: bottleNeckWidth, height: bottleNeckHeight)
+                        UnevenRoundedRectangle(topLeadingRadius: 6, topTrailingRadius: 6)
+                            .stroke(LGColor.accentBlue.opacity(0.3), lineWidth: 2)
                     )
+                    .frame(width: 26, height: 12)
 
-                // Body
-                ZStack(alignment: .bottom) {
-                    // Empty background
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white.opacity(0.04))
-                        .frame(width: bottleBodyWidth, height: bottleBodyHeight)
-
-                    // Liquid fill clipped to body
-                    GeometryReader { _ in
-                        let fillHeight = bottleBodyHeight * fillPercent
-                        ZStack(alignment: .top) {
-                            // Base liquid
-                            Rectangle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [LGColor.accentBlue.opacity(0.7), LGColor.accentBlue.opacity(0.35)],
-                                        startPoint: .bottom,
-                                        endPoint: .top
-                                    )
-                                )
-                                .frame(width: bottleBodyWidth, height: fillHeight)
-
-                            // Gloss overlay
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.18), Color.white.opacity(0)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                            .frame(width: bottleBodyWidth * 0.4, height: fillHeight)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            // Wave at liquid surface
-                            if fillPercent > 0.02 && !reduceMotion {
-                                WavePath(offset: waveOffset)
-                                    .fill(LGColor.accentBlue.opacity(0.5))
-                                    .frame(width: bottleBodyWidth, height: 8)
-                            }
-
-                            // Bubbles
-                            if fillPercent > 0.05 && !reduceMotion {
-                                BubblesView(
-                                    color: LGColor.accentBlue,
-                                    containerWidth: bottleBodyWidth,
-                                    containerHeight: fillHeight,
-                                    offsets: [0.0, 0.8, 1.6],
-                                    xPositions: [0.2, 0.5, 0.75]
-                                )
-                            }
-                        }
-                        .frame(width: bottleBodyWidth, height: fillHeight, alignment: .bottom)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
-                    }
-                    .frame(width: bottleBodyWidth, height: bottleBodyHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .animation(.easeInOut(duration: 1.2), value: fillPercent)
-                }
+                LiquidVessel(
+                    color: LGColor.accentBlue,
+                    bodyWidth: bodyWidth,
+                    bodyHeight: bodyHeight,
+                    cornerRadius: 12,
+                    fillPercent: fillPercent,
+                    waveHeight: 8
+                )
             }
 
-            Text(value)
-                .font(.system(size: 12, weight: .bold, design: .monospaced))
-                .foregroundStyle(LGColor.accentBlue)
-
-            Text("Water")
-                .font(.system(size: 10))
-                .foregroundStyle(LGColor.textMuted)
+            VesselReadout(value: value, label: "Water", color: LGColor.accentBlue)
         }
         .frame(maxWidth: .infinity)
-        .onAppear {
-            guard !reduceMotion else { return }
-            withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-                waveOffset = 1.0
-            }
-        }
     }
 }
 
 // MARK: - Coffee Mug
 
-private struct CoffeeMugView: View {
+private struct CoffeeMugColumn: View {
     let fillPercent: Double
     let value: String
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var steamOffset: Double = 0
 
-    private let mugBodyHeight: CGFloat = 60
-    private let mugBodyWidth: CGFloat = 40
+    private let bodyWidth: CGFloat = 52
+    private let bodyHeight: CGFloat = 74
 
     var body: some View {
         VStack(spacing: 8) {
-            // Mug with handle
-            ZStack(alignment: .bottom) {
-                // Steam above mug (only when caffeine > 0)
-                if fillPercent > 0.05 && !reduceMotion {
-                    SteamLinesView(offset: steamOffset)
-                        .frame(width: mugBodyWidth, height: 20)
-                        .offset(y: -(mugBodyHeight / 2 + 14))
+            VStack(spacing: 2) {
+                SteamView(active: fillPercent > 0.05 && !reduceMotion)
+                    .frame(height: 14)
+
+                LiquidVessel(
+                    color: LGColor.accentAmber,
+                    bodyWidth: bodyWidth,
+                    bodyHeight: bodyHeight,
+                    cornerRadius: 10,
+                    fillPercent: fillPercent,
+                    waveHeight: 6
+                )
+                .overlay(alignment: .trailing) {
+                    MugHandlePath()
+                        .stroke(LGColor.accentAmber.opacity(0.25), lineWidth: 2)
+                        .frame(width: 14, height: 34)
+                        .offset(x: 13, y: 4)
                 }
-
-                // Mug body
-                ZStack(alignment: .bottom) {
-                    // Empty background
-                    RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.white.opacity(0.04))
-                        .frame(width: mugBodyWidth, height: mugBodyHeight)
-
-                    // Liquid fill
-                    GeometryReader { _ in
-                        let fillHeight = mugBodyHeight * fillPercent
-                        ZStack(alignment: .top) {
-                            Rectangle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [LGColor.accentAmber.opacity(0.7), LGColor.accentAmber.opacity(0.35)],
-                                        startPoint: .bottom,
-                                        endPoint: .top
-                                    )
-                                )
-                                .frame(width: mugBodyWidth, height: fillHeight)
-
-                            // Gloss overlay
-                            LinearGradient(
-                                colors: [Color.white.opacity(0.15), Color.white.opacity(0)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                            .frame(width: mugBodyWidth * 0.35, height: fillHeight)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                            // Wave
-                            if fillPercent > 0.02 && !reduceMotion {
-                                WavePath(offset: 0)
-                                    .fill(LGColor.accentAmber.opacity(0.5))
-                                    .frame(width: mugBodyWidth, height: 6)
-                            }
-
-                            // Bubbles
-                            if fillPercent > 0.05 && !reduceMotion {
-                                BubblesView(
-                                    color: LGColor.accentAmber,
-                                    containerWidth: mugBodyWidth,
-                                    containerHeight: fillHeight,
-                                    offsets: [0.3, 1.1, 1.9],
-                                    xPositions: [0.25, 0.55, 0.78]
-                                )
-                            }
-                        }
-                        .frame(width: mugBodyWidth, height: fillHeight, alignment: .bottom)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
-                    }
-                    .frame(width: mugBodyWidth, height: mugBodyHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                    .animation(.easeInOut(duration: 1.2), value: fillPercent)
-                }
-
-                // Handle (arc on the right side)
-                MugHandlePath()
-                    .stroke(Color.white.opacity(0.15), lineWidth: 3)
-                    .frame(width: 14, height: 28)
-                    .offset(x: mugBodyWidth / 2 + 5, y: -6)
             }
-            .frame(width: mugBodyWidth + 20, height: mugBodyHeight + 20)
 
-            Text(value)
-                .font(.system(size: 12, weight: .bold, design: .monospaced))
-                .foregroundStyle(LGColor.accentAmber)
-
-            Text("Caffeine")
-                .font(.system(size: 10))
-                .foregroundStyle(LGColor.textMuted)
+            VesselReadout(value: value, label: "Caffeine", color: LGColor.accentAmber)
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Vessel readout (value + label)
+
+private struct VesselReadout: View {
+    let value: String
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                .foregroundStyle(color)
+                .neonGlow(color, radius: 3)
+
+            Text(label)
+                .font(.system(size: 9, weight: .medium))
+                .kerning(2)
+                .textCase(.uppercase)
+                .foregroundStyle(LGColor.textMuted)
+        }
+    }
+}
+
+// MARK: - Liquid vessel (body background + animated liquid + gloss)
+
+private struct LiquidVessel: View {
+    let color: Color
+    let bodyWidth: CGFloat
+    let bodyHeight: CGFloat
+    let cornerRadius: CGFloat
+    let fillPercent: Double
+    let waveHeight: CGFloat
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var waveOffset: Double = 0
+    @State private var glossShift: CGFloat = 0
+
+    var body: some View {
+        let fillHeight = bodyHeight * fillPercent
+
+        ZStack(alignment: .bottom) {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(Color.white.opacity(0.04))
+                .frame(width: bodyWidth, height: bodyHeight)
+
+            ZStack(alignment: .top) {
+                Rectangle()
+                    .fill(LinearGradient(
+                        colors: [color.opacity(0.7), color.opacity(0.25)],
+                        startPoint: .bottom, endPoint: .top
+                    ))
+                    .frame(width: bodyWidth, height: fillHeight)
+
+                if fillPercent > 0.02, !reduceMotion {
+                    WavePath(offset: waveOffset)
+                        .fill(color.opacity(0.5))
+                        .frame(width: bodyWidth, height: waveHeight)
+                }
+
+                if fillPercent > 0.05, !reduceMotion {
+                    RisingBubbles(width: bodyWidth, height: fillHeight)
+                }
+            }
+            .frame(width: bodyWidth, height: fillHeight, alignment: .top)
+        }
+        .frame(width: bodyWidth, height: bodyHeight, alignment: .bottom)
+        .overlay(alignment: .leading) {
+            // Glossy shimmer band sweeping across the liquid
+            LinearGradient(
+                colors: [.clear, Color.white.opacity(0.14), .clear],
+                startPoint: .leading, endPoint: .trailing
+            )
+            .frame(width: bodyWidth * 0.28)
+            .offset(x: bodyWidth * 0.16 + glossShift)
+            .allowsHitTesting(false)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .overlay(
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(color.opacity(0.25), lineWidth: 1.5)
+        )
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1.6), value: fillPercent)
         .onAppear {
             guard !reduceMotion else { return }
-            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                steamOffset = 1.0
+            withAnimation(.linear(duration: 2.4).repeatForever(autoreverses: false)) {
+                waveOffset = 1.0
+            }
+            withAnimation(.easeInOut(duration: 8).repeatForever(autoreverses: true)) {
+                glossShift = 15
             }
         }
+    }
+}
+
+// MARK: - Rising bubbles (one-way rise + fade, mirrors web hydraV3Rise)
+
+private struct RisingBubbles: View {
+    let width: CGFloat
+    let height: CGFloat
+
+    private struct Bubble {
+        let x: Double
+        let delay: Double
+        let duration: Double
+        let size: CGFloat
+    }
+
+    private let bubbles: [Bubble] = [
+        Bubble(x: 0.20, delay: 0.0, duration: 3.0, size: 4),
+        Bubble(x: 0.45, delay: 0.8, duration: 3.5, size: 3),
+        Bubble(x: 0.70, delay: 1.6, duration: 2.8, size: 5),
+        Bubble(x: 0.35, delay: 2.4, duration: 3.2, size: 4),
+        Bubble(x: 0.60, delay: 0.4, duration: 3.4, size: 3),
+        Bubble(x: 0.15, delay: 1.2, duration: 2.9, size: 4),
+    ]
+
+    @State private var animate = false
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ForEach(0 ..< bubbles.count, id: \.self) { i in
+                let b = bubbles[i]
+                Circle()
+                    .fill(Color.white.opacity(0.22))
+                    .frame(width: b.size, height: b.size)
+                    .offset(
+                        x: width * b.x - width / 2,
+                        y: animate ? -(height - b.size) : 0
+                    )
+                    .scaleEffect(animate ? 0.5 : 1.0)
+                    .opacity(animate ? 0 : 0.5)
+                    .animation(
+                        .easeOut(duration: b.duration)
+                            .repeatForever(autoreverses: false)
+                            .delay(b.delay),
+                        value: animate
+                    )
+            }
+        }
+        .frame(width: width, height: height, alignment: .bottom)
+        .onAppear { animate = true }
+    }
+}
+
+// MARK: - Steam
+
+private struct SteamView: View {
+    let active: Bool
+    @State private var animating = false
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(0 ..< 3, id: \.self) { i in
+                RoundedRectangle(cornerRadius: 1)
+                    .fill(LGColor.accentAmber.opacity(0.3))
+                    .frame(width: 2, height: 12 - CGFloat(i) * 2)
+                    .scaleEffect(y: animating ? 1.3 : 1.0, anchor: .bottom)
+                    .opacity(active ? (animating ? 0.5 : 0.2) : 0)
+                    .offset(y: animating ? -4 : 0)
+                    .animation(
+                        .easeInOut(duration: 2.0)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(i) * 0.4),
+                        value: animating
+                    )
+            }
+        }
+        .onAppear { animating = active }
     }
 }
 
@@ -339,72 +341,6 @@ private struct WavePath: Shape {
     }
 }
 
-// MARK: - Bubbles
-
-private struct BubblesView: View {
-    let color: Color
-    let containerWidth: CGFloat
-    let containerHeight: CGFloat
-    let offsets: [Double]
-    let xPositions: [Double]
-
-    @State private var animating = false
-
-    var body: some View {
-        ZStack {
-            ForEach(0 ..< min(offsets.count, xPositions.count), id: \.self) { i in
-                Circle()
-                    .fill(color.opacity(0.35))
-                    .frame(width: 4, height: 4)
-                    .offset(
-                        x: containerWidth * xPositions[i] - containerWidth / 2,
-                        y: animating ? -containerHeight * 0.7 : -containerHeight * 0.1
-                    )
-                    .animation(
-                        .easeInOut(duration: 2.0 + Double(i) * 0.4)
-                            .repeatForever(autoreverses: true)
-                            .delay(offsets[i] * 0.5),
-                        value: animating
-                    )
-            }
-        }
-        .frame(width: containerWidth, height: containerHeight)
-        .onAppear { animating = true }
-    }
-}
-
-// MARK: - Steam Lines
-
-private struct SteamLinesView: View {
-    var offset: Double
-    @State private var animating = false
-
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(0 ..< 3, id: \.self) { i in
-                SteamLine(delay: Double(i) * 0.4, animating: animating)
-            }
-        }
-        .onAppear { animating = true }
-    }
-}
-
-private struct SteamLine: View {
-    let delay: Double
-    let animating: Bool
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: 2)
-            .fill(Color.white.opacity(0.2))
-            .frame(width: 3, height: animating ? 14 : 6)
-            .opacity(animating ? 0.1 : 0.5)
-            .animation(
-                .easeInOut(duration: 1.2).repeatForever(autoreverses: true).delay(delay),
-                value: animating
-            )
-    }
-}
-
 // MARK: - Mug Handle Path
 
 private struct MugHandlePath: Shape {
@@ -419,6 +355,43 @@ private struct MugHandlePath: Shape {
         )
         return path
     }
+}
+
+// MARK: - Skeleton
+
+private struct HydrationSkeletonView: View {
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 0) {
+            VStack(spacing: 8) {
+                SkeletonBar(width: 48, height: 100, cornerRadius: 12)
+                SkeletonBar(width: 40, height: 12)
+                SkeletonBar(width: 30, height: 8)
+            }
+            .frame(maxWidth: .infinity)
+
+            VesselDivider()
+                .padding(.bottom, 28)
+
+            VStack(spacing: 8) {
+                SkeletonBar(width: 52, height: 74, cornerRadius: 10)
+                SkeletonBar(width: 40, height: 12)
+                SkeletonBar(width: 30, height: 8)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, 18)
+        .padding(.top, 14)
+        .padding(.bottom, 16)
+    }
+}
+
+// MARK: - Empty data
+
+private extension HydrationProps {
+    static let zero = HydrationProps(
+        waterOz: 0, caffeineMg: 0, waterMax: 100, caffeineMax: 500,
+        waterRangeLo: 64, waterRangeHi: 80, caffeineRangeLo: 200, caffeineRangeHi: 400
+    )
 }
 
 // MARK: - Previews
