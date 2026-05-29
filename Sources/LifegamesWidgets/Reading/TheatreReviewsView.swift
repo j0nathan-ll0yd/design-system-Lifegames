@@ -3,44 +3,94 @@ import LifegamesTokens
 import SwiftUI
 
 public struct TheatreReviewsView: View {
-    public let props: TheatreReviewsProps
+    private let state: WidgetState<TheatreReviewsProps>
+
+    public init(state: WidgetState<TheatreReviewsProps>) {
+        self.state = state
+    }
 
     public init(props: TheatreReviewsProps) {
-        self.props = props
+        state = props.reviews.isEmpty ? .empty : .populated(props)
     }
 
     public var body: some View {
+        switch state {
+        case .loading:
+            TheatreReviewsSkeletonView()
+        case .empty:
+            TheatreReviewsEmptyView()
+        case let .populated(props):
+            TheatreReviewsPopulatedView(props: props)
+        }
+    }
+}
+
+private struct TheatreReviewsPopulatedView: View {
+    let props: TheatreReviewsProps
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             WidgetHeaderView(label: "THEATRE REVIEWS", dotColor: Color.colorAccentAmber, timestamp: "\(props.totalCount) reviews")
 
-            if props.reviews.isEmpty {
-                emptyState
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 14) {
-                        ForEach(Array(props.reviews.enumerated()), id: \.offset) { _, review in
-                            ReviewCard(review: review)
-                        }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(Array(props.reviews.enumerated()), id: \.offset) { _, review in
+                        ReviewCard(review: review)
                     }
-                    .padding(.horizontal, 18)
                 }
-                .padding(.bottom, 16)
+                .padding(.horizontal, 18)
             }
+            .padding(.bottom, 16)
         }
         .neonCard(accent: Color(hex: "#ffd600"))
     }
+}
 
-    private var emptyState: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "theatermasks")
-                .font(.system(size: 24))
-                .foregroundStyle(Color.colorAccentAmber.opacity(0.4))
-            Text("No reviews yet")
-                .font(.system(size: 11))
-                .foregroundStyle(Color.colorTextMuted)
+private struct TheatreReviewsEmptyView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: "THEATRE REVIEWS", dotColor: Color.colorAccentAmber, timestamp: "0 reviews")
+
+            VStack(spacing: 8) {
+                Image(systemName: "theatermasks")
+                    .font(.system(size: 24))
+                    .foregroundStyle(Color.colorAccentAmber.opacity(0.4))
+                Text("No reviews yet")
+                    .font(.system(size: 11))
+                    .foregroundStyle(Color.colorTextMuted)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+        .neonCard(accent: Color(hex: "#ffd600"))
+    }
+}
+
+private struct TheatreReviewsSkeletonView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: "THEATRE REVIEWS", dotColor: Color.colorAccentAmber, timestamp: "reviews")
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(0 ..< 3, id: \.self) { _ in
+                        ReviewCardSkeleton()
+                    }
+                }
+                .padding(.horizontal, 18)
+            }
+            .padding(.bottom, 16)
+        }
+        .neonCard(accent: Color(hex: "#ffd600"))
+    }
+}
+
+private struct ReviewCardSkeleton: View {
+    var body: some View {
+        VStack(spacing: 8) {
+            SkeletonBar(width: 95, height: 143, cornerRadius: 4)
+            SkeletonBar(width: 95, height: 11)
+        }
     }
 }
 
@@ -99,7 +149,7 @@ private struct ReviewCard: View {
     }
 }
 
-#Preview("Theatre Reviews") {
+#Preview("Theatre Reviews — Populated") {
     TheatreReviewsView(props: TheatreReviewsProps(
         reviews: [
             .init(title: "Wicked", grade: "A+"),
@@ -111,4 +161,18 @@ private struct ReviewCard: View {
     .padding()
     .background(Color.colorSurfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Theatre Reviews — Loading") {
+    TheatreReviewsView(state: .loading)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Theatre Reviews — Empty") {
+    TheatreReviewsView(state: .empty)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
 }
