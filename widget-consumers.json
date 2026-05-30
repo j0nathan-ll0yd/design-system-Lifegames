@@ -19,5 +19,298 @@
     "ReadingFeed",
     "TheatreReviews"
   ],
-  "generatedAt": "2026-05-27T05:33:57.656Z"
+  "widgets": [
+    {
+      "name": "ActivityFeed",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "CommitLog",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "CommitTimeline",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "DevActivityCards",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "DevActivityLog",
+      "category": "github",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "DevActivityTimeline",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "LanguageBars",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "LanguageStack",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "PinnedRepos",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "StarredRepoList",
+      "category": "github",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "WeeklyPulse",
+      "category": "github",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "DailyActivity",
+      "category": "health",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "HeartRate",
+      "category": "health",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "Hydration",
+      "category": "health",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "NightSummary",
+      "category": "health",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "Workouts",
+      "category": "health",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "BioTerminal",
+      "category": "identity",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "ComingSoon",
+      "category": "identity",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "IdentityCard",
+      "category": "identity",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "CategoryTerrain",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "CityConstellation",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "DurationDonut",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "ExplorationOdometerV3",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "ExplorationRings",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "PlaceLeaderboardV3",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "RhythmBars",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "StreakCalendar",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "StreakFlame",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "WaffleGrid",
+      "category": "location",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "DndOverlay",
+      "category": "other",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "FocusOverlay",
+      "category": "other",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "GitHubHeatmap",
+      "category": "other",
+      "consumers": [],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "SystemStatus",
+      "category": "other",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "BookModal",
+      "category": "reading",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "Bookshelf",
+      "category": "reading",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "ReadingFeed",
+      "category": "reading",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "TheatreReviews",
+      "category": "reading",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    }
+  ],
+  "generatedAt": "2026-05-30T16:49:27.683Z"
 }

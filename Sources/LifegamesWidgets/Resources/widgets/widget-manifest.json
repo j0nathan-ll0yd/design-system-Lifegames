@@ -10,22 +10,6 @@
     },
     {
       "category": "github",
-      "name": "CodeVelocity",
-      "viewType": "CodeVelocityView",
-      "fixturePath": "github/code-velocity.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "CodingHours",
-      "viewType": "CodingHoursView",
-      "fixturePath": "github/coding-hours.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
       "name": "CommitLog",
       "viewType": "CommitLogView",
       "fixturePath": "github/commit-log.json",
@@ -37,46 +21,6 @@
       "name": "CommitTimeline",
       "viewType": "CommitTimelineView",
       "fixturePath": "github/commit-timeline.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "ContributionBreakdown",
-      "viewType": "ContributionBreakdownView",
-      "fixturePath": "github/contribution-breakdown.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "ContributionCalendar",
-      "viewType": "ContributionCalendarView",
-      "fixturePath": "github/contribution-calendar.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "ContributionGrid",
-      "viewType": "ContributionGridView",
-      "fixturePath": "github/contribution-grid.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "ContributionRings",
-      "viewType": "ContributionRingsView",
-      "fixturePath": "github/contribution-rings.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "DevActivityByRepo",
-      "viewType": "DevActivityByRepoView",
-      "fixturePath": "github/dev-activity-by-repo.json",
       "production": false,
       "productionCategory": null
     },
@@ -98,14 +42,6 @@
     },
     {
       "category": "github",
-      "name": "DevActivityPulse",
-      "viewType": "DevActivityPulseView",
-      "fixturePath": "github/dev-activity-pulse.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
       "name": "DevActivityTimeline",
       "viewType": "DevActivityTimelineView",
       "fixturePath": "github/dev-activity-timeline.json",
@@ -117,14 +53,6 @@
       "name": "LanguageBars",
       "viewType": "LanguageBarsView",
       "fixturePath": "github/language-bars.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "LanguageGrid",
-      "viewType": "LanguageGridView",
-      "fixturePath": "github/language-grid.json",
       "production": false,
       "productionCategory": null
     },
@@ -146,38 +74,6 @@
     },
     {
       "category": "github",
-      "name": "ProfileCard",
-      "viewType": "ProfileCardView",
-      "fixturePath": "github/profile-card.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "RepoShowcase",
-      "viewType": "RepoShowcaseView",
-      "fixturePath": "github/repo-showcase.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "StarredByLanguage",
-      "viewType": "StarredByLanguageView",
-      "fixturePath": "github/starred-by-language.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "StarredRepoCards",
-      "viewType": "StarredRepoCardsView",
-      "fixturePath": "github/starred-repo-cards.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
       "name": "StarredRepoList",
       "viewType": "StarredRepoListView",
       "fixturePath": "github/starred-repo-list.json",
@@ -186,49 +82,9 @@
     },
     {
       "category": "github",
-      "name": "StarredTimeline",
-      "viewType": "StarredTimelineView",
-      "fixturePath": "github/starred-timeline.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "StreakCounter",
-      "viewType": "StreakCounterView",
-      "fixturePath": "github/streak-counter.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "TopRepos",
-      "viewType": "TopReposView",
-      "fixturePath": "github/top-repos.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "TopicCloud",
-      "viewType": "TopicCloudView",
-      "fixturePath": "github/topic-cloud.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
       "name": "WeeklyPulse",
       "viewType": "WeeklyPulseView",
       "fixturePath": "github/weekly-pulse.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "github",
-      "name": "YearInReview",
-      "viewType": "YearInReviewView",
-      "fixturePath": "github/year-in-review.json",
       "production": false,
       "productionCategory": null
     },
@@ -456,7 +312,7 @@
       "production": true,
       "productionCategory": "system",
       "status": "Experimental",
-      "plannedSurface": "iOS Settings → Watch Companion preview tile",
+      "plannedSurface": "iOS Settings \u2192 Watch Companion preview tile",
       "platform": "watchOS"
     },
     {
@@ -467,7 +323,7 @@
       "production": true,
       "productionCategory": "system",
       "status": "Experimental",
-      "plannedSurface": "iOS Developer Menu → Watch Log Mirror",
+      "plannedSurface": "iOS Developer Menu \u2192 Watch Log Mirror",
       "platform": "watchOS"
     }
   ]

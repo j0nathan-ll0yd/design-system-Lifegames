@@ -18,7 +18,28 @@ export default [
     },
   },
   {
-    files: ['src/**/*.{ts,tsx,js,jsx,css}'],
+    // P3 presentational-purity: web DS widgets must not import data-fetch / app-state modules.
+    // Advisory ('warn') for now — see GOVERNANCE.md §3, §5.
+    files: ['src/widgets/**/*.{ts,tsx,js,jsx}'],
+    languageOptions: {
+      parser: tsParser,
+    },
+    plugins: {
+      'lifegames-local': lifegamesLocal,
+    },
+    rules: {
+      'lifegames-local/no-app-module-imports': 'warn',  // P3: advisory only
+    },
+  },
+  {
+    // D4: deprecated token refs in JS/TS source (incl. CSS-in-JS template literals).
+    // tsParser handles both .ts/.tsx and plain .js/.jsx. Raw .css files are not
+    // linted here (espree/tsParser cannot parse CSS); CSS token usage is covered
+    // by the token build/validate pipeline, not ESLint.
+    files: ['src/**/*.{ts,tsx,js,jsx}'],
+    languageOptions: {
+      parser: tsParser,
+    },
     plugins: {
       'lifegames-local': lifegamesLocal,
     },

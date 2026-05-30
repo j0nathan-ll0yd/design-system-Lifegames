@@ -1,26 +1,10 @@
 {
-  "generatedAt": "2026-05-27T05:33:57.655Z",
-  "totalCount": 55,
+  "generatedAt": "2026-05-30T16:49:27.679Z",
+  "totalCount": 37,
   "portfolioConsumedCount": 18,
   "widgets": [
     {
       "id": "ActivityFeed",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "CodeVelocity",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "CodingHours",
       "category": "github",
       "hasStory": false,
       "hasSwiftMirror": true,
@@ -44,46 +28,6 @@
       "consumedByPortfolio": false
     },
     {
-      "id": "ContributionBreakdown",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "ContributionCalendar",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "ContributionGrid",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "ContributionRings",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "DevActivityByRepo",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "DevActivityCards",
       "category": "github",
       "hasStory": false,
@@ -100,14 +44,6 @@
       "consumedByPortfolio": true
     },
     {
-      "id": "DevActivityPulse",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "DevActivityTimeline",
       "category": "github",
       "hasStory": false,
@@ -117,14 +53,6 @@
     },
     {
       "id": "LanguageBars",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "LanguageGrid",
       "category": "github",
       "hasStory": false,
       "hasSwiftMirror": true,
@@ -148,38 +76,6 @@
       "consumedByPortfolio": false
     },
     {
-      "id": "ProfileCard",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "RepoShowcase",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StarredByLanguage",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StarredRepoCards",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "StarredRepoList",
       "category": "github",
       "hasStory": false,
@@ -188,47 +84,7 @@
       "consumedByPortfolio": true
     },
     {
-      "id": "StarredTimeline",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StreakCounter",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "TopRepos",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "TopicCloud",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "WeeklyPulse",
-      "category": "github",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "YearInReview",
       "category": "github",
       "hasStory": false,
       "hasSwiftMirror": true,

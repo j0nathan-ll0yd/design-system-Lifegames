@@ -1,5 +1,7 @@
 # Lifegames Design System
 
+**DS placement rules:** what belongs in the design system vs the app is governed by `GOVERNANCE.md` (principles P1–P8).
+
 ## Token Rules
 
 - Token names encode ROLE, not value (e.g., `color.accent.pink` not `color.ff006e`)

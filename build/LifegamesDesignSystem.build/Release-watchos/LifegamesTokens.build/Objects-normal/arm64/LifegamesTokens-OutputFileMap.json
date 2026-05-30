@@ -1,0 +1,66 @@
+{
+  "" : {
+    "const-values" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.swiftconstvalues",
+    "dependencies" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.d",
+    "diagnostics" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.dia",
+    "emit-module-dependencies" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary-emit-module.dia",
+    "pch" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.swiftdeps"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/AISurfaces.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/AISurfaces.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/AISurfaces.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/AISurfaces.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/Color+Hex.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+Hex.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+Hex.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+Hex.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/Color+SemanticAliases.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+SemanticAliases.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+SemanticAliases.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+SemanticAliases.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/Color+Tokens.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+Tokens.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+Tokens.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Color+Tokens.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/Font+Tokens.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Font+Tokens.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Font+Tokens.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Font+Tokens.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/FontRegistration.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/FontRegistration.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/FontRegistration.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/FontRegistration.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/ReducedMotion.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/ReducedMotion.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/ReducedMotion.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/ReducedMotion.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/Shadow+Tokens.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Shadow+Tokens.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Shadow+Tokens.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Shadow+Tokens.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/Sources/LifegamesTokens/Spacing.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Spacing.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Spacing.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/Spacing.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  },
+  "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/DerivedSources/resource_bundle_accessor.swift" : {
+    "index-unit-output-path" : "/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/resource_bundle_accessor.o",
+    "llvm-bc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/resource_bundle_accessor.bc",
+    "object" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/resource_bundle_accessor.o"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/DerivedSources/resource_bundle_accessor.swift" : {
+    "abi-baseline-json" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens.abi.json",
+    "const-values" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.swiftconstvalues",
+    "dependencies" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.d",
+    "diagnostics" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-primary.dia",
+    "objc-header" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens-Swift.h",
+    "swiftdoc" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens.swiftdoc",
+    "swiftmodule" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens.swiftmodule",
+    "swiftsourceinfo" : "/Users/jlloyd/Repositories/design-system-Lifegames/build/LifegamesDesignSystem.build/Release-watchos/LifegamesTokens.build/Objects-normal/arm64/LifegamesTokens.swiftsourceinfo"
+  }
+}

@@ -1,9 +1,0 @@
-{
-  "current": 3,
-  "longest": 3,
-  "recentDays": [
-    { "date": "2025-11-16", "active": true },
-    { "date": "2025-11-17", "active": true },
-    { "date": "2025-11-18", "active": true }
-  ]
-}

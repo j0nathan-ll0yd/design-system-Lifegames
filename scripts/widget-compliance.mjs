@@ -55,7 +55,12 @@ console.log(cols.map((_, i) => '-'.repeat(widths[i])).join(' '));
 
 let gaps = 0;
 
-registry.forEach(widget => {
+// Only web-platform entries have an .astro mirror + fixture + manifest entry.
+// Swift-platform entries (R7 registry completion) are tracked for governance
+// (consumers/status/plannedSurface) but have no web artifacts to check here.
+const webRegistry = registry.filter(w => w.platform !== 'swift');
+
+webRegistry.forEach(widget => {
   const astroExists = fileExists(`packages/web/src/widgets/${widget.fileRelativeToWidgets}`);
   const manifestKey = MANIFEST_ALIASES[widget.name] || widget.name;
   const manifestEntry = manifestByName.get(manifestKey);
@@ -81,7 +86,7 @@ registry.forEach(widget => {
   ].join(' '));
 });
 
-console.log(`\nTotal: ${registry.length} widgets (${registry.filter(w => w.status === 'shipped').length} shipped, ${registry.filter(w => w.status === 'dev-only').length} dev-only)`);
+console.log(`\nTotal: ${webRegistry.length} web widgets (${webRegistry.filter(w => w.buildStatus === 'shipped').length} shipped, ${webRegistry.filter(w => w.buildStatus === 'dev-only').length} dev-only); ${registry.length - webRegistry.length} swift entries (governance-tracked, no web artifacts)`);
 
 if (gaps > 0) {
   console.log(`\n${gaps} widget(s) have compliance gaps.`);

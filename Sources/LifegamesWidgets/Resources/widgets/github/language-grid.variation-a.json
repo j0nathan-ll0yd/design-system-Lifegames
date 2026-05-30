@@ -1,7 +1,0 @@
-{
-  "languages": [
-    { "name": "TypeScript", "pct": 88.4, "color": "#3178c6", "repos": 7 },
-    { "name": "CSS", "pct": 7.2, "color": "#563d7c", "repos": 6 },
-    { "name": "JSON", "pct": 4.4, "color": "#9ca3af", "repos": 7 }
-  ]
-}

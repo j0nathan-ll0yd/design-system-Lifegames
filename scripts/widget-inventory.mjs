@@ -195,11 +195,19 @@ fs.writeFileSync(
 );
 console.log(`Wrote ${OUTPUT_JSON}`);
 
-// Write fallback manifest (consumed widget IDs only — no personal data)
+// Write fallback manifest (consumed widget IDs only — no personal data).
+// Preserve the governance `widgets` array (R6: consumers/status/plannedSurface)
+// across regenerations — it is maintainer-curated and not derivable from import scans.
 const consumedWidgetIds = inventory.filter((w) => w.consumedByPortfolio).map((w) => w.id);
+const existingManifest = readJSON(FALLBACK_MANIFEST);
+const manifestOut = { consumedWidgets: consumedWidgetIds };
+if (existingManifest && Array.isArray(existingManifest.widgets)) {
+  manifestOut.widgets = existingManifest.widgets;
+}
+manifestOut.generatedAt = new Date().toISOString();
 fs.writeFileSync(
   FALLBACK_MANIFEST,
-  JSON.stringify({ consumedWidgets: consumedWidgetIds, generatedAt: new Date().toISOString() }, null, 2) + '\n'
+  JSON.stringify(manifestOut, null, 2) + '\n'
 );
 console.log(`Wrote ${FALLBACK_MANIFEST} (fallback for CI without portfolio checkout)`);
 

@@ -1,0 +1,4 @@
+module LifegamesComponents {
+header "LifegamesComponents-Swift.h"
+export *
+}

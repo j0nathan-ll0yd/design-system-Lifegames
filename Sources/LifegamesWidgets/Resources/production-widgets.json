@@ -3,180 +3,743 @@
     "name": "IdentityCard",
     "fileRelativeToWidgets": "identity/IdentityCard.astro",
     "id": "identityCard",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "left-panel",
     "liveSiteLayoutSlot": {
       "column": 0,
       "order": 0
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "IdentityCardView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "BioTerminal",
     "fileRelativeToWidgets": "identity/BioTerminal.astro",
     "id": "cardBio",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "left-panel",
     "liveSiteLayoutSlot": {
       "column": 0,
       "order": 1
     },
-    "hydration": "hydrated"
+    "hydration": "hydrated",
+    "swiftView": "BioTerminalView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "SystemStatus",
     "fileRelativeToWidgets": "other/SystemStatus.astro",
     "id": "cardSystem",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "left-panel",
     "liveSiteLayoutSlot": {
       "column": 0,
       "order": 2
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "SystemStatusView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "HeartRate",
     "fileRelativeToWidgets": "health/HeartRate.astro",
     "id": "cardHR",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 0
     },
-    "hydration": "hydrated"
+    "hydration": "hydrated",
+    "swiftView": "HeartRateView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "DailyActivity",
     "fileRelativeToWidgets": "health/DailyActivity.astro",
     "id": "cardSteps",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 1
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "DailyActivityView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "Workouts",
     "fileRelativeToWidgets": "health/Workouts.astro",
     "id": "cardWorkouts",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 2
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "WorkoutsView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "Hydration",
     "fileRelativeToWidgets": "health/Hydration.astro",
     "id": "cardHydration",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 3
     },
-    "hydration": "hydrated"
+    "hydration": "hydrated",
+    "swiftView": "HydrationView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "NightSummary",
     "fileRelativeToWidgets": "health/NightSummary.astro",
     "id": "cardSleep",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 4
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "NightSummaryView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "DevActivityLog",
     "fileRelativeToWidgets": "github/DevActivityLog.astro",
     "id": "cardDevLog",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "mind",
     "liveSiteLayoutSlot": {
       "column": 2,
       "order": 0
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "DevActivityLogView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "ReadingFeed",
     "fileRelativeToWidgets": "reading/ReadingFeed.astro",
     "id": "cardReading",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "mind",
     "liveSiteLayoutSlot": {
       "column": 2,
       "order": 1
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "ReadingFeedView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "StarredRepoList",
     "fileRelativeToWidgets": "github/StarredRepoList.astro",
     "id": "cardStarredRepos",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "mind",
     "liveSiteLayoutSlot": {
       "column": 2,
       "order": 2
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "StarredRepoListView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "Bookshelf",
     "fileRelativeToWidgets": "reading/Bookshelf.astro",
     "id": "cardBooks",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "mind",
     "liveSiteLayoutSlot": {
       "column": 2,
       "order": 3
     },
-    "hydration": "hydrated"
+    "hydration": "hydrated",
+    "swiftView": "BookshelfView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "TheatreReviews",
     "fileRelativeToWidgets": "reading/TheatreReviews.astro",
     "id": "cardTheatreReviews",
-    "status": "shipped",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
     "category": "mind",
     "liveSiteLayoutSlot": {
       "column": 2,
       "order": 4
     },
-    "hydration": "hydrated"
+    "hydration": "hydrated",
+    "swiftView": "TheatreReviewsView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
   },
   {
     "name": "PlaceLeaderboardV3",
     "fileRelativeToWidgets": "location/PlaceLeaderboardV3.astro",
     "id": "cardPlaceLeaderboardV3",
-    "status": "dev-only",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "dev-only",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 5
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "PlaceLeaderboardView",
+    "consumers": [],
+    "plannedSurface": null
   },
   {
     "name": "ExplorationOdometerV3",
     "fileRelativeToWidgets": "location/ExplorationOdometerV3.astro",
     "id": "cardExplorationOdometerV3",
-    "status": "dev-only",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "dev-only",
     "category": "body",
     "liveSiteLayoutSlot": {
       "column": 1,
       "order": 6
     },
-    "hydration": "static"
+    "hydration": "static",
+    "swiftView": "ExplorationOdometerView",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "ActivityFeedView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftActivityFeed",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/ActivityFeedView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "CommitLogView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftCommitLog",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/CommitLogView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "CommitTimelineView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftCommitTimeline",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/CommitTimelineView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "DevActivityCardsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftDevActivityCards",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/DevActivityCardsView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "DevActivityLogView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftDevActivityLog",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/DevActivityLogView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "DevActivityTimelineView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftDevActivityTimeline",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/DevActivityTimelineView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "LanguageBarsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftLanguageBars",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/LanguageBarsView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "LanguageStackView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftLanguageStack",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/LanguageStackView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "PinnedReposView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftPinnedRepos",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/PinnedReposView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "StarredRepoListView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftStarredRepoList",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/StarredRepoListView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "WeeklyPulseView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftWeeklyPulse",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "github",
+    "swiftFileRelative": "GitHub/WeeklyPulseView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "HeartRateView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftHeartRate",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "health",
+    "swiftFileRelative": "Health/HeartRateView.swift",
+    "consumers": [
+      "HealthFeatureView"
+    ],
+    "plannedSurface": null
+  },
+  {
+    "name": "DailyActivityView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftDailyActivity",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "health",
+    "swiftFileRelative": "Health/DailyActivityView.swift",
+    "consumers": [
+      "HealthFeatureView"
+    ],
+    "plannedSurface": null
+  },
+  {
+    "name": "NightSummaryView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftNightSummary",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "health",
+    "swiftFileRelative": "Health/NightSummaryView.swift",
+    "consumers": [
+      "HealthFeatureView"
+    ],
+    "plannedSurface": null
+  },
+  {
+    "name": "HydrationView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftHydration",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "health",
+    "swiftFileRelative": "Health/HydrationView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "WorkoutsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftWorkouts",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "health",
+    "swiftFileRelative": "Health/WorkoutsView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "BioTerminalView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftBioTerminal",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "identity",
+    "swiftFileRelative": "Identity/BioTerminalView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "ComingSoonView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftComingSoon",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "identity",
+    "swiftFileRelative": "Identity/ComingSoonView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "IdentityCardView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftIdentityCard",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "identity",
+    "swiftFileRelative": "Identity/IdentityCardView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "CategoryTerrainView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftCategoryTerrain",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/CategoryTerrainView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "CityConstellationView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftCityConstellation",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/CityConstellationView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "DurationDonutView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftDurationDonut",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/DurationDonutView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "ExplorationOdometerView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftExplorationOdometer",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/ExplorationOdometerView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "ExplorationRingsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftExplorationRings",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/ExplorationRingsView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "PlaceLeaderboardView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftPlaceLeaderboard",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/PlaceLeaderboardView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "RhythmBarsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftRhythmBars",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/RhythmBarsView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "StreakCalendarView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftStreakCalendar",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/StreakCalendarView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "StreakFlameView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftStreakFlame",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/StreakFlameView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "WaffleGridView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftWaffleGrid",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "location",
+    "swiftFileRelative": "Location/WaffleGridView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "DndOverlayView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftDndOverlay",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "other",
+    "swiftFileRelative": "Other/DndOverlayView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "FocusOverlayView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftFocusOverlay",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "other",
+    "swiftFileRelative": "Other/FocusOverlayView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "GitHubHeatmapView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftGitHubHeatmap",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "other",
+    "swiftFileRelative": "Other/GitHubHeatmapView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "OGImageView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftOGImage",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "other",
+    "swiftFileRelative": "Other/OGImageView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "SystemStatusView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftSystemStatus",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "other",
+    "swiftFileRelative": "Other/SystemStatusView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "BookModalView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftBookModal",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "reading",
+    "swiftFileRelative": "Reading/BookModalView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "BookshelfView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftBookshelf",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "reading",
+    "swiftFileRelative": "Reading/BookshelfView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "ReadingFeedView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftReadingFeed",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "reading",
+    "swiftFileRelative": "Reading/ReadingFeedView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "TheatreReviewsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftTheatreReviews",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "reading",
+    "swiftFileRelative": "Reading/TheatreReviewsView.swift",
+    "consumers": [],
+    "plannedSurface": null
   }
 ]
