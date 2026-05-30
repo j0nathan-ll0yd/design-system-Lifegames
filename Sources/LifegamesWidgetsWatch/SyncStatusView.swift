@@ -21,34 +21,35 @@ public struct SyncStatusView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(spacing: Spacing.s300) {
+            VStack(spacing: Spacing.s200) {
                 heroSymbol
                 statusPill
                 relativeTimeLabel
                 if let msg = props.errorMessage { errorLine(msg) }
+                primaryButton
             }
             .padding(.horizontal, Spacing.s200)
-            .padding(.top, Spacing.s300)
+            .padding(.top, Spacing.s200)
+            .padding(.bottom, Spacing.s200)
         }
         .background(LGColor.surfaceBase)
-        #if os(watchOS) || os(iOS)
-            .toolbar {
-                ToolbarItem(placement: .bottomBar) {
-                    Button(action: onPrimaryTap) {
-                        Text(props.primaryActionLabel)
-                            .font(Font.Tokens.code())
-                            .minimumScaleFactor(0.8)
-                            .lineLimit(1)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .tint(tintForStatus(props.status))
-                    .disabled(props.status == .needsSetup)
-                    .accessibilityLabel(buttonAccessibilityLabel(for: props.status))
-                    .accessibilityHint(buttonAccessibilityHint(for: props.status))
-                }
-            }
-        #endif
+    }
+
+    private var primaryButton: some View {
+        Button(action: onPrimaryTap) {
+            Text(props.primaryActionLabel)
+                .font(Font.Tokens.code())
+                .minimumScaleFactor(0.8)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.bordered)
+        .controlSize(.large)
+        .tint(tintForStatus(props.status))
+        .disabled(props.status == .needsSetup)
+        .accessibilityLabel(buttonAccessibilityLabel(for: props.status))
+        .accessibilityHint(buttonAccessibilityHint(for: props.status))
+        .padding(.top, Spacing.s100)
     }
 
     // MARK: subviews
@@ -57,7 +58,7 @@ public struct SyncStatusView: View {
     private var heroSymbol: some View {
         let glowColor = symbolColor(for: props.status)
         let symbol = Image(systemName: symbolName(for: props.status))
-            .font(.system(size: 44, weight: .bold))
+            .font(.system(size: 36, weight: .bold))
             .symbolRenderingMode(.hierarchical)
             .foregroundStyle(glowColor)
             .neonGlow(glowColor, radius: 8)
@@ -112,7 +113,7 @@ public struct SyncStatusView: View {
 
     private func symbolName(for s: SyncStatusProps.Status) -> String {
         switch s {
-        case .idle: return "heart.fill"
+        case .idle: return "arrow.triangle.2.circlepath"
         case .syncing: return "arrow.2.circlepath"
         case .syncedRecent: return "checkmark.circle.fill"
         case .needsSetup: return "exclamationmark.triangle.fill"
