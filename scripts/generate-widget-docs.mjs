@@ -364,6 +364,76 @@ ${fixtureJSON}
 `;
   }
 
+  const DATA_SOURCES = {
+    ActivityFeed: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- devActivity array',
+      api: 'REST GET /users/{username}/events (Events API) or GraphQL contributionsCollection',
+      apiDoc: 'https://docs.github.com/en/rest/activity/events',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    CommitLog: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- devActivity array (filtered to type: "commit")',
+      api: 'REST GET /repos/{owner}/{repo}/commits (Commits API) or GraphQL commitContributionsByRepository',
+      apiDoc: 'https://docs.github.com/en/rest/commits/commits',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    CommitTimeline: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- devActivity array, plus DS-local repoColor enrichment',
+      api: 'REST GET /repos/{owner}/{repo}/commits (Commits API)',
+      apiDoc: 'https://docs.github.com/en/rest/commits/commits',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    DevActivityCards: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- devActivity array',
+      api: 'REST GET /users/{username}/events (Events API)',
+      apiDoc: 'https://docs.github.com/en/rest/activity/events',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    DevActivityTimeline: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- devActivity array',
+      api: 'REST GET /users/{username}/events (Events API)',
+      apiDoc: 'https://docs.github.com/en/rest/activity/events',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    LanguageBars: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- languages map (bytes per language, transformed to [{name, pct, color}] by aggregation layer)',
+      api: 'REST GET /repos/{owner}/{repo}/languages (Languages API) or GraphQL repository.languages',
+      apiDoc: 'https://docs.github.com/en/rest/repos/repos#list-repository-languages',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    LanguageStack: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- languages map (same source as LanguageBars)',
+      api: 'REST GET /repos/{owner}/{repo}/languages (Languages API)',
+      apiDoc: 'https://docs.github.com/en/rest/repos/repos#list-repository-languages',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    PinnedRepos: {
+      schema: 'packages/schemas/authored/widget-pinned-repos.schema.json (per-widget schema -- not covered by aggregate dashboard-github.schema.json)',
+      api: 'GraphQL viewer { pinnedItems(first:6, types:REPOSITORY) { nodes { ... on Repository { name description stargazerCount forkCount primaryLanguage { name color } url } } } }',
+      apiDoc: 'https://docs.github.com/en/graphql/reference/objects#user',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+    WeeklyPulse: {
+      schema: 'packages/schemas/authored/dashboard-github.schema.json -- weeklyCommits array (raw number[], transformed to [{total, label}] with DS-local label and maxWeek)',
+      api: 'REST GET /repos/{owner}/{repo}/stats/participation (Participation API) or GraphQL contributionCalendar.weeks',
+      apiDoc: 'https://docs.github.com/en/rest/metrics/statistics#get-the-weekly-commit-count',
+      status: 'No real data pipeline yet -- widget renders fixture data only.',
+    },
+  };
+
+  // Data Source section (if widget has an entry in DATA_SOURCES)
+  let dataSourceSection = '';
+  const ds = DATA_SOURCES[actualName];
+  if (ds) {
+    dataSourceSection = `
+## Data Source
+
+- **Schema:** \`${ds.schema}\`
+- **GitHub API:** ${ds.api} ([docs](${ds.apiDoc}))
+- **Status:** ${ds.status}
+`;
+  }
+
   return `---
 title: "${name}"
 description: "${category} widget -- ${name}"
@@ -396,7 +466,7 @@ import ${actualName} from '${pkgAlias}';
 - **Web:** \`${webPath}\`
 - **iOS:** \`Sources/LifegamesWidgets/${toPascalCategory(category)}/${viewType}.swift\`
 - **Fixture:** \`Sources/LifegamesWidgets/Resources/widgets/${fixturePath}\`
-`;
+${dataSourceSection}`;
 }
 
 function generateStaticMdx(widget, actualName, fields, index, manifest) {

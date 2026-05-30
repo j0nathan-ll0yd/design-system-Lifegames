@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PinnedRepos Widget",
+  "description": "Schema for the PinnedRepos widget. Per-widget schema (widget- prefix) because this shape is not covered by the aggregate dashboard-github.schema.json.",
+  "type": "object",
+  "properties": {
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": ["string", "null"] },
+          "stars": { "type": "integer" },
+          "forks": { "type": "integer" },
+          "language": { "type": ["string", "null"] },
+          "languageColor": { "type": ["string", "null"] },
+          "url": { "type": "string", "format": "uri" }
+        },
+        "required": ["name", "stars", "forks", "url"]
+      }
+    }
+  },
+  "required": ["repos"]
+}
