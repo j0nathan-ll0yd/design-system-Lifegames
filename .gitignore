@@ -3,6 +3,7 @@ dist/
 .turbo/
 .DS_Store
 .build/
+build/
 .swiftpm/
 *.tgz
 .env

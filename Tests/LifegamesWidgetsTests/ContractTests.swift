@@ -12,25 +12,13 @@ struct ContractTests {
         return try Data(contentsOf: url)
     }
 
-    // MARK: - GitHub (29 widgets)
+    // MARK: - GitHub (11 widgets, 7 with dedicated Props decode tests)
 
     @Test func activityFeedFixture() throws {
         let data = try loadFixture("github/activity-feed")
         let root = try JSONDecoder().decode(ActivityFeedFixture.self, from: data)
         #expect(!root.events.isEmpty)
         #expect(!root.events[0].repo.isEmpty)
-    }
-
-    @Test func codeVelocityFixture() throws {
-        let data = try loadFixture("github/code-velocity")
-        let props = try JSONDecoder().decode(CodeVelocityProps.self, from: data)
-        #expect(!props.weeks.isEmpty)
-    }
-
-    @Test func codingHoursFixture() throws {
-        let data = try loadFixture("github/coding-hours")
-        let props = try JSONDecoder().decode(CodingHoursProps.self, from: data)
-        #expect(!props.grid.isEmpty)
     }
 
     @Test func commitLogFixture() throws {
@@ -45,39 +33,9 @@ struct ContractTests {
         #expect(!props.commits.isEmpty)
     }
 
-    @Test func contributionBreakdownFixture() throws {
-        let data = try loadFixture("github/contribution-breakdown")
-        let props = try JSONDecoder().decode(ContributionBreakdownProps.self, from: data)
-        #expect(props.commits >= 0)
-    }
-
-    @Test func contributionCalendarFixture() throws {
-        let data = try loadFixture("github/contribution-calendar")
-        let props = try JSONDecoder().decode(ContributionCalendarProps.self, from: data)
-        #expect(!props.weeks.isEmpty)
-    }
-
-    @Test func contributionGridFixture() throws {
-        let data = try loadFixture("github/contribution-grid")
-        let props = try JSONDecoder().decode(ContributionGridProps.self, from: data)
-        #expect(!props.contributions.isEmpty)
-    }
-
-    @Test func contributionRingsFixture() throws {
-        let data = try loadFixture("github/contribution-rings")
-        let props = try JSONDecoder().decode(ContributionRingsProps.self, from: data)
-        #expect(props.commits.count >= 0)
-    }
-
     @Test func languageBarsFixture() throws {
         let data = try loadFixture("github/language-bars")
         let props = try JSONDecoder().decode(LanguageBarsProps.self, from: data)
-        #expect(!props.languages.isEmpty)
-    }
-
-    @Test func languageGridFixture() throws {
-        let data = try loadFixture("github/language-grid")
-        let props = try JSONDecoder().decode(LanguageGridProps.self, from: data)
         #expect(!props.languages.isEmpty)
     }
 
@@ -87,70 +45,16 @@ struct ContractTests {
         #expect(!props.repos.isEmpty)
     }
 
-    @Test func profileCardFixture() throws {
-        let data = try loadFixture("github/profile-card")
-        let props = try JSONDecoder().decode(ProfileCardProps.self, from: data)
-        #expect(!props.name.isEmpty)
-    }
-
-    @Test func repoShowcaseFixture() throws {
-        let data = try loadFixture("github/repo-showcase")
-        let props = try JSONDecoder().decode(RepoShowcaseProps.self, from: data)
-        #expect(!props.repos.isEmpty)
-    }
-
-    @Test func starredByLanguageFixture() throws {
-        let data = try loadFixture("github/starred-by-language")
-        let props = try JSONDecoder().decode(StarredByLanguageProps.self, from: data)
-        #expect(!props.groups.isEmpty)
-    }
-
-    @Test func starredRepoCardsFixture() throws {
-        let data = try loadFixture("github/starred-repo-cards")
-        let props = try JSONDecoder().decode(StarredRepoCardsProps.self, from: data)
-        #expect(!props.repos.isEmpty)
-    }
-
     @Test func starredRepoListFixture() throws {
         let data = try loadFixture("github/starred-repo-list")
         let props = try JSONDecoder().decode(StarredRepoListProps.self, from: data)
         #expect(!props.repos.isEmpty)
     }
 
-    @Test func starredTimelineFixture() throws {
-        let data = try loadFixture("github/starred-timeline")
-        let props = try JSONDecoder().decode(StarredTimelineProps.self, from: data)
-        #expect(!props.repos.isEmpty)
-    }
-
-    @Test func streakCounterFixture() throws {
-        let data = try loadFixture("github/streak-counter")
-        let props = try JSONDecoder().decode(StreakCounterProps.self, from: data)
-        #expect(props.current >= 0)
-    }
-
-    @Test func topReposFixture() throws {
-        let data = try loadFixture("github/top-repos")
-        let props = try JSONDecoder().decode(TopReposProps.self, from: data)
-        #expect(!props.repos.isEmpty)
-    }
-
-    @Test func topicCloudFixture() throws {
-        let data = try loadFixture("github/topic-cloud")
-        let props = try JSONDecoder().decode(TopicCloudProps.self, from: data)
-        #expect(!props.topics.isEmpty)
-    }
-
     @Test func weeklyPulseFixture() throws {
         let data = try loadFixture("github/weekly-pulse")
         let props = try JSONDecoder().decode(WeeklyPulseProps.self, from: data)
         #expect(!props.weeks.isEmpty)
-    }
-
-    @Test func yearInReviewFixture() throws {
-        let data = try loadFixture("github/year-in-review")
-        let props = try JSONDecoder().decode(YearInReviewProps.self, from: data)
-        #expect(props.totalContributions > 0)
     }
 
     // MARK: - Location (10 widgets)

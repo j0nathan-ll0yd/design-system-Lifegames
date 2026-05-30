@@ -1,4 +1,0 @@
-module LifegamesTokens {
-header "LifegamesTokens-Swift.h"
-export *
-}

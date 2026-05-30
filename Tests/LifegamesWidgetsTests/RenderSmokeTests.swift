@@ -16,13 +16,13 @@ struct RenderSmokeTests {
         let widgets: [ManifestEntry]
     }
 
-    @Test func manifestLoadsAndHas56Widgets() throws {
+    @Test func manifestLoadsAndHas40Widgets() throws {
         let url = try #require(
             Bundle.module.url(forResource: "widget-manifest", withExtension: "json")
         )
         let data = try Data(contentsOf: url)
         let manifest = try JSONDecoder().decode(Manifest.self, from: data)
-        #expect(manifest.widgets.count == 56)
+        #expect(manifest.widgets.count == 40)
     }
 
     @Test func allFixtureFilesExist() throws {
@@ -73,12 +73,12 @@ struct RenderSmokeTests {
         let counts = Dictionary(grouping: manifest.widgets, by: \.category)
             .mapValues(\.count)
 
-        #expect(counts["github"] == 29)
+        #expect(counts["github"] == 11)
         #expect(counts["location"] == 10)
         #expect(counts["health"] == 5)
         #expect(counts["reading"] == 4)
         #expect(counts["identity"] == 3)
-        #expect(counts["other"] == 5)
+        #expect(counts["other"] == 7)
     }
 
     @Test func manifestNamesAreUnique() throws {
