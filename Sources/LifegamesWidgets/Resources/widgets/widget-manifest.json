@@ -447,6 +447,28 @@
       "fixturePath": "other/system-status.json",
       "production": true,
       "productionCategory": "left-panel"
+    },
+    {
+      "category": "other",
+      "name": "SyncStatus",
+      "viewType": "SyncStatusView",
+      "fixturePath": "other/sync-status.json",
+      "production": true,
+      "productionCategory": "system",
+      "status": "Experimental",
+      "plannedSurface": "iOS Settings → Watch Companion preview tile",
+      "platform": "watchOS"
+    },
+    {
+      "category": "other",
+      "name": "DiagnosticsMonitor",
+      "viewType": "DiagnosticsMonitorView",
+      "fixturePath": "other/diagnostics-monitor.json",
+      "production": true,
+      "productionCategory": "system",
+      "status": "Experimental",
+      "plannedSurface": "iOS Developer Menu → Watch Log Mirror",
+      "platform": "watchOS"
     }
   ]
 }

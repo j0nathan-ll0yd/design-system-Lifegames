@@ -31,6 +31,7 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesWidgetsTests", dependencies: [
             "LifegamesWidgets",
+            "LifegamesWidgetsWatch",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
         ]),
     ]
