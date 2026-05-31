@@ -24,6 +24,22 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: ajv-cli
         update-types: [version-update:semver-major]
+      # Astro v5 -> v6 requires a coordinated migration: peer-dep cascade
+      # through @astrojs/starlight, @vite-pwa/astro, and the consumer web
+      # repo. Tracked manually; do not bump majors automatically.
+      - dependency-name: astro
+        update-types: [version-update:semver-major]
+      # @astrojs/starlight is pre-1.0 -- minors can contain breaking
+      # changes. 0.34 -> 0.39 fails docs-build today. Pin to current minor
+      # until the docs site has been verified against a newer version.
+      - dependency-name: "@astrojs/starlight"
+        update-types: [version-update:semver-minor, version-update:semver-major]
+      # Storybook v9 -> v10 is a breaking redesign of the addon API and
+      # framework adapters. Migrate manually once stories are ready.
+      - dependency-name: "@storybook/*"
+        update-types: [version-update:semver-major]
+      - dependency-name: storybook
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /
@@ -31,3 +47,10 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 3
+    ignore:
+      # actions/download-artifact v5+ dropped support for older artifact
+      # formats and breaks build-tokens, contrast, schemas-freshness, and
+      # widget-inventory until uploader/downloader pairs are aligned.
+      # Migrate together with actions/upload-artifact, not separately.
+      - dependency-name: actions/download-artifact
+        update-types: [version-update:semver-major]
