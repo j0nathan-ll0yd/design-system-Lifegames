@@ -57,7 +57,7 @@ public struct DiagnosticsMonitorView: View {
 
     private var countsCard: some View {
         let maxCount = max(1, props.counts.map(\.count).max() ?? 1)
-        return VStack(spacing: Spacing.s100) {
+        return Grid(alignment: .leading, horizontalSpacing: Spacing.s100, verticalSpacing: Spacing.s100) {
             ForEach(props.counts, id: \.category) { row in
                 CountRowView(row: row, maxCount: maxCount)
             }
@@ -132,24 +132,27 @@ private struct CountRowView: View {
     let maxCount: Int
 
     var body: some View {
-        HStack(spacing: Spacing.s100) {
+        GridRow {
             Rectangle()
                 .fill(diagnosticsAccent(for: row.category))
                 .frame(width: 4, height: 16)
             Text(label(for: row.category))
                 .font(Font.Tokens.code())
                 .foregroundStyle(LGColor.textPrimary)
-            ZStack(alignment: .leading) {
-                Capsule().fill(LGColor.surfaceInset)
-                Capsule()
-                    .fill(diagnosticsAccent(for: row.category))
-                    .frame(width: max(2, CGFloat(row.count) / CGFloat(maxCount) * 80))
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(LGColor.surfaceInset)
+                    Capsule()
+                        .fill(diagnosticsAccent(for: row.category))
+                        .frame(width: max(2, geo.size.width * CGFloat(row.count) / CGFloat(maxCount)))
+                }
             }
             .frame(height: 6)
             Text("\(row.count)")
                 .font(Font.Tokens.code())
                 .foregroundStyle(LGColor.textMuted)
                 .monospacedDigit()
+                .gridColumnAlignment(.trailing)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label(for: row.category)) category, \(row.count) events")
@@ -179,10 +182,10 @@ private struct LogRowView: View {
                 .frame(width: 6, height: 6)
                 .padding(.top, Spacing.s50)
             Text(formatter.localizedString(for: entry.timestamp, relativeTo: referenceDate))
-                .font(Font.Tokens.code())
+                .font(Font.Tokens.caption2())
                 .foregroundStyle(LGColor.textMuted)
             Text(entry.message)
-                .font(Font.Tokens.caption())
+                .font(Font.Tokens.caption2())
                 .foregroundStyle(LGColor.textPrimary)
                 .lineLimit(3)
         }
