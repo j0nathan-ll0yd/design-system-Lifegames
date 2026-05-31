@@ -16,7 +16,7 @@
     "@lifegames/web": "workspace:*"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/sitemap": "^3.7.3",
     "@vite-pwa/astro": "^1.2.0"
   }
 }
