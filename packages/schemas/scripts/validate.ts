@@ -10,7 +10,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, resolve, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import Ajv from 'ajv';
+import { Ajv, type ErrorObject } from 'ajv';
 import addFormats from 'ajv-formats';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -23,6 +23,11 @@ const INVOKER_CWD = process.env.LIFEGAMES_VALIDATE_CWD || process.cwd();
 
 // Load AJV — Draft-07 is what all our schemas declare
 const ajv = new Ajv({ strict: false, allErrors: true, allowUnionTypes: true });
+// ajv-formats is pure CJS (`module.exports = formatsPlugin`). At runtime
+// tsx synthesizes a callable default via esModuleInterop, but tsc under
+// NodeNext sees only the module namespace (known Ajv packaging issue
+// ajv-validator/ajv#2132). The runtime invariant is sound.
+// @ts-expect-error  ajv-formats CJS default-interop limitation under NodeNext
 addFormats(ajv);
 
 // Guard: every schema must declare Draft-07. A 2020-12 declaration causes Ajv
@@ -104,7 +109,7 @@ const errors: Array<{
   fixture: string;
   schema?: string;
   error?: string;
-  ajvErrors?: Ajv.ErrorObject[] | null;
+  ajvErrors?: ErrorObject[] | null;
 }> = [];
 
 for (const bucketName of buckets) {
