@@ -25,10 +25,27 @@ const INVOKER_CWD = process.env.LIFEGAMES_VALIDATE_CWD || process.cwd();
 const ajv = new Ajv({ strict: false, allErrors: true, allowUnionTypes: true });
 addFormats(ajv);
 
+// Guard: every schema must declare Draft-07. A 2020-12 declaration causes Ajv
+// to throw an opaque "no schema with key or ref" error on addSchema(); this
+// surfaces the mismatch with a clear message instead. If 2020-12 support is
+// ever needed, switch to Ajv2020 from 'ajv/dist/2020' and maintain two
+// validator instances.
+const EXPECTED_SCHEMA = 'http://json-schema.org/draft-07/schema#';
+
+function assertDraft07(schema: { $schema?: string }, file: string): void {
+  if (schema.$schema && schema.$schema !== EXPECTED_SCHEMA) {
+    throw new Error(
+      `[schemas:validate] ${file} declares "$schema": "${schema.$schema}" — ` +
+        `expected "${EXPECTED_SCHEMA}". All schemas must use Draft-07 for Ajv compatibility.`,
+    );
+  }
+}
+
 // Register all vendored schemas under their canonical URIs
 const vendoredDir = join(PKG_ROOT, 'vendored');
 for (const f of readdirSync(vendoredDir).filter(f => f.endsWith('.schema.json'))) {
   const schema = JSON.parse(readFileSync(join(vendoredDir, f), 'utf-8'));
+  assertDraft07(schema, f);
   ajv.addSchema(schema, `https://lifegames.dev/vendored/${f}`);
 }
 
@@ -43,7 +60,8 @@ for (const f of readdirSync(authoredDir).filter(f => f.endsWith('.schema.json'))
     (_match: string, file: string, frag: string) =>
       `"$ref": "https://lifegames.dev/vendored/${file}${frag}"`,
   );
-  const schema = JSON.parse(raw) as { title?: string };
+  const schema = JSON.parse(raw) as { title?: string; $schema?: string };
+  assertDraft07(schema, f);
   const name = schema.title || f.replace('.schema.json', '');
   schemasByName[name] = schema;
   ajv.addSchema(schema, `urn:authored:${name}`);

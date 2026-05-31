@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "PinnedRepos Widget",
   "description": "Schema for the PinnedRepos widget. Per-widget schema (widget- prefix) because this shape is not covered by the aggregate dashboard-github.schema.json.",
   "type": "object",
