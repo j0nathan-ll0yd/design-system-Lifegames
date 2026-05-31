@@ -33,33 +33,26 @@ public struct DiagnosticsMonitorView: View {
 
     public var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: Spacing.s300) {
-                header
+            LazyVStack(alignment: .leading, spacing: Spacing.s200) {
                 countsCard
+                eventCountLine
                 actionRow
                 Divider().background(LGColor.borderSubtle)
                 logHeader
                 logRows
             }
             .padding(.horizontal, Spacing.s200)
-            .padding(.top, Spacing.s200)
+            .padding(.bottom, Spacing.s100)
         }
         .background(LGColor.surfaceBase)
     }
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: Spacing.s50) {
-            Text("MONITOR")
-                .font(Font.Tokens.caption2())
-                .foregroundStyle(LGColor.textMuted)
-                .accessibilityHidden(true)
-            Text("\(props.totalEventCount) events")
-                .font(Font.Tokens.code())
-                .foregroundStyle(LGColor.textPrimary)
-                .minimumScaleFactor(0.8)
-                .lineLimit(1)
-                .accessibilityLabel("Monitor: \(props.totalEventCount) events")
-        }
+    private var eventCountLine: some View {
+        Text("\(props.totalEventCount) events")
+            .font(Font.Tokens.caption2())
+            .foregroundStyle(LGColor.textMuted)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .accessibilityLabel("Total: \(props.totalEventCount) events")
     }
 
     private var countsCard: some View {

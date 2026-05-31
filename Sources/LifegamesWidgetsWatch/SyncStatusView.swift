@@ -37,13 +37,13 @@ public struct SyncStatusView: View {
     private var primaryButton: some View {
         Button(action: onPrimaryTap) {
             Text(props.primaryActionLabel)
-                .font(Font.Tokens.code())
+                .font(Font.Tokens.caption())
                 .minimumScaleFactor(0.8)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.bordered)
-        .controlSize(.small)
+        .controlSize(.mini)
         .tint(tintForStatus(props.status))
         .disabled(props.status == .needsSetup)
         .accessibilityLabel(buttonAccessibilityLabel(for: props.status))
@@ -93,7 +93,7 @@ public struct SyncStatusView: View {
 
     private var relativeTimeLabel: some View {
         Text(relativeString(for: props.lastSyncDate, reference: props.referenceDate))
-            .font(Font.Tokens.caption())
+            .font(Font.Tokens.caption2())
             .foregroundStyle(LGColor.textMuted)
             .accessibilityLabel("Last synced")
             .accessibilityValue(relativeString(for: props.lastSyncDate, reference: props.referenceDate))
