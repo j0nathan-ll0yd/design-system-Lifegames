@@ -21,7 +21,7 @@ public struct SyncStatusView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(spacing: Spacing.s200) {
+            VStack(spacing: Spacing.s100) {
                 heroSymbol
                 statusPill
                 relativeTimeLabel
@@ -29,8 +29,7 @@ public struct SyncStatusView: View {
                 primaryButton
             }
             .padding(.horizontal, Spacing.s200)
-            .padding(.top, Spacing.s200)
-            .padding(.bottom, Spacing.s200)
+            .padding(.bottom, Spacing.s100)
         }
         .background(LGColor.surfaceBase)
     }
@@ -44,12 +43,11 @@ public struct SyncStatusView: View {
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.bordered)
-        .controlSize(.large)
+        .controlSize(.small)
         .tint(tintForStatus(props.status))
         .disabled(props.status == .needsSetup)
         .accessibilityLabel(buttonAccessibilityLabel(for: props.status))
         .accessibilityHint(buttonAccessibilityHint(for: props.status))
-        .padding(.top, Spacing.s100)
     }
 
     // MARK: subviews
