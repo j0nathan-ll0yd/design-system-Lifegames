@@ -117,6 +117,9 @@ public struct DiagnosticsMonitorView: View {
     }
 
     private var logRows: some View {
+        // props.entries must be passed newest-first by the caller -- see the
+        // doc comment on DiagnosticsMonitorProps.entries. We cap at 25 to keep
+        // the watch render budget bounded.
         ForEach(props.entries.prefix(25)) { entry in
             LogRowView(
                 entry: entry,

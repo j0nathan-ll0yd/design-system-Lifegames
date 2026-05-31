@@ -39,6 +39,12 @@ public struct DiagnosticsMonitorProps: Equatable, Codable, Sendable {
     public let totalEventCount: Int
     public let counts: [CategoryCount]
     public let fileSizeBytes: Int
+
+    /// Log entries in display order: **most recent first**.
+    /// `DiagnosticsMonitorView` applies `prefix(25)` to cap the rendered list,
+    /// so callers passing chronological (oldest-first) data must reverse before
+    /// constructing these props, otherwise users will see the 25 oldest entries
+    /// instead of the 25 newest.
     public let entries: [LogEntry]
     public let transferStatus: TransferStatus
     public let referenceDate: Date
