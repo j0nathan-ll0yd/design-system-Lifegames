@@ -429,7 +429,7 @@ ${fixtureJSON}
 ## Data Source
 
 - **Schema:** \`${ds.schema}\`
-- **GitHub API:** ${ds.api} ([docs](${ds.apiDoc}))
+- **GitHub API:** \`${ds.api}\` ([docs](${ds.apiDoc}))
 - **Status:** ${ds.status}
 `;
   }
@@ -558,6 +558,19 @@ function cleanOrphans(manifest, outputDir) {
 
 function main() {
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+
+  const skipped = [];
+  manifest.widgets = manifest.widgets.filter(w => {
+    if (w.platform && w.platform !== 'web') {
+      skipped.push(`${w.category}/${w.name} (${w.platform})`);
+      return false;
+    }
+    return true;
+  });
+  if (skipped.length > 0) {
+    log(`[skip] ${skipped.length} non-web widgets excluded from docs: ${skipped.join(', ')}`);
+  }
+
   const audit = auditPropsUsage();
 
   if (!DRY_RUN) {
