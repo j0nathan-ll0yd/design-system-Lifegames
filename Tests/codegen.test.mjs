@@ -10,7 +10,6 @@ const ROOT = path.resolve(__dirname, '..');
 const goldenDir = path.join(__dirname, 'golden-mdx');
 
 const goldenFiles = [
-  { widget: 'streak-counter', file: 'github/streak-counter.mdx' },
   { widget: 'heart-rate', file: 'health/heart-rate.mdx' },
   { widget: 'place-leaderboard-v3', file: 'location/place-leaderboard-v3.mdx' },
 ];
