@@ -90,30 +90,6 @@
     },
     {
       "category": "location",
-      "name": "CategoryTerrain",
-      "viewType": "CategoryTerrainView",
-      "fixturePath": "location/category-terrain.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
-      "name": "CityConstellation",
-      "viewType": "CityConstellationView",
-      "fixturePath": "location/city-constellation.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
-      "name": "DurationDonut",
-      "viewType": "DurationDonutView",
-      "fixturePath": "location/duration-donut.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
       "name": "ExplorationOdometer",
       "viewType": "ExplorationOdometerView",
       "fixturePath": "location/exploration-odometer-v3.json",
@@ -122,51 +98,11 @@
     },
     {
       "category": "location",
-      "name": "ExplorationRings",
-      "viewType": "ExplorationRingsView",
-      "fixturePath": "location/exploration-rings.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
       "name": "PlaceLeaderboard",
       "viewType": "PlaceLeaderboardView",
       "fixturePath": "location/place-leaderboard-v3.json",
       "production": true,
       "productionCategory": "body"
-    },
-    {
-      "category": "location",
-      "name": "RhythmBars",
-      "viewType": "RhythmBarsView",
-      "fixturePath": "location/rhythm-bars.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
-      "name": "StreakCalendar",
-      "viewType": "StreakCalendarView",
-      "fixturePath": "location/streak-calendar.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
-      "name": "StreakFlame",
-      "viewType": "StreakFlameView",
-      "fixturePath": "location/streak-flame.json",
-      "production": false,
-      "productionCategory": null
-    },
-    {
-      "category": "location",
-      "name": "WaffleGrid",
-      "viewType": "WaffleGridView",
-      "fixturePath": "location/waffle-grid.json",
-      "production": false,
-      "productionCategory": null
     },
     {
       "category": "health",

@@ -91,20 +91,6 @@ export default defineConfig({
               ],
             },
             {
-              label: 'Location',
-              collapsed: true,
-              items: [
-                { label: 'CategoryTerrain', link: '/alternates/location/category-terrain/' },
-                { label: 'CityConstellation', link: '/alternates/location/city-constellation/' },
-                { label: 'DurationDonut', link: '/alternates/location/duration-donut/' },
-                { label: 'ExplorationRings', link: '/alternates/location/exploration-rings/' },
-                { label: 'RhythmBars', link: '/alternates/location/rhythm-bars/' },
-                { label: 'StreakCalendar', link: '/alternates/location/streak-calendar/' },
-                { label: 'StreakFlame', link: '/alternates/location/streak-flame/' },
-                { label: 'WaffleGrid', link: '/alternates/location/waffle-grid/' },
-              ],
-            },
-            {
               label: 'Reading',
               collapsed: true,
               items: [

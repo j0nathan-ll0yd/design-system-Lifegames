@@ -57,13 +57,11 @@ struct ContractTests {
         #expect(!props.weeks.isEmpty)
     }
 
-    // MARK: - Location (10 widgets)
+    // MARK: - Location (2 widgets)
 
     @Test func locationFixtures() throws {
         let locationFiles = [
-            "category-terrain", "city-constellation", "duration-donut",
-            "exploration-odometer-v3", "exploration-rings", "place-leaderboard-v3",
-            "rhythm-bars", "streak-calendar", "streak-flame", "waffle-grid",
+            "exploration-odometer-v3", "place-leaderboard-v3",
         ]
         for file in locationFiles {
             let data = try loadFixture("location/\(file)")

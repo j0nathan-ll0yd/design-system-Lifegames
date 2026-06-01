@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-31T20:46:28.572Z",
-  "totalCount": 37,
+  "generatedAt": "2026-06-01T17:33:11.010Z",
+  "totalCount": 29,
   "portfolioConsumedCount": 18,
   "widgets": [
     {
@@ -156,30 +156,6 @@
       "consumedByPortfolio": true
     },
     {
-      "id": "CategoryTerrain",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "CityConstellation",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "DurationDonut",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "ExplorationOdometerV3",
       "category": "location",
       "hasStory": false,
@@ -188,52 +164,12 @@
       "consumedByPortfolio": true
     },
     {
-      "id": "ExplorationRings",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "PlaceLeaderboardV3",
       "category": "location",
       "hasStory": false,
       "hasSwiftMirror": false,
       "schemaExempt": true,
       "consumedByPortfolio": true
-    },
-    {
-      "id": "RhythmBars",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StreakCalendar",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StreakFlame",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "WaffleGrid",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
     },
     {
       "id": "DndOverlay",

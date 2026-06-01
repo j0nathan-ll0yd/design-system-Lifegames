@@ -515,42 +515,6 @@
     "plannedSurface": null
   },
   {
-    "name": "CategoryTerrainView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftCategoryTerrain",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/CategoryTerrainView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
-    "name": "CityConstellationView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftCityConstellation",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/CityConstellationView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
-    "name": "DurationDonutView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftDurationDonut",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/DurationDonutView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
     "name": "ExplorationOdometerView",
     "fileRelativeToWidgets": null,
     "id": "swiftExplorationOdometer",
@@ -563,18 +527,6 @@
     "plannedSurface": null
   },
   {
-    "name": "ExplorationRingsView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftExplorationRings",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/ExplorationRingsView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
     "name": "PlaceLeaderboardView",
     "fileRelativeToWidgets": null,
     "id": "swiftPlaceLeaderboard",
@@ -583,54 +535,6 @@
     "buildStatus": "shipped",
     "category": "location",
     "swiftFileRelative": "Location/PlaceLeaderboardView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
-    "name": "RhythmBarsView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftRhythmBars",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/RhythmBarsView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
-    "name": "StreakCalendarView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftStreakCalendar",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/StreakCalendarView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
-    "name": "StreakFlameView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftStreakFlame",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/StreakFlameView.swift",
-    "consumers": [],
-    "plannedSurface": null
-  },
-  {
-    "name": "WaffleGridView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftWaffleGrid",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "location",
-    "swiftFileRelative": "Location/WaffleGridView.swift",
     "consumers": [],
     "plannedSurface": null
   },
