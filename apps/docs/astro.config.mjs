@@ -46,10 +46,10 @@ export default defineConfig({
             { label: 'Local Showcase', link: '/showcase/' },
           ],
         },
-        { label: 'Getting Started', autogenerate: { directory: '.' } },
-        { label: 'Brand', autogenerate: { directory: 'brand' } },
-        { label: 'Tokens', autogenerate: { directory: 'tokens' } },
-        { label: 'Components', autogenerate: { directory: 'components' } },
+        { label: 'Getting Started', items: [{ autogenerate: { directory: '.' } }] },
+        { label: 'Brand', items: [{ autogenerate: { directory: 'brand' } }] },
+        { label: 'Tokens', items: [{ autogenerate: { directory: 'tokens' } }] },
+        { label: 'Components', items: [{ autogenerate: { directory: 'components' } }] },
         {
           label: 'Widgets',
           items: [

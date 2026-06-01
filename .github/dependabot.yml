@@ -22,6 +22,12 @@ updates:
         patterns:
           - "@storybook/*"
           - storybook
+      # Group Astro stack so integrations always bump alongside the core.
+      # Mismatched astro / @astrojs/* versions historically break the build.
+      astro-docs:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
     ignore:
       # ajv majors require coordinated migration of validate.ts and all
       # consumer schemas. Bump manually after testing.
@@ -31,16 +37,11 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: ajv-cli
         update-types: [version-update:semver-major]
-      # Astro v5 -> v6 requires a coordinated migration: peer-dep cascade
-      # through @astrojs/starlight, @vite-pwa/astro, and the consumer web
-      # repo. Tracked manually; do not bump majors automatically.
-      - dependency-name: astro
-        update-types: [version-update:semver-major]
       # @astrojs/starlight is pre-1.0 -- minors can contain breaking
-      # changes. 0.34 -> 0.39 fails docs-build today. Pin to current minor
-      # until the docs site has been verified against a newer version.
+      # changes. Block only majors; minors are safe on the verified 0.39.x
+      # release (docs site confirmed working 2026-05-31).
       - dependency-name: "@astrojs/starlight"
-        update-types: [version-update:semver-minor, version-update:semver-major]
+        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /
