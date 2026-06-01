@@ -29,6 +29,6 @@
     "ajv-cli": "^5.0.0",
     "json-schema-to-typescript": "^15.0.0",
     "quicktype": "^23.0.0",
-    "tsx": "^4.21.0"
+    "tsx": "^4.22.4"
   }
 }
