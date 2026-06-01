@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 
 // DS-internal fixture: location/place-leaderboard-v3.json
@@ -60,5 +60,9 @@ export const Loading: Story = { args: { places: [] } };
 
 export const Dark: Story = {
   ...Default,
-  parameters: { backgrounds: { default: 'dark' } },
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  },
 };

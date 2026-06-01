@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 
 // DS-internal fixture: other/dnd-overlay.json (empty object — overlay is full-page, no props)
@@ -37,5 +37,9 @@ export const Empty: Story = { args: { active: false, label: '' } };
 
 export const Dark: Story = {
   ...Default,
-  parameters: { backgrounds: { default: 'dark' } },
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  },
 };
