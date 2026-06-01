@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 
 // DS-internal fixture: health/workouts.json
@@ -51,5 +51,9 @@ export const Loading: Story = { args: { workouts: [] } };
 
 export const Dark: Story = {
   ...Default,
-  parameters: { backgrounds: { default: 'dark' } },
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  },
 };

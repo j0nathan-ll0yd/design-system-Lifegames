@@ -15,6 +15,13 @@ updates:
           - ajv
           - ajv-formats
           - ajv-cli
+      # Group all Storybook packages so they always bump together.
+      # Partial upgrades break the addon API (framework adapter + addon
+      # version mismatch). Replaces the former major-version ignore rules.
+      storybook:
+        patterns:
+          - "@storybook/*"
+          - storybook
     ignore:
       # ajv majors require coordinated migration of validate.ts and all
       # consumer schemas. Bump manually after testing.
@@ -34,12 +41,6 @@ updates:
       # until the docs site has been verified against a newer version.
       - dependency-name: "@astrojs/starlight"
         update-types: [version-update:semver-minor, version-update:semver-major]
-      # Storybook v9 -> v10 is a breaking redesign of the addon API and
-      # framework adapters. Migrate manually once stories are ready.
-      - dependency-name: "@storybook/*"
-        update-types: [version-update:semver-major]
-      - dependency-name: storybook
-        update-types: [version-update:semver-major]
 
   - package-ecosystem: github-actions
     directory: /

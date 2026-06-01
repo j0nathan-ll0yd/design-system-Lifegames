@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 
 // DS-internal fixture: reading/bookshelf.json
@@ -55,5 +55,9 @@ export const Loading: Story = { args: { books: [] } };
 
 export const Dark: Story = {
   ...Default,
-  parameters: { backgrounds: { default: 'dark' } },
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  },
 };

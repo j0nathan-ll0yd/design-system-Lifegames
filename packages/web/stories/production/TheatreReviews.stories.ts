@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 
 // DS-internal fixture: reading/theatre-reviews.json (3 reviews for brevity)
@@ -53,5 +53,9 @@ export const Loading: Story = { args: { reviews: [] } };
 
 export const Dark: Story = {
   ...Default,
-  parameters: { backgrounds: { default: 'dark' } },
+  globals: {
+    backgrounds: {
+      value: "dark"
+    }
+  },
 };
