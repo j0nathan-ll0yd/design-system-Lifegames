@@ -47,10 +47,8 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 3
-    ignore:
-      # actions/download-artifact v5+ dropped support for older artifact
-      # formats and breaks build-tokens, contrast, schemas-freshness, and
-      # widget-inventory until uploader/downloader pairs are aligned.
-      # Migrate together with actions/upload-artifact, not separately.
-      - dependency-name: actions/download-artifact
-        update-types: [version-update:semver-major]
+    groups:
+      github-artifacts:
+        patterns:
+          - "actions/upload-artifact"
+          - "actions/download-artifact"
