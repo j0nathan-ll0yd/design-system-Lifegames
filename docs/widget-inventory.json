@@ -156,30 +156,6 @@
       "consumedByPortfolio": true
     },
     {
-      "id": "CategoryTerrain",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "CityConstellation",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "DurationDonut",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "ExplorationOdometerV3",
       "category": "location",
       "hasStory": false,
@@ -188,52 +164,12 @@
       "consumedByPortfolio": true
     },
     {
-      "id": "ExplorationRings",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
       "id": "PlaceLeaderboardV3",
       "category": "location",
       "hasStory": false,
       "hasSwiftMirror": false,
       "schemaExempt": true,
       "consumedByPortfolio": true
-    },
-    {
-      "id": "RhythmBars",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StreakCalendar",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "StreakFlame",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
-    },
-    {
-      "id": "WaffleGrid",
-      "category": "location",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": false
     },
     {
       "id": "DndOverlay",

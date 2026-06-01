@@ -1,9 +1,0 @@
-{
-  "categoryBreakdown": [
-    { "category": "Food & Drink", "visitCount": 147, "totalMinutes": 8820 },
-    { "category": "Arts & Entertainment", "visitCount": 28, "totalMinutes": 4200 },
-    { "category": "Nightlife", "visitCount": 19, "totalMinutes": 2280 },
-    { "category": "Fitness", "visitCount": 8, "totalMinutes": 480 },
-    { "category": "Outdoors & Recreation", "visitCount": 4, "totalMinutes": 720 }
-  ]
-}

@@ -1,7 +1,0 @@
-{
-  "totalDurationHours": 4,
-  "categoryBreakdown": [
-    { "category": "Food & Drink", "visitCount": 3, "totalMinutes": 150 },
-    { "category": "Travel & Transport", "visitCount": 2, "totalMinutes": 90 }
-  ]
-}

@@ -172,27 +172,6 @@
       "plannedSurface": null
     },
     {
-      "name": "CategoryTerrain",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "CityConstellation",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "DurationDonut",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
       "name": "ExplorationOdometerV3",
       "category": "location",
       "consumers": [],
@@ -200,42 +179,7 @@
       "plannedSurface": null
     },
     {
-      "name": "ExplorationRings",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
       "name": "PlaceLeaderboardV3",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "RhythmBars",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "StreakCalendar",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "StreakFlame",
-      "category": "location",
-      "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "WaffleGrid",
       "category": "location",
       "consumers": [],
       "status": "Experimental",

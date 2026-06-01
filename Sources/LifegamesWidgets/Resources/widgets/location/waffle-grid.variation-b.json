@@ -1,9 +1,0 @@
-{
-  "categoryBreakdown": [
-    { "category": "Food & Drink", "visitCount": 31, "totalMinutes": 1860 },
-    { "category": "Fitness", "visitCount": 18, "totalMinutes": 1080 },
-    { "category": "Travel & Transport", "visitCount": 14, "totalMinutes": 420 },
-    { "category": "Retail", "visitCount": 9, "totalMinutes": 450 }
-  ],
-  "totalVisits": 72
-}

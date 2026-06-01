@@ -1,6 +1,0 @@
-{
-  "last90Days": [
-    { "date": "2026-05-23", "count": 2, "uniquePlaces": 2, "totalDurationMinutes": 90 },
-    { "date": "2026-05-24", "count": 1, "uniquePlaces": 1, "totalDurationMinutes": 45 }
-  ]
-}

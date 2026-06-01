@@ -10,15 +10,7 @@ import {
   updateReadingFeed,
   updateSystemStatus,
   updateExplorationOdometer,
-  updateStreakFlame,
   updatePlaceLeaderboard,
-  updateRhythmBars,
-  updateWaffleGrid,
-  updateCategoryTerrain,
-  updateExplorationRings,
-  updateDurationDonut,
-  updateStreakCalendar,
-  updateCityConstellation,
   updateBookshelf,
   getCategoryColor,
   esc,
@@ -716,45 +708,6 @@ describe('updateExplorationOdometer', () => {
   });
 });
 
-// ── updateStreakFlame ──────────────────────────────────────────────────────────
-
-describe('updateStreakFlame', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardStreakFlame" class="is-loading">
-        <div data-loc="streak-current">0</div>
-        <div data-loc="streak-longest">0</div>
-        <div data-loc="streak-active">0</div>
-      </div>
-    `;
-  });
-
-  it('sets current streak', () => {
-    updateStreakFlame(makeLocation());
-    expect(el('cardStreakFlame').querySelector('[data-loc="streak-current"]')!.textContent).toBe('7');
-  });
-
-  it('sets longest streak', () => {
-    updateStreakFlame(makeLocation());
-    expect(el('cardStreakFlame').querySelector('[data-loc="streak-longest"]')!.textContent).toBe('21');
-  });
-
-  it('sets total active days', () => {
-    updateStreakFlame(makeLocation());
-    expect(el('cardStreakFlame').querySelector('[data-loc="streak-active"]')!.textContent).toBe('45');
-  });
-
-  it('removes is-loading', () => {
-    updateStreakFlame(makeLocation());
-    expect(el('cardStreakFlame').classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateStreakFlame(makeLocation())).not.toThrow();
-  });
-});
-
 // ── updatePlaceLeaderboard ─────────────────────────────────────────────────────
 
 describe('updatePlaceLeaderboard', () => {
@@ -798,284 +751,6 @@ describe('updatePlaceLeaderboard', () => {
   });
 });
 
-// ── updateRhythmBars ──────────────────────────────────────────────────────────
-
-describe('updateRhythmBars', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardRhythmBars" class="is-loading">
-        <div data-loc="rhythm-bars"></div>
-        <div data-loc="rhythm-busiest"></div>
-      </div>
-    `;
-  });
-
-  it('renders 7 bar columns', () => {
-    updateRhythmBars(makeLocation());
-    const bars = el('cardRhythmBars').querySelectorAll('.rb-bar-col');
-    expect(bars.length).toBe(7);
-  });
-
-  it('renders busiest day label', () => {
-    updateRhythmBars(makeLocation());
-    const busiest = el('cardRhythmBars').querySelector('[data-loc="rhythm-busiest"]');
-    expect(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']).toContain(busiest!.textContent);
-  });
-
-  it('removes is-loading', () => {
-    updateRhythmBars(makeLocation());
-    expect(el('cardRhythmBars').classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateRhythmBars(makeLocation())).not.toThrow();
-  });
-});
-
-// ── updateWaffleGrid ──────────────────────────────────────────────────────────
-
-describe('updateWaffleGrid', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardWaffleGrid" class="is-loading">
-        <div data-loc="waffle-grid"></div>
-        <div data-loc="waffle-legend"></div>
-      </div>
-    `;
-  });
-
-  it('renders 100 waffle cells', () => {
-    updateWaffleGrid(makeLocation());
-    const cells = el('cardWaffleGrid').querySelectorAll('.wg-cell');
-    expect(cells.length).toBe(100);
-  });
-
-  it('renders legend items', () => {
-    updateWaffleGrid(makeLocation());
-    const items = el('cardWaffleGrid').querySelectorAll('.wg-legend-item');
-    expect(items.length).toBeGreaterThan(0);
-  });
-
-  it('removes is-loading', () => {
-    updateWaffleGrid(makeLocation());
-    expect(el('cardWaffleGrid').classList.contains('is-loading')).toBe(false);
-  });
-
-  it('removes is-loading when total minutes is 0', () => {
-    const data = makeLocation({ categoryBreakdown: [] });
-    updateWaffleGrid(data);
-    expect(el('cardWaffleGrid').classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateWaffleGrid(makeLocation())).not.toThrow();
-  });
-});
-
-// ── updateCategoryTerrain ─────────────────────────────────────────────────────
-
-describe('updateCategoryTerrain', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardCategoryTerrain" class="is-loading">
-        <div data-loc="terrain-bar"></div>
-        <div data-loc="terrain-labels"></div>
-      </div>
-    `;
-  });
-
-  it('renders terrain segments', () => {
-    updateCategoryTerrain(makeLocation());
-    const segs = el('cardCategoryTerrain').querySelectorAll('.ct-segment');
-    expect(segs.length).toBe(2);
-  });
-
-  it('renders category labels', () => {
-    updateCategoryTerrain(makeLocation());
-    expect(el('cardCategoryTerrain').innerHTML).toContain('Dining');
-  });
-
-  it('removes is-loading', () => {
-    updateCategoryTerrain(makeLocation());
-    expect(el('cardCategoryTerrain').classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateCategoryTerrain(makeLocation())).not.toThrow();
-  });
-});
-
-// ── updateExplorationRings ────────────────────────────────────────────────────
-
-describe('updateExplorationRings', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardExplorationRings" class="is-loading">
-        <circle data-loc="ring-neighborhoods" style=""></circle>
-        <circle data-loc="ring-cities" style=""></circle>
-        <circle data-loc="ring-states" style=""></circle>
-        <span data-loc="ring-neighborhoods-count"></span>
-        <span data-loc="ring-cities-count"></span>
-        <span data-loc="ring-states-count"></span>
-      </div>
-    `;
-  });
-
-  it('sets count text for neighborhoods', () => {
-    updateExplorationRings(makeLocation());
-    const el = document.querySelector('[data-loc="ring-neighborhoods-count"]');
-    expect(el!.textContent).toContain('12');
-  });
-
-  it('sets count text for cities', () => {
-    updateExplorationRings(makeLocation());
-    const el = document.querySelector('[data-loc="ring-cities-count"]');
-    expect(el!.textContent).toContain('5');
-  });
-
-  it('sets count text for states', () => {
-    updateExplorationRings(makeLocation());
-    const el = document.querySelector('[data-loc="ring-states-count"]');
-    expect(el!.textContent).toContain('3');
-  });
-
-  it('removes is-loading', () => {
-    updateExplorationRings(makeLocation());
-    expect(document.getElementById('cardExplorationRings')!.classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateExplorationRings(makeLocation())).not.toThrow();
-  });
-});
-
-// ── updateDurationDonut ────────────────────────────────────────────────────────
-
-describe('updateDurationDonut', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardDurationDonut" class="is-loading">
-        <div data-loc="donut-total"></div>
-        <div data-loc="donut-ring"></div>
-        <div data-loc="donut-legend"></div>
-      </div>
-    `;
-  });
-
-  it('sets total hours', () => {
-    updateDurationDonut(makeLocation());
-    const total = document.querySelector('[data-loc="donut-total"]');
-    expect(total!.textContent).toBe('300');
-  });
-
-  it('sets conic-gradient on ring', () => {
-    updateDurationDonut(makeLocation());
-    const ring = document.querySelector('[data-loc="donut-ring"]') as HTMLElement;
-    expect(ring.style.background).toContain('conic-gradient');
-  });
-
-  it('renders legend items', () => {
-    updateDurationDonut(makeLocation());
-    const legend = document.querySelector('[data-loc="donut-legend"]');
-    expect(legend!.querySelectorAll('.wg-legend-item').length).toBeGreaterThan(0);
-  });
-
-  it('removes is-loading', () => {
-    updateDurationDonut(makeLocation());
-    expect(document.getElementById('cardDurationDonut')!.classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateDurationDonut(makeLocation())).not.toThrow();
-  });
-});
-
-// ── updateStreakCalendar ───────────────────────────────────────────────────────
-
-describe('updateStreakCalendar', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardStreakCalendar" class="is-loading">
-        <div data-loc="streak-calendar-grid"></div>
-        <div data-loc="streak-calendar-count"></div>
-      </div>
-    `;
-  });
-
-  it('renders cells for each day in last30', () => {
-    updateStreakCalendar(makeLocation());
-    // last90Days has 3 entries, sliced to last 30
-    const cells = document.querySelectorAll('.sc-cell:not(.sc-cell-empty)');
-    expect(cells.length).toBe(3);
-  });
-
-  it('sets current streak count', () => {
-    updateStreakCalendar(makeLocation());
-    const count = document.querySelector('[data-loc="streak-calendar-count"]');
-    expect(count!.textContent).toBe('7');
-  });
-
-  it('removes is-loading', () => {
-    updateStreakCalendar(makeLocation());
-    expect(document.getElementById('cardStreakCalendar')!.classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateStreakCalendar(makeLocation())).not.toThrow();
-  });
-});
-
-// ── updateCityConstellation ───────────────────────────────────────────────────
-
-describe('updateCityConstellation', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardCityConstellation" class="is-loading">
-        <svg data-loc="constellation-svg"></svg>
-        <div data-loc="constellation-list"></div>
-      </div>
-    `;
-  });
-
-  it('renders city circles in SVG', () => {
-    updateCityConstellation(makeLocation());
-    const circles = document.querySelectorAll('[data-loc="constellation-svg"] circle');
-    expect(circles.length).toBe(2);
-  });
-
-  it('renders city list rows', () => {
-    updateCityConstellation(makeLocation());
-    const rows = document.querySelectorAll('.cc-city-row');
-    expect(rows.length).toBe(2);
-  });
-
-  it('renders city names in list', () => {
-    updateCityConstellation(makeLocation());
-    expect(document.querySelector('[data-loc="constellation-list"]')!.innerHTML).toContain('Los Angeles');
-  });
-
-  it('removes is-loading', () => {
-    updateCityConstellation(makeLocation());
-    expect(document.getElementById('cardCityConstellation')!.classList.contains('is-loading')).toBe(false);
-  });
-
-  it('removes is-loading when cityBreakdown is empty', () => {
-    updateCityConstellation(makeLocation({ cityBreakdown: [] }));
-    expect(document.getElementById('cardCityConstellation')!.classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateCityConstellation(makeLocation())).not.toThrow();
-  });
-});
-
 // ── updateBookshelf ────────────────────────────────────────────────────────────
 
 describe('updateBookshelf', () => {
@@ -1093,6 +768,9 @@ describe('updateBookshelf', () => {
           cover: null,
           coverThumb: null,
           coverCard: null,
+          coverAvif: null,
+          coverThumbAvif: null,
+          coverCardAvif: null,
           notes: null,
         },
       ],
@@ -1159,6 +837,9 @@ describe('updateBookshelf', () => {
         cover: null,
         coverThumb: null,
         coverCard: null,
+        coverAvif: null,
+        coverThumbAvif: null,
+        coverCardAvif: null,
         notes: null,
       }],
     });

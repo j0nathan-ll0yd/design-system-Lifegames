@@ -1,21 +1,5 @@
-export { default as CategoryTerrain } from './CategoryTerrain.astro';
-export { default as CityConstellation } from './CityConstellation.astro';
-export { default as DurationDonut } from './DurationDonut.astro';
 export { default as ExplorationOdometerV3 } from './ExplorationOdometerV3.astro';
-export { default as ExplorationRings } from './ExplorationRings.astro';
 export { default as PlaceLeaderboardV3 } from './PlaceLeaderboardV3.astro';
-export { default as RhythmBars } from './RhythmBars.astro';
-export { default as StreakCalendar } from './StreakCalendar.astro';
-export { default as StreakFlame } from './StreakFlame.astro';
-export { default as WaffleGrid } from './WaffleGrid.astro';
 
-export type { CategoryTerrainProps } from './CategoryTerrain.types';
-export type { CityConstellationProps } from './CityConstellation.types';
-export type { DurationDonutProps } from './DurationDonut.types';
 export type { ExplorationOdometerV3Props } from './ExplorationOdometerV3.types';
-export type { ExplorationRingsProps } from './ExplorationRings.types';
 export type { PlaceLeaderboardV3Props } from './PlaceLeaderboardV3.types';
-export type { RhythmBarsProps } from './RhythmBars.types';
-export type { StreakCalendarProps } from './StreakCalendar.types';
-export type { StreakFlameProps } from './StreakFlame.types';
-export type { WaffleGridProps } from './WaffleGrid.types';
