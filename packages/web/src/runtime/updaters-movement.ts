@@ -1,0 +1,141 @@
+// Movement Rings widget + Heart Rate footer-vitals strip updaters.
+// Live-data dispatcher (live-data.ts) calls these from its `health` branch.
+import type { AdaptedHealth } from './adapters';
+
+// Default goals — kept in sync with MovementRings.astro SSR defaults.
+const DEFAULT_MOVE_KCAL = 500;
+const DEFAULT_EXERCISE_MIN = 30;
+const DEFAULT_STAND_HR = 12;
+const DEFAULT_DAYLIGHT_MIN = 20;
+
+// SVG ring geometry — mirrors MovementRings.astro SSR (r=60/44/28).
+const RING_RADII = {
+  move: 60,
+  exercise: 44,
+  stand: 28,
+} as const;
+
+function circumference(radius: number): number {
+  return 2 * Math.PI * radius;
+}
+
+function offset(circ: number, pct: number): number {
+  const visual = Math.min(1, Math.max(0, pct));
+  return circ * (1 - visual);
+}
+
+function setRingProgress(id: string, radius: number, pct: number): void {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const circ = circumference(radius);
+  el.setAttribute('stroke-dasharray', circ.toFixed(2));
+  el.setAttribute('stroke-dashoffset', offset(circ, pct).toFixed(2));
+}
+
+function setText(id: string, text: string): void {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+/**
+ * Update MovementRings widget (cardMovement) from AdaptedHealth.
+ * Reads stepCount / distanceWalkingRunning / flightsClimbed,
+ * activeEnergyBurned / exerciseTime / standTime; normalises Stand
+ * min -> hr if HealthKit shipped minutes; computes ring progress
+ * fractions and applies via stroke-dashoffset.
+ */
+export function updateMovementRings(data: AdaptedHealth): void {
+  const card = document.getElementById('cardMovement');
+  if (!card) return;
+
+  const q = data.quantities;
+
+  // Goals — read from optional goals override on AdaptedHealth (none today, so use defaults).
+  // Future-proof: a typed `goals` field can be added to AdaptedHealth without touching this file.
+  const goals = {
+    moveKcal: DEFAULT_MOVE_KCAL,
+    exerciseMin: DEFAULT_EXERCISE_MIN,
+    standHr: DEFAULT_STAND_HR,
+    daylightMin: DEFAULT_DAYLIGHT_MIN,
+  };
+
+  const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
+  const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
+
+  // Stand: HealthKit ships minutes; UI shows hours.
+  const standRaw = q.standTime;
+  const standHours = standRaw
+    ? (standRaw.unit === 'min'
+        ? Math.floor(standRaw.value / 60)
+        : Math.floor(standRaw.value))
+    : 0;
+
+  const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;
+  const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0;
+  const standPct = goals.standHr > 0 ? standHours / goals.standHr : 0;
+
+  setRingProgress('ringMove', RING_RADII.move, movePct);
+  setRingProgress('ringExercise', RING_RADII.exercise, exercisePct);
+  setRingProgress('ringStand', RING_RADII.stand, standPct);
+
+  setText('ringCenterPct', Math.round(Math.min(movePct, 1) * 100) + '%');
+
+  // Chips: steps · distance · flights
+  const steps = Math.round(q.stepCount?.value ?? 0);
+  const distanceKm = ((q.distanceWalkingRunning?.value ?? 0) / 1000).toFixed(1);
+  const flights = Math.round(q.flightsClimbed?.value ?? 0);
+
+  const stepsEl = card.querySelector<HTMLElement>('[data-mv-metric="steps"]');
+  if (stepsEl) stepsEl.textContent = steps.toLocaleString();
+
+  const distEl = card.querySelector<HTMLElement>('[data-mv-metric="distance"]');
+  if (distEl) {
+    // Preserve the trailing unit span when we rewrite the value
+    distEl.innerHTML = distanceKm + '<span class="mv-chip-unit">km</span>';
+  }
+
+  const flightsEl = card.querySelector<HTMLElement>('[data-mv-metric="flights"]');
+  if (flightsEl) flightsEl.textContent = String(flights);
+
+  // Legend totals
+  setText('legendMove', moveVal + '/' + goals.moveKcal);
+  setText('legendExercise', exerciseVal + '/' + goals.exerciseMin);
+  setText('legendStand', standHours + '/' + goals.standHr);
+
+  // Daylight caption (timeInDaylight is optional and may not arrive)
+  const daylightMin = q.timeInDaylight ? Math.round(q.timeInDaylight.value) : null;
+  if (daylightMin !== null) {
+    setText('mvDaylightMin', String(daylightMin));
+  }
+
+  card.classList.remove('is-loading');
+}
+
+/**
+ * Update the HeartRate widget's 3-up footer vitals strip
+ * (RHR · RR · Temp). Renders '—' when a field is absent or zero.
+ */
+export function updateHeartRateFooter(data: AdaptedHealth): void {
+  const q = data.quantities;
+
+  // Unit spans are static siblings in the DOM — only update the value text.
+  const rhr = q.restingHeartRate;
+  const fmtRhr = rhr && rhr.value > 0 ? String(Math.round(rhr.value)) : '—';
+  const rhrEl = document.getElementById('hrFooterRhr');
+  if (rhrEl) rhrEl.textContent = fmtRhr;
+
+  const rr = q.respiratoryRate;
+  const fmtRr = rr && rr.value > 0 ? String(Math.round(rr.value)) : '—';
+  const rrEl = document.getElementById('hrFooterRr');
+  if (rrEl) rrEl.textContent = fmtRr;
+
+  const tempDelta = q.wristTemperatureDelta;
+  let fmtTemp = '—';
+  if (tempDelta && Number.isFinite(tempDelta.value)) {
+    const v = tempDelta.value;
+    const sign = v > 0 ? '+' : '';
+    fmtTemp = sign + v.toFixed(1);
+  }
+  const tempEl = document.getElementById('hrFooterTemp');
+  if (tempEl) tempEl.textContent = fmtTemp;
+}

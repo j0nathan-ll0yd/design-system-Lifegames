@@ -2,6 +2,7 @@ import { fetchAllEndpoints, fetchWithTimeout } from './api';
 import { updateFocusOverlay } from './updaters-focus';
 import { updateTheatreReviews } from './updaters-theatre';
 import { updatePollStatus } from './updaters-status';
+import { updateMovementRings, updateHeartRateFooter } from './updaters-movement';
 import type { HealthExport, SleepExport, WorkoutsExport, BooksExport, GithubEventsExport, GithubStarredReposExport, ArticlesExport, LocationExport, FocusExport, TheatreReviewsExport } from '../types/exports';
 import { CLOUDFRONT_BASE, ENDPOINTS, WEBSOCKET_URL } from './constants';
 import { adaptHealth, adaptSleep, adaptWorkouts, adaptBooks, adaptGithubEvents, adaptStarredRepos, adaptArticles } from './adapters';
@@ -23,7 +24,8 @@ import { updateExplorationOdometerV3 } from './updaters-odometer-variations';
 import { PollEngine, type ResourceKey } from './poll-engine';
 
 const LIVE_CARDS = [
-  'cardHR', 'cardSteps', 'cardSleep', 'cardHydration', 'cardBooks', 'cardDevLog', 'cardReading',
+  // cardSteps kept registered until DailyActivity retirement (post staging verify).
+  'cardHR', 'cardSteps', 'cardMovement', 'cardSleep', 'cardHydration', 'cardBooks', 'cardDevLog', 'cardReading',
   'cardStarredRepos', 'cardTheatreReviews',
   ...(import.meta.env.DEV ? ['cardPlaceLeaderboardV3', 'cardExplorationOdometerV3'] : []),
 ];
@@ -44,7 +46,9 @@ function handleResourceUpdate(key: ResourceKey, rawData: unknown): void {
         lastHealth = rawData as HealthExport;
         const health = adaptHealth(lastHealth, lastSleep ?? null);
         updateHeartRate(health);
+        updateHeartRateFooter(health);
         updateDailyActivity(health);
+        updateMovementRings(health);
         updateHydration(health);
         break;
       }
@@ -54,6 +58,7 @@ function handleResourceUpdate(key: ResourceKey, rawData: unknown): void {
         if (lastHealth) {
           const health = adaptHealth(lastHealth, lastSleep);
           updateHeartRate(health);
+          updateHeartRateFooter(health);
         }
         break;
       }
@@ -119,7 +124,9 @@ const startFetch = async () => {
     try {
       const health = adaptHealth(data.health, data.sleep);
       updateHeartRate(health);
+      updateHeartRateFooter(health);
       updateDailyActivity(health);
+      updateMovementRings(health);
       updateHydration(health);
     } catch (e) {
       console.warn('[live-data] Health update failed:', e);

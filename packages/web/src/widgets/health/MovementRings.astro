@@ -1,0 +1,471 @@
+---
+import type { MovementRingsProps } from './MovementRings.types';
+
+const { health } = Astro.props as MovementRingsProps;
+const q = health.quantities;
+
+// Default goals (can be overridden by health.goals)
+const goals = {
+  moveKcal: health.goals?.moveKcal ?? 500,
+  exerciseMin: health.goals?.exerciseMin ?? 30,
+  standHr: health.goals?.standHr ?? 12,
+  daylightMin: health.goals?.daylightMin ?? 20,
+};
+
+// Normalise Stand: HealthKit ships minutes — convert if unit === 'min'.
+const standUnit = q.standTime?.unit ?? 'hr';
+const standHours = standUnit === 'min'
+  ? Math.floor((q.standTime?.value ?? 0) / 60)
+  : Math.floor(q.standTime?.value ?? 0);
+
+const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
+const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
+
+// Ring progress fractions (allow >1 for over-fill visual; SVG clamps to 1 turn)
+const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;
+const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0;
+const standPct = goals.standHr > 0 ? standHours / goals.standHr : 0;
+
+const centerPct = Math.round(Math.min(movePct, 1) * 100);
+
+const steps = Math.round(q.stepCount?.value ?? 0);
+const distanceM = q.distanceWalkingRunning?.value ?? 0;
+const distanceKm = (distanceM / 1000).toFixed(1);
+const flights = Math.round(q.flightsClimbed?.value ?? 0);
+
+const isEmpty = steps === 0 && distanceM === 0 && moveVal === 0 && exerciseVal === 0;
+
+// Solar / daylight footer values (mocked defaults if missing)
+const sunrise = health.solar?.sunriseHHmm ?? '06:30';
+const sunset = health.solar?.sunsetHHmm ?? '20:15';
+const sunPct = health.solar?.currentProgressPct ?? 60;
+const daylightMin = Math.round(q.timeInDaylight?.value ?? 48);
+const daylightHit = daylightMin >= goals.daylightMin;
+
+// SVG ring geometry (matches preview html)
+const RADII = { move: 60, exercise: 44, stand: 28 };
+const CIRC = {
+  move: 2 * Math.PI * RADII.move,
+  exercise: 2 * Math.PI * RADII.exercise,
+  stand: 2 * Math.PI * RADII.stand,
+};
+
+// Compute initial stroke-dashoffset (animated to target by updater on load).
+// SSR renders the final state so unhydrated pages still look correct.
+function offset(circ: number, pct: number): number {
+  const visual = Math.min(1, Math.max(0, pct));
+  return circ * (1 - visual);
+}
+---
+<div class="tri-card tri-card-accent-red" id="cardMovement">
+  <div class="widget-header">
+    <h3 class="widget-label">Movement</h3>
+    <div class="widget-header-right">
+      <div class="live-dot live-dot-red"></div>
+      <span class="widget-timestamp">today</span>
+    </div>
+  </div>
+  <div class="widget-body">
+    <div class="skeleton-state">
+      <div style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;">
+        <div class="skeleton-circle" style="width: 120px; height: 120px; border-radius: 50%;"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
+          <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
+          <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
+        <div class="skeleton-bar" style="width: 64px; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 64px; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 64px; height: 12px;"></div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+        <div class="skeleton-bar" style="width: 14px; height: 14px;"></div>
+        <div class="skeleton-bar" style="flex: 1; height: 4px;"></div>
+        <div class="skeleton-bar" style="width: 14px; height: 14px;"></div>
+      </div>
+    </div>
+    {isEmpty ? (
+      <div class="mv-empty">
+        <span class="mv-empty-label">No movement yet today</span>
+      </div>
+    ) : (
+      <>
+        <div class="mv-layout">
+          <div class="mv-rings" aria-label={`Calories ${Math.round(movePct * 100)}%, Exercise ${Math.round(exercisePct * 100)}%, Stand ${Math.round(standPct * 100)}%`}>
+            <svg viewBox="0 0 144 144" role="img">
+              <!-- tracks -->
+              <circle class="mv-ring-track mv-ring-track-move"     cx="72" cy="72" r="60"></circle>
+              <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44"></circle>
+              <circle class="mv-ring-track mv-ring-track-stand"    cx="72" cy="72" r="28"></circle>
+              <!-- progress (animated by updater) -->
+              <circle class="mv-ring-progress mv-ring-move"     id="ringMove"     cx="72" cy="72" r="60"
+                stroke-dasharray={CIRC.move.toFixed(2)}
+                stroke-dashoffset={offset(CIRC.move, movePct).toFixed(2)}></circle>
+              <circle class="mv-ring-progress mv-ring-exercise" id="ringExercise" cx="72" cy="72" r="44"
+                stroke-dasharray={CIRC.exercise.toFixed(2)}
+                stroke-dashoffset={offset(CIRC.exercise, exercisePct).toFixed(2)}></circle>
+              <circle class="mv-ring-progress mv-ring-stand"    id="ringStand"    cx="72" cy="72" r="28"
+                stroke-dasharray={CIRC.stand.toFixed(2)}
+                stroke-dashoffset={offset(CIRC.stand, standPct).toFixed(2)}></circle>
+            </svg>
+            <div class="mv-rings-center">
+              <span class="mv-rings-center-pct" id="ringCenterPct">{centerPct}%</span>
+              <span class="mv-rings-center-cap">cal</span>
+            </div>
+          </div>
+          <div class="mv-chips">
+            <div class="mv-chip">
+              <span class="mv-chip-label">Steps</span>
+              <span class="mv-chip-value" data-mv-metric="steps">{steps.toLocaleString()}</span>
+            </div>
+            <div class="mv-chip">
+              <span class="mv-chip-label">Distance</span>
+              <span class="mv-chip-value" data-mv-metric="distance">{distanceKm}<span class="mv-chip-unit">km</span></span>
+            </div>
+            <div class="mv-chip">
+              <span class="mv-chip-label">Flights</span>
+              <span class="mv-chip-value" data-mv-metric="flights">{flights}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mv-legend">
+          <div class="mv-legend-item">
+            <span class="mv-legend-swatch mv-legend-swatch-move"></span>
+            <span class="mv-swatch-label">
+              <span class="mv-swatch-label-full">Calories</span>
+              <span class="mv-swatch-label-short">Cal</span>
+            </span>
+            <span class="mv-legend-val" id="legendMove">{moveVal}/{goals.moveKcal}</span>
+          </div>
+          <div class="mv-legend-item">
+            <span class="mv-legend-swatch mv-legend-swatch-exercise"></span>
+            <span class="mv-swatch-label">
+              <span class="mv-swatch-label-full">Exercise</span>
+              <span class="mv-swatch-label-short">Ex</span>
+            </span>
+            <span class="mv-legend-val" id="legendExercise">{exerciseVal}/{goals.exerciseMin}</span>
+          </div>
+          <div class="mv-legend-item">
+            <span class="mv-legend-swatch mv-legend-swatch-stand"></span>
+            <span class="mv-swatch-label">
+              <span class="mv-swatch-label-full">Stand</span>
+              <span class="mv-swatch-label-short">Stand</span>
+            </span>
+            <span class="mv-legend-val" id="legendStand">{standHours}/{goals.standHr}</span>
+          </div>
+        </div>
+        <div class="mv-sun-footer">
+          <div class="mv-sun-arc-row">
+            <span class="mv-sun-glyph" aria-hidden="true">&#9728;</span>
+            <span class="mv-sun-time" id="mvSunrise">{sunrise}</span>
+            <div class="mv-sun-track" role="img" aria-label="Daylight position">
+              <div class="mv-sun-track-line"></div>
+              <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`}></div>
+            </div>
+            <span class="mv-sun-time" id="mvSunset">{sunset}</span>
+            <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">&#9790;</span>
+          </div>
+          <p class="mv-sun-caption">
+            <span id="mvDaylightMin">{daylightMin}</span> min in daylight today &middot; goal {goals.daylightMin} min{daylightHit && (<span class="mv-sun-caption-hit">&#10003;</span>)}
+          </p>
+        </div>
+      </>
+    )}
+  </div>
+</div>
+
+<style>
+  /* Container context — enables @container queries for child elements */
+  #cardMovement {
+    container-type: inline-size;
+    container-name: card-movement;
+  }
+
+  .mv-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--space-48);
+    padding: var(--lg-space-600) 0;
+  }
+  .mv-empty-label {
+    font-size: var(--lg-font-size-caption);
+    color: var(--lg-color-text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Top section — rings + chips */
+  .mv-layout {
+    display: grid;
+    grid-template-columns: 144px 1fr;
+    gap: var(--lg-space-450);
+    align-items: center;
+  }
+  .mv-rings {
+    width: 144px;
+    height: 144px;
+    position: relative;
+    filter: drop-shadow(0 0 12px rgba(255, 59, 48, 0.15));
+  }
+  .mv-rings svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .mv-ring-track {
+    fill: none;
+    stroke-width: 12;
+    stroke-linecap: round;
+    opacity: 0.18;
+  }
+  .mv-ring-progress {
+    fill: none;
+    stroke-width: 12;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1.4s var(--lg-motion-easing-decelerate);
+  }
+  .mv-ring-move {
+    stroke: var(--lg-color-health-red);
+    filter: drop-shadow(0 0 4px rgba(255, 59, 48, 0.6));
+  }
+  .mv-ring-exercise {
+    stroke: var(--lg-color-health-green);
+    filter: drop-shadow(0 0 4px rgba(52, 199, 89, 0.55));
+  }
+  .mv-ring-stand {
+    stroke: var(--lg-color-accent-blue);
+    filter: drop-shadow(0 0 4px rgba(58, 134, 255, 0.55));
+  }
+  .mv-ring-track-move {
+    stroke: var(--lg-color-health-red);
+  }
+  .mv-ring-track-exercise {
+    stroke: var(--lg-color-health-green);
+  }
+  .mv-ring-track-stand {
+    stroke: var(--lg-color-accent-blue);
+  }
+
+  .mv-rings-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    line-height: 1;
+    gap: var(--lg-space-50);
+  }
+  .mv-rings-center-pct {
+    font-family: var(--lg-font-family-system);
+    font-size: 0.92rem;
+    font-weight: var(--lg-font-weight-bold);
+    color: var(--lg-color-text-title);
+    letter-spacing: -0.01em;
+  }
+  .mv-rings-center-cap {
+    font-family: var(--lg-font-family-system);
+    font-size: 0.50rem;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--lg-color-text-muted);
+  }
+
+  /* Right column — chips */
+  .mv-chips {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lg-space-150);
+  }
+  .mv-chip {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: var(--lg-space-200);
+    padding: var(--lg-space-150) var(--lg-space-250);
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--lg-radius-md);
+    position: relative;
+  }
+  .mv-chip-label {
+    font-size: var(--lg-font-size-caption2);
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: var(--lg-color-text-muted);
+  }
+  .mv-chip-value {
+    font-family: var(--lg-font-family-system);
+    font-size: var(--lg-font-size-body);
+    font-weight: var(--lg-font-weight-semibold);
+    color: var(--lg-color-text-title);
+    letter-spacing: -0.01em;
+  }
+  .mv-chip-unit {
+    font-family: var(--lg-font-family-system);
+    font-size: var(--lg-font-size-caption2);
+    color: var(--lg-color-text-muted);
+    margin-left: 3px;
+    font-weight: var(--lg-font-weight-regular);
+    letter-spacing: 0.04em;
+  }
+
+  /* Legend row */
+  .mv-legend {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--lg-space-200);
+    margin-top: var(--lg-space-350);
+    padding-top: var(--lg-space-300);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  .mv-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--lg-space-150);
+    font-family: var(--lg-font-family-system);
+    font-size: var(--lg-font-size-caption2);
+    color: var(--lg-color-text-muted);
+    letter-spacing: 0.08em;
+  }
+  .mv-legend-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .mv-legend-swatch-move {
+    background: var(--lg-color-health-red);
+    box-shadow: 0 0 6px rgba(255, 59, 48, 0.6);
+  }
+  .mv-legend-swatch-exercise {
+    background: var(--lg-color-health-green);
+    box-shadow: 0 0 6px rgba(52, 199, 89, 0.5);
+  }
+  .mv-legend-swatch-stand {
+    background: var(--lg-color-accent-blue);
+    box-shadow: 0 0 6px rgba(58, 134, 255, 0.5);
+  }
+  .mv-legend-val {
+    color: var(--lg-color-text-title);
+    font-weight: var(--lg-font-weight-semibold);
+  }
+
+  /* Sun-arc circadian footer */
+  .mv-sun-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: var(--lg-space-350);
+    padding-top: var(--lg-space-300);
+  }
+  .mv-sun-arc-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--lg-space-200);
+    margin-bottom: var(--lg-space-200);
+  }
+  .mv-sun-glyph {
+    font-size: 0.82rem;
+    line-height: 1;
+    flex-shrink: 0;
+    color: var(--lg-color-accent-amber);
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
+  }
+  .mv-sun-glyph-moon {
+    opacity: 0.45;
+  }
+  .mv-sun-time {
+    font-family: var(--lg-font-family-system);
+    font-size: 0.56rem;
+    letter-spacing: 0.10em;
+    color: var(--lg-color-text-subtle);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .mv-sun-track {
+    flex: 1;
+    position: relative;
+    height: 4px;
+    border-radius: 2px;
+    overflow: visible;
+    background: linear-gradient(
+      90deg,
+      rgba(94, 92, 230, 0.25) 0%,
+      rgba(245, 158, 11, 0.22) 18%,
+      rgba(245, 158, 11, 0.55) 50%,
+      rgba(245, 158, 11, 0.22) 82%,
+      rgba(94, 92, 230, 0.25) 100%
+    );
+  }
+  .mv-sun-track-line {
+    position: absolute;
+    inset: 1px 0;
+    border-radius: 2px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(245, 158, 11, 0.18) 40%,
+      rgba(245, 158, 11, 0.30) 60%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+  }
+  .mv-sun-dot {
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lg-color-accent-amber);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.9), 0 0 16px rgba(245, 158, 11, 0.45);
+    transform: translate(-50%, -50%);
+    animation: mvSunDotPulse 3s ease-in-out infinite;
+  }
+  @keyframes mvSunDotPulse {
+    0%, 100% {
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.9), 0 0 16px rgba(245, 158, 11, 0.45);
+    }
+    50% {
+      box-shadow: 0 0 12px rgba(245, 158, 11, 1.0), 0 0 24px rgba(245, 158, 11, 0.65);
+    }
+  }
+  .mv-sun-caption {
+    text-align: center;
+    font-family: var(--lg-font-family-system);
+    font-size: 0.60rem;
+    letter-spacing: 0.09em;
+    color: var(--lg-color-text-muted);
+    line-height: 1.4;
+    margin: 0;
+  }
+  .mv-sun-caption-hit {
+    color: var(--lg-color-health-green);
+    text-shadow: 0 0 6px rgba(52, 199, 89, 0.45);
+    margin-left: 3px;
+  }
+
+  /* Container-query responsive swatch labels.
+     Explicit defaults on both spans prevent the CSS minifier from
+     collapsing same-selector rules across the @container boundary. */
+  .mv-swatch-label-full  { display: inline; }
+  .mv-swatch-label-short { display: none;   }
+
+  @container card-movement (max-width: 260px) {
+    .mv-swatch-label-full  { display: none;   }
+    .mv-swatch-label-short { display: inline; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mv-ring-progress {
+      transition: none;
+    }
+    .mv-sun-dot {
+      animation: none;
+    }
+  }
+</style>

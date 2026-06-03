@@ -53,52 +53,148 @@ private struct HeartRatePopulatedView: View {
         VStack(alignment: .leading, spacing: 0) {
             WidgetHeaderView(label: "HEART RATE", dotColor: zone.accentColor, timestamp: "live")
 
-            ZStack {
-                ECGBackgroundView(color: zone.accentColor, bpm: Double(props.bpm), animated: animateECG)
-                    .frame(height: 80)
-                    .opacity(zone.ecgOpacity)
+            // widget-body padding: 14px top, 18px horizontal, 16px bottom
+            VStack(alignment: .leading, spacing: 0) {
+                ZStack {
+                    ECGBackgroundView(color: zone.accentColor, bpm: Double(props.bpm), animated: animateECG)
+                        // web canvas height is 120px; min-height of hr-layout is 108px
+                        .frame(height: 108)
+                        .opacity(zone.ecgOpacity)
 
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text("\(props.bpm)")
-                                .font(.system(size: 36, weight: .bold, design: .monospaced))
+                    HStack {
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                                // web: clamp(2.1rem,1.7rem+1.5vw,2.8rem) ≈ 38pt at 380px
+                                // letter-spacing: -0.02em → tracking(-0.76); dual glow shadows
+                                Text("\(props.bpm)")
+                                    .font(.system(size: 38, weight: .bold, design: .monospaced))
+                                    .tracking(-0.76)
+                                    .foregroundStyle(zone.accentColor)
+                                    .shadow(color: zone.accentColor.opacity(0.6), radius: 8, x: 0, y: 0)
+                                    .shadow(color: zone.accentColor.opacity(0.25), radius: 20, x: 0, y: 0)
+                                // web: cap2 ≈ 10pt, letter-spacing 2px, weight 500, margin-left 6px
+                                Text("BPM")
+                                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                                    .kerning(2)
+                                    .foregroundStyle(LGColor.textMuted)
+                            }
+
+                            // web: pulse-status-badge cap2 ≈ 10pt, weight 600, padding 3px 10px
+                            Text(zone.name)
+                                .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                                .textCase(.uppercase)
+                                .kerning(2)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 3)
+                                .background(zone.accentColor.opacity(0.12))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(zone.accentColor.opacity(0.25), lineWidth: 1)
+                                )
                                 .foregroundStyle(zone.accentColor)
-                                .neonGlow(zone.accentColor, radius: zone.bpmShadowIntensity * 20)
-                            Text("BPM")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundStyle(LGColor.textMuted)
+                                .clipShape(Capsule())
                         }
 
-                        Text(zone.name)
-                            .font(.system(size: 10, weight: .semibold))
-                            .textCase(.uppercase)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(zone.accentColor.opacity(0.15))
-                            .foregroundStyle(zone.accentColor)
-                            .clipShape(Capsule())
-                    }
+                        Spacer()
 
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text("HRV")
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundStyle(LGColor.textMuted)
-                        Text("\(props.hrv)")
-                            .font(.system(size: 22, weight: .bold, design: .monospaced))
-                            .foregroundStyle(hrvColor(props.hrv))
-                        Text("ms")
-                            .font(.system(size: 10))
-                            .foregroundStyle(LGColor.textMuted)
+                        // web: hrv-label letter-spacing 0.18em → kerning(1.8); hrv-value dual glow;
+                        //      hrv-unit letter-spacing 0.10em → kerning(1.0)
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("HRV")
+                                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                                .kerning(1.8)
+                                .foregroundStyle(LGColor.textMuted)
+                            Text("\(props.hrv)")
+                                .font(.system(size: 17, weight: .bold, design: .monospaced))
+                                .foregroundStyle(hrvColor(props.hrv))
+                                .shadow(color: hrvColor(props.hrv).opacity(0.5), radius: 6, x: 0, y: 0)
+                                .shadow(color: hrvColor(props.hrv).opacity(0.2), radius: 15, x: 0, y: 0)
+                            Text("ms")
+                                .font(.system(size: 10, design: .monospaced))
+                                .kerning(1.0)
+                                .foregroundStyle(LGColor.textMuted)
+                        }
                     }
+                    .padding(.horizontal, 2)
                 }
-                .padding(.horizontal, 18)
+
+                DailyVitalsFooterView(
+                    restingHeartRate: props.restingHeartRate,
+                    respiratoryRate: props.respiratoryRate,
+                    wristTemperatureDelta: props.wristTemperatureDelta
+                )
             }
-            .padding(.bottom, 12)
+            .padding(.top, 14)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
         }
         .neonCard(accent: zone.accentColor)
+    }
+}
+
+// MARK: - HR Footer — compact 3-up vitals ribbon (visual weight matches Movement swatch row)
+
+private struct DailyVitalsFooterView: View {
+    let restingHeartRate: Double?
+    let respiratoryRate: Double?
+    let wristTemperatureDelta: Double?
+
+    private var rhrValue: String {
+        guard let rhr = restingHeartRate else { return "—" }
+        return "\(Int(rhr.rounded()))"
+    }
+
+    private var rrValue: String {
+        guard let rr = respiratoryRate else { return "—" }
+        return "\(Int(rr.rounded()))"
+    }
+
+    private var tempValue: String {
+        guard let delta = wristTemperatureDelta else { return "—" }
+        let sign = delta >= 0 ? "+" : ""
+        return "\(sign)\(String(format: "%.1f", delta))"
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            VitalRibbonCell(label: "RHR", value: rhrValue, unit: "bpm")
+            Spacer()
+            VitalRibbonCell(label: "RR", value: rrValue, unit: "br/m")
+            Spacer()
+            VitalRibbonCell(label: "TEMP", value: tempValue, unit: "°C")
+        }
+        .padding(.vertical, 3)
+        .padding(.top, 8) // margin above the divider
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(Color.white.opacity(0.06))
+                .frame(height: 1)
+        }
+    }
+}
+
+/// Compact inline label+value cell — matches Movement swatch ribbon visual weight.
+/// label: 8pt medium mono kerning 1.2; value: 11pt semibold mono; unit: 8pt muted mono.
+private struct VitalRibbonCell: View {
+    let label: String
+    let value: String
+    let unit: String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(label)
+                .font(.system(size: 8, weight: .medium, design: .monospaced))
+                .kerning(1.2)
+                .foregroundStyle(LGColor.textMuted)
+            HStack(alignment: .firstTextBaseline, spacing: 1) {
+                Text(value)
+                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(LGColor.textTitle)
+                Text(unit)
+                    .font(.system(size: 8, design: .monospaced))
+                    .foregroundStyle(LGColor.textMuted.opacity(0.7))
+            }
+        }
     }
 }
 
@@ -107,29 +203,33 @@ private struct HeartRateSkeletonView: View {
         VStack(alignment: .leading, spacing: 0) {
             WidgetHeaderView(label: "HEART RATE", dotColor: LGColor.accentPink, timestamp: "live")
 
-            ZStack {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(LGColor.surfaceRaised)
-                    .frame(height: 80)
-                    .opacity(0.3)
+            VStack(alignment: .leading, spacing: 0) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(LGColor.surfaceRaised)
+                        .frame(height: 108)
+                        .opacity(0.3)
 
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        SkeletonBar(width: 80, height: 36)
-                        SkeletonBar(width: 60, height: 20, cornerRadius: 10)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 8) {
+                            SkeletonBar(width: 80, height: 36)
+                            SkeletonBar(width: 60, height: 20, cornerRadius: 10)
+                        }
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 6) {
+                            SkeletonBar(width: 24, height: 10)
+                            SkeletonBar(width: 44, height: 22)
+                            SkeletonBar(width: 16, height: 10)
+                        }
                     }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 6) {
-                        SkeletonBar(width: 24, height: 10)
-                        SkeletonBar(width: 44, height: 22)
-                        SkeletonBar(width: 16, height: 10)
-                    }
+                    .padding(.horizontal, 2)
                 }
-                .padding(.horizontal, 18)
             }
-            .padding(.bottom, 12)
+            .padding(.top, 14)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
         }
         .neonCard(accent: LGColor.accentPink)
     }
@@ -149,8 +249,10 @@ private struct HeartRateEmptyView: View {
                     .foregroundStyle(LGColor.textMuted)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 80)
-            .padding(.bottom, 12)
+            .frame(height: 108)
+            .padding(.top, 14)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
         }
         .neonCard(accent: LGColor.accentPink)
     }
@@ -159,14 +261,59 @@ private struct HeartRateEmptyView: View {
 #Preview("Heart Rate — Populated") {
     ScrollView {
         VStack(spacing: 16) {
-            HeartRateView(props: HeartRateProps(bpm: 38, hrv: 55, zone: "Bradycardia"))
-            HeartRateView(props: HeartRateProps(bpm: 52, hrv: 42, zone: "Resting Zone"))
-            HeartRateView(props: HeartRateProps(bpm: 72, hrv: 35, zone: "Normal Zone"))
-            HeartRateView(props: HeartRateProps(bpm: 115, hrv: 18, zone: "Fat Burn"))
-            HeartRateView(props: HeartRateProps(bpm: 162, hrv: 8, zone: "Peak Zone"))
+            HeartRateView(props: HeartRateProps(
+                bpm: 38, hrv: 55, zone: "Bradycardia",
+                restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2
+            ))
+            HeartRateView(props: HeartRateProps(
+                bpm: 52, hrv: 42, zone: "Resting Zone",
+                restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2
+            ))
+            HeartRateView(props: HeartRateProps(
+                bpm: 72, hrv: 35, zone: "Normal Zone",
+                restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2
+            ))
+            HeartRateView(props: HeartRateProps(
+                bpm: 115, hrv: 18, zone: "Fat Burn",
+                restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2
+            ))
+            HeartRateView(props: HeartRateProps(
+                bpm: 162, hrv: 8, zone: "Peak Zone",
+                restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2
+            ))
         }
         .padding()
     }
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Footer Partial") {
+    HeartRateView(props: HeartRateProps(
+        bpm: 72, hrv: 35, zone: "Normal Zone",
+        restingHeartRate: 54, respiratoryRate: nil, wristTemperatureDelta: nil
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Footer Empty") {
+    HeartRateView(props: HeartRateProps(
+        bpm: 72, hrv: 35, zone: "Normal Zone",
+        restingHeartRate: nil, respiratoryRate: nil, wristTemperatureDelta: nil
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Temp Negative") {
+    HeartRateView(props: HeartRateProps(
+        bpm: 60, hrv: 48, zone: "Resting Zone",
+        restingHeartRate: 56, respiratoryRate: 13, wristTemperatureDelta: -0.1
+    ))
+    .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
 }

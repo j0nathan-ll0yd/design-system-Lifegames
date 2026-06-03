@@ -4,11 +4,25 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
     public let bpm: Int
     public let hrv: Int
     public let zone: String
+    public var restingHeartRate: Double?
+    public var respiratoryRate: Double?
+    /// Wrist temperature delta in °C from the user's 30-day baseline.
+    public var wristTemperatureDelta: Double?
 
-    public init(bpm: Int, hrv: Int, zone: String) {
+    public init(
+        bpm: Int,
+        hrv: Int,
+        zone: String,
+        restingHeartRate: Double? = nil,
+        respiratoryRate: Double? = nil,
+        wristTemperatureDelta: Double? = nil
+    ) {
         self.bpm = bpm
         self.hrv = hrv
         self.zone = zone
+        self.restingHeartRate = restingHeartRate
+        self.respiratoryRate = respiratoryRate
+        self.wristTemperatureDelta = wristTemperatureDelta
     }
 
     public var heartRateZone: HeartRateZone {

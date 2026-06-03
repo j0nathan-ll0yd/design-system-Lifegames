@@ -8,6 +8,23 @@ const hrv = Math.round(health.quantities.hrvSDNN.value);
 const isEmpty = hr === 0 && hrv === 0;
 const state = classifyHeartRate(hr);
 const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
+
+// 3-up footer vitals — RHR / RR / Temp.
+// Render '—' for any field that is absent or zero (empty signal).
+const rhr = health.quantities.restingHeartRate;
+const rr = health.quantities.respiratoryRate;
+const tempDelta = health.quantities.wristTemperatureDelta;
+
+const fmtRhr = rhr && rhr.value > 0 ? String(Math.round(rhr.value)) : '—';
+const fmtRr = rr && rr.value > 0 ? String(Math.round(rr.value)) : '—';
+// Temp delta: show signed value to 1 decimal place (e.g. +0.2, -0.1)
+const fmtTemp = (() => {
+  if (!tempDelta) return '—';
+  const v = tempDelta.value;
+  if (!Number.isFinite(v)) return '—';
+  const sign = v > 0 ? '+' : '';
+  return sign + v.toFixed(1);
+})();
 ---
 <div class={`tri-card ${state.accentClass}`} id="cardHR">
   <div class="widget-header">
@@ -28,6 +45,11 @@ const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
         <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
           <div class="skeleton-bar" style="width: 60px; height: 10px;"></div>
         </div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
+          <div class="skeleton-bar" style="width: 48px; height: 8px; border-radius: 3px;"></div>
+          <div class="skeleton-bar" style="width: 48px; height: 8px; border-radius: 3px;"></div>
+          <div class="skeleton-bar" style="width: 40px; height: 8px; border-radius: 3px;"></div>
+        </div>
       </div>
     </div>
     {isEmpty ? (
@@ -35,29 +57,45 @@ const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
         <span class="hr-empty-label">No data</span>
       </div>
     ) : (
-      <div class="hr-layout">
-        <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
-          <canvas class="ecg-canvas" id="hrEcgCanvas"
-            data-bpm={String(hr)}
-            data-hrv={String(hrv)}
-            data-stroke={state.ecgStroke}
-            width="400" height="120">
-          </canvas>
-        </div>
-        <div class="hr-overlay">
-          <div class="hr-overlay-left">
-            <div>
-              <span class="pulse-bpm" id="pulseBpm" style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}>{hr}</span><span class="pulse-bpm-unit">BPM</span>
+      <>
+        <div class="hr-layout">
+          <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
+            <canvas class="ecg-canvas" id="hrEcgCanvas"
+              data-bpm={String(hr)}
+              data-hrv={String(hrv)}
+              data-stroke={state.ecgStroke}
+              width="400" height="120">
+            </canvas>
+          </div>
+          <div class="hr-overlay">
+            <div class="hr-overlay-left">
+              <div>
+                <span class="pulse-bpm" id="pulseBpm" style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}>{hr}</span><span class="pulse-bpm-unit">BPM</span>
+              </div>
+              <span class="pulse-status-badge" id="hrZoneBadge" style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}>{state.zone}</span>
             </div>
-            <span class="pulse-status-badge" id="hrZoneBadge" style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}>{state.zone}</span>
-          </div>
-          <div class="hr-overlay-right">
-            <span class="hr-hrv-label">HRV</span>
-            <span class="hr-hrv-value" id="hrHrvValue" style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}>{hrv}</span>
-            <span class="hr-hrv-unit">ms</span>
+            <div class="hr-overlay-right">
+              <span class="hr-hrv-label">HRV</span>
+              <span class="hr-hrv-value" id="hrHrvValue" style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}>{hrv}</span>
+              <span class="hr-hrv-unit">ms</span>
+            </div>
           </div>
         </div>
-      </div>
+        <div class="hr-footer">
+          <div class="hr-footer-cell">
+            <span class="hr-footer-label">RHR</span>
+            <span class="hr-footer-value" id="hrFooterRhr">{fmtRhr}</span><span class="hr-footer-unit">bpm</span>
+          </div>
+          <div class="hr-footer-cell">
+            <span class="hr-footer-label">RR</span>
+            <span class="hr-footer-value" id="hrFooterRr">{fmtRr}</span><span class="hr-footer-unit">br/m</span>
+          </div>
+          <div class="hr-footer-cell">
+            <span class="hr-footer-label">Temp</span>
+            <span class="hr-footer-value" id="hrFooterTemp">{fmtTemp}</span>
+          </div>
+        </div>
+      </>
     )}
   </div>
 </div>
@@ -74,5 +112,50 @@ const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
     color: var(--text-muted);
     letter-spacing: 1px;
     text-transform: uppercase;
+  }
+
+  /* Tighten card bottom padding so the strip sits flush */
+  #cardHR .widget-body {
+    padding-bottom: 12px;
+  }
+
+  /* Quiet vitals swatch strip (RHR / RR / Temp). ~14-16px tall. */
+  .hr-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: var(--lg-space-200);
+    padding: 4px 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .hr-footer-cell {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+  .hr-footer-label {
+    font-family: var(--lg-font-family-system);
+    font-size: 0.5rem;
+    font-weight: var(--lg-font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--lg-color-text-muted);
+    line-height: 1;
+  }
+  .hr-footer-value {
+    font-family: var(--lg-font-family-system);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--lg-color-text-title);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .hr-footer-unit {
+    font-family: var(--lg-font-family-system);
+    font-size: 0.5rem;
+    color: var(--lg-color-text-muted);
+    letter-spacing: 0.06em;
+    font-weight: var(--lg-font-weight-regular);
+    opacity: 0.7;
   }
 </style>
