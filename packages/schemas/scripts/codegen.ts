@@ -48,7 +48,7 @@ const SCHEMA_ENTRIES: Array<{ relPath: string; name: string }> = [
   { relPath: 'vendored/workouts-export.schema.json',              name: 'WorkoutsExport' },
   { relPath: 'authored/profile.schema.json',                      name: 'Profile' },
   { relPath: 'authored/system.schema.json',                       name: 'System' },
-  { relPath: 'authored/dashboard-health.schema.json',             name: 'DashboardHealth' },
+  { relPath: 'generated/dashboard-health.schema.json',            name: 'DashboardHealth' },
   { relPath: 'authored/dashboard-github.schema.json',             name: 'DashboardGithub' },
   { relPath: 'authored/dashboard-reading.schema.json',            name: 'DashboardReading' },
   { relPath: 'authored/dashboard-books.schema.json',              name: 'DashboardBooks' },
