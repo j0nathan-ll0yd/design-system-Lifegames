@@ -8,6 +8,16 @@
     "generatedAt": {
       "type": "string"
     },
+    "lastSync": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "quantities": {
       "type": "object",
       "propertyNames": {
@@ -29,6 +39,71 @@
         ],
         "additionalProperties": false
       }
+    },
+    "goals": {
+      "type": "object",
+      "properties": {
+        "moveKcal": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exerciseMin": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "standHr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "daylightMin": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "moveKcal",
+        "exerciseMin",
+        "standHr",
+        "daylightMin"
+      ],
+      "additionalProperties": false
+    },
+    "solar": {
+      "type": "object",
+      "properties": {
+        "sunriseHHmm": {
+          "type": "string"
+        },
+        "sunsetHHmm": {
+          "type": "string"
+        },
+        "currentProgressPct": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "sunriseHHmm",
+        "sunsetHHmm",
+        "currentProgressPct"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [

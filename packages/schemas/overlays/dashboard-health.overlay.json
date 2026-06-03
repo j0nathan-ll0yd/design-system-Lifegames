@@ -1,0 +1,238 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/dashboard-health.schema.json",
+  "title": "DashboardHealth",
+  "description": "Daily health dashboard data consumed by the health widget, combining Apple Health quantities (composed from the LP health-export shape) with sleep phases, workout records, reference ranges, derived metrics, and hydration.",
+  "required": ["date", "quantities", "sleep", "workouts"],
+  "properties": {
+    "sleep": {
+      "type": "object",
+      "description": "Sleep phase breakdown keyed by phase name, each with a duration in seconds.",
+      "additionalProperties": false,
+      "properties": {
+        "awake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["seconds"],
+          "properties": {
+            "seconds": { "type": "number", "description": "Duration in seconds spent awake." }
+          }
+        },
+        "core": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["seconds"],
+          "properties": {
+            "seconds": { "type": "number", "description": "Duration in seconds in core sleep." }
+          }
+        },
+        "deep": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["seconds"],
+          "properties": {
+            "seconds": { "type": "number", "description": "Duration in seconds in deep sleep." }
+          }
+        },
+        "rem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["seconds"],
+          "properties": {
+            "seconds": { "type": "number", "description": "Duration in seconds in REM sleep." }
+          }
+        }
+      }
+    },
+    "workouts": {
+      "type": "array",
+      "description": "List of workout records for the day. Empty array when no workouts were logged.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["activity_type", "duration", "energy_burned", "distance"],
+        "properties": {
+          "activity_type": {
+            "type": "string",
+            "description": "Human-readable workout type.",
+            "examples": ["Outdoor Walk", "Barry's Bootcamp"]
+          },
+          "duration": {
+            "type": "number",
+            "description": "Duration of the workout in seconds."
+          },
+          "energy_burned": {
+            "type": "number",
+            "description": "Active energy burned in kilocalories."
+          },
+          "distance": {
+            "type": "number",
+            "description": "Distance covered in meters. 0 for non-distance activities."
+          }
+        }
+      }
+    },
+    "ranges": {
+      "type": "object",
+      "description": "Clinical and goal reference ranges used by the widget to color-code metrics.",
+      "additionalProperties": false,
+      "properties": {
+        "heartRate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["low", "normal", "high", "unit"],
+          "properties": {
+            "low": { "type": "number" },
+            "normal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "high": { "type": "number" },
+            "unit": { "type": "string", "examples": ["bpm"] }
+          }
+        },
+        "restingHeartRate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["excellent", "good", "fair", "poor"],
+          "properties": {
+            "excellent": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "good": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "fair": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "poor": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+          }
+        },
+        "hrvSDNN": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["poor", "fair", "good", "excellent"],
+          "properties": {
+            "poor": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "fair": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "good": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "excellent": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+          }
+        },
+        "respiratoryRate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["low", "normal", "high"],
+          "properties": {
+            "low": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "normal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "high": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+          }
+        },
+        "stepCount": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["goal"],
+          "properties": {
+            "goal": { "type": "number", "description": "Daily step count goal.", "examples": [10000] }
+          }
+        },
+        "activeEnergy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["goal"],
+          "properties": {
+            "goal": { "type": "number", "description": "Daily active energy goal in kilocalories.", "examples": [300] }
+          }
+        },
+        "exerciseTime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["goal"],
+          "properties": {
+            "goal": { "type": "number", "description": "Daily exercise time goal in minutes.", "examples": [30] }
+          }
+        },
+        "standTime": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["goal"],
+          "properties": {
+            "goal": { "type": "number", "description": "Daily stand time goal in minutes.", "examples": [60] }
+          }
+        },
+        "sleep": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["targetHours", "deepPctIdeal", "remPctIdeal", "efficiencyGood"],
+          "properties": {
+            "targetHours": { "type": "number", "description": "Target sleep duration in hours.", "examples": [7] },
+            "deepPctIdeal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Ideal deep-sleep percentage range [min, max]." },
+            "remPctIdeal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Ideal REM percentage range [min, max]." },
+            "efficiencyGood": { "type": "number", "description": "Minimum sleep efficiency percentage considered good.", "examples": [85] }
+          }
+        }
+      }
+    },
+    "derived": {
+      "type": "object",
+      "description": "Pre-computed derived metrics used directly by the widget to avoid runtime calculation.",
+      "additionalProperties": false,
+      "required": ["totalSleepSeconds", "timeInBedSeconds", "sleepEfficiency", "totalCalories", "distanceKm", "deepPct", "remPct", "corePct"],
+      "properties": {
+        "totalSleepSeconds": { "type": "number", "description": "Total sleep duration in seconds (sum of all phases)." },
+        "timeInBedSeconds": { "type": "number", "description": "Total time in bed in seconds including awake periods." },
+        "sleepEfficiency": { "type": "number", "description": "Sleep efficiency as a percentage (totalSleep / timeInBed * 100)." },
+        "totalCalories": { "type": "number", "description": "Total calories burned (active + basal) in kilocalories." },
+        "distanceKm": { "type": "number", "description": "Total walking/running distance in kilometres." },
+        "deepPct": { "type": "number", "description": "Deep sleep as a percentage of total sleep." },
+        "remPct": { "type": "number", "description": "REM sleep as a percentage of total sleep." },
+        "corePct": { "type": "number", "description": "Core sleep as a percentage of total sleep." }
+      }
+    },
+    "sleepScore": {
+      "type": "number",
+      "description": "Composite sleep quality score (0-100).",
+      "examples": [66]
+    },
+    "sleepDurationFormatted": {
+      "type": "string",
+      "description": "Human-readable total sleep duration string.",
+      "examples": ["5h 41m"]
+    },
+    "sleepPhaseFormatted": {
+      "type": "object",
+      "description": "Human-readable formatted duration strings for each sleep phase.",
+      "additionalProperties": false,
+      "required": ["deep", "rem", "core", "awake"],
+      "properties": {
+        "deep": { "type": "string", "examples": ["17m"] },
+        "rem": { "type": "string", "examples": ["1h 50m"] },
+        "core": { "type": "string", "examples": ["3h 33m"] },
+        "awake": { "type": "string", "examples": ["19m"] }
+      }
+    },
+    "sampleWorkouts": {
+      "type": "array",
+      "description": "Representative recent workout records for display when live data is unavailable.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["activity_type", "duration", "energy_burned", "distance"],
+        "properties": {
+          "activity_type": { "type": "string", "description": "Human-readable workout type." },
+          "duration": { "type": "number", "description": "Duration in seconds." },
+          "energy_burned": { "type": "number", "description": "Active energy burned in kilocalories." },
+          "distance": { "type": "number", "description": "Distance in meters." }
+        }
+      }
+    },
+    "hydration": {
+      "type": "object",
+      "description": "Daily hydration and caffeine intake values and reference ranges.",
+      "additionalProperties": false,
+      "required": ["waterOz", "caffeineMg", "waterMax", "caffeineMax", "waterRangeLo", "waterRangeHi", "caffeineRangeLo", "caffeineRangeHi"],
+      "properties": {
+        "waterOz": { "type": "number", "description": "Water consumed in fluid ounces." },
+        "caffeineMg": { "type": "number", "description": "Caffeine consumed in milligrams." },
+        "waterMax": { "type": "number", "description": "Maximum daily water intake goal in fluid ounces." },
+        "caffeineMax": { "type": "number", "description": "Maximum recommended caffeine in milligrams." },
+        "waterRangeLo": { "type": "number", "description": "Lower bound of healthy water intake range in fluid ounces." },
+        "waterRangeHi": { "type": "number", "description": "Upper bound of healthy water intake range in fluid ounces." },
+        "caffeineRangeLo": { "type": "number", "description": "Lower bound of moderate caffeine range in milligrams." },
+        "caffeineRangeHi": { "type": "number", "description": "Upper bound of moderate caffeine range in milligrams." }
+      }
+    }
+  }
+}

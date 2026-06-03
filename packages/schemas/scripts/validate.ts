@@ -72,6 +72,25 @@ for (const f of readdirSync(authoredDir).filter(f => f.endsWith('.schema.json'))
   ajv.addSchema(schema, `urn:authored:${name}`);
 }
 
+// Register generated schemas (overlay + vendored merges) under urn:generated: namespace.
+// Phase 3 deletes authored/dashboard-health.schema.json; validate resolves from here instead.
+const generatedDir = join(PKG_ROOT, 'generated');
+if (existsSync(generatedDir)) {
+  for (const f of readdirSync(generatedDir).filter(f => f.endsWith('.schema.json'))) {
+    let raw = readFileSync(join(generatedDir, f), 'utf-8');
+    raw = raw.replace(
+      /"\$ref":\s*"\.\.\/vendored\/([^"#]+\.schema\.json)([^"]*)"/g,
+      (_match: string, file: string, frag: string) =>
+        `"$ref": "https://lifegames.dev/vendored/${file}${frag}"`,
+    );
+    const schema = JSON.parse(raw) as { title?: string; $schema?: string };
+    assertDraft07(schema, f);
+    const name = schema.title || f.replace('.schema.json', '');
+    schemasByName[name] = schema;
+    ajv.addSchema(schema, `urn:generated:${name}`);
+  }
+}
+
 // Also alias vendored schemas by their title names so fixture-map entries like
 // 'TheatreReviewsExport' resolve without knowing the file name.
 const VENDORED_TITLE_MAP: Record<string, string> = {
@@ -141,9 +160,10 @@ for (const bucketName of buckets) {
       continue;
     }
 
-    // Try authored URN first, then vendored URN
+    // Resolution chain: authored → generated → vendored
     const validate =
       ajv.getSchema(`urn:authored:${schemaName}`) ||
+      ajv.getSchema(`urn:generated:${schemaName}`) ||
       ajv.getSchema(`urn:vendored:${schemaName}`);
 
     if (!validate) {

@@ -12,6 +12,7 @@
     "swift",
     "vendored",
     "authored",
+    "generated",
     "scripts/validate.ts",
     "fixture-map.json"
   ],
@@ -19,7 +20,7 @@
     "sync": "tsx scripts/sync-from-lp.ts",
     "codegen": "tsx scripts/codegen.ts",
     "validate": "tsx scripts/validate.ts",
-    "build": "pnpm codegen && pnpm validate"
+    "build": "pnpm sync && pnpm codegen && pnpm validate"
   },
   "dependencies": {
     "ajv": "~8.20.0",
