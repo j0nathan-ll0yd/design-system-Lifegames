@@ -7,6 +7,10 @@ export interface HeartRateProps {
     quantities: {
       heartRate: { value: number; unit: string };
       hrvSDNN: { value: number; unit: string };
+      restingHeartRate?: { value: number; unit: string };
+      respiratoryRate?: { value: number; unit: string };
+      // °C delta from 30-day baseline (Apple wrist temperature)
+      wristTemperatureDelta?: { value: number; unit: string };
     };
   };
 }

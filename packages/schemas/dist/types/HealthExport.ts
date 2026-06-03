@@ -4,10 +4,22 @@
 export interface HealthExport {
   date: string;
   generatedAt: string;
+  lastSync?: string | null;
   quantities: {
     [k: string]: {
       value: number;
       unit: string;
     };
+  };
+  goals?: {
+    moveKcal: number | null;
+    exerciseMin: number | null;
+    standHr: number | null;
+    daylightMin: number;
+  };
+  solar?: {
+    sunriseHHmm: string;
+    sunsetHHmm: string;
+    currentProgressPct: number;
   };
 }

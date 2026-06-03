@@ -19,6 +19,8 @@ import { execSync } from 'node:child_process';
 import { compile } from 'json-schema-to-typescript';
 import { fileURLToPath } from 'node:url';
 
+type JsonObject = Record<string, unknown>;
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -46,16 +48,75 @@ const SCHEMA_ENTRIES: Array<{ relPath: string; name: string }> = [
   { relPath: 'vendored/workouts-export.schema.json',              name: 'WorkoutsExport' },
   { relPath: 'authored/profile.schema.json',                      name: 'Profile' },
   { relPath: 'authored/system.schema.json',                       name: 'System' },
-  { relPath: 'authored/dashboard-health.schema.json',             name: 'DashboardHealth' },
+  { relPath: 'generated/dashboard-health.schema.json',            name: 'DashboardHealth' },
   { relPath: 'authored/dashboard-github.schema.json',             name: 'DashboardGithub' },
   { relPath: 'authored/dashboard-reading.schema.json',            name: 'DashboardReading' },
   { relPath: 'authored/dashboard-books.schema.json',              name: 'DashboardBooks' },
+];
+
+/**
+ * Overlay entries drive the merge-generate pipeline.
+ * For each entry: vendored schema + overlay = generated schema written to generated/.
+ * SCHEMA_ENTRIES still points at authored/ until Phase 3 switches it to generated/.
+ */
+const OVERLAY_ENTRIES: Array<{
+  vendored: string;
+  overlay: string;
+  outputRel: string;
+  name: string;
+  excludeFromVendored?: string[];
+}> = [
+  {
+    vendored: 'vendored/health-export.schema.json',
+    overlay: 'overlays/dashboard-health.overlay.json',
+    outputRel: 'generated/dashboard-health.schema.json',
+    name: 'DashboardHealth',
+    excludeFromVendored: ['generatedAt'],
+  },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function ensureDir(p: string): void {
   mkdirSync(p, { recursive: true });
+}
+
+/**
+ * Deep-merge a vendored LP schema with a DS overlay to produce a generated schema.
+ * - properties: vendored props (minus excludeFromVendored) + overlay props (overlay wins on conflict)
+ * - required: overlay's required array only (overlay is authoritative; vendored required is ignored)
+ * - $id, title, description: from overlay only
+ * - type: "object" from vendored
+ * - No top-level additionalProperties (forward-compat: LP ships new fields regularly)
+ */
+function mergeSchemas(
+  vendored: JsonObject,
+  overlay: JsonObject,
+  excludeFromVendored: string[] = [],
+): JsonObject {
+  const vendoredProps = (vendored['properties'] as JsonObject) ?? {};
+  const overlayProps = (overlay['properties'] as JsonObject) ?? {};
+
+  const filteredVendoredProps: JsonObject = {};
+  for (const [key, val] of Object.entries(vendoredProps)) {
+    if (!excludeFromVendored.includes(key)) {
+      filteredVendoredProps[key] = val;
+    }
+  }
+
+  const merged: JsonObject = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    type: 'object',
+    properties: { ...filteredVendoredProps, ...overlayProps },
+    required: overlay['required'],
+  };
+
+  // $id intentionally omitted — generated schemas are registered under urn:generated: URN.
+  // Including $id causes AJV conflict when authored schema with the same $id is also registered.
+  if (overlay['title']) merged['title'] = overlay['title'];
+  if (overlay['description']) merged['description'] = overlay['description'];
+
+  return merged;
 }
 
 /** Read and parse a JSON schema file. */
@@ -87,12 +148,31 @@ function patchRefs(schema: object, schemaAbsPath: string): object {
   return JSON.parse(patched);
 }
 
+const GENERATED = join(PKG_ROOT, 'generated');
+
 // ─── Step 1: Ensure output directories ───────────────────────────────────────
 
 console.log('codegen: ensuring output directories...');
 ensureDir(DIST_TYPES);
 ensureDir(SWIFT_DIR);
 ensureDir(SWIFT_TEMP);
+ensureDir(GENERATED);
+
+// ─── Step 1b: Generate merged schemas from overlay + vendored ─────────────────
+
+console.log('codegen: generating merged schemas...');
+for (const entry of OVERLAY_ENTRIES) {
+  const vendoredPath = join(PKG_ROOT, entry.vendored);
+  const overlayPath = join(PKG_ROOT, entry.overlay);
+  const outputPath = join(PKG_ROOT, entry.outputRel);
+
+  const vendored = JSON.parse(readFileSync(vendoredPath, 'utf-8')) as JsonObject;
+  const overlay = JSON.parse(readFileSync(overlayPath, 'utf-8')) as JsonObject;
+  const merged = mergeSchemas(vendored, overlay, entry.excludeFromVendored);
+
+  writeFileSync(outputPath, JSON.stringify(merged, null, 2) + '\n', 'utf-8');
+  console.log(`  generated: ${entry.outputRel} (${entry.name})`);
+}
 
 // ─── Step 2: Write branded.ts ────────────────────────────────────────────────
 

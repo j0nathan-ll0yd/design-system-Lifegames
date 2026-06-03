@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-05-25T20:16:47.013Z",
+  "syncedAt": "2026-06-03T23:03:02.910Z",
   "lpPath": "/Users/jlloyd/Repositories/mantle-LifegamesPortal",
   "files": [
     "articles-export.schema.json",
@@ -13,5 +13,5 @@
     "theatre-reviews-export.schema.json",
     "workouts-export.schema.json"
   ],
-  "lpGitSha": "a8eda490bd3f63e27e244339054988185d983bef"
+  "lpGitSha": "42d4d1669748c7a8687eb235705b275ca95aed68"
 }

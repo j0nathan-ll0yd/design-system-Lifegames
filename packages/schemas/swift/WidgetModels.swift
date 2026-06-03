@@ -673,7 +673,10 @@ extension Language {
 // MARK: - HealthExport
 struct HealthExport: Codable {
     let date, generatedAt: String
+    let goals: Goals?
+    let lastSync: String?
     let quantities: [String: Quantity]
+    let solar: Solar?
 }
 
 // MARK: HealthExport convenience initializers and mutators
@@ -697,12 +700,65 @@ extension HealthExport {
     func with(
         date: String? = nil,
         generatedAt: String? = nil,
-        quantities: [String: Quantity]? = nil
+        goals: Goals?? = nil,
+        lastSync: String?? = nil,
+        quantities: [String: Quantity]? = nil,
+        solar: Solar?? = nil
     ) -> HealthExport {
         return HealthExport(
             date: date ?? self.date,
             generatedAt: generatedAt ?? self.generatedAt,
-            quantities: quantities ?? self.quantities
+            goals: goals ?? self.goals,
+            lastSync: lastSync ?? self.lastSync,
+            quantities: quantities ?? self.quantities,
+            solar: solar ?? self.solar
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Goals
+struct Goals: Codable {
+    let daylightMin: Double
+    let exerciseMin, moveKcal, standHr: Double?
+}
+
+// MARK: Goals convenience initializers and mutators
+
+extension Goals {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Goals.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        daylightMin: Double? = nil,
+        exerciseMin: Double?? = nil,
+        moveKcal: Double?? = nil,
+        standHr: Double?? = nil
+    ) -> Goals {
+        return Goals(
+            daylightMin: daylightMin ?? self.daylightMin,
+            exerciseMin: exerciseMin ?? self.exerciseMin,
+            moveKcal: moveKcal ?? self.moveKcal,
+            standHr: standHr ?? self.standHr
         )
     }
 
@@ -746,6 +802,51 @@ extension Quantity {
         return Quantity(
             unit: unit ?? self.unit,
             value: value ?? self.value
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Solar
+struct Solar: Codable {
+    let currentProgressPct: Double
+    let sunriseHHmm, sunsetHHmm: String
+}
+
+// MARK: Solar convenience initializers and mutators
+
+extension Solar {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Solar.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        currentProgressPct: Double? = nil,
+        sunriseHHmm: String? = nil,
+        sunsetHHmm: String? = nil
+    ) -> Solar {
+        return Solar(
+            currentProgressPct: currentProgressPct ?? self.currentProgressPct,
+            sunriseHHmm: sunriseHHmm ?? self.sunriseHHmm,
+            sunsetHHmm: sunsetHHmm ?? self.sunsetHHmm
         )
     }
 
@@ -1686,15 +1787,14 @@ extension Line {
 /// reference ranges, derived metrics, and hydration.
 // MARK: - DashboardHealth
 struct DashboardHealth: Codable {
-    /// ISO 8601 date string for which the health data applies.
     let date: String
     /// Pre-computed derived metrics used directly by the widget to avoid runtime calculation.
     let derived: Derived?
+    let goals: Goals?
     /// Daily hydration and caffeine intake values and reference ranges.
     let hydration: Hydration?
-    /// Map of HealthKit quantity identifiers to their latest value and unit. Structure matches
-    /// LP health-export quantities.
-    let quantities: [String: HealthExportSchema]
+    let lastSync: String?
+    let quantities: [String: Quantity]
     /// Clinical and goal reference ranges used by the widget to color-code metrics.
     let ranges: Ranges?
     /// Representative recent workout records for display when live data is unavailable.
@@ -1707,6 +1807,7 @@ struct DashboardHealth: Codable {
     let sleepPhaseFormatted: SleepPhaseFormatted?
     /// Composite sleep quality score (0-100).
     let sleepScore: Double?
+    let solar: Solar?
     /// List of workout records for the day. Empty array when no workouts were logged.
     let workouts: [Workout]
 }
@@ -1732,20 +1833,25 @@ extension DashboardHealth {
     func with(
         date: String? = nil,
         derived: Derived?? = nil,
+        goals: Goals?? = nil,
         hydration: Hydration?? = nil,
-        quantities: [String: HealthExportSchema]? = nil,
+        lastSync: String?? = nil,
+        quantities: [String: Quantity]? = nil,
         ranges: Ranges?? = nil,
         sampleWorkouts: [SampleWorkout]?? = nil,
         sleep: DashboardHealthSleep? = nil,
         sleepDurationFormatted: String?? = nil,
         sleepPhaseFormatted: SleepPhaseFormatted?? = nil,
         sleepScore: Double?? = nil,
+        solar: Solar?? = nil,
         workouts: [Workout]? = nil
     ) -> DashboardHealth {
         return DashboardHealth(
             date: date ?? self.date,
             derived: derived ?? self.derived,
+            goals: goals ?? self.goals,
             hydration: hydration ?? self.hydration,
+            lastSync: lastSync ?? self.lastSync,
             quantities: quantities ?? self.quantities,
             ranges: ranges ?? self.ranges,
             sampleWorkouts: sampleWorkouts ?? self.sampleWorkouts,
@@ -1753,6 +1859,7 @@ extension DashboardHealth {
             sleepDurationFormatted: sleepDurationFormatted ?? self.sleepDurationFormatted,
             sleepPhaseFormatted: sleepPhaseFormatted ?? self.sleepPhaseFormatted,
             sleepScore: sleepScore ?? self.sleepScore,
+            solar: solar ?? self.solar,
             workouts: workouts ?? self.workouts
         )
     }
@@ -1842,6 +1949,53 @@ extension Derived {
     }
 }
 
+// MARK: - Goals
+struct Goals: Codable {
+    let daylightMin: Double
+    let exerciseMin, moveKcal, standHr: Double?
+}
+
+// MARK: Goals convenience initializers and mutators
+
+extension Goals {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Goals.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        daylightMin: Double? = nil,
+        exerciseMin: Double?? = nil,
+        moveKcal: Double?? = nil,
+        standHr: Double?? = nil
+    ) -> Goals {
+        return Goals(
+            daylightMin: daylightMin ?? self.daylightMin,
+            exerciseMin: exerciseMin ?? self.exerciseMin,
+            moveKcal: moveKcal ?? self.moveKcal,
+            standHr: standHr ?? self.standHr
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
 /// Daily hydration and caffeine intake values and reference ranges.
 // MARK: - Hydration
 struct Hydration: Codable {
@@ -1912,17 +2066,17 @@ extension Hydration {
     }
 }
 
-// MARK: - HealthExportSchema
-struct HealthExportSchema: Codable {
+// MARK: - Quantity
+struct Quantity: Codable {
     let unit: String
     let value: Double
 }
 
-// MARK: HealthExportSchema convenience initializers and mutators
+// MARK: Quantity convenience initializers and mutators
 
-extension HealthExportSchema {
+extension Quantity {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(HealthExportSchema.self, from: data)
+        self = try newJSONDecoder().decode(Quantity.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -1939,8 +2093,8 @@ extension HealthExportSchema {
     func with(
         unit: String? = nil,
         value: Double? = nil
-    ) -> HealthExportSchema {
-        return HealthExportSchema(
+    ) -> Quantity {
+        return Quantity(
             unit: unit ?? self.unit,
             value: value ?? self.value
         )
@@ -2729,6 +2883,51 @@ extension SleepPhaseFormatted {
             core: core ?? self.core,
             deep: deep ?? self.deep,
             rem: rem ?? self.rem
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Solar
+struct Solar: Codable {
+    let currentProgressPct: Double
+    let sunriseHHmm, sunsetHHmm: String
+}
+
+// MARK: Solar convenience initializers and mutators
+
+extension Solar {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Solar.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        currentProgressPct: Double? = nil,
+        sunriseHHmm: String? = nil,
+        sunsetHHmm: String? = nil
+    ) -> Solar {
+        return Solar(
+            currentProgressPct: currentProgressPct ?? self.currentProgressPct,
+            sunriseHHmm: sunriseHHmm ?? self.sunriseHHmm,
+            sunsetHHmm: sunsetHHmm ?? self.sunsetHHmm
         )
     }
 

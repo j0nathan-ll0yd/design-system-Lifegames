@@ -3,20 +3,8 @@
   "$id": "https://lifegames.dev/schemas/dashboard-health.schema.json",
   "title": "DashboardHealth",
   "description": "Daily health dashboard data consumed by the health widget, combining Apple Health quantities (composed from the LP health-export shape) with sleep phases, workout records, reference ranges, derived metrics, and hydration.",
-  "type": "object",
-  "additionalProperties": false,
   "required": ["date", "quantities", "sleep", "workouts"],
   "properties": {
-    "date": {
-      "type": "string",
-      "description": "ISO 8601 date string for which the health data applies.",
-      "examples": ["2026-02-10"]
-    },
-    "quantities": {
-      "title": "HealthQuantities",
-      "$ref": "../vendored/health-export.schema.json#/properties/quantities",
-      "description": "Map of HealthKit quantity identifiers to their latest value and unit. Structure matches LP health-export quantities."
-    },
     "sleep": {
       "type": "object",
       "description": "Sleep phase breakdown keyed by phase name, each with a duration in seconds.",
