@@ -1,4 +1,3 @@
-export { default as DailyActivity } from './DailyActivity.astro';
 export { default as HeartRate } from './HeartRate.astro';
 export { default as Hydration } from './Hydration.astro';
 export { default as MovementRings } from './MovementRings.astro';

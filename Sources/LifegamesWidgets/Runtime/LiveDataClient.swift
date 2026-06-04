@@ -6,7 +6,6 @@ import Observation
 @available(macOS 14.0, iOS 17.0, watchOS 10.0, *)
 @Observable
 public final class LiveDataClient: @unchecked Sendable {
-    public var health: DailyActivityProps?
     public var heartRate: HeartRateProps?
     public var hydration: HydrationProps?
     public var nightSummary: NightSummaryProps?

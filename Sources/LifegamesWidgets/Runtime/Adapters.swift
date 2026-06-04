@@ -1,26 +1,6 @@
 import Foundation
 
 public enum Adapters {
-    public static func adaptHealth(from raw: [String: Any]) -> DailyActivityProps {
-        let quantities = raw["quantities"] as? [String: [String: Any]] ?? [:]
-        func intVal(_ key: String) -> Int {
-            guard let q = quantities[key], let v = q["value"] as? Double else { return 0 }
-            return Int(v.rounded())
-        }
-
-        let active = intVal("activeEnergyBurned")
-        let basal = intVal("basalEnergyBurned")
-
-        return DailyActivityProps(
-            steps: intVal("stepCount"),
-            distance: intVal("distanceWalkingRunning"),
-            exerciseMinutes: intVal("exerciseTime"),
-            activeCalories: active,
-            basalCalories: basal,
-            totalCalories: active + basal
-        )
-    }
-
     public static func adaptHeartRate(from raw: [String: Any]) -> HeartRateProps {
         let quantities = raw["quantities"] as? [String: [String: Any]] ?? [:]
         let hr = (quantities["heartRate"]?["value"] as? Double).map { Int($0.rounded()) } ?? 0

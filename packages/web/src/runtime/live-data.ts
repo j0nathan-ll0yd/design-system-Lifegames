@@ -9,7 +9,6 @@ import { adaptHealth, adaptSleep, adaptWorkouts, adaptBooks, adaptGithubEvents, 
 import { WSClient } from './ws-client';
 import {
   updateHeartRate,
-  updateDailyActivity,
   updateWorkouts,
   updateNightSummary,
   updateHydration,
@@ -24,8 +23,7 @@ import { updateExplorationOdometerV3 } from './updaters-odometer-variations';
 import { PollEngine, type ResourceKey } from './poll-engine';
 
 const LIVE_CARDS = [
-  // cardSteps kept registered until DailyActivity retirement (post staging verify).
-  'cardHR', 'cardSteps', 'cardMovement', 'cardSleep', 'cardHydration', 'cardBooks', 'cardDevLog', 'cardReading',
+  'cardHR', 'cardMovement', 'cardSleep', 'cardHydration', 'cardBooks', 'cardDevLog', 'cardReading',
   'cardStarredRepos', 'cardTheatreReviews',
   ...(import.meta.env.DEV ? ['cardPlaceLeaderboardV3', 'cardExplorationOdometerV3'] : []),
 ];
@@ -47,7 +45,6 @@ function handleResourceUpdate(key: ResourceKey, rawData: unknown): void {
         const health = adaptHealth(lastHealth, lastSleep ?? null);
         updateHeartRate(health);
         updateHeartRateFooter(health);
-        updateDailyActivity(health);
         updateMovementRings(health);
         updateHydration(health);
         break;
@@ -125,7 +122,6 @@ const startFetch = async () => {
       const health = adaptHealth(data.health, data.sleep);
       updateHeartRate(health);
       updateHeartRateFooter(health);
-      updateDailyActivity(health);
       updateMovementRings(health);
       updateHydration(health);
     } catch (e) {

@@ -79,35 +79,6 @@ export function updateHeartRate(data: AdaptedHealth): void {
   }
 }
 
-export function updateDailyActivity(data: AdaptedHealth): void {
-  const q = data.quantities;
-  const card = document.getElementById('cardSteps');
-  if (!card) return;
-
-  const metrics: Record<string, string> = {
-    steps: Math.round(q.stepCount.value).toLocaleString(),
-    distance: String(Math.round(q.distanceWalkingRunning.value)),
-    exercise: String(q.exerciseTime?.value ?? 0),
-    active: String(Math.round(q.activeEnergyBurned.value)),
-    basal: String(Math.round(q.basalEnergyBurned.value)),
-    total: String(Math.round(data.derived.totalCalories)),
-  };
-
-  for (const [key, val] of Object.entries(metrics)) {
-    const el = card.querySelector<HTMLElement>(`[data-metric="${key}"]`);
-    if (el) {
-      const unit = el.querySelector('.split-metric-unit');
-      if (unit) {
-        el.firstChild!.textContent = val;
-      } else {
-        el.textContent = val;
-      }
-    }
-  }
-
-  card.classList.remove('is-loading');
-}
-
 export function updateWorkouts(data: WorkoutEntry[] | null): void {
   const card = document.getElementById('cardWorkouts');
   if (!card) return;

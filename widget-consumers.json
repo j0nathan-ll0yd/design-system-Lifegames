@@ -2,7 +2,6 @@
   "consumedWidgets": [
     "DevActivityLog",
     "StarredRepoList",
-    "DailyActivity",
     "HeartRate",
     "Hydration",
     "NightSummary",
@@ -98,15 +97,6 @@
       "name": "WeeklyPulse",
       "category": "github",
       "consumers": [],
-      "status": "Experimental",
-      "plannedSurface": null
-    },
-    {
-      "name": "DailyActivity",
-      "category": "health",
-      "consumers": [
-        "index.astro"
-      ],
       "status": "Experimental",
       "plannedSurface": null
     },

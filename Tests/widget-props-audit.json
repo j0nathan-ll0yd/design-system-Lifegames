@@ -10,7 +10,6 @@
   "PinnedRepos": "props",
   "StarredRepoList": "props",
   "WeeklyPulse": "props",
-  "DailyActivity": "props",
   "HeartRate": "props",
   "Hydration": "props",
   "NightSummary": "props",

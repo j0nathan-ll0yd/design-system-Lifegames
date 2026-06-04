@@ -76,25 +76,6 @@
     "plannedSurface": null
   },
   {
-    "name": "DailyActivity",
-    "fileRelativeToWidgets": "health/DailyActivity.astro",
-    "id": "cardSteps",
-    "platform": "web",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "body",
-    "liveSiteLayoutSlot": {
-      "column": 1,
-      "order": 1
-    },
-    "hydration": "static",
-    "swiftView": "DailyActivityView",
-    "consumers": [
-      "index.astro"
-    ],
-    "plannedSurface": null
-  },
-  {
     "name": "Workouts",
     "fileRelativeToWidgets": "health/Workouts.astro",
     "id": "cardWorkouts",
@@ -421,20 +402,6 @@
     "buildStatus": "shipped",
     "category": "health",
     "swiftFileRelative": "Health/HeartRateView.swift",
-    "consumers": [
-      "HealthFeatureView"
-    ],
-    "plannedSurface": null
-  },
-  {
-    "name": "DailyActivityView",
-    "fileRelativeToWidgets": null,
-    "id": "swiftDailyActivity",
-    "platform": "swift",
-    "status": "Experimental",
-    "buildStatus": "shipped",
-    "category": "health",
-    "swiftFileRelative": "Health/DailyActivityView.swift",
     "consumers": [
       "HealthFeatureView"
     ],

@@ -106,14 +106,6 @@
     },
     {
       "category": "health",
-      "name": "DailyActivity",
-      "viewType": "DailyActivityView",
-      "fixturePath": "health/daily-activity.json",
-      "production": true,
-      "productionCategory": "body"
-    },
-    {
-      "category": "health",
       "name": "HeartRate",
       "viewType": "HeartRateView",
       "fixturePath": "health/heart-rate.json",
