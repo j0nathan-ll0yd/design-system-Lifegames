@@ -22,7 +22,7 @@ struct RenderSmokeTests {
         )
         let data = try Data(contentsOf: url)
         let manifest = try JSONDecoder().decode(Manifest.self, from: data)
-        #expect(manifest.widgets.count == 32)
+        #expect(manifest.widgets.count == 31)
     }
 
     @Test func allFixtureFilesExist() throws {
@@ -75,7 +75,7 @@ struct RenderSmokeTests {
 
         #expect(counts["github"] == 11)
         #expect(counts["location"] == 2)
-        #expect(counts["health"] == 5)
+        #expect(counts["health"] == 4)
         #expect(counts["reading"] == 4)
         #expect(counts["identity"] == 3)
         #expect(counts["other"] == 7)
@@ -96,10 +96,6 @@ struct RenderSmokeTests {
     #if canImport(UIKit)
     @Test func healthWidgetsRender() throws {
         let views: [any View] = [
-            DailyActivityView(props: DailyActivityProps(
-                steps: 100, distance: 500, exerciseMinutes: 10,
-                activeCalories: 50, basalCalories: 100, totalCalories: 150
-            )),
             HeartRateView(props: HeartRateProps(bpm: 72, hrv: 40, zone: "Resting")),
             HydrationView(props: HydrationProps(
                 waterOz: 32, caffeineMg: 100, waterMax: 100, caffeineMax: 500,
@@ -111,7 +107,7 @@ struct RenderSmokeTests {
             )),
             WorkoutsView(props: WorkoutsProps(workouts: [])),
         ]
-        #expect(views.count == 5)
+        #expect(views.count == 4)
     }
 
     @Test func readingWidgetsRender() throws {

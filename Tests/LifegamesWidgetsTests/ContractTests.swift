@@ -69,15 +69,7 @@ struct ContractTests {
         }
     }
 
-    // MARK: - Health (5 widgets)
-
-    @Test func dailyActivityFixture() throws {
-        let data = try loadFixture("health/daily-activity")
-        let root = try JSONDecoder().decode(HealthDailyActivityFixture.self, from: data)
-        let q = root.health.quantities
-        #expect(q.stepCount.value > 0)
-        #expect(q.activeEnergyBurned.value > 0)
-    }
+    // MARK: - Health (4 widgets)
 
     @Test func heartRateFixture() throws {
         let data = try loadFixture("health/heart-rate")
@@ -179,20 +171,6 @@ struct ContractTests {
 
 private struct ActivityFeedFixture: Decodable {
     let events: [ActivityFeedProps.Event]
-}
-
-private struct HealthDailyActivityFixture: Decodable {
-    let health: HealthData
-    struct HealthData: Decodable {
-        let quantities: Quantities
-        struct Quantities: Decodable {
-            let stepCount: Quantity
-            let distanceWalkingRunning: Quantity
-            let exerciseTime: Quantity
-            let activeEnergyBurned: Quantity
-            let basalEnergyBurned: Quantity
-        }
-    }
 }
 
 private struct Quantity: Decodable {

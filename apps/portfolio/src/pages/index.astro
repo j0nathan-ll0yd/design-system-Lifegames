@@ -6,7 +6,6 @@ import IdentityCard from '@widgets/identity/IdentityCard.astro';
 import BioTerminal from '@lifegames/web/production/BioTerminal.astro';
 import SystemStatus from '@widgets/other/SystemStatus.astro';
 import HeartRate from '@widgets/health/HeartRate.astro';
-import DailyActivity from '@widgets/health/DailyActivity.astro';
 import Workouts from '@widgets/health/Workouts.astro';
 import NightSummary from '@widgets/health/NightSummary.astro';
 import Hydration from '@lifegames/web/production/Hydration.astro';
@@ -70,7 +69,6 @@ const starredRepos: AdaptedStarredRepo[] = adaptStarredRepos(
         <section class="triptych-column triptych-column-body" aria-label="Body">
           <h2 class="column-header column-header-pink">Body</h2>
           <HeartRate health={health} />
-          <DailyActivity health={health} />
           <Workouts health={health} />
           <Hydration health={health} />
           <NightSummary health={health} />

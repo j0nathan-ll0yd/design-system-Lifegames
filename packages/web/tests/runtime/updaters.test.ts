@@ -2,7 +2,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   updateHeartRate,
-  updateDailyActivity,
   updateWorkouts,
   updateNightSummary,
   updateHydration,
@@ -182,75 +181,6 @@ describe('updateHeartRate', () => {
     updateHeartRate(makeHealth());
     expect(ecgUpdate).toHaveBeenCalledWith(72, 45, expect.any(String));
     delete (window as any).__ecgUpdate;
-  });
-});
-
-// ── updateDailyActivity ────────────────────────────────────────────────────────
-
-describe('updateDailyActivity', () => {
-  beforeEach(() => {
-    document.body.innerHTML = `
-      <div id="cardSteps" class="is-loading">
-        <div data-metric="steps">0</div>
-        <div data-metric="distance">0</div>
-        <div data-metric="exercise">0</div>
-        <div data-metric="active">0</div>
-        <div data-metric="basal">0</div>
-        <div data-metric="total">0</div>
-      </div>
-    `;
-  });
-
-  it('updates steps metric', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').querySelector('[data-metric="steps"]')!.textContent).toMatch(/8[,.]?000/);
-  });
-
-  it('updates distance metric', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').querySelector('[data-metric="distance"]')!.textContent).toBe('5200');
-  });
-
-  it('updates exercise metric', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').querySelector('[data-metric="exercise"]')!.textContent).toBe('30');
-  });
-
-  it('updates active calories', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').querySelector('[data-metric="active"]')!.textContent).toBe('400');
-  });
-
-  it('updates basal calories', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').querySelector('[data-metric="basal"]')!.textContent).toBe('1800');
-  });
-
-  it('updates total calories', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').querySelector('[data-metric="total"]')!.textContent).toBe('2200');
-  });
-
-  it('removes is-loading', () => {
-    updateDailyActivity(makeHealth());
-    expect(el('cardSteps').classList.contains('is-loading')).toBe(false);
-  });
-
-  it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateDailyActivity(makeHealth())).not.toThrow();
-  });
-
-  it('respects split-metric-unit structure — updates firstChild only', () => {
-    document.body.innerHTML = `
-      <div id="cardSteps" class="is-loading">
-        <div data-metric="steps">0<span class="split-metric-unit"> steps</span></div>
-      </div>
-    `;
-    updateDailyActivity(makeHealth());
-    const container = el('cardSteps').querySelector('[data-metric="steps"]') as HTMLElement;
-    expect(container.firstChild!.textContent).toMatch(/8[,.]?000/);
-    expect(container.querySelector('.split-metric-unit')!.textContent).toBe(' steps');
   });
 });
 

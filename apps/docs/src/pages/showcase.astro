@@ -9,7 +9,6 @@ import '@lifegames/tokens/base';
 
 import IdentityCard from '@widgets/identity/IdentityCard.astro';
 import SystemStatus from '@widgets/other/SystemStatus.astro';
-import DailyActivity from '@widgets/health/DailyActivity.astro';
 import Workouts from '@widgets/health/Workouts.astro';
 import NightSummary from '@widgets/health/NightSummary.astro';
 import DevActivityLog from '@widgets/github/DevActivityLog.astro';
@@ -29,7 +28,6 @@ import identityFixture from '@fixtures/identity/identity-card.json';
 import bioFixture from '@fixtures/identity/bio-terminal.json';
 import systemFixture from '@fixtures/other/system-status.json';
 import heartRateFixture from '@fixtures/health/heart-rate.json';
-import dailyActivityFixture from '@fixtures/health/daily-activity.json';
 import workoutsFixture from '@fixtures/health/workouts.json';
 import hydrationFixture from '@fixtures/health/hydration.json';
 import nightSummaryFixture from '@fixtures/health/night-summary.json';
@@ -172,9 +170,6 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
           <section class="triptych-column triptych-column-body" aria-label="Body">
             <h2 class="column-header column-header-pink">Body</h2>
             <HeartRateIsland fixture={heartRateFixture} />
-            <div data-widget-preview>
-              <DailyActivity {...dailyActivityFixture} />
-            </div>
             <div data-widget-preview>
               <Workouts {...workoutsFixture} />
             </div>

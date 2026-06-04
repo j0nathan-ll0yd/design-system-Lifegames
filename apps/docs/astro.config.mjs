@@ -57,7 +57,6 @@ export default defineConfig({
             { label: 'BioTerminal', link: '/widgets/bio-terminal/' },
             { label: 'SystemStatus', link: '/widgets/system-status/' },
             { label: 'HeartRate', link: '/widgets/heart-rate/' },
-            { label: 'DailyActivity', link: '/widgets/daily-activity/' },
             { label: 'Workouts', link: '/widgets/workouts/' },
             { label: 'Hydration', link: '/widgets/hydration/' },
             { label: 'NightSummary', link: '/widgets/night-summary/' },

@@ -64,30 +64,6 @@ struct HealthWidgetSnapshotTests {
         )), as: .image(layout: layout))
     }
 
-    // MARK: - DailyActivity
-
-    @Test func dailyActivityLoading() {
-        assertSnapshot(of: wrap(DailyActivityView(state: .loading)), as: .image(layout: layout))
-    }
-
-    @Test func dailyActivityEmpty() {
-        assertSnapshot(of: wrap(DailyActivityView(state: .empty)), as: .image(layout: layout))
-    }
-
-    @Test func dailyActivityPopulated() {
-        assertSnapshot(of: wrap(DailyActivityView(props: DailyActivityProps(
-            steps: 8432, distance: 6200, exerciseMinutes: 42,
-            activeCalories: 380, basalCalories: 1680, totalCalories: 2060
-        ))), as: .image(layout: layout))
-    }
-
-    @Test func dailyActivityGoalMet() {
-        assertSnapshot(of: wrap(DailyActivityView(props: DailyActivityProps(
-            steps: 12500, distance: 9800, exerciseMinutes: 75,
-            activeCalories: 620, basalCalories: 1720, totalCalories: 2340
-        ))), as: .image(layout: layout))
-    }
-
     // MARK: - Hydration
 
     @Test func hydrationLoading() {
