@@ -152,6 +152,7 @@ private struct WorkoutCard: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .background(Color.white.opacity(0.03))
         .clipShape(RoundedRectangle(cornerRadius: 10))
