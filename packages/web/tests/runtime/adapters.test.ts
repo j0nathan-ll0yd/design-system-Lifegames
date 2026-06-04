@@ -565,10 +565,14 @@ describe('adaptBooks', () => {
     expect(result.books[0].link).toContain('lifegames04-20');
   });
 
-  it('localizes CloudFront mainImage to /images/ path', () => {
+  // CloudFront URLs pass through the adapter unchanged. The downstream updater
+  // (updaters.ts) conditionally rewrites to a same-origin /images/ path only
+  // for ASINs that were in the SSR fixture. See the comment in adapters.ts
+  // for the bug-class rationale (Cloudflare Pages caches 404s for 30 days).
+  it('passes CloudFront mainImage through unchanged', () => {
     const books = makeBooks([{ mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/B0TEST.webp' }]);
     const result = adaptBooks(books);
-    expect(result.books[0].cover).toBe('/images/books/B0TEST.webp');
+    expect(result.books[0].cover).toBe('https://d1pfm520aduift.cloudfront.net/images/books/B0TEST.webp');
   });
 
   it('preserves non-CloudFront mainImage URLs unchanged', () => {

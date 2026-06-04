@@ -6,7 +6,6 @@ import {
   computeSleepPercentages,
 } from './sleep';
 import type { HealthExport, SleepExport, WorkoutsExport, BooksExport, GithubEventsExport, ArticlesExport, GithubStarredReposExport } from '../types/exports';
-import { localizeImageUrl } from './image-utils';
 
 // ── Adapted output types (what adapters produce for updaters) ──────
 
@@ -329,12 +328,19 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       rating: b.rating ?? null,
       progress,
       link: 'https://www.amazon.com/dp/' + b.asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
-      cover: localizeImageUrl(b.mainImage ?? null),
-      coverThumb: localizeImageUrl(b.mainImageThumb ?? null),
-      coverCard: localizeImageUrl((b as any).mainImageCard ?? null),
-      coverAvif: localizeImageUrl((b as any).mainImageAvif ?? null),
-      coverThumbAvif: localizeImageUrl((b as any).mainImageThumbAvif ?? null),
-      coverCardAvif: localizeImageUrl((b as any).mainImageCardAvif ?? null),
+      // CloudFront URLs flow through unchanged. The updater conditionally rewrites
+      // to a local /images/books/<asin>-*.webp path only for ASINs that were in
+      // the SSR fixture (`ssrAsins`) — those are the only ASINs that have a
+      // committed local copy under `public/images/books/`. Books added after the
+      // dashboard was last built (e.g. a new book the backend just synced)
+      // would 404 on the local path, and Cloudflare Pages caches that 404 for
+      // 30 days. Defaulting to CloudFront avoids the entire bug class.
+      cover: b.mainImage ?? null,
+      coverThumb: b.mainImageThumb ?? null,
+      coverCard: (b as any).mainImageCard ?? null,
+      coverAvif: (b as any).mainImageAvif ?? null,
+      coverThumbAvif: (b as any).mainImageThumbAvif ?? null,
+      coverCardAvif: (b as any).mainImageCardAvif ?? null,
       notes: b.notes ?? null,
     };
   });
