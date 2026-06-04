@@ -85,9 +85,6 @@ struct RootGalleryView: View {
                         .foregroundStyle(LGColor.textMuted)
                 }
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(LGColor.textSubtle)
             }
             .padding(.vertical, 6)
         }
