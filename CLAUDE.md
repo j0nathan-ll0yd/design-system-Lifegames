@@ -56,6 +56,7 @@ Phase 2 flips to npm `^X.Y.Z` from GitHub Packages without source changes.
 - `apps/portfolio` — Astro 6 static site (was Astro 5)
 - `apps/docs` — Astro 6 Starlight documentation (was Astro 5)
 - `apps/storybook` — Storybook 10 component workshop (was Storybook 9)
+- `apps/swift-gallery` — iOS SwiftUI runtime showcase. Consumes DS via local-path SPM. Six sections: Colors, Typography, Cards, Components, Neon Effects, Widgets. Open with `open apps/swift-gallery/SwiftGallery.xcodeproj`. Dropped from LP's DesignGalleryFeature: BookshelfFeature and HomeFeature showcases (coupling was via PreviewMocks only, not direct symbol references).
 
 All use Vite 7 (unified from prior Vite 6/7 split).
 

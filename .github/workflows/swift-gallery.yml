@@ -1,0 +1,37 @@
+name: Swift Gallery
+
+on:
+  pull_request:
+    paths:
+      - "apps/swift-gallery/**"
+      - "Sources/LifegamesTokens/**"
+      - "Sources/LifegamesComponents/**"
+      - "Sources/LifegamesWidgets/**"
+      - "Sources/LifegamesOnboarding/**"
+      - "Sources/LifegamesSchemas/**"
+      - "Package.swift"
+      - "tokens/**"
+      - ".github/workflows/swift-gallery.yml"
+
+jobs:
+  build:
+    name: Build SwiftGallery (iOS Simulator)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then echo "No Xcode 26 found" >&2; exit 1; fi
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
+          xcodebuild -version
+
+      - name: Build
+        run: |
+          xcodebuild build \
+            -project apps/swift-gallery/SwiftGallery.xcodeproj \
+            -scheme SwiftGallery \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
