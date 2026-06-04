@@ -5,7 +5,7 @@ import SwiftUI
 struct VariationState: Identifiable {
     let id: String
     let label: String
-    let make: () -> AnyView
+    let make: @MainActor @Sendable () -> AnyView
 }
 
 /// A single widget registered in the gallery catalog. Each `*Variations.swift` file exposes one

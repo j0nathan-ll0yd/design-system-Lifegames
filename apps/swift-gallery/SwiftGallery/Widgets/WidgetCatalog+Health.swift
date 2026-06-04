@@ -4,7 +4,10 @@ extension WidgetCatalog {
     static var healthEntries: [WidgetEntry] {
         [
             HeartRateVariations.entry,
-            // Hydration, MovementRings, NightSummary, Workouts added by Health worker in fan-out.
+            HydrationVariations.entry,
+            MovementRingsVariations.entry,
+            NightSummaryVariations.entry,
+            WorkoutsVariations.entry,
         ]
     }
 }
