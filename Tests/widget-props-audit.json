@@ -12,6 +12,7 @@
   "WeeklyPulse": "props",
   "HeartRate": "props",
   "Hydration": "props",
+  "MovementRings": "props",
   "NightSummary": "props",
   "Workouts": "props",
   "BioTerminal": "props",
