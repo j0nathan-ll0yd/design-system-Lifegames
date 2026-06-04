@@ -42,10 +42,10 @@ struct RootGalleryView: View {
                 )
                 galleryRow(
                     title: "Widgets",
-                    subtitle: "DS widgets and health panel showcase",
+                    subtitle: "Per-widget detail pages with every documented state",
                     icon: "rectangle.3.group.fill",
                     color: LGColor.accentPurple,
-                    destination: DSWidgetsShowcase()
+                    destination: CategoryListView()
                 )
             }
             .listStyle(.plain)
