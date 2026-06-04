@@ -9,6 +9,16 @@ public enum Adapters {
         return HeartRateProps(bpm: hr, hrv: hrv, zone: zone)
     }
 
+    /// Convenience: decode the full `health/heart-rate*.json` envelope and return Props.
+    /// Returns nil if the JSON isn't a dictionary; the inner adapter tolerates missing keys.
+    public static func heartRate(fromFixture data: Data) -> HeartRateProps? {
+        guard
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+            let health = json["health"] as? [String: Any]
+        else { return nil }
+        return adaptHeartRate(from: health)
+    }
+
     public static func adaptHydration(from raw: [String: Any]) -> HydrationProps {
         let h = raw["hydration"] as? [String: Any] ?? [:]
         return HydrationProps(

@@ -1,0 +1,24 @@
+{
+  "health": {
+    "movement": {
+      "moveKcal": 540,
+      "exerciseMin": 34,
+      "standHr": 12,
+      "steps": 11280,
+      "distanceMeters": 9100,
+      "flights": 18,
+      "daylightMin": 24,
+      "goals": {
+        "moveKcal": 500,
+        "exerciseMin": 30,
+        "standHr": 12,
+        "daylightMin": 20
+      },
+      "solar": {
+        "sunriseHHmm": "06:30",
+        "sunsetHHmm": "20:15",
+        "currentProgressPct": 72
+      }
+    }
+  }
+}
