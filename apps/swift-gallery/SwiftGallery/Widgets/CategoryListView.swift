@@ -5,7 +5,9 @@ struct CategoryListView: View {
     var body: some View {
         List {
             ForEach(WidgetCatalog.populatedCategories) { category in
-                NavigationLink(value: category) {
+                NavigationLink {
+                    WidgetListView(category: category)
+                } label: {
                     CategoryRow(category: category)
                 }
                 .listRowBackground(Color.clear)
@@ -19,9 +21,6 @@ struct CategoryListView: View {
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
-            .navigationDestination(for: WidgetCategory.self) { category in
-                WidgetListView(category: category)
-            }
     }
 }
 
@@ -51,9 +50,6 @@ private struct CategoryRow: View {
             Spacer()
             Text("\(widgetCount)")
                 .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                .foregroundStyle(LGColor.textSubtle)
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
                 .foregroundStyle(LGColor.textSubtle)
         }
         .padding(.vertical, 6)

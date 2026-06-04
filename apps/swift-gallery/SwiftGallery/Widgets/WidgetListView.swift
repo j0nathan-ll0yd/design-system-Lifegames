@@ -5,13 +5,17 @@ struct WidgetListView: View {
     let category: WidgetCategory
 
     private var entries: [WidgetEntry] {
-        WidgetCatalog.entries(in: category).sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+        WidgetCatalog.entries(in: category).sorted {
+            $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending
+        }
     }
 
     var body: some View {
         List {
             ForEach(entries) { entry in
-                NavigationLink(value: entry) {
+                NavigationLink {
+                    WidgetDetailView(entry: entry)
+                } label: {
                     WidgetRow(entry: entry)
                 }
                 .listRowBackground(Color.clear)
@@ -25,9 +29,6 @@ struct WidgetListView: View {
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
-            .navigationDestination(for: WidgetEntry.self) { entry in
-                WidgetDetailView(entry: entry)
-            }
     }
 }
 
@@ -45,9 +46,6 @@ private struct WidgetRow: View {
                     .foregroundStyle(LGColor.textMuted)
             }
             Spacer()
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(LGColor.textSubtle)
         }
         .padding(.vertical, 6)
     }
