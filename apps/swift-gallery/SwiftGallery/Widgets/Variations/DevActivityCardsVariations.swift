@@ -35,7 +35,7 @@ enum DevActivityCardsVariations {
     }
 
     @ViewBuilder
-    fileprivate static func render(state: State) -> some View {
+    private static func render(state: State) -> some View {
         if let props: DevActivityProps = FixtureLoader.load(category: "github", name: state.fixtureName) {
             DevActivityCardsView(props: props)
         } else {

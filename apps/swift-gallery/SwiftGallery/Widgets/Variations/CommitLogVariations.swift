@@ -35,7 +35,7 @@ enum CommitLogVariations {
     }
 
     @ViewBuilder
-    fileprivate static func render(state: State) -> some View {
+    private static func render(state: State) -> some View {
         if let props: CommitLogProps = FixtureLoader.load(category: "github", name: state.fixtureName) {
             CommitLogView(props: props)
         } else {

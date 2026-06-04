@@ -19,6 +19,10 @@ enum BookModalVariations {
     }
 
     static let states: [State] = [
+        // The on-disk `book-modal.json` / `.populated-min.json` / `.populated-max.json` fixtures
+        // are `{}` stubs (no fields), so the canonical Default row aliases the most representative
+        // named variant (currently-reading) instead of loading the empty stub.
+        .init(id: "default", label: "Default", kind: .fixture("book-modal.currently-reading")),
         .init(id: "currently-reading", label: "Currently Reading", kind: .fixture("book-modal.currently-reading")),
         .init(id: "completed-with-rating", label: "Completed with Rating", kind: .fixture("book-modal.completed-with-rating")),
         .init(id: "series-book", label: "Series Book", kind: .fixture("book-modal.series-book")),

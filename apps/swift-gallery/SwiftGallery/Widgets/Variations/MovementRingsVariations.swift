@@ -7,8 +7,9 @@ import SwiftUI
 /// fixture wire format requires a complex adapter that does not yet exist. This entry uses a
 /// single hand-coded default state inline.
 ///
-/// TODO: Replace inline Props with fixture loading once `Adapters.adaptMovementRings` is
-/// implemented (follow-up work). The fixture glob `health/movement-rings*.json` is ready on disk.
+/// TODO(follow-up): Replace inline Props with fixture loading once a `movementRings(fromFixture:)`
+/// adapter is implemented; the fixture glob `health/movement-rings*.json` is ready on disk but the
+/// wire shape decomposition (rings, goals, solar) hasn't been authored yet.
 enum MovementRingsVariations {
     static var entry: WidgetEntry {
         WidgetEntry(

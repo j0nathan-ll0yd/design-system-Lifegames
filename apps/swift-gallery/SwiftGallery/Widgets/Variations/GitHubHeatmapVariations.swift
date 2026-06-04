@@ -42,7 +42,7 @@ enum GitHubHeatmapVariations {
     }
 
     @ViewBuilder
-    fileprivate static func render(state: State) -> some View {
+    private static func render(state: State) -> some View {
         switch state.kind {
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "other", name: name),
