@@ -27,7 +27,13 @@ extension WidgetFixtureCatalogTests {
             hydrationRow("hydration.morning-coffee"),
             hydrationRow("hydration.normal"),
             hydrationRow("hydration.overhydrated"),
-            // MovementRings — no fixture rows (plan option b: inline default only, no adapter)
+            // MovementRings — wire-shape fixtures, adapter-required (Kind.fixture states only;
+            // skeleton/empty use init(state:) and don't load JSON)
+            movementRingsRow("movement-rings"),
+            movementRingsRow("movement-rings.populated-min"),
+            movementRingsRow("movement-rings.populated-max"),
+            movementRingsRow("movement-rings.all-rings-closed"),
+            movementRingsRow("movement-rings.stand-only"),
             // NightSummary — wire-shape fixtures, adapter-required
             nightSummaryRow("night-summary"),
             nightSummaryRow("night-summary.populated-min"),
@@ -65,6 +71,15 @@ extension WidgetFixtureCatalogTests {
             name: name,
             propsTypeName: "HydrationProps",
             adapt: { Adapters.hydration(fromFixture: $0) }
+        )
+    }
+
+    private static func movementRingsRow(_ name: String) -> FixtureCatalogRow {
+        .adapted(
+            category: "health",
+            name: name,
+            propsTypeName: "MovementRingsProps",
+            adapt: { Adapters.movementRings(fromFixture: $0) }
         )
     }
 
