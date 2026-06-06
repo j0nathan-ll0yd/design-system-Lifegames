@@ -7,7 +7,8 @@
     },
     "blue": {
       "500": { "$value": "#3a86ff", "$description": "Neon blue (web --neon-blue, iOS neonBlue)" },
-      "600": { "$value": "#3b82f6", "$description": "Accent blue (iOS accentBlue)" }
+      "600": { "$value": "#3b82f6", "$description": "Accent blue (iOS accentBlue)" },
+      "700": { "$value": "#1e40af", "$description": "Deep blue (sleep.deep)" }
     },
     "green": {
       "500": { "$value": "#06d6a0", "$description": "Neon green (web --neon-green, iOS neonGreen)" }

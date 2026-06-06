@@ -417,10 +417,10 @@
     grid-column: 1 / -1;
   }
 
-  /* nth-child(4) = Workouts — positional; update if Body column order changes */
-  /* Workouts (child 4: h2=1, HeartRate=2, DailyActivity=3, Workouts=4)
+  /* nth-child(3) = Workouts — positional; update if Body column order changes */
+  /* Workouts (child 3: h2=1, HeartRate=2, Workouts=3)
      gets full width because sub-cards need horizontal room */
-  .triptych-column-body .tri-card:nth-child(4) {
+  .triptych-column-body .tri-card:nth-child(3) {
     grid-column: 1 / -1;
   }
 
