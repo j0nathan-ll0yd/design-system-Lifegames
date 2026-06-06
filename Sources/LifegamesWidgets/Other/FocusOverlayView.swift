@@ -9,7 +9,7 @@ public struct FocusOverlayView: View {
         self.props = props
     }
 
-    private let redColor = Color(hex: "#ef4444")
+    private let redColor = LGColor.accentRed
 
     public var body: some View {
         VStack(spacing: 0) {
