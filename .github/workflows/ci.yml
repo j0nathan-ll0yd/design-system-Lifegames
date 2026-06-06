@@ -193,21 +193,8 @@ jobs:
       - name: Swift Props contract check
         run: swift test --filter ContractTests
 
-  widget-inventory:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, linux, arm64, node]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Check widget inventory drift
-        run: node scripts/widget-inventory.mjs --check
-
-  advisory-gates:
+  governance-gates:
+    name: governance-gates
     needs: build-tokens
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]
@@ -223,6 +210,8 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
+      - name: Widget inventory drift (P5)
+        run: pnpm widget:inventory -- --check
       - name: P1 token parity (web/Swift accent hex)
         run: node scripts/check-token-parity.mjs --check
       - name: WCAG-AA contrast gate
