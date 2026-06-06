@@ -4,11 +4,11 @@
 
 - `tokens/` — W3C DTCG JSON token source of truth
 - `packages/tokens/` — Style Dictionary build; outputs CSS, JS, JSON
-- `packages/web/` — Astro components and 56 widgets with Storybook stories
+- `packages/web/` — Astro components and 29 web widgets with Storybook stories
 - `Sources/` — Swift packages (SPM targets at repo root)
 - `Tests/` — Swift test targets
 - `apps/docs/` — Astro Starlight documentation
-- `apps/storybook/` — Storybook 8 workshop
+- `apps/storybook/` — Storybook 10 workshop
 
 ## Key Constraints
 

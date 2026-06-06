@@ -10,7 +10,7 @@ packages/tokens  @lifegames/tokens — CSS custom properties, JS/JSON outputs vi
 packages/web     @lifegames/web — Astro components, 29 page-specific widgets, Storybook stories
 Sources/         Swift packages — LifegamesTokens, LifegamesComponents, LifegamesWidgets (SPM)
 apps/docs        Astro Starlight documentation site
-apps/storybook   Storybook 8 component workshop
+apps/storybook   Storybook 10 component workshop
 ```
 
 ## Quick Start

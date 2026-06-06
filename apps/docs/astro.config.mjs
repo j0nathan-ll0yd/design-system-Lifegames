@@ -1,16 +1,24 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightLlmsTxt from 'starlight-llms-txt';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  site: 'https://design.lifegames.org',
   redirects: {
     '/': '/getting-started/',
   },
   integrations: [
     starlight({
+      plugins: [
+        starlightLlmsTxt({
+          projectName: 'Lifegames Design System',
+          description: 'Unified cross-platform design system powering the Lifegames portfolio — a single source of truth for tokens, components, and widgets across web (Astro) and iOS (SwiftUI).',
+        }),
+      ],
       title: 'Lifegames Design System',
       head: [
         {
