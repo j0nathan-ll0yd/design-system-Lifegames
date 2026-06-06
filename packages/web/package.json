@@ -31,7 +31,7 @@
     "src"
   ],
   "scripts": {
-    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro}\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -42,7 +42,9 @@
   "devDependencies": {
     "@typescript-eslint/parser": "^8.60.1",
     "@vitest/coverage-v8": "^4.1.8",
+    "astro-eslint-parser": "^1.4.0",
     "eslint": "^10.4.1",
+    "eslint-plugin-astro": "^1.7.0",
     "jsdom": "^29.1.1",
     "vite": "^7.3.3",
     "vitest": "^4.1.8"
