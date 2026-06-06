@@ -57,7 +57,7 @@ primitive → semantic → component → widget
 | `LifegamesTokens` | Swift | Generated Color, Font, Spacing extensions |
 | `LifegamesComponents` | Swift | iOS/macOS SwiftUI primitives |
 | `LifegamesComponentsWatch` | Swift | Watch-safe component subset |
-| `LifegamesWidgets` | Swift | 29 SwiftUI widget ports |
+| `LifegamesWidgets` | Swift | 30 SwiftUI widget ports |
 
 ## AI Platform Integration
 
