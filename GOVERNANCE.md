@@ -238,6 +238,21 @@ Uses **Changesets** (`.changeset/config.json`) with **semantic versioning**.
 
 **SPM constraint:** The DS must remain a separate Git repository — SPM requires a Git remote to resolve package dependencies. The iOS `Package.swift` resolves `design-system-Lifegames` via SPM; a path-local pnpm workspace cannot satisfy this. The web consumer (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`) has no such constraint — co-locating with the web repo would eliminate the yalc dance but couples web build to DS repo layout. Decision deferred; see `.omc/plans/open-questions.md` Q3.
 
+### 6.1 Distribution — yalc-only
+
+The JS packages (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`) are distributed **via yalc only.** There is no published npm package today and no active CI path that publishes one.
+
+The earlier `REMOTE_ENABLED`-gated workflows (`publish.yml`, `release.yml`, `deploy-docs.yml`) were removed because the gate never flipped to `true` in the workflows' entire lifetime — GitHub Packages has zero published `@lifegames/*` versions, and every push to `main` short-circuited the jobs. Carrying dormant CI implies a working publish pipeline that does not exist. Per the no-middle-state rule, the workflows are gone until a concrete, dated need brings them back.
+
+**Restoring the npm path** (only when a non-monorepo consumer actually requires `npm install @lifegames/tokens`):
+
+1. Recover the workflows from git history. The last-known-good revisions are visible in `git log -- .github/workflows/publish.yml` (range `d75b222`..`189599d`, May–Jun 2026); `git show <sha>:.github/workflows/publish.yml > .github/workflows/publish.yml` reconstitutes them.
+2. Remove the `REMOTE_ENABLED` gate or set the repo variable to `true`; the gate's only purpose was to keep the workflow inert during the deferral.
+3. Verify GHP scope/auth end-to-end before merging — the gate previously hid this surface.
+4. Update this subsection to reflect the new distribution policy.
+
+**Swift consumers** continue to pin to a DS Git tag (or branch) via SPM — that path is independent of the JS distribution model.
+
 ---
 
 ## 7. ADR Convention
