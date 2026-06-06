@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/diagnostics-monitor.json",
+  "title": "DiagnosticsMonitorProps",
+  "type": "object",
+  "properties": {
+    "totalEventCount": {
+      "type": "number"
+    },
+    "counts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "category",
+          "count"
+        ]
+      }
+    },
+    "fileSizeBytes": {
+      "type": "number"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "timestamp",
+          "message"
+        ]
+      }
+    },
+    "transferStatus": {
+      "type": "string"
+    },
+    "referenceDate": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "totalEventCount",
+    "counts",
+    "fileSizeBytes",
+    "entries",
+    "transferStatus",
+    "referenceDate"
+  ]
+}

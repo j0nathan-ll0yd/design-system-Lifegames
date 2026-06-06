@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {
+    "health": {
+      "type": "object",
+      "properties": {
+        "sleepScore": {
+          "type": "number"
+        },
+        "sleepDurationFormatted": {
+          "type": "string"
+        },
+        "sleepPhaseFormatted": {
+          "type": "object",
+          "properties": {
+            "deep": {
+              "type": "string"
+            },
+            "rem": {
+              "type": "string"
+            },
+            "core": {
+              "type": "string"
+            },
+            "awake": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "deep",
+            "rem",
+            "core",
+            "awake"
+          ]
+        },
+        "derived": {
+          "type": "object",
+          "properties": {
+            "deepPct": {
+              "type": "number"
+            },
+            "remPct": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "deepPct",
+            "remPct"
+          ]
+        }
+      },
+      "required": [
+        "sleepScore",
+        "sleepDurationFormatted",
+        "sleepPhaseFormatted",
+        "derived"
+      ]
+    }
+  },
+  "required": [
+    "health"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/night-summary.json",
+  "title": "NightSummaryProps"
+}

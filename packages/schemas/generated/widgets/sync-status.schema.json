@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/sync-status.json",
+  "title": "SyncStatusProps",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "lastSyncDate": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "referenceDate": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "primaryActionLabel": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "lastSyncDate",
+    "referenceDate",
+    "errorMessage",
+    "primaryActionLabel"
+  ]
+}

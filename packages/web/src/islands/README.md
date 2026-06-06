@@ -14,7 +14,7 @@ these directives only work on framework components (React/Svelte/Vue/etc).
 | BioTerminal | **hydrated** | Typewriter animation |
 | SystemStatus | static | Timestamp display from props |
 | HeartRate | **hydrated** | ECG canvas animation + zone colors |
-| DailyActivity | static | Metric values + ring SVG from props |
+| MovementRings | **hydrated** | Ring SVG animation + sun-arc circadian footer |
 | Workouts | static | List rendering from props |
 | Hydration | **hydrated** | Liquid-fill CSS animation |
 | NightSummary | static | Sleep score + bars from props |

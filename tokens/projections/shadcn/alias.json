@@ -21,7 +21,7 @@
     "border":       "{color.border.default}",
     "input":        "{color.border.subtle}",
     "ring":         "{color.accent.indigo}",
-    "radius":       "component.button.radius"
+    "radius":       "{card.cornerRadius}"
   },
   "dark": {
     "background":   "{color.surface.base}",

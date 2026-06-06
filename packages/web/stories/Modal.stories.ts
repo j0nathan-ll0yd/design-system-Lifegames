@@ -8,7 +8,7 @@ const meta: Meta = {
     visible: { control: 'boolean' },
   },
   render: (args) => html`
-    <div class="lg-modal-overlay ${args.visible ? 'visible' : ''}" role="dialog" aria-modal="true">
+    <div class="lg-modal-overlay ${args.visible ? 'visible' : ''}" role="dialog" aria-modal="true" aria-label="Modal">
       <div class="lg-modal">
         <button class="lg-modal-close" aria-label="Close">&times;</button>
         <div class="lg-modal-body">

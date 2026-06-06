@@ -7,6 +7,7 @@ let package = Package(
     products: [
         .library(name: "LifegamesTokens", targets: ["LifegamesTokens"]),
         .library(name: "LifegamesSchemas", targets: ["LifegamesSchemas"]),
+        .library(name: "LifegamesComponentsCore", targets: ["LifegamesComponentsCore"]),
         .library(name: "LifegamesComponents", targets: ["LifegamesComponents"]),
         .library(name: "LifegamesComponentsWatch", targets: ["LifegamesComponentsWatch"]),
         .library(name: "LifegamesOnboarding", targets: ["LifegamesOnboarding"]),
@@ -20,12 +21,13 @@ let package = Package(
     targets: [
         .target(name: "LifegamesTokens", resources: [.process("Resources")]),
         .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
-        .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens"]),
+        .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens"]),
+        .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens", "LifegamesComponentsCore"]),
         .target(name: "LifegamesOnboarding", dependencies: ["LifegamesComponents"], exclude: ["README.md"]),
-        .target(name: "LifegamesComponentsWatch", dependencies: ["LifegamesTokens"]),
+        .target(name: "LifegamesComponentsWatch", dependencies: ["LifegamesTokens", "LifegamesComponentsCore"]),
         .target(name: "LifegamesWidgets", dependencies: ["LifegamesComponents", "LifegamesSchemas"],
                 resources: [.process("Resources")]),
-        .target(name: "LifegamesWidgetsWatch", dependencies: ["LifegamesComponentsWatch"]),
+        .target(name: "LifegamesWidgetsWatch", dependencies: ["LifegamesComponentsWatch", "LifegamesComponentsCore"]),
         .testTarget(name: "LifegamesTokensTests", dependencies: ["LifegamesTokens"]),
         .testTarget(name: "LifegamesComponentsTests", dependencies: [
             "LifegamesComponents",
@@ -35,6 +37,16 @@ let package = Package(
             "LifegamesWidgets",
             "LifegamesWidgetsWatch",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+        ]),
+        .testTarget(name: "LifegamesComponentsWatchTests", dependencies: [
+            "LifegamesComponentsWatch",
+            .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+        ]),
+        .testTarget(name: "LifegamesOnboardingTests", dependencies: [
+            "LifegamesOnboarding",
+        ]),
+        .testTarget(name: "LifegamesSchemasTests", dependencies: [
+            "LifegamesSchemas",
         ]),
     ]
 )

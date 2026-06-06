@@ -83,9 +83,9 @@ A component earns DS placement when it is presentational (P3) **and**:
 
 **Loophole closure:** Adding a bare `import LifegamesWidgets` to the watch target does not satisfy this gate. The watch target must actually render the widget in a shipping surface.
 
-**Outcomes:** 0 surfaces → **demote-or-justify** (move to app, delete, or record a named near-term surface as Experimental in the registry). 1 surface + no credible 2nd plan → keep local, lower priority than 0-surface case. 1 surface + credible 2nd planned → admit at **Experimental**; advances to **Stable** only once ≥2 real product surfaces consume it (P7).
+**Outcomes:** 0 surfaces + no `plannedSurface` → **incubating** (valid state; widget is in active development toward its first surface — not a violation). 1 surface + no credible 2nd plan → keep local, lower priority. 1 surface + credible 2nd planned → admit at **Experimental**; advances to **Stable** only once ≥2 real product surfaces consume it (P7). The gate fails only on structural inconsistency (e.g., a consumer reference pointing to a missing file).
 
-**Enforcement:** **NEW** `scripts/check-promotion.mjs --check` — fails CI if any promoted widget has 0 product-surface consumers AND no `plannedSurface` justification in the registry. 1-surface + `plannedSurface` passes but surfaces as advisory. Requires `consumers: []` and `plannedSurface` fields (R6) and complete registry (R7). Showcase/stub importers excluded by name-allowlist.
+**Enforcement:** **NEW** `scripts/check-promotion.mjs --check` — reports incubating widgets as INFO (not violations); 1-surface + `plannedSurface` surfaces as advisory. Requires `consumers: []` and `plannedSurface` fields (R6) and complete registry (R7). Showcase/stub importers excluded by name-allowlist.
 
 *(Cite: Nathan Curtis EightShapes "I Made This. Does It Go in the System?" — 1=no, 2=discuss, 5+=probably belongs; Rule of Three; Sandi Metz — duplication cheaper than wrong abstraction; Kent Dodds AHA; Oz Nova "You Are Not Google" — scale abstraction to actual need.)*
 
@@ -133,6 +133,8 @@ Components may regress (Stable → Beta → Deprecated). The **Stable gate is �
 
 **Enforcement:** Extend `scripts/widget-inventory.mjs --check` to fail if any promoted widget lacks a valid `status` field; emit advisory when a `Stable`-labeled widget has fewer than 2 product-surface consumers in the registry. Depends on R7.
 
+Formal deprecation annotation, survival period, migration alias requirements, tooling, and quarterly audit process are documented in [`DEPRECATION.md`](DEPRECATION.md).
+
 *(Cite: USWDS lifecycle labels; Primer design system status model; VA.gov Experimental → Beta → Stable → Deprecated — components may regress.)*
 
 ---
@@ -170,8 +172,8 @@ Q2. Does it have ≥1 REAL SHIPPING PRODUCT SURFACE today on this platform,
            renders it} now + credible 2nd surface planned
     EXCLUDE: DesignGallery/Showcase previews; the empty LifegamesWidgetsWatch stub
 
-    0 surfaces ──► DEMOTE-OR-JUSTIFY: move to app, delete, or record a named
-                   near-term surface as Experimental in the registry.  [P4]
+    0 surfaces ──► INCUBATING: valid state — widget is developing toward its
+                   first surface. No violation. Logged as INFO by gate.  [P4]
 
     1 surface, NO credible 2nd plan
                ──► Keep local. If ORGANISM, document as PATTERN in docs/patterns/.
@@ -200,7 +202,7 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 | **P1** Tokens tiered / no raw hex | Lint (existing) + Script (NEW) | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); **NEW** `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff) | `check-token-parity` → CI; `validate-dtcg` → `pnpm test` |
 | **P2** Native reimpl / spec parity / divergence | Agent-review → script after R7 | Parity script deferred: registry 15/~55 — false greens if run now. Divergence traced via mandatory ADR in `docs/adr/`. Upgrade to `scripts/widget-compliance.mjs` after R7. | ADR presence → agent-review |
 | **P3** Presentational purity | Lint + Agent-review | **NEW** `eslint-local-rules/no-app-module-imports.js` (web); **NEW** `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation). Local-vs-domain-state judgment → agent-review. | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI |
-| **P4** 1-surface-now + credible-2nd test | Script (NEW) | **NEW** `scripts/check-promotion.mjs --check` — fails CI on 0-surface/no-`plannedSurface`. 1-surface + `plannedSurface` → advisory. Requires `consumers: []` + `plannedSurface` fields (R6) + complete registry (R7). Showcase/stub excluded by name-allowlist. | CI (blocking after R6+R7; advisory on 1-surface) |
+| **P4** 1-surface-now + credible-2nd test | Script (NEW) | **NEW** `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Requires `consumers: []` + `plannedSurface` fields (R6) + complete registry (R7). Showcase/stub excluded by name-allowlist. | CI (advisory; blocking only on structural errors after R6+R7) |
 | **P5** Surface-differentiated consumption | Agent-review + doc | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence. | Agent-review checklist |
 | **P6** Organism pattern-first | Agent-review + doc | Judgment. ADR required if organism promoted without pattern-first stage. | Agent-review checklist |
 | **P7** Lifecycle labels | Script (existing, extended) | Extend `scripts/widget-inventory.mjs --check`: fail on missing `status`; advisory when `Stable` but <2 consumers in registry. Depends on R7. | CI (blocking after R7) |

@@ -13,6 +13,7 @@ public enum LGColor {
     public static let pink500 = Color("color-pink-500", bundle: .module)
     public static let blue500 = Color("color-blue-500", bundle: .module)
     public static let blue600 = Color("color-blue-600", bundle: .module)
+    public static let blue700 = Color("color-blue-700", bundle: .module)
     public static let green500 = Color("color-green-500", bundle: .module)
     public static let amber500 = Color("color-amber-500", bundle: .module)
     public static let purple400 = Color("color-purple-400", bundle: .module)

@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "reading": {
+      "type": "object",
+      "properties": {
+        "articles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "source",
+              "date"
+            ]
+          }
+        }
+      },
+      "required": [
+        "articles"
+      ]
+    }
+  },
+  "required": [
+    "reading"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/reading-feed.json",
+  "title": "ReadingFeedProps"
+}

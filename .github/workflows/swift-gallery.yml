@@ -28,6 +28,12 @@ jobs:
           sudo xcode-select -s "$XCODE/Contents/Developer"
           xcodebuild -version
 
+      # NOTE: -destination is intentionally 'generic/platform=iOS Simulator'
+      # rather than a pinned (name=iPhone X, OS=Y). The self-hosted runner
+      # currently runs macOS 15.7.7 which the installed Xcode SDK refuses
+      # to load a concrete simulator on. The generic destination compiles
+      # the binary without booting a simulator. Re-pin once the runner's
+      # macOS is upgraded; see issue tracking host-runner OS upgrade.
       - name: Build
         run: |
           xcodebuild build \

@@ -224,11 +224,15 @@ for (const t of tokens) {
 }
 
 css += '\n  /* Typography (fluid) */\n';
+const emittedFluidFontSizes = new Set();
 for (const t of tokens) {
   if (t.$type !== 'typography') continue;
   const name = t.path[t.path.length - 1];
   const fluid = FLUID_TYPOGRAPHY[name];
-  if (fluid) css += `  --lg-font-size-${name}: ${fluid};\n`;
+  if (fluid && !emittedFluidFontSizes.has(name)) {
+    css += `  --lg-font-size-${name}: ${fluid};\n`;
+    emittedFluidFontSizes.add(name);
+  }
 }
 
 css += '\n  /* Font families */\n';

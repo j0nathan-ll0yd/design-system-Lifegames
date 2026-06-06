@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/movement-rings.json",
+  "title": "MovementRingsProps",
+  "type": "object",
+  "properties": {
+    "health": {
+      "type": "object",
+      "properties": {
+        "movement": {
+          "type": "object",
+          "properties": {
+            "moveKcal": {
+              "type": "number"
+            },
+            "exerciseMin": {
+              "type": "number"
+            },
+            "standHr": {
+              "type": "number"
+            },
+            "steps": {
+              "type": "number"
+            },
+            "distanceMeters": {
+              "type": "number"
+            },
+            "flights": {
+              "type": "number"
+            },
+            "daylightMin": {
+              "type": "number"
+            },
+            "goals": {
+              "type": "object",
+              "properties": {
+                "moveKcal": {
+                  "type": "number"
+                },
+                "exerciseMin": {
+                  "type": "number"
+                },
+                "standHr": {
+                  "type": "number"
+                },
+                "daylightMin": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "moveKcal",
+                "exerciseMin",
+                "standHr",
+                "daylightMin"
+              ]
+            },
+            "solar": {
+              "type": "object",
+              "properties": {
+                "sunriseHHmm": {
+                  "type": "string"
+                },
+                "sunsetHHmm": {
+                  "type": "string"
+                },
+                "currentProgressPct": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "sunriseHHmm",
+                "sunsetHHmm",
+                "currentProgressPct"
+              ]
+            }
+          },
+          "required": [
+            "moveKcal",
+            "exerciseMin",
+            "standHr",
+            "steps",
+            "distanceMeters",
+            "flights"
+          ]
+        }
+      },
+      "required": [
+        "movement"
+      ]
+    }
+  }
+}

@@ -1809,7 +1809,7 @@ struct DashboardHealth: Codable {
     let sleepScore: Double?
     let solar: Solar?
     /// List of workout records for the day. Empty array when no workouts were logged.
-    let workouts: [Workout]
+    let workouts: [DashboardHealthWorkout]
 }
 
 // MARK: DashboardHealth convenience initializers and mutators
@@ -1844,7 +1844,7 @@ extension DashboardHealth {
         sleepPhaseFormatted: SleepPhaseFormatted?? = nil,
         sleepScore: Double?? = nil,
         solar: Solar?? = nil,
-        workouts: [Workout]? = nil
+        workouts: [DashboardHealthWorkout]? = nil
     ) -> DashboardHealth {
         return DashboardHealth(
             date: date ?? self.date,
@@ -1949,53 +1949,6 @@ extension Derived {
     }
 }
 
-// MARK: - Goals
-struct Goals: Codable {
-    let daylightMin: Double
-    let exerciseMin, moveKcal, standHr: Double?
-}
-
-// MARK: Goals convenience initializers and mutators
-
-extension Goals {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Goals.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        daylightMin: Double? = nil,
-        exerciseMin: Double?? = nil,
-        moveKcal: Double?? = nil,
-        standHr: Double?? = nil
-    ) -> Goals {
-        return Goals(
-            daylightMin: daylightMin ?? self.daylightMin,
-            exerciseMin: exerciseMin ?? self.exerciseMin,
-            moveKcal: moveKcal ?? self.moveKcal,
-            standHr: standHr ?? self.standHr
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
 /// Daily hydration and caffeine intake values and reference ranges.
 // MARK: - Hydration
 struct Hydration: Codable {
@@ -2054,49 +2007,6 @@ extension Hydration {
             waterOz: waterOz ?? self.waterOz,
             waterRangeHi: waterRangeHi ?? self.waterRangeHi,
             waterRangeLo: waterRangeLo ?? self.waterRangeLo
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Quantity
-struct Quantity: Codable {
-    let unit: String
-    let value: Double
-}
-
-// MARK: Quantity convenience initializers and mutators
-
-extension Quantity {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Quantity.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        unit: String? = nil,
-        value: Double? = nil
-    ) -> Quantity {
-        return Quantity(
-            unit: unit ?? self.unit,
-            value: value ?? self.value
         )
     }
 
@@ -2895,53 +2805,8 @@ extension SleepPhaseFormatted {
     }
 }
 
-// MARK: - Solar
-struct Solar: Codable {
-    let currentProgressPct: Double
-    let sunriseHHmm, sunsetHHmm: String
-}
-
-// MARK: Solar convenience initializers and mutators
-
-extension Solar {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Solar.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        currentProgressPct: Double? = nil,
-        sunriseHHmm: String? = nil,
-        sunsetHHmm: String? = nil
-    ) -> Solar {
-        return Solar(
-            currentProgressPct: currentProgressPct ?? self.currentProgressPct,
-            sunriseHHmm: sunriseHHmm ?? self.sunriseHHmm,
-            sunsetHHmm: sunsetHHmm ?? self.sunsetHHmm
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Workout
-struct Workout: Codable {
+// MARK: - DashboardHealthWorkout
+struct DashboardHealthWorkout: Codable {
     /// Human-readable workout type.
     let activityType: String
     /// Distance covered in meters. 0 for non-distance activities.
@@ -2958,11 +2823,11 @@ struct Workout: Codable {
     }
 }
 
-// MARK: Workout convenience initializers and mutators
+// MARK: DashboardHealthWorkout convenience initializers and mutators
 
-extension Workout {
+extension DashboardHealthWorkout {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Workout.self, from: data)
+        self = try newJSONDecoder().decode(DashboardHealthWorkout.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -2981,8 +2846,8 @@ extension Workout {
         distance: Double? = nil,
         duration: Double? = nil,
         energyBurned: Double? = nil
-    ) -> Workout {
-        return Workout(
+    ) -> DashboardHealthWorkout {
+        return DashboardHealthWorkout(
             activityType: activityType ?? self.activityType,
             distance: distance ?? self.distance,
             duration: duration ?? self.duration,
@@ -3376,9 +3241,9 @@ extension TopRepo {
 struct DashboardReading: Codable {
     /// Recently saved articles projected from LP articles-export. Field names are simplified
     /// relative to the LP export (e.g. 'title' instead of 'articleTitle').
-    let articles: [Article]
+    let articles: [DashboardReadingArticle]
     /// Aggregate reading statistics computed by the DS pipeline from LP articles-export data.
-    let stats: Stats
+    let stats: DashboardReadingStats
 }
 
 // MARK: DashboardReading convenience initializers and mutators
@@ -3400,8 +3265,8 @@ extension DashboardReading {
     }
 
     func with(
-        articles: [Article]? = nil,
-        stats: Stats? = nil
+        articles: [DashboardReadingArticle]? = nil,
+        stats: DashboardReadingStats? = nil
     ) -> DashboardReading {
         return DashboardReading(
             articles: articles ?? self.articles,
@@ -3418,8 +3283,8 @@ extension DashboardReading {
     }
 }
 
-// MARK: - Article
-struct Article: Codable {
+// MARK: - DashboardReadingArticle
+struct DashboardReadingArticle: Codable {
     /// Topic category label for display filtering.
     let category: String
     /// Human-readable relative or formatted date string.
@@ -3428,15 +3293,15 @@ struct Article: Codable {
     let source: String
     /// Whether the article has been starred/highlighted by the user.
     let starred: Bool
-    /// Article title.
+    /// DashboardReadingArticle title.
     let title: String
 }
 
-// MARK: Article convenience initializers and mutators
+// MARK: DashboardReadingArticle convenience initializers and mutators
 
-extension Article {
+extension DashboardReadingArticle {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Article.self, from: data)
+        self = try newJSONDecoder().decode(DashboardReadingArticle.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -3456,8 +3321,8 @@ extension Article {
         source: String? = nil,
         starred: Bool? = nil,
         title: String? = nil
-    ) -> Article {
-        return Article(
+    ) -> DashboardReadingArticle {
+        return DashboardReadingArticle(
             category: category ?? self.category,
             date: date ?? self.date,
             source: source ?? self.source,
@@ -3476,8 +3341,8 @@ extension Article {
 }
 
 /// Aggregate reading statistics computed by the DS pipeline from LP articles-export data.
-// MARK: - Stats
-struct Stats: Codable {
+// MARK: - DashboardReadingStats
+struct DashboardReadingStats: Codable {
     /// Number of articles saved or read in the previous calendar week.
     let articlesLastWeek: Int
     /// Number of articles saved or read in the current calendar week.
@@ -3490,11 +3355,11 @@ struct Stats: Codable {
     let unreadCount: Int
 }
 
-// MARK: Stats convenience initializers and mutators
+// MARK: DashboardReadingStats convenience initializers and mutators
 
-extension Stats {
+extension DashboardReadingStats {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Stats.self, from: data)
+        self = try newJSONDecoder().decode(DashboardReadingStats.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -3514,8 +3379,8 @@ extension Stats {
         starredCount: Int? = nil,
         totalSubscriptions: Int? = nil,
         unreadCount: Int? = nil
-    ) -> Stats {
-        return Stats(
+    ) -> DashboardReadingStats {
+        return DashboardReadingStats(
             articlesLastWeek: articlesLastWeek ?? self.articlesLastWeek,
             articlesThisWeek: articlesThisWeek ?? self.articlesThisWeek,
             starredCount: starredCount ?? self.starredCount,
@@ -3547,9 +3412,9 @@ struct DashboardBooks: Codable {
     let bookMeta: [String: BookMeta]
     /// List of books projected from LP books-export, augmented with DS display fields. Field set
     /// is a subset of LP's books items plus DS-specific additions (isbn, link, progress).
-    let books: [Book]
+    let books: [DashboardBooksBook]
     /// Aggregate reading statistics computed by the DS pipeline.
-    let stats: Stats
+    let stats: DashboardBooksStats
     /// Human-readable display labels keyed by status value. Maps status enum values to UI
     /// strings.
     let statusLabels: StatusLabels
@@ -3575,8 +3440,8 @@ extension DashboardBooks {
 
     func with(
         bookMeta: [String: BookMeta]? = nil,
-        books: [Book]? = nil,
-        stats: Stats? = nil,
+        books: [DashboardBooksBook]? = nil,
+        stats: DashboardBooksStats? = nil,
         statusLabels: StatusLabels? = nil
     ) -> DashboardBooks {
         return DashboardBooks(
@@ -3661,8 +3526,8 @@ extension BookMeta {
     }
 }
 
-// MARK: - Book
-struct Book: Codable {
+// MARK: - DashboardBooksBook
+struct DashboardBooksBook: Codable {
     /// Amazon ASIN used for affiliate link construction and as an alternate key into bookMeta.
     let asin: String
     /// Author full name.
@@ -3677,15 +3542,15 @@ struct Book: Codable {
     let rating: Int?
     /// Reading status key. Must match a key in statusLabels.
     let status: Status
-    /// Book title.
+    /// DashboardBooksBook title.
     let title: String
 }
 
-// MARK: Book convenience initializers and mutators
+// MARK: DashboardBooksBook convenience initializers and mutators
 
-extension Book {
+extension DashboardBooksBook {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Book.self, from: data)
+        self = try newJSONDecoder().decode(DashboardBooksBook.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -3708,8 +3573,8 @@ extension Book {
         rating: Int?? = nil,
         status: Status? = nil,
         title: String? = nil
-    ) -> Book {
-        return Book(
+    ) -> DashboardBooksBook {
+        return DashboardBooksBook(
             asin: asin ?? self.asin,
             author: author ?? self.author,
             isbn: isbn ?? self.isbn,
@@ -3738,8 +3603,8 @@ enum Status: String, Codable {
 }
 
 /// Aggregate reading statistics computed by the DS pipeline.
-// MARK: - Stats
-struct Stats: Codable {
+// MARK: - DashboardBooksStats
+struct DashboardBooksStats: Codable {
     /// Average star rating across all rated books.
     let avgRating: Double
     /// Total books started or completed in the current calendar year.
@@ -3752,11 +3617,11 @@ struct Stats: Codable {
     let upNext: Int
 }
 
-// MARK: Stats convenience initializers and mutators
+// MARK: DashboardBooksStats convenience initializers and mutators
 
-extension Stats {
+extension DashboardBooksStats {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Stats.self, from: data)
+        self = try newJSONDecoder().decode(DashboardBooksStats.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -3776,8 +3641,8 @@ extension Stats {
         currentlyReading: Int? = nil,
         totalRead: Int? = nil,
         upNext: Int? = nil
-    ) -> Stats {
-        return Stats(
+    ) -> DashboardBooksStats {
+        return DashboardBooksStats(
             avgRating: avgRating ?? self.avgRating,
             booksThisYear: booksThisYear ?? self.booksThisYear,
             currentlyReading: currentlyReading ?? self.currentlyReading,

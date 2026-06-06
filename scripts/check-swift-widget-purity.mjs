@@ -16,10 +16,10 @@
  *   - import SharedModels            (app domain models)
  *
  * Usage:
- *   node scripts/check-swift-widget-purity.mjs           — print findings
- *   node scripts/check-swift-widget-purity.mjs --check   — advisory: print, exit 0
+ *   node scripts/check-swift-widget-purity.mjs           — print findings, exit 0
+ *   node scripts/check-swift-widget-purity.mjs --check   — print findings, exit 1 on violations
  *
- * Any hit is a genuine P3 violation and is reported clearly even in advisory mode.
+ * Any hit is a genuine P3 violation and is reported clearly.
  */
 
 import fs from 'node:fs';
@@ -95,6 +95,5 @@ if (findings.length === 0) {
 }
 
 // ── exit code ─────────────────────────────────────────────────────────────────
-// Advisory: always exit 0, even when violations are found.
-void CHECK_MODE;
-process.exit(0);
+// --check: exit 1 when violations found (blocking gate). Without flag: exit 0.
+process.exit(CHECK_MODE && findings.length > 0 ? 1 : 0);

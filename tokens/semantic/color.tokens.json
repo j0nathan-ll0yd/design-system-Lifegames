@@ -56,7 +56,7 @@
     "sleep": {
       "deep": {
         "$type": "color",
-        "$value": "#1e40af",
+        "$value": "{color.blue.700}",
         "$description": "Deep sleep phase (web NightSummary deep pill)"
       }
     }

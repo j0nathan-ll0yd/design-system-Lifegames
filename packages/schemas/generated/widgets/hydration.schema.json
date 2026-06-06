@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "properties": {
+    "health": {
+      "type": "object",
+      "properties": {
+        "hydration": {
+          "type": "object",
+          "properties": {
+            "waterOz": {
+              "type": "number"
+            },
+            "waterMax": {
+              "type": "number"
+            },
+            "waterRangeLo": {
+              "type": "number"
+            },
+            "waterRangeHi": {
+              "type": "number"
+            },
+            "caffeineMg": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "caffeineMax": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "caffeineRangeLo": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "caffeineRangeHi": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "waterOz",
+            "waterMax",
+            "waterRangeLo",
+            "waterRangeHi",
+            "caffeineMg",
+            "caffeineMax",
+            "caffeineRangeLo",
+            "caffeineRangeHi"
+          ]
+        }
+      },
+      "required": [
+        "hydration"
+      ]
+    }
+  },
+  "required": [
+    "health"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/hydration.json",
+  "title": "HydrationProps"
+}

@@ -10,9 +10,9 @@ public struct PlaceLeaderboardView: View {
     }
 
     private static let medalColors: [Color] = [
-        Color(red: 1.0, green: 0.84, blue: 0.0),
-        Color(red: 0.75, green: 0.75, blue: 0.75),
-        Color(red: 0.80, green: 0.50, blue: 0.20),
+        Color.colorAccentAmber,
+        LGColor.zinc400,
+        Color.colorAccentOrange,
     ]
 
     public var body: some View {

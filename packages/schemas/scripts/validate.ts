@@ -91,6 +91,19 @@ if (existsSync(generatedDir)) {
   }
 }
 
+// Register per-widget generated schemas (from generate-widget-schemas.mjs).
+const widgetSchemaDir = join(generatedDir, 'widgets');
+if (existsSync(widgetSchemaDir)) {
+  for (const f of readdirSync(widgetSchemaDir).filter(f => f.endsWith('.schema.json'))) {
+    const raw = readFileSync(join(widgetSchemaDir, f), 'utf-8');
+    const schema = JSON.parse(raw) as { title?: string; $schema?: string };
+    assertDraft07(schema, `widgets/${f}`);
+    const name = schema.title || f.replace('.schema.json', '');
+    schemasByName[name] = schema;
+    ajv.addSchema(schema, `urn:generated:${name}`);
+  }
+}
+
 // Also alias vendored schemas by their title names so fixture-map entries like
 // 'TheatreReviewsExport' resolve without knowing the file name.
 const VENDORED_TITLE_MAP: Record<string, string> = {

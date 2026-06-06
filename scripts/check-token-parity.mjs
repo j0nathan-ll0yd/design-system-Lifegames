@@ -15,8 +15,8 @@
  * present in both outputs, the resolved hex must match.
  *
  * Usage:
- *   node scripts/check-token-parity.mjs           — print parity table
- *   node scripts/check-token-parity.mjs --check   — advisory: print, exit 0
+ *   node scripts/check-token-parity.mjs           — print parity table, exit 0
+ *   node scripts/check-token-parity.mjs --check   — print parity table, exit 1 on mismatches
  */
 
 import fs from 'node:fs';
@@ -164,6 +164,5 @@ if (mismatches.length > 0) {
 }
 
 // ── exit code ─────────────────────────────────────────────────────────────────
-// Advisory: always exit 0.
-void CHECK_MODE;
-process.exit(0);
+// --check: exit 1 when hex mismatches found (blocking gate). Without flag: exit 0.
+process.exit(CHECK_MODE && mismatches.length > 0 ? 1 : 0);

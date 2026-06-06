@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-06-01T17:33:11.010Z",
-  "totalCount": 29,
-  "portfolioConsumedCount": 18,
+  "totalCount": 28,
+  "portfolioConsumedCount": 17,
   "widgets": [
     {
       "id": "ActivityFeed",
@@ -90,14 +90,6 @@
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": false
-    },
-    {
-      "id": "DailyActivity",
-      "category": "health",
-      "hasStory": false,
-      "hasSwiftMirror": true,
-      "schemaExempt": true,
-      "consumedByPortfolio": true
     },
     {
       "id": "HeartRate",

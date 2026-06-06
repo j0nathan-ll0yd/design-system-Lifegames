@@ -17,7 +17,6 @@
 		29215EB29E41B445001BBADE /* DevActivityLogVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B0A743BA891EC6AF96DA223 /* DevActivityLogVariations.swift */; };
 		35EE5E5A8F17B2E6C9015258 /* ExplorationOdometerVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C1381812DE0C9652EAC9B5 /* ExplorationOdometerVariations.swift */; };
 		3A831878DECDCC95F4DC6EB4 /* BioTerminalVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717CBA3BE53E783D4EF40D4 /* BioTerminalVariations.swift */; };
-		3BD7226B13C971EFEDEC6261 /* LifegamesSchemas in Frameworks */ = {isa = PBXBuildFile; productRef = 2A39C38B913197B18665F9CC /* LifegamesSchemas */; };
 		3F980A6E9E0799646C061743 /* WidgetListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4271E2CBCB376EA56E8F17 /* WidgetListView.swift */; };
 		474DDDA3E1A70215CA0093F6 /* CardsShowcase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AF9B85206D53CDB63DD6DE /* CardsShowcase.swift */; };
 		4A1A44ED30FF888FCEF1DD26 /* HeartRateVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7541E997AA10E3E4A2C8A97 /* HeartRateVariations.swift */; };
@@ -33,7 +32,6 @@
 		6CB55BE612DAD98083FB3049 /* WidgetCatalog+Health.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60F7DFB831949951FC8F8F1 /* WidgetCatalog+Health.swift */; };
 		7B30D1197A155C64DF8EF0F8 /* SystemStatusVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF0C740AB155C2A1E8D416FA /* SystemStatusVariations.swift */; };
 		7D34E03F249ABFA5B060A242 /* LanguageStackVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F67835CDF01FEB50867F65C5 /* LanguageStackVariations.swift */; };
-		7E3D388AE8A70E0F1CC42CDD /* LifegamesOnboarding in Frameworks */ = {isa = PBXBuildFile; productRef = A2E2ECC67D785888530E67B9 /* LifegamesOnboarding */; };
 		82905343DBFCB46C36E50023 /* CommitTimelineVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38394CE362054CFD472CEA2 /* CommitTimelineVariations.swift */; };
 		832F2B5CD7B31A10EBEA309C /* StarredRepoListVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39CB697BD82AF083143B4A96 /* StarredRepoListVariations.swift */; };
 		85E48EBB53DCDC55459A7F76 /* TypographyShowcase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F156AC07EEBBE23E5A1668C /* TypographyShowcase.swift */; };
@@ -130,8 +128,6 @@
 				61422319CE1D4014B9AC6CA0 /* LifegamesTokens in Frameworks */,
 				CAFE8C3CB8762BCF62CF0565 /* LifegamesComponents in Frameworks */,
 				D98740F0CF10770D58104143 /* LifegamesWidgets in Frameworks */,
-				7E3D388AE8A70E0F1CC42CDD /* LifegamesOnboarding in Frameworks */,
-				3BD7226B13C971EFEDEC6261 /* LifegamesSchemas in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,8 +270,6 @@
 				44198BCCE30792EADF1687AA /* LifegamesTokens */,
 				B1743235CA7DB15E6E5B3D59 /* LifegamesComponents */,
 				C612F58B3BFF38D7B87AD62A /* LifegamesWidgets */,
-				A2E2ECC67D785888530E67B9 /* LifegamesOnboarding */,
-				2A39C38B913197B18665F9CC /* LifegamesSchemas */,
 			);
 			productName = SwiftGallery;
 			productReference = DB17570B916E0BA77C3BB7EF /* SwiftGallery.app */;
@@ -590,17 +584,9 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2A39C38B913197B18665F9CC /* LifegamesSchemas */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = LifegamesSchemas;
-		};
 		44198BCCE30792EADF1687AA /* LifegamesTokens */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LifegamesTokens;
-		};
-		A2E2ECC67D785888530E67B9 /* LifegamesOnboarding */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = LifegamesOnboarding;
 		};
 		B1743235CA7DB15E6E5B3D59 /* LifegamesComponents */ = {
 			isa = XCSwiftPackageProductDependency;

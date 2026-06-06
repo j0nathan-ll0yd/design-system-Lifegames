@@ -13,11 +13,11 @@ const meta: Meta = {
     rating: { control: 'number' },
   },
   render: (args) => html`
-    <div id="bookModal" class="lg-modal-overlay ${args.visible ? 'visible' : ''}" role="dialog" aria-modal="true">
+    <div id="bookModal" class="lg-modal-overlay ${args.visible ? 'visible' : ''}" role="dialog" aria-modal="true" aria-label="Book details">
       <div class="lg-modal" style="background: var(--lg-color-surface); border-radius: 8px; padding: 24px; max-width: 400px; margin: auto;">
         <button class="lg-modal-close" aria-label="Close" style="float: right; background: none; border: none; cursor: pointer; color: var(--lg-color-text-muted);">&times;</button>
         <div class="lg-modal-body">
-          <h2 style="color: var(--lg-color-text-title); margin: 0 0 4px;">${args.bookTitle ?? 'Book Title'}</h2>
+          ${args.bookTitle ? html`<h2 style="color: var(--lg-color-text-title); margin: 0 0 4px;">${args.bookTitle}</h2>` : ''}
           <p style="color: var(--lg-color-text-muted); margin: 0 0 12px; font-size: 0.9em;">${args.bookAuthor ?? 'Author'}</p>
           ${args.rating != null ? html`<div style="color: var(--lg-color-accent-amber);">${'★'.repeat(args.rating)}${'☆'.repeat(5 - args.rating)}</div>` : ''}
         </div>

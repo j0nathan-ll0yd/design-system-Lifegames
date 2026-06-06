@@ -60,7 +60,7 @@ Snapshots are generated for every story exported from the Storybook. The 19 prod
 
 | Category | Stories |
 |---|---|
-| Health | HeartRate, DailyActivity, Hydration, NightSummary, Workouts |
+| Health | HeartRate, MovementRings, Hydration, NightSummary, Workouts |
 | Github | DevActivityLog, StarredRepoList |
 | Identity | BioTerminal, IdentityCard, ComingSoon |
 | Location | ExplorationOdometerV3, PlaceLeaderboardV3 |

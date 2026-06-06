@@ -1,7 +1,36 @@
 ---
 import type { MovementRingsProps } from './MovementRings.types';
 
-const { health } = Astro.props as MovementRingsProps;
+const { health: rawHealth } = Astro.props as MovementRingsProps;
+
+// Shape adapter: accept the flat `health.movement.*` shape (Swift Props
+// contract used by widget fixtures) in addition to the nested
+// `health.quantities.*` shape (HealthKit export contract used by the
+// runtime updater). The renderer continues to use the nested shape.
+const m = (rawHealth as any).movement as
+  | {
+      moveKcal?: number; exerciseMin?: number; standHr?: number;
+      steps?: number; distanceMeters?: number; flights?: number;
+      daylightMin?: number;
+      goals?: MovementRingsProps['health']['goals'];
+      solar?: MovementRingsProps['health']['solar'];
+    }
+  | undefined;
+const health: MovementRingsProps['health'] = (rawHealth as any).quantities
+  ? rawHealth
+  : ({
+      quantities: {
+        stepCount:              { value: m?.steps           ?? 0, unit: 'count' },
+        distanceWalkingRunning: { value: m?.distanceMeters  ?? 0, unit: 'm' },
+        flightsClimbed:         { value: m?.flights         ?? 0, unit: 'count' },
+        activeEnergyBurned:     { value: m?.moveKcal        ?? 0, unit: 'kcal' },
+        exerciseTime:           { value: m?.exerciseMin     ?? 0, unit: 'min' },
+        standTime:              { value: m?.standHr         ?? 0, unit: 'hr' },
+        timeInDaylight:         { value: m?.daylightMin     ?? 0, unit: 'min' },
+      },
+      goals: m?.goals,
+      solar: m?.solar,
+    } as MovementRingsProps['health']);
 const q = health.quantities;
 
 // Default goals (can be overridden by health.goals)

@@ -11,7 +11,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 4px;
-  color: var(--neon-pink);
+  color: var(--lg-color-accent-pink);
   margin-bottom: 20px;
   padding-bottom: 8px;
   border-bottom: 1px solid rgba(255,0,110,0.2);
@@ -48,7 +48,7 @@
 .swatch-hex {
   font-size: 0.58rem;
   font-family: 'Space Grotesk', monospace;
-  color: var(--text-muted);
+  color: var(--lg-color-text-muted);
 }
 
 .swatch-var {
@@ -72,7 +72,7 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: var(--text-muted);
+  color: var(--lg-color-text-muted);
   margin-bottom: 8px;
 }
 
@@ -92,7 +92,7 @@
   justify-content: center;
   font-size: 0.6rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--lg-color-text-muted);
   letter-spacing: 1px;
 }
 
@@ -131,7 +131,7 @@
 
 .spacing-bar {
   height: 8px;
-  background: var(--neon-blue);
+  background: var(--lg-color-accent-blue);
   border-radius: 4px;
   opacity: 0.5;
 }
@@ -139,7 +139,7 @@
 .spacing-label {
   font-size: 0.58rem;
   font-family: 'Space Grotesk', monospace;
-  color: var(--text-muted);
+  color: var(--lg-color-text-muted);
   min-width: 80px;
 }
 
@@ -181,5 +181,5 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: var(--text-muted);
+  color: var(--lg-color-text-muted);
 }

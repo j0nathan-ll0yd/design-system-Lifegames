@@ -22,7 +22,7 @@ struct RenderSmokeTests {
         )
         let data = try Data(contentsOf: url)
         let manifest = try JSONDecoder().decode(Manifest.self, from: data)
-        #expect(manifest.widgets.count == 31)
+        #expect(manifest.widgets.count == 32)
     }
 
     @Test func allFixtureFilesExist() throws {
@@ -75,7 +75,7 @@ struct RenderSmokeTests {
 
         #expect(counts["github"] == 11)
         #expect(counts["location"] == 2)
-        #expect(counts["health"] == 4)
+        #expect(counts["health"] == 5)
         #expect(counts["reading"] == 4)
         #expect(counts["identity"] == 3)
         #expect(counts["other"] == 7)

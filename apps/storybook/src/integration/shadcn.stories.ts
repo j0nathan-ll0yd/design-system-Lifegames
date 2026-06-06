@@ -42,11 +42,11 @@ const shadcnStyles = html`
     }
     .shadcn-btn--primary {
       background: var(--primary);
-      color: var(--primary-foreground);
+      color: var(--lg-color-gray-950);
     }
     .shadcn-btn--destructive {
       background: var(--destructive);
-      color: var(--destructive-foreground);
+      color: var(--lg-color-gray-950);
     }
     .shadcn-card {
       background: var(--card);
