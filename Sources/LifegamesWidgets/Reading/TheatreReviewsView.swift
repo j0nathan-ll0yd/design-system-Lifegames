@@ -42,7 +42,7 @@ private struct TheatreReviewsPopulatedView: View {
             }
             .padding(.bottom, 16)
         }
-        .neonCard(accent: Color(hex: "#ffd600"))
+        .neonCard(accent: Color.colorAccentAmber)
     }
 }
 
@@ -62,7 +62,7 @@ private struct TheatreReviewsEmptyView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 20)
         }
-        .neonCard(accent: Color(hex: "#ffd600"))
+        .neonCard(accent: Color.colorAccentAmber)
     }
 }
 
@@ -81,7 +81,7 @@ private struct TheatreReviewsSkeletonView: View {
             }
             .padding(.bottom, 16)
         }
-        .neonCard(accent: Color(hex: "#ffd600"))
+        .neonCard(accent: Color.colorAccentAmber)
     }
 }
 
@@ -102,7 +102,7 @@ private struct ReviewCard: View {
         case "green": return Color.colorAccentGreen
         case "blue": return Color.colorAccentBlue
         case "amber": return Color.colorAccentAmber
-        case "red": return Color(hex: "#ef4444")
+        case "red": return Color.colorAccentRed
         default: return Color.colorAccentAmber
         }
     }
@@ -113,7 +113,7 @@ private struct ReviewCard: View {
                 RoundedRectangle(cornerRadius: 4)
                     .fill(
                         LinearGradient(
-                            colors: [Color(hex: "#ffd600").opacity(0.12), Color.colorAccentBlue.opacity(0.08)],
+                            colors: [Color.colorAccentAmber.opacity(0.12), Color.colorAccentBlue.opacity(0.08)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -122,7 +122,7 @@ private struct ReviewCard: View {
                     .overlay(
                         Image(systemName: "theatermasks.fill")
                             .font(.system(size: 28))
-                            .foregroundStyle(Color(hex: "#ffd600").opacity(0.3))
+                            .foregroundStyle(Color.colorAccentAmber.opacity(0.3))
                     )
 
                 Text(review.grade)

@@ -28,7 +28,7 @@ public struct BioTerminalView: View {
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(hex: "#0d1117"))
+                .background(LGColor.gray950)
             }
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .padding(.horizontal, 14)
@@ -42,7 +42,7 @@ public struct BioTerminalView: View {
 
     private var terminalTitleBar: some View {
         HStack(spacing: 6) {
-            Circle().fill(Color(hex: "#ef4444")).frame(width: 10, height: 10)
+            Circle().fill(Color.colorAccentRed).frame(width: 10, height: 10)
             Circle().fill(Color.colorAccentAmber).frame(width: 10, height: 10)
             Circle().fill(Color.colorAccentGreen).frame(width: 10, height: 10)
             Spacer()
