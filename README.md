@@ -81,6 +81,12 @@ DESIGN.md is a deterministic, human-readable brief: brand voice, token architect
 
 Sync is one-way (this repo → Claude Design) and upload is a manual drag — Claude Design has no public ingest API. The deterministic markdown means diffs are reviewable before each upload.
 
+## Governance
+
+- [CONTRACT.md](CONTRACT.md) — versioning contract: what counts as a major / minor / patch bump on each shipped surface (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`, SPM products).
+- [GOVERNANCE.md](GOVERNANCE.md) — placement rules (P1–P8): what belongs in the design system vs the app.
+- [CHANGELOG.md](CHANGELOG.md) — cross-package narrative changelog; per-package histories live under `packages/*/CHANGELOG.md`.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Space Grotesk font under [SIL OFL](LICENSES/OFL.txt).
