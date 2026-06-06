@@ -67,6 +67,17 @@
     },
     "appleHealth": {
       "green": { "$value": "#34c759", "$description": "Apple health green (iOS healthGreen)" }
+    },
+    "alpha": {
+      "$description": "Neutral alpha primitives for layered glass surfaces. Name encodes the alpha percentage; semantic tier references these to keep all surface/border opacities aligned.",
+      "white3":  { "$value": "rgba(255,255,255,0.03)", "$description": "3% white overlay (inset surface)" },
+      "white4":  { "$value": "rgba(255,255,255,0.04)", "$description": "4% white overlay (AI artifact frame)" },
+      "white5":  { "$value": "rgba(255,255,255,0.05)", "$description": "5% white overlay (raised hover)" },
+      "white6":  { "$value": "rgba(255,255,255,0.06)", "$description": "6% white overlay (default border)" },
+      "white7":  { "$value": "rgba(255,255,255,0.07)", "$description": "7% white overlay (raised surface)" },
+      "white10": { "$value": "rgba(255,255,255,0.1)",  "$description": "10% white overlay (subtle border)" },
+      "white18": { "$value": "rgba(255,255,255,0.18)", "$description": "18% white overlay (strong border)" },
+      "black35": { "$value": "rgba(0,0,0,0.35)",       "$description": "35% black overlay (AI code-block background)" }
     }
   }
 }

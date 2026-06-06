@@ -4,15 +4,15 @@
     "surface": {
       "base":        { "$value": "{color.gray.950}", "$description": "Primary background" },
       "deep":        { "$value": "{color.gray.900}", "$description": "Secondary background" },
-      "raised":      { "$value": "rgba(255,255,255,0.07)", "$description": "Card/glass background" },
-      "raisedHover": { "$value": "rgba(255,255,255,0.05)", "$description": "Card hover state" },
-      "inset":       { "$value": "rgba(255,255,255,0.03)", "$description": "Inset/recessed surface" }
+      "raised":      { "$value": "{color.alpha.white7}", "$description": "Card/glass background" },
+      "raisedHover": { "$value": "{color.alpha.white5}", "$description": "Card hover state" },
+      "inset":       { "$value": "{color.alpha.white3}", "$description": "Inset/recessed surface" }
     },
     "border": {
-      "default":     { "$value": "rgba(255,255,255,0.06)", "$description": "Default border" },
-      "subtle":      { "$value": "rgba(255,255,255,0.1)", "$description": "Glass border" },
-      "strong":      { "$value": "rgba(255,255,255,0.18)", "$description": "Emphasized border" },
-      "interactive": { "$value": "rgba(99,102,241,0.2)", "$description": "Interactive hover border" }
+      "default":     { "$value": "{color.alpha.white6}", "$description": "Default border" },
+      "subtle":      { "$value": "{color.alpha.white10}", "$description": "Glass border" },
+      "strong":      { "$value": "{color.alpha.white18}", "$description": "Emphasized border" },
+      "interactive": { "$value": "rgba(99,102,241,0.2)", "$description": "Interactive hover border (indigo accent — not covered by white/black alpha primitive set)" }
     },
     "text": {
       "title":    { "$value": "{color.zinc.100}", "$description": "Heading text" },
