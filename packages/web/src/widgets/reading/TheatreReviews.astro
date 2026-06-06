@@ -32,7 +32,7 @@
 
 <style is:global>
   .tri-card-accent-yellow {
-    border-top: 2px solid #ffd600;
+    border-top: 2px solid var(--lg-color-status-warning);
     box-shadow: 0 0 20px rgba(255,214,0,0.08);
   }
 
@@ -56,7 +56,7 @@
     color: inherit;
     transition: color 0.2s ease;
   }
-  .theatre-count-link:hover { color: #ffd600; }
+  .theatre-count-link:hover { color: var(--lg-color-status-warning); }
 
   .theatre-card {
     flex-shrink: 0;
@@ -72,7 +72,7 @@
 
   @media (hover: hover) {
     .theatre-card:hover { transform: translateY(-4px); }
-    .theatre-card:hover .theatre-title { color: #ffd600; }
+    .theatre-card:hover .theatre-title { color: var(--lg-color-status-warning); }
   }
 
   .theatre-poster-wrap {

@@ -187,14 +187,14 @@ function offset(circ: number, pct: number): number {
         </div>
         <div class="mv-sun-footer">
           <div class="mv-sun-arc-row">
-            <span class="mv-sun-glyph" aria-hidden="true">&#9728;</span>
+            <span class="mv-sun-glyph" aria-hidden="true">☀</span>
             <span class="mv-sun-time" id="mvSunrise">{sunrise}</span>
             <div class="mv-sun-track" role="img" aria-label="Daylight position">
               <div class="mv-sun-track-line"></div>
               <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`}></div>
             </div>
             <span class="mv-sun-time" id="mvSunset">{sunset}</span>
-            <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">&#9790;</span>
+            <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">☾</span>
           </div>
           <p class="mv-sun-caption">
             <span id="mvDaylightMin">{daylightMin}</span> min in daylight today &middot; goal {goals.daylightMin} min{daylightHit && (<span class="mv-sun-caption-hit">&#10003;</span>)}

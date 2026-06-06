@@ -31,7 +31,7 @@ const { repos } = Astro.props;
           <a class="gh-sl-name" href={repo.url} target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">
             <span class="gh-sl-owner">{repo.owner}/</span>{repo.name}
           </a>
-          <span class="gh-sl-stars">&#9733; {repo.stars.toLocaleString()}</span>
+          <span class="gh-sl-stars">★ {repo.stars.toLocaleString()}</span>
           <span class="gh-sl-lang">
             <span class="gh-sl-lang-dot" style={`background: ${repo.languageColor};`}></span>
             {repo.language}

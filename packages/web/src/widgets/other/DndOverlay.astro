@@ -56,13 +56,13 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: #06060f;
+    background: var(--lg-color-surface-base);
     z-index: 9999;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     font-family: 'Space Grotesk', sans-serif;
-    color: #f0f0f0;
+    color: var(--lg-color-text-primary);
   }
 
   .dnd-badge {
@@ -80,14 +80,14 @@
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: #00d4ff;
+    color: var(--lg-color-accent-cyan);
   }
 
   .dnd-badge .dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #00d4ff;
+    background: var(--lg-color-accent-cyan);
     animation: dnd-pulse-dot 2s ease-in-out infinite;
   }
 
@@ -112,7 +112,7 @@
   .heading {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #00d4ff;
+    color: var(--lg-color-accent-cyan);
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-top: 24px;
@@ -122,7 +122,7 @@
   .subheading {
     font-size: 0.75rem;
     font-weight: 300;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
     text-align: center;
     line-height: 1.5;
     max-width: 340px;
@@ -177,7 +177,7 @@
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
   }
 
   .clock-time {
@@ -185,13 +185,13 @@
     font-weight: 600;
     letter-spacing: 0.05em;
     font-variant-numeric: tabular-nums;
-    color: #00d4ff;
+    color: var(--lg-color-accent-cyan);
   }
 
   .clock-zone {
     font-size: 0.6rem;
     font-weight: 400;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
     letter-spacing: 0.1em;
   }
 

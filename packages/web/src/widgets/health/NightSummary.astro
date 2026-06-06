@@ -6,10 +6,10 @@ const phases = health.sleepPhaseFormatted;
 const derived = health.derived;
 
 const pills = [
-  { label: 'Deep', phase: 'deep', formatted: phases.deep, color: '#1e40af' },
-  { label: 'REM', phase: 'rem', formatted: phases.rem, color: '#a855f7' },
-  { label: 'Core', phase: 'core', formatted: phases.core, color: '#3a86ff' },
-  { label: 'Awake', phase: 'awake', formatted: phases.awake, color: '#f59e0b' }
+  { label: 'Deep', phase: 'deep', formatted: phases.deep, color: 'var(--lg-color-sleep-deep)' },
+  { label: 'REM', phase: 'rem', formatted: phases.rem, color: 'var(--lg-color-sleep-rem)' },
+  { label: 'Core', phase: 'core', formatted: phases.core, color: 'var(--lg-color-sleep-core)' },
+  { label: 'Awake', phase: 'awake', formatted: phases.awake, color: 'var(--lg-color-accent-amber)' }
 ];
 ---
 <div class="tri-card tri-card-accent-purple" id="cardSleep">
@@ -46,9 +46,9 @@ const pills = [
               </feMerge>
             </filter>
           </defs>
-          <circle cx="40" cy="40" r="28" fill="#a855f7" opacity="0.15" filter="url(#moonGlow)"/>
-          <circle cx="40" cy="40" r="28" fill="none" stroke="#a855f7" stroke-width="1.5" opacity="0.4"/>
-          <path d="M40,12 A28,28 0 1,1 40,68 A20,20 0 1,0 40,12" fill="#a855f7" opacity="0.3" filter="url(#moonGlow)"/>
+          <circle cx="40" cy="40" r="28" fill="var(--lg-color-sleep-rem)" opacity="0.15" filter="url(#moonGlow)"/>
+          <circle cx="40" cy="40" r="28" fill="none" stroke="var(--lg-color-sleep-rem)" stroke-width="1.5" opacity="0.4"/>
+          <path d="M40,12 A28,28 0 1,1 40,68 A20,20 0 1,0 40,12" fill="var(--lg-color-sleep-rem)" opacity="0.3" filter="url(#moonGlow)"/>
           <circle cx="34" cy="30" r="3" fill="rgba(168,85,247,0.2)"/>
           <circle cx="48" cy="45" r="2" fill="rgba(168,85,247,0.15)"/>
         </svg>
