@@ -45,12 +45,14 @@ public struct MetricCardView: View {
     }
 }
 
-#Preview("Metric Card") {
-    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-        MetricCardView(title: "Heart Rate", value: "72", unit: "bpm", icon: "heart.fill", color: Color.colorAccentPink)
-        MetricCardView(title: "Steps", value: "8,247", unit: nil, icon: "figure.walk", color: Color.colorAccentGreen)
+#if os(iOS)
+    #Preview("Metric Card") {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+            MetricCardView(title: "Heart Rate", value: "72", unit: "bpm", icon: "heart.fill", color: Color.colorAccentPink)
+            MetricCardView(title: "Steps", value: "8,247", unit: nil, icon: "figure.walk", color: Color.colorAccentGreen)
+        }
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
     }
-    .padding()
-    .background(Color.colorSurfaceBase)
-    .preferredColorScheme(.dark)
-}
+#endif

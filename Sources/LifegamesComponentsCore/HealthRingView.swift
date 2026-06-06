@@ -47,3 +47,16 @@ public struct HealthRingView: View {
         }
     }
 }
+
+#if os(iOS)
+    #Preview("Health Ring") {
+        HStack(spacing: 20) {
+            HealthRingView(progress: 0.72, color: Color.colorHealthRed, label: "Move", value: "432")
+            HealthRingView(progress: 0.85, color: Color.colorHealthGreen, label: "Exercise", value: "26m")
+            HealthRingView(progress: 0.60, color: Color.colorAccentPurple, label: "Stand", value: "7h")
+        }
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+    }
+#endif

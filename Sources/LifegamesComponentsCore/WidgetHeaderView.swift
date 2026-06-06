@@ -30,3 +30,16 @@ public struct WidgetHeaderView: View {
         .padding(.bottom, 8)
     }
 }
+
+#if os(iOS)
+    #Preview("Widget Header") {
+        VStack(spacing: 20) {
+            WidgetHeaderView(label: "HEALTH", dotColor: Color.colorAccentPink, timestamp: "today")
+            WidgetHeaderView(label: "LOCATION", dotColor: Color.colorAccentBlue, timestamp: "live")
+            WidgetHeaderView(label: "BOOKSHELF", dotColor: Color.colorAccentAmber, timestamp: "library")
+        }
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+    }
+#endif

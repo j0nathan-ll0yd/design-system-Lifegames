@@ -29,15 +29,17 @@ public struct StatItemView: View {
     }
 }
 
-#Preview("Stat Item") {
-    HStack {
-        StatItemView(label: "Steps", value: "8,432", valueColor: Color.colorAccentGreen)
-        Spacer()
-        StatItemView(label: "Distance", value: "5.2 km")
-        Spacer()
-        StatItemView(label: "Calories", value: "432", valueColor: Color.colorHealthRed)
+#if os(iOS)
+    #Preview("Stat Item") {
+        HStack {
+            StatItemView(label: "Steps", value: "8,432", valueColor: Color.colorAccentGreen)
+            Spacer()
+            StatItemView(label: "Distance", value: "5.2 km")
+            Spacer()
+            StatItemView(label: "Calories", value: "432", valueColor: Color.colorHealthRed)
+        }
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
     }
-    .padding()
-    .background(Color.colorSurfaceBase)
-    .preferredColorScheme(.dark)
-}
+#endif
