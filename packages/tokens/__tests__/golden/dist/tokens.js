@@ -477,120 +477,72 @@ export default {
       "bold": 700
     }
   },
-  "typography": {
+  "iosTypography": {
     "caption2": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 10,
-      "fontSizeMax": 11.5,
+      "fontSize": 11.5,
       "fontWeight": 400,
-      "lineHeight": 1.3,
-      "iosTextStyle": "caption2"
+      "lineHeight": 1.3
     },
     "caption": {
       "fontFamily": "Space Grotesk",
+      "fontSize": 12.5,
       "fontWeight": 400,
-      "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
       "lineHeight": 1.3
     },
     "footnote": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 11.5,
-      "fontSizeMax": 13.1,
+      "fontSize": 13.1,
       "fontWeight": 400,
-      "lineHeight": 1.4,
-      "iosTextStyle": "footnote"
+      "lineHeight": 1.4
     },
     "body": {
       "fontFamily": "Space Grotesk",
+      "fontSize": 13.1,
       "fontWeight": 400,
-      "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
       "lineHeight": 1.5
     },
     "callout": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 11.5,
-      "fontSizeMax": 13.1,
+      "fontSize": 13.1,
       "fontWeight": 400,
-      "lineHeight": 1.4,
-      "iosTextStyle": "callout"
+      "lineHeight": 1.4
     },
     "subhead": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 14.1,
-      "fontSizeMax": 16.8,
+      "fontSize": 16.8,
       "fontWeight": 500,
-      "lineHeight": 1.4,
-      "iosTextStyle": "subheadline"
+      "lineHeight": 1.4
     },
     "headline": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 19.2,
-      "fontSizeMax": 24,
+      "fontSize": 24,
       "fontWeight": 600,
-      "lineHeight": 1.3,
-      "iosTextStyle": "headline"
+      "lineHeight": 1.3
     },
     "title3": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 25.6,
-      "fontSizeMax": 32,
+      "fontSize": 32,
       "fontWeight": 700,
-      "lineHeight": 1.25,
-      "iosTextStyle": "title3"
+      "lineHeight": 1.25
     },
     "title2": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 30.4,
-      "fontSizeMax": 38.4,
+      "fontSize": 38.4,
       "fontWeight": 700,
-      "lineHeight": 1.2,
-      "iosTextStyle": "title2"
+      "lineHeight": 1.2
     },
     "title1": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 33.6,
-      "fontSizeMax": 42,
+      "fontSize": 42,
       "fontWeight": 700,
-      "lineHeight": 1.15,
-      "iosTextStyle": "title1"
+      "lineHeight": 1.15
     },
     "hero": {
       "fontFamily": "Space Grotesk",
-      "fontSizeMin": 28.8,
-      "fontSizeMax": 35.2,
+      "fontSize": 35.2,
       "fontWeight": 700,
-      "lineHeight": 1.15,
-      "iosTextStyle": "largeTitle"
-    },
-    "display": {
-      "fontFamily": "Space Grotesk",
-      "fontWeight": 700,
-      "fontSize": "clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)",
       "lineHeight": 1.15
-    },
-    "heading1": {
-      "fontFamily": "Space Grotesk",
-      "fontWeight": 700,
-      "fontSize": "clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)",
-      "lineHeight": 1.25
-    },
-    "heading2": {
-      "fontFamily": "Space Grotesk",
-      "fontWeight": 600,
-      "fontSize": "clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)",
-      "lineHeight": 1.3
-    },
-    "label": {
-      "fontFamily": "Space Grotesk",
-      "fontWeight": 500,
-      "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
-      "lineHeight": 1.4
-    },
-    "code": {
-      "fontFamily": "system-ui",
-      "fontWeight": 400,
-      "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
-      "lineHeight": 1.6
     }
   },
   "transition": {
@@ -643,6 +595,50 @@ export default {
         1
       ],
       "delay": "0ms"
+    }
+  },
+  "typography": {
+    "display": {
+      "fontFamily": "Space Grotesk",
+      "fontWeight": 700,
+      "fontSize": "clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)",
+      "lineHeight": 1.15
+    },
+    "heading1": {
+      "fontFamily": "Space Grotesk",
+      "fontWeight": 700,
+      "fontSize": "clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)",
+      "lineHeight": 1.25
+    },
+    "heading2": {
+      "fontFamily": "Space Grotesk",
+      "fontWeight": 600,
+      "fontSize": "clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)",
+      "lineHeight": 1.3
+    },
+    "body": {
+      "fontFamily": "Space Grotesk",
+      "fontWeight": 400,
+      "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+      "lineHeight": 1.5
+    },
+    "label": {
+      "fontFamily": "Space Grotesk",
+      "fontWeight": 500,
+      "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+      "lineHeight": 1.4
+    },
+    "caption": {
+      "fontFamily": "Space Grotesk",
+      "fontWeight": 400,
+      "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+      "lineHeight": 1.3
+    },
+    "code": {
+      "fontFamily": "system-ui",
+      "fontWeight": 400,
+      "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+      "lineHeight": 1.6
     }
   }
 };

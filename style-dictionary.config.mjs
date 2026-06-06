@@ -489,9 +489,17 @@ function emitFontTokensSwift() {
     const val = t.resolvedValue;
     if (!val || typeof val !== 'object') continue;
     seenFontNames.add(name);
-    const size = val.fontSizeMax || 17;
+    // iOS-specific scale data lives in $extensions.lifegames per DTCG convention.
+    // Primitive iOS typography tokens carry the canonical size in $value.fontSize
+    // (DTCG-standard); legacy fontSizeMax and $extensions.lifegames.fontSizeMax
+    // are accepted as fallbacks during the native-transform migration window.
+    const lgExt = (t.$extensions && t.$extensions.lifegames) || {};
+    // val.fontSize may be a number (iOS primitive) or a CSS clamp() string
+    // (semantic web token). Only numeric sizes are valid in SwiftUI Font.custom.
+    const numericFontSize = typeof val.fontSize === 'number' ? val.fontSize : null;
+    const size = lgExt.fontSizeMax || val.fontSizeMax || numericFontSize || 17;
     const weight = SWIFT_FONT_WEIGHT[val.fontWeight] || 'Regular';
-    const textStyle = IOS_TEXT_STYLE[name] || '.body';
+    const textStyle = lgExt.iosTextStyle || IOS_TEXT_STYLE[name] || '.body';
     swiftFonts += `        public static func ${name}() -> Font {\n`;
     swiftFonts += `            .custom("SpaceGrotesk-${weight}", size: ${size}, relativeTo: ${textStyle})\n`;
     swiftFonts += `        }\n`;
@@ -686,7 +694,7 @@ function emitDesignMd() {
   md += '## Component Tokens\n\n';
   const componentRoots = new Set();
   for (const t of tokens) {
-    if (['color', 'space', 'motion', 'typography', 'shadow', 'font'].includes(t.path[0])) continue;
+    if (['color', 'space', 'motion', 'typography', 'iosTypography', 'shadow', 'font'].includes(t.path[0])) continue;
     if (t.path[0]) componentRoots.add(t.path[0]);
   }
   for (const root of [...componentRoots].sort()) {

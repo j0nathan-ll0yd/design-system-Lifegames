@@ -146,8 +146,8 @@ function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
         // DTCG typography composite fields
         const dtcgFields = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'];
         const hasAny = dtcgFields.some((f) => f in val);
-        // We allow extended fields (fontSizeMin/Max, iosTextStyle) as $extensions effectively
-        // Just warn if none of the standard DTCG fields are present
+        // iOS scale metadata lives in $extensions.lifegames per DTCG convention.
+        // Warn only if none of the standard DTCG fields are present in $value.
         if (!hasAny) {
           violations.push({
             file: relFile,

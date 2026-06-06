@@ -1051,68 +1051,59 @@
       }
     }
   },
-  "typography": {
+  "iosTypography": {
     "caption2": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 10,
-        "fontSizeMax": 11.5,
+        "fontSize": 11.5,
         "fontWeight": 400,
-        "lineHeight": 1.3,
-        "iosTextStyle": "caption2"
+        "lineHeight": 1.3
       },
       "$type": "typography"
     },
     "caption": {
       "$value": {
         "fontFamily": "Space Grotesk",
+        "fontSize": 12.5,
         "fontWeight": 400,
-        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
         "lineHeight": 1.3
       },
-      "$type": "typography",
-      "$description": "Caption / supporting text. Maps to typography.caption primitive."
+      "$type": "typography"
     },
     "footnote": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 11.5,
-        "fontSizeMax": 13.1,
+        "fontSize": 13.1,
         "fontWeight": 400,
-        "lineHeight": 1.4,
-        "iosTextStyle": "footnote"
+        "lineHeight": 1.4
       },
       "$type": "typography"
     },
     "body": {
       "$value": {
         "fontFamily": "Space Grotesk",
+        "fontSize": 13.1,
         "fontWeight": 400,
-        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
         "lineHeight": 1.5
       },
       "$type": "typography",
-      "$description": "Default body text. Maps to typography.body primitive."
+      "$description": "Maps to web --font-size-base: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)"
     },
     "callout": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 11.5,
-        "fontSizeMax": 13.1,
+        "fontSize": 13.1,
         "fontWeight": 400,
-        "lineHeight": 1.4,
-        "iosTextStyle": "callout"
+        "lineHeight": 1.4
       },
       "$type": "typography"
     },
     "subhead": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 14.1,
-        "fontSizeMax": 16.8,
+        "fontSize": 16.8,
         "fontWeight": 500,
-        "lineHeight": 1.4,
-        "iosTextStyle": "subheadline"
+        "lineHeight": 1.4
       },
       "$type": "typography",
       "$description": "Maps to web --font-size-lg"
@@ -1120,11 +1111,9 @@
     "headline": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 19.2,
-        "fontSizeMax": 24,
+        "fontSize": 24,
         "fontWeight": 600,
-        "lineHeight": 1.3,
-        "iosTextStyle": "headline"
+        "lineHeight": 1.3
       },
       "$type": "typography",
       "$description": "Maps to web --font-size-xl"
@@ -1132,11 +1121,9 @@
     "title3": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 25.6,
-        "fontSizeMax": 32,
+        "fontSize": 32,
         "fontWeight": 700,
-        "lineHeight": 1.25,
-        "iosTextStyle": "title3"
+        "lineHeight": 1.25
       },
       "$type": "typography",
       "$description": "Maps to web --font-size-2xl"
@@ -1144,11 +1131,9 @@
     "title2": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 30.4,
-        "fontSizeMax": 38.4,
+        "fontSize": 38.4,
         "fontWeight": 700,
-        "lineHeight": 1.2,
-        "iosTextStyle": "title2"
+        "lineHeight": 1.2
       },
       "$type": "typography",
       "$description": "Maps to web --font-size-3xl"
@@ -1156,11 +1141,9 @@
     "title1": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 33.6,
-        "fontSizeMax": 42,
+        "fontSize": 42,
         "fontWeight": 700,
-        "lineHeight": 1.15,
-        "iosTextStyle": "title1"
+        "lineHeight": 1.15
       },
       "$type": "typography",
       "$description": "Interpolated between title2 and hero. No direct web mapping."
@@ -1168,64 +1151,12 @@
     "hero": {
       "$value": {
         "fontFamily": "Space Grotesk",
-        "fontSizeMin": 28.8,
-        "fontSizeMax": 35.2,
+        "fontSize": 35.2,
         "fontWeight": 700,
-        "lineHeight": 1.15,
-        "iosTextStyle": "largeTitle"
-      },
-      "$type": "typography",
-      "$description": "Maps to web --font-size-hero"
-    },
-    "display": {
-      "$value": {
-        "fontFamily": "Space Grotesk",
-        "fontWeight": 700,
-        "fontSize": "clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)",
         "lineHeight": 1.15
       },
       "$type": "typography",
-      "$description": "Hero/display text. Maps to typography.hero primitive."
-    },
-    "heading1": {
-      "$value": {
-        "fontFamily": "Space Grotesk",
-        "fontWeight": 700,
-        "fontSize": "clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)",
-        "lineHeight": 1.25
-      },
-      "$type": "typography",
-      "$description": "Section headings. Maps to typography.title3 primitive."
-    },
-    "heading2": {
-      "$value": {
-        "fontFamily": "Space Grotesk",
-        "fontWeight": 600,
-        "fontSize": "clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)",
-        "lineHeight": 1.3
-      },
-      "$type": "typography",
-      "$description": "Subsection headings. Maps to typography.headline primitive."
-    },
-    "label": {
-      "$value": {
-        "fontFamily": "Space Grotesk",
-        "fontWeight": 500,
-        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
-        "lineHeight": 1.4
-      },
-      "$type": "typography",
-      "$description": "Form labels and UI element labels."
-    },
-    "code": {
-      "$value": {
-        "fontFamily": "system-ui",
-        "fontWeight": 400,
-        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
-        "lineHeight": 1.6
-      },
-      "$type": "typography",
-      "$description": "Monospaced code blocks and inline code. Uses system monospace fallback."
+      "$description": "Maps to web --font-size-hero"
     }
   },
   "transition": {
@@ -1298,6 +1229,78 @@
       },
       "$type": "transition",
       "$description": "Playful spring/bounce transition for expressive affordances"
+    }
+  },
+  "typography": {
+    "display": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 700,
+        "fontSize": "clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)",
+        "lineHeight": 1.15
+      },
+      "$type": "typography",
+      "$description": "Hero/display text. Maps to typography.hero primitive."
+    },
+    "heading1": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 700,
+        "fontSize": "clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)",
+        "lineHeight": 1.25
+      },
+      "$type": "typography",
+      "$description": "Section headings. Maps to typography.title3 primitive."
+    },
+    "heading2": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 600,
+        "fontSize": "clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)",
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "Subsection headings. Maps to typography.headline primitive."
+    },
+    "body": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 400,
+        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+        "lineHeight": 1.5
+      },
+      "$type": "typography",
+      "$description": "Default body text. Maps to typography.body primitive."
+    },
+    "label": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 500,
+        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+        "lineHeight": 1.4
+      },
+      "$type": "typography",
+      "$description": "Form labels and UI element labels."
+    },
+    "caption": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 400,
+        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "Caption / supporting text. Maps to typography.caption primitive."
+    },
+    "code": {
+      "$value": {
+        "fontFamily": "system-ui",
+        "fontWeight": 400,
+        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+        "lineHeight": 1.6
+      },
+      "$type": "typography",
+      "$description": "Monospaced code blocks and inline code. Uses system monospace fallback."
     }
   }
 }

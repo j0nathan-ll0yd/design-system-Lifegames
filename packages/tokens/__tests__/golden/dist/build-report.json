@@ -3,19 +3,19 @@
   "files": [
     {
       "path": "tokens.css",
-      "bytes": 13359
+      "bytes": 13952
     },
     {
       "path": "tokens-layered.css",
-      "bytes": 13398
+      "bytes": 13991
     },
     {
       "path": "tokens.js",
-      "bytes": 13725
+      "bytes": 13443
     },
     {
       "path": "tokens.json",
-      "bytes": 13660
+      "bytes": 13378
     },
     {
       "path": "DESIGN.md",
@@ -31,9 +31,9 @@
     },
     {
       "path": "tokens.dtcg.json",
-      "bytes": 31810
+      "bytes": 31715
     }
   ],
-  "totalBytes": 105467,
+  "totalBytes": 105994,
   "engine": "style-dictionary@5"
 }
