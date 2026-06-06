@@ -1,0 +1,62 @@
+{
+  "type": "object",
+  "properties": {
+    "system": {
+      "type": "object",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "dotClass": {
+                "type": "string"
+              },
+              "valClass": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "key",
+              "value",
+              "dotClass"
+            ]
+          }
+        }
+      },
+      "required": [
+        "lines"
+      ]
+    },
+    "compact": {
+      "anyOf": [
+        {
+          "type": "boolean",
+          "description": "When true (default in production island), renders the consumer-shaped flat .left-panel-status root instead of the full .tri-card chrome. Matches the pre-migration DOM shape so visual tests pass without baseline updates."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "system"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/system-status.json",
+  "title": "SystemStatusProps"
+}

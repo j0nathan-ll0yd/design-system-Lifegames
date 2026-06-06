@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "commits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "hash": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "additions": {
+            "type": "number"
+          },
+          "deletions": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "hash",
+          "message",
+          "repo",
+          "date",
+          "additions",
+          "deletions"
+        ]
+      }
+    }
+  },
+  "required": [
+    "commits"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/commit-log.json",
+  "title": "CommitLogProps"
+}

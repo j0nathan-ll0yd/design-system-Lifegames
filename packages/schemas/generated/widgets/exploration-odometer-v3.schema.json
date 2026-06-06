@@ -1,0 +1,46 @@
+{
+  "type": "object",
+  "properties": {
+    "totalVisits": {
+      "type": "number"
+    },
+    "totalPlaces": {
+      "type": "number"
+    },
+    "totalDurationHours": {
+      "type": "number"
+    },
+    "citiesVisited": {
+      "type": "number"
+    },
+    "explorationStats": {
+      "type": "object",
+      "properties": {
+        "totalNeighborhoods": {
+          "type": "number"
+        },
+        "totalCities": {
+          "type": "number"
+        },
+        "totalStates": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "totalNeighborhoods",
+        "totalCities",
+        "totalStates"
+      ]
+    }
+  },
+  "required": [
+    "totalVisits",
+    "totalPlaces",
+    "totalDurationHours",
+    "citiesVisited",
+    "explorationStats"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/exploration-odometer-v3.json",
+  "title": "ExplorationOdometerV3Props"
+}

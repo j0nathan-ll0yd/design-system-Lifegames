@@ -1,0 +1,124 @@
+{
+  "type": "object",
+  "properties": {
+    "health": {
+      "type": "object",
+      "properties": {
+        "quantities": {
+          "type": "object",
+          "properties": {
+            "heartRate": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ]
+            },
+            "hrvSDNN": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "number"
+                },
+                "unit": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ]
+            },
+            "restingHeartRate": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "unit"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "respiratoryRate": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "unit"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "wristTemperatureDelta": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "number"
+                    },
+                    "unit": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "unit"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "heartRate",
+            "hrvSDNN"
+          ]
+        }
+      },
+      "required": [
+        "quantities"
+      ]
+    }
+  },
+  "required": [
+    "health"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/heart-rate.json",
+  "title": "HeartRateProps"
+}

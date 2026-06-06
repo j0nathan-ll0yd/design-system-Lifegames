@@ -1,0 +1,105 @@
+{
+  "type": "object",
+  "properties": {
+    "reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": "string"
+          },
+          "rating": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ratingNumeric": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "excerpt": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrlAvif": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrlCard": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrlCardAvif": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageWidth": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "imageHeight": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "title",
+          "slug",
+          "url",
+          "author",
+          "publishedAt",
+          "rating",
+          "ratingNumeric",
+          "excerpt",
+          "imageUrl",
+          "imageUrlAvif",
+          "imageUrlCard",
+          "imageUrlCardAvif",
+          "imageWidth",
+          "imageHeight"
+        ]
+      }
+    },
+    "totalReviews": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "reviews",
+    "totalReviews"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/theatre-reviews.json",
+  "title": "TheatreReviewsProps"
+}

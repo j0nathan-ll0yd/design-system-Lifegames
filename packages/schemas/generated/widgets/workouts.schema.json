@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "health": {
+      "type": "object",
+      "properties": {
+        "workouts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "activity_type": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "number"
+              },
+              "energy_burned": {
+                "type": "number"
+              },
+              "distance": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "activity_type",
+              "duration",
+              "energy_burned",
+              "distance"
+            ]
+          }
+        }
+      },
+      "required": [
+        "workouts"
+      ]
+    }
+  },
+  "required": [
+    "health"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/workouts.json",
+  "title": "WorkoutsProps"
+}

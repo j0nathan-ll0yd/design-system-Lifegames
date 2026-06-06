@@ -30,6 +30,1065 @@
     }
   },
   "ds": {
-    "_comment": "DS-side widget showcase fixtures (Sources/LifegamesWidgets/Resources/widgets/) need per-widget schemas; see .omc/research/2026-05-25-schema-mismatches.md for the deferred follow-up plan."
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.burst-week.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.empty.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.new-contributor.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.populated-max.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.populated-min.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.review-heavy-month.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.skeleton.json": {
+      "schema": "ActivityFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.conventional-discipline.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.empty.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.messy-history.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.populated-max.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.populated-min.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.refactor-sprint.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-log.skeleton.json": {
+      "schema": "CommitLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.empty.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.gap-and-recovery.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.multi-repo-scatter.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.ninety-day-streak.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.populated-max.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.populated-min.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/commit-timeline.skeleton.json": {
+      "schema": "CommitTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.empty.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.populated-max.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.populated-min.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.skeleton.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.variation-a.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.variation-b.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards.variation-c.json": {
+      "schema": "DevActivityCardsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.bot-noise.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.empty.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.merge-marathon.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.mixed-repos.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.populated-max.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.populated-min.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.pr-burst.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.quiet-day.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.skeleton.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.empty.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.populated-max.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.populated-min.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.skeleton.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.variation-a.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.variation-b.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.variation-c.json": {
+      "schema": "DevActivityTimelineProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.empty.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.populated-max.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.populated-min.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.skeleton.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.variation-a.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.variation-b.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-bars.variation-c.json": {
+      "schema": "LanguageBarsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.empty.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.populated-max.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.populated-min.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.skeleton.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.variation-a.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.variation-b.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/language-stack.variation-c.json": {
+      "schema": "LanguageStackProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.empty.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.populated-max.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.populated-min.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.skeleton.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.variation-a.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.variation-b.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/pinned-repos.variation-c.json": {
+      "schema": "PinnedReposProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.archived-mix.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.empty.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.freshly-starred.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.one-language.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.org-starred.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.polyglot.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.populated-max.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.populated-min.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.skeleton.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.empty.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.populated-max.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.populated-min.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.skeleton.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.variation-a.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.variation-b.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.variation-c.json": {
+      "schema": "WeeklyPulseProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.bradycardia.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.cardio.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.empty.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.fat-burn.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.max.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.normal.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.peak.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.populated-max.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.populated-min.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.resting.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.skeleton.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.caffeine-crash.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.dehydrated.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.empty.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.hydrated.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.low.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.morning-coffee.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.normal.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.overhydrated.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.populated-max.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.populated-min.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.skeleton.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.all-rings-closed.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.empty.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.populated-max.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.populated-min.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.skeleton.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.stand-only.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.empty.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.excellent.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.fair.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.good.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.nap.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.oversleep.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.poor.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.populated-max.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.populated-min.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.restless.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.skeleton.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.barrys-only.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.empty.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.endurance.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.heavy-day.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.multi-link.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.populated-max.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.populated-min.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.skeleton.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.dense.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.empty.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.minimal.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.populated-max.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.populated-min.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.skeleton.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.skills.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.uptime.json": {
+      "schema": "BioTerminalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.default.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.empty.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.populated-max.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.populated-min.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.skeleton.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.variation-a.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.variation-b.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon.variation-c.json": {
+      "schema": "ComingSoonProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.creator.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.empty.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.engineer-lead.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.long-bio.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.minimal.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.populated-max.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.populated-min.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card.skeleton.json": {
+      "schema": "IdentityCardProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.empty.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.homebody.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.new-city-week.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.passport-week.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.populated-max.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.populated-min.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.roadtripper.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.skeleton.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3.weekend-warrior.json": {
+      "schema": "ExplorationOdometerV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.cafe-loyal.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.empty.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.even-spread.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.gym-loyal.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.gym-vs-cafe.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.populated-max.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.populated-min.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.skeleton.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3.tourist-week.json": {
+      "schema": "PlaceLeaderboardV3Props",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/diagnostics-monitor.json": {
+      "schema": "DiagnosticsMonitorProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.default.json": {
+      "schema": "DndOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.empty.json": {
+      "schema": "DndOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.json": {
+      "schema": "DndOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.populated-max.json": {
+      "schema": "DndOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.populated-min.json": {
+      "schema": "DndOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.skeleton.json": {
+      "schema": "DndOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay.default.json": {
+      "schema": "FocusOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay.empty.json": {
+      "schema": "FocusOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay.json": {
+      "schema": "FocusOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay.populated-max.json": {
+      "schema": "FocusOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay.populated-min.json": {
+      "schema": "FocusOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay.skeleton.json": {
+      "schema": "FocusOverlayProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.burst-driven.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.consistent-contributor.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.empty.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.populated-max.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.populated-min.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.seasonal-surge.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.skeleton.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.sparse-year.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.weekend-warrior.json": {
+      "schema": "GitHubHeatmapProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/og-image.json": {
+      "schema": "OGImageProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/sync-status.json": {
+      "schema": "SyncStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.all-green.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.bootstrap.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.degraded.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.empty.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.mixed.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.one-stale.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.populated-max.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.populated-min.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/system-status.skeleton.json": {
+      "schema": "SystemStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.completed-with-rating.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.currently-reading.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.empty.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.populated-max.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.populated-min.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.series-book.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.skeleton.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal.wishlist.json": {
+      "schema": "BookModalProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.all-completed.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.all-in-progress.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.dense-shelf.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.empty.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.mixed.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.mostly-empty.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.populated-max.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.populated-min.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.skeleton.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.binge-week.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.empty.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.mixed-types.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.populated-max.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.populated-min.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.quiet-week.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.recent-burst.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.single-entry.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.skeleton.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.empty.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.mixed-ratings.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.populated-max.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.populated-min.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.regional-tour.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.single-show.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.skeleton.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.subscription-season.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.west-end-season.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    }
   }
 }

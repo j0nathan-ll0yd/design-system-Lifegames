@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/widget/dnd-overlay.json",
+  "title": "DndOverlayProps",
+  "type": "object"
+}
