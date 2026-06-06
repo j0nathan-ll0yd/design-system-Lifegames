@@ -35,9 +35,9 @@ test.describe('Widgets - populated', () => {
     await expect(widget).toHaveScreenshot('widget-heart-rate.png', { stylePath });
   });
 
-  test('daily activity', async () => {
-    const widget = page.locator(WIDGET_SELECTORS.dailyActivity);
-    await expect(widget).toHaveScreenshot('widget-daily-activity.png', { stylePath });
+  test('movement rings', async () => {
+    const widget = page.locator(WIDGET_SELECTORS.movementRings);
+    await expect(widget).toHaveScreenshot('widget-movement-rings.png', { stylePath });
   });
 
   test('workouts', async () => {

@@ -12,7 +12,7 @@ export const WIDGET_SELECTORS = {
   bioTerminal: '#cardBio',
   systemStatus: '#cardSystem',
   heartRate: '#cardHR',
-  dailyActivity: '#cardSteps',
+  movementRings: '#cardMovement',
   workouts: '#cardWorkouts',
   hydration: '#cardHydration',
   nightSummary: '#cardSleep',
