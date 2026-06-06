@@ -222,6 +222,8 @@ jobs:
         run: node scripts/check-watch-exclusions.mjs --check
       - name: P4/P7 promotion gate
         run: node scripts/check-promotion.mjs --check
+      - name: Style Dictionary golden-file characterization (F-005)
+        run: pnpm --filter @lifegames/tokens test
 
   docs-build:
     needs: build-tokens
