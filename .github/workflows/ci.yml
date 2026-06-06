@@ -218,6 +218,8 @@ jobs:
         run: node scripts/check-contrast.mjs
       - name: P3 Swift widget purity
         run: node scripts/check-swift-widget-purity.mjs --check
+      - name: Watch exclusions (F-014)
+        run: node scripts/check-watch-exclusions.mjs --check
       - name: P4/P7 promotion gate
         run: node scripts/check-promotion.mjs --check
 
