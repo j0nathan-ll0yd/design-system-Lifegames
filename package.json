@@ -18,6 +18,7 @@
     "yalc:publish": "pnpm build:tokens && node scripts/check-yalc-staleness.mjs --write && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push && pnpm --filter @lifegames/schemas exec yalc publish --push",
     "yalc:update": "pnpm yalc:publish",
     "yalc:check": "node scripts/check-yalc-staleness.mjs --check",
+    "baseline:age": "node scripts/check-baseline-age.mjs",
     "widget:inventory": "node scripts/widget-inventory.mjs",
     "dtcg:validate": "node scripts/validate-dtcg.mjs",
     "check:baseline": "node scripts/compare-portfolio-baseline.mjs",
