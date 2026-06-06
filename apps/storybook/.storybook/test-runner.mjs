@@ -1,7 +1,7 @@
-const { toMatchImageSnapshot } = require('jest-image-snapshot');
+import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 /** @type {import('@storybook/test-runner').TestRunnerConfig} */
-module.exports = {
+export default {
   setup() {
     expect.extend({ toMatchImageSnapshot });
   },

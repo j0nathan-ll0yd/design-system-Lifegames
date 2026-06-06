@@ -26,7 +26,7 @@ const meta: Meta = {
         <span class="widget-label">Identity</span>
       </div>
       <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-primary);">
-        <h2 style="margin: 0 0 4px; color: var(--lg-color-text-title);">${args.name}</h2>
+        ${args.name ? html`<h2 style="margin: 0 0 4px; color: var(--lg-color-text-title);">${args.name}</h2>` : ''}
         <p style="margin: 0 0 8px; color: var(--lg-color-text-muted); font-size: 0.85em;">${args.title}</p>
         <p style="margin: 0 0 12px;">${args.bio}</p>
         <div class="id-links" style="display: flex; gap: 8px;">

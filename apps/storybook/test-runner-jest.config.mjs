@@ -1,8 +1,8 @@
-const { getJestConfig } = require('@storybook/test-runner');
-const { toMatchImageSnapshot } = require('jest-image-snapshot');
+import { getJestConfig } from '@storybook/test-runner';
+import { toMatchImageSnapshot } from 'jest-image-snapshot';
 
 /** @type {import('@storybook/test-runner').TestRunnerConfig} */
-module.exports = {
+export default {
   ...getJestConfig(),
   testEnvironmentOptions: {
     'jest-playwright': {
@@ -19,13 +19,13 @@ module.exports = {
     // Snapshots land in apps/storybook/__snapshots__/<StoryId>.png
     const image = await page.screenshot({ animations: 'disabled' });
     expect(image).toMatchImageSnapshot({
-      customSnapshotsDir: `${__dirname}/__snapshots__`,
+      customSnapshotsDir: `${import.meta.dirname}/__snapshots__`,
       customSnapshotIdentifier: context.id,
       // Allow up to 0.2% pixel diff to absorb sub-pixel anti-aliasing variance.
       failureThreshold: 0.002,
       failureThresholdType: 'percent',
       // Store diff images alongside baselines for easy review.
-      customDiffDir: `${__dirname}/__snapshots__/__diff__`,
+      customDiffDir: `${import.meta.dirname}/__snapshots__/__diff__`,
     });
   },
 };
