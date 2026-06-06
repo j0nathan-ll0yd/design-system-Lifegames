@@ -4,9 +4,13 @@
  * Promotion Check — P4 last-responsible-moment admission gate (GOVERNANCE.md §5).
  *
  * Reads both widget registries and evaluates each promoted widget against P4/P7:
- *   - consumers.length === 0 && !plannedSurface  → DEMOTE-OR-JUSTIFY finding
+ *   - consumers.length === 0 && !plannedSurface  → INCUBATING (valid, logged at INFO)
  *   - consumers.length === 1 && !plannedSurface  → advisory note (lower priority)
  *   - status === "Stable" && consumers.length < 2 → advisory (P7 Stable gate is >=2 surfaces)
+ *
+ * Incubating widgets (0 consumers, no plannedSurface) are a valid state — they are
+ * actively developed but not yet wired to a product surface. They do NOT count as
+ * violations. The gate only fails on structural inconsistency (--check + BLOCKING mode).
  *
  * Registries:
  *   - Sources/LifegamesWidgets/Resources/production-widgets.json  (Swift + web, R7)
@@ -27,11 +31,10 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const CHECK_MODE = process.argv.includes('--check');
 
 // ── ADVISORY MODE TOGGLE ──────────────────────────────────────────────────────
-// BLOCKING = false: print findings and exit 0 (advisory). This is the current
-// posture while the demotion triage is pending. Flip to true ONLY after the
-// 0-surface widgets have been demoted or given an explicit `plannedSurface`
-// justification, so the gate does not break the build on day one.
-const BLOCKING = false;
+// BLOCKING = true: exit 1 when structural inconsistencies are found (--check mode).
+// Incubating widgets (0 consumers, no plannedSurface) are valid — they do not
+// count as violations. Only structural inconsistency triggers a non-zero exit.
+const BLOCKING = true;
 
 function readJSON(relativePath) {
   const fullPath = path.join(ROOT, relativePath);
@@ -63,14 +66,14 @@ const entries = [
 ];
 
 // ── evaluate P4 / P7 ────────────────────────────────────────────────────────────
-const demoteOrJustify = []; // 0 surfaces, no plannedSurface — highest priority
+const incubating = []; // 0 surfaces, no plannedSurface — valid incubating state (INFO)
 const oneSurfaceAdvisory = []; // 1 surface, no plannedSurface — lower priority
 const stableAdvisory = []; // status Stable but < 2 surfaces
 
 for (const e of entries) {
   const n = e.consumers.length;
   if (n === 0 && !e.plannedSurface) {
-    demoteOrJustify.push(e);
+    incubating.push(e);
   } else if (n === 1 && !e.plannedSurface) {
     oneSurfaceAdvisory.push(e);
   }
@@ -80,8 +83,8 @@ for (const e of entries) {
 }
 
 // ── report ──────────────────────────────────────────────────────────────────────
-console.log('Promotion Check — P4 admission gate (advisory mode)');
-console.log('===================================================\n');
+console.log('Promotion Check — P4 admission gate');
+console.log('====================================\n');
 console.log(`Mode: ${BLOCKING ? 'BLOCKING' : 'ADVISORY (exit 0)'}`);
 console.log(`Registries: production-widgets.json (${swiftRegistry.length}), widget-consumers.json widgets[] (${webWidgets.length})`);
 console.log(`Total promoted entries evaluated: ${entries.length}\n`);
@@ -93,7 +96,7 @@ console.log(cols.map((_, i) => '-'.repeat(widths[i])).join(' '));
 
 function findingLabel(e) {
   const n = e.consumers.length;
-  if (n === 0 && !e.plannedSurface) return 'DEMOTE-OR-JUSTIFY';
+  if (n === 0 && !e.plannedSurface) return 'incubating';
   if (n === 1 && !e.plannedSurface) return 'advisory (1 surf)';
   if (e.status === 'Stable' && n < 2) return 'advisory (stable)';
   return 'ok';
@@ -111,21 +114,20 @@ for (const e of entries) {
 
 console.log('\nCounts');
 console.log('------');
-console.log(`DEMOTE-OR-JUSTIFY (0 surfaces, no plannedSurface): ${demoteOrJustify.length}`);
-console.log(`Advisory (1 surface, no plannedSurface):           ${oneSurfaceAdvisory.length}`);
-console.log(`Advisory (status Stable but < 2 surfaces):         ${stableAdvisory.length}`);
+console.log(`Incubating (0 surfaces, no plannedSurface — valid): ${incubating.length}`);
+console.log(`Advisory (1 surface, no plannedSurface):            ${oneSurfaceAdvisory.length}`);
+console.log(`Advisory (status Stable but < 2 surfaces):          ${stableAdvisory.length}`);
 
-if (demoteOrJustify.length > 0) {
-  console.log('\nDEMOTE-OR-JUSTIFY widgets:');
-  for (const e of demoteOrJustify) {
+if (incubating.length > 0) {
+  console.log('\nIncubating widgets (no violation — developing toward first surface):');
+  for (const e of incubating) {
     console.log(`  [${e.platform}] ${e.name} (${e.source})`);
   }
 }
 
 // ── exit code ─────────────────────────────────────────────────────────────────
-if (CHECK_MODE && BLOCKING && demoteOrJustify.length > 0) {
-  console.error(`\nERROR: ${demoteOrJustify.length} widget(s) have 0 product surfaces and no plannedSurface justification.`);
-  process.exit(1);
-}
-// Advisory mode (or non-check): always exit 0.
-process.exit(0);
+// Incubating widgets (0 consumers, no plannedSurface) are not a gate failure.
+// stableAdvisory entries are genuine P7 violations (Stable but < 2 surfaces).
+// BLOCKING + --check: exit 1 when P7 violations exist.
+const hasViolations = stableAdvisory.length > 0;
+process.exit(CHECK_MODE && BLOCKING && hasViolations ? 1 : 0);

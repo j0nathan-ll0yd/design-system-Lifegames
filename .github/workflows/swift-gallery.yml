@@ -33,5 +33,7 @@ jobs:
           xcodebuild build \
             -project apps/swift-gallery/SwiftGallery.xcodeproj \
             -scheme SwiftGallery \
-            -destination 'generic/platform=iOS Simulator' \
+            # Pinned to iPhone 17 / iOS 26.0 for snapshot determinism.
+            # Update in lockstep with the self-hosted runner's Xcode 26 SDK.
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.0' \
             CODE_SIGNING_ALLOWED=NO
