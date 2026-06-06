@@ -13,7 +13,7 @@ public struct SystemStatusView: View {
         switch status {
         case "green": return Color.colorAccentGreen
         case "amber": return Color.colorAccentAmber
-        case "red": return Color(hex: "#ef4444")
+        case "red": return LGColor.accentRed
         default: return Color.colorAccentGreen
         }
     }
@@ -25,7 +25,7 @@ public struct SystemStatusView: View {
         case "blue": return Color.colorAccentBlue
         case "amber": return Color.colorAccentAmber
         case "green": return Color.colorAccentGreen
-        case "yellow": return Color(hex: "#ffd600")
+        case "yellow": return LGColor.statusWarning
         default: return Color.colorAccentGreen
         }
     }

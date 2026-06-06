@@ -1,5 +1,8 @@
 node_modules/
 dist/
+# Exception: golden-file test fixtures intentionally snapshot dist outputs and
+# must be committed so the byte-equality spec is reproducible from a fresh clone.
+!packages/tokens/__tests__/golden/dist/
 .turbo/
 .DS_Store
 .build/

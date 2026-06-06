@@ -45,10 +45,13 @@
   ],
   "scripts": {
     "build": "node ../../style-dictionary.config.mjs",
-    "build:tokens": "node ../../style-dictionary.config.mjs"
+    "build:tokens": "node ../../style-dictionary.config.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@tokens-studio/sd-transforms": "^2.0.3",
-    "style-dictionary": "^5.4.2"
+    "style-dictionary": "^5.4.2",
+    "vitest": "^4.1.8"
   }
 }

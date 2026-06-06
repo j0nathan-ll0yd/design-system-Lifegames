@@ -13,112 +13,123 @@
       "bold":     { "$type": "fontWeight", "$value": 700 }
     }
   },
-  "typography": {
+  "iosTypography": {
     "caption2": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 10, "fontSizeMax": 11.5,
-        "fontWeight": 400, "lineHeight": 1.3,
-        "iosTextStyle": "caption2"
-      }
+        "fontSize": 11.5,
+        "fontWeight": 400,
+        "lineHeight": 1.3
+      },
+      "$extensions": { "lifegames": { "fontSizeMax": 11.5, "iosTextStyle": ".caption2" } }
     },
     "caption": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 11.2, "fontSizeMax": 12.5,
-        "fontWeight": 400, "lineHeight": 1.3,
-        "iosTextStyle": "caption1"
-      }
+        "fontSize": 12.5,
+        "fontWeight": 400,
+        "lineHeight": 1.3
+      },
+      "$extensions": { "lifegames": { "fontSizeMax": 12.5, "iosTextStyle": ".caption" } }
     },
     "footnote": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 11.5, "fontSizeMax": 13.1,
-        "fontWeight": 400, "lineHeight": 1.4,
-        "iosTextStyle": "footnote"
-      }
+        "fontSize": 13.1,
+        "fontWeight": 400,
+        "lineHeight": 1.4
+      },
+      "$extensions": { "lifegames": { "fontSizeMax": 13.1, "iosTextStyle": ".footnote" } }
     },
     "body": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 11.5, "fontSizeMax": 13.1,
-        "fontWeight": 400, "lineHeight": 1.5,
-        "iosTextStyle": "body"
+        "fontSize": 13.1,
+        "fontWeight": 400,
+        "lineHeight": 1.5
       },
-      "$description": "Maps to web --font-size-base: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)"
+      "$description": "Maps to web --font-size-base: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+      "$extensions": { "lifegames": { "fontSizeMax": 13.1, "iosTextStyle": ".body" } }
     },
     "callout": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 11.5, "fontSizeMax": 13.1,
-        "fontWeight": 400, "lineHeight": 1.4,
-        "iosTextStyle": "callout"
-      }
+        "fontSize": 13.1,
+        "fontWeight": 400,
+        "lineHeight": 1.4
+      },
+      "$extensions": { "lifegames": { "fontSizeMax": 13.1, "iosTextStyle": ".callout" } }
     },
     "subhead": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 14.1, "fontSizeMax": 16.8,
-        "fontWeight": 500, "lineHeight": 1.4,
-        "iosTextStyle": "subheadline"
+        "fontSize": 16.8,
+        "fontWeight": 500,
+        "lineHeight": 1.4
       },
-      "$description": "Maps to web --font-size-lg"
+      "$description": "Maps to web --font-size-lg",
+      "$extensions": { "lifegames": { "fontSizeMax": 16.8, "iosTextStyle": ".subheadline" } }
     },
     "headline": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 19.2, "fontSizeMax": 24.0,
-        "fontWeight": 600, "lineHeight": 1.3,
-        "iosTextStyle": "headline"
+        "fontSize": 24.0,
+        "fontWeight": 600,
+        "lineHeight": 1.3
       },
-      "$description": "Maps to web --font-size-xl"
+      "$description": "Maps to web --font-size-xl",
+      "$extensions": { "lifegames": { "fontSizeMax": 24.0, "iosTextStyle": ".headline" } }
     },
     "title3": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 25.6, "fontSizeMax": 32.0,
-        "fontWeight": 700, "lineHeight": 1.25,
-        "iosTextStyle": "title3"
+        "fontSize": 32.0,
+        "fontWeight": 700,
+        "lineHeight": 1.25
       },
-      "$description": "Maps to web --font-size-2xl"
+      "$description": "Maps to web --font-size-2xl",
+      "$extensions": { "lifegames": { "fontSizeMax": 32.0, "iosTextStyle": ".title3" } }
     },
     "title2": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 30.4, "fontSizeMax": 38.4,
-        "fontWeight": 700, "lineHeight": 1.2,
-        "iosTextStyle": "title2"
+        "fontSize": 38.4,
+        "fontWeight": 700,
+        "lineHeight": 1.2
       },
-      "$description": "Maps to web --font-size-3xl"
+      "$description": "Maps to web --font-size-3xl",
+      "$extensions": { "lifegames": { "fontSizeMax": 38.4, "iosTextStyle": ".title2" } }
     },
     "title1": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 33.6, "fontSizeMax": 42.0,
-        "fontWeight": 700, "lineHeight": 1.15,
-        "iosTextStyle": "title1"
+        "fontSize": 42.0,
+        "fontWeight": 700,
+        "lineHeight": 1.15
       },
-      "$description": "Interpolated between title2 and hero. No direct web mapping."
+      "$description": "Interpolated between title2 and hero. No direct web mapping.",
+      "$extensions": { "lifegames": { "fontSizeMax": 42.0, "iosTextStyle": ".title1" } }
     },
     "hero": {
       "$type": "typography",
       "$value": {
         "fontFamily": "{font.family.brand}",
-        "fontSizeMin": 28.8, "fontSizeMax": 35.2,
-        "fontWeight": 700, "lineHeight": 1.15,
-        "iosTextStyle": "largeTitle"
+        "fontSize": 35.2,
+        "fontWeight": 700,
+        "lineHeight": 1.15
       },
-      "$description": "Maps to web --font-size-hero"
+      "$description": "Maps to web --font-size-hero",
+      "$extensions": { "lifegames": { "fontSizeMax": 35.2, "iosTextStyle": ".largeTitle" } }
     }
   }
 }

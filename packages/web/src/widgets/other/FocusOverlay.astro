@@ -38,13 +38,13 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: #06060f;
+    background: var(--lg-color-surface-base);
     z-index: 9999;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     font-family: 'Space Grotesk', sans-serif;
-    color: #f0f0f0;
+    color: var(--lg-color-text-primary);
   }
 
   .shift-badge {
@@ -62,14 +62,14 @@
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: #ef4444;
+    color: var(--lg-color-accent-red);
   }
 
   .shift-badge .dot {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #ef4444;
+    background: var(--lg-color-accent-red);
     animation: pulse-dot 2s ease-in-out infinite;
   }
 
@@ -90,7 +90,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    border: 4px solid #ef4444;
+    border: 4px solid var(--lg-color-accent-red);
     position: relative;
     display: flex;
     align-items: center;
@@ -102,7 +102,7 @@
     content: '';
     width: 44px;
     height: 4px;
-    background: #ef4444;
+    background: var(--lg-color-accent-red);
     border-radius: 2px;
   }
 
@@ -116,7 +116,7 @@
   .subheading {
     font-size: 0.75rem;
     font-weight: 300;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
     text-align: center;
     line-height: 1.5;
     max-width: 320px;
@@ -140,7 +140,7 @@
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
   }
 
   .clock-time {
@@ -148,13 +148,13 @@
     font-weight: 600;
     letter-spacing: 0.05em;
     font-variant-numeric: tabular-nums;
-    color: #f59e0b;
+    color: var(--lg-color-accent-amber);
   }
 
   .clock-zone {
     font-size: 0.6rem;
     font-weight: 400;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
     letter-spacing: 0.1em;
   }
 
@@ -175,7 +175,7 @@
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--lg-color-text-muted);
   }
 
   .schedule-value {
@@ -184,8 +184,8 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .schedule-value.start { color: #ef4444; }
-  .schedule-value.end { color: #06d6a0; }
+  .schedule-value.start { color: var(--lg-color-accent-red); }
+  .schedule-value.end { color: var(--lg-color-accent-green); }
 
   @keyframes pulse-dot {
     0%, 100% { opacity: 1; }

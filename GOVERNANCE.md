@@ -18,7 +18,7 @@ Constitution for `design-system-Lifegames`. Defines what belongs in the DS versu
 
 **The two genuine inconsistencies to remediate:**
 
-1. **iOS consumption is non-uniform.** The iOS app *consumes* DS Health widgets in a real product surface (`HealthFeatureView.swift` imports `LifegamesWidgets`, renders `HeartRateView`, `DailyActivityView`, `NightSummaryView`) but *duplicates* DS Location widgets locally (`TopPlacesCard.swift`, `HeatMapCard.swift`). Needs resolution per-widget.
+1. **iOS consumption is non-uniform.** The iOS app *consumes* DS Health widgets in a real product surface (`HealthFeatureView.swift` imports `LifegamesWidgets`, renders `HeartRateView`, `MovementRingsView`, `NightSummaryView`) but *duplicates* DS Location widgets locally (`TopPlacesCard.swift`, `HeatMapCard.swift`). Needs resolution per-widget.
 
 2. **Speculative promotion confirmed by census.** An empirical census (2026-05-29) found 0 of ~110 widgets meet a strict "≥2 shipping product surfaces" bar: the web dashboard is single-page (every web widget has exactly 1 consumer route); on iOS only the 3 Health widgets have even 1 product-surface consumer. Only ~16 web + 3 Swift widgets have any product-surface consumer at all. The remaining bulk is in **demote-or-justify** status. The maintainer's response is the **relaxed P4 rule** (≥1 surface now + credible 2nd surface planned), detailed below.
 
@@ -237,6 +237,45 @@ Uses **Changesets** (`.changeset/config.json`) with **semantic versioning**.
 **Release workflow:** `pnpm changeset` (record) → `pnpm changeset:version` → `pnpm changeset:publish`. Not a gate on every commit (P8).
 
 **SPM constraint:** The DS must remain a separate Git repository — SPM requires a Git remote to resolve package dependencies. The iOS `Package.swift` resolves `design-system-Lifegames` via SPM; a path-local pnpm workspace cannot satisfy this. The web consumer (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`) has no such constraint — co-locating with the web repo would eliminate the yalc dance but couples web build to DS repo layout. Decision deferred; see `.omc/plans/open-questions.md` Q3.
+
+### 6.1 Distribution — yalc-only
+
+The JS packages (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`) are distributed **via yalc only.** There is no published npm package today and no active CI path that publishes one.
+
+The earlier `REMOTE_ENABLED`-gated workflows (`publish.yml`, `release.yml`, `deploy-docs.yml`) were removed because the gate never flipped to `true` in the workflows' entire lifetime — GitHub Packages has zero published `@lifegames/*` versions, and every push to `main` short-circuited the jobs. Carrying dormant CI implies a working publish pipeline that does not exist. Per the no-middle-state rule, the workflows are gone until a concrete, dated need brings them back.
+
+**Restoring the npm path** (only when a non-monorepo consumer actually requires `npm install @lifegames/tokens`):
+
+1. Recover the workflows from git history. The last-known-good revisions are visible in `git log -- .github/workflows/publish.yml` (range `d75b222`..`189599d`, May–Jun 2026); `git show <sha>:.github/workflows/publish.yml > .github/workflows/publish.yml` reconstitutes them.
+2. Remove the `REMOTE_ENABLED` gate or set the repo variable to `true`; the gate's only purpose was to keep the workflow inert during the deferral.
+3. Verify GHP scope/auth end-to-end before merging — the gate previously hid this surface.
+4. Update this subsection to reflect the new distribution policy.
+
+**Swift consumers** continue to pin to a DS Git tag (or branch) via SPM — that path is independent of the JS distribution model.
+
+### 6.2 SPM-JS version contract
+
+The design system has two consumer surfaces with two distribution mechanisms. To keep them coherent, they share a single source of truth: the Git tag on this repository.
+
+| Consumer | Pins to | Source of truth | Reproducibility |
+|----------|---------|-----------------|-----------------|
+| Swift (iOS / watchOS) | DS Git tag or branch via SPM | Git tag on `design-system-Lifegames` | Full — SPM resolves to a commit SHA |
+| JS (web today; future others) | yalc-published artifact in consumer's `.yalc/` | `packages/tokens/package.json` `version` field at the time of `pnpm yalc:publish` | Partial — yalc copies a build artifact; the matching DS commit is not recorded in the consumer |
+
+**The contract:**
+
+1. **DS Git tags are canonical.** When DS state is worth a tag (a tokens change consumers should reference, a coordinated DS+iOS+web rollout, etc.), tag the commit on `main`: `git tag v0.1.1 && git push --tags`.
+2. **`packages/tokens/package.json` `version` aligns to the Git tag.** A `v0.1.1` tag implies that `packages/tokens/package.json` reads `"version": "0.1.1"` at that commit, and similarly for `@lifegames/web` and `@lifegames/schemas`. Bump versions in the same commit that gets tagged.
+3. **Swift consumers** add `.package(url: "...", from: "0.1.1")` (or `.branch("main")` during development). SPM resolves this to a Git SHA, fully reproducible.
+4. **JS consumers** run `pnpm yalc:publish` from DS, then `pnpm yalc:add @lifegames/tokens` in the consumer. The consumer's `package.json` records the yalc-installed version (`0.1.1`); the consumer's `yalc.lock` records the content hash. This is **not** as reproducible as SPM's SHA — yalc captures a built artifact, not a source commit — which is why Task 5.2 adds a `yalc:check` staleness detector.
+5. **Semver tier meaning** (applies to both surfaces):
+   - `patch` — bug fix, no token name changes, no API changes.
+   - `minor` — new tokens, new components, new exported widgets; backward-compatible.
+   - `major` — token rename or removal, component removal, SPM product rename, breaking type changes in `@lifegames/schemas`. Requires consumer code changes.
+
+**Why a single version stream:** Two version streams (a Git tag separate from the JS package version) would force every consumer-facing change to be reasoned about twice and would let the streams drift silently. Keeping them lockstep means "DS at v0.1.1" has the same meaning whether you are an iOS developer or a yalc-linked JS consumer.
+
+**Why not npm-published JS today:** see §6.1. When npm distribution returns, it inherits this contract unchanged — `npm install @lifegames/tokens@^0.1` then maps to the same version stream as the Git tag and the yalc artifact.
 
 ---
 

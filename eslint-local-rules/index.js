@@ -5,5 +5,6 @@ module.exports = {
     'widget-props-extends-schema': require('./widget-props-extends-schema'),
     'no-deprecated-tokens': require('./no-deprecated-tokens'),
     'no-app-module-imports': require('./no-app-module-imports'),
+    'no-raw-hex-in-widgets': require('./no-raw-hex-in-widgets'),
   },
 };

@@ -9,7 +9,7 @@ public struct DndOverlayView: View {
         self.props = props
     }
 
-    private let cyanColor = Color(hex: "#00d4ff")
+    private let cyanColor = LGColor.accentCyan
 
     public var body: some View {
         VStack(spacing: 0) {

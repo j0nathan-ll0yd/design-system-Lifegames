@@ -4,9 +4,9 @@
     "surface": {
       "thinking":        { "$value": "{color.surface.raised}", "$description": "Background for AI thinking/reasoning indicator surfaces" },
       "citation":        { "$value": "{color.surface.inset}", "$description": "Background for AI citation reference surfaces" },
-      "tool-use":        { "$value": "rgba(99,102,241,0.08)", "$description": "Background for AI tool-use disclosure surfaces (indigo tint)" },
-      "artifact-frame":  { "$value": "rgba(255,255,255,0.04)", "$description": "Background for AI artifact frame containers" },
-      "code-block":      { "$value": "rgba(0,0,0,0.35)", "$description": "Background for AI-rendered code block surfaces" },
+      "tool-use":        { "$value": "rgba(99,102,241,0.08)", "$description": "Background for AI tool-use disclosure surfaces (indigo tint — not covered by white/black alpha primitive set)" },
+      "artifact-frame":  { "$value": "{color.alpha.white4}", "$description": "Background for AI artifact frame containers" },
+      "code-block":      { "$value": "{color.alpha.black35}", "$description": "Background for AI-rendered code block surfaces" },
       "code-block-diff": {
         "added":   { "$value": "rgba(6,214,160,0.12)", "$description": "Background for diff-added lines in AI code blocks" },
         "removed": { "$value": "rgba(239,68,68,0.12)", "$description": "Background for diff-removed lines in AI code blocks" }

@@ -151,10 +151,13 @@ struct RoundTripColorTests {
         #expect(abs(actual.b - expected.b) <= epsilon)
     }
 
-    @Test("surfaceRaised has alpha 0.07")
+    @Test("surfaceRaised has alpha 0.05 (hover-brighter convention)")
     func surfaceRaisedAlpha() throws {
+        // Rest = 0.05 (white5), hover = 0.07 (white7). Hover is brighter than rest
+        // per the 2026-06-06 swap (commit 3d0ba2e); prior baseline expected the
+        // inverted 0.07 here.
         let actual = try components(of: "color-surface-raised")
-        #expect(abs(actual.a - 0.07) <= epsilon)
+        #expect(abs(actual.a - 0.05) <= epsilon)
     }
 
     @Test("borderInteractive has alpha 0.20")

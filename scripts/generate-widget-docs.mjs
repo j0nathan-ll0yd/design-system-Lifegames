@@ -326,7 +326,7 @@ function generateDynamicMdx(widget, actualName, fields, index, manifest) {
     const a11yMap = {
       'DevActivityLog': 'Renders semantic list markup; keyboard navigation supported via arrow keys and Enter.',
       'StarredRepoList': 'List items are keyboard accessible; external links open in new tab with proper aria-label.',
-      'DailyActivity': 'Displays numeric values with unit labels; color contrast meets WCAG AA standards.',
+      'MovementRings': 'Apple Health-style activity rings with accessible numeric values for move/exercise/stand goals.',
       'HeartRate': 'Large numeric display optimized for readability; includes accessible value descriptions.',
       'Hydration': 'Progress bars use both color and numeric indicators for accessibility.',
       'NightSummary': 'Sleep metrics presented with text labels and percentages; no color-only information.',

@@ -1,0 +1,55 @@
+{
+  "$comment": "F-015 widget-purity allow-list. Each entry exempts one specific Color(hex:) site (file + line) from the no-raw-Color rule. Reason MUST explain why the raw color is required (typically: runtime-data-driven where the hex is supplied by the API, not authored). The allow-list is read by scripts/check-swift-widget-purity.mjs.",
+  "colorHex": [
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/LanguageStackView.swift",
+      "line": 20,
+      "reason": "Runtime data: GitHub API supplies language.color hex; the widget renders the language palette as-given."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/LanguageStackView.swift",
+      "line": 33,
+      "reason": "Runtime data: GitHub API supplies language.color hex; same site as line 20 inside the legend row."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/LanguageBarsView.swift",
+      "line": 20,
+      "reason": "Runtime data: GitHub API supplies language.color hex for the proportional bar fill."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/LanguageBarsView.swift",
+      "line": 30,
+      "reason": "Runtime data: GitHub API supplies language.color hex for the language legend swatch."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/StarredRepoListView.swift",
+      "line": 23,
+      "reason": "Runtime data: repository's primary-language color from the API; rendered as a 6pt dot in the repo row."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/PinnedReposView.swift",
+      "line": 28,
+      "reason": "Runtime data: pinned repository's primary-language color from the API."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/CommitTimelineView.swift",
+      "line": 21,
+      "reason": "Runtime data: per-commit repository color used as the timeline marker fill."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/CommitTimelineView.swift",
+      "line": 23,
+      "reason": "Runtime data: per-commit repository color used as the marker glow (paired with line 21)."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/CommitTimelineView.swift",
+      "line": 36,
+      "reason": "Runtime data: per-commit repository color used as the commit-row foreground accent."
+    },
+    {
+      "file": "Sources/LifegamesWidgets/GitHub/CommitTimelineView.swift",
+      "line": 39,
+      "reason": "Runtime data: per-commit repository color used as the commit-row background (with opacity)."
+    }
+  ]
+}

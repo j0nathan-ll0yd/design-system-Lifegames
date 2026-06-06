@@ -57,7 +57,7 @@ primitive → semantic → component → widget
 | `LifegamesTokens` | Swift | Generated Color, Font, Spacing extensions |
 | `LifegamesComponents` | Swift | iOS/macOS SwiftUI primitives |
 | `LifegamesComponentsWatch` | Swift | Watch-safe component subset |
-| `LifegamesWidgets` | Swift | 29 SwiftUI widget ports |
+| `LifegamesWidgets` | Swift | 30 SwiftUI widget ports |
 
 ## AI Platform Integration
 
@@ -80,6 +80,12 @@ pnpm sync:claude-design    # opens claude.ai/design + reveals DESIGN.md in Finde
 DESIGN.md is a deterministic, human-readable brief: brand voice, token architecture, color/typography/spacing/motion/shadow tables, the full 56-widget catalog, and authoring rules. The token build prints a reminder when DESIGN.md content changes, so re-upload to Claude Design isn't forgotten.
 
 Sync is one-way (this repo → Claude Design) and upload is a manual drag — Claude Design has no public ingest API. The deterministic markdown means diffs are reviewable before each upload.
+
+## Governance
+
+- [CONTRACT.md](CONTRACT.md) — versioning contract: what counts as a major / minor / patch bump on each shipped surface (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`, SPM products).
+- [GOVERNANCE.md](GOVERNANCE.md) — placement rules (P1–P8): what belongs in the design system vs the app.
+- [CHANGELOG.md](CHANGELOG.md) — cross-package narrative changelog; per-package histories live under `packages/*/CHANGELOG.md`.
 
 ## License
 

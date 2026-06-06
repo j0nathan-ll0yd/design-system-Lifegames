@@ -1,0 +1,1306 @@
+{
+  "card": {
+    "background": {
+      "$value": "rgba(255,255,255,0.05)",
+      "$type": "color"
+    },
+    "border": {
+      "$value": "rgba(255,255,255,0.06)",
+      "$type": "color"
+    },
+    "borderHover": {
+      "$value": "rgba(99,102,241,0.2)",
+      "$type": "color"
+    },
+    "cornerRadius": {
+      "$value": "16px",
+      "$type": "dimension",
+      "$description": "16px"
+    },
+    "padding": {
+      "$value": "32px",
+      "$type": "dimension",
+      "$description": "32px"
+    },
+    "paddingCompact": {
+      "$value": "18px",
+      "$type": "dimension",
+      "$description": "18px"
+    },
+    "neonCornerRadius": {
+      "$value": "20px",
+      "$type": "dimension",
+      "$description": "Neon card variant"
+    },
+    "glassBorder": {
+      "$value": "rgba(255,255,255,0.1)",
+      "$type": "color"
+    }
+  },
+  "color": {
+    "pink": {
+      "400": {
+        "$value": "#ff69b4",
+        "$type": "color",
+        "$description": "High-contrast pink (WCAG AAA on dark)"
+      },
+      "500": {
+        "$value": "#ff006e",
+        "$type": "color",
+        "$description": "Neon pink (web --neon-pink, iOS neonPink)"
+      }
+    },
+    "blue": {
+      "500": {
+        "$value": "#3a86ff",
+        "$type": "color",
+        "$description": "Neon blue (web --neon-blue, iOS neonBlue)"
+      },
+      "600": {
+        "$value": "#3b82f6",
+        "$type": "color",
+        "$description": "Accent blue (iOS accentBlue)"
+      },
+      "700": {
+        "$value": "#1e40af",
+        "$type": "color",
+        "$description": "Deep blue (sleep.deep)"
+      }
+    },
+    "green": {
+      "500": {
+        "$value": "#06d6a0",
+        "$type": "color",
+        "$description": "Neon green (web --neon-green, iOS neonGreen)"
+      }
+    },
+    "amber": {
+      "500": {
+        "$value": "#f59e0b",
+        "$type": "color",
+        "$description": "Neon amber (web --neon-amber, iOS neonAmber)"
+      }
+    },
+    "purple": {
+      "400": {
+        "$value": "#c084fc",
+        "$type": "color",
+        "$description": "High-contrast purple (WCAG AAA)"
+      },
+      "500": {
+        "$value": "#a855f7",
+        "$type": "color",
+        "$description": "Neon purple (web --neon-purple, iOS neonPurple)"
+      },
+      "600": {
+        "$value": "#8b5cf6",
+        "$type": "color",
+        "$description": "Accent purple (iOS accentPurple)"
+      }
+    },
+    "red": {
+      "400": {
+        "$value": "#f87171",
+        "$type": "color",
+        "$description": "High-contrast red (WCAG AAA)"
+      },
+      "500": {
+        "$value": "#ef4444",
+        "$type": "color",
+        "$description": "Neon red (web --neon-red)"
+      },
+      "apple": {
+        "$value": "#ff3b30",
+        "$type": "color",
+        "$description": "Apple health red (iOS healthRed)"
+      }
+    },
+    "cyan": {
+      "500": {
+        "$value": "#00d4ff",
+        "$type": "color",
+        "$description": "Neon cyan (web --neon-cyan)"
+      }
+    },
+    "orange": {
+      "500": {
+        "$value": "#ff6b00",
+        "$type": "color",
+        "$description": "Neon orange (web --neon-orange)"
+      }
+    },
+    "yellow": {
+      "500": {
+        "$value": "#ffd600",
+        "$type": "color",
+        "$description": "Status warning yellow (iOS statusWarning)"
+      }
+    },
+    "gold": {
+      "500": {
+        "$value": "#ffd700",
+        "$type": "color",
+        "$description": "Podium gold (1st place; distinct from yellow.500)"
+      }
+    },
+    "silver": {
+      "500": {
+        "$value": "#c0c0c0",
+        "$type": "color",
+        "$description": "Podium silver (2nd place)"
+      }
+    },
+    "bronze": {
+      "500": {
+        "$value": "#cd7f32",
+        "$type": "color",
+        "$description": "Podium bronze (3rd place)"
+      }
+    },
+    "indigo": {
+      "500": {
+        "$value": "#818cf8",
+        "$type": "color",
+        "$description": "Neon indigo (web --neon-indigo)"
+      },
+      "600": {
+        "$value": "#6366f1",
+        "$type": "color",
+        "$description": "Accent indigo (iOS accent)"
+      },
+      "700": {
+        "$value": "#5e5ce6",
+        "$type": "color",
+        "$description": "Apple system indigo (iOS healthPurple)"
+      }
+    },
+    "gray": {
+      "900": {
+        "$value": "#0a0a0f",
+        "$type": "color",
+        "$description": "Background (iOS background)"
+      },
+      "950": {
+        "$value": "#06060f",
+        "$type": "color",
+        "$description": "Deep background (web --bg, iOS backgroundDeep)"
+      }
+    },
+    "zinc": {
+      "100": {
+        "$value": "#fafafa",
+        "$type": "color",
+        "$description": "Title text (iOS textTitle)"
+      },
+      "200": {
+        "$value": "#e4e4e7",
+        "$type": "color",
+        "$description": "Primary text (iOS textPrimary)"
+      },
+      "300": {
+        "$value": "#f0f0f0",
+        "$type": "color",
+        "$description": "Primary text (web --text)"
+      },
+      "400": {
+        "$value": "#9ca3af",
+        "$type": "color",
+        "$description": "Muted text (web --text-muted)"
+      },
+      "500": {
+        "$value": "#71717a",
+        "$type": "color",
+        "$description": "Muted text (iOS textMuted)"
+      },
+      "600": {
+        "$value": "#52525b",
+        "$type": "color",
+        "$description": "Subtle text (iOS textSubtle)"
+      },
+      "700": {
+        "$value": "#3f3f46",
+        "$type": "color",
+        "$description": "Card arrow (iOS cardArrow)"
+      }
+    },
+    "white": {
+      "pure": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Pure white base for opacity variants"
+      }
+    },
+    "appleHealth": {
+      "green": {
+        "$value": "#34c759",
+        "$type": "color",
+        "$description": "Apple health green (iOS healthGreen)"
+      }
+    },
+    "alpha": {
+      "white3": {
+        "$value": "rgba(255,255,255,0.03)",
+        "$type": "color",
+        "$description": "3% white overlay (inset surface)"
+      },
+      "white4": {
+        "$value": "rgba(255,255,255,0.04)",
+        "$type": "color",
+        "$description": "4% white overlay (AI artifact frame)"
+      },
+      "white5": {
+        "$value": "rgba(255,255,255,0.05)",
+        "$type": "color",
+        "$description": "5% white overlay (raised hover)"
+      },
+      "white6": {
+        "$value": "rgba(255,255,255,0.06)",
+        "$type": "color",
+        "$description": "6% white overlay (default border)"
+      },
+      "white7": {
+        "$value": "rgba(255,255,255,0.07)",
+        "$type": "color",
+        "$description": "7% white overlay (raised surface)"
+      },
+      "white10": {
+        "$value": "rgba(255,255,255,0.1)",
+        "$type": "color",
+        "$description": "10% white overlay (subtle border)"
+      },
+      "white18": {
+        "$value": "rgba(255,255,255,0.18)",
+        "$type": "color",
+        "$description": "18% white overlay (strong border)"
+      },
+      "black35": {
+        "$value": "rgba(0,0,0,0.35)",
+        "$type": "color",
+        "$description": "35% black overlay (AI code-block background)"
+      }
+    },
+    "surface": {
+      "thinking": {
+        "$value": "rgba(255,255,255,0.05)",
+        "$type": "color",
+        "$description": "Background for AI thinking/reasoning indicator surfaces"
+      },
+      "citation": {
+        "$value": "rgba(255,255,255,0.03)",
+        "$type": "color",
+        "$description": "Background for AI citation reference surfaces"
+      },
+      "tool-use": {
+        "$value": "rgba(99,102,241,0.08)",
+        "$type": "color",
+        "$description": "Background for AI tool-use disclosure surfaces (indigo tint — not covered by white/black alpha primitive set)"
+      },
+      "artifact-frame": {
+        "$value": "rgba(255,255,255,0.04)",
+        "$type": "color",
+        "$description": "Background for AI artifact frame containers"
+      },
+      "code-block": {
+        "$value": "rgba(0,0,0,0.35)",
+        "$type": "color",
+        "$description": "Background for AI-rendered code block surfaces"
+      },
+      "code-block-diff": {
+        "added": {
+          "$value": "rgba(6,214,160,0.12)",
+          "$type": "color",
+          "$description": "Background for diff-added lines in AI code blocks"
+        },
+        "removed": {
+          "$value": "rgba(239,68,68,0.12)",
+          "$type": "color",
+          "$description": "Background for diff-removed lines in AI code blocks"
+        }
+      },
+      "base": {
+        "$value": "#06060f",
+        "$type": "color",
+        "$description": "Primary background"
+      },
+      "deep": {
+        "$value": "#0a0a0f",
+        "$type": "color",
+        "$description": "Secondary background"
+      },
+      "raised": {
+        "$value": "rgba(255,255,255,0.05)",
+        "$type": "color",
+        "$description": "Card/glass background (5% white overlay)"
+      },
+      "raisedHover": {
+        "$value": "rgba(255,255,255,0.07)",
+        "$type": "color",
+        "$description": "Card hover state — brighter than rest per industry-default hover-emphasis convention"
+      },
+      "inset": {
+        "$value": "rgba(255,255,255,0.03)",
+        "$type": "color",
+        "$description": "Inset/recessed surface"
+      }
+    },
+    "border": {
+      "default": {
+        "$value": "rgba(255,255,255,0.06)",
+        "$type": "color",
+        "$description": "Default border"
+      },
+      "subtle": {
+        "$value": "rgba(255,255,255,0.1)",
+        "$type": "color",
+        "$description": "Glass border"
+      },
+      "strong": {
+        "$value": "rgba(255,255,255,0.18)",
+        "$type": "color",
+        "$description": "Emphasized border"
+      },
+      "interactive": {
+        "$value": "rgba(99,102,241,0.2)",
+        "$type": "color",
+        "$description": "Interactive hover border (indigo accent — not covered by white/black alpha primitive set)"
+      }
+    },
+    "text": {
+      "title": {
+        "$value": "#fafafa",
+        "$type": "color",
+        "$description": "Heading text"
+      },
+      "primary": {
+        "$value": "#f0f0f0",
+        "$type": "color",
+        "$description": "Body text. Web parity: zinc.300 = #f0f0f0 matches production --text. iOS textPrimary remains zinc.200 (#e4e4e7) via SwiftUI layer (MA2)."
+      },
+      "muted": {
+        "$value": "#9ca3af",
+        "$type": "color",
+        "$description": "Secondary text. Uses web value #9ca3af cross-platform. Converged upward for accessibility (MA2)."
+      },
+      "subtle": {
+        "$value": "#52525b",
+        "$type": "color",
+        "$description": "Tertiary text"
+      },
+      "disabled": {
+        "$value": "#3f3f46",
+        "$type": "color",
+        "$description": "Disabled/arrow text"
+      }
+    },
+    "accent": {
+      "pink": {
+        "$value": "#ff006e",
+        "$type": "color"
+      },
+      "blue": {
+        "$value": "#3a86ff",
+        "$type": "color"
+      },
+      "green": {
+        "$value": "#06d6a0",
+        "$type": "color"
+      },
+      "amber": {
+        "$value": "#f59e0b",
+        "$type": "color"
+      },
+      "purple": {
+        "$value": "#a855f7",
+        "$type": "color"
+      },
+      "red": {
+        "$value": "#ef4444",
+        "$type": "color"
+      },
+      "cyan": {
+        "$value": "#00d4ff",
+        "$type": "color"
+      },
+      "orange": {
+        "$value": "#ff6b00",
+        "$type": "color"
+      },
+      "indigo": {
+        "$value": "#818cf8",
+        "$type": "color"
+      },
+      "default": {
+        "$value": "#6366f1",
+        "$type": "color",
+        "$description": "Primary accent (iOS accent)"
+      }
+    },
+    "accent-hc": {
+      "pink": {
+        "$value": "#ff69b4",
+        "$type": "color",
+        "$description": "High-contrast variant (AAA)"
+      },
+      "purple": {
+        "$value": "#c084fc",
+        "$type": "color"
+      },
+      "red": {
+        "$value": "#f87171",
+        "$type": "color"
+      }
+    },
+    "health": {
+      "red": {
+        "$value": "#ff3b30",
+        "$type": "color",
+        "$description": "Apple Health move ring"
+      },
+      "green": {
+        "$value": "#34c759",
+        "$type": "color",
+        "$description": "Apple Health exercise ring"
+      },
+      "purple": {
+        "$value": "#5e5ce6",
+        "$type": "color",
+        "$description": "Apple Health stand ring"
+      }
+    },
+    "interactive": {
+      "default": {
+        "$value": "#6366f1",
+        "$type": "color",
+        "$description": "Buttons, links"
+      },
+      "hover": {
+        "$value": "#8b5cf6",
+        "$type": "color",
+        "$description": "Hover state"
+      }
+    },
+    "sleep": {
+      "deep": {
+        "$value": "#1e40af",
+        "$type": "color",
+        "$description": "Deep sleep phase (web NightSummary deep pill)"
+      },
+      "rem": {
+        "$value": "#a855f7",
+        "$type": "color",
+        "$description": "REM sleep phase (web NightSummary rem pill)"
+      },
+      "core": {
+        "$value": "#3a86ff",
+        "$type": "color",
+        "$description": "Core sleep phase (web NightSummary core pill)"
+      },
+      "awake": {
+        "$value": "#9ca3af",
+        "$type": "color",
+        "$description": "Awake (muted; rendered as inactive surface in NightSummary)"
+      }
+    },
+    "status": {
+      "warning": {
+        "$value": "#ffd600",
+        "$type": "color",
+        "$description": "Warning state (iOS statusWarning)"
+      }
+    },
+    "podium": {
+      "gold": {
+        "$value": "#ffd700",
+        "$type": "color",
+        "$description": "1st place"
+      },
+      "silver": {
+        "$value": "#c0c0c0",
+        "$type": "color",
+        "$description": "2nd place"
+      },
+      "bronze": {
+        "$value": "#cd7f32",
+        "$type": "color",
+        "$description": "3rd place"
+      }
+    }
+  },
+  "motion": {
+    "duration": {
+      "instant": {
+        "$value": "0ms",
+        "$type": "duration",
+        "$description": "No animation"
+      },
+      "fast": {
+        "$value": "150ms",
+        "$type": "duration",
+        "$description": "Micro-interactions, Watch default"
+      },
+      "normal": {
+        "$value": "300ms",
+        "$type": "duration",
+        "$description": "Standard transitions"
+      },
+      "slow": {
+        "$value": "500ms",
+        "$type": "duration",
+        "$description": "Page-level transitions"
+      },
+      "slower": {
+        "$value": "600ms",
+        "$type": "duration",
+        "$description": "Card entrance"
+      }
+    },
+    "easing": {
+      "standard": {
+        "$value": [
+          0.4,
+          0,
+          0.2,
+          1
+        ],
+        "$type": "cubicBezier",
+        "$description": "General purpose"
+      },
+      "decelerate": {
+        "$value": [
+          0,
+          0,
+          0.2,
+          1
+        ],
+        "$type": "cubicBezier",
+        "$description": "Enter/appear"
+      },
+      "accelerate": {
+        "$value": [
+          0.4,
+          0,
+          1,
+          1
+        ],
+        "$type": "cubicBezier",
+        "$description": "Exit/disappear"
+      },
+      "overshoot": {
+        "$value": [
+          0.34,
+          1.56,
+          0.64,
+          1
+        ],
+        "$type": "cubicBezier",
+        "$description": "Bounce/spring"
+      }
+    },
+    "delay": {
+      "short": {
+        "$value": "50ms",
+        "$type": "duration"
+      },
+      "normal": {
+        "$value": "100ms",
+        "$type": "duration"
+      }
+    },
+    "reduced": {
+      "duration": {
+        "$value": "0ms",
+        "$type": "duration",
+        "$description": "All durations collapse to 0 under prefers-reduced-motion"
+      },
+      "easing": {
+        "$value": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "$type": "cubicBezier",
+        "$description": "Linear easing under prefers-reduced-motion"
+      }
+    },
+    "pulse": {
+      "breathing": {
+        "$value": "2000ms",
+        "$type": "duration",
+        "$description": "Slow ease-in-out breathing cycle for AI thinking indicators"
+      },
+      "streaming": {
+        "$value": "500ms",
+        "$type": "duration",
+        "$description": "Fast linear cycle for AI streaming/token-generation indicators"
+      }
+    }
+  },
+  "shadow": {
+    "glow": {
+      "pink": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(255,0,110,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(255,0,110,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "blue": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(58,134,255,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(58,134,255,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "green": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(6,214,160,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(6,214,160,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "amber": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(245,158,11,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(245,158,11,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "purple": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(168,85,247,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(168,85,247,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "red": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(239,68,68,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(239,68,68,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "cyan": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(0,212,255,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(0,212,255,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "orange": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(255,107,0,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(255,107,0,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "indigo": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(129,140,248,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(129,140,248,0.15)"
+          }
+        ],
+        "$type": "shadow"
+      },
+      "pinkSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(255,0,110,0.25)"
+        },
+        "$type": "shadow",
+        "$description": "Reduced glow for mobile performance"
+      },
+      "blueSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(58,134,255,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "greenSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(6,214,160,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "amberSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(245,158,11,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "purpleSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(168,85,247,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "redSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(239,68,68,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "cyanSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(0,212,255,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "orangeSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(255,107,0,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "indigoSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(129,140,248,0.25)"
+        },
+        "$type": "shadow"
+      },
+      "accent": {
+        "$value": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 20,
+            "spread": 0,
+            "color": "rgba(129,140,248,0.3)"
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 40,
+            "spread": 0,
+            "color": "rgba(129,140,248,0.15)"
+          }
+        ],
+        "$type": "shadow",
+        "$description": "Default accent glow (matches accent.default)"
+      },
+      "accentSm": {
+        "$value": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "blur": 12,
+          "spread": 0,
+          "color": "rgba(129,140,248,0.25)"
+        },
+        "$type": "shadow"
+      }
+    }
+  },
+  "space": {
+    "50": {
+      "$value": "2px",
+      "$type": "dimension",
+      "$description": "Micro"
+    },
+    "100": {
+      "$value": "4px",
+      "$type": "dimension",
+      "$description": "Atomic gutter"
+    },
+    "150": {
+      "$value": "6px",
+      "$type": "dimension",
+      "$description": "Tight"
+    },
+    "200": {
+      "$value": "8px",
+      "$type": "dimension",
+      "$description": "Compact inset"
+    },
+    "250": {
+      "$value": "10px",
+      "$type": "dimension"
+    },
+    "300": {
+      "$value": "12px",
+      "$type": "dimension"
+    },
+    "350": {
+      "$value": "14px",
+      "$type": "dimension"
+    },
+    "400": {
+      "$value": "16px",
+      "$type": "dimension",
+      "$description": "Default card padding (iOS cardCornerRadius)"
+    },
+    "450": {
+      "$value": "18px",
+      "$type": "dimension",
+      "$description": "Compact card padding (iOS cardPaddingCompact)"
+    },
+    "500": {
+      "$value": "20px",
+      "$type": "dimension",
+      "$description": "Grid spacing (iOS gridSpacing)"
+    },
+    "600": {
+      "$value": "24px",
+      "$type": "dimension"
+    },
+    "700": {
+      "$value": "28px",
+      "$type": "dimension"
+    },
+    "800": {
+      "$value": "32px",
+      "$type": "dimension",
+      "$description": "Large card padding (iOS cardPadding)"
+    },
+    "900": {
+      "$value": "36px",
+      "$type": "dimension",
+      "$description": "Widget header height (iOS widgetHeaderHeight)"
+    },
+    "1000": {
+      "$value": "40px",
+      "$type": "dimension"
+    },
+    "1200": {
+      "$value": "48px",
+      "$type": "dimension",
+      "$description": "Page rhythm"
+    },
+    "1600": {
+      "$value": "64px",
+      "$type": "dimension",
+      "$description": "Hero spacing"
+    }
+  },
+  "font": {
+    "family": {
+      "brand": {
+        "$value": "Space Grotesk",
+        "$type": "fontFamily"
+      },
+      "brandFallback": {
+        "$value": "Space Grotesk Fallback",
+        "$type": "fontFamily"
+      },
+      "system": {
+        "$value": "system-ui",
+        "$type": "fontFamily"
+      }
+    },
+    "weight": {
+      "light": {
+        "$value": 300,
+        "$type": "fontWeight"
+      },
+      "regular": {
+        "$value": 400,
+        "$type": "fontWeight"
+      },
+      "medium": {
+        "$value": 500,
+        "$type": "fontWeight"
+      },
+      "semibold": {
+        "$value": 600,
+        "$type": "fontWeight"
+      },
+      "bold": {
+        "$value": 700,
+        "$type": "fontWeight"
+      }
+    }
+  },
+  "iosTypography": {
+    "caption2": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 11.5,
+        "fontWeight": 400,
+        "lineHeight": 1.3
+      },
+      "$type": "typography"
+    },
+    "caption": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 12.5,
+        "fontWeight": 400,
+        "lineHeight": 1.3
+      },
+      "$type": "typography"
+    },
+    "footnote": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 13.1,
+        "fontWeight": 400,
+        "lineHeight": 1.4
+      },
+      "$type": "typography"
+    },
+    "body": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 13.1,
+        "fontWeight": 400,
+        "lineHeight": 1.5
+      },
+      "$type": "typography",
+      "$description": "Maps to web --font-size-base: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)"
+    },
+    "callout": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 13.1,
+        "fontWeight": 400,
+        "lineHeight": 1.4
+      },
+      "$type": "typography"
+    },
+    "subhead": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 16.8,
+        "fontWeight": 500,
+        "lineHeight": 1.4
+      },
+      "$type": "typography",
+      "$description": "Maps to web --font-size-lg"
+    },
+    "headline": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 24,
+        "fontWeight": 600,
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "Maps to web --font-size-xl"
+    },
+    "title3": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 32,
+        "fontWeight": 700,
+        "lineHeight": 1.25
+      },
+      "$type": "typography",
+      "$description": "Maps to web --font-size-2xl"
+    },
+    "title2": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 38.4,
+        "fontWeight": 700,
+        "lineHeight": 1.2
+      },
+      "$type": "typography",
+      "$description": "Maps to web --font-size-3xl"
+    },
+    "title1": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 42,
+        "fontWeight": 700,
+        "lineHeight": 1.15
+      },
+      "$type": "typography",
+      "$description": "Interpolated between title2 and hero. No direct web mapping."
+    },
+    "hero": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 35.2,
+        "fontWeight": 700,
+        "lineHeight": 1.15
+      },
+      "$type": "typography",
+      "$description": "Maps to web --font-size-hero"
+    }
+  },
+  "transition": {
+    "default": {
+      "$value": {
+        "duration": "300ms",
+        "timingFunction": [
+          0.4,
+          0,
+          0.2,
+          1
+        ],
+        "delay": "50ms"
+      },
+      "$type": "transition",
+      "$description": "Standard UI transition for most interactive elements"
+    },
+    "fast": {
+      "$value": {
+        "duration": "150ms",
+        "timingFunction": [
+          0.4,
+          0,
+          0.2,
+          1
+        ],
+        "delay": "0ms"
+      },
+      "$type": "transition",
+      "$description": "Fast transition for micro-interactions (hover states, focus rings)"
+    },
+    "enter": {
+      "$value": {
+        "duration": "300ms",
+        "timingFunction": [
+          0,
+          0,
+          0.2,
+          1
+        ],
+        "delay": "50ms"
+      },
+      "$type": "transition",
+      "$description": "Entering/appearing elements — decelerated easing"
+    },
+    "exit": {
+      "$value": {
+        "duration": "150ms",
+        "timingFunction": [
+          0.4,
+          0,
+          1,
+          1
+        ],
+        "delay": "0ms"
+      },
+      "$type": "transition",
+      "$description": "Exiting/disappearing elements — accelerated easing"
+    },
+    "spring": {
+      "$value": {
+        "duration": "500ms",
+        "timingFunction": [
+          0.34,
+          1.56,
+          0.64,
+          1
+        ],
+        "delay": "0ms"
+      },
+      "$type": "transition",
+      "$description": "Playful spring/bounce transition for expressive affordances"
+    }
+  },
+  "typography": {
+    "display": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 700,
+        "fontSize": "clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)",
+        "lineHeight": 1.15
+      },
+      "$type": "typography",
+      "$description": "Hero/display text. Maps to typography.hero primitive."
+    },
+    "heading1": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 700,
+        "fontSize": "clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)",
+        "lineHeight": 1.25
+      },
+      "$type": "typography",
+      "$description": "Section headings. Maps to typography.title3 primitive."
+    },
+    "heading2": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 600,
+        "fontSize": "clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)",
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "Subsection headings. Maps to typography.headline primitive."
+    },
+    "body": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 400,
+        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+        "lineHeight": 1.5
+      },
+      "$type": "typography",
+      "$description": "Default body text. Maps to typography.body primitive."
+    },
+    "label": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 500,
+        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+        "lineHeight": 1.4
+      },
+      "$type": "typography",
+      "$description": "Form labels and UI element labels."
+    },
+    "caption": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontWeight": 400,
+        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "Caption / supporting text. Maps to typography.caption primitive."
+    },
+    "code": {
+      "$value": {
+        "fontFamily": "system-ui",
+        "fontWeight": 400,
+        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+        "lineHeight": 1.6
+      },
+      "$type": "typography",
+      "$description": "Monospaced code blocks and inline code. Uses system monospace fallback."
+    }
+  }
+}
