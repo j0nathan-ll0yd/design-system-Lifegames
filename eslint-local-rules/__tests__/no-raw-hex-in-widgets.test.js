@@ -45,6 +45,17 @@ tester.run('no-raw-hex-in-widgets', rule, {
       filename: widgetTsFile,
       code: 'const s = "#12345";',
     },
+    // HTML numeric character entity (`&#NNNN;`) — not a CSS hex literal,
+    // negative lookbehind in HEX_RE rules out the `&`-prefixed form so
+    // glyphs like ★ &#9733; ⑂ &#9474; do not trip the rule.
+    {
+      filename: widgetTsFile,
+      code: 'const s = "<span>&#9733;</span>";',
+    },
+    {
+      filename: widgetTsFile,
+      code: 'const s = "&#9474; &#8758; &#9472;";',
+    },
   ],
 
   invalid: [

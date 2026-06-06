@@ -26,7 +26,9 @@ const FILE_PATTERN = /\/packages\/web\/src\/widgets\/.+\.(?:astro|css|ts|tsx|js|
 
 // #RGB, #RGBA, #RRGGBB, #RRGGBBAA — exactly 3, 4, 6, or 8 hex digits.
 // Word boundary after to avoid swallowing into longer tokens.
-const HEX_RE = /#([0-9a-fA-F]{3,8})\b/g;
+// Negative lookbehind for `&` rules out HTML numeric character entities
+// (`&#NNNN;`, `&#xNN;`) which share the `#NN..` prefix but are not CSS hex.
+const HEX_RE = /(?<!&)#([0-9a-fA-F]{3,8})\b/g;
 
 // Width set we recognise as a real CSS color literal.
 const VALID_HEX_LENGTHS = new Set([3, 4, 6, 8]);
