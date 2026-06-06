@@ -25,6 +25,9 @@ public enum LGColor {
     public static let cyan500 = Color("color-cyan-500", bundle: .module)
     public static let orange500 = Color("color-orange-500", bundle: .module)
     public static let yellow500 = Color("color-yellow-500", bundle: .module)
+    public static let gold500 = Color("color-gold-500", bundle: .module)
+    public static let silver500 = Color("color-silver-500", bundle: .module)
+    public static let bronze500 = Color("color-bronze-500", bundle: .module)
     public static let indigo500 = Color("color-indigo-500", bundle: .module)
     public static let indigo600 = Color("color-indigo-600", bundle: .module)
     public static let indigo700 = Color("color-indigo-700", bundle: .module)
@@ -83,4 +86,7 @@ public enum LGColor {
     public static let sleepCore = Color("color-sleep-core", bundle: .module)
     public static let sleepAwake = Color("color-sleep-awake", bundle: .module)
     public static let statusWarning = Color("color-status-warning", bundle: .module)
+    public static let podiumGold = Color("color-podium-gold", bundle: .module)
+    public static let podiumSilver = Color("color-podium-silver", bundle: .module)
+    public static let podiumBronze = Color("color-podium-bronze", bundle: .module)
 }

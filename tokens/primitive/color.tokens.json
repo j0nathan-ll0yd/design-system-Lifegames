@@ -35,6 +35,15 @@
     "yellow": {
       "500": { "$value": "#ffd600", "$description": "Status warning yellow (iOS statusWarning)" }
     },
+    "gold": {
+      "500": { "$value": "#ffd700", "$description": "Podium gold (1st place; distinct from yellow.500)" }
+    },
+    "silver": {
+      "500": { "$value": "#c0c0c0", "$description": "Podium silver (2nd place)" }
+    },
+    "bronze": {
+      "500": { "$value": "#cd7f32", "$description": "Podium bronze (3rd place)" }
+    },
     "indigo": {
       "500": { "$value": "#818cf8", "$description": "Neon indigo (web --neon-indigo)" },
       "600": { "$value": "#6366f1", "$description": "Accent indigo (iOS accent)" },

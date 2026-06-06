@@ -78,6 +78,12 @@
     },
     "status": {
       "warning": { "$value": "{color.yellow.500}", "$description": "Warning state (iOS statusWarning)" }
+    },
+    "podium": {
+      "$description": "Medal podium colors for PlaceLeaderboard rankings.",
+      "gold":   { "$value": "{color.gold.500}",   "$description": "1st place" },
+      "silver": { "$value": "{color.silver.500}", "$description": "2nd place" },
+      "bronze": { "$value": "{color.bronze.500}", "$description": "3rd place" }
     }
   }
 }
