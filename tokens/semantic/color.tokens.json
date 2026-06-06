@@ -59,6 +59,9 @@
         "$value": "{color.blue.700}",
         "$description": "Deep sleep phase (web NightSummary deep pill)"
       }
+    },
+    "status": {
+      "warning": { "$value": "{color.yellow.500}", "$description": "Warning state (iOS statusWarning)" }
     }
   }
 }

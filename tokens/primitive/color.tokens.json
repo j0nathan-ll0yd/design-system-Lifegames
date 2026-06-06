@@ -32,6 +32,9 @@
     "orange": {
       "500": { "$value": "#ff6b00", "$description": "Neon orange (web --neon-orange)" }
     },
+    "yellow": {
+      "500": { "$value": "#ffd600", "$description": "Status warning yellow (iOS statusWarning)" }
+    },
     "indigo": {
       "500": { "$value": "#818cf8", "$description": "Neon indigo (web --neon-indigo)" },
       "600": { "$value": "#6366f1", "$description": "Accent indigo (iOS accent)" },

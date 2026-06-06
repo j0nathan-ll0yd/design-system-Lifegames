@@ -24,6 +24,7 @@ public enum LGColor {
     public static let redApple = Color("color-red-apple", bundle: .module)
     public static let cyan500 = Color("color-cyan-500", bundle: .module)
     public static let orange500 = Color("color-orange-500", bundle: .module)
+    public static let yellow500 = Color("color-yellow-500", bundle: .module)
     public static let indigo500 = Color("color-indigo-500", bundle: .module)
     public static let indigo600 = Color("color-indigo-600", bundle: .module)
     public static let indigo700 = Color("color-indigo-700", bundle: .module)
@@ -78,4 +79,5 @@ public enum LGColor {
     public static let interactiveDefault = Color("color-interactive-default", bundle: .module)
     public static let interactiveHover = Color("color-interactive-hover", bundle: .module)
     public static let sleepDeep = Color("color-sleep-deep", bundle: .module)
+    public static let statusWarning = Color("color-status-warning", bundle: .module)
 }
