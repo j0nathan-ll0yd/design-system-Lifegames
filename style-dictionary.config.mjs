@@ -816,6 +816,44 @@ function emitDeprecatedTokensJson() {
   return JSON.stringify(deprecatedTokens, null, 2) + '\n';
 }
 
+// tokens.dtcg.json — normalised DTCG output for downstream conformance tooling.
+// Emits the resolved token tree with $value and $type at every leaf, matching
+// the W3C DTCG draft shape. scripts/validate-dtcg.mjs consumes this file when
+// invoked with --report.
+function emitTokensDtcgJson() {
+  const tree = {};
+  for (const t of tokens) {
+    let obj = tree;
+    for (let i = 0; i < t.path.length - 1; i++) {
+      if (!obj[t.path[i]]) obj[t.path[i]] = {};
+      obj = obj[t.path[i]];
+    }
+    const leaf = { $value: t.resolvedValue };
+    if (t.$type) leaf.$type = t.$type;
+    if (t.$description) leaf.$description = t.$description;
+    if (t.$deprecated) leaf.$deprecated = t.$deprecated;
+    obj[t.path[t.path.length - 1]] = leaf;
+  }
+  return JSON.stringify(tree, null, 2) + '\n';
+}
+
+// build-report.json — per-build provenance: token count, list of emitted files
+// with sizes, total bytes, build timestamp. Consumed by CI for size budget
+// guards and by the F-034 baseline-age policy script.
+//
+// builtAt is intentionally omitted from the emitted bytes to keep the file
+// stable for golden-test byte comparison. CI consumers that need a timestamp
+// can read fs.statSync(...).mtime on the file itself.
+function emitBuildReportJson(emittedFilesAndSizes) {
+  const totalBytes = emittedFilesAndSizes.reduce((sum, f) => sum + f.bytes, 0);
+  return JSON.stringify({
+    tokens: tokens.length,
+    files: emittedFilesAndSizes.map(f => ({ path: f.path, bytes: f.bytes })),
+    totalBytes,
+    engine: 'style-dictionary@5',
+  }, null, 2) + '\n';
+}
+
 // --- StyleDictionary v5 platform / format registration ---
 //
 // SD v5 is invoked as the build orchestrator. Order matters: emit xcassets
@@ -842,6 +880,8 @@ const sd = new StyleDictionary({
         { destination: 'DESIGN.md', format: 'lifegames/DESIGN.md' },
         { destination: 'shadcn.css', format: 'lifegames/shadcn.css' },
         { destination: 'deprecated-tokens.json', format: 'lifegames/deprecated-tokens.json' },
+        { destination: 'tokens.dtcg.json', format: 'lifegames/tokens.dtcg.json' },
+        { destination: 'build-report.json', format: 'lifegames/build-report.json' },
       ],
     },
     'ios/xcassets': {
@@ -888,6 +928,21 @@ const designMdChanged = previousMd !== designMdOut;
 
 const shadcnOut = emitShadcnCss();
 const deprecatedOut = emitDeprecatedTokensJson();
+const tokensDtcgOut = emitTokensDtcgJson();
+// build-report sizes are computed across the six dist files emitted alongside it.
+// We measure byte-length of the JS strings rather than reading back from disk to
+// keep the report self-contained and reproducible regardless of fs encoding.
+const buildReportFiles = [
+  { path: 'tokens.css', bytes: Buffer.byteLength(cssOut, 'utf-8') },
+  { path: 'tokens-layered.css', bytes: Buffer.byteLength(cssLayeredOut, 'utf-8') },
+  { path: 'tokens.js', bytes: Buffer.byteLength(tokensJsOut, 'utf-8') },
+  { path: 'tokens.json', bytes: Buffer.byteLength(tokensJsonOut, 'utf-8') },
+  { path: 'DESIGN.md', bytes: Buffer.byteLength(designMdOut, 'utf-8') },
+  { path: 'shadcn.css', bytes: Buffer.byteLength(shadcnOut, 'utf-8') },
+  { path: 'deprecated-tokens.json', bytes: Buffer.byteLength(deprecatedOut, 'utf-8') },
+  { path: 'tokens.dtcg.json', bytes: Buffer.byteLength(tokensDtcgOut, 'utf-8') },
+];
+const buildReportOut = emitBuildReportJson(buildReportFiles);
 
 sd.registerFormat({ name: 'lifegames/tokens.css', format: () => cssOut });
 sd.registerFormat({ name: 'lifegames/tokens-layered.css', format: () => cssLayeredOut });
@@ -896,6 +951,8 @@ sd.registerFormat({ name: 'lifegames/tokens.json', format: () => tokensJsonOut }
 sd.registerFormat({ name: 'lifegames/DESIGN.md', format: () => designMdOut });
 sd.registerFormat({ name: 'lifegames/shadcn.css', format: () => shadcnOut });
 sd.registerFormat({ name: 'lifegames/deprecated-tokens.json', format: () => deprecatedOut });
+sd.registerFormat({ name: 'lifegames/tokens.dtcg.json', format: () => tokensDtcgOut });
+sd.registerFormat({ name: 'lifegames/build-report.json', format: () => buildReportOut });
 sd.registerFormat({ name: 'lifegames/xcassets-root', format: () => xcassetsRootOut });
 sd.registerFormat({ name: 'lifegames/Color+Tokens.swift', format: () => colorTokensOut });
 sd.registerFormat({ name: 'lifegames/Spacing.swift', format: () => spacingOut });
