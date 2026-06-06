@@ -253,6 +253,30 @@ The earlier `REMOTE_ENABLED`-gated workflows (`publish.yml`, `release.yml`, `dep
 
 **Swift consumers** continue to pin to a DS Git tag (or branch) via SPM — that path is independent of the JS distribution model.
 
+### 6.2 SPM-JS version contract
+
+The design system has two consumer surfaces with two distribution mechanisms. To keep them coherent, they share a single source of truth: the Git tag on this repository.
+
+| Consumer | Pins to | Source of truth | Reproducibility |
+|----------|---------|-----------------|-----------------|
+| Swift (iOS / watchOS) | DS Git tag or branch via SPM | Git tag on `design-system-Lifegames` | Full — SPM resolves to a commit SHA |
+| JS (web today; future others) | yalc-published artifact in consumer's `.yalc/` | `packages/tokens/package.json` `version` field at the time of `pnpm yalc:publish` | Partial — yalc copies a build artifact; the matching DS commit is not recorded in the consumer |
+
+**The contract:**
+
+1. **DS Git tags are canonical.** When DS state is worth a tag (a tokens change consumers should reference, a coordinated DS+iOS+web rollout, etc.), tag the commit on `main`: `git tag v0.1.1 && git push --tags`.
+2. **`packages/tokens/package.json` `version` aligns to the Git tag.** A `v0.1.1` tag implies that `packages/tokens/package.json` reads `"version": "0.1.1"` at that commit, and similarly for `@lifegames/web` and `@lifegames/schemas`. Bump versions in the same commit that gets tagged.
+3. **Swift consumers** add `.package(url: "...", from: "0.1.1")` (or `.branch("main")` during development). SPM resolves this to a Git SHA, fully reproducible.
+4. **JS consumers** run `pnpm yalc:publish` from DS, then `pnpm yalc:add @lifegames/tokens` in the consumer. The consumer's `package.json` records the yalc-installed version (`0.1.1`); the consumer's `yalc.lock` records the content hash. This is **not** as reproducible as SPM's SHA — yalc captures a built artifact, not a source commit — which is why Task 5.2 adds a `yalc:check` staleness detector.
+5. **Semver tier meaning** (applies to both surfaces):
+   - `patch` — bug fix, no token name changes, no API changes.
+   - `minor` — new tokens, new components, new exported widgets; backward-compatible.
+   - `major` — token rename or removal, component removal, SPM product rename, breaking type changes in `@lifegames/schemas`. Requires consumer code changes.
+
+**Why a single version stream:** Two version streams (a Git tag separate from the JS package version) would force every consumer-facing change to be reasoned about twice and would let the streams drift silently. Keeping them lockstep means "DS at v0.1.1" has the same meaning whether you are an iOS developer or a yalc-linked JS consumer.
+
+**Why not npm-published JS today:** see §6.1. When npm distribution returns, it inherits this contract unchanged — `npm install @lifegames/tokens@^0.1` then maps to the same version stream as the Git tag and the yalc artifact.
+
 ---
 
 ## 7. ADR Convention

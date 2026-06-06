@@ -4,7 +4,7 @@ import SwiftUI
 /// Color tokens for surfaces rendered by AI clients (thinking indicators,
 /// citations, tool-use disclosure, artifact frames, code blocks).
 public enum AISurfaces {
-    public static let surfaceThinking = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0.07)
+    public static let surfaceThinking = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0.05)
     public static let surfaceCitation = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0.03)
     public static let surfaceToolUse = Color(red: 0.388, green: 0.400, blue: 0.945, opacity: 0.08)
     public static let surfaceArtifactFrame = Color(red: 1.000, green: 1.000, blue: 1.000, opacity: 0.04)
