@@ -18,7 +18,7 @@ Constitution for `design-system-Lifegames`. Defines what belongs in the DS versu
 
 **The two genuine inconsistencies to remediate:**
 
-1. **iOS consumption is non-uniform.** The iOS app *consumes* DS Health widgets in a real product surface (`HealthFeatureView.swift` imports `LifegamesWidgets`, renders `HeartRateView`, `DailyActivityView`, `NightSummaryView`) but *duplicates* DS Location widgets locally (`TopPlacesCard.swift`, `HeatMapCard.swift`). Needs resolution per-widget.
+1. **iOS consumption is non-uniform.** The iOS app *consumes* DS Health widgets in a real product surface (`HealthFeatureView.swift` imports `LifegamesWidgets`, renders `HeartRateView`, `MovementRingsView`, `NightSummaryView`) but *duplicates* DS Location widgets locally (`TopPlacesCard.swift`, `HeatMapCard.swift`). Needs resolution per-widget.
 
 2. **Speculative promotion confirmed by census.** An empirical census (2026-05-29) found 0 of ~110 widgets meet a strict "≥2 shipping product surfaces" bar: the web dashboard is single-page (every web widget has exactly 1 consumer route); on iOS only the 3 Health widgets have even 1 product-surface consumer. Only ~16 web + 3 Swift widgets have any product-surface consumer at all. The remaining bulk is in **demote-or-justify** status. The maintainer's response is the **relaxed P4 rule** (≥1 surface now + credible 2nd surface planned), detailed below.
 
