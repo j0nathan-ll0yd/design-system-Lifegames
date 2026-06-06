@@ -4,8 +4,8 @@
     "surface": {
       "base":        { "$value": "{color.gray.950}", "$description": "Primary background" },
       "deep":        { "$value": "{color.gray.900}", "$description": "Secondary background" },
-      "raised":      { "$value": "{color.alpha.white7}", "$description": "Card/glass background" },
-      "raisedHover": { "$value": "{color.alpha.white5}", "$description": "Card hover state" },
+      "raised":      { "$value": "{color.alpha.white5}", "$description": "Card/glass background (5% white overlay)" },
+      "raisedHover": { "$value": "{color.alpha.white7}", "$description": "Card hover state — brighter than rest per industry-default hover-emphasis convention" },
       "inset":       { "$value": "{color.alpha.white3}", "$description": "Inset/recessed surface" }
     },
     "border": {
