@@ -11,8 +11,10 @@ export default {
     expect(image).toMatchImageSnapshot({
       customSnapshotsDir: `${process.cwd()}/__snapshots__`,
       customSnapshotIdentifier: context.id,
-      // Allow up to 0.2% pixel diff to absorb sub-pixel anti-aliasing variance.
-      failureThreshold: 0.002,
+      // Allow up to 1% pixel diff to absorb sub-pixel anti-aliasing variance
+      // plus cross-platform rendering differences between local macOS recording
+      // and Linux CI playback (font hinting, gradient interpolation).
+      failureThreshold: 0.01,
       failureThresholdType: 'percent',
       customDiffDir: `${process.cwd()}/__snapshots__/__diff__`,
     });
