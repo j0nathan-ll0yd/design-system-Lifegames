@@ -54,10 +54,26 @@
       "hover":   { "$value": "{color.purple.600}", "$description": "Hover state" }
     },
     "sleep": {
+      "$description": "Sleep-phase palette. Four phases (deep/rem/core/awake) shared by iOS NightSummary and web NightSummary pills.",
       "deep": {
         "$type": "color",
         "$value": "{color.blue.700}",
         "$description": "Deep sleep phase (web NightSummary deep pill)"
+      },
+      "rem": {
+        "$type": "color",
+        "$value": "{color.purple.500}",
+        "$description": "REM sleep phase (web NightSummary rem pill)"
+      },
+      "core": {
+        "$type": "color",
+        "$value": "{color.blue.500}",
+        "$description": "Core sleep phase (web NightSummary core pill)"
+      },
+      "awake": {
+        "$type": "color",
+        "$value": "{color.zinc.400}",
+        "$description": "Awake (muted; rendered as inactive surface in NightSummary)"
       }
     },
     "status": {

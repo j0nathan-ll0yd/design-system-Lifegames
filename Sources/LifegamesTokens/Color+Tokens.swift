@@ -79,5 +79,8 @@ public enum LGColor {
     public static let interactiveDefault = Color("color-interactive-default", bundle: .module)
     public static let interactiveHover = Color("color-interactive-hover", bundle: .module)
     public static let sleepDeep = Color("color-sleep-deep", bundle: .module)
+    public static let sleepRem = Color("color-sleep-rem", bundle: .module)
+    public static let sleepCore = Color("color-sleep-core", bundle: .module)
+    public static let sleepAwake = Color("color-sleep-awake", bundle: .module)
     public static let statusWarning = Color("color-status-warning", bundle: .module)
 }
