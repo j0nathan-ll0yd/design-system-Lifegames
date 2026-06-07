@@ -1,6 +1,8 @@
+import type { LocationExport } from '../types/exports';
+
 const TRACKING_START = new Date('2026-03-02T00:00:00').getTime();
 
-export function initExplorationOdometerV3(container: HTMLElement, data: any): void {
+export function initExplorationOdometerV3(container: HTMLElement, data: LocationExport): void {
   if (container.dataset.odoInit === '1') return;
   container.dataset.odoInit = '1';
 

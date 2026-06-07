@@ -49,6 +49,10 @@ export interface BooksExport {
     pageCount: number | null;
     mainImage: string | null;
     mainImageThumb: string | null;
+    mainImageCard: string | null;
+    mainImageAvif: string | null;
+    mainImageThumbAvif: string | null;
+    mainImageCardAvif: string | null;
     images: string | null;
     averageRating: string | null;
     category: string | null;
