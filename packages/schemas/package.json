@@ -21,7 +21,9 @@
     "codegen": "tsx scripts/codegen.ts",
     "validate": "tsx scripts/validate.ts",
     "generate:widgets": "node scripts/generate-widget-schemas.mjs",
-    "build": "pnpm sync && pnpm generate:widgets && pnpm codegen && LIFEGAMES_VALIDATE_CWD=$PWD/../.. pnpm validate"
+    "contract:generate": "tsx scripts/generate-contract-lock.ts",
+    "contract:verify": "tsx scripts/verify-contract.ts",
+    "build": "pnpm sync && pnpm generate:widgets && pnpm codegen && LIFEGAMES_VALIDATE_CWD=$PWD/../.. pnpm validate && pnpm contract:generate"
   },
   "dependencies": {
     "ajv": "~8.20.0",
