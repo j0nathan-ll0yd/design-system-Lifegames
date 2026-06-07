@@ -7,8 +7,9 @@
     },
     "blue": {
       "500": { "$value": "#3a86ff", "$description": "Neon blue (web --neon-blue, iOS neonBlue)" },
+      "550": { "$value": "#0c69ff", "$description": "Sleep core blue (WCAG AA for white text on bg)" },
       "600": { "$value": "#3b82f6", "$description": "Accent blue (iOS accentBlue)" },
-      "700": { "$value": "#1e40af", "$description": "Deep blue (sleep.deep)" }
+      "700": { "$value": "#5676e2", "$description": "Deep blue (sleep.deep, WCAG AA on dark)" }
     },
     "green": {
       "500": { "$value": "#06d6a0", "$description": "Neon green (web --neon-green, iOS neonGreen)" }
@@ -18,6 +19,7 @@
     },
     "purple": {
       "500": { "$value": "#a855f7", "$description": "Neon purple (web --neon-purple, iOS neonPurple)" },
+      "550": { "$value": "#9e41f6", "$description": "Sleep REM purple (WCAG AA for white text on bg)" },
       "400": { "$value": "#c084fc", "$description": "High-contrast purple (WCAG AAA)" },
       "600": { "$value": "#8b5cf6", "$description": "Accent purple (iOS accentPurple)" }
     },
@@ -58,9 +60,9 @@
       "200": { "$value": "#e4e4e7", "$description": "Primary text (iOS textPrimary)" },
       "300": { "$value": "#f0f0f0", "$description": "Primary text (web --text)" },
       "400": { "$value": "#9ca3af", "$description": "Muted text (web --text-muted)" },
-      "500": { "$value": "#71717a", "$description": "Muted text (iOS textMuted)" },
-      "600": { "$value": "#52525b", "$description": "Subtle text (iOS textSubtle)" },
-      "700": { "$value": "#3f3f46", "$description": "Card arrow (iOS cardArrow)" }
+      "500": { "$value": "#8e8e97", "$description": "Muted text (iOS textMuted, WCAG AA on dark)" },
+      "600": { "$value": "#85858e", "$description": "Subtle text (iOS textSubtle, WCAG AA on dark)" },
+      "700": { "$value": "#7c7c84", "$description": "Card arrow (iOS cardArrow, WCAG AA on dark)" }
     },
     "white": {
       "pure": { "$value": "#ffffff", "$description": "Pure white base for opacity variants" }

@@ -337,10 +337,10 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       // 30 days. Defaulting to CloudFront avoids the entire bug class.
       cover: b.mainImage ?? null,
       coverThumb: b.mainImageThumb ?? null,
-      coverCard: (b as any).mainImageCard ?? null,
-      coverAvif: (b as any).mainImageAvif ?? null,
-      coverThumbAvif: (b as any).mainImageThumbAvif ?? null,
-      coverCardAvif: (b as any).mainImageCardAvif ?? null,
+      coverCard: b.mainImageCard ?? null,
+      coverAvif: b.mainImageAvif ?? null,
+      coverThumbAvif: b.mainImageThumbAvif ?? null,
+      coverCardAvif: b.mainImageCardAvif ?? null,
       notes: b.notes ?? null,
     };
   });

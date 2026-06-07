@@ -1,4 +1,7 @@
 import { esc, getCategoryColor } from './updaters';
+import type { LocationExport } from '../types/exports';
+
+type Place = LocationExport['topPlaces'][number];
 
 function metalColor(rank: number): string {
   if (rank === 1) return '#FFD700';
@@ -7,7 +10,7 @@ function metalColor(rank: number): string {
   return '';
 }
 
-export function initPlaceLeaderboardV3(container: HTMLElement, data: any): void {
+export function initPlaceLeaderboardV3(container: HTMLElement, data: LocationExport): void {
   if (container.dataset.lbInit === '1') return;
   container.dataset.lbInit = '1';
 
@@ -27,7 +30,7 @@ export function initPlaceLeaderboardV3(container: HTMLElement, data: any): void 
   const podium = places.slice(0, 3);
   const rest = places.slice(3);
 
-  podiumEl.innerHTML = podium.map((place: any, i: number) => {
+  podiumEl.innerHTML = podium.map((place: Place, i: number) => {
     const rank = i + 1;
     const catColor = getCategoryColor(place.category);
     const mc = metalColor(rank);
@@ -47,7 +50,7 @@ export function initPlaceLeaderboardV3(container: HTMLElement, data: any): void 
     );
   }).join('');
 
-  listEl.innerHTML = rest.map((place: any, i: number) => {
+  listEl.innerHTML = rest.map((place: Place, i: number) => {
     const rank = i + 4;
     const catColor = getCategoryColor(place.category);
     const listCatBadge = place.category

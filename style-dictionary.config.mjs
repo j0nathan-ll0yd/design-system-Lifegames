@@ -1,25 +1,46 @@
 // Style Dictionary v5 build driver for Lifegames Design System.
 //
-// Architecture (post-Step-4.6 migration):
-//   - StyleDictionary v5 is the engine. We instantiate it, register custom
-//     formats, declare three platforms (web/css, ios/xcassets, ios/swift),
+// Architecture:
+//   - StyleDictionary v5 (5.4.x) is the engine. We instantiate it, register
+//     custom formats, declare three platforms (web/css, ios/xcassets, ios/swift),
 //     and call buildAllPlatforms() to orchestrate output emission.
 //   - DTCG token loading still uses our group-$type-aware flattener because
-//     SD's stock DTCG parser does not propagate $type inheritance from group
-//     nodes down to leaf tokens the way our token sources require.
+//     SD v5's stock DTCG parser does not propagate $type inheritance from group
+//     nodes down to leaf tokens. This remains necessary until a future SD
+//     version ships native group-$type inheritance.
 //   - Each emitter is registered as a custom SD format. SD orchestrates write
 //     order, deterministic build hashing, and the file output API.
-//   - All ~105 build artifacts remain byte-identical to the pre-migration
-//     goldens (gated by packages/tokens/__tests__/build-output.spec.ts).
+//   - All build artifacts are gated by golden file tests
+//     (packages/tokens/__tests__/build-output.spec.ts).
 //
-// Future incremental refactors should:
-//   1. Replace each custom format with native SD transforms+formats one at a
-//      time (e.g. color/css → SD's stock color/css once the rgba syntax matches).
-//   2. Each replacement must regenerate goldens with an audit rationale comment.
-//   3. The custom xcassets, LGColor namer, DESIGN.md, and shadcn-OKLCH emitters
-//      will likely remain bespoke — they encode product-specific shape that SD
-//      doesn't model. That's fine — they live under SD's format hook API as
-//      first-class formats.
+// Format audit (SD v5.4 — 2026-06-06):
+//   16 custom formats registered. SD v5 built-in formats (css/variables,
+//   javascript/module, json/nested, ios-swift/enum.swift, etc.) cannot
+//   replace any of them because:
+//
+//   RETAINED (product-specific shape SD doesn't model):
+//     1. tokens.css — fluid clamp() spacing, composite typography shorthand,
+//        shadow multi-layer, reduced-motion @media block, custom --lg- prefix
+//     2. tokens-layered.css — @layer wrapper around tokens.css
+//     3. tokens.js — flat resolved tree (SD's js/module adds wrapper)
+//     4. tokens.json — flat resolved tree
+//     5. DESIGN.md — rich markdown documentation with widget catalog
+//     6. shadcn.css — OKLCH conversion via culori + shadcn alias mapping
+//     7. deprecated-tokens.json — deprecation metadata extraction
+//     8. tokens.dtcg.json — normalised DTCG output for conformance tooling
+//     9. build-report.json — per-build provenance (sizes, file list)
+//    10. xcassets-root — sidecar-writes N colorset dirs (SD writes one file)
+//    11. Color+Tokens.swift — LGColor enum with asset catalog references
+//    12. Spacing.swift — CGFloat enum with numeric extraction
+//    13. Font+Tokens.swift — Font.custom with relativeTo + $extensions
+//    14. Shadow+Tokens.swift — ViewModifier structs with multi-layer shadows
+//    15. ReducedMotion.swift — static utility enum (no token data)
+//    16. AISurfaces.swift — filtered color subset for AI client surfaces
+//
+//   DEFERRED (require future SD native DTCG group-$type inheritance):
+//     - flattenTokens() / resolveAllTokens() custom loader
+//     - Potential replacement of tokens.css color section with css/variables
+//       (blocked by custom --lg- prefix and fluid spacing interleaving)
 
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

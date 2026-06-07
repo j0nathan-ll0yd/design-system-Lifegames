@@ -17,8 +17,9 @@ export default {
     },
     "blue": {
       "500": "#3a86ff",
+      "550": "#0c69ff",
       "600": "#3b82f6",
-      "700": "#1e40af"
+      "700": "#5676e2"
     },
     "green": {
       "500": "#06d6a0"
@@ -29,6 +30,7 @@ export default {
     "purple": {
       "400": "#c084fc",
       "500": "#a855f7",
+      "550": "#9e41f6",
       "600": "#8b5cf6"
     },
     "red": {
@@ -68,9 +70,9 @@ export default {
       "200": "#e4e4e7",
       "300": "#f0f0f0",
       "400": "#9ca3af",
-      "500": "#71717a",
-      "600": "#52525b",
-      "700": "#3f3f46"
+      "500": "#8e8e97",
+      "600": "#85858e",
+      "700": "#7c7c84"
     },
     "white": {
       "pure": "#ffffff"
@@ -114,8 +116,8 @@ export default {
       "title": "#fafafa",
       "primary": "#f0f0f0",
       "muted": "#9ca3af",
-      "subtle": "#52525b",
-      "disabled": "#3f3f46"
+      "subtle": "#85858e",
+      "disabled": "#7c7c84"
     },
     "accent": {
       "pink": "#ff006e",
@@ -144,9 +146,9 @@ export default {
       "hover": "#8b5cf6"
     },
     "sleep": {
-      "deep": "#1e40af",
-      "rem": "#a855f7",
-      "core": "#3a86ff",
+      "deep": "#5676e2",
+      "rem": "#9e41f6",
+      "core": "#0c69ff",
       "awake": "#9ca3af"
     },
     "status": {

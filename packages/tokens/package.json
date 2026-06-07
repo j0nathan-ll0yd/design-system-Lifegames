@@ -53,5 +53,8 @@
     "@tokens-studio/sd-transforms": "^2.0.3",
     "style-dictionary": "^5.4.2",
     "vitest": "^4.1.8"
+  },
+  "dependencies": {
+    "style-dictionary": "^5.4.3"
   }
 }

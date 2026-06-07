@@ -34,15 +34,57 @@ let lastSleep: SleepExport | undefined;
 const timestamps: Record<string, string | null> = {};
 let engine: PollEngine | null = null;
 
+// ── Resource type map for discriminated validation ───────────────────
+type ResourceTypeMap = {
+  health: HealthExport;
+  sleep: SleepExport;
+  workouts: WorkoutsExport;
+  books: BooksExport;
+  githubEvents: GithubEventsExport;
+  articles: ArticlesExport;
+  location: LocationExport;
+  focus: FocusExport;
+  theatreReviews: TheatreReviewsExport;
+  starredRepos: GithubStarredReposExport;
+};
+
+const RESOURCE_DISCRIMINANTS: Record<ResourceKey, string> = {
+  health: 'quantities',
+  sleep: 'date',
+  workouts: 'workouts',
+  books: 'books',
+  githubEvents: 'events',
+  articles: 'articles',
+  location: 'topPlaces',
+  focus: 'currentFocus',
+  theatreReviews: 'reviews',
+  starredRepos: 'repos',
+};
+
+function validateResource<K extends ResourceKey>(key: K, rawData: unknown): ResourceTypeMap[K] | null {
+  if (typeof rawData !== 'object' || rawData === null) return null;
+  const obj = rawData as Record<string, unknown>;
+  if (typeof obj.generatedAt !== 'string') return null;
+  if (!(RESOURCE_DISCRIMINANTS[key] in obj)) return null;
+  return rawData as ResourceTypeMap[K];
+}
+
 // ── Per-resource incremental update dispatch ─────────────────────────
 function handleResourceUpdate(key: ResourceKey, rawData: unknown): void {
-  try {
-    timestamps[key] = (rawData as { generatedAt?: string }).generatedAt ?? null;
+  const validated = validateResource(key, rawData);
+  if (!validated) {
+    console.warn(`[live-data] ${key}: payload failed structural validation, preserving stale data`);
+    return;
+  }
 
+  timestamps[key] = validated.generatedAt;
+
+  try {
     switch (key) {
       case 'health': {
-        lastHealth = rawData as HealthExport;
-        const health = adaptHealth(lastHealth, lastSleep ?? null);
+        const data = validated as ResourceTypeMap['health'];
+        lastHealth = data;
+        const health = adaptHealth(data, lastSleep ?? null);
         updateHeartRate(health);
         updateHeartRateFooter(health);
         updateMovementRings(health);
@@ -50,45 +92,48 @@ function handleResourceUpdate(key: ResourceKey, rawData: unknown): void {
         break;
       }
       case 'sleep': {
-        lastSleep = rawData as SleepExport;
-        updateNightSummary(adaptSleep(lastSleep, lastHealth ?? null));
+        const data = validated as ResourceTypeMap['sleep'];
+        lastSleep = data;
+        updateNightSummary(adaptSleep(data, lastHealth ?? null));
         if (lastHealth) {
-          const health = adaptHealth(lastHealth, lastSleep);
+          const health = adaptHealth(lastHealth, data);
           updateHeartRate(health);
           updateHeartRateFooter(health);
         }
         break;
       }
       case 'workouts':
-        updateWorkouts(adaptWorkouts(rawData as WorkoutsExport));
+        updateWorkouts(adaptWorkouts(validated as ResourceTypeMap['workouts']));
         break;
       case 'books':
-        updateBookshelf(adaptBooks(rawData as BooksExport));
+        updateBookshelf(adaptBooks(validated as ResourceTypeMap['books']));
         break;
       case 'githubEvents':
-        updateDevActivityLog(adaptGithubEvents(rawData as GithubEventsExport));
+        updateDevActivityLog(adaptGithubEvents(validated as ResourceTypeMap['githubEvents']));
         break;
       case 'articles':
-        updateReadingFeed(adaptArticles(rawData as ArticlesExport));
+        updateReadingFeed(adaptArticles(validated as ResourceTypeMap['articles']));
         break;
-      case 'location':
-        updatePlaceLeaderboardV3(rawData as LocationExport);
-        updateExplorationOdometerV3(rawData as LocationExport);
+      case 'location': {
+        const data = validated as ResourceTypeMap['location'];
+        updatePlaceLeaderboardV3(data);
+        updateExplorationOdometerV3(data);
         break;
+      }
       case 'focus':
-        updateFocusOverlay(rawData as FocusExport);
+        updateFocusOverlay(validated as ResourceTypeMap['focus']);
         break;
       case 'theatreReviews':
-        updateTheatreReviews(rawData as TheatreReviewsExport);
+        updateTheatreReviews(validated as ResourceTypeMap['theatreReviews']);
         break;
       case 'starredRepos':
-        updateStarredRepos(adaptStarredRepos(rawData as GithubStarredReposExport));
+        updateStarredRepos(adaptStarredRepos(validated as ResourceTypeMap['starredRepos']));
         break;
     }
 
     updateSystemStatus(timestamps);
   } catch (e) {
-    console.warn(`[live-data] ${key} incremental update failed:`, e);
+    console.warn(`[live-data] ${key} incremental update failed, preserving stale data:`, e);
   }
 }
 

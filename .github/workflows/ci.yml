@@ -24,6 +24,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:schemas-freshness
+      - name: Verify schema contract
+        if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"
+        run: pnpm -F @lifegames/schemas contract:verify
 
   build-tokens:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
