@@ -27,12 +27,14 @@ Four tiers, applied in order of specificity:
 | `color.pink.400` | `#ff69b4` |
 | `color.pink.500` | `#ff006e` |
 | `color.blue.500` | `#3a86ff` |
+| `color.blue.550` | `#0c69ff` |
 | `color.blue.600` | `#3b82f6` |
-| `color.blue.700` | `#1e40af` |
+| `color.blue.700` | `#5676e2` |
 | `color.green.500` | `#06d6a0` |
 | `color.amber.500` | `#f59e0b` |
 | `color.purple.400` | `#c084fc` |
 | `color.purple.500` | `#a855f7` |
+| `color.purple.550` | `#9e41f6` |
 | `color.purple.600` | `#8b5cf6` |
 | `color.red.400` | `#f87171` |
 | `color.red.500` | `#ef4444` |
@@ -52,9 +54,9 @@ Four tiers, applied in order of specificity:
 | `color.zinc.200` | `#e4e4e7` |
 | `color.zinc.300` | `#f0f0f0` |
 | `color.zinc.400` | `#9ca3af` |
-| `color.zinc.500` | `#71717a` |
-| `color.zinc.600` | `#52525b` |
-| `color.zinc.700` | `#3f3f46` |
+| `color.zinc.500` | `#8e8e97` |
+| `color.zinc.600` | `#85858e` |
+| `color.zinc.700` | `#7c7c84` |
 | `color.white.pure` | `#ffffff` |
 | `color.appleHealth.green` | `#34c759` |
 | `color.alpha.white3` | `rgba(255,255,255,0.03)` |
@@ -65,9 +67,9 @@ Four tiers, applied in order of specificity:
 | `color.alpha.white10` | `rgba(255,255,255,0.1)` |
 | `color.alpha.white18` | `rgba(255,255,255,0.18)` |
 | `color.alpha.black35` | `rgba(0,0,0,0.35)` |
-| `color.sleep.deep` | `#1e40af` |
-| `color.sleep.rem` | `#a855f7` |
-| `color.sleep.core` | `#3a86ff` |
+| `color.sleep.deep` | `#5676e2` |
+| `color.sleep.rem` | `#9e41f6` |
+| `color.sleep.core` | `#0c69ff` |
 | `color.sleep.awake` | `#9ca3af` |
 | `color.podium.gold` | `#ffd700` |
 | `color.podium.silver` | `#c0c0c0` |
@@ -108,8 +110,8 @@ Four tiers, applied in order of specificity:
 | `color.text.title` | `#fafafa` | Heading text |
 | `color.text.primary` | `#f0f0f0` | Body text. Web parity: zinc.300 = #f0f0f0 matches production --text. iOS textPrimary remains zinc.200 (#e4e4e7) via SwiftUI layer (MA2). |
 | `color.text.muted` | `#9ca3af` | Secondary text. Uses web value #9ca3af cross-platform. Converged upward for accessibility (MA2). |
-| `color.text.subtle` | `#52525b` | Tertiary text |
-| `color.text.disabled` | `#3f3f46` | Disabled/arrow text |
+| `color.text.subtle` | `#85858e` | Tertiary text |
+| `color.text.disabled` | `#7c7c84` | Disabled/arrow text |
 
 #### color.accent
 

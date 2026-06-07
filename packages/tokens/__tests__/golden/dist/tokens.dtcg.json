@@ -56,15 +56,20 @@
         "$type": "color",
         "$description": "Neon blue (web --neon-blue, iOS neonBlue)"
       },
+      "550": {
+        "$value": "#0c69ff",
+        "$type": "color",
+        "$description": "Sleep core blue (WCAG AA for white text on bg)"
+      },
       "600": {
         "$value": "#3b82f6",
         "$type": "color",
         "$description": "Accent blue (iOS accentBlue)"
       },
       "700": {
-        "$value": "#1e40af",
+        "$value": "#5676e2",
         "$type": "color",
-        "$description": "Deep blue (sleep.deep)"
+        "$description": "Deep blue (sleep.deep, WCAG AA on dark)"
       }
     },
     "green": {
@@ -91,6 +96,11 @@
         "$value": "#a855f7",
         "$type": "color",
         "$description": "Neon purple (web --neon-purple, iOS neonPurple)"
+      },
+      "550": {
+        "$value": "#9e41f6",
+        "$type": "color",
+        "$description": "Sleep REM purple (WCAG AA for white text on bg)"
       },
       "600": {
         "$value": "#8b5cf6",
@@ -208,19 +218,19 @@
         "$description": "Muted text (web --text-muted)"
       },
       "500": {
-        "$value": "#71717a",
+        "$value": "#8e8e97",
         "$type": "color",
-        "$description": "Muted text (iOS textMuted)"
+        "$description": "Muted text (iOS textMuted, WCAG AA on dark)"
       },
       "600": {
-        "$value": "#52525b",
+        "$value": "#85858e",
         "$type": "color",
-        "$description": "Subtle text (iOS textSubtle)"
+        "$description": "Subtle text (iOS textSubtle, WCAG AA on dark)"
       },
       "700": {
-        "$value": "#3f3f46",
+        "$value": "#7c7c84",
         "$type": "color",
-        "$description": "Card arrow (iOS cardArrow)"
+        "$description": "Card arrow (iOS cardArrow, WCAG AA on dark)"
       }
     },
     "white": {
@@ -382,12 +392,12 @@
         "$description": "Secondary text. Uses web value #9ca3af cross-platform. Converged upward for accessibility (MA2)."
       },
       "subtle": {
-        "$value": "#52525b",
+        "$value": "#85858e",
         "$type": "color",
         "$description": "Tertiary text"
       },
       "disabled": {
-        "$value": "#3f3f46",
+        "$value": "#7c7c84",
         "$type": "color",
         "$description": "Disabled/arrow text"
       }
@@ -481,19 +491,19 @@
     },
     "sleep": {
       "deep": {
-        "$value": "#1e40af",
+        "$value": "#5676e2",
         "$type": "color",
         "$description": "Deep sleep phase (web NightSummary deep pill)"
       },
       "rem": {
-        "$value": "#a855f7",
+        "$value": "#9e41f6",
         "$type": "color",
-        "$description": "REM sleep phase (web NightSummary rem pill)"
+        "$description": "REM sleep phase (WCAG AA for white text on bg)"
       },
       "core": {
-        "$value": "#3a86ff",
+        "$value": "#0c69ff",
         "$type": "color",
-        "$description": "Core sleep phase (web NightSummary core pill)"
+        "$description": "Core sleep phase (WCAG AA for white text on bg)"
       },
       "awake": {
         "$value": "#9ca3af",
