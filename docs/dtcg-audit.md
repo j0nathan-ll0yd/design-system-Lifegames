@@ -1,6 +1,6 @@
 # DTCG 2025.10 Conformance Audit Report
 
-Generated: 2026-06-06T21:44:29.078Z
+Generated: 2026-06-07T00:02:40.483Z
 Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 
 ## Summary
