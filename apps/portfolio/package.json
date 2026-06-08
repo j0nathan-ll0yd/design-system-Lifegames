@@ -11,9 +11,9 @@
     "test:visual:update": "npx playwright test --update-snapshots"
   },
   "dependencies": {
-    "astro": "^6.4.2",
     "@lifegames/tokens": "workspace:*",
-    "@lifegames/web": "workspace:*"
+    "@lifegames/web": "workspace:*",
+    "astro": "^6.4.4"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.3",

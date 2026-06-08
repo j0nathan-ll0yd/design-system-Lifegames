@@ -11,18 +11,18 @@
     "storybook:visual:update": "test-storybook --config-dir .storybook -u"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "10.4.1",
-    "@storybook/addon-vitest": "10.4.1",
+    "@storybook/addon-a11y": "10.4.2",
+    "@storybook/addon-vitest": "10.4.2",
     "@storybook/test-runner": "^0.24.4",
-    "@storybook/web-components-vite": "10.4.1",
+    "@storybook/web-components-vite": "10.4.2",
     "@types/jest-image-snapshot": "^6.4.1",
     "@vitest/browser": "^4.1.8",
     "@vitest/runner": "^4.1.8",
     "jest-image-snapshot": "^6.5.2",
     "lit": "^3.3.3",
     "playwright": "^1.60.0",
-    "storybook": "10.4.1",
-    "vite": "^7.3.3",
+    "storybook": "10.4.2",
+    "vite": "^8.0.16",
     "vitest": "^4.1.8"
   }
 }
