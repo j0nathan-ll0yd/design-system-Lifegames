@@ -42,12 +42,6 @@ updates:
       # release (docs site confirmed working 2026-05-31).
       - dependency-name: "@astrojs/starlight"
         update-types: [version-update:semver-major]
-      # Vite 8 not yet supported by Storybook 10 (peerDep ^7.0.0) or Astro 6.4
-      # (^7.3.2). Workspace unified on Vite 7 in #19. Re-evaluate when both
-      # Storybook 10 and Astro 6.x ship Vite 8 support.
-      - dependency-name: "vite"
-        update-types: [version-update:semver-major]
-
   - package-ecosystem: github-actions
     directory: /
     schedule:
