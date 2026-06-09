@@ -358,10 +358,12 @@
 .terminal-line {
   white-space: pre-wrap;
   word-break: break-word;
-  opacity: 0;
-}
-
-.terminal-line.visible {
+  /* opacity:1 by default so SSR text stays visible if the typewriter init
+     script never runs (CSP block, SW race, runtime failure). The typewriter
+     controls per-character visibility via inline opacity on inner
+     .terminal-command / .terminal-output spans, so this does not break
+     the desktop typing animation. See .omc/plans/fix-bio-csp-blocked-inline-script.md
+     (Bug 2 — desktop fallback). */
   opacity: 1;
 }
 
