@@ -1,17 +1,27 @@
 ---
-// Production-shaped HeartRate: typed-props passthrough only.
+// Production-shaped HeartRate: self-bootstrapping ECG island.
 //
-// The consumer fork has no inline script; the ECG canvas is initialized by a
-// page-level inline script at consumer's pages/index.astro:166-168 (targets
-// #hrEcgCanvas directly). Bundling the heart-rate-init runtime here would
-// race against that page-level animation loop and cause canvas layout
-// divergence (verified: bundled init produced 73px shorter render).
+// The island owns its own ECG init (Astro island-isolation principle): the
+// bundled <script> below calls initHeartRateInline('hrEcgCanvas') on mount, so
+// the consumer just renders <HeartRate /> with no page-level wiring. A non-
+// is:inline script is required so Astro bundles + transpiles it (and so the
+// import is resolved through the @lifegames/web runtime).
 //
-// The showcase use case (apps/portfolio, apps/docs, fixture-driven demos)
-// loads heart-rate-init via the existing HeartRateIsland.astro wrapper.
+// History: an earlier design left init to a page-level inline script in the
+// consumer's index.astro. Bundling init here while that page-level loop also
+// ran produced a canvas layout race (73px shorter render). That race is gone:
+// this is now the SOLE initializer of #hrEcgCanvas, so there is no competing
+// loop to diverge from.
+//
+// The showcase use case (apps/portfolio, apps/docs, fixture-driven demos) loads
+// heart-rate-init via the separate HeartRateIsland.astro wrapper.
 import HeartRate from '../widgets/health/HeartRate.astro';
 import type { HeartRateProps } from '../widgets/health/HeartRate.types';
 
 const props = Astro.props as HeartRateProps;
 ---
 <HeartRate {...props} />
+<script>
+  import { initHeartRateInline } from '../runtime/heart-rate-init';
+  initHeartRateInline('hrEcgCanvas');
+</script>
