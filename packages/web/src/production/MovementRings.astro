@@ -1,0 +1,12 @@
+---
+// Production-shaped MovementRings: typed-props widget passthrough.
+// The SSR markup renders the final ring state; the ring animation is driven
+// page-side by the live-data runtime (updateMovementRings in
+// runtime/updaters-movement.ts), which targets #cardMovement / the ring IDs
+// directly — so no bundled runtime is needed here (mirrors HeartRate/NightSummary).
+import MovementRings from '../widgets/health/MovementRings.astro';
+import type { MovementRingsProps } from '../widgets/health/MovementRings.types';
+
+const props = Astro.props as MovementRingsProps;
+---
+<MovementRings {...props} />

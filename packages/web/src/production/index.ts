@@ -10,6 +10,8 @@ export { default as Hydration } from './Hydration.astro';
 export { default as SystemStatus } from './SystemStatus.astro';
 export { default as Workouts } from './Workouts.astro';
 export { default as NightSummary } from './NightSummary.astro';
+export { default as MovementRings } from './MovementRings.astro';
+export type { MovementRingsProps } from '../widgets/health/MovementRings.types';
 export { default as StarredRepoList } from './StarredRepoList.astro';
 export { default as DevActivityLog } from './DevActivityLog.astro';
 export { default as FocusOverlay } from './FocusOverlay.astro';
