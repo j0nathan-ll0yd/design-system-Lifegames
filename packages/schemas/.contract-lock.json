@@ -1,10 +1,10 @@
 {
   "generatedFrom": {
     "repo": "j0nathan-ll0yd/mantle-LifegamesPortal",
-    "sha": "a85a74eeb6d635def428cc0af64bc7bdfdae4cfc",
+    "sha": "f318c6b4ef53dde5607c9fce773adea29b063181",
     "checksum": "sha256:ebe689049a93e071b87d544b82a852605aa859385f52a3b84def17fe3d14df6c"
   },
-  "generatedAt": "2026-06-08T22:36:51.005Z",
+  "generatedAt": "2026-06-10T23:44:51.338Z",
   "generatorVersion": "1.0.0",
   "files": {
     "articles-export.schema.json": "sha256:4a3d6514ab959b251ad88bef79020747bbddb865d0a7c913e71fe36f608ffd36",
