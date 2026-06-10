@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro}\"",
+    "audit:inline-scripts": "node scripts/audit-inline-scripts.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

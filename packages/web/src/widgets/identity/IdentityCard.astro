@@ -99,16 +99,9 @@ const { profile, compact = false } = Astro.props;
   }
 </style>
 
-<script is:inline>
-(function() {
-  var links = document.querySelectorAll('.id-links a');
-  for (var i = 0; i < links.length; i++) {
-    links[i].addEventListener('click', function(e) {
-      var label = e.currentTarget.textContent.trim().toLowerCase();
-      if (typeof window.sa_event === 'function') {
-        window.sa_event('social_click', { platform: label });
-      }
-    });
-  }
-})();
-</script>
+<!-- IdentityCard ships scriptless. Consumers attach social-click tracking via a
+     delegated handler at the page level (on `.id-links a`); see
+     production/IdentityCard.astro's comment and the consumer's
+     public/js/social-click-track.js. CSP `script-src 'self'` rejects inline
+     script bodies, so analytics wiring lives in an external file, never here. -->
+

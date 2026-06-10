@@ -235,10 +235,8 @@
   }
 </style>
 
-<script is:inline>
-(function() {
-  var year = new Date().getFullYear();
-  var id = 'CC-' + year + '-' + Math.floor(Math.random() * 9000 + 1000);
-  document.getElementById('dossierId').textContent = id;
-})();
-</script>
+<!-- ComingSoon ships scriptless. The production wrapper (production/ComingSoon.astro)
+     stamps the random dossier ID into #dossierId via a bundled module script.
+     CSP `script-src 'self'` rejects inline script bodies, so the runtime lives
+     in the bundled production path, never as an inline block here. -->
+

@@ -2,27 +2,35 @@
 // Production-shaped Hydration: typed-props widget + bundled runtime for the
 // count-up animation + range overlay rendering.
 //
-// initHydration needs the fixture values. We split the script in two:
-//   1) inline (define:vars) — stashes the fixture on window under a
-//      per-element key so multiple instances are isolated;
-//   2) bundled module — statically imports the runtime so Vite resolves
-//      the path correctly in both dev (no pre-bundle) and build modes.
+// initHydration needs the fixture values. We bridge them across the
+// SSR -> runtime boundary via a JSON `data-*` attribute on a hidden carrier
+// element (mirrors BookModal's `data-book` pattern), then a bundled module
+// reads + parses it. This is CSP-clean: no inline script body and no
+// `window.__lgHydrationFixtures` global.
 //
-// A single `<script define:vars>` with a dynamic import() does NOT work in
-// dev: Astro emits the script verbatim and the relative import is
-// interpreted as a literal URL (404).
+// Why a data attribute instead of the previous inline `define:vars` bridge:
+// CSP `script-src 'self'` rejects inline script bodies in production, so the
+// old bridge silently failed and the widget stayed in its SSR skeleton
+// forever.
 import Hydration from '../widgets/health/Hydration.astro';
 import type { HydrationProps } from '../widgets/health/Hydration.types';
 
 const props = Astro.props as HydrationProps;
 ---
 <Hydration {...props} />
-<script define:vars={{ fixture: props }} is:inline>
-  (window.__lgHydrationFixtures = window.__lgHydrationFixtures || {})['cardHydration'] = fixture;
-</script>
+<div id="cardHydrationData" data-hydration-fixture={JSON.stringify(props)} hidden></div>
 <script>
   import { initHydration } from '../runtime/hydration-init';
   const target = document.getElementById('cardHydration');
-  const fixture = (window as any).__lgHydrationFixtures?.['cardHydration'];
-  if (target && fixture) initHydration(target, fixture);
+  const carrier = document.getElementById('cardHydrationData');
+  const raw = carrier?.dataset.hydrationFixture;
+  if (target && raw) {
+    try {
+      initHydration(target, JSON.parse(raw));
+    } catch (err) {
+      if (window.console && console.error) {
+        console.error('[Hydration] bad data-hydration-fixture JSON', err);
+      }
+    }
+  }
 </script>
