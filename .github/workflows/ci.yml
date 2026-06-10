@@ -64,6 +64,8 @@ jobs:
           name: token-dist
           path: packages/tokens/dist/
       - run: pnpm lint
+      - name: CSP inline-JS audit (Plan #07 sibling gate)
+        run: pnpm -F @lifegames/web audit:inline-scripts
 
   build-web:
     needs: build-tokens
