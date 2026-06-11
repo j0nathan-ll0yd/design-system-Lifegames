@@ -6,8 +6,7 @@ const rule = require('../copy-src-no-dependencies');
 
 // A synthetic filename inside packages/copy/src/** so the rule activates.
 const srcFile = '/repo/packages/copy/src/helpers.ts';
-// scripts/ is the only place allowed to import the build-time schema devDep —
-// the rule must be inert there.
+// scripts/ (the build) is outside the rule's scope — the rule must be inert there.
 const scriptsFile = '/repo/packages/copy/scripts/build.ts';
 
 const tester = new RuleTester({
@@ -20,10 +19,10 @@ tester.run('copy-src-no-dependencies', rule, {
     { filename: srcFile, code: "import { readFileSync } from 'node:fs';" },
     // Relative import of generated data — allowed.
     { filename: srcFile, code: "import data from './identity.flat.json';" },
-    // The schema import is allowed OUTSIDE src (e.g. scripts/build.ts).
+    // @lifegames/* is allowed OUTSIDE src (the rule is scoped to src/ only).
     {
       filename: scriptsFile,
-      code: "import schema from '@lifegames/schemas/authored/copy.identity.schema.json';",
+      code: "import { z } from '@lifegames/schemas';",
     },
     // UI framework imported from scripts — rule inert outside src.
     { filename: scriptsFile, code: "import React from 'react';" },
@@ -36,11 +35,11 @@ tester.run('copy-src-no-dependencies', rule, {
       code: "import { tokens } from '@lifegames/tokens';",
       errors: [{ messageId: 'forbiddenImport', data: { source: '@lifegames/tokens' } }],
     },
-    // The schema must NOT be imported from src (build-time only).
+    // Any @lifegames/* package in src is forbidden (here: schemas).
     {
       filename: srcFile,
-      code: "import schema from '@lifegames/schemas/authored/copy.identity.schema.json';",
-      errors: [{ messageId: 'forbiddenImport' }],
+      code: "import { z } from '@lifegames/schemas';",
+      errors: [{ messageId: 'forbiddenImport', data: { source: '@lifegames/schemas' } }],
     },
     // UI frameworks are forbidden in src.
     {

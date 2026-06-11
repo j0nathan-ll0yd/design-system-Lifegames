@@ -5,8 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/types/index.ts",
-    "./swift/*": "./swift/*",
-    "./authored/*": "./authored/*"
+    "./swift/*": "./swift/*"
   },
   "files": [
     "dist",

@@ -9,8 +9,9 @@
 //     to UI/DS packages and break the leaf guarantee;
 //   - any UI framework (react, vue, svelte, astro, …).
 //
-// The JSON Schema is a BUILD-time devDependency and may be imported ONLY from
-// packages/copy/scripts/** (the build). It must never be imported from src/.
+// The package is self-contained: the authoring JSON Schema lives in
+// packages/copy/schema/ and is read by the build (packages/copy/scripts/**), so
+// src/ has no reason to import anything outside node builtins + relative files.
 //
 // This is the highest-tier enforcement of the zero-runtime-dep boundary (B10):
 // a lint rule, not a doc convention.
@@ -50,7 +51,7 @@ module.exports = {
     },
     messages: {
       forbiddenImport:
-        "D9: packages/copy/src must be a zero-dependency content leaf. '{{source}}' is forbidden here so the backend can import @lifegames/copy without pulling in UI/DS code. The JSON Schema is a build-time devDep importable only from packages/copy/scripts/. (GOVERNANCE P3.1)",
+        "D9: packages/copy/src must be a zero-dependency content leaf. '{{source}}' is forbidden here so the backend can import @lifegames/copy without pulling in UI/DS code. The package is self-contained (schema in packages/copy/schema/, read by the build). (GOVERNANCE P3.1)",
     },
     schema: [],
   },

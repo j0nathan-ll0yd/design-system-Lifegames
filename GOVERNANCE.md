@@ -89,8 +89,8 @@ the P3 presentational-purity boundary. Rules:
   hand-written.
 - **Zero-dependency boundary (enforced).** `packages/copy/src/**` must not import any
   `@lifegames/*` package or UI framework, so the backend (an AWS Lambda) can import copy
-  without pulling in UI/DS code. The JSON Schema is a build-time devDep importable only
-  from `packages/copy/scripts/**`.
+  without pulling in UI/DS code. The package is self-contained: the authoring JSON Schema
+  lives in `packages/copy/schema/` and is read by the build (`packages/copy/scripts/**`).
 
 **Enforcement:** `eslint-local-rules/copy-src-no-dependencies.js` (D9 leaf boundary);
 `packages/copy/tests/identity.test.ts` (Ajv rich validation + ICU MF1 parse + `maxChars` +

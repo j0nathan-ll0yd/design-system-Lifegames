@@ -20,7 +20,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@lifegames/schemas": "workspace:*",
     "@formatjs/icu-messageformat-parser": "^2.11.0",
     "@typescript-eslint/parser": "^8.61.0",
     "ajv": "~8.20.0",

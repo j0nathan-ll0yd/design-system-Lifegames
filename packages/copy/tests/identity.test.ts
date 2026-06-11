@@ -2,18 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createRequire } from 'node:module';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { _Parser } from '@formatjs/icu-messageformat-parser';
 
-const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PKG = join(HERE, '..');
 
-const richSchema = JSON.parse(
-  readFileSync(require.resolve('@lifegames/schemas/authored/copy.identity.schema.json'), 'utf-8'),
-);
+const richSchema = JSON.parse(readFileSync(join(PKG, 'schema', 'identity.schema.json'), 'utf-8'));
 const richInstance = JSON.parse(readFileSync(join(PKG, 'src', 'identity.en-US.json'), 'utf-8'));
 const flatSchema = JSON.parse(readFileSync(join(PKG, 'dist', 'identity.flat.schema.json'), 'utf-8'));
 const flatInstance = JSON.parse(readFileSync(join(PKG, 'dist', 'identity.flat.json'), 'utf-8'));

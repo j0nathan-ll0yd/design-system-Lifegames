@@ -4,9 +4,8 @@
  *
  * Single producer of every copy artifact. Pipeline:
  *   1. Validate the RICH authoring file (src/identity.en-US.json) against the
- *      rich schema (@lifegames/schemas/authored/copy.identity.schema.json) with
- *      Ajv + ajv-formats. This is the ONLY place the rich {value,_meta} shape is
- *      validated.
+ *      rich schema (schema/identity.schema.json) with Ajv + ajv-formats. This is
+ *      the ONLY place the rich {value,_meta} shape is validated.
  *   2. Derive a FLAT JSON Schema from the rich one: walk the schema tree and
  *      replace ONLY the leaf $refs (CopyString → {type:string}, CopyStringList →
  *      {type:array,items:{type:string}}), preserving every object wrapper,
@@ -23,21 +22,20 @@
  * (ajv.validate(flatSchema, flatJson)) so a derivation bug cannot silently drop
  * a `required` field. Idempotent: re-running yields byte-identical output.
  *
- * D9 boundary: this script lives in scripts/ (NOT src/) — it is the only place
- * permitted to import @lifegames/schemas. The src/ tree stays a zero-dep leaf.
+ * D9 boundary: @lifegames/copy is a zero-dependency leaf — the src/ tree must not
+ * import any @lifegames/* or UI package. The authoring schema lives in schema/
+ * and is read here in scripts/; consumers read the flat dist/ outputs only.
  */
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { compile } from 'json-schema-to-typescript';
 import jsonSchemaToZod from 'json-schema-to-zod';
 
-const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 const PKG_ROOT = join(HERE, '..'); // packages/copy
@@ -48,7 +46,7 @@ const SWIFT_TARGET = join(DS_ROOT, 'Sources', 'LifegamesCopy');
 const SWIFT_RESOURCES = join(SWIFT_TARGET, 'Resources');
 
 const RICH_INSTANCE_PATH = join(SRC, 'identity.en-US.json');
-const RICH_SCHEMA_PATH = require.resolve('@lifegames/schemas/authored/copy.identity.schema.json');
+const RICH_SCHEMA_PATH = join(PKG_ROOT, 'schema', 'identity.schema.json');
 
 type JsonSchema = Record<string, any>;
 
