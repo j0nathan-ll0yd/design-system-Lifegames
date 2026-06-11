@@ -141,6 +141,9 @@ importers:
 
   packages/web:
     dependencies:
+      '@lifegames/portal-contract':
+        specifier: file:.yalc/@lifegames/portal-contract
+        version: file:packages/web/.yalc/@lifegames/portal-contract
       '@lifegames/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -169,6 +172,9 @@ importers:
       vitest:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@25.9.2)(@vitest/coverage-v8@4.1.8)(jsdom@29.1.1)(vite@8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+    dependenciesMeta:
+      '@lifegames/portal-contract':
+        injected: true
 
 packages:
 
@@ -1768,6 +1774,9 @@ packages:
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
+
+  '@lifegames/portal-contract@file:packages/web/.yalc/@lifegames/portal-contract':
+    resolution: {directory: packages/web/.yalc/@lifegames/portal-contract, type: directory}
 
   '@lit-labs/ssr-dom-shim@1.6.0':
     resolution: {integrity: sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==}
@@ -9135,6 +9144,8 @@ snapshots:
       '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
       '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
       tslib: 2.8.1
+
+  '@lifegames/portal-contract@file:packages/web/.yalc/@lifegames/portal-contract': {}
 
   '@lit-labs/ssr-dom-shim@1.6.0': {}
 

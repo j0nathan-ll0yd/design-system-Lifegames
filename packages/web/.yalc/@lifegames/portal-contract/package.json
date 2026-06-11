@@ -1,0 +1,29 @@
+{
+  "name": "@lifegames/portal-contract",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "exports": {
+    "./constants": {
+      "types": "./dist/ts/constants.d.ts",
+      "import": "./dist/ts/constants.js"
+    },
+    "./schemas": {
+      "types": "./dist/ts/schemas.d.ts",
+      "import": "./dist/ts/schemas.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "Sources",
+    "Package.swift"
+  ],
+  "scripts": {
+    "codegen": "node scripts/codegen.mjs",
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test tests/contract.test.ts",
+    "prepublishOnly": "pnpm run codegen && pnpm run build"
+  },
+  "yalcSig": "8a1ae31376be87214326132499c1ab10"
+}

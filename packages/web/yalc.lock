@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "@lifegames/portal-contract": {
+      "signature": "8a1ae31376be87214326132499c1ab10",
+      "file": true
+    }
+  }
+}
