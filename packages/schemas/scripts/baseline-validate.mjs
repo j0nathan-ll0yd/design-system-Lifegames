@@ -5,7 +5,7 @@
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { readFileSync, readdirSync } from 'node:fs';
-import { join, basename } from 'node:path';
+import { join } from 'node:path';
 import { RAW_SCHEMAS_DIR } from './portal-contract-source.mjs';
 
 const DS = '/Users/jlloyd/Repositories/design-system-Lifegames';
