@@ -1216,44 +1216,71 @@ extension TopPlace {
 
 // MARK: - Schema: SleepExport
 
-enum SleepExportValue: Codable {
-    case sleepExportClass(SleepExportClass)
-    case string(String)
+// MARK: - SleepExport
+struct SleepExport: Codable {
+    let awake: Awake?
+    let core: Core?
+    let date: String
+    let deep: Deep?
+    let generatedAt: String
+    let rem: Rem?
+}
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let x = try? container.decode(String.self) {
-            self = .string(x)
-            return
-        }
-        if let x = try? container.decode(SleepExportClass.self) {
-            self = .sleepExportClass(x)
-            return
-        }
-        throw DecodingError.typeMismatch(SleepExportValue.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for SleepExportValue"))
+// MARK: SleepExport convenience initializers and mutators
+
+extension SleepExport {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SleepExport.self, from: data)
     }
 
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .sleepExportClass(let x):
-            try container.encode(x)
-        case .string(let x):
-            try container.encode(x)
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
         }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        awake: Awake?? = nil,
+        core: Core?? = nil,
+        date: String? = nil,
+        deep: Deep?? = nil,
+        generatedAt: String? = nil,
+        rem: Rem?? = nil
+    ) -> SleepExport {
+        return SleepExport(
+            awake: awake ?? self.awake,
+            core: core ?? self.core,
+            date: date ?? self.date,
+            deep: deep ?? self.deep,
+            generatedAt: generatedAt ?? self.generatedAt,
+            rem: rem ?? self.rem
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
     }
 }
 
-// MARK: - SleepExportClass
-struct SleepExportClass: Codable {
+// MARK: - Awake
+struct Awake: Codable {
     let seconds: Double
 }
 
-// MARK: SleepExportClass convenience initializers and mutators
+// MARK: Awake convenience initializers and mutators
 
-extension SleepExportClass {
+extension Awake {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(SleepExportClass.self, from: data)
+        self = try newJSONDecoder().decode(Awake.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -1269,8 +1296,8 @@ extension SleepExportClass {
 
     func with(
         seconds: Double? = nil
-    ) -> SleepExportClass {
-        return SleepExportClass(
+    ) -> Awake {
+        return Awake(
             seconds: seconds ?? self.seconds
         )
     }
@@ -1284,11 +1311,16 @@ extension SleepExportClass {
     }
 }
 
-typealias SleepExport = [String: SleepExportValue]
+// MARK: - Core
+struct Core: Codable {
+    let seconds: Double
+}
 
-extension Dictionary where Key == String, Value == SleepExportValue {
+// MARK: Core convenience initializers and mutators
+
+extension Core {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(SleepExport.self, from: data)
+        self = try newJSONDecoder().decode(Core.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -1300,6 +1332,94 @@ extension Dictionary where Key == String, Value == SleepExportValue {
 
     init(fromURL url: URL) throws {
         try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        seconds: Double? = nil
+    ) -> Core {
+        return Core(
+            seconds: seconds ?? self.seconds
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Deep
+struct Deep: Codable {
+    let seconds: Double
+}
+
+// MARK: Deep convenience initializers and mutators
+
+extension Deep {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Deep.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        seconds: Double? = nil
+    ) -> Deep {
+        return Deep(
+            seconds: seconds ?? self.seconds
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Rem
+struct Rem: Codable {
+    let seconds: Double
+}
+
+// MARK: Rem convenience initializers and mutators
+
+extension Rem {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Rem.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        seconds: Double? = nil
+    ) -> Rem {
+        return Rem(
+            seconds: seconds ?? self.seconds
+        )
     }
 
     func jsonData() throws -> Data {
@@ -2582,170 +2702,6 @@ extension DashboardHealthSleep {
             core: core ?? self.core,
             deep: deep ?? self.deep,
             rem: rem ?? self.rem
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Awake
-struct Awake: Codable {
-    /// Duration in seconds spent awake.
-    let seconds: Double
-}
-
-// MARK: Awake convenience initializers and mutators
-
-extension Awake {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Awake.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Awake {
-        return Awake(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Core
-struct Core: Codable {
-    /// Duration in seconds in core sleep.
-    let seconds: Double
-}
-
-// MARK: Core convenience initializers and mutators
-
-extension Core {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Core.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Core {
-        return Core(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Deep
-struct Deep: Codable {
-    /// Duration in seconds in deep sleep.
-    let seconds: Double
-}
-
-// MARK: Deep convenience initializers and mutators
-
-extension Deep {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Deep.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Deep {
-        return Deep(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Rem
-struct Rem: Codable {
-    /// Duration in seconds in REM sleep.
-    let seconds: Double
-}
-
-// MARK: Rem convenience initializers and mutators
-
-extension Rem {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Rem.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Rem {
-        return Rem(
-            seconds: seconds ?? self.seconds
         )
     }
 
