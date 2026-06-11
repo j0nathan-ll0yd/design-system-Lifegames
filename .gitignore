@@ -45,3 +45,6 @@ apps/storybook/__snapshots__/__diff__/
 # yalc (Phase 1 local cross-repo linking; gitignored — flip to GitHub Packages in Phase 2)
 .yalc/
 yalc.lock
+
+# Local onboarding scratch docs
+docs/ONBOARDING.md
