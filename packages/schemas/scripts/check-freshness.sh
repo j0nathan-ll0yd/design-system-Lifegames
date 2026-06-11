@@ -1,29 +1,38 @@
 #!/usr/bin/env bash
-# CI/pre-commit guard: ensures generated TS+Swift types and fixture-map are up to
-# date with their sources. The raw export schemas are produced by
-# @lifegames/portal-contract (resolved from the package), so there is no local
-# vendored/ to sync — codegen reads the schemas straight from the package.
+# CI/pre-commit guard: ensures generated artifacts are up to date with their
+# sources. Covers two producers:
+#   - @lifegames/schemas — TS+Swift widget types + fixture-map (raw export schemas
+#     come from @lifegames/portal-contract, resolved from the package; no local
+#     vendored/ to sync).
+#   - @lifegames/copy — derived flat schema + flat JSON + TS/Zod + Swift
+#     (Identity.generated.swift) + bundled resource. The copy build writes into
+#     BOTH packages/copy/dist AND Sources/LifegamesCopy, so both are diffed.
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-echo "[schemas:freshness] Regenerating codegen artifacts..."
+echo "[freshness] Regenerating @lifegames/schemas codegen artifacts..."
 pnpm -F @lifegames/schemas codegen
 
-echo "[schemas:freshness] Checking git diff..."
+echo "[freshness] Regenerating @lifegames/copy artifacts..."
+pnpm -F @lifegames/copy build
+
+echo "[freshness] Checking git diff..."
 PATHS=(
   packages/schemas/dist
   packages/schemas/swift
   packages/schemas/fixture-map.json
+  packages/copy/dist
+  Sources/LifegamesCopy
 )
 
 if ! git diff --exit-code -- "${PATHS[@]}"; then
   echo ""
-  echo "[schemas:freshness] FAIL: generated artifacts are out of date."
-  echo "  Run \`pnpm -F @lifegames/schemas codegen\` locally,"
-  echo "  then commit the regenerated files."
+  echo "[freshness] FAIL: generated artifacts are out of date."
+  echo "  Run \`pnpm -F @lifegames/schemas codegen\` and \`pnpm -F @lifegames/copy build\`"
+  echo "  locally, then commit the regenerated files."
   exit 1
 fi
 
-echo "[schemas:freshness] OK: generated artifacts are fresh."
+echo "[freshness] OK: generated artifacts are fresh."

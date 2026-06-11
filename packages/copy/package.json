@@ -1,0 +1,35 @@
+{
+  "name": "@lifegames/copy",
+  "version": "0.1.0",
+  "description": "Single source of truth for customer-facing copy (V1: identity slice) across web, iOS, the design system, and the backend. Zero runtime dependencies; rich per-string authoring context (_meta); ICU MessageFormat 1 syntax.",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.ts",
+    "./identity.flat.json": "./dist/identity.flat.json",
+    "./identity.zod": "./dist/identity.zod.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "build:copy": "tsx scripts/build.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@lifegames/schemas": "workspace:*",
+    "@formatjs/icu-messageformat-parser": "^2.11.0",
+    "@typescript-eslint/parser": "^8.61.0",
+    "ajv": "~8.20.0",
+    "ajv-formats": "~3.0.1",
+    "eslint": "^10.4.1",
+    "json-schema-to-typescript": "^15.0.4",
+    "json-schema-to-zod": "^2.8.1",
+    "quicktype": "^23.2.6",
+    "tsx": "^4.22.4",
+    "vitest": "^4.1.8"
+  }
+}

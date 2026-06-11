@@ -7,6 +7,7 @@ let package = Package(
     products: [
         .library(name: "LifegamesTokens", targets: ["LifegamesTokens"]),
         .library(name: "LifegamesSchemas", targets: ["LifegamesSchemas"]),
+        .library(name: "LifegamesCopy", targets: ["LifegamesCopy"]),
         .library(name: "LifegamesComponentsCore", targets: ["LifegamesComponentsCore"]),
         .library(name: "LifegamesComponents", targets: ["LifegamesComponents"]),
         .library(name: "LifegamesComponentsWatch", targets: ["LifegamesComponentsWatch"]),
@@ -21,6 +22,7 @@ let package = Package(
     targets: [
         .target(name: "LifegamesTokens", resources: [.process("Resources")]),
         .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
+        .target(name: "LifegamesCopy", resources: [.process("Resources")]),
         .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens"]),
         .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens", "LifegamesComponentsCore"]),
         .target(name: "LifegamesOnboarding", dependencies: ["LifegamesComponents"], exclude: ["README.md"]),
@@ -47,6 +49,9 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesSchemasTests", dependencies: [
             "LifegamesSchemas",
+        ]),
+        .testTarget(name: "LifegamesCopyTests", dependencies: [
+            "LifegamesCopy",
         ]),
     ]
 )

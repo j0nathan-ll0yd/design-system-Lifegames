@@ -68,6 +68,39 @@ A DS component must satisfy all of the following: no data fetching; no app/domai
 
 ---
 
+### P3.1 — Copy is a single-source-of-truth content leaf
+
+`@lifegames/copy` (`packages/copy/`) is the single source of truth for every
+customer-facing string across web, iOS, the design system, and the backend. It is a
+**zero-runtime-dependency content leaf** — data in, strings out — the copy analogue of
+the P3 presentational-purity boundary. Rules:
+
+- **One home per string.** Every customer-facing string lives in exactly one copy field —
+  zero duplication across the four repos. (V1 covers the identity slice; V2 mass-migrates
+  widget labels, error messages, a11y breadth, email, etc.)
+- **Rich authoring context.** Each string is authored as `{ value, _meta }`, where `_meta`
+  carries `description`, `usage` (render sites), `tone`, `owner`, `lastReviewed`, and
+  optional `constraints` (e.g. `maxChars`) + `rationale`. The build derives a flattened
+  view so consumers read plain values.
+- **ICU MessageFormat 1.** Strings are authored in ICU MF1 syntax; static passthrough (no
+  MF runtime in V1). CI parse-tests every string.
+- **Generated, never hand-written.** TS, Zod, and Swift (`Identity.generated.swift`) are
+  codegen from a schema-derived FLAT schema. Only `CopyLoader.swift` + `CopyError` are
+  hand-written.
+- **Zero-dependency boundary (enforced).** `packages/copy/src/**` must not import any
+  `@lifegames/*` package or UI framework, so the backend (an AWS Lambda) can import copy
+  without pulling in UI/DS code. The JSON Schema is a build-time devDep importable only
+  from `packages/copy/scripts/**`.
+
+**Enforcement:** `eslint-local-rules/copy-src-no-dependencies.js` (D9 leaf boundary);
+`packages/copy/tests/identity.test.ts` (Ajv rich validation + ICU MF1 parse + `maxChars` +
+flat round-trip); the `copy` CI job (build + test + lint); and the freshness git-diff over
+`packages/copy/dist` + `Sources/LifegamesCopy` in `packages/schemas/scripts/check-freshness.sh`.
+
+*(Cite: single-source-of-truth content modeling; ICU MessageFormat; Ousterhout deep modules — a simple `copy.person.shortBio` interface over a rich authoring/codegen implementation.)*
+
+---
+
 ### P4 — The last-responsible-moment promotion test
 
 A component earns DS placement when it is presentational (P3) **and**:
@@ -211,6 +244,7 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 **Existing checks — mapped:**
 - `eslint-local-rules/no-deprecated-tokens.js` → P1
 - `eslint-local-rules/widget-props-extends-schema.js` → P3
+- `eslint-local-rules/copy-src-no-dependencies.js` → P3.1 (D9 copy leaf boundary)
 - `scripts/widget-compliance.mjs` → P2 (gated on R7)
 - `scripts/widget-inventory.mjs --check` → P7 (extend for `status` field)
 - `scripts/scan-personal-data.sh` → `.husky/pre-commit` (personal data, not governance)

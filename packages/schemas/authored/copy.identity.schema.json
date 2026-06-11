@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.identity.schema.json",
+  "title": "LifegamesCopyIdentity",
+  "description": "Rich authoring schema for the identity slice of @lifegames/copy. Every customer-facing identity string is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["person", "site", "seo", "a11y"],
+  "properties": {
+    "person": {
+      "type": "object",
+      "description": "Identity facts and biographical voices for Jonathan Lloyd.",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "firstName",
+        "lastName",
+        "jobTitle",
+        "location",
+        "yearsExperience",
+        "philosophy",
+        "skills",
+        "interests",
+        "shortBio",
+        "socialBio",
+        "longBio",
+        "flavorBio"
+      ],
+      "properties": {
+        "name": { "$ref": "#/$defs/CopyString" },
+        "firstName": { "$ref": "#/$defs/CopyString" },
+        "lastName": { "$ref": "#/$defs/CopyString" },
+        "jobTitle": { "$ref": "#/$defs/CopyString" },
+        "location": { "$ref": "#/$defs/CopyString" },
+        "yearsExperience": { "$ref": "#/$defs/CopyString" },
+        "philosophy": { "$ref": "#/$defs/CopyString" },
+        "skills": { "$ref": "#/$defs/CopyStringList" },
+        "interests": { "$ref": "#/$defs/CopyStringList" },
+        "shortBio": { "$ref": "#/$defs/CopyString" },
+        "socialBio": { "$ref": "#/$defs/CopyString" },
+        "longBio": { "$ref": "#/$defs/CopyString" },
+        "flavorBio": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "site": {
+      "type": "object",
+      "description": "Brand/site-level naming and description.",
+      "additionalProperties": false,
+      "required": ["name", "fullName", "tagline", "description"],
+      "properties": {
+        "name": { "$ref": "#/$defs/CopyString" },
+        "fullName": { "$ref": "#/$defs/CopyString" },
+        "tagline": { "$ref": "#/$defs/CopyString" },
+        "description": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "description": "SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in consumers.",
+      "additionalProperties": false,
+      "required": ["title", "keywords", "expertise"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "keywords": { "$ref": "#/$defs/CopyStringList" },
+        "expertise": { "$ref": "#/$defs/CopyStringList" }
+      }
+    },
+    "a11y": {
+      "type": "object",
+      "description": "Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y is V2.",
+      "additionalProperties": false,
+      "required": ["skipToMain", "ogImageAlt"],
+      "properties": {
+        "skipToMain": { "$ref": "#/$defs/CopyString" },
+        "ogImageAlt": { "$ref": "#/$defs/CopyString" }
+      }
+    }
+  },
+  "$defs": {
+    "CopyMeta": {
+      "type": "object",
+      "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
+      "additionalProperties": false,
+      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "What this string is and why it exists."
+        },
+        "usage": {
+          "type": "array",
+          "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "tone": {
+          "type": "string",
+          "description": "Intended voice/register (e.g. professional, playful, terse)."
+        },
+        "owner": {
+          "type": "string",
+          "description": "Who owns this string's wording."
+        },
+        "lastReviewed": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO-8601 date (YYYY-MM-DD) the wording was last deliberately reviewed."
+        },
+        "constraints": {
+          "type": "object",
+          "description": "Optional machine-checkable constraints (CI-enforced).",
+          "additionalProperties": false,
+          "properties": {
+            "maxChars": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum rendered length. CI fails if value exceeds this."
+            }
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Optional: why this wording/variant exists distinctly (intent, history)."
+        }
+      }
+    },
+    "CopyString": {
+      "type": "object",
+      "description": "A single customer-facing string (ICU MF1 syntax) plus its authoring context.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The string, authored in ICU MessageFormat 1 syntax."
+        },
+        "_meta": { "$ref": "#/$defs/CopyMeta" }
+      }
+    },
+    "CopyStringList": {
+      "type": "object",
+      "description": "An ordered list of customer-facing strings (each ICU MF1) plus shared authoring context.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
+          "items": { "type": "string" }
+        },
+        "_meta": { "$ref": "#/$defs/CopyMeta" }
+      }
+    }
+  }
+}
