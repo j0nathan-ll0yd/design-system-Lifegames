@@ -1,0 +1,313 @@
+{
+  "person": {
+    "name": {
+      "value": "Jonathan Lloyd",
+      "_meta": {
+        "description": "Full personal name. The single canonical spelling used everywhere a human name is shown.",
+        "usage": [
+          "web:Dashboard.astro:24 (meta author)",
+          "web:Dashboard.astro:78 (Person JSON-LD name)",
+          "backend:profile.ts PROFILE.name",
+          "backend:llms-txt.eta:1 heading, llms-full profile"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "firstName": {
+      "value": "Jonathan",
+      "_meta": {
+        "description": "Given name, used by OpenGraph profile metadata.",
+        "usage": ["web:Dashboard.astro:45 (profile:first_name)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "lastName": {
+      "value": "Lloyd",
+      "_meta": {
+        "description": "Family name, used by OpenGraph profile metadata.",
+        "usage": ["web:Dashboard.astro:46 (profile:last_name)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "jobTitle": {
+      "value": "Engineering Director",
+      "_meta": {
+        "description": "Current professional title in title case.",
+        "usage": [
+          "web:Dashboard.astro:80 (Person JSON-LD jobTitle)",
+          "backend:profile.ts PROFILE.title (also lowercased into llms.txt About prose)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "location": {
+      "value": "San Francisco, CA",
+      "_meta": {
+        "description": "City and state of residence. Backend-only today; not yet shown on web.",
+        "usage": ["backend:profile.ts PROFILE.location", "backend:llms-txt.eta:7 About prose"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "yearsExperience": {
+      "value": "24+",
+      "_meta": {
+        "description": "Years of professional experience, expressed as an open-ended figure (e.g. '24+'). Also baked into longBio prose as '24+ years'.",
+        "usage": ["backend:profile.ts PROFILE.yearsExperience", "backend:llms-txt.eta:7 About prose"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "philosophy": {
+      "value": "Enjoying the passage of time",
+      "_meta": {
+        "description": "Short personal-philosophy line. Backend-only today.",
+        "usage": ["backend:profile.ts PROFILE.philosophy", "backend:llms-full profile block"],
+        "tone": "reflective",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "skills": {
+      "value": ["aws", "typescript", "serverless", "swift", "go", "perl"],
+      "_meta": {
+        "description": "Lowercase technology/skill tokens as authored for the backend profile. Distinct from seo.expertise (title-case marketing phrases) — kept separate uniqueness-first.",
+        "usage": ["backend:profile.ts PROFILE.skills", "backend:llms-full profile block (joined with ', ')"],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Casual lowercase token list; deliberately NOT the same voice as the title-case seo.expertise list."
+      }
+    },
+    "interests": {
+      "value": ["programming", "pc gaming", "musical theatre", "edm", "conversation"],
+      "_meta": {
+        "description": "Lowercase personal-interest tokens. Backend-only today.",
+        "usage": ["backend:profile.ts PROFILE.interests", "backend:llms-full profile block (joined with ', ')"],
+        "tone": "casual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "shortBio": {
+      "value": "A living data dashboard by engineer, Jonathan Lloyd — tracking body (health, activity, hydration) and mind (coding, reading). Jack into his human datastream.",
+      "_meta": {
+        "description": "SEO meta description (<meta name=description>). The shortest bio voice; must stay within Google's ~160-char snippet.",
+        "usage": ["web:Dashboard.astro:5 (description prop → meta description)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 160 },
+        "rationale": "Distinct from socialBio: this one names him 'engineer' and omits biometrics specifics to fit the meta-description length budget."
+      }
+    },
+    "socialBio": {
+      "value": "A living data dashboard by engineering director Jonathan Lloyd. Real biometrics — heart rate, sleep, hydration, coding, reading. Jack into his human datastream.",
+      "_meta": {
+        "description": "OpenGraph + Twitter card description (og:description / twitter:description). Slightly longer, names specific biometrics.",
+        "usage": ["web:Dashboard.astro:6 (ogDescription prop → og:description, twitter:description)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 200 },
+        "rationale": "Distinct from shortBio: titles him 'engineering director' and lists concrete biometrics (heart rate, sleep, hydration) for richer social-share previews."
+      }
+    },
+    "longBio": {
+      "value": "Engineering director and backend engineer with 24+ years of experience. Built this portfolio as a living data dashboard — real biometrics and constant updates of body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
+      "_meta": {
+        "description": "Person JSON-LD description — the long, structured-data biography. Names experience ('24+ years') and the AI-centric framing.",
+        "usage": ["web:Dashboard.astro:102 (Person JSON-LD description)"],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Distinct from site.description: phrased about the person ('with 24+ years of experience') rather than about the portfolio ('Personal portfolio of …')."
+      }
+    },
+    "flavorBio": {
+      "value": "100% pure, old fashioned, home-grown human, born free right here in the real world.",
+      "_meta": {
+        "description": "Playful first-person 'human' flavor line. Backend-only; a deliberately different voice from the professional bios.",
+        "usage": ["backend:profile.ts PROFILE.bio", "backend:llms-full profile bio field"],
+        "tone": "playful",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Intentionally distinct voice (whimsical, anti-AI flavor). NOT a candidate to merge with the professional bios."
+      }
+    },
+    "experiencePhrase": {
+      "value": "24+ years professionally & counting",
+      "_meta": {
+        "description": "Formatted experience phrase rendered on the OpenGraph share image. Distinct from yearsExperience ('24+'): this is the full display phrase.",
+        "usage": ["design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (experience default)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "site": {
+    "name": {
+      "value": "Human Datastream",
+      "_meta": {
+        "description": "Brand/site short name.",
+        "usage": ["web:Dashboard.astro:44 (og:site_name)", "web:Dashboard.astro:107 (Dataset name, machine metadata)"],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fullName": {
+      "value": "Jonathan Lloyd — Human Datastream",
+      "_meta": {
+        "description": "Composed brand name: person + site, stored whole (no consumer-side concatenation, per D7).",
+        "usage": ["web:Dashboard.astro:60 (WebSite JSON-LD name)"],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tagline": {
+      "value": "Live Engineering Dashboard",
+      "_meta": {
+        "description": "Brand tagline; the trailing segment of the SEO title.",
+        "usage": ["web:Dashboard.astro:4 (tail of seo.title)"],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "description": {
+      "value": "Personal portfolio of Jonathan Lloyd, an engineering director and backend engineer, built as a living data dashboard. Real biometrics and constant updates of his whole body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
+      "_meta": {
+        "description": "WebSite JSON-LD description. The canonical 'about the portfolio' paragraph. IDENTICAL prose currently lives inline in the backend llms-txt.eta:3 (D1b threads this through siteDescription to close that duplication).",
+        "usage": [
+          "web:Dashboard.astro:61 (WebSite JSON-LD description)",
+          "backend:llms-txt.eta:3 (inline blockquote — to be replaced by it.siteDescription in D1b)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Phrased about the portfolio ('Personal portfolio of …'); distinct from person.longBio which is phrased about the person."
+      }
+    },
+    "pwaDescription": {
+      "value": "Living data dashboard — tracking body and mind. Jack into his human datastream.",
+      "_meta": {
+        "description": "PWA web-app manifest description (shown in install prompts / app listings). A short variant distinct from site.description and person.shortBio.",
+        "usage": ["web:astro.config.mjs (AstroPWA manifest.description)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 120 },
+        "rationale": "Shortest site-level description; the PWA manifest favors a terse install-prompt blurb."
+      }
+    }
+  },
+  "seo": {
+    "title": {
+      "value": "Jonathan Lloyd — Human Datastream | Live Engineering Dashboard",
+      "_meta": {
+        "description": "Full SEO/browser title. Composed (person + site + tagline) and stored whole per D7. Used for <title>, og:title, twitter:title.",
+        "usage": [
+          "web:Dashboard.astro:4 (title prop)",
+          "web:Dashboard.astro:30 (<title>)",
+          "web:Dashboard.astro:36 (og:title)",
+          "web:Dashboard.astro:49 (twitter:title)"
+        ],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 70 }
+      }
+    },
+    "keywords": {
+      "value": [
+        "backend engineer portfolio",
+        "software engineer portfolio",
+        "data visualization dashboard",
+        "living data dashboard",
+        "human datastream",
+        "engineering director",
+        "personal dashboard",
+        "biometrics dashboard",
+        "GitHub activity visualization",
+        "Astro static site"
+      ],
+      "_meta": {
+        "description": "SEO keyword phrases for <meta name=keywords>. Consumers join with ', '.",
+        "usage": ["web:Dashboard.astro:22 (meta keywords, comma-joined)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "expertise": {
+      "value": [
+        "Backend Engineering",
+        "Software Engineering",
+        "Engineering Leadership",
+        "Cloud Infrastructure",
+        "Data Visualization",
+        "Serverless Architecture",
+        "TypeScript",
+        "Go",
+        "AWS"
+      ],
+      "_meta": {
+        "description": "Title-case areas of expertise. THE single home for what was duplicated across web Person.knowsAbout and backend EXPERTISE (byte-identical lists, now unified).",
+        "usage": [
+          "web:Dashboard.astro:90-100 (Person JSON-LD knowsAbout)",
+          "backend:view.ts EXPERTISE (joined with ', ' into llms.txt + llms-full Expertise sections)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Distinct from person.skills (lowercase casual tokens). This is the polished, title-case marketing list."
+      }
+    },
+    "ogImageQuote": {
+      "value": "Jack into his human datastream",
+      "_meta": {
+        "description": "The brand quote/CTA rendered on the OpenGraph share image. The recurring tagline fragment from the bios, as a standalone line.",
+        "usage": ["design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (quote default)"],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "a11y": {
+    "skipToMain": {
+      "value": "Skip to main content",
+      "_meta": {
+        "description": "Skip-link text for keyboard/screen-reader users.",
+        "usage": ["web:Dashboard.astro:417 (.lg-skip-link)"],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "ogImageAlt": {
+      "value": "Jonathan Lloyd — Human Datastream dashboard",
+      "_meta": {
+        "description": "Alt text for the OpenGraph / Twitter share image.",
+        "usage": ["web:Dashboard.astro:43 (og:image:alt)", "web:Dashboard.astro:52 (twitter:image:alt)"],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 125 }
+      }
+    }
+  }
+}

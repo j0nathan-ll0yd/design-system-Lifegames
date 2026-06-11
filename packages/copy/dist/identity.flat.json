@@ -1,0 +1,69 @@
+{
+  "person": {
+    "name": "Jonathan Lloyd",
+    "firstName": "Jonathan",
+    "lastName": "Lloyd",
+    "jobTitle": "Engineering Director",
+    "location": "San Francisco, CA",
+    "yearsExperience": "24+",
+    "philosophy": "Enjoying the passage of time",
+    "skills": [
+      "aws",
+      "typescript",
+      "serverless",
+      "swift",
+      "go",
+      "perl"
+    ],
+    "interests": [
+      "programming",
+      "pc gaming",
+      "musical theatre",
+      "edm",
+      "conversation"
+    ],
+    "shortBio": "A living data dashboard by engineer, Jonathan Lloyd — tracking body (health, activity, hydration) and mind (coding, reading). Jack into his human datastream.",
+    "socialBio": "A living data dashboard by engineering director Jonathan Lloyd. Real biometrics — heart rate, sleep, hydration, coding, reading. Jack into his human datastream.",
+    "longBio": "Engineering director and backend engineer with 24+ years of experience. Built this portfolio as a living data dashboard — real biometrics and constant updates of body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
+    "flavorBio": "100% pure, old fashioned, home-grown human, born free right here in the real world.",
+    "experiencePhrase": "24+ years professionally & counting"
+  },
+  "site": {
+    "name": "Human Datastream",
+    "fullName": "Jonathan Lloyd — Human Datastream",
+    "tagline": "Live Engineering Dashboard",
+    "description": "Personal portfolio of Jonathan Lloyd, an engineering director and backend engineer, built as a living data dashboard. Real biometrics and constant updates of his whole body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
+    "pwaDescription": "Living data dashboard — tracking body and mind. Jack into his human datastream."
+  },
+  "seo": {
+    "title": "Jonathan Lloyd — Human Datastream | Live Engineering Dashboard",
+    "keywords": [
+      "backend engineer portfolio",
+      "software engineer portfolio",
+      "data visualization dashboard",
+      "living data dashboard",
+      "human datastream",
+      "engineering director",
+      "personal dashboard",
+      "biometrics dashboard",
+      "GitHub activity visualization",
+      "Astro static site"
+    ],
+    "expertise": [
+      "Backend Engineering",
+      "Software Engineering",
+      "Engineering Leadership",
+      "Cloud Infrastructure",
+      "Data Visualization",
+      "Serverless Architecture",
+      "TypeScript",
+      "Go",
+      "AWS"
+    ],
+    "ogImageQuote": "Jack into his human datastream"
+  },
+  "a11y": {
+    "skipToMain": "Skip to main content",
+    "ogImageAlt": "Jonathan Lloyd — Human Datastream dashboard"
+  }
+}

@@ -31,6 +31,28 @@ jobs:
         if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"
         run: pnpm -F @lifegames/schemas contract:verify
 
+  copy:
+    # @lifegames/copy: build (validate rich + derive flat + codegen TS/Zod/Swift),
+    # unit tests (Ajv + ICU MF1 parse + maxChars + flat round-trip), and the D9
+    # zero-dependency leaf-boundary lint. The freshness git-diff of copy's
+    # generated artifacts is covered by the schemas-freshness job above.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
+        env:
+          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -F @lifegames/copy build
+      - run: pnpm -F @lifegames/copy test
+      - run: pnpm -F @lifegames/copy lint
+
   build-tokens:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]

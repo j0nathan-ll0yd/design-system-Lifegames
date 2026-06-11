@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.identity.flat.schema.json",
+  "type": "object",
+  "title": "Identity",
+  "description": "Rich authoring schema for the identity slice of @lifegames/copy. Every customer-facing identity string is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax.",
+  "properties": {
+    "person": {
+      "type": "object",
+      "description": "Identity facts and biographical voices for Jonathan Lloyd.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "jobTitle": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "yearsExperience": {
+          "type": "string"
+        },
+        "philosophy": {
+          "type": "string"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shortBio": {
+          "type": "string"
+        },
+        "socialBio": {
+          "type": "string"
+        },
+        "longBio": {
+          "type": "string"
+        },
+        "flavorBio": {
+          "type": "string"
+        },
+        "experiencePhrase": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "firstName",
+        "lastName",
+        "jobTitle",
+        "location",
+        "yearsExperience",
+        "philosophy",
+        "skills",
+        "interests",
+        "shortBio",
+        "socialBio",
+        "longBio",
+        "flavorBio",
+        "experiencePhrase"
+      ],
+      "additionalProperties": false
+    },
+    "site": {
+      "type": "object",
+      "description": "Brand/site-level naming and description.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "tagline": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "pwaDescription": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "fullName",
+        "tagline",
+        "description",
+        "pwaDescription"
+      ],
+      "additionalProperties": false
+    },
+    "seo": {
+      "type": "object",
+      "description": "SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in consumers.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expertise": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ogImageQuote": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "keywords",
+        "expertise",
+        "ogImageQuote"
+      ],
+      "additionalProperties": false
+    },
+    "a11y": {
+      "type": "object",
+      "description": "Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y is V2.",
+      "properties": {
+        "skipToMain": {
+          "type": "string"
+        },
+        "ogImageAlt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "skipToMain",
+        "ogImageAlt"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "person",
+    "site",
+    "seo",
+    "a11y"
+  ],
+  "additionalProperties": false
+}

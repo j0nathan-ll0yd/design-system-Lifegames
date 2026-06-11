@@ -4,9 +4,16 @@
 export interface SleepExport {
   date: string;
   generatedAt: string;
-  [k: string]:
-    | string
-    | {
-        seconds: number;
-      };
+  awake?: {
+    seconds: number;
+  };
+  core?: {
+    seconds: number;
+  };
+  deep?: {
+    seconds: number;
+  };
+  rem?: {
+    seconds: number;
+  };
 }
