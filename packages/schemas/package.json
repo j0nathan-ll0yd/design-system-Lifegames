@@ -10,24 +10,29 @@
   "files": [
     "dist",
     "swift",
-    "vendored",
     "authored",
     "generated",
     "scripts/validate.ts",
+    "scripts/portal-contract-source.mjs",
     "fixture-map.json"
   ],
   "scripts": {
-    "sync": "tsx scripts/sync-from-lp.ts",
     "codegen": "tsx scripts/codegen.ts",
     "validate": "tsx scripts/validate.ts",
     "generate:widgets": "node scripts/generate-widget-schemas.mjs",
     "contract:generate": "tsx scripts/generate-contract-lock.ts",
     "contract:verify": "tsx scripts/verify-contract.ts",
-    "build": "pnpm sync && pnpm generate:widgets && pnpm codegen && LIFEGAMES_VALIDATE_CWD=$PWD/../.. pnpm validate && pnpm contract:generate"
+    "build": "pnpm generate:widgets && pnpm codegen && LIFEGAMES_VALIDATE_CWD=$PWD/../.. pnpm validate && pnpm contract:generate"
   },
   "dependencies": {
+    "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
     "ajv": "~8.20.0",
     "ajv-formats": "~3.0.1"
+  },
+  "dependenciesMeta": {
+    "@lifegames/portal-contract": {
+      "injected": true
+    }
   },
   "devDependencies": {
     "ajv-cli": "^5.0.0",

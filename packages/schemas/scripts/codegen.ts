@@ -2,7 +2,8 @@
 /**
  * codegen.ts — Lifegames Schema Codegen Pipeline
  *
- * Generates from 16 JSON schemas (10 vendored LP + 6 authored DS):
+ * Generates from 16 JSON schemas (10 raw LP exports from
+ * @lifegames/portal-contract + 6 authored DS):
  *   - dist/types/{Name}.ts      — TypeScript interfaces via json-schema-to-typescript
  *   - dist/types/branded.ts     — SchemaDerived<T> brand type
  *   - dist/types/index.ts       — Re-exports all types wrapped in SchemaDerived<T>
@@ -10,14 +11,15 @@
  *   - fixture-map.json          — Fixture → schema → strategy mapping
  *
  * Idempotent: re-running produces byte-identical output.
- * Do NOT modify vendored/ or authored/ schemas from this script.
+ * Do NOT modify the portal-contract raw schemas or authored/ schemas from this script.
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, readdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { execSync } from 'node:child_process';
 import { compile } from 'json-schema-to-typescript';
 import { fileURLToPath } from 'node:url';
+import { RAW_SCHEMAS_DIR } from './portal-contract-source.mjs';
 
 type JsonObject = Record<string, unknown>;
 
@@ -77,6 +79,18 @@ const OVERLAY_ENTRIES: Array<{
 
 function ensureDir(p: string): void {
   mkdirSync(p, { recursive: true });
+}
+
+/**
+ * Resolve a SCHEMA_ENTRIES/OVERLAY_ENTRIES relPath to an absolute file path.
+ * `vendored/<file>` paths now resolve from the @lifegames/portal-contract
+ * package (the single producer of the raw export schemas); `authored/` and
+ * `generated/` paths remain local to this package.
+ */
+function resolveSchemaPath(relPath: string): string {
+  return relPath.startsWith('vendored/')
+    ? join(RAW_SCHEMAS_DIR, basename(relPath))
+    : join(PKG_ROOT, relPath);
 }
 
 /**
@@ -160,7 +174,7 @@ ensureDir(GENERATED);
 
 console.log('codegen: generating merged schemas...');
 for (const entry of OVERLAY_ENTRIES) {
-  const vendoredPath = join(PKG_ROOT, entry.vendored);
+  const vendoredPath = resolveSchemaPath(entry.vendored);
   const overlayPath = join(PKG_ROOT, entry.overlay);
   const outputPath = join(PKG_ROOT, entry.outputRel);
 
@@ -190,7 +204,7 @@ console.log('codegen: generating TypeScript types...');
 const generatedNames: string[] = [];
 
 for (const { relPath, name } of SCHEMA_ENTRIES) {
-  const absPath = join(PKG_ROOT, relPath);
+  const absPath = resolveSchemaPath(relPath);
   const raw = readSchema(absPath);
   const patched = patchRefs(raw, absPath);
 
@@ -246,7 +260,7 @@ const QUICKTYPE_BIN = join(PKG_ROOT, 'node_modules', '.bin', 'quicktype');
 const swiftParts: string[] = [];
 
 for (const { relPath, name } of SCHEMA_ENTRIES) {
-  const absPath = join(PKG_ROOT, relPath);
+  const absPath = resolveSchemaPath(relPath);
   const outFile = join(SWIFT_TEMP, `${name}.swift`);
 
   process.stdout.write(`  [Swift] ${name} (${relPath})...`);

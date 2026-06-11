@@ -11,6 +11,7 @@
     "test:visual:update": "npx playwright test --update-snapshots"
   },
   "dependencies": {
+    "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
     "@lifegames/tokens": "workspace:*",
     "@lifegames/web": "workspace:*",
     "astro": "^6.4.4"

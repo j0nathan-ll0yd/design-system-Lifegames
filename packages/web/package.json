@@ -38,7 +38,13 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
     "@lifegames/tokens": "workspace:*"
+  },
+  "dependenciesMeta": {
+    "@lifegames/portal-contract": {
+      "injected": true
+    }
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.61.0",

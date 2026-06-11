@@ -35,19 +35,5 @@ export const ACTIVITY_TYPE_MAP: Record<string, { label: string; url?: string }> 
   'Other': { label: "Barry's Bootcamp", url: 'https://share.barrys.com/jsvsl' },
 };
 
-export const CLOUDFRONT_BASE = 'https://d1pfm520aduift.cloudfront.net';
-
-export const WEBSOCKET_URL = 'wss://iu1k9jv4mi.execute-api.us-west-2.amazonaws.com/live';
-
-export const ENDPOINTS = {
-  health: '/health.json',
-  sleep: '/sleep.json',
-  workouts: '/workouts.json',
-  books: '/books.json',
-  starredRepos: '/github-starred-repos.json',
-  githubEvents: '/github-events.json',
-  articles: '/articles.json',
-  location: '/location.json',
-  focus: '/focus.json',
-  theatreReviews: '/theatre-reviews.json',
-} as const;
+// Infrastructure addressing is owned by the backend (ADR 003); re-exported here for backward compatibility.
+export { CLOUDFRONT_BASE, WEBSOCKET_URL, ENDPOINTS } from '@lifegames/portal-contract/constants';

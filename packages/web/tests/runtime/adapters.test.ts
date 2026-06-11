@@ -8,7 +8,7 @@ import {
   adaptArticles,
   adaptStarredRepos,
 } from '../../src/runtime/adapters';
-import { HYDRATION, STATUS_LABELS } from '../../src/runtime/constants';
+import { HYDRATION, STATUS_LABELS, CLOUDFRONT_BASE } from '../../src/runtime/constants';
 import type { HealthExport, SleepExport, WorkoutsExport, BooksExport, GithubEventsExport, ArticlesExport } from '../../src/types/exports';
 
 // ── Fixture factories ─────────────────────────────────────────────
@@ -570,9 +570,10 @@ describe('adaptBooks', () => {
   // for ASINs that were in the SSR fixture. See the comment in adapters.ts
   // for the bug-class rationale (Cloudflare Pages caches 404s for 30 days).
   it('passes CloudFront mainImage through unchanged', () => {
-    const books = makeBooks([{ mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/B0TEST.webp' }]);
+    const cfImage = `${CLOUDFRONT_BASE}/images/books/B0TEST.webp`;
+    const books = makeBooks([{ mainImage: cfImage }]);
     const result = adaptBooks(books);
-    expect(result.books[0].cover).toBe('https://d1pfm520aduift.cloudfront.net/images/books/B0TEST.webp');
+    expect(result.books[0].cover).toBe(cfImage);
   });
 
   it('preserves non-CloudFront mainImage URLs unchanged', () => {
