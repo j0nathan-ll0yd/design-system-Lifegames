@@ -1,9 +1,11 @@
 import path from 'path';
 import type { Page } from '@playwright/test';
+import { CLOUDFRONT_BASE, WEBSOCKET_URL as WEBSOCKET_URL_WITH_PATH } from '@lifegames/portal-contract/constants';
 import { getScenarioFixtures, scenarioHasWorkouts, type ScenarioName } from './fixtures';
 
-const CLOUDFRONT_BASE = 'https://d1pfm520aduift.cloudfront.net';
-const WEBSOCKET_URL = 'wss://iu1k9jv4mi.execute-api.us-west-2.amazonaws.com';
+// The contract's WEBSOCKET_URL carries the `/live` path; the route globs below
+// match on host origin only, so strip the path to preserve prior behaviour.
+const WEBSOCKET_URL = WEBSOCKET_URL_WITH_PATH.replace(/\/[^/]*$/, '');
 
 export const stylePath = path.join(import.meta.dirname, 'screenshot.css');
 

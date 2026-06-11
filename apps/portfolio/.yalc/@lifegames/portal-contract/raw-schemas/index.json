@@ -1,0 +1,12 @@
+[
+  "articles-export.schema.json",
+  "books-export.schema.json",
+  "focus-export.schema.json",
+  "github-events-export.schema.json",
+  "github-starred-repos-export.schema.json",
+  "health-export.schema.json",
+  "location-export.schema.json",
+  "sleep-export.schema.json",
+  "theatre-reviews-export.schema.json",
+  "workouts-export.schema.json"
+]

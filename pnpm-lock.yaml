@@ -42,6 +42,9 @@ importers:
 
   apps/portfolio:
     dependencies:
+      '@lifegames/portal-contract':
+        specifier: file:.yalc/@lifegames/portal-contract
+        version: file:apps/portfolio/.yalc/@lifegames/portal-contract
       '@lifegames/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -128,6 +131,9 @@ importers:
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
+    dependenciesMeta:
+      '@lifegames/portal-contract':
+        injected: true
 
   packages/tokens:
     dependencies:
@@ -1777,6 +1783,9 @@ packages:
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
+
+  '@lifegames/portal-contract@file:apps/portfolio/.yalc/@lifegames/portal-contract':
+    resolution: {directory: apps/portfolio/.yalc/@lifegames/portal-contract, type: directory}
 
   '@lifegames/portal-contract@file:packages/schemas/.yalc/@lifegames/portal-contract':
     resolution: {directory: packages/schemas/.yalc/@lifegames/portal-contract, type: directory}
@@ -9150,6 +9159,8 @@ snapshots:
       '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
       '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
       tslib: 2.8.1
+
+  '@lifegames/portal-contract@file:apps/portfolio/.yalc/@lifegames/portal-contract': {}
 
   '@lifegames/portal-contract@file:packages/schemas/.yalc/@lifegames/portal-contract': {}
 

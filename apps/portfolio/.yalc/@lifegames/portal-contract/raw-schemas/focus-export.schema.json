@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "generatedAt": {
+      "type": "string"
+    },
+    "currentFocus": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "generatedAt",
+    "currentFocus"
+  ],
+  "additionalProperties": false
+}

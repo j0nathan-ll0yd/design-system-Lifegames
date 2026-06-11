@@ -1,0 +1,136 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "generatedAt": {
+      "type": "string"
+    },
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "ownerLogin": {
+            "type": "string"
+          },
+          "ownerHtmlUrl": {
+            "type": "string"
+          },
+          "htmlUrl": {
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "forksCount": {
+            "type": "number"
+          },
+          "stargazersCount": {
+            "type": "number"
+          },
+          "watchersCount": {
+            "type": "number"
+          },
+          "openIssuesCount": {
+            "type": "number"
+          },
+          "topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "size": {
+            "type": "number"
+          },
+          "licenseKey": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "licenseName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "licenseSpdxId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "starredAt": {
+            "type": "string"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "language": {
+                  "type": "string"
+                },
+                "lines": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "language",
+                "lines"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "name",
+          "ownerLogin",
+          "ownerHtmlUrl",
+          "htmlUrl",
+          "description",
+          "forksCount",
+          "stargazersCount",
+          "watchersCount",
+          "openIssuesCount",
+          "topics",
+          "size",
+          "licenseKey",
+          "licenseName",
+          "licenseSpdxId",
+          "starredAt",
+          "languages"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "generatedAt",
+    "repos"
+  ],
+  "additionalProperties": false
+}

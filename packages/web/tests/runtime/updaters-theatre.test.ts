@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest';
 import { updateTheatreReviews } from '../../src/runtime/updaters-theatre';
+import { CLOUDFRONT_BASE } from '../../src/runtime/constants';
 import type { TheatreReviewsExport } from '../../src/types/exports';
 
 function makeExport(reviews: TheatreReviewsExport['reviews'] = []): TheatreReviewsExport {
@@ -66,7 +67,7 @@ describe('updateTheatreReviews', () => {
 
   it('renders localized image URL when imageUrl is a CloudFront URL', () => {
     const reviews = [
-      { title: 'CF Show', slug: 'cf-show', url: 'https://example.com/cf', author: 'Jonathan', publishedAt: '2026-01-01', rating: 'A', ratingNumeric: 4, excerpt: 'Good', imageUrl: 'https://d1pfm520aduift.cloudfront.net/images/theatre/cf-show.webp', imageWidth: 95, imageHeight: 143 },
+      { title: 'CF Show', slug: 'cf-show', url: 'https://example.com/cf', author: 'Jonathan', publishedAt: '2026-01-01', rating: 'A', ratingNumeric: 4, excerpt: 'Good', imageUrl: `${CLOUDFRONT_BASE}/images/theatre/cf-show.webp`, imageWidth: 95, imageHeight: 143 },
     ];
     updateTheatreReviews(makeExport(reviews));
     const img = document.querySelector('#theatreRow img') as HTMLImageElement;

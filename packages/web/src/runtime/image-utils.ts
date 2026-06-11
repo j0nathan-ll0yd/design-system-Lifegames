@@ -1,4 +1,6 @@
-const CF_IMAGE_PREFIX = 'https://d1pfm520aduift.cloudfront.net/images/';
+import { CLOUDFRONT_BASE } from './constants';
+
+const CF_IMAGE_PREFIX = `${CLOUDFRONT_BASE}/images/`;
 
 /**
  * Converts a CloudFront image URL to a local path for same-origin serving.

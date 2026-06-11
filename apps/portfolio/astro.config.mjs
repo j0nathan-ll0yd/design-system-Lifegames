@@ -5,8 +5,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import AstroPWA from '@vite-pwa/astro';
 import sitemap from '@astrojs/sitemap';
+import { CLOUDFRONT_BASE } from '@lifegames/portal-contract/constants';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Derive the bare CloudFront host (no scheme) for service-worker URL patterns,
+// escaped for safe interpolation into a RegExp.
+const CLOUDFRONT_HOST = CLOUDFRONT_BASE.replace(/^https?:\/\//, '');
+const CLOUDFRONT_HOST_RE = CLOUDFRONT_HOST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const fixtureMiddleware = {
   name: 'fixture-middleware',
@@ -53,7 +59,7 @@ export default defineConfig({
     server: {
       proxy: {
         '/api/live': {
-          target: 'https://d1pfm520aduift.cloudfront.net',
+          target: CLOUDFRONT_BASE,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/live/, ''),
         }
@@ -96,7 +102,7 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /^https:\/\/d1pfm520aduift\.cloudfront\.net\/images\//,
+            urlPattern: new RegExp(`^https:\\/\\/${CLOUDFRONT_HOST_RE}\\/images\\/`),
             handler: 'CacheFirst',
             options: {
               cacheName: 'optimized-images-fallback',
@@ -104,7 +110,7 @@ export default defineConfig({
             }
           },
           {
-            urlPattern: /^https:\/\/d1pfm520aduift\.cloudfront\.net\/(?!.*[?&]_poll=).*\.json$/,
+            urlPattern: new RegExp(`^https:\\/\\/${CLOUDFRONT_HOST_RE}\\/(?!.*[?&]_poll=).*\\.json$`),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'live-data',
