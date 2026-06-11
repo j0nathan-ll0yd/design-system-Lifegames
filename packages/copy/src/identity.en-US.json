@@ -144,6 +144,16 @@
         "lastReviewed": "2026-06-11",
         "rationale": "Intentionally distinct voice (whimsical, anti-AI flavor). NOT a candidate to merge with the professional bios."
       }
+    },
+    "experiencePhrase": {
+      "value": "24+ years professionally & counting",
+      "_meta": {
+        "description": "Formatted experience phrase rendered on the OpenGraph share image. Distinct from yearsExperience ('24+'): this is the full display phrase.",
+        "usage": ["design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (experience default)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
     }
   },
   "site": {
@@ -189,6 +199,18 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Phrased about the portfolio ('Personal portfolio of …'); distinct from person.longBio which is phrased about the person."
+      }
+    },
+    "pwaDescription": {
+      "value": "Living data dashboard — tracking body and mind. Jack into his human datastream.",
+      "_meta": {
+        "description": "PWA web-app manifest description (shown in install prompts / app listings). A short variant distinct from site.description and person.shortBio.",
+        "usage": ["web:astro.config.mjs (AstroPWA manifest.description)"],
+        "tone": "marketing",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 120 },
+        "rationale": "Shortest site-level description; the PWA manifest favors a terse install-prompt blurb."
       }
     }
   },
@@ -252,6 +274,16 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Distinct from person.skills (lowercase casual tokens). This is the polished, title-case marketing list."
+      }
+    },
+    "ogImageQuote": {
+      "value": "Jack into his human datastream",
+      "_meta": {
+        "description": "The brand quote/CTA rendered on the OpenGraph share image. The recurring tagline fragment from the bios, as a standalone line.",
+        "usage": ["design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (quote default)"],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
       }
     }
   },

@@ -1,4 +1,5 @@
 import Foundation
+import LifegamesCopy
 
 public struct OGImageProps: Hashable, Codable, Sendable {
     public let name: String
@@ -7,10 +8,10 @@ public struct OGImageProps: Hashable, Codable, Sendable {
     public let experience: String
 
     public init(
-        name: String = "Jonathan Lloyd",
-        title: String = "ENGINEERING DIRECTOR",
-        quote: String = "Jack into his human datastream",
-        experience: String = "24+ years professionally & counting"
+        name: String = CopyLoader.identity.person.name,
+        title: String = CopyLoader.identity.person.jobTitle.uppercased(),
+        quote: String = CopyLoader.identity.seo.ogImageQuote,
+        experience: String = CopyLoader.identity.person.experiencePhrase
     ) {
         self.name = name
         self.title = title

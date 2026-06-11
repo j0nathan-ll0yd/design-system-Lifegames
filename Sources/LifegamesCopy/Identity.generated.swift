@@ -127,14 +127,15 @@ public extension A11Y {
 /// Identity facts and biographical voices for Jonathan Lloyd.
 // MARK: - Person
 public struct Person: Codable, Sendable {
-    public let firstName, flavorBio: String
+    public let experiencePhrase, firstName, flavorBio: String
     public let interests: [String]
     public let jobTitle, lastName, location, longBio: String
     public let name, philosophy, shortBio: String
     public let skills: [String]
     public let socialBio, yearsExperience: String
 
-    public init(firstName: String, flavorBio: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+    public init(experiencePhrase: String, firstName: String, flavorBio: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+        self.experiencePhrase = experiencePhrase
         self.firstName = firstName
         self.flavorBio = flavorBio
         self.interests = interests
@@ -170,6 +171,7 @@ public extension Person {
     }
 
     func with(
+        experiencePhrase: String? = nil,
         firstName: String? = nil,
         flavorBio: String? = nil,
         interests: [String]? = nil,
@@ -185,6 +187,7 @@ public extension Person {
         yearsExperience: String? = nil
     ) -> Person {
         return Person(
+            experiencePhrase: experiencePhrase ?? self.experiencePhrase,
             firstName: firstName ?? self.firstName,
             flavorBio: flavorBio ?? self.flavorBio,
             interests: interests ?? self.interests,
@@ -215,11 +218,12 @@ public extension Person {
 // MARK: - SEO
 public struct SEO: Codable, Sendable {
     public let expertise, keywords: [String]
-    public let title: String
+    public let ogImageQuote, title: String
 
-    public init(expertise: [String], keywords: [String], title: String) {
+    public init(expertise: [String], keywords: [String], ogImageQuote: String, title: String) {
         self.expertise = expertise
         self.keywords = keywords
+        self.ogImageQuote = ogImageQuote
         self.title = title
     }
 }
@@ -245,11 +249,13 @@ public extension SEO {
     func with(
         expertise: [String]? = nil,
         keywords: [String]? = nil,
+        ogImageQuote: String? = nil,
         title: String? = nil
     ) -> SEO {
         return SEO(
             expertise: expertise ?? self.expertise,
             keywords: keywords ?? self.keywords,
+            ogImageQuote: ogImageQuote ?? self.ogImageQuote,
             title: title ?? self.title
         )
     }
@@ -266,12 +272,14 @@ public extension SEO {
 /// Brand/site-level naming and description.
 // MARK: - Site
 public struct Site: Codable, Sendable {
-    public let description, fullName, name, tagline: String
+    public let description, fullName, name, pwaDescription: String
+    public let tagline: String
 
-    public init(description: String, fullName: String, name: String, tagline: String) {
+    public init(description: String, fullName: String, name: String, pwaDescription: String, tagline: String) {
         self.description = description
         self.fullName = fullName
         self.name = name
+        self.pwaDescription = pwaDescription
         self.tagline = tagline
     }
 }
@@ -298,12 +306,14 @@ public extension Site {
         description: String? = nil,
         fullName: String? = nil,
         name: String? = nil,
+        pwaDescription: String? = nil,
         tagline: String? = nil
     ) -> Site {
         return Site(
             description: description ?? self.description,
             fullName: fullName ?? self.fullName,
             name: name ?? self.name,
+            pwaDescription: pwaDescription ?? self.pwaDescription,
             tagline: tagline ?? self.tagline
         )
     }

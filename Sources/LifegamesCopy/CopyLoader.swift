@@ -33,4 +33,19 @@ public enum CopyLoader {
             throw CopyError.decodingFailed(name: "\(identityResource).json", underlying: error)
         }
     }
+
+    /// The bundled identity, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadIdentity()`` where you want to handle failure explicitly.
+    public static let identity: Identity = {
+        do {
+            return try loadIdentity()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(identityResource).json failed to load: \(error)")
+        }
+    }()
 }

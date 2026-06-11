@@ -23,6 +23,7 @@ export interface Identity {
     socialBio: string;
     longBio: string;
     flavorBio: string;
+    experiencePhrase: string;
   };
   /**
    * Brand/site-level naming and description.
@@ -32,6 +33,7 @@ export interface Identity {
     fullName: string;
     tagline: string;
     description: string;
+    pwaDescription: string;
   };
   /**
    * SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in consumers.
@@ -40,6 +42,7 @@ export interface Identity {
     title: string;
     keywords: string[];
     expertise: string[];
+    ogImageQuote: string;
   };
   /**
    * Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y is V2.

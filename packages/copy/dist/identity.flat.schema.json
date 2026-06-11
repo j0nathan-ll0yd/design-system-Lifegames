@@ -53,6 +53,9 @@
         },
         "flavorBio": {
           "type": "string"
+        },
+        "experiencePhrase": {
+          "type": "string"
         }
       },
       "required": [
@@ -68,7 +71,8 @@
         "shortBio",
         "socialBio",
         "longBio",
-        "flavorBio"
+        "flavorBio",
+        "experiencePhrase"
       ],
       "additionalProperties": false
     },
@@ -87,13 +91,17 @@
         },
         "description": {
           "type": "string"
+        },
+        "pwaDescription": {
+          "type": "string"
         }
       },
       "required": [
         "name",
         "fullName",
         "tagline",
-        "description"
+        "description",
+        "pwaDescription"
       ],
       "additionalProperties": false
     },
@@ -115,12 +123,16 @@
           "items": {
             "type": "string"
           }
+        },
+        "ogImageQuote": {
+          "type": "string"
         }
       },
       "required": [
         "title",
         "keywords",
-        "expertise"
+        "expertise",
+        "ogImageQuote"
       ],
       "additionalProperties": false
     },

@@ -24,7 +24,8 @@
         "shortBio",
         "socialBio",
         "longBio",
-        "flavorBio"
+        "flavorBio",
+        "experiencePhrase"
       ],
       "properties": {
         "name": { "$ref": "#/$defs/CopyString" },
@@ -39,30 +40,33 @@
         "shortBio": { "$ref": "#/$defs/CopyString" },
         "socialBio": { "$ref": "#/$defs/CopyString" },
         "longBio": { "$ref": "#/$defs/CopyString" },
-        "flavorBio": { "$ref": "#/$defs/CopyString" }
+        "flavorBio": { "$ref": "#/$defs/CopyString" },
+        "experiencePhrase": { "$ref": "#/$defs/CopyString" }
       }
     },
     "site": {
       "type": "object",
       "description": "Brand/site-level naming and description.",
       "additionalProperties": false,
-      "required": ["name", "fullName", "tagline", "description"],
+      "required": ["name", "fullName", "tagline", "description", "pwaDescription"],
       "properties": {
         "name": { "$ref": "#/$defs/CopyString" },
         "fullName": { "$ref": "#/$defs/CopyString" },
         "tagline": { "$ref": "#/$defs/CopyString" },
-        "description": { "$ref": "#/$defs/CopyString" }
+        "description": { "$ref": "#/$defs/CopyString" },
+        "pwaDescription": { "$ref": "#/$defs/CopyString" }
       }
     },
     "seo": {
       "type": "object",
       "description": "SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in consumers.",
       "additionalProperties": false,
-      "required": ["title", "keywords", "expertise"],
+      "required": ["title", "keywords", "expertise", "ogImageQuote"],
       "properties": {
         "title": { "$ref": "#/$defs/CopyString" },
         "keywords": { "$ref": "#/$defs/CopyStringList" },
-        "expertise": { "$ref": "#/$defs/CopyStringList" }
+        "expertise": { "$ref": "#/$defs/CopyStringList" },
+        "ogImageQuote": { "$ref": "#/$defs/CopyString" }
       }
     },
     "a11y": {

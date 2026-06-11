@@ -68,8 +68,8 @@ describe('@lifegames/copy identity', () => {
   });
 
   it('captures the full identity surface', () => {
-    // Sanity: 22 leaves (person 13 + site 4 + seo 3 + a11y 2).
-    expect(leaves.length).toBe(22);
+    // Sanity: 25 leaves (person 14 + site 5 + seo 4 + a11y 2).
+    expect(leaves.length).toBe(25);
   });
 
   it('every string value is valid ICU MessageFormat 1', () => {
