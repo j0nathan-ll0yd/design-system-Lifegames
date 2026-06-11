@@ -13,7 +13,6 @@
     "docs:dev": "turbo run docs:dev",
     "storybook:build": "turbo run storybook:build",
     "storybook:test": "turbo run storybook:test",
-    "sync:schemas": "pnpm -F @lifegames/schemas sync",
     "check:schemas-freshness": "bash packages/schemas/scripts/check-freshness.sh",
     "yalc:publish": "pnpm build:tokens && node scripts/check-yalc-staleness.mjs --write && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push && pnpm --filter @lifegames/schemas exec yalc publish --push",
     "yalc:update": "pnpm yalc:publish",

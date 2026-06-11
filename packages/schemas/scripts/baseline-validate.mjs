@@ -6,6 +6,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, basename } from 'node:path';
+import { RAW_SCHEMAS_DIR } from './portal-contract-source.mjs';
 
 const DS = '/Users/jlloyd/Repositories/design-system-Lifegames';
 const CONSUMER = '/Users/jlloyd/Repositories/j0nathan-ll0yd.github.io';
@@ -13,11 +14,11 @@ const CONSUMER = '/Users/jlloyd/Repositories/j0nathan-ll0yd.github.io';
 const ajv = new Ajv({ strict: false, allErrors: true, allowUnionTypes: true });
 try { addFormats(ajv); } catch (e) { /* ajv-formats not installed; OK */ }
 
-// Load vendored schemas; register under https://lifegames.dev/vendored/<basename>
-const vendoredDir = join(DS, 'packages/schemas/vendored');
-const vendored = readdirSync(vendoredDir).filter(f => f.endsWith('.schema.json'));
+// Load raw export schemas from @lifegames/portal-contract; register under the
+// canonical https://lifegames.dev/vendored/<basename> URIs (namespace unchanged).
+const vendored = readdirSync(RAW_SCHEMAS_DIR).filter(f => f.endsWith('.schema.json'));
 for (const f of vendored) {
-  const schema = JSON.parse(readFileSync(join(vendoredDir, f), 'utf-8'));
+  const schema = JSON.parse(readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'));
   const id = `https://lifegames.dev/vendored/${f}`;
   ajv.addSchema(schema, id);
 }

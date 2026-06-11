@@ -1,0 +1,9 @@
+{
+  "endpoints": {
+    "health": "/health.json", "sleep": "/sleep.json", "workouts": "/workouts.json",
+    "books": "/books.json", "starredRepos": "/github-starred-repos.json",
+    "githubEvents": "/github-events.json", "articles": "/articles.json",
+    "location": "/location.json", "focus": "/focus.json", "theatreReviews": "/theatre-reviews.json"
+  },
+  "contentPaths": { "llmsFull": "/llms-full.txt", "llmsSmall": "/llms-small.txt", "indexMarkdown": "/index.md" }
+}

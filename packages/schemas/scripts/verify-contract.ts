@@ -3,10 +3,10 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { RAW_SCHEMAS_DIR } from './portal-contract-source.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const PKG_ROOT = resolve(__dirname, '..');
-const VENDORED_DIR = join(PKG_ROOT, 'vendored');
 const LOCK_FILE = join(PKG_ROOT, '.contract-lock.json');
 
 const WARNING_MODE = process.env.CONTRACT_CHECK_MODE !== 'blocking';
@@ -24,7 +24,7 @@ const lock = JSON.parse(readFileSync(LOCK_FILE, 'utf-8'));
 const expectedChecksums: Record<string, string> = lock.files ?? {};
 const expectedAggregate: string = lock.generatedFrom?.checksum ?? '';
 
-const schemaFiles = readdirSync(VENDORED_DIR)
+const schemaFiles = readdirSync(RAW_SCHEMAS_DIR)
   .filter(f => f.endsWith('.schema.json'))
   .sort();
 
@@ -32,7 +32,7 @@ let drifted = false;
 const driftDetails: string[] = [];
 
 for (const file of schemaFiles) {
-  const content = readFileSync(join(VENDORED_DIR, file), 'utf-8');
+  const content = readFileSync(join(RAW_SCHEMAS_DIR, file), 'utf-8');
   const actual = `sha256:${sha256(content)}`;
   const expected = expectedChecksums[file];
 
@@ -55,7 +55,7 @@ for (const file of Object.keys(expectedChecksums)) {
 }
 
 const combinedContent = schemaFiles
-  .map(f => readFileSync(join(VENDORED_DIR, f), 'utf-8'))
+  .map(f => readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'))
   .join('');
 const actualAggregate = `sha256:${sha256(combinedContent)}`;
 

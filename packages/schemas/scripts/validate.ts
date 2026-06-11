@@ -12,6 +12,7 @@ import { join, resolve, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Ajv, type ErrorObject } from 'ajv';
 import addFormats from 'ajv-formats';
+import { RAW_SCHEMAS_DIR } from './portal-contract-source.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const PKG_ROOT = resolve(__dirname, '..');
@@ -46,10 +47,11 @@ function assertDraft07(schema: { $schema?: string }, file: string): void {
   }
 }
 
-// Register all vendored schemas under their canonical URIs
-const vendoredDir = join(PKG_ROOT, 'vendored');
-for (const f of readdirSync(vendoredDir).filter(f => f.endsWith('.schema.json'))) {
-  const schema = JSON.parse(readFileSync(join(vendoredDir, f), 'utf-8'));
+// Register all raw export schemas under their canonical vendored URIs.
+// Source is now @lifegames/portal-contract (resolved on disk); the canonical
+// `https://lifegames.dev/vendored/<file>` namespace is preserved unchanged.
+for (const f of readdirSync(RAW_SCHEMAS_DIR).filter(f => f.endsWith('.schema.json'))) {
+  const schema = JSON.parse(readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'));
   assertDraft07(schema, f);
   ajv.addSchema(schema, `https://lifegames.dev/vendored/${f}`);
 }
