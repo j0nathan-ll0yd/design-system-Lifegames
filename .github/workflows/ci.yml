@@ -22,6 +22,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:schemas-freshness
       - name: Verify schema contract
@@ -38,6 +39,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
@@ -58,6 +60,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v8
         with:
@@ -78,6 +81,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v8
         with:
@@ -96,6 +100,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v8
         with:
@@ -182,6 +187,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - name: Select Xcode 26
         run: |
@@ -210,6 +216,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v8
         with:
@@ -241,6 +248,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@v8
         with:
