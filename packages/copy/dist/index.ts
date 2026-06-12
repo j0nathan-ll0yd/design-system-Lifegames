@@ -20,3 +20,27 @@ import type { Accessibility } from './a11y';
 export type { Accessibility } from './a11y';
 
 export const a11y: Accessibility = a11yData;
+import appData from './app.flat.json';
+import type { App } from './app';
+
+export type { App } from './app';
+
+export const app: App = appData;
+import permissionsData from './permissions.flat.json';
+import type { Permissions } from './permissions';
+
+export type { Permissions } from './permissions';
+
+export const permissions: Permissions = permissionsData;
+import errorsData from './errors.flat.json';
+import type { Errors } from './errors';
+
+export type { Errors } from './errors';
+
+export const errors: Errors = errorsData;
+import llmData from './llm.flat.json';
+import type { Llm } from './llm';
+
+export type { Llm } from './llm';
+
+export const llm: Llm = llmData;

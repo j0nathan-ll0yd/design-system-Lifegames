@@ -31,7 +31,7 @@ const PKG_ROOT = join(HERE, '..'); // packages/copy
 const DS_ROOT = join(PKG_ROOT, '..', '..'); // design-system-Lifegames
 
 /** Migrated namespaces whose values must not be hardcoded in consumers. */
-const NAMESPACES = ['widgets', 'a11y'];
+const NAMESPACES = ['widgets', 'a11y', 'app', 'permissions', 'errors', 'llm'];
 
 /** Consumer source roots to scan (relative to DS_ROOT). Never packages/copy. */
 const CONSUMER_ROOTS = [
@@ -80,7 +80,16 @@ function quotedForms(value) {
  * data-derived, not copy — the widget title itself IS sourced from copy). Allowed
  * only in files whose path includes `pathIncludes`.
  */
-const ALLOWLIST = [{ value: 'Theatre Reviews', pathIncludes: 'SystemStatus' }];
+const ALLOWLIST = [
+  { value: 'Theatre Reviews', pathIncludes: 'SystemStatus' },
+  // The web reading-feed STATUS_LABELS map is the WEB dashboard's own
+  // reading-status display copy (next/in_progress/completed routing keys),
+  // a separate surface from the iOS `app.bookshelf.statusUpNext` book-status
+  // chip. It is not the same string instance as the iOS app namespace, so it
+  // is not a hardcoded duplicate of migrated copy. Scoped to the runtime
+  // constants file that owns the status map.
+  { value: 'Up Next', pathIncludes: 'runtime/constants.ts' },
+];
 
 function isAllowed(value, relPath) {
   return ALLOWLIST.some((a) => a.value === value && relPath.includes(a.pathIncludes));

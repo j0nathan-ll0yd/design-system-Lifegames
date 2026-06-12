@@ -1,0 +1,1371 @@
+{
+  "txt": {
+    "titleHeading": {
+      "value": "# {profileName} — Human Datastream",
+      "_meta": {
+        "description": "Top-level H1 of the /llms.txt discovery index. ICU MF1; consumer substitutes the profile name. Literal markdown '# ' marker and em-dash preserved.",
+        "usage": ["llms-txt.eta:1"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutHeading": {
+      "value": "## About",
+      "_meta": {
+        "description": "About section heading.",
+        "usage": ["llms-txt.eta:5"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutBody": {
+      "value": "{profileName} is an {profileTitleLower} and backend engineer based in {profileLocation} with {profileYearsExperience} years of professional experience. The portfolio site is a sci-fi \"Human Datastream\" dashboard — a single-page application that visualizes real-time personal data across two domains: Body and Mind.",
+      "_meta": {
+        "description": "About paragraph. ICU MF1; consumer substitutes name, lowercased title, location, and years. Literal quotes around 'Human Datastream' and em-dash preserved.",
+        "usage": ["llms-txt.eta:7"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linkSite": {
+      "value": "- Site: {siteUrl}",
+      "_meta": {
+        "description": "About-section Site link list item. ICU MF1; consumer substitutes the site URL.",
+        "usage": ["llms-txt.eta:9"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linkGithub": {
+      "value": "- GitHub: {profileGithub}",
+      "_meta": {
+        "description": "About-section GitHub link list item. ICU MF1; consumer substitutes the GitHub URL.",
+        "usage": ["llms-txt.eta:10"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linkLinkedin": {
+      "value": "- LinkedIn: {profileLinkedin}",
+      "_meta": {
+        "description": "About-section LinkedIn link list item. ICU MF1; consumer substitutes the LinkedIn URL.",
+        "usage": ["llms-txt.eta:11"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "liveHeading": {
+      "value": "## Live LLM-optimized content",
+      "_meta": {
+        "description": "Live LLM-optimized content section heading.",
+        "usage": ["llms-txt.eta:13"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "liveBody": {
+      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics use 7-day aggregates only; GitHub, books, reading, and theatre use full granularity.",
+      "_meta": {
+        "description": "Live-content explanatory paragraph (static).",
+        "usage": ["llms-txt.eta:15"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "liveFullDump": {
+      "value": "- [llms-full.txt]({cloudfrontBase}/llms-full.txt): Complete data dump — all domains as structured markdown with tables and source citations",
+      "_meta": {
+        "description": "llms-full.txt link list item + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-txt.eta:17"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "liveIndexAlias": {
+      "value": "- [index.md]({cloudfrontBase}/index.md): Markdown alias of llms-full.txt for agents expecting .md extensions",
+      "_meta": {
+        "description": "index.md alias link list item + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:18"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "canonicalHeading": {
+      "value": "## Canonical JSON",
+      "_meta": {
+        "description": "Canonical JSON section heading.",
+        "usage": ["llms-txt.eta:20"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "canonicalBody": {
+      "value": "The backend composes the markdown variants from these live JSON sources. LLMs that prefer raw machine-readable data can fetch them directly:",
+      "_meta": {
+        "description": "Canonical-JSON explanatory paragraph (static).",
+        "usage": ["llms-txt.eta:22"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointHealth": {
+      "value": "- [health.json]({cloudfrontBase}/health.json): biometrics (heart rate, HRV, activity, workouts)",
+      "_meta": {
+        "description": "health.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:24"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointSleep": {
+      "value": "- [sleep.json]({cloudfrontBase}/sleep.json): sleep phases and efficiency",
+      "_meta": {
+        "description": "sleep.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:25"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointFocus": {
+      "value": "- [focus.json]({cloudfrontBase}/focus.json): focus / Do Not Disturb state",
+      "_meta": {
+        "description": "focus.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:26"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointGithubEvents": {
+      "value": "- [github-events.json]({cloudfrontBase}/github-events.json): GitHub commits, PRs, issues",
+      "_meta": {
+        "description": "github-events.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:27"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointStarred": {
+      "value": "- [github-starred-repos.json]({cloudfrontBase}/github-starred-repos.json): starred repositories",
+      "_meta": {
+        "description": "github-starred-repos.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:28"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointBooks": {
+      "value": "- [books.json]({cloudfrontBase}/books.json): bookshelf with status, ratings, progress",
+      "_meta": {
+        "description": "books.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:29"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointArticles": {
+      "value": "- [articles.json]({cloudfrontBase}/articles.json): saved articles",
+      "_meta": {
+        "description": "articles.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:30"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointTheatre": {
+      "value": "- [theatre-reviews.json]({cloudfrontBase}/theatre-reviews.json): theatre reviews",
+      "_meta": {
+        "description": "theatre-reviews.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:31"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointWorkouts": {
+      "value": "- [workouts.json]({cloudfrontBase}/workouts.json): workout sessions",
+      "_meta": {
+        "description": "workouts.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:32"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "endpointLocation": {
+      "value": "- [location.json]({cloudfrontBase}/location.json): location activity and place summaries",
+      "_meta": {
+        "description": "location.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
+        "usage": ["llms-txt.eta:33"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "technologyHeading": {
+      "value": "## Technology",
+      "_meta": {
+        "description": "Technology section heading.",
+        "usage": ["llms-txt.eta:35"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "technologyFramework": {
+      "value": "- Framework: Astro (static site generation, 0 KB JS by default)",
+      "_meta": {
+        "description": "Technology block — Framework line (static).",
+        "usage": ["llms-txt.eta:37"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "technologyHosting": {
+      "value": "- Hosting: Cloudflare Pages via GitHub Actions",
+      "_meta": {
+        "description": "Technology block — Hosting line (static).",
+        "usage": ["llms-txt.eta:38"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "technologyLiveData": {
+      "value": "- Live data: CloudFront-backed JSON API polled at runtime by the dashboard; same JSON composed into LLM-friendly markdown by the backend",
+      "_meta": {
+        "description": "Technology block — Live data line (static).",
+        "usage": ["llms-txt.eta:39"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "technologyDesign": {
+      "value": "- Design: Glass-morphism, dark theme, fluid responsive tokens, CSS container queries",
+      "_meta": {
+        "description": "Technology block — Design line (static).",
+        "usage": ["llms-txt.eta:40"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "expertiseHeading": {
+      "value": "## Expertise",
+      "_meta": {
+        "description": "Expertise section heading.",
+        "usage": ["llms-txt.eta:42"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "optionalHeading": {
+      "value": "## Optional",
+      "_meta": {
+        "description": "Optional section heading.",
+        "usage": ["llms-txt.eta:46"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "optionalBody": {
+      "value": "Secondary reference material — skippable when a shorter context is needed.",
+      "_meta": {
+        "description": "Optional-section explanatory paragraph (static). Em-dash preserved.",
+        "usage": ["llms-txt.eta:48"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "wikiSpec": {
+      "value": "- [Wiki: LLM Content Spec]({profileGithub}/j0nathan-ll0yd.github.io/wiki/LLM-Content-Spec): Format, URLs, freshness, Level 2 health constraint",
+      "_meta": {
+        "description": "Optional wiki link — LLM Content Spec + description. ICU MF1; consumer substitutes the GitHub URL.",
+        "usage": ["llms-txt.eta:50"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "wikiArchitecture": {
+      "value": "- [Wiki: Architecture]({profileGithub}/j0nathan-ll0yd.github.io/wiki/Astro-Implementation): Components, data flow, build system",
+      "_meta": {
+        "description": "Optional wiki link — Architecture + description. ICU MF1; consumer substitutes the GitHub URL.",
+        "usage": ["llms-txt.eta:51"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "wikiBrand": {
+      "value": "- [Wiki: Brand Guide]({profileGithub}/j0nathan-ll0yd.github.io/wiki/Brand-Guide): Colors, typography, glass-morphism",
+      "_meta": {
+        "description": "Optional wiki link — Brand Guide + description. ICU MF1; consumer substitutes the GitHub URL.",
+        "usage": ["llms-txt.eta:52"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "full": {
+    "systemFraming": {
+      "value": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an engineering director and backend engineer. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",
+      "_meta": {
+        "description": "<SYSTEM> framing line. ICU MF1; consumer substitutes the profile name. Literal <SYSTEM></SYSTEM> tags, quotes, and em-dash preserved.",
+        "usage": ["llms-full.eta:1"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "titleHeading": {
+      "value": "# {profileName} — Human Datastream (Complete)",
+      "_meta": {
+        "description": "Top-level H1 of /llms-full.txt. ICU MF1; consumer substitutes the profile name. Em-dash preserved.",
+        "usage": ["llms-full.eta:3"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "intro": {
+      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are 7-day\n> aggregates only (no point-in-time biometrics). Everything else is full granularity.",
+      "_meta": {
+        "description": "Blockquote intro (static, 4 lines). Newlines and '> ' blockquote markers preserved verbatim.",
+        "usage": ["llms-full.eta:5-8"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "metaLastUpdated": {
+      "value": "**Last updated:** {lastUpdated}",
+      "_meta": {
+        "description": "Last-updated meta label. ICU MF1; consumer substitutes the timestamp. Bold markers preserved.",
+        "usage": ["llms-full.eta:10"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "metaGenerated": {
+      "value": "**Generated:** {generated}",
+      "_meta": {
+        "description": "Generated meta label. ICU MF1; consumer substitutes the timestamp. Bold markers preserved.",
+        "usage": ["llms-full.eta:11"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "metaSource": {
+      "value": "**Source:** {source}",
+      "_meta": {
+        "description": "Source meta label. ICU MF1; consumer substitutes the source. Bold markers preserved.",
+        "usage": ["llms-full.eta:12"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "contentsHeading": {
+      "value": "## Contents",
+      "_meta": {
+        "description": "Contents section heading.",
+        "usage": ["llms-full.eta:14"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "contentsProfile": {
+      "value": "- [Profile](#profile)",
+      "_meta": {
+        "description": "Contents TOC entry — Profile.",
+        "usage": ["llms-full.eta:16"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "contentsBody": {
+      "value": "- [Body](#body)",
+      "_meta": {
+        "description": "Contents TOC entry — Body.",
+        "usage": ["llms-full.eta:17"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "contentsMind": {
+      "value": "- [Mind](#mind)",
+      "_meta": {
+        "description": "Contents TOC entry — Mind.",
+        "usage": ["llms-full.eta:18"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "contentsSystem": {
+      "value": "- [System](#system)",
+      "_meta": {
+        "description": "Contents TOC entry — System.",
+        "usage": ["llms-full.eta:19"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "contentsStreams": {
+      "value": "- [Streams](#streams)",
+      "_meta": {
+        "description": "Contents TOC entry — Streams.",
+        "usage": ["llms-full.eta:20"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileHeading": {
+      "value": "## Profile '{#profile}'",
+      "_meta": {
+        "description": "Profile section heading with anchor.",
+        "usage": ["llms-full.eta:24"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Literal markdown anchor '{#profile}' is ICU-MF1-escaped as '{#profile}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+      }
+    },
+    "profileNameLine": {
+      "value": "**{profileName}** — {profileTitle}.",
+      "_meta": {
+        "description": "Profile name + title line. ICU MF1; consumer substitutes name and title. Bold markers, em-dash, trailing period preserved.",
+        "usage": ["llms-full.eta:26"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileBio": {
+      "value": "Bio: {profileBio}",
+      "_meta": {
+        "description": "Bio label line. ICU MF1; consumer substitutes the bio.",
+        "usage": ["llms-full.eta:28"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileLocation": {
+      "value": "- **Location**: {profileLocation}",
+      "_meta": {
+        "description": "Profile Location list item. ICU MF1; consumer substitutes the location.",
+        "usage": ["llms-full.eta:30"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileExperience": {
+      "value": "- **Experience**: {profileYearsExperience} years professionally and counting",
+      "_meta": {
+        "description": "Profile Experience list item. ICU MF1; consumer substitutes the years.",
+        "usage": ["llms-full.eta:31"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profilePhilosophy": {
+      "value": "- **Philosophy**: \"{profilePhilosophy}\"",
+      "_meta": {
+        "description": "Profile Philosophy list item. ICU MF1; consumer substitutes the philosophy. Literal surrounding quotes preserved.",
+        "usage": ["llms-full.eta:32"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileCurrentFocus": {
+      "value": "- **Current focus**: \"{profileCurrentFocus}\"",
+      "_meta": {
+        "description": "Profile Current focus list item. ICU MF1; consumer substitutes the current focus. Literal surrounding quotes preserved.",
+        "usage": ["llms-full.eta:33"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileSkills": {
+      "value": "- **Skills**: {profileSkills}",
+      "_meta": {
+        "description": "Profile Skills list item. ICU MF1; consumer substitutes the skills.",
+        "usage": ["llms-full.eta:34"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "profileInterests": {
+      "value": "- **Interests**: {profileInterests}",
+      "_meta": {
+        "description": "Profile Interests list item. ICU MF1; consumer substitutes the interests.",
+        "usage": ["llms-full.eta:35"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "expertiseHeading": {
+      "value": "### Expertise",
+      "_meta": {
+        "description": "Profile Expertise subsection heading.",
+        "usage": ["llms-full.eta:37"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linksHeading": {
+      "value": "### Links",
+      "_meta": {
+        "description": "Profile Links subsection heading.",
+        "usage": ["llms-full.eta:41"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linkSite": {
+      "value": "- Site: {siteUrl}",
+      "_meta": {
+        "description": "Profile Links — Site list item. ICU MF1; consumer substitutes the site URL.",
+        "usage": ["llms-full.eta:43"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linkGithub": {
+      "value": "- GitHub: {profileGithub}",
+      "_meta": {
+        "description": "Profile Links — GitHub list item. ICU MF1; consumer substitutes the GitHub URL.",
+        "usage": ["llms-full.eta:44"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "linkLinkedin": {
+      "value": "- LinkedIn: {profileLinkedin}",
+      "_meta": {
+        "description": "Profile Links — LinkedIn list item. ICU MF1; consumer substitutes the LinkedIn URL.",
+        "usage": ["llms-full.eta:45"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bodyHeading": {
+      "value": "## Body '{#body}'",
+      "_meta": {
+        "description": "Body section heading with anchor.",
+        "usage": ["llms-full.eta:49"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Literal markdown anchor '{#body}' is ICU-MF1-escaped as '{#body}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+      }
+    },
+    "bodyDataAsOf": {
+      "value": "**Data as of:** {bodyDataAsOf}",
+      "_meta": {
+        "description": "Body data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
+        "usage": ["llms-full.eta:51"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bodyAggregateNote": {
+      "value": "All body metrics are 7-day aggregates ending {bodyEndingDate}. No point-in-time values\nare included — this is a privacy-preserving granularity choice. For raw daily\nvalues, see the JSON endpoints linked in the Streams section.",
+      "_meta": {
+        "description": "Body 7-day-aggregate privacy note (3 lines). ICU MF1; consumer substitutes the ending date. Newlines and em-dash preserved.",
+        "usage": ["llms-full.eta:53-55"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "cardioHeading": {
+      "value": "### Cardiovascular (7-day aggregate)",
+      "_meta": {
+        "description": "Cardiovascular subsection heading.",
+        "usage": ["llms-full.eta:57"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "cardioEmpty": {
+      "value": "_No cardiovascular data available._",
+      "_meta": {
+        "description": "Cardiovascular empty-state fallback (italic).",
+        "usage": ["llms-full.eta:60"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "cardioColumns": {
+      "value": "| Metric | Range | Trend | Interpretation |",
+      "_meta": {
+        "description": "Cardiovascular table column-header row.",
+        "usage": ["llms-full.eta:62"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "cardioRestingLabel": {
+      "value": "Resting heart rate",
+      "_meta": {
+        "description": "Cardiovascular table row label — resting heart rate (the literal metric name in the table cell).",
+        "usage": ["llms-full.eta:65"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "cardioHrvLabel": {
+      "value": "Heart rate variability (SDNN)",
+      "_meta": {
+        "description": "Cardiovascular table row label — HRV (the literal metric name in the table cell).",
+        "usage": ["llms-full.eta:68"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepHeading": {
+      "value": "### Sleep (7-day aggregate)",
+      "_meta": {
+        "description": "Sleep subsection heading.",
+        "usage": ["llms-full.eta:72"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepEmpty": {
+      "value": "_No sleep data available._",
+      "_meta": {
+        "description": "Sleep empty-state fallback (italic).",
+        "usage": ["llms-full.eta:75"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepColumns": {
+      "value": "| Metric | Value | Trend | Interpretation |",
+      "_meta": {
+        "description": "Sleep table column-header row.",
+        "usage": ["llms-full.eta:77"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepTotalLabel": {
+      "value": "Total sleep duration",
+      "_meta": {
+        "description": "Sleep table row label — total sleep duration.",
+        "usage": ["llms-full.eta:79"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepEfficiencyLabel": {
+      "value": "Sleep efficiency",
+      "_meta": {
+        "description": "Sleep table row label — sleep efficiency.",
+        "usage": ["llms-full.eta:80"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepDeepLabel": {
+      "value": "Deep sleep share",
+      "_meta": {
+        "description": "Sleep table row label — deep sleep share.",
+        "usage": ["llms-full.eta:81"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sleepRemLabel": {
+      "value": "REM sleep share",
+      "_meta": {
+        "description": "Sleep table row label — REM sleep share.",
+        "usage": ["llms-full.eta:82"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "activityHeading": {
+      "value": "### Activity (7-day aggregate)",
+      "_meta": {
+        "description": "Activity subsection heading.",
+        "usage": ["llms-full.eta:85"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutsHeading": {
+      "value": "### Workouts (7-day aggregate)",
+      "_meta": {
+        "description": "Workouts subsection heading.",
+        "usage": ["llms-full.eta:91"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutsEmpty": {
+      "value": "_No workout data available._",
+      "_meta": {
+        "description": "Workouts empty-state fallback (italic).",
+        "usage": ["llms-full.eta:94"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutsActivityTypes": {
+      "value": "- Typical activity types: {activityTypes}",
+      "_meta": {
+        "description": "Workouts — typical activity types list item. ICU MF1; consumer substitutes the types.",
+        "usage": ["llms-full.eta:97"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutsAvgDuration": {
+      "value": "- Avg workout duration: {avgDuration}",
+      "_meta": {
+        "description": "Workouts — average duration list item. ICU MF1; consumer substitutes the duration.",
+        "usage": ["llms-full.eta:98"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutsAvgEnergy": {
+      "value": "- Avg workout energy burn: {avgEnergy}",
+      "_meta": {
+        "description": "Workouts — average energy burn list item. ICU MF1; consumer substitutes the energy.",
+        "usage": ["llms-full.eta:99"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "hydrationHeading": {
+      "value": "### Hydration (7-day aggregate)",
+      "_meta": {
+        "description": "Hydration subsection heading.",
+        "usage": ["llms-full.eta:102"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "hydrationWater": {
+      "value": "- Water intake: {water}",
+      "_meta": {
+        "description": "Hydration — water intake list item. ICU MF1; consumer substitutes the water value.",
+        "usage": ["llms-full.eta:104"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "hydrationCaffeine": {
+      "value": "- Caffeine intake: {caffeine}",
+      "_meta": {
+        "description": "Hydration — caffeine intake list item. ICU MF1; consumer substitutes the caffeine value.",
+        "usage": ["llms-full.eta:105"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "mindHeading": {
+      "value": "## Mind '{#mind}'",
+      "_meta": {
+        "description": "Mind section heading with anchor.",
+        "usage": ["llms-full.eta:109"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Literal markdown anchor '{#mind}' is ICU-MF1-escaped as '{#mind}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+      }
+    },
+    "githubHeading": {
+      "value": "### GitHub activity",
+      "_meta": {
+        "description": "GitHub activity subsection heading.",
+        "usage": ["llms-full.eta:111"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubDataAsOf": {
+      "value": "**Data as of:** {githubDate}",
+      "_meta": {
+        "description": "GitHub data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
+        "usage": ["llms-full.eta:113"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubEmpty": {
+      "value": "_No GitHub activity data available._",
+      "_meta": {
+        "description": "GitHub activity empty-state fallback (italic).",
+        "usage": ["llms-full.eta:116"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubActiveRepos": {
+      "value": "- Active repositories: {activeRepos}",
+      "_meta": {
+        "description": "GitHub — active repositories list item. ICU MF1; consumer substitutes the count.",
+        "usage": ["llms-full.eta:118"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubRecentEvents": {
+      "value": "- Recent events: {recentEvents} total",
+      "_meta": {
+        "description": "GitHub — recent events list item. ICU MF1; consumer substitutes the count.",
+        "usage": ["llms-full.eta:119"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubStarredCount": {
+      "value": "- Starred repositories: {starredCount}",
+      "_meta": {
+        "description": "GitHub — starred repositories count list item. ICU MF1; consumer substitutes the count.",
+        "usage": ["llms-full.eta:121"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubRecentCommitsHeading": {
+      "value": "#### Recent commits",
+      "_meta": {
+        "description": "GitHub recent-commits sub-subsection heading.",
+        "usage": ["llms-full.eta:125"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "githubRecentPrsHeading": {
+      "value": "#### Recent PRs & issues",
+      "_meta": {
+        "description": "GitHub recent-PRs-and-issues sub-subsection heading.",
+        "usage": ["llms-full.eta:133"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "starredHeading": {
+      "value": "### Starred repositories",
+      "_meta": {
+        "description": "Starred repositories subsection heading.",
+        "usage": ["llms-full.eta:141"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "starredDataAsOf": {
+      "value": "**Data as of:** {starredDate}",
+      "_meta": {
+        "description": "Starred data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
+        "usage": ["llms-full.eta:143"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "starredEmpty": {
+      "value": "_No starred repository data available._",
+      "_meta": {
+        "description": "Starred repositories empty-state fallback (italic).",
+        "usage": ["llms-full.eta:146"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "starredSummary": {
+      "value": "{starredTotal} total starred repositories. Showing top {starredShown} by stars.",
+      "_meta": {
+        "description": "Starred-repositories summary line. ICU MF1; consumer substitutes total and shown counts.",
+        "usage": ["llms-full.eta:148"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "starredTopics": {
+      "value": "Topics:",
+      "_meta": {
+        "description": "Inline label prefix preceding a starred repo's interpolated topics list (' · Topics: {topics}').",
+        "usage": ["llms-full.eta:151"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfHeading": {
+      "value": "### Bookshelf",
+      "_meta": {
+        "description": "Bookshelf subsection heading.",
+        "usage": ["llms-full.eta:155"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfDataAsOf": {
+      "value": "**Data as of:** {booksDate}",
+      "_meta": {
+        "description": "Bookshelf data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
+        "usage": ["llms-full.eta:157"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfEmpty": {
+      "value": "_No book data available._",
+      "_meta": {
+        "description": "Bookshelf empty-state fallback (italic).",
+        "usage": ["llms-full.eta:160"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfReadingHeading": {
+      "value": "#### Currently reading",
+      "_meta": {
+        "description": "Bookshelf currently-reading sub-subsection heading.",
+        "usage": ["llms-full.eta:163"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfByAuthor": {
+      "value": "by",
+      "_meta": {
+        "description": "Inline connector between a book title and its interpolated author ('[**{title}**]({link}) by {author}'). Shared across the currently-reading, up-next, and recently-finished book lists.",
+        "usage": ["llms-full.eta:166", "llms-full.eta:189", "llms-full.eta:212"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfNotesLabel": {
+      "value": "*Notes*:",
+      "_meta": {
+        "description": "Inline italic label prefix preceding a book's interpolated notes ('- *Notes*: {notes}'). Shared across the three book lists.",
+        "usage": ["llms-full.eta:177", "llms-full.eta:200", "llms-full.eta:223"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfIsbnLabel": {
+      "value": "ISBN:",
+      "_meta": {
+        "description": "Inline label prefix preceding a book's interpolated ISBN ('- ISBN: {isbn}'). Shared across the three book lists.",
+        "usage": ["llms-full.eta:180", "llms-full.eta:203", "llms-full.eta:226"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfUpNextHeading": {
+      "value": "#### Up next",
+      "_meta": {
+        "description": "Bookshelf up-next sub-subsection heading.",
+        "usage": ["llms-full.eta:186"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfFinishedHeading": {
+      "value": "#### Recently finished",
+      "_meta": {
+        "description": "Bookshelf recently-finished sub-subsection heading.",
+        "usage": ["llms-full.eta:209"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfStatsHeading": {
+      "value": "#### Reading stats",
+      "_meta": {
+        "description": "Bookshelf reading-stats sub-subsection heading.",
+        "usage": ["llms-full.eta:231"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfStatBooksRead": {
+      "value": "- Books read: {readCount}",
+      "_meta": {
+        "description": "Reading stats — books read list item. ICU MF1; consumer substitutes the count.",
+        "usage": ["llms-full.eta:233"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfStatReading": {
+      "value": "- Currently reading: {readingCount}",
+      "_meta": {
+        "description": "Reading stats — currently reading list item. ICU MF1; consumer substitutes the count.",
+        "usage": ["llms-full.eta:234"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfStatUpNext": {
+      "value": "- Up next: {upNextCount}",
+      "_meta": {
+        "description": "Reading stats — up next list item. ICU MF1; consumer substitutes the count.",
+        "usage": ["llms-full.eta:235"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelfStatAvgRating": {
+      "value": "- Average rating: {avgRating} / 5",
+      "_meta": {
+        "description": "Reading stats — average rating list item. ICU MF1; consumer substitutes the avg rating (rendered as avgRating.toFixed(1)).",
+        "usage": ["llms-full.eta:237"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "articlesHeading": {
+      "value": "### Reading feed (articles)",
+      "_meta": {
+        "description": "Reading feed (articles) subsection heading.",
+        "usage": ["llms-full.eta:241"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "articlesDataAsOf": {
+      "value": "**Data as of:** {articlesDate}",
+      "_meta": {
+        "description": "Articles data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
+        "usage": ["llms-full.eta:243"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "articlesEmpty": {
+      "value": "_No article data available._",
+      "_meta": {
+        "description": "Articles empty-state fallback (italic).",
+        "usage": ["llms-full.eta:246"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "articlesColumns": {
+      "value": "| Title | Source | Category | Date |",
+      "_meta": {
+        "description": "Articles table column-header row.",
+        "usage": ["llms-full.eta:248"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "theatreHeading": {
+      "value": "### Theatre reviews",
+      "_meta": {
+        "description": "Theatre reviews subsection heading.",
+        "usage": ["llms-full.eta:255"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "theatreDataAsOf": {
+      "value": "**Data as of:** {theatreDate}",
+      "_meta": {
+        "description": "Theatre data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
+        "usage": ["llms-full.eta:257"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "theatreEmpty": {
+      "value": "_No theatre review data available._",
+      "_meta": {
+        "description": "Theatre reviews empty-state fallback (italic).",
+        "usage": ["llms-full.eta:260"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "theatreByLine": {
+      "value": "- By {reviewAuthor} · {reviewDate}",
+      "_meta": {
+        "description": "Theatre review by-line list item. ICU MF1; consumer substitutes author and date. Middot separator preserved.",
+        "usage": ["llms-full.eta:265"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "theatreSource": {
+      "value": "- Source: [coasttocoastreviews.com]({reviewUrl})",
+      "_meta": {
+        "description": "Theatre review source link list item. ICU MF1; consumer substitutes the review URL. Literal source domain preserved.",
+        "usage": ["llms-full.eta:267"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "systemHeading": {
+      "value": "## System '{#system}'",
+      "_meta": {
+        "description": "System section heading with anchor.",
+        "usage": ["llms-full.eta:273"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Literal markdown anchor '{#system}' is ICU-MF1-escaped as '{#system}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+      }
+    },
+    "freshnessHeading": {
+      "value": "### Data freshness",
+      "_meta": {
+        "description": "Data freshness subsection heading.",
+        "usage": ["llms-full.eta:275"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "freshnessColumns": {
+      "value": "| Source | Last fetched |",
+      "_meta": {
+        "description": "Data-freshness table column-header row.",
+        "usage": ["llms-full.eta:277"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "freshnessNote": {
+      "value": "Composition triggered by EventBridge BroadcastUpdate events (after each source JSON\nupdate) plus a 30-minute safety-net schedule. Composer reads all source JSON from S3\nand writes `llms.txt`, `llms-full.txt`, and `index.md` to CloudFront origin.",
+      "_meta": {
+        "description": "Data-freshness explanatory paragraph (static, 3 lines). Newlines and inline-code backticks preserved.",
+        "usage": ["llms-full.eta:283-285"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamsHeading": {
+      "value": "## Streams '{#streams}'",
+      "_meta": {
+        "description": "Streams section heading with anchor.",
+        "usage": ["llms-full.eta:289"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Literal markdown anchor '{#streams}' is ICU-MF1-escaped as '{#streams}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+      }
+    },
+    "streamsBody": {
+      "value": "Canonical JSON endpoints for agents preferring raw machine-readable data:",
+      "_meta": {
+        "description": "Streams-section explanatory paragraph (static).",
+        "usage": ["llms-full.eta:291"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamHealth": {
+      "value": "- {cloudfrontBase}/health.json — biometrics (heart rate, HRV, activity, workouts)",
+      "_meta": {
+        "description": "Streams — health.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:293"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamSleep": {
+      "value": "- {cloudfrontBase}/sleep.json — sleep phases and efficiency",
+      "_meta": {
+        "description": "Streams — sleep.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:294"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamFocus": {
+      "value": "- {cloudfrontBase}/focus.json — focus / Do Not Disturb state",
+      "_meta": {
+        "description": "Streams — focus.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:295"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamGithubEvents": {
+      "value": "- {cloudfrontBase}/github-events.json — GitHub commits, PRs, issues",
+      "_meta": {
+        "description": "Streams — github-events.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:296"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamStarred": {
+      "value": "- {cloudfrontBase}/github-starred-repos.json — starred repositories",
+      "_meta": {
+        "description": "Streams — github-starred-repos.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:297"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamBooks": {
+      "value": "- {cloudfrontBase}/books.json — bookshelf with status, ratings, progress",
+      "_meta": {
+        "description": "Streams — books.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:298"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamArticles": {
+      "value": "- {cloudfrontBase}/articles.json — saved articles",
+      "_meta": {
+        "description": "Streams — articles.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:299"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamTheatre": {
+      "value": "- {cloudfrontBase}/theatre-reviews.json — theatre reviews",
+      "_meta": {
+        "description": "Streams — theatre-reviews.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:300"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamWorkouts": {
+      "value": "- {cloudfrontBase}/workouts.json — workout sessions",
+      "_meta": {
+        "description": "Streams — workouts.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:301"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "streamLocation": {
+      "value": "- {cloudfrontBase}/location.json — location activity and place summaries",
+      "_meta": {
+        "description": "Streams — location.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
+        "usage": ["llms-full.eta:302"],
+        "tone": "llm-prose",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  }
+}

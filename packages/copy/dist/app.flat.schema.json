@@ -1,0 +1,1285 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.app.flat.schema.json",
+  "type": "object",
+  "title": "App",
+  "description": "Rich authoring schema for the app slice of @lifegames/copy (V2). Every customer-facing UI string in the iOS/watchOS LifePortal app — navigation titles, tab labels, section headers, buttons, alerts, field labels, placeholders, and interpolated templates — is a CopyString leaf carrying authoring context in _meta. Source of truth is ios-LifegamesPortal/LifePortal/Packages/LifePortalFeatures/Sources/** (verified file:line in each leaf's _meta.usage). The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax; interpolated templates carry their ICU placeholders ({count}, {percent}, {relative}, …) and ICU plural syntax where the source pluralizes — consumers keep their native plural logic in V2. Casing is NATURAL case (D3): the app uppercases section headers / buttons at the call site via .textCase / .kerning, so stored values are natural-case ('Sync Now', not 'SYNC NOW'). Every object group has a UNIQUE title (App* / Perm-free App-prefixed) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, and schema/a11y.schema.json (per-file inlined, no cross-file $ref — §3.2).",
+  "properties": {
+    "nav": {
+      "type": "object",
+      "title": "AppNav",
+      "description": "Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle).",
+      "properties": {
+        "home": {
+          "type": "string"
+        },
+        "health": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "journey": {
+          "type": "string"
+        },
+        "activityMap": {
+          "type": "string"
+        },
+        "topPlaces": {
+          "type": "string"
+        },
+        "bookshelf": {
+          "type": "string"
+        },
+        "diagnostics": {
+          "type": "string"
+        },
+        "savedPlaces": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "home",
+        "health",
+        "settings",
+        "location",
+        "journey",
+        "activityMap",
+        "topPlaces",
+        "bookshelf",
+        "diagnostics",
+        "savedPlaces"
+      ],
+      "additionalProperties": false
+    },
+    "tab": {
+      "type": "object",
+      "title": "AppTab",
+      "description": "Bottom tab-bar labels (TabView Label text).",
+      "properties": {
+        "home": {
+          "type": "string"
+        },
+        "health": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "books": {
+          "type": "string"
+        },
+        "settings": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "home",
+        "health",
+        "location",
+        "books",
+        "settings"
+      ],
+      "additionalProperties": false
+    },
+    "common": {
+      "type": "object",
+      "title": "AppCommon",
+      "description": "Shared button/action labels reused across many screens (alert buttons, toolbar actions).",
+      "properties": {
+        "cancel": {
+          "type": "string"
+        },
+        "delete": {
+          "type": "string"
+        },
+        "clear": {
+          "type": "string"
+        },
+        "ok": {
+          "type": "string"
+        },
+        "done": {
+          "type": "string"
+        },
+        "save": {
+          "type": "string"
+        },
+        "add": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "cancel",
+        "delete",
+        "clear",
+        "ok",
+        "done",
+        "save",
+        "add"
+      ],
+      "additionalProperties": false
+    },
+    "home": {
+      "type": "object",
+      "title": "AppHome",
+      "description": "Home dashboard strings — loading state, health/location summary cards, and the sync-status banner.",
+      "properties": {
+        "loading": {
+          "type": "string"
+        },
+        "stepsUnit": {
+          "type": "string"
+        },
+        "goalProgress": {
+          "type": "string"
+        },
+        "visitsToday": {
+          "type": "string"
+        },
+        "unsynced": {
+          "type": "string"
+        },
+        "sectionHealth": {
+          "type": "string"
+        },
+        "sectionLocation": {
+          "type": "string"
+        },
+        "noLocation": {
+          "type": "string"
+        },
+        "tracking": {
+          "type": "string"
+        },
+        "notTracking": {
+          "type": "string"
+        },
+        "notSynced": {
+          "type": "string"
+        },
+        "syncStatus": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "loading",
+        "stepsUnit",
+        "goalProgress",
+        "visitsToday",
+        "unsynced",
+        "sectionHealth",
+        "sectionLocation",
+        "noLocation",
+        "tracking",
+        "notTracking",
+        "notSynced",
+        "syncStatus"
+      ],
+      "additionalProperties": false
+    },
+    "settings": {
+      "type": "object",
+      "title": "AppSettings",
+      "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.",
+      "properties": {
+        "sectionLocation": {
+          "type": "string"
+        },
+        "sectionServer": {
+          "type": "string"
+        },
+        "sectionData": {
+          "type": "string"
+        },
+        "sectionDiagnostics": {
+          "type": "string"
+        },
+        "sectionAbout": {
+          "type": "string"
+        },
+        "savedPlacesTitle": {
+          "type": "string"
+        },
+        "savedPlacesSubtitle": {
+          "type": "string"
+        },
+        "apiBaseUrl": {
+          "type": "string"
+        },
+        "apiBaseUrlPlaceholder": {
+          "type": "string"
+        },
+        "apiToken": {
+          "type": "string"
+        },
+        "apiTokenPlaceholder": {
+          "type": "string"
+        },
+        "totalVisits": {
+          "type": "string"
+        },
+        "unsyncedVisits": {
+          "type": "string"
+        },
+        "lastHealthSync": {
+          "type": "string"
+        },
+        "fullResync": {
+          "type": "string"
+        },
+        "deleteAll": {
+          "type": "string"
+        },
+        "watchLogEntries": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "string"
+        },
+        "diagEmpty": {
+          "type": "string"
+        },
+        "recentEntries": {
+          "type": "string"
+        },
+        "shareLog": {
+          "type": "string"
+        },
+        "clearLogs": {
+          "type": "string"
+        },
+        "reload": {
+          "type": "string"
+        },
+        "aboutName": {
+          "type": "string"
+        },
+        "aboutTitle": {
+          "type": "string"
+        },
+        "aboutVersion": {
+          "type": "string"
+        },
+        "aboutBuild": {
+          "type": "string"
+        },
+        "aboutPlatform": {
+          "type": "string"
+        },
+        "alerts": {
+          "type": "object",
+          "title": "AppSettingsAlerts",
+          "description": "Settings destructive-action confirmation alerts (delete-all, full re-sync, clear-logs).",
+          "properties": {
+            "deleteAllTitle": {
+              "type": "string"
+            },
+            "deleteAllMessage": {
+              "type": "string"
+            },
+            "resyncTitle": {
+              "type": "string"
+            },
+            "resyncMessage": {
+              "type": "string"
+            },
+            "resyncConfirm": {
+              "type": "string"
+            },
+            "clearLogsTitle": {
+              "type": "string"
+            },
+            "clearLogsMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "deleteAllTitle",
+            "deleteAllMessage",
+            "resyncTitle",
+            "resyncMessage",
+            "resyncConfirm",
+            "clearLogsTitle",
+            "clearLogsMessage"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "sectionLocation",
+        "sectionServer",
+        "sectionData",
+        "sectionDiagnostics",
+        "sectionAbout",
+        "savedPlacesTitle",
+        "savedPlacesSubtitle",
+        "apiBaseUrl",
+        "apiBaseUrlPlaceholder",
+        "apiToken",
+        "apiTokenPlaceholder",
+        "totalVisits",
+        "unsyncedVisits",
+        "lastHealthSync",
+        "fullResync",
+        "deleteAll",
+        "watchLogEntries",
+        "fileSize",
+        "diagEmpty",
+        "recentEntries",
+        "shareLog",
+        "clearLogs",
+        "reload",
+        "aboutName",
+        "aboutTitle",
+        "aboutVersion",
+        "aboutBuild",
+        "aboutPlatform",
+        "alerts"
+      ],
+      "additionalProperties": false
+    },
+    "savedPlaces": {
+      "type": "object",
+      "title": "AppSavedPlaces",
+      "description": "Saved Places list — empty state and per-row radius label.",
+      "properties": {
+        "emptyTitle": {
+          "type": "string"
+        },
+        "emptyBody": {
+          "type": "string"
+        },
+        "addHome": {
+          "type": "string"
+        },
+        "radius": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "emptyTitle",
+        "emptyBody",
+        "addHome",
+        "radius"
+      ],
+      "additionalProperties": false
+    },
+    "addPlace": {
+      "type": "object",
+      "title": "AppAddPlace",
+      "description": "Add Saved Place sheet — header, field labels, placeholders, radius template, and coordinate tip.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "sectionNewLocation": {
+          "type": "string"
+        },
+        "fieldName": {
+          "type": "string"
+        },
+        "fieldNamePlaceholder": {
+          "type": "string"
+        },
+        "fieldCategory": {
+          "type": "string"
+        },
+        "fieldLatitude": {
+          "type": "string"
+        },
+        "fieldLongitude": {
+          "type": "string"
+        },
+        "fieldRadius": {
+          "type": "string"
+        },
+        "tip": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "sectionNewLocation",
+        "fieldName",
+        "fieldNamePlaceholder",
+        "fieldCategory",
+        "fieldLatitude",
+        "fieldLongitude",
+        "fieldRadius",
+        "tip"
+      ],
+      "additionalProperties": false
+    },
+    "health": {
+      "type": "object",
+      "title": "AppHealth",
+      "description": "Health dashboard — section headers, workouts, HealthKit authorization, sync, and data-mode toggle.",
+      "properties": {
+        "sectionHeart": {
+          "type": "string"
+        },
+        "sectionMovement": {
+          "type": "string"
+        },
+        "sectionSleep": {
+          "type": "string"
+        },
+        "sectionWorkouts": {
+          "type": "string"
+        },
+        "sectionData": {
+          "type": "string"
+        },
+        "sectionDataMode": {
+          "type": "string"
+        },
+        "todaysWorkouts": {
+          "type": "string"
+        },
+        "recoveryDay": {
+          "type": "string"
+        },
+        "noWorkouts": {
+          "type": "string"
+        },
+        "workoutDuration": {
+          "type": "string"
+        },
+        "workoutCalories": {
+          "type": "string"
+        },
+        "sectionHealthkit": {
+          "type": "string"
+        },
+        "authorization": {
+          "type": "string"
+        },
+        "authorized": {
+          "type": "string"
+        },
+        "lastSync": {
+          "type": "string"
+        },
+        "syncing": {
+          "type": "string"
+        },
+        "syncNow": {
+          "type": "string"
+        },
+        "useRealHR": {
+          "type": "string"
+        },
+        "realActive": {
+          "type": "string"
+        },
+        "simActive": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sectionHeart",
+        "sectionMovement",
+        "sectionSleep",
+        "sectionWorkouts",
+        "sectionData",
+        "sectionDataMode",
+        "todaysWorkouts",
+        "recoveryDay",
+        "noWorkouts",
+        "workoutDuration",
+        "workoutCalories",
+        "sectionHealthkit",
+        "authorization",
+        "authorized",
+        "lastSync",
+        "syncing",
+        "syncNow",
+        "useRealHR",
+        "realActive",
+        "simActive"
+      ],
+      "additionalProperties": false
+    },
+    "sleep": {
+      "type": "object",
+      "title": "AppSleep",
+      "description": "Sleep-score entry sheet — title, prompt, placeholder, buttons, and a11y labels for the add/edit affordance.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "save": {
+          "type": "string"
+        },
+        "deleteScore": {
+          "type": "string"
+        },
+        "cancel": {
+          "type": "string"
+        },
+        "a11yAdd": {
+          "type": "string"
+        },
+        "a11yEdit": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "prompt",
+        "placeholder",
+        "save",
+        "deleteScore",
+        "cancel",
+        "a11yAdd",
+        "a11yEdit"
+      ],
+      "additionalProperties": false
+    },
+    "location": {
+      "type": "object",
+      "title": "AppLocation",
+      "description": "Location feature — grouped by sub-screen (journey, visit correction, place rename, top places, heat map, today stats, week chart, now-at hero, merge, current-location ribbon, visit duration).",
+      "properties": {
+        "journey": {
+          "type": "object",
+          "title": "AppLocationJourney",
+          "description": "Journey timeline screen — empty state, per-visit actions, and the delete-visit alert.",
+          "properties": {
+            "viewYesterday": {
+              "type": "string"
+            },
+            "mapUnavailable": {
+              "type": "string"
+            },
+            "placesVisited": {
+              "type": "string"
+            },
+            "emptyTitle": {
+              "type": "string"
+            },
+            "emptyMessage": {
+              "type": "string"
+            },
+            "actionCorrect": {
+              "type": "string"
+            },
+            "actionSavePlace": {
+              "type": "string"
+            },
+            "actionMerge": {
+              "type": "string"
+            },
+            "actionDelete": {
+              "type": "string"
+            },
+            "visitFallback": {
+              "type": "string"
+            },
+            "unknown": {
+              "type": "string"
+            },
+            "deleteVisitTitle": {
+              "type": "string"
+            },
+            "deleteVisitMessage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "viewYesterday",
+            "mapUnavailable",
+            "placesVisited",
+            "emptyTitle",
+            "emptyMessage",
+            "actionCorrect",
+            "actionSavePlace",
+            "actionMerge",
+            "actionDelete",
+            "visitFallback",
+            "unknown",
+            "deleteVisitTitle",
+            "deleteVisitMessage"
+          ],
+          "additionalProperties": false
+        },
+        "visitCorrection": {
+          "type": "object",
+          "title": "AppLocationVisitCorrection",
+          "description": "Visit Correction sheet — header, tab hints, time pickers, and confirm button.",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "unknownVisit": {
+              "type": "string"
+            },
+            "dragPin": {
+              "type": "string"
+            },
+            "searchPlaceholder": {
+              "type": "string"
+            },
+            "adjustTimes": {
+              "type": "string"
+            },
+            "arrived": {
+              "type": "string"
+            },
+            "departed": {
+              "type": "string"
+            },
+            "confirming": {
+              "type": "string"
+            },
+            "confirm": {
+              "type": "string"
+            },
+            "pinnedLocation": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "unknownVisit",
+            "dragPin",
+            "searchPlaceholder",
+            "adjustTimes",
+            "arrived",
+            "departed",
+            "confirming",
+            "confirm",
+            "pinnedLocation"
+          ],
+          "additionalProperties": false
+        },
+        "placeRename": {
+          "type": "object",
+          "title": "AppLocationPlaceRename",
+          "description": "Place Rename sheet — title, subtitle template, success template, fields.",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            },
+            "done": {
+              "type": "string"
+            },
+            "newName": {
+              "type": "string"
+            },
+            "newNamePlaceholder": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "subtitle",
+            "result",
+            "done",
+            "newName",
+            "newNamePlaceholder",
+            "category"
+          ],
+          "additionalProperties": false
+        },
+        "topPlaces": {
+          "type": "object",
+          "title": "AppLocationTopPlaces",
+          "description": "Top Places card + full screen — header, counts, empty state, sort options, and per-place actions.",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "seeAll": {
+              "type": "string"
+            },
+            "empty": {
+              "type": "string"
+            },
+            "uniqueLocations": {
+              "type": "string"
+            },
+            "emptyTitle": {
+              "type": "string"
+            },
+            "emptyMessage": {
+              "type": "string"
+            },
+            "sort": {
+              "type": "string"
+            },
+            "sortMostVisited": {
+              "type": "string"
+            },
+            "sortMostRecent": {
+              "type": "string"
+            },
+            "recentVisits": {
+              "type": "string"
+            },
+            "rename": {
+              "type": "string"
+            },
+            "lastVisit": {
+              "type": "string"
+            },
+            "visitsUnit": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "header",
+            "seeAll",
+            "empty",
+            "uniqueLocations",
+            "emptyTitle",
+            "emptyMessage",
+            "sort",
+            "sortMostVisited",
+            "sortMostRecent",
+            "recentVisits",
+            "rename",
+            "lastVisit",
+            "visitsUnit"
+          ],
+          "additionalProperties": false
+        },
+        "heatMap": {
+          "type": "object",
+          "title": "AppLocationHeatMap",
+          "description": "Activity Map card + full screen — header, legend, totals, and scale template.",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "seeMonth": {
+              "type": "string"
+            },
+            "legendLess": {
+              "type": "string"
+            },
+            "legendMore": {
+              "type": "string"
+            },
+            "totalVisits": {
+              "type": "string"
+            },
+            "scale": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "header",
+            "seeMonth",
+            "legendLess",
+            "legendMore",
+            "totalVisits",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "todayStats": {
+          "type": "object",
+          "title": "AppLocationTodayStats",
+          "description": "Today stats row — the three stat-cell labels.",
+          "properties": {
+            "visits": {
+              "type": "string"
+            },
+            "timeOut": {
+              "type": "string"
+            },
+            "distance": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "visits",
+            "timeOut",
+            "distance"
+          ],
+          "additionalProperties": false
+        },
+        "weekChart": {
+          "type": "object",
+          "title": "AppLocationWeekChart",
+          "description": "This-week bar chart — header and total-visits template.",
+          "properties": {
+            "header": {
+              "type": "string"
+            },
+            "totalVisits": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "header",
+            "totalVisits"
+          ],
+          "additionalProperties": false
+        },
+        "nowAt": {
+          "type": "object",
+          "title": "AppLocationNowAt",
+          "description": "Now-At hero card — contextual header labels and fallbacks for current/last location.",
+          "properties": {
+            "atHome": {
+              "type": "string"
+            },
+            "currentlyHere": {
+              "type": "string"
+            },
+            "lastVisited": {
+              "type": "string"
+            },
+            "lastKnown": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "homeFallback": {
+              "type": "string"
+            },
+            "unknownLocation": {
+              "type": "string"
+            },
+            "waiting": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "atHome",
+            "currentlyHere",
+            "lastVisited",
+            "lastKnown",
+            "location",
+            "homeFallback",
+            "unknownLocation",
+            "waiting"
+          ],
+          "additionalProperties": false
+        },
+        "merge": {
+          "type": "object",
+          "title": "AppLocationMerge",
+          "description": "Merge Visits sheet — header, keep/absorb/result labels, and merged-samples template.",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "combining": {
+              "type": "string"
+            },
+            "keep": {
+              "type": "string"
+            },
+            "absorb": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            },
+            "samplesMerged": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "subtitle",
+            "combining",
+            "keep",
+            "absorb",
+            "result",
+            "samplesMerged"
+          ],
+          "additionalProperties": false
+        },
+        "ribbon": {
+          "type": "object",
+          "title": "AppLocationRibbon",
+          "description": "Current-location ribbon — staleness prefix, proximity template, and exploring fallback.",
+          "properties": {
+            "lastSeenPrefix": {
+              "type": "string"
+            },
+            "near": {
+              "type": "string"
+            },
+            "exploring": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "lastSeenPrefix",
+            "near",
+            "exploring"
+          ],
+          "additionalProperties": false
+        },
+        "visitDuration": {
+          "type": "object",
+          "title": "AppLocationVisitDuration",
+          "description": "Visit-duration fallbacks — in-progress label for an ongoing (not-yet-departed) visit.",
+          "properties": {
+            "inProgress": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "inProgress"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "journey",
+        "visitCorrection",
+        "placeRename",
+        "topPlaces",
+        "heatMap",
+        "todayStats",
+        "weekChart",
+        "nowAt",
+        "merge",
+        "ribbon",
+        "visitDuration"
+      ],
+      "additionalProperties": false
+    },
+    "bookshelf": {
+      "type": "object",
+      "title": "AppBookshelf",
+      "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.",
+      "properties": {
+        "navTitle": {
+          "type": "string"
+        },
+        "pages": {
+          "type": "string"
+        },
+        "sectionUpNext": {
+          "type": "string"
+        },
+        "sectionPending": {
+          "type": "string"
+        },
+        "sectionRecentlyFinished": {
+          "type": "string"
+        },
+        "currentlyReading": {
+          "type": "string"
+        },
+        "pageOf": {
+          "type": "string"
+        },
+        "enriching": {
+          "type": "string"
+        },
+        "tileHeader": {
+          "type": "string"
+        },
+        "tileComplete": {
+          "type": "string"
+        },
+        "tileBooks": {
+          "type": "string"
+        },
+        "tileReading": {
+          "type": "string"
+        },
+        "statusPending": {
+          "type": "string"
+        },
+        "statusReading": {
+          "type": "string"
+        },
+        "statusUpNext": {
+          "type": "string"
+        },
+        "statusFinished": {
+          "type": "string"
+        },
+        "addBook": {
+          "type": "object",
+          "title": "AppBookshelfAddBook",
+          "description": "Add Book search screen — title, search placeholder, empty prompt, ASIN template, add button.",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "searchPlaceholder": {
+              "type": "string"
+            },
+            "emptyPrompt": {
+              "type": "string"
+            },
+            "asin": {
+              "type": "string"
+            },
+            "add": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "searchPlaceholder",
+            "emptyPrompt",
+            "asin",
+            "add"
+          ],
+          "additionalProperties": false
+        },
+        "editBook": {
+          "type": "object",
+          "title": "AppBookshelfEditBook",
+          "description": "Edit Book screen — title, buttons, placeholders, section headers, and metadata field labels.",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "save": {
+              "type": "string"
+            },
+            "delete": {
+              "type": "string"
+            },
+            "notesPlaceholder": {
+              "type": "string"
+            },
+            "descriptionPlaceholder": {
+              "type": "string"
+            },
+            "page": {
+              "type": "string"
+            },
+            "of": {
+              "type": "string"
+            },
+            "sectionDetails": {
+              "type": "string"
+            },
+            "sectionDescription": {
+              "type": "string"
+            },
+            "sectionPublication": {
+              "type": "string"
+            },
+            "sectionCategories": {
+              "type": "string"
+            },
+            "sectionStatus": {
+              "type": "string"
+            },
+            "sectionProgress": {
+              "type": "string"
+            },
+            "sectionRating": {
+              "type": "string"
+            },
+            "sectionNotes": {
+              "type": "string"
+            },
+            "fieldSeries": {
+              "type": "string"
+            },
+            "fieldSeriesPlaceholder": {
+              "type": "string"
+            },
+            "fieldSeriesNum": {
+              "type": "string"
+            },
+            "fieldSeriesTotal": {
+              "type": "string"
+            },
+            "fieldDate": {
+              "type": "string"
+            },
+            "fieldDatePlaceholder": {
+              "type": "string"
+            },
+            "fieldYear": {
+              "type": "string"
+            },
+            "fieldGenres": {
+              "type": "string"
+            },
+            "fieldGenresPlaceholder": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "save",
+            "delete",
+            "notesPlaceholder",
+            "descriptionPlaceholder",
+            "page",
+            "of",
+            "sectionDetails",
+            "sectionDescription",
+            "sectionPublication",
+            "sectionCategories",
+            "sectionStatus",
+            "sectionProgress",
+            "sectionRating",
+            "sectionNotes",
+            "fieldSeries",
+            "fieldSeriesPlaceholder",
+            "fieldSeriesNum",
+            "fieldSeriesTotal",
+            "fieldDate",
+            "fieldDatePlaceholder",
+            "fieldYear",
+            "fieldGenres",
+            "fieldGenresPlaceholder"
+          ],
+          "additionalProperties": false
+        },
+        "alerts": {
+          "type": "object",
+          "title": "AppBookshelfAlerts",
+          "description": "Bookshelf error-alert titles (load/add/update/delete failures).",
+          "properties": {
+            "failedToLoad": {
+              "type": "string"
+            },
+            "failedToAddBook": {
+              "type": "string"
+            },
+            "failedToUpdate": {
+              "type": "string"
+            },
+            "failedToDelete": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "failedToLoad",
+            "failedToAddBook",
+            "failedToUpdate",
+            "failedToDelete"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "navTitle",
+        "pages",
+        "sectionUpNext",
+        "sectionPending",
+        "sectionRecentlyFinished",
+        "currentlyReading",
+        "pageOf",
+        "enriching",
+        "tileHeader",
+        "tileComplete",
+        "tileBooks",
+        "tileReading",
+        "statusPending",
+        "statusReading",
+        "statusUpNext",
+        "statusFinished",
+        "addBook",
+        "editBook",
+        "alerts"
+      ],
+      "additionalProperties": false
+    },
+    "watch": {
+      "type": "object",
+      "title": "AppWatch",
+      "description": "watchOS app + sync-status complication — diagnostics chrome, sync action labels, and complication strings.",
+      "properties": {
+        "diagTitle": {
+          "type": "string"
+        },
+        "diagA11yLabel": {
+          "type": "string"
+        },
+        "diagA11yHint": {
+          "type": "string"
+        },
+        "transferSent": {
+          "type": "string"
+        },
+        "openIphone": {
+          "type": "string"
+        },
+        "authorize": {
+          "type": "string"
+        },
+        "sync": {
+          "type": "string"
+        },
+        "syncFailed": {
+          "type": "string"
+        },
+        "complicationNotSynced": {
+          "type": "string"
+        },
+        "complicationSyncAgo": {
+          "type": "string"
+        },
+        "complicationDisplayName": {
+          "type": "string"
+        },
+        "complicationDescription": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "diagTitle",
+        "diagA11yLabel",
+        "diagA11yHint",
+        "transferSent",
+        "openIphone",
+        "authorize",
+        "sync",
+        "syncFailed",
+        "complicationNotSynced",
+        "complicationSyncAgo",
+        "complicationDisplayName",
+        "complicationDescription"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "nav",
+    "tab",
+    "common",
+    "home",
+    "settings",
+    "savedPlaces",
+    "addPlace",
+    "health",
+    "sleep",
+    "location",
+    "bookshelf",
+    "watch"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,637 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.app.schema.json",
+  "title": "LifegamesCopyApp",
+  "description": "Rich authoring schema for the app slice of @lifegames/copy (V2). Every customer-facing UI string in the iOS/watchOS LifePortal app — navigation titles, tab labels, section headers, buttons, alerts, field labels, placeholders, and interpolated templates — is a CopyString leaf carrying authoring context in _meta. Source of truth is ios-LifegamesPortal/LifePortal/Packages/LifePortalFeatures/Sources/** (verified file:line in each leaf's _meta.usage). The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax; interpolated templates carry their ICU placeholders ({count}, {percent}, {relative}, …) and ICU plural syntax where the source pluralizes — consumers keep their native plural logic in V2. Casing is NATURAL case (D3): the app uppercases section headers / buttons at the call site via .textCase / .kerning, so stored values are natural-case ('Sync Now', not 'SYNC NOW'). Every object group has a UNIQUE title (App* / Perm-free App-prefixed) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, and schema/a11y.schema.json (per-file inlined, no cross-file $ref — §3.2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nav",
+    "tab",
+    "common",
+    "home",
+    "settings",
+    "savedPlaces",
+    "addPlace",
+    "health",
+    "sleep",
+    "location",
+    "bookshelf",
+    "watch"
+  ],
+  "properties": {
+    "nav": {
+      "type": "object",
+      "title": "AppNav",
+      "description": "Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle).",
+      "additionalProperties": false,
+      "required": ["home", "health", "settings", "location", "journey", "activityMap", "topPlaces", "bookshelf", "diagnostics", "savedPlaces"],
+      "properties": {
+        "home": { "$ref": "#/$defs/CopyString" },
+        "health": { "$ref": "#/$defs/CopyString" },
+        "settings": { "$ref": "#/$defs/CopyString" },
+        "location": { "$ref": "#/$defs/CopyString" },
+        "journey": { "$ref": "#/$defs/CopyString" },
+        "activityMap": { "$ref": "#/$defs/CopyString" },
+        "topPlaces": { "$ref": "#/$defs/CopyString" },
+        "bookshelf": { "$ref": "#/$defs/CopyString" },
+        "diagnostics": { "$ref": "#/$defs/CopyString" },
+        "savedPlaces": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "tab": {
+      "type": "object",
+      "title": "AppTab",
+      "description": "Bottom tab-bar labels (TabView Label text).",
+      "additionalProperties": false,
+      "required": ["home", "health", "location", "books", "settings"],
+      "properties": {
+        "home": { "$ref": "#/$defs/CopyString" },
+        "health": { "$ref": "#/$defs/CopyString" },
+        "location": { "$ref": "#/$defs/CopyString" },
+        "books": { "$ref": "#/$defs/CopyString" },
+        "settings": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "common": {
+      "type": "object",
+      "title": "AppCommon",
+      "description": "Shared button/action labels reused across many screens (alert buttons, toolbar actions).",
+      "additionalProperties": false,
+      "required": ["cancel", "delete", "clear", "ok", "done", "save", "add"],
+      "properties": {
+        "cancel": { "$ref": "#/$defs/CopyString" },
+        "delete": { "$ref": "#/$defs/CopyString" },
+        "clear": { "$ref": "#/$defs/CopyString" },
+        "ok": { "$ref": "#/$defs/CopyString" },
+        "done": { "$ref": "#/$defs/CopyString" },
+        "save": { "$ref": "#/$defs/CopyString" },
+        "add": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "home": {
+      "type": "object",
+      "title": "AppHome",
+      "description": "Home dashboard strings — loading state, health/location summary cards, and the sync-status banner.",
+      "additionalProperties": false,
+      "required": [
+        "loading", "stepsUnit", "goalProgress", "visitsToday", "unsynced",
+        "sectionHealth", "sectionLocation", "noLocation", "tracking", "notTracking",
+        "notSynced", "syncStatus"
+      ],
+      "properties": {
+        "loading": { "$ref": "#/$defs/CopyString" },
+        "stepsUnit": { "$ref": "#/$defs/CopyString" },
+        "goalProgress": { "$ref": "#/$defs/CopyString" },
+        "visitsToday": { "$ref": "#/$defs/CopyString" },
+        "unsynced": { "$ref": "#/$defs/CopyString" },
+        "sectionHealth": { "$ref": "#/$defs/CopyString" },
+        "sectionLocation": { "$ref": "#/$defs/CopyString" },
+        "noLocation": { "$ref": "#/$defs/CopyString" },
+        "tracking": { "$ref": "#/$defs/CopyString" },
+        "notTracking": { "$ref": "#/$defs/CopyString" },
+        "notSynced": { "$ref": "#/$defs/CopyString" },
+        "syncStatus": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "title": "AppSettings",
+      "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.",
+      "additionalProperties": false,
+      "required": [
+        "sectionLocation", "sectionServer", "sectionData", "sectionDiagnostics", "sectionAbout",
+        "savedPlacesTitle", "savedPlacesSubtitle", "apiBaseUrl", "apiBaseUrlPlaceholder",
+        "apiToken", "apiTokenPlaceholder", "totalVisits", "unsyncedVisits", "lastHealthSync",
+        "fullResync", "deleteAll", "watchLogEntries", "fileSize", "diagEmpty", "recentEntries",
+        "shareLog", "clearLogs", "reload", "aboutName", "aboutTitle", "aboutVersion", "aboutBuild",
+        "aboutPlatform", "alerts"
+      ],
+      "properties": {
+        "sectionLocation": { "$ref": "#/$defs/CopyString" },
+        "sectionServer": { "$ref": "#/$defs/CopyString" },
+        "sectionData": { "$ref": "#/$defs/CopyString" },
+        "sectionDiagnostics": { "$ref": "#/$defs/CopyString" },
+        "sectionAbout": { "$ref": "#/$defs/CopyString" },
+        "savedPlacesTitle": { "$ref": "#/$defs/CopyString" },
+        "savedPlacesSubtitle": { "$ref": "#/$defs/CopyString" },
+        "apiBaseUrl": { "$ref": "#/$defs/CopyString" },
+        "apiBaseUrlPlaceholder": { "$ref": "#/$defs/CopyString" },
+        "apiToken": { "$ref": "#/$defs/CopyString" },
+        "apiTokenPlaceholder": { "$ref": "#/$defs/CopyString" },
+        "totalVisits": { "$ref": "#/$defs/CopyString" },
+        "unsyncedVisits": { "$ref": "#/$defs/CopyString" },
+        "lastHealthSync": { "$ref": "#/$defs/CopyString" },
+        "fullResync": { "$ref": "#/$defs/CopyString" },
+        "deleteAll": { "$ref": "#/$defs/CopyString" },
+        "watchLogEntries": { "$ref": "#/$defs/CopyString" },
+        "fileSize": { "$ref": "#/$defs/CopyString" },
+        "diagEmpty": { "$ref": "#/$defs/CopyString" },
+        "recentEntries": { "$ref": "#/$defs/CopyString" },
+        "shareLog": { "$ref": "#/$defs/CopyString" },
+        "clearLogs": { "$ref": "#/$defs/CopyString" },
+        "reload": { "$ref": "#/$defs/CopyString" },
+        "aboutName": { "$ref": "#/$defs/CopyString" },
+        "aboutTitle": { "$ref": "#/$defs/CopyString" },
+        "aboutVersion": { "$ref": "#/$defs/CopyString" },
+        "aboutBuild": { "$ref": "#/$defs/CopyString" },
+        "aboutPlatform": { "$ref": "#/$defs/CopyString" },
+        "alerts": {
+          "type": "object",
+          "title": "AppSettingsAlerts",
+          "description": "Settings destructive-action confirmation alerts (delete-all, full re-sync, clear-logs).",
+          "additionalProperties": false,
+          "required": ["deleteAllTitle", "deleteAllMessage", "resyncTitle", "resyncMessage", "resyncConfirm", "clearLogsTitle", "clearLogsMessage"],
+          "properties": {
+            "deleteAllTitle": { "$ref": "#/$defs/CopyString" },
+            "deleteAllMessage": { "$ref": "#/$defs/CopyString" },
+            "resyncTitle": { "$ref": "#/$defs/CopyString" },
+            "resyncMessage": { "$ref": "#/$defs/CopyString" },
+            "resyncConfirm": { "$ref": "#/$defs/CopyString" },
+            "clearLogsTitle": { "$ref": "#/$defs/CopyString" },
+            "clearLogsMessage": { "$ref": "#/$defs/CopyString" }
+          }
+        }
+      }
+    },
+    "savedPlaces": {
+      "type": "object",
+      "title": "AppSavedPlaces",
+      "description": "Saved Places list — empty state and per-row radius label.",
+      "additionalProperties": false,
+      "required": ["emptyTitle", "emptyBody", "addHome", "radius"],
+      "properties": {
+        "emptyTitle": { "$ref": "#/$defs/CopyString" },
+        "emptyBody": { "$ref": "#/$defs/CopyString" },
+        "addHome": { "$ref": "#/$defs/CopyString" },
+        "radius": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "addPlace": {
+      "type": "object",
+      "title": "AppAddPlace",
+      "description": "Add Saved Place sheet — header, field labels, placeholders, radius template, and coordinate tip.",
+      "additionalProperties": false,
+      "required": [
+        "title", "sectionNewLocation", "fieldName", "fieldNamePlaceholder", "fieldCategory",
+        "fieldLatitude", "fieldLongitude", "fieldRadius", "tip"
+      ],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "sectionNewLocation": { "$ref": "#/$defs/CopyString" },
+        "fieldName": { "$ref": "#/$defs/CopyString" },
+        "fieldNamePlaceholder": { "$ref": "#/$defs/CopyString" },
+        "fieldCategory": { "$ref": "#/$defs/CopyString" },
+        "fieldLatitude": { "$ref": "#/$defs/CopyString" },
+        "fieldLongitude": { "$ref": "#/$defs/CopyString" },
+        "fieldRadius": { "$ref": "#/$defs/CopyString" },
+        "tip": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "health": {
+      "type": "object",
+      "title": "AppHealth",
+      "description": "Health dashboard — section headers, workouts, HealthKit authorization, sync, and data-mode toggle.",
+      "additionalProperties": false,
+      "required": [
+        "sectionHeart", "sectionMovement", "sectionSleep", "sectionWorkouts", "sectionData",
+        "sectionDataMode", "todaysWorkouts", "recoveryDay", "noWorkouts", "workoutDuration",
+        "workoutCalories", "sectionHealthkit", "authorization", "authorized", "lastSync",
+        "syncing", "syncNow", "useRealHR", "realActive", "simActive"
+      ],
+      "properties": {
+        "sectionHeart": { "$ref": "#/$defs/CopyString" },
+        "sectionMovement": { "$ref": "#/$defs/CopyString" },
+        "sectionSleep": { "$ref": "#/$defs/CopyString" },
+        "sectionWorkouts": { "$ref": "#/$defs/CopyString" },
+        "sectionData": { "$ref": "#/$defs/CopyString" },
+        "sectionDataMode": { "$ref": "#/$defs/CopyString" },
+        "todaysWorkouts": { "$ref": "#/$defs/CopyString" },
+        "recoveryDay": { "$ref": "#/$defs/CopyString" },
+        "noWorkouts": { "$ref": "#/$defs/CopyString" },
+        "workoutDuration": { "$ref": "#/$defs/CopyString" },
+        "workoutCalories": { "$ref": "#/$defs/CopyString" },
+        "sectionHealthkit": { "$ref": "#/$defs/CopyString" },
+        "authorization": { "$ref": "#/$defs/CopyString" },
+        "authorized": { "$ref": "#/$defs/CopyString" },
+        "lastSync": { "$ref": "#/$defs/CopyString" },
+        "syncing": { "$ref": "#/$defs/CopyString" },
+        "syncNow": { "$ref": "#/$defs/CopyString" },
+        "useRealHR": { "$ref": "#/$defs/CopyString" },
+        "realActive": { "$ref": "#/$defs/CopyString" },
+        "simActive": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "sleep": {
+      "type": "object",
+      "title": "AppSleep",
+      "description": "Sleep-score entry sheet — title, prompt, placeholder, buttons, and a11y labels for the add/edit affordance.",
+      "additionalProperties": false,
+      "required": ["title", "prompt", "placeholder", "save", "deleteScore", "cancel", "a11yAdd", "a11yEdit"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "prompt": { "$ref": "#/$defs/CopyString" },
+        "placeholder": { "$ref": "#/$defs/CopyString" },
+        "save": { "$ref": "#/$defs/CopyString" },
+        "deleteScore": { "$ref": "#/$defs/CopyString" },
+        "cancel": { "$ref": "#/$defs/CopyString" },
+        "a11yAdd": { "$ref": "#/$defs/CopyString" },
+        "a11yEdit": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "location": {
+      "type": "object",
+      "title": "AppLocation",
+      "description": "Location feature — grouped by sub-screen (journey, visit correction, place rename, top places, heat map, today stats, week chart, now-at hero, merge, current-location ribbon, visit duration).",
+      "additionalProperties": false,
+      "required": [
+        "journey", "visitCorrection", "placeRename", "topPlaces", "heatMap", "todayStats",
+        "weekChart", "nowAt", "merge", "ribbon", "visitDuration"
+      ],
+      "properties": {
+        "journey": {
+          "type": "object",
+          "title": "AppLocationJourney",
+          "description": "Journey timeline screen — empty state, per-visit actions, and the delete-visit alert.",
+          "additionalProperties": false,
+          "required": [
+            "viewYesterday", "mapUnavailable", "placesVisited", "emptyTitle", "emptyMessage",
+            "actionCorrect", "actionSavePlace", "actionMerge", "actionDelete", "visitFallback",
+            "unknown", "deleteVisitTitle", "deleteVisitMessage"
+          ],
+          "properties": {
+            "viewYesterday": { "$ref": "#/$defs/CopyString" },
+            "mapUnavailable": { "$ref": "#/$defs/CopyString" },
+            "placesVisited": { "$ref": "#/$defs/CopyString" },
+            "emptyTitle": { "$ref": "#/$defs/CopyString" },
+            "emptyMessage": { "$ref": "#/$defs/CopyString" },
+            "actionCorrect": { "$ref": "#/$defs/CopyString" },
+            "actionSavePlace": { "$ref": "#/$defs/CopyString" },
+            "actionMerge": { "$ref": "#/$defs/CopyString" },
+            "actionDelete": { "$ref": "#/$defs/CopyString" },
+            "visitFallback": { "$ref": "#/$defs/CopyString" },
+            "unknown": { "$ref": "#/$defs/CopyString" },
+            "deleteVisitTitle": { "$ref": "#/$defs/CopyString" },
+            "deleteVisitMessage": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "visitCorrection": {
+          "type": "object",
+          "title": "AppLocationVisitCorrection",
+          "description": "Visit Correction sheet — header, tab hints, time pickers, and confirm button.",
+          "additionalProperties": false,
+          "required": [
+            "title", "unknownVisit", "dragPin", "searchPlaceholder", "adjustTimes",
+            "arrived", "departed", "confirming", "confirm", "pinnedLocation"
+          ],
+          "properties": {
+            "title": { "$ref": "#/$defs/CopyString" },
+            "unknownVisit": { "$ref": "#/$defs/CopyString" },
+            "dragPin": { "$ref": "#/$defs/CopyString" },
+            "searchPlaceholder": { "$ref": "#/$defs/CopyString" },
+            "adjustTimes": { "$ref": "#/$defs/CopyString" },
+            "arrived": { "$ref": "#/$defs/CopyString" },
+            "departed": { "$ref": "#/$defs/CopyString" },
+            "confirming": { "$ref": "#/$defs/CopyString" },
+            "confirm": { "$ref": "#/$defs/CopyString" },
+            "pinnedLocation": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "placeRename": {
+          "type": "object",
+          "title": "AppLocationPlaceRename",
+          "description": "Place Rename sheet — title, subtitle template, success template, fields.",
+          "additionalProperties": false,
+          "required": ["title", "subtitle", "result", "done", "newName", "newNamePlaceholder", "category"],
+          "properties": {
+            "title": { "$ref": "#/$defs/CopyString" },
+            "subtitle": { "$ref": "#/$defs/CopyString" },
+            "result": { "$ref": "#/$defs/CopyString" },
+            "done": { "$ref": "#/$defs/CopyString" },
+            "newName": { "$ref": "#/$defs/CopyString" },
+            "newNamePlaceholder": { "$ref": "#/$defs/CopyString" },
+            "category": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "topPlaces": {
+          "type": "object",
+          "title": "AppLocationTopPlaces",
+          "description": "Top Places card + full screen — header, counts, empty state, sort options, and per-place actions.",
+          "additionalProperties": false,
+          "required": [
+            "header", "seeAll", "empty", "uniqueLocations", "emptyTitle", "emptyMessage",
+            "sort", "sortMostVisited", "sortMostRecent", "recentVisits", "rename", "lastVisit", "visitsUnit"
+          ],
+          "properties": {
+            "header": { "$ref": "#/$defs/CopyString" },
+            "seeAll": { "$ref": "#/$defs/CopyString" },
+            "empty": { "$ref": "#/$defs/CopyString" },
+            "uniqueLocations": { "$ref": "#/$defs/CopyString" },
+            "emptyTitle": { "$ref": "#/$defs/CopyString" },
+            "emptyMessage": { "$ref": "#/$defs/CopyString" },
+            "sort": { "$ref": "#/$defs/CopyString" },
+            "sortMostVisited": { "$ref": "#/$defs/CopyString" },
+            "sortMostRecent": { "$ref": "#/$defs/CopyString" },
+            "recentVisits": { "$ref": "#/$defs/CopyString" },
+            "rename": { "$ref": "#/$defs/CopyString" },
+            "lastVisit": { "$ref": "#/$defs/CopyString" },
+            "visitsUnit": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "heatMap": {
+          "type": "object",
+          "title": "AppLocationHeatMap",
+          "description": "Activity Map card + full screen — header, legend, totals, and scale template.",
+          "additionalProperties": false,
+          "required": ["header", "seeMonth", "legendLess", "legendMore", "totalVisits", "scale"],
+          "properties": {
+            "header": { "$ref": "#/$defs/CopyString" },
+            "seeMonth": { "$ref": "#/$defs/CopyString" },
+            "legendLess": { "$ref": "#/$defs/CopyString" },
+            "legendMore": { "$ref": "#/$defs/CopyString" },
+            "totalVisits": { "$ref": "#/$defs/CopyString" },
+            "scale": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "todayStats": {
+          "type": "object",
+          "title": "AppLocationTodayStats",
+          "description": "Today stats row — the three stat-cell labels.",
+          "additionalProperties": false,
+          "required": ["visits", "timeOut", "distance"],
+          "properties": {
+            "visits": { "$ref": "#/$defs/CopyString" },
+            "timeOut": { "$ref": "#/$defs/CopyString" },
+            "distance": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "weekChart": {
+          "type": "object",
+          "title": "AppLocationWeekChart",
+          "description": "This-week bar chart — header and total-visits template.",
+          "additionalProperties": false,
+          "required": ["header", "totalVisits"],
+          "properties": {
+            "header": { "$ref": "#/$defs/CopyString" },
+            "totalVisits": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "nowAt": {
+          "type": "object",
+          "title": "AppLocationNowAt",
+          "description": "Now-At hero card — contextual header labels and fallbacks for current/last location.",
+          "additionalProperties": false,
+          "required": [
+            "atHome", "currentlyHere", "lastVisited", "lastKnown", "location",
+            "homeFallback", "unknownLocation", "waiting"
+          ],
+          "properties": {
+            "atHome": { "$ref": "#/$defs/CopyString" },
+            "currentlyHere": { "$ref": "#/$defs/CopyString" },
+            "lastVisited": { "$ref": "#/$defs/CopyString" },
+            "lastKnown": { "$ref": "#/$defs/CopyString" },
+            "location": { "$ref": "#/$defs/CopyString" },
+            "homeFallback": { "$ref": "#/$defs/CopyString" },
+            "unknownLocation": { "$ref": "#/$defs/CopyString" },
+            "waiting": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "merge": {
+          "type": "object",
+          "title": "AppLocationMerge",
+          "description": "Merge Visits sheet — header, keep/absorb/result labels, and merged-samples template.",
+          "additionalProperties": false,
+          "required": ["title", "subtitle", "combining", "keep", "absorb", "result", "samplesMerged"],
+          "properties": {
+            "title": { "$ref": "#/$defs/CopyString" },
+            "subtitle": { "$ref": "#/$defs/CopyString" },
+            "combining": { "$ref": "#/$defs/CopyString" },
+            "keep": { "$ref": "#/$defs/CopyString" },
+            "absorb": { "$ref": "#/$defs/CopyString" },
+            "result": { "$ref": "#/$defs/CopyString" },
+            "samplesMerged": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "ribbon": {
+          "type": "object",
+          "title": "AppLocationRibbon",
+          "description": "Current-location ribbon — staleness prefix, proximity template, and exploring fallback.",
+          "additionalProperties": false,
+          "required": ["lastSeenPrefix", "near", "exploring"],
+          "properties": {
+            "lastSeenPrefix": { "$ref": "#/$defs/CopyString" },
+            "near": { "$ref": "#/$defs/CopyString" },
+            "exploring": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "visitDuration": {
+          "type": "object",
+          "title": "AppLocationVisitDuration",
+          "description": "Visit-duration fallbacks — in-progress label for an ongoing (not-yet-departed) visit.",
+          "additionalProperties": false,
+          "required": ["inProgress"],
+          "properties": {
+            "inProgress": { "$ref": "#/$defs/CopyString" }
+          }
+        }
+      }
+    },
+    "bookshelf": {
+      "type": "object",
+      "title": "AppBookshelf",
+      "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.",
+      "additionalProperties": false,
+      "required": [
+        "navTitle", "pages", "sectionUpNext", "sectionPending", "sectionRecentlyFinished",
+        "currentlyReading", "pageOf", "enriching", "tileHeader", "tileComplete", "tileBooks",
+        "tileReading", "statusPending", "statusReading", "statusUpNext", "statusFinished",
+        "addBook", "editBook", "alerts"
+      ],
+      "properties": {
+        "navTitle": { "$ref": "#/$defs/CopyString" },
+        "pages": { "$ref": "#/$defs/CopyString" },
+        "sectionUpNext": { "$ref": "#/$defs/CopyString" },
+        "sectionPending": { "$ref": "#/$defs/CopyString" },
+        "sectionRecentlyFinished": { "$ref": "#/$defs/CopyString" },
+        "currentlyReading": { "$ref": "#/$defs/CopyString" },
+        "pageOf": { "$ref": "#/$defs/CopyString" },
+        "enriching": { "$ref": "#/$defs/CopyString" },
+        "tileHeader": { "$ref": "#/$defs/CopyString" },
+        "tileComplete": { "$ref": "#/$defs/CopyString" },
+        "tileBooks": { "$ref": "#/$defs/CopyString" },
+        "tileReading": { "$ref": "#/$defs/CopyString" },
+        "statusPending": { "$ref": "#/$defs/CopyString" },
+        "statusReading": { "$ref": "#/$defs/CopyString" },
+        "statusUpNext": { "$ref": "#/$defs/CopyString" },
+        "statusFinished": { "$ref": "#/$defs/CopyString" },
+        "addBook": {
+          "type": "object",
+          "title": "AppBookshelfAddBook",
+          "description": "Add Book search screen — title, search placeholder, empty prompt, ASIN template, add button.",
+          "additionalProperties": false,
+          "required": ["title", "searchPlaceholder", "emptyPrompt", "asin", "add"],
+          "properties": {
+            "title": { "$ref": "#/$defs/CopyString" },
+            "searchPlaceholder": { "$ref": "#/$defs/CopyString" },
+            "emptyPrompt": { "$ref": "#/$defs/CopyString" },
+            "asin": { "$ref": "#/$defs/CopyString" },
+            "add": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "editBook": {
+          "type": "object",
+          "title": "AppBookshelfEditBook",
+          "description": "Edit Book screen — title, buttons, placeholders, section headers, and metadata field labels.",
+          "additionalProperties": false,
+          "required": [
+            "title", "save", "delete", "notesPlaceholder", "descriptionPlaceholder", "page", "of",
+            "sectionDetails", "sectionDescription", "sectionPublication", "sectionCategories",
+            "sectionStatus", "sectionProgress", "sectionRating", "sectionNotes", "fieldSeries",
+            "fieldSeriesPlaceholder", "fieldSeriesNum", "fieldSeriesTotal", "fieldDate",
+            "fieldDatePlaceholder", "fieldYear", "fieldGenres", "fieldGenresPlaceholder"
+          ],
+          "properties": {
+            "title": { "$ref": "#/$defs/CopyString" },
+            "save": { "$ref": "#/$defs/CopyString" },
+            "delete": { "$ref": "#/$defs/CopyString" },
+            "notesPlaceholder": { "$ref": "#/$defs/CopyString" },
+            "descriptionPlaceholder": { "$ref": "#/$defs/CopyString" },
+            "page": { "$ref": "#/$defs/CopyString" },
+            "of": { "$ref": "#/$defs/CopyString" },
+            "sectionDetails": { "$ref": "#/$defs/CopyString" },
+            "sectionDescription": { "$ref": "#/$defs/CopyString" },
+            "sectionPublication": { "$ref": "#/$defs/CopyString" },
+            "sectionCategories": { "$ref": "#/$defs/CopyString" },
+            "sectionStatus": { "$ref": "#/$defs/CopyString" },
+            "sectionProgress": { "$ref": "#/$defs/CopyString" },
+            "sectionRating": { "$ref": "#/$defs/CopyString" },
+            "sectionNotes": { "$ref": "#/$defs/CopyString" },
+            "fieldSeries": { "$ref": "#/$defs/CopyString" },
+            "fieldSeriesPlaceholder": { "$ref": "#/$defs/CopyString" },
+            "fieldSeriesNum": { "$ref": "#/$defs/CopyString" },
+            "fieldSeriesTotal": { "$ref": "#/$defs/CopyString" },
+            "fieldDate": { "$ref": "#/$defs/CopyString" },
+            "fieldDatePlaceholder": { "$ref": "#/$defs/CopyString" },
+            "fieldYear": { "$ref": "#/$defs/CopyString" },
+            "fieldGenres": { "$ref": "#/$defs/CopyString" },
+            "fieldGenresPlaceholder": { "$ref": "#/$defs/CopyString" }
+          }
+        },
+        "alerts": {
+          "type": "object",
+          "title": "AppBookshelfAlerts",
+          "description": "Bookshelf error-alert titles (load/add/update/delete failures).",
+          "additionalProperties": false,
+          "required": ["failedToLoad", "failedToAddBook", "failedToUpdate", "failedToDelete"],
+          "properties": {
+            "failedToLoad": { "$ref": "#/$defs/CopyString" },
+            "failedToAddBook": { "$ref": "#/$defs/CopyString" },
+            "failedToUpdate": { "$ref": "#/$defs/CopyString" },
+            "failedToDelete": { "$ref": "#/$defs/CopyString" }
+          }
+        }
+      }
+    },
+    "watch": {
+      "type": "object",
+      "title": "AppWatch",
+      "description": "watchOS app + sync-status complication — diagnostics chrome, sync action labels, and complication strings.",
+      "additionalProperties": false,
+      "required": [
+        "diagTitle", "diagA11yLabel", "diagA11yHint", "transferSent", "openIphone", "authorize",
+        "sync", "syncFailed", "complicationNotSynced", "complicationSyncAgo",
+        "complicationDisplayName", "complicationDescription"
+      ],
+      "properties": {
+        "diagTitle": { "$ref": "#/$defs/CopyString" },
+        "diagA11yLabel": { "$ref": "#/$defs/CopyString" },
+        "diagA11yHint": { "$ref": "#/$defs/CopyString" },
+        "transferSent": { "$ref": "#/$defs/CopyString" },
+        "openIphone": { "$ref": "#/$defs/CopyString" },
+        "authorize": { "$ref": "#/$defs/CopyString" },
+        "sync": { "$ref": "#/$defs/CopyString" },
+        "syncFailed": { "$ref": "#/$defs/CopyString" },
+        "complicationNotSynced": { "$ref": "#/$defs/CopyString" },
+        "complicationSyncAgo": { "$ref": "#/$defs/CopyString" },
+        "complicationDisplayName": { "$ref": "#/$defs/CopyString" },
+        "complicationDescription": { "$ref": "#/$defs/CopyString" }
+      }
+    }
+  },
+  "$defs": {
+    "CopyMeta": {
+      "type": "object",
+      "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
+      "additionalProperties": false,
+      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "What this string is and why it exists."
+        },
+        "usage": {
+          "type": "array",
+          "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "tone": {
+          "type": "string",
+          "description": "Intended voice/register (e.g. professional, playful, terse)."
+        },
+        "owner": {
+          "type": "string",
+          "description": "Who owns this string's wording."
+        },
+        "lastReviewed": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO-8601 date (YYYY-MM-DD) the wording was last deliberately reviewed."
+        },
+        "constraints": {
+          "type": "object",
+          "description": "Optional machine-checkable constraints (CI-enforced).",
+          "additionalProperties": false,
+          "properties": {
+            "maxChars": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum rendered length. CI fails if value exceeds this."
+            }
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Optional: why this wording/variant exists distinctly (intent, history)."
+        }
+      }
+    },
+    "CopyString": {
+      "type": "object",
+      "description": "A single customer-facing string (ICU MF1 syntax) plus its authoring context.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The string, authored in ICU MessageFormat 1 syntax."
+        },
+        "_meta": { "$ref": "#/$defs/CopyMeta" }
+      }
+    },
+    "CopyStringList": {
+      "type": "object",
+      "description": "An ordered list of customer-facing strings (each ICU MF1) plus shared authoring context.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
+          "items": { "type": "string" }
+        },
+        "_meta": { "$ref": "#/$defs/CopyMeta" }
+      }
+    }
+  }
+}

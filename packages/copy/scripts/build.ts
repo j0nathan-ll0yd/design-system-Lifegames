@@ -87,6 +87,26 @@ const NAMESPACES: Namespace[] = [
     topLevelType: 'Accessibility',
     flatSchemaId: 'https://lifegames.org/schemas/copy.a11y.flat.schema.json',
   },
+  {
+    name: 'app',
+    topLevelType: 'App',
+    flatSchemaId: 'https://lifegames.org/schemas/copy.app.flat.schema.json',
+  },
+  {
+    name: 'permissions',
+    topLevelType: 'Permissions',
+    flatSchemaId: 'https://lifegames.org/schemas/copy.permissions.flat.schema.json',
+  },
+  {
+    name: 'errors',
+    topLevelType: 'Errors',
+    flatSchemaId: 'https://lifegames.org/schemas/copy.errors.flat.schema.json',
+  },
+  {
+    name: 'llm',
+    topLevelType: 'Llm',
+    flatSchemaId: 'https://lifegames.org/schemas/copy.llm.flat.schema.json',
+  },
 ];
 
 /** Per-namespace generated-file banner. Names the namespace's own rich source so

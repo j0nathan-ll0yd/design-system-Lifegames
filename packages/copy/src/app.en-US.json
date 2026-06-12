@@ -1,0 +1,2995 @@
+{
+  "nav": {
+    "home": {
+      "value": "Life Portal",
+      "_meta": {
+        "description": "Home dashboard navigation title.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:190 (.navigationTitle); HomeFeature.swift:177 (screenshot-mode title)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "health": {
+      "value": "Health",
+      "_meta": {
+        "description": "Health dashboard navigation title.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:39 (.navigationTitle); :26 (screenshot-mode title)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "settings": {
+      "value": "Settings",
+      "_meta": {
+        "description": "Settings screen navigation title.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:44 (.navigationTitle); :30 (screenshot-mode title)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "location": {
+      "value": "Location",
+      "_meta": {
+        "description": "Location dashboard navigation title.",
+        "usage": [
+          "ios:LocationFeature/Views/LocationDashboardView.swift:39 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "journey": {
+      "value": "Journey",
+      "_meta": {
+        "description": "Journey timeline navigation title.",
+        "usage": [
+          "ios:LocationFeature/Views/LocationDashboardView.swift:50 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "activityMap": {
+      "value": "Activity Map",
+      "_meta": {
+        "description": "Activity (heat) map navigation title.",
+        "usage": [
+          "ios:LocationFeature/Views/LocationDashboardView.swift:57 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "topPlaces": {
+      "value": "Top Places",
+      "_meta": {
+        "description": "Top Places full-screen navigation title.",
+        "usage": [
+          "ios:LocationFeature/Views/LocationDashboardView.swift:64 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "bookshelf": {
+      "value": "Bookshelf",
+      "_meta": {
+        "description": "Bookshelf navigation title.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:132 (.navigationTitle); :119 (screenshot-mode title)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "diagnostics": {
+      "value": "Diagnostics",
+      "_meta": {
+        "description": "Watch diagnostics navigation title.",
+        "usage": [
+          "ios:WatchDiagnosticFeature/WatchDiagnosticFeature.swift:98 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "savedPlaces": {
+      "value": "Saved Places",
+      "_meta": {
+        "description": "Saved Places list navigation title.",
+        "usage": [
+          "ios:SettingsFeature/SavedPlacesView.swift:33 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "tab": {
+    "home": {
+      "value": "Home",
+      "_meta": {
+        "description": "Home tab-bar label.",
+        "usage": [
+          "ios:AppFeature/AppFeature.swift:214 (Tab Label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "health": {
+      "value": "Health",
+      "_meta": {
+        "description": "Health tab-bar label.",
+        "usage": [
+          "ios:AppFeature/AppFeature.swift:220 (Tab Label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "location": {
+      "value": "Location",
+      "_meta": {
+        "description": "Location tab-bar label.",
+        "usage": [
+          "ios:AppFeature/AppFeature.swift:226 (Tab Label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "books": {
+      "value": "Books",
+      "_meta": {
+        "description": "Bookshelf tab-bar label (short form 'Books').",
+        "usage": [
+          "ios:AppFeature/AppFeature.swift:232 (Tab Label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "settings": {
+      "value": "Settings",
+      "_meta": {
+        "description": "Settings tab-bar label.",
+        "usage": [
+          "ios:AppFeature/AppFeature.swift:238 (Tab Label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "common": {
+    "cancel": {
+      "value": "Cancel",
+      "_meta": {
+        "description": "Generic Cancel action (alert/sheet cancellation).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:257 (alert button); many alert/toolbar sites"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "delete": {
+      "value": "Delete",
+      "_meta": {
+        "description": "Generic destructive Delete action.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:258 (alert button); JourneyFeature delete action"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "clear": {
+      "value": "Clear",
+      "_meta": {
+        "description": "Generic Clear action (clear watch logs alert).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:384 (alert button)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "ok": {
+      "value": "OK",
+      "_meta": {
+        "description": "Generic OK confirmation (alert dismiss).",
+        "usage": [
+          "ios: shared alert button label (BookshelfFeature error alerts default OK)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "done": {
+      "value": "Done",
+      "_meta": {
+        "description": "Generic Done action.",
+        "usage": [
+          "ios:LocationFeature/Views/PlaceRenameView.swift:59 (DONE button, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "save": {
+      "value": "Save",
+      "_meta": {
+        "description": "Generic Save action.",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:79 (SAVE, uppercased at call site); EditBookScreen.swift:80"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "add": {
+      "value": "Add",
+      "_meta": {
+        "description": "Generic Add action.",
+        "usage": [
+          "ios:BookshelfFeature/AddBookScreen.swift:149 (ADD, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "home": {
+    "loading": {
+      "value": "Loading data...",
+      "_meta": {
+        "description": "Home dashboard initial loading message.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:228 (loadingView Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "stepsUnit": {
+      "value": "steps",
+      "_meta": {
+        "description": "Unit label next to the step count on the health card.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:255 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "goalProgress": {
+      "value": "{percent}% of daily goal",
+      "_meta": {
+        "description": "Step-goal progress caption. ICU MF1; consumer substitutes the integer percentage.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:279 (Text, composed \\(Int(stepProgress*100))% of daily goal)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "visitsToday": {
+      "value": "{count} visits today",
+      "_meta": {
+        "description": "Today's visit-count caption on the location card. ICU MF1; consumer substitutes the count.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:349 (Text, composed \\(store.todayVisitCount) visits today)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "unsynced": {
+      "value": "{count} unsynced",
+      "_meta": {
+        "description": "Unsynced-visit indicator on the location card. ICU MF1; consumer substitutes the count.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:359 (Text, composed \\(store.unsyncedCount) unsynced)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionHealth": {
+      "value": "Health",
+      "_meta": {
+        "description": "Health column label in the sync-status banner.",
+        "usage": [
+          "ios:HomeFeature/SyncStatusBanner.swift:26 (syncIndicator label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionLocation": {
+      "value": "Location",
+      "_meta": {
+        "description": "Location column label in the sync-status banner.",
+        "usage": [
+          "ios:HomeFeature/SyncStatusBanner.swift:27 (syncIndicator label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "noLocation": {
+      "value": "No location",
+      "_meta": {
+        "description": "Placeholder when no current place name is available on the location card.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:319 (Text fallback)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tracking": {
+      "value": "Tracking",
+      "_meta": {
+        "description": "Location-tracking active status.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:339 (Text, isTracking branch)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "notTracking": {
+      "value": "Not tracking",
+      "_meta": {
+        "description": "Location-tracking inactive status.",
+        "usage": [
+          "ios:HomeFeature/HomeFeature.swift:339 (Text, !isTracking branch)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "notSynced": {
+      "value": "Not synced",
+      "_meta": {
+        "description": "Sync-status banner per-channel 'never synced' state.",
+        "usage": [
+          "ios:HomeFeature/SyncStatusBanner.swift:65 (Text fallback)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "syncStatus": {
+      "value": "Sync Status",
+      "_meta": {
+        "description": "Sync-status banner header label.",
+        "usage": [
+          "ios:HomeFeature/SyncStatusBanner.swift:21 (Label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "settings": {
+    "sectionLocation": {
+      "value": "Location",
+      "_meta": {
+        "description": "Settings 'Location' section header (saved-places card).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:76 (WidgetHeaderView label LOCATION, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionServer": {
+      "value": "Server",
+      "_meta": {
+        "description": "Settings 'Server' section header.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:121 (WidgetHeaderView label SERVER, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionData": {
+      "value": "Data",
+      "_meta": {
+        "description": "Settings 'Data' section header.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:208 (WidgetHeaderView label DATA, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionDiagnostics": {
+      "value": "Diagnostics",
+      "_meta": {
+        "description": "Settings 'Diagnostics' section header.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:281 (WidgetHeaderView label DIAGNOSTICS, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionAbout": {
+      "value": "About",
+      "_meta": {
+        "description": "Settings 'About' section header.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:396 (WidgetHeaderView label ABOUT, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "savedPlacesTitle": {
+      "value": "Saved Places",
+      "_meta": {
+        "description": "Saved-places navigation row title in Settings.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:95 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "savedPlacesSubtitle": {
+      "value": "Home, work, and frequent locations",
+      "_meta": {
+        "description": "Saved-places navigation row subtitle in Settings.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:98 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "apiBaseUrl": {
+      "value": "API Base URL",
+      "_meta": {
+        "description": "Server API base-URL field label. Stored natural-case; rendered uppercase ('API BASE URL') at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:125 (Text label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "apiBaseUrlPlaceholder": {
+      "value": "https://api.example.com/prod",
+      "_meta": {
+        "description": "Server API base-URL text-field placeholder (example URL).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:130 (TextField placeholder)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "apiToken": {
+      "value": "API Token",
+      "_meta": {
+        "description": "Server API-token field label. Stored natural-case; rendered uppercase ('API TOKEN') at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:152 (Text label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "apiTokenPlaceholder": {
+      "value": "Bearer token",
+      "_meta": {
+        "description": "Server API-token secure-field placeholder.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:157 (SecureField placeholder)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "totalVisits": {
+      "value": "Total Visits",
+      "_meta": {
+        "description": "Data section 'Total Visits' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:211 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "unsyncedVisits": {
+      "value": "Unsynced Visits",
+      "_meta": {
+        "description": "Data section 'Unsynced Visits' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:212 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "lastHealthSync": {
+      "value": "Last Health Sync",
+      "_meta": {
+        "description": "Data section 'Last Health Sync' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:215 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fullResync": {
+      "value": "Full Re-sync",
+      "_meta": {
+        "description": "Full re-sync button label. Stored natural-case; rendered uppercase ('FULL RE-SYNC') at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:231 (neonActionButton label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "deleteAll": {
+      "value": "Delete All Data",
+      "_meta": {
+        "description": "Delete-all-data button label. Stored natural-case; rendered uppercase ('DELETE ALL DATA') at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:241 (neonActionButton label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "watchLogEntries": {
+      "value": "Watch Log Entries",
+      "_meta": {
+        "description": "Diagnostics 'Watch Log Entries' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:292 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fileSize": {
+      "value": "File Size",
+      "_meta": {
+        "description": "Diagnostics 'File Size' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:294 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "diagEmpty": {
+      "value": "No watch logs transferred yet.\nUse \"Transfer\" on Apple Watch to send logs.",
+      "_meta": {
+        "description": "Diagnostics empty state. Two lines; second line quotes the 'Transfer' watch action verbatim.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:285 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Quotes around \"Transfer\" preserved from source (prior inventory dropped them)."
+      }
+    },
+    "recentEntries": {
+      "value": "Recent Entries",
+      "_meta": {
+        "description": "Diagnostics 'Recent Entries' subsection header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:304 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "shareLog": {
+      "value": "Share Log File",
+      "_meta": {
+        "description": "Diagnostics share-log button label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:338 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "clearLogs": {
+      "value": "Clear Watch Logs",
+      "_meta": {
+        "description": "Diagnostics clear-logs button label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:356 (neonActionButton label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "reload": {
+      "value": "Reload",
+      "_meta": {
+        "description": "Diagnostics reload button label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:367 (neonActionButton label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutName": {
+      "value": "Name",
+      "_meta": {
+        "description": "About section 'Name' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:404 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutTitle": {
+      "value": "Title",
+      "_meta": {
+        "description": "About section 'Title' (job title) row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:405 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutVersion": {
+      "value": "Version",
+      "_meta": {
+        "description": "About section 'Version' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:407 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutBuild": {
+      "value": "Build",
+      "_meta": {
+        "description": "About section 'Build' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:408 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "aboutPlatform": {
+      "value": "Platform",
+      "_meta": {
+        "description": "About section 'Platform' row label.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift:409 (dataRow label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "alerts": {
+      "deleteAllTitle": {
+        "value": "Delete All Data?",
+        "_meta": {
+          "description": "Delete-all-data confirmation alert title.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:253 (.alert title)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "deleteAllMessage": {
+        "value": "This will permanently delete all stored location data. This cannot be undone.",
+        "_meta": {
+          "description": "Delete-all-data confirmation alert message.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:262 (.alert message Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "resyncTitle": {
+        "value": "Full Re-sync?",
+        "_meta": {
+          "description": "Full re-sync confirmation alert title.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:264 (.alert title)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "resyncMessage": {
+        "value": "This will re-upload all location data to the server.",
+        "_meta": {
+          "description": "Full re-sync confirmation alert message.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:273 (.alert message Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "resyncConfirm": {
+        "value": "Full Re-sync",
+        "_meta": {
+          "description": "Full re-sync confirmation alert confirm-button label.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:269 (alert Button)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "clearLogsTitle": {
+        "value": "Clear Watch Logs?",
+        "_meta": {
+          "description": "Clear-watch-logs confirmation alert title.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:379 (.alert title)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "clearLogsMessage": {
+        "value": "This will delete the watch diagnostic log file from this device.",
+        "_meta": {
+          "description": "Clear-watch-logs confirmation alert message.",
+          "usage": [
+            "ios:SettingsFeature/SettingsFeatureView.swift:388 (.alert message Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    }
+  },
+  "savedPlaces": {
+    "emptyTitle": {
+      "value": "No Saved Places",
+      "_meta": {
+        "description": "Saved-places empty-state title.",
+        "usage": [
+          "ios:SettingsFeature/SavedPlacesView.swift:67 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "emptyBody": {
+      "value": "Add your home, office, or other\nfrequently visited locations.",
+      "_meta": {
+        "description": "Saved-places empty-state body (two lines).",
+        "usage": [
+          "ios:SettingsFeature/SavedPlacesView.swift:70 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "addHome": {
+      "value": "Add Home",
+      "_meta": {
+        "description": "Saved-places empty-state add-home button. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SavedPlacesView.swift:82 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "radius": {
+      "value": "{meters}m radius",
+      "_meta": {
+        "description": "Per-place radius label. ICU MF1; consumer substitutes the integer meters.",
+        "usage": [
+          "ios:SettingsFeature/SavedPlacesView.swift:137 (Text, composed \\(Int(place.radiusMeters))m radius)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "addPlace": {
+    "title": {
+      "value": "Add Saved Place",
+      "_meta": {
+        "description": "Add-saved-place sheet header. Stored natural-case; rendered uppercase ('ADD SAVED PLACE') at call site.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:24 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionNewLocation": {
+      "value": "New Location",
+      "_meta": {
+        "description": "Add-saved-place sheet sub-header.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:28 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fieldName": {
+      "value": "Name",
+      "_meta": {
+        "description": "Name field label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:48 (fieldSection label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fieldNamePlaceholder": {
+      "value": "Home",
+      "_meta": {
+        "description": "Name field placeholder.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:49 (TextField placeholder)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fieldCategory": {
+      "value": "Category",
+      "_meta": {
+        "description": "Category picker label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:58 (fieldSection label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fieldLatitude": {
+      "value": "Latitude",
+      "_meta": {
+        "description": "Latitude field label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:90 (fieldSection label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fieldLongitude": {
+      "value": "Longitude",
+      "_meta": {
+        "description": "Longitude field label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:102 (fieldSection label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "fieldRadius": {
+      "value": "Radius: {meters}m",
+      "_meta": {
+        "description": "Radius slider field label. ICU MF1; consumer substitutes the integer meters. Stored natural-case; rendered uppercase ('RADIUS: …M') at call site.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:116 (fieldSection label, composed RADIUS: \\(Int(store.radiusMeters))M)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tip": {
+      "value": "Tip: Use \"Correct\" on a visit to get exact coordinates, then save as a place.",
+      "_meta": {
+        "description": "Coordinate-entry tip; quotes the 'Correct' visit action verbatim.",
+        "usage": [
+          "ios:SettingsFeature/AddPlaceView.swift:133 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Quotes around \"Correct\" preserved from source (prior inventory dropped them)."
+      }
+    }
+  },
+  "health": {
+    "sectionHeart": {
+      "value": "Heart",
+      "_meta": {
+        "description": "Health 'Heart' section header. Stored natural-case; rendered uppercase ('HEART') at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:74 (sectionHeader, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionMovement": {
+      "value": "Movement",
+      "_meta": {
+        "description": "Health 'Movement' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:76 (sectionHeader, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionSleep": {
+      "value": "Sleep",
+      "_meta": {
+        "description": "Health 'Sleep' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:78 (sectionHeader, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionWorkouts": {
+      "value": "Workouts",
+      "_meta": {
+        "description": "Health 'Workouts' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:80 (sectionHeader, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionData": {
+      "value": "Data",
+      "_meta": {
+        "description": "Health 'Data' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:82 (sectionHeader, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionDataMode": {
+      "value": "Data Mode",
+      "_meta": {
+        "description": "Health 'Data Mode' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:84 (sectionHeader, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "todaysWorkouts": {
+      "value": "Today's Workouts",
+      "_meta": {
+        "description": "Workouts subsection header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:192 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Apostrophe in 'Today's' preserved from source (prior inventory dropped it)."
+      }
+    },
+    "recoveryDay": {
+      "value": "Recovery Day",
+      "_meta": {
+        "description": "Workouts empty-state title (no workouts).",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:210 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "noWorkouts": {
+      "value": "No workouts recorded",
+      "_meta": {
+        "description": "Workouts empty-state message.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:214 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutDuration": {
+      "value": "Duration",
+      "_meta": {
+        "description": "Per-workout duration stat label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:250 (workoutStat label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "workoutCalories": {
+      "value": "Calories",
+      "_meta": {
+        "description": "Per-workout calories stat label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:251 (workoutStat label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionHealthkit": {
+      "value": "HealthKit",
+      "_meta": {
+        "description": "HealthKit subsection header. Stored natural-case; rendered uppercase ('HEALTHKIT') at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:281 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "authorization": {
+      "value": "Authorization",
+      "_meta": {
+        "description": "HealthKit authorization row label.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:298 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "authorized": {
+      "value": "Authorized",
+      "_meta": {
+        "description": "HealthKit authorized status. Stored natural-case; rendered uppercase ('AUTHORIZED') at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:304 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "lastSync": {
+      "value": "Last Sync",
+      "_meta": {
+        "description": "HealthKit last-sync row label.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:313 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "syncing": {
+      "value": "Syncing...",
+      "_meta": {
+        "description": "HealthKit sync button in-progress label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:325 (neonActionButton label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "syncNow": {
+      "value": "Sync Now",
+      "_meta": {
+        "description": "HealthKit sync button label. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:325 (neonActionButton label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "useRealHR": {
+      "value": "Use Real Heart Rate Data",
+      "_meta": {
+        "description": "Data-mode toggle title.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:346 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "realActive": {
+      "value": "Sending real HealthKit data",
+      "_meta": {
+        "description": "Data-mode subtitle when real-data mode is on.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:349 (Text, useRealData branch)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "simActive": {
+      "value": "Server generates simulated data",
+      "_meta": {
+        "description": "Data-mode subtitle when simulated-data mode is on.",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:349 (Text, !useRealData branch)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "sleep": {
+    "title": {
+      "value": "Sleep Score",
+      "_meta": {
+        "description": "Sleep-score entry sheet title. Stored natural-case; rendered uppercase ('SLEEP SCORE') at call site.",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:40 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "prompt": {
+      "value": "Enter the score shown in the Health app",
+      "_meta": {
+        "description": "Sleep-score entry prompt.",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:67 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "placeholder": {
+      "value": "0–100",
+      "_meta": {
+        "description": "Sleep-score text-field placeholder. Uses an en-dash range (0–100).",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:45 (TextField placeholder, '0\\u{2013}100')"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Source uses a U+2013 en-dash ('0–100'), not a hyphen (prior inventory said '0-100')."
+      }
+    },
+    "save": {
+      "value": "Save",
+      "_meta": {
+        "description": "Sleep-score save button. Stored natural-case; rendered uppercase ('SAVE') at call site.",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:79 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "deleteScore": {
+      "value": "Delete Score",
+      "_meta": {
+        "description": "Sleep-score delete button. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:111 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "cancel": {
+      "value": "Cancel",
+      "_meta": {
+        "description": "Sleep-score cancel toolbar button. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:HealthFeature/SleepScoreEntrySheet.swift:139 (Text, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "a11yAdd": {
+      "value": "Add sleep score",
+      "_meta": {
+        "description": "Accessibility label for the add-sleep-score affordance (no current score).",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:183 (.accessibilityLabel, sleepScore == nil branch)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "a11yEdit": {
+      "value": "Edit sleep score",
+      "_meta": {
+        "description": "Accessibility label for the edit-sleep-score affordance (existing score).",
+        "usage": [
+          "ios:HealthFeature/HealthFeatureView.swift:183 (.accessibilityLabel, sleepScore != nil branch)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "location": {
+    "journey": {
+      "viewYesterday": {
+        "value": "View Yesterday's Journey",
+        "_meta": {
+          "description": "Button to jump to yesterday's journey when today is empty.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:43 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11",
+          "rationale": "Apostrophe in 'Yesterday's' preserved from source (prior inventory dropped it)."
+        }
+      },
+      "mapUnavailable": {
+        "value": "Map unavailable on this platform",
+        "_meta": {
+          "description": "Fallback shown when MapKit is unavailable (non-iOS/watchOS).",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:191 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "placesVisited": {
+        "value": "{count} places visited",
+        "_meta": {
+          "description": "Visit-count caption under the journey date. ICU MF1; consumer substitutes the count.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:226 (Text, composed \\(store.displayedVisits.count) places visited)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "emptyTitle": {
+        "value": "No Journey Data",
+        "_meta": {
+          "description": "Journey empty-state title.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:32 (LocationEmptyState title)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "emptyMessage": {
+        "value": "No visits recorded for this day.",
+        "_meta": {
+          "description": "Journey empty-state message.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:33 (LocationEmptyState message)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "actionCorrect": {
+        "value": "Correct",
+        "_meta": {
+          "description": "Per-visit Correct action. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:433 (actionButton title, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "actionSavePlace": {
+        "value": "Save Place",
+        "_meta": {
+          "description": "Per-visit Save Place action. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:434 (actionButton title, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "actionMerge": {
+        "value": "Merge",
+        "_meta": {
+          "description": "Per-visit Merge action. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:437 (actionButton title, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "actionDelete": {
+        "value": "Delete",
+        "_meta": {
+          "description": "Per-visit Delete action. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:440 (actionButton title, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "visitFallback": {
+        "value": "Visit",
+        "_meta": {
+          "description": "Fallback annotation title for an unnamed visit on the map.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:153 (Annotation title fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "unknown": {
+        "value": "Unknown",
+        "_meta": {
+          "description": "Fallback name for a visit with no place name or address.",
+          "usage": [
+            "ios:LocationFeature/Views/JourneyView.swift:395 (Text fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "deleteVisitTitle": {
+        "value": "Delete Visit",
+        "_meta": {
+          "description": "Delete-visit confirmation alert title.",
+          "usage": [
+            "ios:LocationFeature/JourneyFeature.swift:182 (alert TextState)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "deleteVisitMessage": {
+        "value": "This visit will be permanently removed from your journey log.",
+        "_meta": {
+          "description": "Delete-visit confirmation alert message.",
+          "usage": [
+            "ios:LocationFeature/JourneyFeature.swift:188 (alert TextState)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "visitCorrection": {
+      "title": {
+        "value": "Correct Visit",
+        "_meta": {
+          "description": "Visit-correction sheet header. Stored natural-case; rendered uppercase ('CORRECT VISIT') at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:62 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "unknownVisit": {
+        "value": "Unknown Visit",
+        "_meta": {
+          "description": "Fallback header subtitle for an unnamed visit being corrected.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:66 (Text fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "dragPin": {
+        "value": "Drag the pin to the exact location",
+        "_meta": {
+          "description": "Pin-tab hint.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:187 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "searchPlaceholder": {
+        "value": "Search nearby places...",
+        "_meta": {
+          "description": "Search-tab text-field placeholder.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:125 (TextField placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "adjustTimes": {
+        "value": "Adjust visit start and end times",
+        "_meta": {
+          "description": "Time-tab hint.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:221 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "arrived": {
+        "value": "Arrived",
+        "_meta": {
+          "description": "Arrival time-picker label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:231 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "departed": {
+        "value": "Departed",
+        "_meta": {
+          "description": "Departure time-picker label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:258 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "confirming": {
+        "value": "Correcting...",
+        "_meta": {
+          "description": "Confirm button in-progress label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:351 (ConfirmButton title, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "confirm": {
+        "value": "Confirm",
+        "_meta": {
+          "description": "Confirm button label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:351 (ConfirmButton title, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "pinnedLocation": {
+        "value": "Pinned Location",
+        "_meta": {
+          "description": "Default place name applied when confirming a pin correction with no geocoded address.",
+          "usage": [
+            "ios:LocationFeature/VisitCorrectionFeature.swift:145 (correction.placeName fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "placeRename": {
+      "title": {
+        "value": "Rename Place",
+        "_meta": {
+          "description": "Place-rename sheet header. Stored natural-case; rendered uppercase ('RENAME PLACE') at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:32 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "subtitle": {
+        "value": "Renaming all visits at {name}",
+        "_meta": {
+          "description": "Place-rename subtitle. ICU MF1; consumer substitutes the old place name.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:37 (Text, composed Renaming all visits at \\(store.oldName))"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "result": {
+        "value": "Renamed {count, plural, one {# visit} other {# visits}}",
+        "_meta": {
+          "description": "Place-rename success message. ICU MF1 plural; source pluralizes inline (\\(count) visit\\(count==1 ? \"\" : \"s\")). Consumer keeps native plural logic in V2.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:52 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11",
+          "rationale": "Authored as ICU plural form; iOS uses native string interpolation for the singular/plural switch."
+        }
+      },
+      "done": {
+        "value": "Done",
+        "_meta": {
+          "description": "Place-rename success Done button. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:59 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "newName": {
+        "value": "New Name",
+        "_meta": {
+          "description": "New-name field label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:76 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "newNamePlaceholder": {
+        "value": "Enter new place name",
+        "_meta": {
+          "description": "New-name text-field placeholder.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:81 (TextField placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "category": {
+        "value": "Category",
+        "_meta": {
+          "description": "Read-only category field label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/PlaceRenameView.swift:101 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "topPlaces": {
+      "header": {
+        "value": "Top Places",
+        "_meta": {
+          "description": "Top-places card/full-screen header. Stored natural-case; rendered uppercase ('TOP PLACES') at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesCard.swift:16 (Text, uppercased); TopPlacesFullView.swift:26"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "seeAll": {
+        "value": "See All",
+        "_meta": {
+          "description": "Top-places card 'see all' link. Source renders with a trailing ' >' chevron glyph appended in the literal.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesCard.swift:21 (Text 'See All >')"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11",
+          "rationale": "Source literal is 'See All >'; stored without the decorative chevron (the '>' is a presentational affordance, not copy)."
+        }
+      },
+      "empty": {
+        "value": "No places yet",
+        "_meta": {
+          "description": "Top-places card empty state.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesCard.swift:28 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "uniqueLocations": {
+        "value": "{count} unique locations",
+        "_meta": {
+          "description": "Top-places full-screen subtitle. ICU MF1; consumer substitutes the count.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:29 (Text, composed \\(store.places.count) unique locations)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "emptyTitle": {
+        "value": "No Places",
+        "_meta": {
+          "description": "Top-places full-screen empty-state title.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:60 (LocationEmptyState title)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "emptyMessage": {
+        "value": "Visit some places to see them ranked here.",
+        "_meta": {
+          "description": "Top-places full-screen empty-state message.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:61 (LocationEmptyState message)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sort": {
+        "value": "Sort",
+        "_meta": {
+          "description": "Sort picker accessibility/title label.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:41 (Picker label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sortMostVisited": {
+        "value": "Most Visited",
+        "_meta": {
+          "description": "Sort-order option: most visited.",
+          "usage": [
+            "ios:LocationFeature/LocationAnalyticsClient.swift:191 (PlacesSortOrder.visits rawValue)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sortMostRecent": {
+        "value": "Most Recent",
+        "_meta": {
+          "description": "Sort-order option: most recent.",
+          "usage": [
+            "ios:LocationFeature/LocationAnalyticsClient.swift:192 (PlacesSortOrder.recent rawValue)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "recentVisits": {
+        "value": "Recent Visits",
+        "_meta": {
+          "description": "Expanded-place 'recent visits' subsection header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:229 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "rename": {
+        "value": "Rename",
+        "_meta": {
+          "description": "Expanded-place rename button. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:257 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "lastVisit": {
+        "value": "Last: {relative}",
+        "_meta": {
+          "description": "Per-place last-visited caption. ICU MF1; consumer substitutes a relative-date string.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:173 (Text, composed Last: \\(relativeFmt…))"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "visitsUnit": {
+        "value": "visits",
+        "_meta": {
+          "description": "Unit label under a place's visit count.",
+          "usage": [
+            "ios:LocationFeature/Views/TopPlacesFullView.swift:186 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "heatMap": {
+      "header": {
+        "value": "Activity Map",
+        "_meta": {
+          "description": "Activity-map card header. Stored natural-case; rendered uppercase ('ACTIVITY MAP') at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/HeatMapCard.swift:20 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "seeMonth": {
+        "value": "See Month",
+        "_meta": {
+          "description": "Activity-map card 'see month' link. Source renders with a trailing ' >' chevron glyph appended in the literal.",
+          "usage": [
+            "ios:LocationFeature/Views/HeatMapCard.swift:25 (Text 'See Month >')"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11",
+          "rationale": "Source literal is 'See Month >'; stored without the decorative chevron (the '>' is a presentational affordance, not copy)."
+        }
+      },
+      "legendLess": {
+        "value": "Less",
+        "_meta": {
+          "description": "Heat-map legend low-end label.",
+          "usage": [
+            "ios:LocationFeature/Views/HeatMapCard.swift:59 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "legendMore": {
+        "value": "More",
+        "_meta": {
+          "description": "Heat-map legend high-end label.",
+          "usage": [
+            "ios:LocationFeature/Views/HeatMapCard.swift:71 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "totalVisits": {
+        "value": "{count} total visits",
+        "_meta": {
+          "description": "Activity-map full-screen total-visits caption. ICU MF1; consumer substitutes the count.",
+          "usage": [
+            "ios:LocationFeature/Views/HeatMapFullView.swift:64 (Text, composed \\(store.totalVisits) total visits)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "scale": {
+        "value": "0 → {max}+ visits",
+        "_meta": {
+          "description": "Activity-map legend scale caption. ICU MF1; consumer substitutes the max count. Uses an arrow glyph (→).",
+          "usage": [
+            "ios:LocationFeature/Views/HeatMapFullView.swift:82 (Text, composed 0 → \\(maxCount)+ visits)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11",
+          "rationale": "Source uses a U+2192 arrow ('0 → …'), not the word 'to' (prior inventory said 'to')."
+        }
+      }
+    },
+    "todayStats": {
+      "visits": {
+        "value": "Visits",
+        "_meta": {
+          "description": "Today-stats 'Visits' cell label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/TodayStatsRow.swift:14 (StatCell label, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "timeOut": {
+        "value": "Time Out",
+        "_meta": {
+          "description": "Today-stats 'Time Out' cell label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/TodayStatsRow.swift:25 (StatCell label, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "distance": {
+        "value": "Distance",
+        "_meta": {
+          "description": "Today-stats 'Distance' cell label. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/TodayStatsRow.swift:36 (StatCell label, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "weekChart": {
+      "header": {
+        "value": "This Week",
+        "_meta": {
+          "description": "Week bar-chart header. Stored natural-case; rendered uppercase ('THIS WEEK') at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/WeekBarChart.swift:23 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "totalVisits": {
+        "value": "{count} visits",
+        "_meta": {
+          "description": "Week bar-chart total caption. ICU MF1; consumer substitutes the count.",
+          "usage": [
+            "ios:LocationFeature/Views/WeekBarChart.swift:29 (Text, composed \\(total) visits)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "nowAt": {
+      "atHome": {
+        "value": "At Home",
+        "_meta": {
+          "description": "Now-at hero header when at home. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:121 (headerLabel, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "currentlyHere": {
+        "value": "Currently Here",
+        "_meta": {
+          "description": "Now-at hero header for an active named-place visit. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:123 (headerLabel, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "lastVisited": {
+        "value": "Last Visited",
+        "_meta": {
+          "description": "Now-at hero header for a completed visit. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:123 (headerLabel, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "lastKnown": {
+        "value": "Last Known",
+        "_meta": {
+          "description": "Now-at hero header when only a last-known location exists. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:126 (headerLabel, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "location": {
+        "value": "Location",
+        "_meta": {
+          "description": "Now-at hero generic header fallback. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:127 (headerLabel, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "homeFallback": {
+        "value": "Home",
+        "_meta": {
+          "description": "Now-at hero name fallback when at home with no place name.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:134 (locationName fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "unknownLocation": {
+        "value": "Unknown Location",
+        "_meta": {
+          "description": "Now-at hero name fallback when no place/address/city is known.",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:140,147,150 (locationName fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "waiting": {
+        "value": "Waiting for Location…",
+        "_meta": {
+          "description": "Now-at hero name while awaiting first location fix. Uses a horizontal-ellipsis glyph (…).",
+          "usage": [
+            "ios:LocationFeature/Views/NowAtHeroCard.swift:152 (locationName fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11",
+          "rationale": "Source uses U+2026 ellipsis ('…'), not three periods (prior inventory said '...')."
+        }
+      }
+    },
+    "merge": {
+      "title": {
+        "value": "Merge Visits",
+        "_meta": {
+          "description": "Merge-visits sheet header. Stored natural-case; rendered uppercase ('MERGE VISITS') at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:55 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "subtitle": {
+        "value": "Combine into one visit",
+        "_meta": {
+          "description": "Merge-visits sheet subtitle.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:59 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "combining": {
+        "value": "Combining",
+        "_meta": {
+          "description": "Merge source-visits section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:79 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "keep": {
+        "value": "Keep",
+        "_meta": {
+          "description": "Merge 'keep' visit badge. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:85 (VisitSummaryCard label, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "absorb": {
+        "value": "Absorb",
+        "_meta": {
+          "description": "Merge 'absorb' visit badge. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:96 (VisitSummaryCard label, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "result": {
+        "value": "Result",
+        "_meta": {
+          "description": "Merge result section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:104 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "samplesMerged": {
+        "value": "{count} GPS samples merged",
+        "_meta": {
+          "description": "Merge GPS-samples note. ICU MF1; consumer substitutes the combined sample count.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitMergeView.swift:157 (Text, composed \\(keep+absorb mergeCount) GPS samples merged)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "ribbon": {
+      "lastSeenPrefix": {
+        "value": "Last seen",
+        "_meta": {
+          "description": "Current-location ribbon staleness prefix prepended to the primary label when data is stale.",
+          "usage": [
+            "ios:LocationFeature/Views/CurrentLocationRibbon.swift:115 (primaryLabel prefix)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "near": {
+        "value": "Near {place}",
+        "_meta": {
+          "description": "Current-location ribbon proximity label. ICU MF1; consumer substitutes the saved-place or last-visit name.",
+          "usage": [
+            "ios:LocationFeature/Views/CurrentLocationRibbon.swift:119,134 (primaryLabel, composed Near \\(place))"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "exploring": {
+        "value": "Exploring",
+        "_meta": {
+          "description": "Current-location ribbon fallback when no place context is known.",
+          "usage": [
+            "ios:LocationFeature/Views/CurrentLocationRibbon.swift:137 (primaryLabel fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "visitDuration": {
+      "inProgress": {
+        "value": "In progress",
+        "_meta": {
+          "description": "Visit-correction duration display when the visit has no departure yet.",
+          "usage": [
+            "ios:LocationFeature/Views/VisitCorrectionView.swift:317 (formattedDuration fallback)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    }
+  },
+  "bookshelf": {
+    "navTitle": {
+      "value": "Bookshelf",
+      "_meta": {
+        "description": "Bookshelf screen title (also used as nav title).",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:132 (.navigationTitle); :119"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "pages": {
+      "value": "{count} pages",
+      "_meta": {
+        "description": "Per-book page-count caption. ICU MF1; consumer substitutes the total pages.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:28,64 (Text, composed \\(total) pages)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionUpNext": {
+      "value": "Up Next",
+      "_meta": {
+        "description": "Bookshelf 'Up Next' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:171 (SectionHeader title, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionPending": {
+      "value": "Pending",
+      "_meta": {
+        "description": "Bookshelf 'Pending' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:183 (SectionHeader title, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sectionRecentlyFinished": {
+      "value": "Recently Finished",
+      "_meta": {
+        "description": "Bookshelf 'Recently Finished' section header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:200 (SectionHeader title, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "currentlyReading": {
+      "value": "Currently Reading",
+      "_meta": {
+        "description": "Hero card 'currently reading' header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:240 (WidgetHeaderView label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "pageOf": {
+      "value": "Page {current} of {total} · {percent}%",
+      "_meta": {
+        "description": "Hero card reading-progress caption. ICU MF1; consumer substitutes current page, total pages, percent. Uses a middle-dot separator (·).",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:271 (Text, composed Page \\(current) of \\(total) · \\(percent)%)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Source uses a U+00B7 middle dot ('· ') as the separator, not a hyphen (prior inventory said '-')."
+      }
+    },
+    "enriching": {
+      "value": "Enriching...",
+      "_meta": {
+        "description": "Pending-book enrichment overlay label.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfView.swift:298 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tileHeader": {
+      "value": "Bookshelf",
+      "_meta": {
+        "description": "Home dashboard bookshelf-tile header. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfDashboardTile.swift:133 (WidgetHeaderView label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tileComplete": {
+      "value": "{percent}% complete",
+      "_meta": {
+        "description": "Bookshelf-tile progress caption. ICU MF1; consumer substitutes the percent.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfDashboardTile.swift:165 (Text, composed \\(percent)% complete)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tileBooks": {
+      "value": "{count} books",
+      "_meta": {
+        "description": "Bookshelf-tile total-books caption. ICU MF1; consumer substitutes the count.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfDashboardTile.swift:172 (Text, composed \\(books.count) books)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "tileReading": {
+      "value": "{count} reading",
+      "_meta": {
+        "description": "Bookshelf-tile currently-reading caption. ICU MF1; consumer substitutes the count.",
+        "usage": [
+          "ios:BookshelfFeature/BookshelfDashboardTile.swift:178 (Text, composed \\(readingCount) reading)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "statusPending": {
+      "value": "Pending",
+      "_meta": {
+        "description": "Book status label: pending.",
+        "usage": [
+          "ios:SharedModels/Book.swift:18 (BookStatus.pending.statusLabel)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "statusReading": {
+      "value": "Reading",
+      "_meta": {
+        "description": "Book status label: reading.",
+        "usage": [
+          "ios:SharedModels/Book.swift:19 (BookStatus.reading.statusLabel)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "statusUpNext": {
+      "value": "Up Next",
+      "_meta": {
+        "description": "Book status label: up next.",
+        "usage": [
+          "ios:SharedModels/Book.swift:20 (BookStatus.upNext.statusLabel)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "statusFinished": {
+      "value": "Finished",
+      "_meta": {
+        "description": "Book status label: finished.",
+        "usage": [
+          "ios:SharedModels/Book.swift:21 (BookStatus.finished.statusLabel)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "addBook": {
+      "title": {
+        "value": "Search Books",
+        "_meta": {
+          "description": "Add-book screen navigation title.",
+          "usage": [
+            "ios:BookshelfFeature/AddBookScreen.swift:102 (.navigationTitle)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "searchPlaceholder": {
+        "value": "Search books by title or author...",
+        "_meta": {
+          "description": "Add-book search-field placeholder.",
+          "usage": [
+            "ios:BookshelfFeature/AddBookScreen.swift:42 (TextField placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "emptyPrompt": {
+        "value": "Search Amazon for books",
+        "_meta": {
+          "description": "Add-book empty-state prompt before searching.",
+          "usage": [
+            "ios:BookshelfFeature/AddBookScreen.swift:88 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "asin": {
+        "value": "ASIN: {asin}",
+        "_meta": {
+          "description": "Detected-ASIN caption in the detection bar. ICU MF1; consumer substitutes the ASIN.",
+          "usage": [
+            "ios:BookshelfFeature/AddBookScreen.swift:131 (Text, composed ASIN: \\(asin))"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "add": {
+        "value": "Add",
+        "_meta": {
+          "description": "Add-book add button. Stored natural-case; rendered uppercase ('ADD') at call site.",
+          "usage": [
+            "ios:BookshelfFeature/AddBookScreen.swift:149 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "editBook": {
+      "title": {
+        "value": "Edit Book",
+        "_meta": {
+          "description": "Edit-book screen navigation title.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:401 (.navigationTitle)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "save": {
+        "value": "Save",
+        "_meta": {
+          "description": "Edit-book save button. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:80 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "delete": {
+        "value": "Delete Book",
+        "_meta": {
+          "description": "Edit-book delete button. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:103 (Text, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "notesPlaceholder": {
+        "value": "Add personal notes...",
+        "_meta": {
+          "description": "Notes editor placeholder.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:128 (Text placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "descriptionPlaceholder": {
+        "value": "Book description...",
+        "_meta": {
+          "description": "Description editor placeholder.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:284 (Text placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "page": {
+        "value": "Page",
+        "_meta": {
+          "description": "Progress 'Page' label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:313 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "of": {
+        "value": "of",
+        "_meta": {
+          "description": "Progress 'of' separator (Page X of Y).",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:333 (Text)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionDetails": {
+        "value": "Book Details",
+        "_meta": {
+          "description": "Edit-book 'Book Details' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:258 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionDescription": {
+        "value": "Description",
+        "_meta": {
+          "description": "Edit-book 'Description' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:269 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionPublication": {
+        "value": "Publication",
+        "_meta": {
+          "description": "Edit-book 'Publication' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:294 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionCategories": {
+        "value": "Categories",
+        "_meta": {
+          "description": "Edit-book 'Categories' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:301 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionStatus": {
+        "value": "Status",
+        "_meta": {
+          "description": "Edit-book 'Status' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:305 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionProgress": {
+        "value": "Progress",
+        "_meta": {
+          "description": "Edit-book 'Progress' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:310 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionRating": {
+        "value": "Rating",
+        "_meta": {
+          "description": "Edit-book 'Rating' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:359 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "sectionNotes": {
+        "value": "Notes",
+        "_meta": {
+          "description": "Edit-book 'Notes' section header. Stored natural-case; rendered uppercase at call site.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:363 (sectionHeader, uppercased at call site)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldSeries": {
+        "value": "Series",
+        "_meta": {
+          "description": "Series field label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:261 (metadataField label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldSeriesPlaceholder": {
+        "value": "Series name",
+        "_meta": {
+          "description": "Series field placeholder.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:261 (metadataField placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldSeriesNum": {
+        "value": "Series #",
+        "_meta": {
+          "description": "Series-number field label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:263 (metadataField label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldSeriesTotal": {
+        "value": "of Total",
+        "_meta": {
+          "description": "Series-total field label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:264 (metadataField label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldDate": {
+        "value": "Date",
+        "_meta": {
+          "description": "Publication-date field label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:296 (metadataField label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldDatePlaceholder": {
+        "value": "January 1, 2025",
+        "_meta": {
+          "description": "Publication-date field placeholder (example date).",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:296 (metadataField placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldYear": {
+        "value": "Year",
+        "_meta": {
+          "description": "Published-year field label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:297 (metadataField label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldGenres": {
+        "value": "Genres",
+        "_meta": {
+          "description": "Genres field label.",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:302 (metadataField label)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "fieldGenresPlaceholder": {
+        "value": "Fantasy, Science Fiction",
+        "_meta": {
+          "description": "Genres field placeholder (example genres).",
+          "usage": [
+            "ios:BookshelfFeature/EditBookScreen.swift:302 (metadataField placeholder)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    },
+    "alerts": {
+      "failedToLoad": {
+        "value": "Failed to Load",
+        "_meta": {
+          "description": "Bookshelf load-failure alert title.",
+          "usage": [
+            "ios:BookshelfFeature/BookshelfFeature.swift:88 (alert TextState)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "failedToAddBook": {
+        "value": "Failed to Add Book",
+        "_meta": {
+          "description": "Bookshelf add-book-failure alert title.",
+          "usage": [
+            "ios:BookshelfFeature/BookshelfFeature.swift:134 (alert TextState)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "failedToUpdate": {
+        "value": "Failed to Update",
+        "_meta": {
+          "description": "Bookshelf update-failure alert title.",
+          "usage": [
+            "ios:BookshelfFeature/BookshelfFeature.swift:160 (alert TextState)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      },
+      "failedToDelete": {
+        "value": "Failed to Delete",
+        "_meta": {
+          "description": "Bookshelf delete-failure alert title.",
+          "usage": [
+            "ios:BookshelfFeature/BookshelfFeature.swift:186 (alert TextState)"
+          ],
+          "tone": "functional",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-11"
+        }
+      }
+    }
+  },
+  "watch": {
+    "diagTitle": {
+      "value": "Diagnostics",
+      "_meta": {
+        "description": "Watch diagnostics screen navigation title.",
+        "usage": [
+          "ios:WatchDiagnosticFeature/WatchDiagnosticFeature.swift:98 (.navigationTitle)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "diagA11yLabel": {
+      "value": "Diagnostics",
+      "_meta": {
+        "description": "Accessibility label for the watch diagnostics wrench toolbar button.",
+        "usage": [
+          "ios:WatchAppFeature/WatchAppFeature.swift:96 (.accessibilityLabel)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "diagA11yHint": {
+      "value": "Opens watch sync diagnostics",
+      "_meta": {
+        "description": "Accessibility hint for the watch diagnostics wrench toolbar button.",
+        "usage": [
+          "ios:WatchAppFeature/WatchAppFeature.swift:97 (.accessibilityHint)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "transferSent": {
+      "value": "Sent",
+      "_meta": {
+        "description": "Watch diagnostics transfer-completed status.",
+        "usage": [
+          "ios:WatchDiagnosticFeature/WatchDiagnosticFeature.swift:76 (transferStatus state)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "openIphone": {
+      "value": "Open iPhone",
+      "_meta": {
+        "description": "Watch sync-status primary action when unconfigured. Stored natural-case; rendered uppercase ('OPEN IPHONE') at call site.",
+        "usage": [
+          "ios:WatchHealthFeature/WatchHealthFeature.swift:273 (label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "authorize": {
+      "value": "Authorize",
+      "_meta": {
+        "description": "Watch sync-status primary action when auth required. Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:WatchHealthFeature/WatchHealthFeature.swift:274 (label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "sync": {
+      "value": "Sync",
+      "_meta": {
+        "description": "Watch sync-status primary action (default). Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:WatchHealthFeature/WatchHealthFeature.swift:275 (label, uppercased at call site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "syncFailed": {
+      "value": "Sync failed",
+      "_meta": {
+        "description": "Watch sync-failure message.",
+        "usage": [
+          "ios:WatchHealthFeature/WatchHealthFeature.swift:190 (syncFailed action payload)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "complicationNotSynced": {
+      "value": "Not synced",
+      "_meta": {
+        "description": "Sync-status complication never-synced state.",
+        "usage": [
+          "ios:LifePortalWatchWidgets/SyncStatusWidget.swift:185,207 (Text)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "complicationSyncAgo": {
+      "value": "Sync {relative} ago",
+      "_meta": {
+        "description": "Sync-status complication last-synced caption. ICU MF1; consumer substitutes a relative-time string.",
+        "usage": [
+          "ios:LifePortalWatchWidgets/SyncStatusWidget.swift:180,205 (Text, composed Sync \\(syncDate, style: .relative) ago)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "complicationDisplayName": {
+      "value": "Sync Status",
+      "_meta": {
+        "description": "Sync-status complication configuration display name.",
+        "usage": [
+          "ios:LifePortalWatchWidgets/SyncStatusWidget.swift:225 (.configurationDisplayName)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "complicationDescription": {
+      "value": "Shows when health and location data were last synced.",
+      "_meta": {
+        "description": "Sync-status complication configuration description.",
+        "usage": [
+          "ios:LifePortalWatchWidgets/SyncStatusWidget.swift:226 (.description)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "health": {
+    "app": "Life Portal reads your health data — including activity goals, time in daylight, and overnight wrist temperature — to display metrics and sync with your server.",
+    "watch": "Life Portal reads your health data — including activity goals, time in daylight, and overnight wrist temperature — to sync with your server."
+  },
+  "locationWhenInUse": {
+    "app": "Life Portal needs your location to track and display your movement history.",
+    "watch": "Life Portal needs your location to display your current position."
+  },
+  "locationAlways": {
+    "app": "Life Portal needs continuous location access to track your movements in the background."
+  },
+  "motion": {
+    "app": "LifePortal uses motion data to detect when you arrive at and leave places, improving visit tracking accuracy."
+  }
+}

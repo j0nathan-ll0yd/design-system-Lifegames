@@ -1,0 +1,578 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.llm.flat.schema.json",
+  "type": "object",
+  "title": "Llm",
+  "description": "Rich authoring schema for the llm slice of @lifegames/copy (V2). Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so Wave 4 can reconstruct byte-identical template output. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json (per-file inlined, no cross-file $ref — §3.2).",
+  "properties": {
+    "txt": {
+      "type": "object",
+      "title": "LlmTxt",
+      "description": "Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings, list-label prefixes, explanatory paragraphs, link descriptions, technology block, and the JSON-endpoint descriptions.",
+      "properties": {
+        "titleHeading": {
+          "type": "string"
+        },
+        "aboutHeading": {
+          "type": "string"
+        },
+        "aboutBody": {
+          "type": "string"
+        },
+        "linkSite": {
+          "type": "string"
+        },
+        "linkGithub": {
+          "type": "string"
+        },
+        "linkLinkedin": {
+          "type": "string"
+        },
+        "liveHeading": {
+          "type": "string"
+        },
+        "liveBody": {
+          "type": "string"
+        },
+        "liveFullDump": {
+          "type": "string"
+        },
+        "liveIndexAlias": {
+          "type": "string"
+        },
+        "canonicalHeading": {
+          "type": "string"
+        },
+        "canonicalBody": {
+          "type": "string"
+        },
+        "endpointHealth": {
+          "type": "string"
+        },
+        "endpointSleep": {
+          "type": "string"
+        },
+        "endpointFocus": {
+          "type": "string"
+        },
+        "endpointGithubEvents": {
+          "type": "string"
+        },
+        "endpointStarred": {
+          "type": "string"
+        },
+        "endpointBooks": {
+          "type": "string"
+        },
+        "endpointArticles": {
+          "type": "string"
+        },
+        "endpointTheatre": {
+          "type": "string"
+        },
+        "endpointWorkouts": {
+          "type": "string"
+        },
+        "endpointLocation": {
+          "type": "string"
+        },
+        "technologyHeading": {
+          "type": "string"
+        },
+        "technologyFramework": {
+          "type": "string"
+        },
+        "technologyHosting": {
+          "type": "string"
+        },
+        "technologyLiveData": {
+          "type": "string"
+        },
+        "technologyDesign": {
+          "type": "string"
+        },
+        "expertiseHeading": {
+          "type": "string"
+        },
+        "optionalHeading": {
+          "type": "string"
+        },
+        "optionalBody": {
+          "type": "string"
+        },
+        "wikiSpec": {
+          "type": "string"
+        },
+        "wikiArchitecture": {
+          "type": "string"
+        },
+        "wikiBrand": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "titleHeading",
+        "aboutHeading",
+        "aboutBody",
+        "linkSite",
+        "linkGithub",
+        "linkLinkedin",
+        "liveHeading",
+        "liveBody",
+        "liveFullDump",
+        "liveIndexAlias",
+        "canonicalHeading",
+        "canonicalBody",
+        "endpointHealth",
+        "endpointSleep",
+        "endpointFocus",
+        "endpointGithubEvents",
+        "endpointStarred",
+        "endpointBooks",
+        "endpointArticles",
+        "endpointTheatre",
+        "endpointWorkouts",
+        "endpointLocation",
+        "technologyHeading",
+        "technologyFramework",
+        "technologyHosting",
+        "technologyLiveData",
+        "technologyDesign",
+        "expertiseHeading",
+        "optionalHeading",
+        "optionalBody",
+        "wikiSpec",
+        "wikiArchitecture",
+        "wikiBrand"
+      ],
+      "additionalProperties": false
+    },
+    "full": {
+      "type": "object",
+      "title": "LlmFull",
+      "description": "Prose strings from llms-full.eta — the complete LLM data dump (/llms-full.txt + /index.md). The <SYSTEM> framing line, headings, blockquote intro, meta labels, table column headers, the _No … available._ fallbacks, list-label prefixes, and explanatory paragraphs.",
+      "properties": {
+        "systemFraming": {
+          "type": "string"
+        },
+        "titleHeading": {
+          "type": "string"
+        },
+        "intro": {
+          "type": "string"
+        },
+        "metaLastUpdated": {
+          "type": "string"
+        },
+        "metaGenerated": {
+          "type": "string"
+        },
+        "metaSource": {
+          "type": "string"
+        },
+        "contentsHeading": {
+          "type": "string"
+        },
+        "contentsProfile": {
+          "type": "string"
+        },
+        "contentsBody": {
+          "type": "string"
+        },
+        "contentsMind": {
+          "type": "string"
+        },
+        "contentsSystem": {
+          "type": "string"
+        },
+        "contentsStreams": {
+          "type": "string"
+        },
+        "profileHeading": {
+          "type": "string"
+        },
+        "profileNameLine": {
+          "type": "string"
+        },
+        "profileBio": {
+          "type": "string"
+        },
+        "profileLocation": {
+          "type": "string"
+        },
+        "profileExperience": {
+          "type": "string"
+        },
+        "profilePhilosophy": {
+          "type": "string"
+        },
+        "profileCurrentFocus": {
+          "type": "string"
+        },
+        "profileSkills": {
+          "type": "string"
+        },
+        "profileInterests": {
+          "type": "string"
+        },
+        "expertiseHeading": {
+          "type": "string"
+        },
+        "linksHeading": {
+          "type": "string"
+        },
+        "linkSite": {
+          "type": "string"
+        },
+        "linkGithub": {
+          "type": "string"
+        },
+        "linkLinkedin": {
+          "type": "string"
+        },
+        "bodyHeading": {
+          "type": "string"
+        },
+        "bodyDataAsOf": {
+          "type": "string"
+        },
+        "bodyAggregateNote": {
+          "type": "string"
+        },
+        "cardioHeading": {
+          "type": "string"
+        },
+        "cardioEmpty": {
+          "type": "string"
+        },
+        "cardioColumns": {
+          "type": "string"
+        },
+        "cardioRestingLabel": {
+          "type": "string"
+        },
+        "cardioHrvLabel": {
+          "type": "string"
+        },
+        "sleepHeading": {
+          "type": "string"
+        },
+        "sleepEmpty": {
+          "type": "string"
+        },
+        "sleepColumns": {
+          "type": "string"
+        },
+        "sleepTotalLabel": {
+          "type": "string"
+        },
+        "sleepEfficiencyLabel": {
+          "type": "string"
+        },
+        "sleepDeepLabel": {
+          "type": "string"
+        },
+        "sleepRemLabel": {
+          "type": "string"
+        },
+        "activityHeading": {
+          "type": "string"
+        },
+        "workoutsHeading": {
+          "type": "string"
+        },
+        "workoutsEmpty": {
+          "type": "string"
+        },
+        "workoutsActivityTypes": {
+          "type": "string"
+        },
+        "workoutsAvgDuration": {
+          "type": "string"
+        },
+        "workoutsAvgEnergy": {
+          "type": "string"
+        },
+        "hydrationHeading": {
+          "type": "string"
+        },
+        "hydrationWater": {
+          "type": "string"
+        },
+        "hydrationCaffeine": {
+          "type": "string"
+        },
+        "mindHeading": {
+          "type": "string"
+        },
+        "githubHeading": {
+          "type": "string"
+        },
+        "githubDataAsOf": {
+          "type": "string"
+        },
+        "githubEmpty": {
+          "type": "string"
+        },
+        "githubActiveRepos": {
+          "type": "string"
+        },
+        "githubRecentEvents": {
+          "type": "string"
+        },
+        "githubStarredCount": {
+          "type": "string"
+        },
+        "githubRecentCommitsHeading": {
+          "type": "string"
+        },
+        "githubRecentPrsHeading": {
+          "type": "string"
+        },
+        "starredHeading": {
+          "type": "string"
+        },
+        "starredDataAsOf": {
+          "type": "string"
+        },
+        "starredEmpty": {
+          "type": "string"
+        },
+        "starredSummary": {
+          "type": "string"
+        },
+        "starredTopics": {
+          "type": "string"
+        },
+        "bookshelfHeading": {
+          "type": "string"
+        },
+        "bookshelfDataAsOf": {
+          "type": "string"
+        },
+        "bookshelfEmpty": {
+          "type": "string"
+        },
+        "bookshelfReadingHeading": {
+          "type": "string"
+        },
+        "bookshelfByAuthor": {
+          "type": "string"
+        },
+        "bookshelfNotesLabel": {
+          "type": "string"
+        },
+        "bookshelfIsbnLabel": {
+          "type": "string"
+        },
+        "bookshelfUpNextHeading": {
+          "type": "string"
+        },
+        "bookshelfFinishedHeading": {
+          "type": "string"
+        },
+        "bookshelfStatsHeading": {
+          "type": "string"
+        },
+        "bookshelfStatBooksRead": {
+          "type": "string"
+        },
+        "bookshelfStatReading": {
+          "type": "string"
+        },
+        "bookshelfStatUpNext": {
+          "type": "string"
+        },
+        "bookshelfStatAvgRating": {
+          "type": "string"
+        },
+        "articlesHeading": {
+          "type": "string"
+        },
+        "articlesDataAsOf": {
+          "type": "string"
+        },
+        "articlesEmpty": {
+          "type": "string"
+        },
+        "articlesColumns": {
+          "type": "string"
+        },
+        "theatreHeading": {
+          "type": "string"
+        },
+        "theatreDataAsOf": {
+          "type": "string"
+        },
+        "theatreEmpty": {
+          "type": "string"
+        },
+        "theatreByLine": {
+          "type": "string"
+        },
+        "theatreSource": {
+          "type": "string"
+        },
+        "systemHeading": {
+          "type": "string"
+        },
+        "freshnessHeading": {
+          "type": "string"
+        },
+        "freshnessColumns": {
+          "type": "string"
+        },
+        "freshnessNote": {
+          "type": "string"
+        },
+        "streamsHeading": {
+          "type": "string"
+        },
+        "streamsBody": {
+          "type": "string"
+        },
+        "streamHealth": {
+          "type": "string"
+        },
+        "streamSleep": {
+          "type": "string"
+        },
+        "streamFocus": {
+          "type": "string"
+        },
+        "streamGithubEvents": {
+          "type": "string"
+        },
+        "streamStarred": {
+          "type": "string"
+        },
+        "streamBooks": {
+          "type": "string"
+        },
+        "streamArticles": {
+          "type": "string"
+        },
+        "streamTheatre": {
+          "type": "string"
+        },
+        "streamWorkouts": {
+          "type": "string"
+        },
+        "streamLocation": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "systemFraming",
+        "titleHeading",
+        "intro",
+        "metaLastUpdated",
+        "metaGenerated",
+        "metaSource",
+        "contentsHeading",
+        "contentsProfile",
+        "contentsBody",
+        "contentsMind",
+        "contentsSystem",
+        "contentsStreams",
+        "profileHeading",
+        "profileNameLine",
+        "profileBio",
+        "profileLocation",
+        "profileExperience",
+        "profilePhilosophy",
+        "profileCurrentFocus",
+        "profileSkills",
+        "profileInterests",
+        "expertiseHeading",
+        "linksHeading",
+        "linkSite",
+        "linkGithub",
+        "linkLinkedin",
+        "bodyHeading",
+        "bodyDataAsOf",
+        "bodyAggregateNote",
+        "cardioHeading",
+        "cardioEmpty",
+        "cardioColumns",
+        "cardioRestingLabel",
+        "cardioHrvLabel",
+        "sleepHeading",
+        "sleepEmpty",
+        "sleepColumns",
+        "sleepTotalLabel",
+        "sleepEfficiencyLabel",
+        "sleepDeepLabel",
+        "sleepRemLabel",
+        "activityHeading",
+        "workoutsHeading",
+        "workoutsEmpty",
+        "workoutsActivityTypes",
+        "workoutsAvgDuration",
+        "workoutsAvgEnergy",
+        "hydrationHeading",
+        "hydrationWater",
+        "hydrationCaffeine",
+        "mindHeading",
+        "githubHeading",
+        "githubDataAsOf",
+        "githubEmpty",
+        "githubActiveRepos",
+        "githubRecentEvents",
+        "githubStarredCount",
+        "githubRecentCommitsHeading",
+        "githubRecentPrsHeading",
+        "starredHeading",
+        "starredDataAsOf",
+        "starredEmpty",
+        "starredSummary",
+        "starredTopics",
+        "bookshelfHeading",
+        "bookshelfDataAsOf",
+        "bookshelfEmpty",
+        "bookshelfReadingHeading",
+        "bookshelfByAuthor",
+        "bookshelfNotesLabel",
+        "bookshelfIsbnLabel",
+        "bookshelfUpNextHeading",
+        "bookshelfFinishedHeading",
+        "bookshelfStatsHeading",
+        "bookshelfStatBooksRead",
+        "bookshelfStatReading",
+        "bookshelfStatUpNext",
+        "bookshelfStatAvgRating",
+        "articlesHeading",
+        "articlesDataAsOf",
+        "articlesEmpty",
+        "articlesColumns",
+        "theatreHeading",
+        "theatreDataAsOf",
+        "theatreEmpty",
+        "theatreByLine",
+        "theatreSource",
+        "systemHeading",
+        "freshnessHeading",
+        "freshnessColumns",
+        "freshnessNote",
+        "streamsHeading",
+        "streamsBody",
+        "streamHealth",
+        "streamSleep",
+        "streamFocus",
+        "streamGithubEvents",
+        "streamStarred",
+        "streamBooks",
+        "streamArticles",
+        "streamTheatre",
+        "streamWorkouts",
+        "streamLocation"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "txt",
+    "full"
+  ],
+  "additionalProperties": false
+}
