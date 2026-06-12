@@ -31,7 +31,7 @@ const PKG_ROOT = join(HERE, '..'); // packages/copy
 const DS_ROOT = join(PKG_ROOT, '..', '..'); // design-system-Lifegames
 
 /** Migrated namespaces whose values must not be hardcoded in consumers. */
-const NAMESPACES = ['widgets'];
+const NAMESPACES = ['widgets', 'a11y'];
 
 /** Consumer source roots to scan (relative to DS_ROOT). Never packages/copy. */
 const CONSUMER_ROOTS = [

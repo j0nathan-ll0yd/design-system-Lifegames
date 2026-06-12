@@ -8,7 +8,7 @@
 // strings, named functions) but the port-first approach minimizes regression
 // risk for the cross-repo migration.
 
-import { widgets } from '@lifegames/copy';
+import { widgets, a11y } from '@lifegames/copy';
 import { esc } from './html-utils';
 
 interface BookData {
@@ -82,7 +82,7 @@ function renderModalHtml(b: BookData): string {
     html += '</div>';
   }
   html += '</div>';
-  html += '<button class="book-modal-close" id="bookModalClose" aria-label="Close">&times;</button>';
+  html += '<button class="book-modal-close" id="bookModalClose" aria-label="' + a11y.modal.close + '">&times;</button>';
   html += '</div>';
   html += '<div class="book-modal-body">';
   html += '<div class="book-modal-stats">';

@@ -17,6 +17,7 @@ public enum CopyError: Error, Sendable {
 public enum CopyLoader {
     private static let identityResource = "identity.en-US"
     private static let widgetsResource = "widgets.en-US"
+    private static let a11yResource = "a11y.en-US"
 
     /// Decodes the bundled identity copy (en-US, flat values).
     ///
@@ -79,6 +80,38 @@ public enum CopyLoader {
             return try loadWidgets()
         } catch {
             fatalError("LifegamesCopy: bundled \(widgetsResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled accessibility copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Accessibility``.
+    public static func loadAccessibility() throws -> Accessibility {
+        guard let url = Bundle.module.url(forResource: a11yResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(a11yResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Accessibility.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(a11yResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled accessibility copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadAccessibility()`` where you want to handle failure explicitly.
+    public static let a11y: Accessibility = {
+        do {
+            return try loadAccessibility()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(a11yResource).json failed to load: \(error)")
         }
     }()
 }

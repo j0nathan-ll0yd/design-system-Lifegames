@@ -1,4 +1,6 @@
 ---
+import { a11y } from '@lifegames/copy';
+
 interface Props {
   visible?: boolean;
   class?: string;
@@ -14,7 +16,7 @@ const { visible = false, class: className } = Astro.props;
   data-modal-overlay
 >
   <div class="lg-modal">
-    <button class="lg-modal-close" aria-label="Close" data-modal-close>
+    <button class="lg-modal-close" aria-label={a11y.modal.close} data-modal-close>
       &times;
     </button>
     <div class="lg-modal-body">

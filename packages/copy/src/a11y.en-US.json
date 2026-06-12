@@ -1,0 +1,205 @@
+{
+  "movement": {
+    "rings": {
+      "value": "Calories {calories}%, Exercise {exercise}%, Stand {stand}%",
+      "_meta": {
+        "description": "Movement Rings activity-rings progress summary, read by screen readers. ICU MF1 template; the consumer substitutes the three integer ring percentages at the call site (D2-A).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:126 (.mv-rings aria-label, composed 'Calories ${movePct}%, Exercise ${exercisePct}%, Stand ${standPct}%')"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "daylight": {
+      "value": "Daylight position",
+      "_meta": {
+        "description": "Accessibility label for the sun-arc daylight-position track (rendered as role=img) in the Movement Rings footer.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:193 (.mv-sun-track aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "identity": {
+    "avatarAlt": {
+      "value": "{name} profile photo",
+      "_meta": {
+        "description": "Alt text for the identity-card avatar image. ICU MF1 template; the consumer substitutes the person's display name (from identity.person.name) at the call site (D2-A).",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:11 (.id-avatar alt, compact, composed `${profile.name} profile photo`)",
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:54 (.id-avatar alt, full, composed `${profile.name} profile photo`)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "socialNav": {
+      "value": "Social",
+      "_meta": {
+        "description": "Accessibility label for the social/external-links nav landmark on the identity card.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:21 (.id-links nav aria-label, compact)",
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:64 (.id-links nav aria-label, full)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    }
+  },
+  "bookshelf": {
+    "bookItem": {
+      "value": "{title} by {author}",
+      "_meta": {
+        "description": "Per-book list-item aria-label on the bookshelf shelf row. ICU MF1 template; the consumer substitutes the book title and author at the call site (D2-A).",
+        "usage": [
+          "web:packages/web/src/widgets/reading/Bookshelf.astro:83 (.shelf-book aria-label, SSR, composed `${b.title} by ${b.author}`)",
+          "web:packages/web/src/runtime/updaters.ts:532 (shelf-book aria-label set on re-render, 'b.title + ' by ' + b.author')",
+          "web:packages/web/src/runtime/updaters.ts:661 (shelf-book aria-label in generated markup, esc(b.title) + ' by ' + esc(b.author))"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "bookModal": {
+    "dialog": {
+      "value": "Book details",
+      "_meta": {
+        "description": "Accessibility label for the book-detail modal dialog (role=dialog overlay).",
+        "usage": [
+          "web:packages/web/src/widgets/reading/BookModal.astro:3 (.book-overlay aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 24 }
+      }
+    }
+  },
+  "modal": {
+    "close": {
+      "value": "Close",
+      "_meta": {
+        "description": "Accessibility label for a modal close (×) button. Shared modal chrome — used by both the generic Modal and the book-detail modal close buttons.",
+        "usage": [
+          "web:packages/web/src/components/Modal.astro:17 (.lg-modal-close aria-label)",
+          "web:packages/web/src/runtime/book-modal-init.ts:85 (.book-modal-close aria-label in generated markup)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    }
+  },
+  "readingFeed": {
+    "pagination": {
+      "value": "Page {page} of {total}",
+      "_meta": {
+        "description": "Article-pagination button aria-label in the Reading Feed. ICU MF1 template; the consumer substitutes the current page number and total page count at the call site (D2-A).",
+        "usage": [
+          "web:packages/web/src/runtime/reading-feed-init.ts:31 (.article-page-btn aria-label, 'Page ' + p + ' of ' + totalPages)",
+          "web:packages/web/src/runtime/updaters.ts:338 (.article-page-btn aria-label in generated markup, 'Page ' + p + ' of ' + totalPages)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "nav": {
+    "profile": {
+      "value": "Profile",
+      "_meta": {
+        "description": "Accessibility label for the left-panel profile aside landmark (web shell).",
+        "usage": [
+          "webshell:src/pages/index.astro:22 (.left-panel aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "dashboard": {
+      "value": "Dashboard",
+      "_meta": {
+        "description": "Accessibility label for the top-bar dashboard nav landmark (web shell).",
+        "usage": [
+          "webshell:src/pages/index.astro:29 (nav aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    }
+  },
+  "region": {
+    "body": {
+      "value": "Body",
+      "_meta": {
+        "description": "Accessibility label for the Body triptych column region (web shell).",
+        "usage": [
+          "webshell:src/pages/index.astro:43 (.triptych-column-body section aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "mind": {
+      "value": "Mind",
+      "_meta": {
+        "description": "Accessibility label for the Mind triptych column region (web shell).",
+        "usage": [
+          "webshell:src/pages/index.astro:54 (.triptych-column-mind section aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    }
+  },
+  "clock": {
+    "currentTime": {
+      "value": "Current time",
+      "_meta": {
+        "description": "Accessibility label for the top-bar live clock readout (web shell).",
+        "usage": [
+          "webshell:src/pages/index.astro:36 (.top-bar-clock #liveClock aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 24 }
+      }
+    }
+  },
+  "page404": {
+    "region": {
+      "value": "404 error page",
+      "_meta": {
+        "description": "Accessibility label for the 404 glitch error region (web shell).",
+        "usage": [
+          "webshell:src/pages/404.astro:6 (.glitch-container aria-label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 24 }
+      }
+    }
+  }
+}

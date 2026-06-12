@@ -1,5 +1,5 @@
 ---
-import { widgets } from '@lifegames/copy';
+import { widgets, a11y } from '@lifegames/copy';
 
 const { profile, compact = false } = Astro.props;
 ---
@@ -8,7 +8,7 @@ const { profile, compact = false } = Astro.props;
     {profile.github || profile.linkedin ? (
       <picture>
         <source srcset="/assets/avatar.webp" type="image/webp">
-        <img class="id-avatar" src="/assets/avatar.jpg" alt={profile.name + ' profile photo'} fetchpriority="high" width="200" height="200">
+        <img class="id-avatar" src="/assets/avatar.jpg" alt={a11y.identity.avatarAlt.replace('{name}', profile.name)} fetchpriority="high" width="200" height="200">
       </picture>
     ) : null}
     <div class="id-info-inline">
@@ -18,7 +18,7 @@ const { profile, compact = false } = Astro.props;
     {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
     {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
     {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
-      <nav class="id-links" aria-label="Social">
+      <nav class="id-links" aria-label={a11y.identity.socialNav}>
         {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.github}</a>}
         {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.linkedin}</a>}
         {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.site}</a>}
@@ -51,7 +51,7 @@ const { profile, compact = false } = Astro.props;
         {profile.github || profile.linkedin ? (
           <picture>
             <source srcset="/assets/avatar.webp" type="image/webp">
-            <img class="id-avatar" src="/assets/avatar.jpg" alt={profile.name + ' profile photo'} fetchpriority="high" width="200" height="200">
+            <img class="id-avatar" src="/assets/avatar.jpg" alt={a11y.identity.avatarAlt.replace('{name}', profile.name)} fetchpriority="high" width="200" height="200">
           </picture>
         ) : null}
         <div class="id-info-inline">
@@ -61,7 +61,7 @@ const { profile, compact = false } = Astro.props;
         {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
         {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
         {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
-          <nav class="id-links" aria-label="Social">
+          <nav class="id-links" aria-label={a11y.identity.socialNav}>
             {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">GitHub</a>}
             {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">LinkedIn</a>}
             {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">Site</a>}

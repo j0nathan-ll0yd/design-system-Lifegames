@@ -1,7 +1,7 @@
 ---
 import fs from 'node:fs';
 import path from 'node:path';
-import { widgets } from '@lifegames/copy';
+import { widgets, a11y } from '@lifegames/copy';
 
 const { books } = Astro.props;
 const bookList = books.books;
@@ -80,7 +80,7 @@ function hasLocalImage(asin: string): boolean {
           cover: meta.cover || null
         });
         return (
-          <li class={`shelf-book${b.status === 'in_progress' ? ' shelf-book-active' : ''}`} style={`animation-delay: ${i * 0.08}s`} data-book={bookData} tabindex="0" aria-label={`${b.title} by ${b.author}`}>
+          <li class={`shelf-book${b.status === 'in_progress' ? ' shelf-book-active' : ''}`} style={`animation-delay: ${i * 0.08}s`} data-book={bookData} tabindex="0" aria-label={a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author)}>
             <div class="shelf-cover-wrapper">
               {b.coverAvif ? (
                 <picture>

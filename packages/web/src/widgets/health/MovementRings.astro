@@ -1,5 +1,5 @@
 ---
-import { widgets } from '@lifegames/copy';
+import { widgets, a11y } from '@lifegames/copy';
 import type { MovementRingsProps } from './MovementRings.types';
 
 const { health: rawHealth } = Astro.props as MovementRingsProps;
@@ -123,7 +123,7 @@ function offset(circ: number, pct: number): number {
     ) : (
       <>
         <div class="mv-layout">
-          <div class="mv-rings" aria-label={`Calories ${Math.round(movePct * 100)}%, Exercise ${Math.round(exercisePct * 100)}%, Stand ${Math.round(standPct * 100)}%`}>
+          <div class="mv-rings" aria-label={a11y.movement.rings.replace('{calories}', String(Math.round(movePct * 100))).replace('{exercise}', String(Math.round(exercisePct * 100))).replace('{stand}', String(Math.round(standPct * 100)))}>
             <svg viewBox="0 0 144 144" role="img">
               <!-- tracks -->
               <circle class="mv-ring-track mv-ring-track-move"     cx="72" cy="72" r="60"></circle>
@@ -190,7 +190,7 @@ function offset(circ: number, pct: number): number {
           <div class="mv-sun-arc-row">
             <span class="mv-sun-glyph" aria-hidden="true">☀</span>
             <span class="mv-sun-time" id="mvSunrise">{sunrise}</span>
-            <div class="mv-sun-track" role="img" aria-label="Daylight position">
+            <div class="mv-sun-track" role="img" aria-label={a11y.movement.daylight}>
               <div class="mv-sun-track-line"></div>
               <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`}></div>
             </div>

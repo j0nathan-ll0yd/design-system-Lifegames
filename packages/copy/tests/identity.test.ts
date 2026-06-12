@@ -58,6 +58,9 @@ const NAMESPACES: NamespaceFixture[] = [
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 5 + theatreReviews 2
   //   + bookModal 7 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.
   { name: 'widgets', expectedLeaves: 93 },
+  // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
+  //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
+  { name: 'a11y', expectedLeaves: 14 },
 ];
 
 for (const ns of NAMESPACES) {

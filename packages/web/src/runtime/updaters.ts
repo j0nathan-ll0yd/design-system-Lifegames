@@ -1,4 +1,4 @@
-import { widgets } from '@lifegames/copy';
+import { widgets, a11y } from '@lifegames/copy';
 import { classifyHeartRate, classifyHRV } from './heart-rate';
 import { HYDRATION } from './constants';
 import type { AdaptedHealth, AdaptedSleep, AdaptedBooks, AdaptedGithubEvent, AdaptedStarredRepo, BookMeta, WorkoutEntry, AdaptedArticle } from './adapters';
@@ -335,7 +335,7 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
       for (let p = 1; p <= totalPages; p++) {
         const activeClass = p === page ? ' article-page-active' : '';
         const ariaCurrent = p === page ? ' aria-current="page"' : '';
-        html += '<button class="article-page-btn' + activeClass + '"' + ariaCurrent + ' data-page="' + p + '" aria-label="Page ' + p + ' of ' + totalPages + '">' + p + '</button>';
+        html += '<button class="article-page-btn' + activeClass + '"' + ariaCurrent + ' data-page="' + p + '" aria-label="' + a11y.readingFeed.pagination.replace('{page}', String(p)).replace('{total}', String(totalPages)) + '">' + p + '</button>';
       }
       html += '</div>';
     }
@@ -529,7 +529,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
         notes: b.notes || null,
       }));
 
-      el.setAttribute('aria-label', b.title + ' by ' + b.author);
+      el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author));
 
       const img = el.querySelector('img') as HTMLImageElement | null;
       if (img) {
@@ -658,7 +658,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc;
       const displayCardSrc = localCardSrc || null;
       const displayCoverSrc = localCoverSrc ?? coverSrc;
-      html += '<div class="shelf-book' + activeClass + '" style="animation-delay: ' + (i * 0.08) + 's" data-book=\'' + bookData.replace(/'/g, '&#39;') + '\' tabindex="0" aria-label="' + esc(b.title) + ' by ' + esc(b.author) + '">';
+      html += '<div class="shelf-book' + activeClass + '" style="animation-delay: ' + (i * 0.08) + 's" data-book=\'' + bookData.replace(/'/g, '&#39;') + '\' tabindex="0" aria-label="' + a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) + '">';
       html += '<div class="shelf-cover-wrapper">';
       const srcsetAttr = displayCardSrc ? ' srcset="' + esc(displayCardSrc) + ' 1x, ' + esc(displayCoverSrc) + ' 2x"' : '';
       var avifSrcset = '';

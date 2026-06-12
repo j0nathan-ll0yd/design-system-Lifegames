@@ -14,3 +14,9 @@ import type { Widgets } from './widgets';
 export type { Widgets } from './widgets';
 
 export const widgets: Widgets = widgetsData;
+import a11yData from './a11y.flat.json';
+import type { Accessibility } from './a11y';
+
+export type { Accessibility } from './a11y';
+
+export const a11y: Accessibility = a11yData;
