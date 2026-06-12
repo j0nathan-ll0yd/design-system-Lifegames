@@ -16,6 +16,7 @@ public enum CopyError: Error, Sendable {
 /// `Identity` and its nested types are generated (`Identity.generated.swift`).
 public enum CopyLoader {
     private static let identityResource = "identity.en-US"
+    private static let widgetsResource = "widgets.en-US"
 
     /// Decodes the bundled identity copy (en-US, flat values).
     ///
@@ -46,6 +47,38 @@ public enum CopyLoader {
             return try loadIdentity()
         } catch {
             fatalError("LifegamesCopy: bundled \(identityResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled widgets copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Widgets``.
+    public static func loadWidgets() throws -> Widgets {
+        guard let url = Bundle.module.url(forResource: widgetsResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(widgetsResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Widgets.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(widgetsResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled widgets copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadWidgets()`` where you want to handle failure explicitly.
+    public static let widgets: Widgets = {
+        do {
+            return try loadWidgets()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(widgetsResource).json failed to load: \(error)")
         }
     }()
 }

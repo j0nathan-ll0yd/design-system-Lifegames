@@ -1,0 +1,127 @@
+{
+  "heartRate": {
+    "title": "Heart Rate",
+    "bpm": "BPM",
+    "hrv": "HRV",
+    "hrvUnit": "ms",
+    "rhr": "RHR",
+    "rhrUnit": "bpm",
+    "rr": "RR",
+    "rrUnit": "br/m",
+    "temp": "Temp",
+    "empty": "No heart rate data",
+    "zoneBradycardia": "Bradycardia",
+    "zoneResting": "Resting Zone",
+    "zoneNormal": "Normal Zone",
+    "zoneFatBurn": "Fat Burn",
+    "zonePeak": "Peak Zone",
+    "timestampLive": "live"
+  },
+  "movement": {
+    "title": "Movement",
+    "steps": "Steps",
+    "distance": "Distance",
+    "distanceUnit": "km",
+    "flights": "Flights",
+    "calories": "Calories",
+    "caloriesShort": "Cal",
+    "exercise": "Exercise",
+    "exerciseShort": "Ex",
+    "stand": "Stand",
+    "empty": "No movement yet today",
+    "daylightCaption": "{minutes} min in daylight today",
+    "daylightGoal": "goal {minutes} min",
+    "timestampToday": "today"
+  },
+  "workouts": {
+    "title": "Workouts",
+    "recoveryDay": "Recovery Day",
+    "none": "No workouts recorded",
+    "recoveryBody": "Your body recovers while you rest",
+    "duration": "Duration",
+    "calories": "Calories",
+    "caloriesUnit": "kcal",
+    "distance": "Distance",
+    "distanceUnit": "km",
+    "timestampToday": "today"
+  },
+  "hydration": {
+    "title": "Hydration",
+    "water": "Water",
+    "caffeine": "Caffeine",
+    "timestampToday": "today"
+  },
+  "nightSummary": {
+    "title": "Night Summary",
+    "score": "Score",
+    "phaseDeep": "Deep",
+    "phaseRem": "REM",
+    "phaseCore": "Core",
+    "phaseAwake": "Awake",
+    "restorative": "{deep}% deep — {rem}% REM — restorative sleep",
+    "empty": "No sleep data",
+    "timestampLastNight": "last night"
+  },
+  "exploration": {
+    "title": "Exploration",
+    "visits": "Visits",
+    "places": "Places",
+    "cities": "Cities",
+    "states": "States"
+  },
+  "topPlaces": {
+    "title": "Top Places",
+    "empty": "No places recorded yet"
+  },
+  "readingFeed": {
+    "title": "Reading Feed",
+    "empty": "No articles yet",
+    "timestampRecent": "recent"
+  },
+  "bookshelf": {
+    "title": "Bookshelf",
+    "emptyTitle": "No Books Yet",
+    "emptyBody": "Books you add will appear here",
+    "statusReading": "Reading",
+    "timestampLibrary": "library"
+  },
+  "theatreReviews": {
+    "title": "Theatre Reviews",
+    "empty": "No reviews yet"
+  },
+  "bookModal": {
+    "notes": "Notes",
+    "empty": "No book selected",
+    "pages": "Pages",
+    "published": "Published",
+    "status": "Status",
+    "amazonCta": "View on Amazon →",
+    "progressSuffix": "{percent}% complete"
+  },
+  "devLog": {
+    "title": "Dev Log",
+    "timestampLive": "live"
+  },
+  "starredRepos": {
+    "title": "Starred Repos",
+    "timestampRecent": "recent"
+  },
+  "bio": {
+    "title": "Bio",
+    "terminalTitle": "zsh — about",
+    "timestampBash": "bash"
+  },
+  "systemStatus": {
+    "title": "System Status",
+    "valueActive": "Active",
+    "valueOffline": "Offline",
+    "timestampRealtime": "realtime"
+  },
+  "identityCard": {
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "site": "Site",
+    "mastodon": "Mastodon",
+    "bluesky": "Bluesky"
+  }
+}

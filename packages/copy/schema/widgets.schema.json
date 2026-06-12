@@ -1,0 +1,378 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.widgets.schema.json",
+  "title": "LifegamesCopyWidgets",
+  "description": "Rich authoring schema for the widgets slice of @lifegames/copy (V2 Wave 1a). Every customer-facing widget label, unit, empty-state, zone/phase name, and timestamp badge is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax. Casing is canonical natural-case (D3): consumers apply any uppercasing as a display-only transform; no all-caps literals are stored. The $defs block is byte-identical to schema/identity.schema.json (per-file inlined, no cross-file $ref — §3.2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "heartRate",
+    "movement",
+    "workouts",
+    "hydration",
+    "nightSummary",
+    "exploration",
+    "topPlaces",
+    "readingFeed",
+    "bookshelf",
+    "theatreReviews",
+    "bookModal",
+    "devLog",
+    "starredRepos",
+    "bio",
+    "systemStatus",
+    "identityCard"
+  ],
+  "properties": {
+    "heartRate": {
+      "type": "object",
+      "description": "Heart Rate widget — title, metric labels/units, HR zone names, empty-state, timestamp.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "bpm",
+        "hrv",
+        "hrvUnit",
+        "rhr",
+        "rhrUnit",
+        "rr",
+        "rrUnit",
+        "temp",
+        "empty",
+        "zoneBradycardia",
+        "zoneResting",
+        "zoneNormal",
+        "zoneFatBurn",
+        "zonePeak",
+        "timestampLive"
+      ],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "bpm": { "$ref": "#/$defs/CopyString" },
+        "hrv": { "$ref": "#/$defs/CopyString" },
+        "hrvUnit": { "$ref": "#/$defs/CopyString" },
+        "rhr": { "$ref": "#/$defs/CopyString" },
+        "rhrUnit": { "$ref": "#/$defs/CopyString" },
+        "rr": { "$ref": "#/$defs/CopyString" },
+        "rrUnit": { "$ref": "#/$defs/CopyString" },
+        "temp": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
+        "zoneBradycardia": { "$ref": "#/$defs/CopyString" },
+        "zoneResting": { "$ref": "#/$defs/CopyString" },
+        "zoneNormal": { "$ref": "#/$defs/CopyString" },
+        "zoneFatBurn": { "$ref": "#/$defs/CopyString" },
+        "zonePeak": { "$ref": "#/$defs/CopyString" },
+        "timestampLive": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "movement": {
+      "type": "object",
+      "description": "Movement Rings widget — title, ring/metric labels + short variants, units, empty-state, daylight caption template, timestamp.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "steps",
+        "distance",
+        "distanceUnit",
+        "flights",
+        "calories",
+        "caloriesShort",
+        "exercise",
+        "exerciseShort",
+        "stand",
+        "empty",
+        "daylightCaption",
+        "daylightGoal",
+        "timestampToday"
+      ],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "steps": { "$ref": "#/$defs/CopyString" },
+        "distance": { "$ref": "#/$defs/CopyString" },
+        "distanceUnit": { "$ref": "#/$defs/CopyString" },
+        "flights": { "$ref": "#/$defs/CopyString" },
+        "calories": { "$ref": "#/$defs/CopyString" },
+        "caloriesShort": { "$ref": "#/$defs/CopyString" },
+        "exercise": { "$ref": "#/$defs/CopyString" },
+        "exerciseShort": { "$ref": "#/$defs/CopyString" },
+        "stand": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
+        "daylightCaption": { "$ref": "#/$defs/CopyString" },
+        "daylightGoal": { "$ref": "#/$defs/CopyString" },
+        "timestampToday": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "workouts": {
+      "type": "object",
+      "description": "Workouts widget — title, recovery-day empty-state chrome, stat labels/units, timestamp.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "recoveryDay",
+        "none",
+        "recoveryBody",
+        "duration",
+        "calories",
+        "caloriesUnit",
+        "distance",
+        "distanceUnit",
+        "timestampToday"
+      ],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "recoveryDay": { "$ref": "#/$defs/CopyString" },
+        "none": { "$ref": "#/$defs/CopyString" },
+        "recoveryBody": { "$ref": "#/$defs/CopyString" },
+        "duration": { "$ref": "#/$defs/CopyString" },
+        "calories": { "$ref": "#/$defs/CopyString" },
+        "caloriesUnit": { "$ref": "#/$defs/CopyString" },
+        "distance": { "$ref": "#/$defs/CopyString" },
+        "distanceUnit": { "$ref": "#/$defs/CopyString" },
+        "timestampToday": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "hydration": {
+      "type": "object",
+      "description": "Hydration widget — title, vessel labels, timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "water", "caffeine", "timestampToday"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "water": { "$ref": "#/$defs/CopyString" },
+        "caffeine": { "$ref": "#/$defs/CopyString" },
+        "timestampToday": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "nightSummary": {
+      "type": "object",
+      "description": "Night Summary (sleep) widget — title, score label, sleep-phase names, restorative caption template, empty-state, timestamp.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "score",
+        "phaseDeep",
+        "phaseRem",
+        "phaseCore",
+        "phaseAwake",
+        "restorative",
+        "empty",
+        "timestampLastNight"
+      ],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "score": { "$ref": "#/$defs/CopyString" },
+        "phaseDeep": { "$ref": "#/$defs/CopyString" },
+        "phaseRem": { "$ref": "#/$defs/CopyString" },
+        "phaseCore": { "$ref": "#/$defs/CopyString" },
+        "phaseAwake": { "$ref": "#/$defs/CopyString" },
+        "restorative": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
+        "timestampLastNight": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "exploration": {
+      "type": "object",
+      "description": "Exploration odometer widget — title + the four odometer stat labels.",
+      "additionalProperties": false,
+      "required": ["title", "visits", "places", "cities", "states"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "visits": { "$ref": "#/$defs/CopyString" },
+        "places": { "$ref": "#/$defs/CopyString" },
+        "cities": { "$ref": "#/$defs/CopyString" },
+        "states": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "topPlaces": {
+      "type": "object",
+      "description": "Top Places leaderboard widget — title + empty-state.",
+      "additionalProperties": false,
+      "required": ["title", "empty"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "readingFeed": {
+      "type": "object",
+      "description": "Reading Feed widget — title, empty-state, timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "empty", "timestampRecent"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
+        "timestampRecent": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "bookshelf": {
+      "type": "object",
+      "description": "Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "emptyTitle", "emptyBody", "statusReading", "timestampLibrary"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "emptyTitle": { "$ref": "#/$defs/CopyString" },
+        "emptyBody": { "$ref": "#/$defs/CopyString" },
+        "statusReading": { "$ref": "#/$defs/CopyString" },
+        "timestampLibrary": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "theatreReviews": {
+      "type": "object",
+      "description": "Theatre Reviews widget — title + empty-state.",
+      "additionalProperties": false,
+      "required": ["title", "empty"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "bookModal": {
+      "type": "object",
+      "description": "Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template.",
+      "additionalProperties": false,
+      "required": ["notes", "empty", "pages", "published", "status", "amazonCta", "progressSuffix"],
+      "properties": {
+        "notes": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
+        "pages": { "$ref": "#/$defs/CopyString" },
+        "published": { "$ref": "#/$defs/CopyString" },
+        "status": { "$ref": "#/$defs/CopyString" },
+        "amazonCta": { "$ref": "#/$defs/CopyString" },
+        "progressSuffix": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "devLog": {
+      "type": "object",
+      "description": "Dev Log (GitHub activity) production widget — title + live timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "timestampLive"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "timestampLive": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "starredRepos": {
+      "type": "object",
+      "description": "Starred Repos production widget — title + recent timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "timestampRecent"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "timestampRecent": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "bio": {
+      "type": "object",
+      "description": "Bio terminal widget — widget title, terminal title-bar text, bash timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "terminalTitle", "timestampBash"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "terminalTitle": { "$ref": "#/$defs/CopyString" },
+        "timestampBash": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "systemStatus": {
+      "type": "object",
+      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.",
+      "additionalProperties": false,
+      "required": ["title", "valueActive", "valueOffline", "timestampRealtime"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "valueActive": { "$ref": "#/$defs/CopyString" },
+        "valueOffline": { "$ref": "#/$defs/CopyString" },
+        "timestampRealtime": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "identityCard": {
+      "type": "object",
+      "description": "Identity card — the social/link pill labels.",
+      "additionalProperties": false,
+      "required": ["github", "linkedin", "site", "mastodon", "bluesky"],
+      "properties": {
+        "github": { "$ref": "#/$defs/CopyString" },
+        "linkedin": { "$ref": "#/$defs/CopyString" },
+        "site": { "$ref": "#/$defs/CopyString" },
+        "mastodon": { "$ref": "#/$defs/CopyString" },
+        "bluesky": { "$ref": "#/$defs/CopyString" }
+      }
+    }
+  },
+  "$defs": {
+    "CopyMeta": {
+      "type": "object",
+      "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
+      "additionalProperties": false,
+      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "What this string is and why it exists."
+        },
+        "usage": {
+          "type": "array",
+          "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "tone": {
+          "type": "string",
+          "description": "Intended voice/register (e.g. professional, playful, terse)."
+        },
+        "owner": {
+          "type": "string",
+          "description": "Who owns this string's wording."
+        },
+        "lastReviewed": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO-8601 date (YYYY-MM-DD) the wording was last deliberately reviewed."
+        },
+        "constraints": {
+          "type": "object",
+          "description": "Optional machine-checkable constraints (CI-enforced).",
+          "additionalProperties": false,
+          "properties": {
+            "maxChars": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum rendered length. CI fails if value exceeds this."
+            }
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Optional: why this wording/variant exists distinctly (intent, history)."
+        }
+      }
+    },
+    "CopyString": {
+      "type": "object",
+      "description": "A single customer-facing string (ICU MF1 syntax) plus its authoring context.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The string, authored in ICU MessageFormat 1 syntax."
+        },
+        "_meta": { "$ref": "#/$defs/CopyMeta" }
+      }
+    },
+    "CopyStringList": {
+      "type": "object",
+      "description": "An ordered list of customer-facing strings (each ICU MF1) plus shared authoring context.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
+          "items": { "type": "string" }
+        },
+        "_meta": { "$ref": "#/$defs/CopyMeta" }
+      }
+    }
+  }
+}
