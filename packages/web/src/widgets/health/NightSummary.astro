@@ -1,23 +1,36 @@
 ---
+import { widgets } from '@lifegames/copy';
+
 const { health } = Astro.props;
 const sleepScore = health.sleepScore;
 const sleepDuration = health.sleepDurationFormatted;
 const phases = health.sleepPhaseFormatted;
 const derived = health.derived;
 
+// Restorative-sleep caption (D2-A): source the ICU template from copy and
+// interpolate the deep/REM percentages. The template is em-dash separated:
+// "{deep}% deep — {rem}% REM — restorative sleep". We split on the em-dash so
+// the web keeps its <span>-wrapped (purple-highlighted) percentage clauses.
+const restorativeClauses = widgets.nightSummary.restorative
+  .split('—')
+  .map((clause) => clause.trim());
+const restorativeDeepClause = (restorativeClauses[0] ?? '').replace('{deep}', String(derived.deepPct));
+const restorativeRemClause = (restorativeClauses[1] ?? '').replace('{rem}', String(derived.remPct));
+const restorativeTailClause = restorativeClauses[2] ?? '';
+
 const pills = [
-  { label: 'Deep', phase: 'deep', formatted: phases.deep, color: 'var(--lg-color-sleep-deep)' },
-  { label: 'REM', phase: 'rem', formatted: phases.rem, color: 'var(--lg-color-sleep-rem)' },
-  { label: 'Core', phase: 'core', formatted: phases.core, color: 'var(--lg-color-sleep-core)' },
-  { label: 'Awake', phase: 'awake', formatted: phases.awake, color: 'var(--lg-color-accent-amber)' }
+  { label: widgets.nightSummary.phaseDeep, phase: 'deep', formatted: phases.deep, color: 'var(--lg-color-sleep-deep)' },
+  { label: widgets.nightSummary.phaseRem, phase: 'rem', formatted: phases.rem, color: 'var(--lg-color-sleep-rem)' },
+  { label: widgets.nightSummary.phaseCore, phase: 'core', formatted: phases.core, color: 'var(--lg-color-sleep-core)' },
+  { label: widgets.nightSummary.phaseAwake, phase: 'awake', formatted: phases.awake, color: 'var(--lg-color-accent-amber)' }
 ];
 ---
 <div class="tri-card tri-card-accent-purple" id="cardSleep">
   <div class="widget-header">
-    <h3 class="widget-label">Night Summary</h3>
+    <h3 class="widget-label">{widgets.nightSummary.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-purple"></div>
-      <span class="widget-timestamp" id="sleepTimestamp">last night</span>
+      <span class="widget-timestamp" id="sleepTimestamp">{widgets.nightSummary.timestampLastNight}</span>
     </div>
   </div>
   <div class="widget-body">
@@ -56,7 +69,7 @@ const pills = [
       <div class="sleep-moon-info">
         <div class="sleep-moon-hero" id="sleepDuration">{sleepDuration}</div>
         <div class="sleep-moon-score-row">
-          <span class="sleep-moon-score-label">Score</span>
+          <span class="sleep-moon-score-label">{widgets.nightSummary.score}</span>
           <div class="sleep-moon-score-track">
             <div class="sleep-moon-score-fill" id="sleepScoreFill" style={`width: ${sleepScore}%`}></div>
           </div>
@@ -73,7 +86,7 @@ const pills = [
       ))}
     </div>
     <div class="sleep-moon-insight" id="sleepInsight">
-      <span>{derived.deepPct}% deep</span> &mdash; <span>{derived.remPct}% REM</span> &mdash; restorative sleep
+      <span>{restorativeDeepClause}</span> &mdash; <span>{restorativeRemClause}</span> &mdash; {restorativeTailClause}
     </div>
   </div>
 </div>

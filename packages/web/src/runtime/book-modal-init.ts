@@ -8,6 +8,7 @@
 // strings, named functions) but the port-first approach minimizes regression
 // risk for the cross-repo migration.
 
+import { widgets } from '@lifegames/copy';
 import { esc } from './html-utils';
 
 interface BookData {
@@ -85,13 +86,13 @@ function renderModalHtml(b: BookData): string {
   html += '</div>';
   html += '<div class="book-modal-body">';
   html += '<div class="book-modal-stats">';
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.pages || '—'}</div><div class="book-modal-stat-label">Pages</div></div>`;
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.year || '—'}</div><div class="book-modal-stat-label">Published</div></div>`;
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${b.status}" style="font-size:0.7rem;margin:0">${b.statusLabel || ''}</div><div class="book-modal-stat-label">Status</div></div>`;
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.pages || '—'}</div><div class="book-modal-stat-label">${widgets.bookModal.pages}</div></div>`;
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.year || '—'}</div><div class="book-modal-stat-label">${widgets.bookModal.published}</div></div>`;
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${b.status}" style="font-size:0.7rem;margin:0">${b.statusLabel || ''}</div><div class="book-modal-stat-label">${widgets.bookModal.status}</div></div>`;
   html += '</div>';
   if (b.status === 'in_progress' && b.progress !== undefined) {
     html += `<div><div class="book-modal-progress"><div class="book-modal-progress-fill" style="width:${b.progress}%"></div></div>`;
-    html += `<div class="book-modal-progress-label">${b.progress}% complete</div></div>`;
+    html += `<div class="book-modal-progress-label">${widgets.bookModal.progressSuffix.replace('{percent}', String(b.progress))}</div></div>`;
   }
   if (b.desc) html += `<div class="book-modal-desc">${esc(b.desc)}</div>`;
   const genreList = normalizeGenres(b.genres);
@@ -105,12 +106,12 @@ function renderModalHtml(b: BookData): string {
   }
   if (b.status === 'completed' && b.notes) {
     html += '<div class="book-modal-notes">';
-    html += '<div class="book-modal-notes-label">Notes</div>';
+    html += `<div class="book-modal-notes-label">${widgets.bookModal.notes}</div>`;
     html += `<div class="book-modal-notes-text">${esc(b.notes)}</div>`;
     html += '</div>';
   }
   if (b.link) {
-    html += `<div><a href="${esc(b.link)}" target="_blank" rel="noopener" class="book-modal-amazon">View on Amazon &rarr;</a></div>`;
+    html += `<div><a href="${esc(b.link)}" target="_blank" rel="noopener" class="book-modal-amazon">${widgets.bookModal.amazonCta}</a></div>`;
   }
   html += '</div>';
   return html;

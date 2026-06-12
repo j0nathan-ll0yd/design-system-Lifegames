@@ -1,3 +1,4 @@
+import { widgets } from '@lifegames/copy';
 import { esc, getCategoryColor } from './updaters';
 import type { LocationExport } from '../types/exports';
 
@@ -21,7 +22,7 @@ export function initPlaceLeaderboardV3(container: HTMLElement, data: LocationExp
 
   const places = (data.topPlaces ?? []).slice(0, 8);
   if (places.length === 0) {
-    podiumEl.innerHTML = '<div style="text-align:center;color:var(--text-muted,#9ca3af);font-size:0.75rem;padding:16px 0;">No places recorded yet</div>';
+    podiumEl.innerHTML = '<div style="text-align:center;color:var(--text-muted,#9ca3af);font-size:0.75rem;padding:16px 0;">' + esc(widgets.topPlaces.empty) + '</div>';
     listEl.innerHTML = '';
     card.classList.remove('is-loading');
     return;

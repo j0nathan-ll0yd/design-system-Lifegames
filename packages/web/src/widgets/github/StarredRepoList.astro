@@ -1,4 +1,6 @@
 ---
+import { widgets } from '@lifegames/copy';
+
 interface Repo {
   owner: string;
   name: string;
@@ -18,10 +20,10 @@ const { repos } = Astro.props;
 
 <div class="tri-card tri-card-accent-green" id="cardStarredRepos">
   <div class="widget-header">
-    <h3 class="widget-label">Starred Repos</h3>
+    <h3 class="widget-label">{widgets.starredRepos.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">recent</span>
+      <span class="widget-timestamp">{widgets.starredRepos.timestampRecent}</span>
     </div>
   </div>
   <div class="widget-body">

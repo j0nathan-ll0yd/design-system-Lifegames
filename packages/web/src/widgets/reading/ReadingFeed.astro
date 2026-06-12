@@ -1,13 +1,15 @@
 ---
+import { widgets } from '@lifegames/copy';
+
 const { reading } = Astro.props;
 const articles = reading.articles;
 ---
 <div class="tri-card tri-card-accent-amber" id="cardReading">
   <div class="widget-header">
-    <h3 class="widget-label">Reading Feed</h3>
+    <h3 class="widget-label">{widgets.readingFeed.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">recent</span>
+      <span class="widget-timestamp">{widgets.readingFeed.timestampRecent}</span>
     </div>
   </div>
   <div class="widget-body">

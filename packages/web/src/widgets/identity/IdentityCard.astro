@@ -1,4 +1,6 @@
 ---
+import { widgets } from '@lifegames/copy';
+
 const { profile, compact = false } = Astro.props;
 ---
 {compact ? (
@@ -17,11 +19,11 @@ const { profile, compact = false } = Astro.props;
     {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
     {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
       <nav class="id-links" aria-label="Social">
-        {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">GitHub</a>}
-        {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">LinkedIn</a>}
-        {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">Site</a>}
-        {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">Mastodon</a>}
-        {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">Bluesky</a>}
+        {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.github}</a>}
+        {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.linkedin}</a>}
+        {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.site}</a>}
+        {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.mastodon}</a>}
+        {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.bluesky}</a>}
       </nav>
     )}
   </div>

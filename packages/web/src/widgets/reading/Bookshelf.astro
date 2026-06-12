@@ -1,6 +1,7 @@
 ---
 import fs from 'node:fs';
 import path from 'node:path';
+import { widgets } from '@lifegames/copy';
 
 const { books } = Astro.props;
 const bookList = books.books;
@@ -21,10 +22,10 @@ function hasLocalImage(asin: string): boolean {
 ---
 <div class="tri-card tri-card-accent-amber" id="cardBooks">
   <div class="widget-header">
-    <h3 class="widget-label">Bookshelf</h3>
+    <h3 class="widget-label">{widgets.bookshelf.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">library</span>
+      <span class="widget-timestamp">{widgets.bookshelf.timestampLibrary}</span>
     </div>
   </div>
   <div class="widget-body">
@@ -94,7 +95,7 @@ function hasLocalImage(asin: string): boolean {
             <div class="shelf-book-author">{b.author}</div>
             {b.status === 'in_progress' ? (
               <Fragment>
-                <div class="shelf-book-status shelf-status-in_progress">READING</div>
+                <div class="shelf-book-status shelf-status-in_progress">{widgets.bookshelf.statusReading}</div>
                 {b.progress != null && (
                   <Fragment>
                     <div class="shelf-book-progress-bar">

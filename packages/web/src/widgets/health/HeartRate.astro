@@ -1,4 +1,5 @@
 ---
+import { widgets } from '@lifegames/copy';
 import { classifyHeartRate, classifyHRV } from '../../runtime/heart-rate';
 
 const { health } = Astro.props;
@@ -28,10 +29,10 @@ const fmtTemp = (() => {
 ---
 <div class={`tri-card ${state.accentClass}`} id="cardHR">
   <div class="widget-header">
-    <h3 class="widget-label">Heart Rate</h3>
+    <h3 class="widget-label">{widgets.heartRate.title}</h3>
     <div class="widget-header-right">
       <div class={`live-dot ${state.dotClass}`}></div>
-      <span class="widget-timestamp">live</span>
+      <span class="widget-timestamp">{widgets.heartRate.timestampLive}</span>
     </div>
   </div>
   <div class="widget-body">
@@ -54,7 +55,7 @@ const fmtTemp = (() => {
     </div>
     {isEmpty ? (
       <div class="hr-empty">
-        <span class="hr-empty-label">No data</span>
+        <span class="hr-empty-label">{widgets.heartRate.empty}</span>
       </div>
     ) : (
       <>
@@ -70,28 +71,28 @@ const fmtTemp = (() => {
           <div class="hr-overlay">
             <div class="hr-overlay-left">
               <div>
-                <span class="pulse-bpm" id="pulseBpm" style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}>{hr}</span><span class="pulse-bpm-unit">BPM</span>
+                <span class="pulse-bpm" id="pulseBpm" style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}>{hr}</span><span class="pulse-bpm-unit">{widgets.heartRate.bpm}</span>
               </div>
               <span class="pulse-status-badge" id="hrZoneBadge" style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}>{state.zone}</span>
             </div>
             <div class="hr-overlay-right">
-              <span class="hr-hrv-label">HRV</span>
+              <span class="hr-hrv-label">{widgets.heartRate.hrv}</span>
               <span class="hr-hrv-value" id="hrHrvValue" style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}>{hrv}</span>
-              <span class="hr-hrv-unit">ms</span>
+              <span class="hr-hrv-unit">{widgets.heartRate.hrvUnit}</span>
             </div>
           </div>
         </div>
         <div class="hr-footer">
           <div class="hr-footer-cell">
-            <span class="hr-footer-label">RHR</span>
-            <span class="hr-footer-value" id="hrFooterRhr">{fmtRhr}</span><span class="hr-footer-unit">bpm</span>
+            <span class="hr-footer-label">{widgets.heartRate.rhr}</span>
+            <span class="hr-footer-value" id="hrFooterRhr">{fmtRhr}</span><span class="hr-footer-unit">{widgets.heartRate.rhrUnit}</span>
           </div>
           <div class="hr-footer-cell">
-            <span class="hr-footer-label">RR</span>
-            <span class="hr-footer-value" id="hrFooterRr">{fmtRr}</span><span class="hr-footer-unit">br/m</span>
+            <span class="hr-footer-label">{widgets.heartRate.rr}</span>
+            <span class="hr-footer-value" id="hrFooterRr">{fmtRr}</span><span class="hr-footer-unit">{widgets.heartRate.rrUnit}</span>
           </div>
           <div class="hr-footer-cell">
-            <span class="hr-footer-label">Temp</span>
+            <span class="hr-footer-label">{widgets.heartRate.temp}</span>
             <span class="hr-footer-value" id="hrFooterTemp">{fmtTemp}</span>
           </div>
         </div>

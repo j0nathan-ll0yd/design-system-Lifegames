@@ -183,6 +183,9 @@ importers:
 
   packages/web:
     dependencies:
+      '@lifegames/copy':
+        specifier: workspace:*
+        version: link:../copy
       '@lifegames/portal-contract':
         specifier: file:.yalc/@lifegames/portal-contract
         version: file:packages/web/.yalc/@lifegames/portal-contract

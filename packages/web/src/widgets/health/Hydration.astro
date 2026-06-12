@@ -1,4 +1,6 @@
 ---
+import { widgets } from '@lifegames/copy';
+
 const { health } = Astro.props;
 const hydration = health.hydration;
 const waterPct = Math.min(hydration.waterOz / hydration.waterMax, 1) * 100;
@@ -13,10 +15,10 @@ const caffeineMg = hydration.caffeineMg ?? 0;
 ---
 <div class="tri-card tri-card-accent-pink is-loading" id="cardHydration">
   <div class="widget-header">
-    <h3 class="widget-label">Hydration</h3>
+    <h3 class="widget-label">{widgets.hydration.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-pink"></div>
-      <span class="widget-timestamp">today</span>
+      <span class="widget-timestamp">{widgets.hydration.timestampToday}</span>
     </div>
   </div>
   <div class="widget-body">
@@ -57,7 +59,7 @@ const caffeineMg = hydration.caffeineMg ?? 0;
           </div>
         </div>
         <div class="hydra-val" id="hydraWaterVal">0</div>
-        <div class="hydra-label">Water</div>
+        <div class="hydra-label">{widgets.hydration.water}</div>
       </div>
       <div class="hydra-divider"></div>
       <div class="hydra-vessel hydra-vessel-coffee">
@@ -86,7 +88,7 @@ const caffeineMg = hydration.caffeineMg ?? 0;
           <div class="hydra-mug-handle"></div>
         </div>
         <div class="hydra-val" id="hydraCoffeeVal">0</div>
-        <div class="hydra-label" id="hydraCoffeeLabel">Caffeine</div>
+        <div class="hydra-label" id="hydraCoffeeLabel">{widgets.hydration.caffeine}</div>
       </div>
     </div>
   </div>

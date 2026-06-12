@@ -1,4 +1,5 @@
 ---
+import { widgets } from '@lifegames/copy';
 import type { MovementRingsProps } from './MovementRings.types';
 
 const { health: rawHealth } = Astro.props as MovementRingsProps;
@@ -88,10 +89,10 @@ function offset(circ: number, pct: number): number {
 ---
 <div class="tri-card tri-card-accent-red" id="cardMovement">
   <div class="widget-header">
-    <h3 class="widget-label">Movement</h3>
+    <h3 class="widget-label">{widgets.movement.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-red"></div>
-      <span class="widget-timestamp">today</span>
+      <span class="widget-timestamp">{widgets.movement.timestampToday}</span>
     </div>
   </div>
   <div class="widget-body">
@@ -117,7 +118,7 @@ function offset(circ: number, pct: number): number {
     </div>
     {isEmpty ? (
       <div class="mv-empty">
-        <span class="mv-empty-label">No movement yet today</span>
+        <span class="mv-empty-label">{widgets.movement.empty}</span>
       </div>
     ) : (
       <>
@@ -146,15 +147,15 @@ function offset(circ: number, pct: number): number {
           </div>
           <div class="mv-chips">
             <div class="mv-chip">
-              <span class="mv-chip-label">Steps</span>
+              <span class="mv-chip-label">{widgets.movement.steps}</span>
               <span class="mv-chip-value" data-mv-metric="steps">{steps.toLocaleString()}</span>
             </div>
             <div class="mv-chip">
-              <span class="mv-chip-label">Distance</span>
-              <span class="mv-chip-value" data-mv-metric="distance">{distanceKm}<span class="mv-chip-unit">km</span></span>
+              <span class="mv-chip-label">{widgets.movement.distance}</span>
+              <span class="mv-chip-value" data-mv-metric="distance">{distanceKm}<span class="mv-chip-unit">{widgets.movement.distanceUnit}</span></span>
             </div>
             <div class="mv-chip">
-              <span class="mv-chip-label">Flights</span>
+              <span class="mv-chip-label">{widgets.movement.flights}</span>
               <span class="mv-chip-value" data-mv-metric="flights">{flights}</span>
             </div>
           </div>
@@ -163,24 +164,24 @@ function offset(circ: number, pct: number): number {
           <div class="mv-legend-item">
             <span class="mv-legend-swatch mv-legend-swatch-move"></span>
             <span class="mv-swatch-label">
-              <span class="mv-swatch-label-full">Calories</span>
-              <span class="mv-swatch-label-short">Cal</span>
+              <span class="mv-swatch-label-full">{widgets.movement.calories}</span>
+              <span class="mv-swatch-label-short">{widgets.movement.caloriesShort}</span>
             </span>
             <span class="mv-legend-val" id="legendMove">{moveVal}/{goals.moveKcal}</span>
           </div>
           <div class="mv-legend-item">
             <span class="mv-legend-swatch mv-legend-swatch-exercise"></span>
             <span class="mv-swatch-label">
-              <span class="mv-swatch-label-full">Exercise</span>
-              <span class="mv-swatch-label-short">Ex</span>
+              <span class="mv-swatch-label-full">{widgets.movement.exercise}</span>
+              <span class="mv-swatch-label-short">{widgets.movement.exerciseShort}</span>
             </span>
             <span class="mv-legend-val" id="legendExercise">{exerciseVal}/{goals.exerciseMin}</span>
           </div>
           <div class="mv-legend-item">
             <span class="mv-legend-swatch mv-legend-swatch-stand"></span>
             <span class="mv-swatch-label">
-              <span class="mv-swatch-label-full">Stand</span>
-              <span class="mv-swatch-label-short">Stand</span>
+              <span class="mv-swatch-label-full">{widgets.movement.stand}</span>
+              <span class="mv-swatch-label-short">{widgets.movement.stand}</span>
             </span>
             <span class="mv-legend-val" id="legendStand">{standHours}/{goals.standHr}</span>
           </div>
@@ -197,7 +198,7 @@ function offset(circ: number, pct: number): number {
             <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">☾</span>
           </div>
           <p class="mv-sun-caption">
-            <span id="mvDaylightMin">{daylightMin}</span> min in daylight today &middot; goal {goals.daylightMin} min{daylightHit && (<span class="mv-sun-caption-hit">&#10003;</span>)}
+            <span id="mvDaylightMin">{daylightMin}</span>{widgets.movement.daylightCaption.replace('{minutes}', '')} &middot; {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}{daylightHit && (<span class="mv-sun-caption-hit">&#10003;</span>)}
           </p>
         </div>
       </>
