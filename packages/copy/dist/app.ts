@@ -18,6 +18,7 @@ export interface App {
   location: AppLocation;
   bookshelf: AppBookshelf;
   watch: AppWatch;
+  sections: AppSections;
 }
 /**
  * Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle).
@@ -412,4 +413,11 @@ export interface AppWatch {
   complicationSyncAgo: string;
   complicationDisplayName: string;
   complicationDescription: string;
+}
+/**
+ * Dashboard triptych column header labels used on the web dashboard (index.astro).
+ */
+export interface AppSections {
+  body: string;
+  mind: string;
 }

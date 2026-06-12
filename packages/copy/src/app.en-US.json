@@ -2991,5 +2991,31 @@
         "lastReviewed": "2026-06-11"
       }
     }
+  },
+  "sections": {
+    "body": {
+      "value": "Body",
+      "_meta": {
+        "description": "Dashboard triptych column header for the Body domain (biometrics, health, activity).",
+        "usage": [
+          "web:src/pages/index.astro:45 (column heading)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-12"
+      }
+    },
+    "mind": {
+      "value": "Mind",
+      "_meta": {
+        "description": "Dashboard triptych column header for the Mind domain (GitHub, books, articles, theatre).",
+        "usage": [
+          "web:src/pages/index.astro:56 (column heading)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-12"
+      }
+    }
   }
 }

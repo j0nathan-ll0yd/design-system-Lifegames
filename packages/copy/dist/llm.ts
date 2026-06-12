@@ -8,6 +8,7 @@
 export interface Llm {
   txt: LlmTxt;
   full: LlmFull;
+  dashboard: LlmDashboard;
 }
 /**
  * Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings, list-label prefixes, explanatory paragraphs, link descriptions, technology block, and the JSON-endpoint descriptions.
@@ -154,4 +155,12 @@ export interface LlmFull {
   streamTheatre: string;
   streamWorkouts: string;
   streamLocation: string;
+}
+/**
+ * LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link titles and JSON-LD Dataset prose.
+ */
+export interface LlmDashboard {
+  alternateLinkMarkdown: string;
+  alternateLinkPlain: string;
+  datasetDescription: string;
 }
