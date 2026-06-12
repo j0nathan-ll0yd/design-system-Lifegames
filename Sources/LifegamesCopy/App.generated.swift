@@ -44,6 +44,8 @@ public struct App: Codable, Sendable {
     public let nav: AppNav
     /// Saved Places list — empty state and per-row radius label.
     public let savedPlaces: AppSavedPlaces
+    /// Dashboard triptych column header labels used on the web dashboard (index.astro).
+    public let sections: AppSections
     /// Settings screen — section headers, server/data/diagnostics/about rows, buttons, and
     /// destructive-action alerts.
     public let settings: AppSettings
@@ -56,7 +58,7 @@ public struct App: Codable, Sendable {
     /// complication strings.
     public let watch: AppWatch
 
-    public init(addPlace: AppAddPlace, bookshelf: AppBookshelf, common: AppCommon, health: AppHealth, home: AppHome, location: AppLocation, nav: AppNav, savedPlaces: AppSavedPlaces, settings: AppSettings, sleep: AppSleep, tab: AppTab, watch: AppWatch) {
+    public init(addPlace: AppAddPlace, bookshelf: AppBookshelf, common: AppCommon, health: AppHealth, home: AppHome, location: AppLocation, nav: AppNav, savedPlaces: AppSavedPlaces, sections: AppSections, settings: AppSettings, sleep: AppSleep, tab: AppTab, watch: AppWatch) {
         self.addPlace = addPlace
         self.bookshelf = bookshelf
         self.common = common
@@ -65,6 +67,7 @@ public struct App: Codable, Sendable {
         self.location = location
         self.nav = nav
         self.savedPlaces = savedPlaces
+        self.sections = sections
         self.settings = settings
         self.sleep = sleep
         self.tab = tab
@@ -99,6 +102,7 @@ public extension App {
         location: AppLocation? = nil,
         nav: AppNav? = nil,
         savedPlaces: AppSavedPlaces? = nil,
+        sections: AppSections? = nil,
         settings: AppSettings? = nil,
         sleep: AppSleep? = nil,
         tab: AppTab? = nil,
@@ -113,6 +117,7 @@ public extension App {
             location: location ?? self.location,
             nav: nav ?? self.nav,
             savedPlaces: savedPlaces ?? self.savedPlaces,
+            sections: sections ?? self.sections,
             settings: settings ?? self.settings,
             sleep: sleep ?? self.sleep,
             tab: tab ?? self.tab,
@@ -1707,6 +1712,54 @@ public extension AppSavedPlaces {
             emptyBody: emptyBody ?? self.emptyBody,
             emptyTitle: emptyTitle ?? self.emptyTitle,
             radius: radius ?? self.radius
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Dashboard triptych column header labels used on the web dashboard (index.astro).
+// MARK: - AppSections
+public struct AppSections: Codable, Sendable {
+    public let body, mind: String
+
+    public init(body: String, mind: String) {
+        self.body = body
+        self.mind = mind
+    }
+}
+
+// MARK: AppSections convenience initializers and mutators
+
+public extension AppSections {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(AppSections.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        mind: String? = nil
+    ) -> AppSections {
+        return AppSections(
+            body: body ?? self.body,
+            mind: mind ?? self.mind
         )
     }
 

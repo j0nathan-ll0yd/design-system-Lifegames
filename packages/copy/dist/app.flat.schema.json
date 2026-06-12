@@ -1265,6 +1265,24 @@
         "complicationDescription"
       ],
       "additionalProperties": false
+    },
+    "sections": {
+      "type": "object",
+      "title": "AppSections",
+      "description": "Dashboard triptych column header labels used on the web dashboard (index.astro).",
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "mind": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "body",
+        "mind"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -1279,7 +1297,8 @@
     "sleep",
     "location",
     "bookshelf",
-    "watch"
+    "watch",
+    "sections"
   ],
   "additionalProperties": false
 }

@@ -23,6 +23,9 @@ import Foundation
 /// $ref), which the flat-schema derivation requires.
 // MARK: - Llm
 public struct Llm: Codable, Sendable {
+    /// LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link
+    /// titles and JSON-LD Dataset prose.
+    public let dashboard: LlmDashboard
     /// Prose strings from llms-full.eta — the complete LLM data dump (/llms-full.txt +
     /// /index.md). The <SYSTEM> framing line, headings, blockquote intro, meta labels, table
     /// column headers, the _No … available._ fallbacks, list-label prefixes, and explanatory
@@ -33,7 +36,8 @@ public struct Llm: Codable, Sendable {
     /// block, and the JSON-endpoint descriptions.
     public let txt: LlmTxt
 
-    public init(full: LlmFull, txt: LlmTxt) {
+    public init(dashboard: LlmDashboard, full: LlmFull, txt: LlmTxt) {
+        self.dashboard = dashboard
         self.full = full
         self.txt = txt
     }
@@ -58,12 +62,66 @@ public extension Llm {
     }
 
     func with(
+        dashboard: LlmDashboard? = nil,
         full: LlmFull? = nil,
         txt: LlmTxt? = nil
     ) -> Llm {
         return Llm(
+            dashboard: dashboard ?? self.dashboard,
             full: full ?? self.full,
             txt: txt ?? self.txt
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link
+/// titles and JSON-LD Dataset prose.
+// MARK: - LlmDashboard
+public struct LlmDashboard: Codable, Sendable {
+    public let alternateLinkMarkdown, alternateLinkPlain, datasetDescription: String
+
+    public init(alternateLinkMarkdown: String, alternateLinkPlain: String, datasetDescription: String) {
+        self.alternateLinkMarkdown = alternateLinkMarkdown
+        self.alternateLinkPlain = alternateLinkPlain
+        self.datasetDescription = datasetDescription
+    }
+}
+
+// MARK: LlmDashboard convenience initializers and mutators
+
+public extension LlmDashboard {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(LlmDashboard.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        alternateLinkMarkdown: String? = nil,
+        alternateLinkPlain: String? = nil,
+        datasetDescription: String? = nil
+    ) -> LlmDashboard {
+        return LlmDashboard(
+            alternateLinkMarkdown: alternateLinkMarkdown ?? self.alternateLinkMarkdown,
+            alternateLinkPlain: alternateLinkPlain ?? self.alternateLinkPlain,
+            datasetDescription: datasetDescription ?? self.datasetDescription
         )
     }
 

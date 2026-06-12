@@ -568,11 +568,34 @@
         "streamLocation"
       ],
       "additionalProperties": false
+    },
+    "dashboard": {
+      "type": "object",
+      "title": "LlmDashboard",
+      "description": "LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link titles and JSON-LD Dataset prose.",
+      "properties": {
+        "alternateLinkMarkdown": {
+          "type": "string"
+        },
+        "alternateLinkPlain": {
+          "type": "string"
+        },
+        "datasetDescription": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "alternateLinkMarkdown",
+        "alternateLinkPlain",
+        "datasetDescription"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
     "txt",
-    "full"
+    "full",
+    "dashboard"
   ],
   "additionalProperties": false
 }

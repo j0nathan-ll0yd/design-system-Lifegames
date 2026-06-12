@@ -17,7 +17,8 @@
     "sleep",
     "location",
     "bookshelf",
-    "watch"
+    "watch",
+    "sections"
   ],
   "properties": {
     "nav": {
@@ -555,6 +556,17 @@
         "complicationSyncAgo": { "$ref": "#/$defs/CopyString" },
         "complicationDisplayName": { "$ref": "#/$defs/CopyString" },
         "complicationDescription": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "title": "AppSections",
+      "description": "Dashboard triptych column header labels used on the web dashboard (index.astro).",
+      "additionalProperties": false,
+      "required": ["body", "mind"],
+      "properties": {
+        "body": { "$ref": "#/$defs/CopyString" },
+        "mind": { "$ref": "#/$defs/CopyString" }
       }
     }
   },

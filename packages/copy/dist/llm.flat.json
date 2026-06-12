@@ -138,5 +138,10 @@
     "streamTheatre": "- {cloudfrontBase}/theatre-reviews.json — theatre reviews",
     "streamWorkouts": "- {cloudfrontBase}/workouts.json — workout sessions",
     "streamLocation": "- {cloudfrontBase}/location.json — location activity and place summaries"
+  },
+  "dashboard": {
+    "alternateLinkMarkdown": "LLM-friendly complete content",
+    "alternateLinkPlain": "LLM discovery index",
+    "datasetDescription": "Live biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON."
   }
 }

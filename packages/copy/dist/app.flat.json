@@ -296,5 +296,9 @@
     "complicationSyncAgo": "Sync {relative} ago",
     "complicationDisplayName": "Sync Status",
     "complicationDescription": "Shows when health and location data were last synced."
+  },
+  "sections": {
+    "body": "Body",
+    "mind": "Mind"
   }
 }
