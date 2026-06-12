@@ -1,0 +1,36 @@
+{
+  "movement": {
+    "rings": "Calories {calories}%, Exercise {exercise}%, Stand {stand}%",
+    "daylight": "Daylight position"
+  },
+  "identity": {
+    "avatarAlt": "{name} profile photo",
+    "socialNav": "Social"
+  },
+  "bookshelf": {
+    "bookItem": "{title} by {author}"
+  },
+  "bookModal": {
+    "dialog": "Book details"
+  },
+  "modal": {
+    "close": "Close"
+  },
+  "readingFeed": {
+    "pagination": "Page {page} of {total}"
+  },
+  "nav": {
+    "profile": "Profile",
+    "dashboard": "Dashboard"
+  },
+  "region": {
+    "body": "Body",
+    "mind": "Mind"
+  },
+  "clock": {
+    "currentTime": "Current time"
+  },
+  "page404": {
+    "region": "404 error page"
+  }
+}

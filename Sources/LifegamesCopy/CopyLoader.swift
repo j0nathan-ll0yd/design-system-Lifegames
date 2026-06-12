@@ -16,6 +16,12 @@ public enum CopyError: Error, Sendable {
 /// `Identity` and its nested types are generated (`Identity.generated.swift`).
 public enum CopyLoader {
     private static let identityResource = "identity.en-US"
+    private static let widgetsResource = "widgets.en-US"
+    private static let a11yResource = "a11y.en-US"
+    private static let appResource = "app.en-US"
+    private static let permissionsResource = "permissions.en-US"
+    private static let errorsResource = "errors.en-US"
+    private static let llmResource = "llm.en-US"
 
     /// Decodes the bundled identity copy (en-US, flat values).
     ///
@@ -46,6 +52,198 @@ public enum CopyLoader {
             return try loadIdentity()
         } catch {
             fatalError("LifegamesCopy: bundled \(identityResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled widgets copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Widgets``.
+    public static func loadWidgets() throws -> Widgets {
+        guard let url = Bundle.module.url(forResource: widgetsResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(widgetsResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Widgets.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(widgetsResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled widgets copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadWidgets()`` where you want to handle failure explicitly.
+    public static let widgets: Widgets = {
+        do {
+            return try loadWidgets()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(widgetsResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled accessibility copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Accessibility``.
+    public static func loadAccessibility() throws -> Accessibility {
+        guard let url = Bundle.module.url(forResource: a11yResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(a11yResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Accessibility.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(a11yResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled accessibility copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadAccessibility()`` where you want to handle failure explicitly.
+    public static let a11y: Accessibility = {
+        do {
+            return try loadAccessibility()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(a11yResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled app UI copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``App``.
+    public static func loadApp() throws -> App {
+        guard let url = Bundle.module.url(forResource: appResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(appResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(App.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(appResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled app UI copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadApp()`` where you want to handle failure explicitly.
+    public static let app: App = {
+        do {
+            return try loadApp()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(appResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled permissions (Info.plist usage-description) copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Permissions``.
+    public static func loadPermissions() throws -> Permissions {
+        guard let url = Bundle.module.url(forResource: permissionsResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(permissionsResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Permissions.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(permissionsResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled permissions copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadPermissions()`` where you want to handle failure explicitly.
+    public static let permissions: Permissions = {
+        do {
+            return try loadPermissions()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(permissionsResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled cross-repo error display copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Errors``.
+    public static func loadErrors() throws -> Errors {
+        guard let url = Bundle.module.url(forResource: errorsResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(errorsResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Errors.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(errorsResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled error display copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadErrors()`` where you want to handle failure explicitly.
+    public static let errors: Errors = {
+        do {
+            return try loadErrors()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(errorsResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled backend LLM-content prose copy (en-US, flat values).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``Llm``.
+    public static func loadLlm() throws -> Llm {
+        guard let url = Bundle.module.url(forResource: llmResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(llmResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(Llm.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(llmResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled LLM-content prose copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical (e.g. Swift default-argument values); use
+    /// ``loadLlm()`` where you want to handle failure explicitly.
+    public static let llm: Llm = {
+        do {
+            return try loadLlm()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(llmResource).json failed to load: \(error)")
         }
     }()
 }

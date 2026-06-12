@@ -1,0 +1,58 @@
+{
+  "validation": {
+    "bookNoFields": {
+      "value": "At least one field besides asin must be provided",
+      "_meta": {
+        "description": "Zod refinement error returned when an update-book request includes only the asin and no other updatable field.",
+        "usage": [
+          "backend:src/schemas/books.ts:31 (z refine message)",
+          "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift (presented on 400; D7-B rewire target)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "dateFormat": {
+      "value": "date must be YYYY-MM-DD",
+      "_meta": {
+        "description": "Zod regex error returned when a health request's date field is not in YYYY-MM-DD format.",
+        "usage": [
+          "backend:src/schemas/health.ts:121 (z.string().regex message)",
+          "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift (presented on 400; D7-B rewire target)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "client": {
+    "connectionSuccess": {
+      "value": "Success! Connected.",
+      "_meta": {
+        "description": "iOS connection-test success message returned when the server health check responds 2xx.",
+        "usage": [
+          "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift:144 (return string)",
+          "backend:canonical source under D7-B (no current backend render site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "serverReturned": {
+      "value": "Server returned {code}",
+      "_meta": {
+        "description": "iOS connection-test failure message for a non-2xx, non-401 response. ICU MF1; consumer substitutes the HTTP status code.",
+        "usage": [
+          "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift:148 (composed \"Server returned \\(httpResponse.statusCode)\")",
+          "backend:canonical source under D7-B (no current backend render site)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  }
+}

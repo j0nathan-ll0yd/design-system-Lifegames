@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let systemStatusCopy = CopyLoader.widgets.systemStatus
 
 public struct SystemStatusView: View {
     public let props: SystemStatusProps
@@ -32,7 +35,7 @@ public struct SystemStatusView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "SYSTEM STATUS", dotColor: Color.colorAccentGreen, timestamp: "realtime")
+            WidgetHeaderView(label: systemStatusCopy.title.uppercased(), dotColor: Color.colorAccentGreen, timestamp: systemStatusCopy.timestampRealtime)
 
             VStack(spacing: 0) {
                 ForEach(Array(props.lines.enumerated()), id: \.offset) { index, line in

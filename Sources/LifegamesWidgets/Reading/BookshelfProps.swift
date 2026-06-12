@@ -1,4 +1,5 @@
 import Foundation
+import LifegamesCopy
 
 public struct BookshelfProps: Hashable, Codable, Sendable {
     public let books: [Book]
@@ -32,7 +33,7 @@ public struct BookshelfProps: Hashable, Codable, Sendable {
 
         public var statusLabel: String {
             switch status {
-            case "in_progress": return "READING"
+            case "in_progress": return CopyLoader.widgets.bookshelf.statusReading.uppercased()
             case "next": return "UP NEXT"
             case "completed": return "COMPLETED"
             default: return status.uppercased()

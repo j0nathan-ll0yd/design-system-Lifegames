@@ -9,11 +9,6 @@ import { _Parser } from '@formatjs/icu-messageformat-parser';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const PKG = join(HERE, '..');
 
-const richSchema = JSON.parse(readFileSync(join(PKG, 'schema', 'identity.schema.json'), 'utf-8'));
-const richInstance = JSON.parse(readFileSync(join(PKG, 'src', 'identity.en-US.json'), 'utf-8'));
-const flatSchema = JSON.parse(readFileSync(join(PKG, 'dist', 'identity.flat.schema.json'), 'utf-8'));
-const flatInstance = JSON.parse(readFileSync(join(PKG, 'dist', 'identity.flat.json'), 'utf-8'));
-
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 
@@ -45,52 +40,102 @@ function collectLeaves(node: unknown, path: string, out: Leaf[]): void {
   }
 }
 
-const leaves: Leaf[] = [];
-collectLeaves(richInstance, '', leaves);
+function readJson(p: string): unknown {
+  return JSON.parse(readFileSync(p, 'utf-8'));
+}
 
-describe('@lifegames/copy identity', () => {
-  it('rich instance validates against the rich schema', () => {
-    const validate = ajv.compile(richSchema);
-    const ok = validate(richInstance);
-    expect(validate.errors ?? null).toBeNull();
-    expect(ok).toBe(true);
-  });
+/** One namespace's authoring + generated artifacts, plus its expected leaf count. */
+interface NamespaceFixture {
+  name: string;
+  /** Sanity leaf count. */
+  expectedLeaves: number;
+}
 
-  it('derived flat schema validates the flat instance (round-trip)', () => {
-    const validate = ajv.compile(flatSchema);
-    const ok = validate(flatInstance);
-    expect(validate.errors ?? null).toBeNull();
-    expect(ok).toBe(true);
-  });
+const NAMESPACES: NamespaceFixture[] = [
+  // identity: person 14 + site 5 + seo 4 + a11y 2.
+  { name: 'identity', expectedLeaves: 25 },
+  // widgets: heartRate 16 + movement 14 + workouts 10 + hydration 4 + nightSummary 9
+  //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 5 + theatreReviews 2
+  //   + bookModal 7 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.
+  { name: 'widgets', expectedLeaves: 93 },
+  // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
+  //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
+  { name: 'a11y', expectedLeaves: 14 },
+  // app: nav 10 + tab 5 + common 7 + home 12 + settings 35 + savedPlaces 4
+  //   + addPlace 9 + health 20 + sleep 8 + location 73 + bookshelf 49 + watch 12.
+  { name: 'app', expectedLeaves: 244 },
+  // permissions: health 2 + locationWhenInUse 2 + locationAlways 1 + motion 1.
+  { name: 'permissions', expectedLeaves: 6 },
+  // errors: validation 2 + client 2.
+  { name: 'errors', expectedLeaves: 4 },
+  // llm: txt 33 + full 103.
+  { name: 'llm', expectedLeaves: 136 },
+];
 
-  it('captures the full identity surface', () => {
-    // Sanity: 25 leaves (person 14 + site 5 + seo 4 + a11y 2).
-    expect(leaves.length).toBe(25);
-  });
+for (const ns of NAMESPACES) {
+  const richSchema = readJson(join(PKG, 'schema', `${ns.name}.schema.json`));
+  const richInstance = readJson(join(PKG, 'src', `${ns.name}.en-US.json`));
+  const flatSchema = readJson(join(PKG, 'dist', `${ns.name}.flat.schema.json`));
+  const flatInstance = readJson(join(PKG, 'dist', `${ns.name}.flat.json`));
 
-  it('every string value is valid ICU MessageFormat 1', () => {
-    const failures: string[] = [];
-    for (const leaf of leaves) {
-      for (const value of leaf.values) {
-        const result = parseMF1(value);
-        if (result.err) {
-          failures.push(`${leaf.path}: ${result.err.message} — "${value}"`);
+  const leaves: Leaf[] = [];
+  collectLeaves(richInstance, '', leaves);
+
+  describe(`@lifegames/copy ${ns.name}`, () => {
+    it('rich instance validates against the rich schema', () => {
+      const validate = ajv.compile(richSchema as object);
+      const ok = validate(richInstance);
+      expect(validate.errors ?? null).toBeNull();
+      expect(ok).toBe(true);
+    });
+
+    it('derived flat schema validates the flat instance (round-trip)', () => {
+      const validate = ajv.compile(flatSchema as object);
+      const ok = validate(flatInstance);
+      expect(validate.errors ?? null).toBeNull();
+      expect(ok).toBe(true);
+    });
+
+    it(`captures the full ${ns.name} surface`, () => {
+      expect(leaves.length).toBe(ns.expectedLeaves);
+    });
+
+    it('every string value is valid ICU MessageFormat 1', () => {
+      const failures: string[] = [];
+      for (const leaf of leaves) {
+        for (const value of leaf.values) {
+          const result = parseMF1(value);
+          if (result.err) {
+            failures.push(`${leaf.path}: ${result.err.message} — "${value}"`);
+          }
         }
       }
-    }
-    expect(failures).toEqual([]);
-  });
+      expect(failures).toEqual([]);
+    });
 
-  it('every maxChars constraint is satisfied', () => {
-    const failures: string[] = [];
-    for (const leaf of leaves) {
-      if (leaf.maxChars == null) continue;
-      for (const value of leaf.values) {
-        if (value.length > leaf.maxChars) {
-          failures.push(`${leaf.path}: ${value.length} > maxChars ${leaf.maxChars} — "${value}"`);
+    it('every maxChars constraint is satisfied', () => {
+      const failures: string[] = [];
+      for (const leaf of leaves) {
+        if (leaf.maxChars == null) continue;
+        for (const value of leaf.values) {
+          if (value.length > leaf.maxChars) {
+            failures.push(`${leaf.path}: ${value.length} > maxChars ${leaf.maxChars} — "${value}"`);
+          }
         }
       }
+      expect(failures).toEqual([]);
+    });
+  });
+}
+
+describe('@lifegames/copy cross-namespace invariants', () => {
+  it('the $defs block is byte-identical across every schema (inlined per file, no cross-file $ref)', () => {
+    const defs = NAMESPACES.map((ns) => {
+      const schema = readJson(join(PKG, 'schema', `${ns.name}.schema.json`)) as Record<string, unknown>;
+      return JSON.stringify(schema['$defs']);
+    });
+    for (let i = 1; i < defs.length; i++) {
+      expect(defs[i]).toBe(defs[0]);
     }
-    expect(failures).toEqual([]);
   });
 });

@@ -1,3 +1,4 @@
+import { widgets, a11y } from '@lifegames/copy';
 import { classifyHeartRate, classifyHRV } from './heart-rate';
 import { HYDRATION } from './constants';
 import type { AdaptedHealth, AdaptedSleep, AdaptedBooks, AdaptedGithubEvent, AdaptedStarredRepo, BookMeta, WorkoutEntry, AdaptedArticle } from './adapters';
@@ -118,10 +119,10 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
       : '<div class="workout-sub-type">' + esc(w.activityType) + '</div>';
     html += '</div>';
     html += '<div class="workout-sub-stats">';
-    html += '<div class="workout-stat"><div class="workout-stat-label">Duration</div><div class="workout-stat-value">' + fmtDuration(w.duration ?? 0) + '</div></div>';
-    html += '<div class="workout-stat"><div class="workout-stat-label">Calories</div><div class="workout-stat-value">' + Math.round(w.energyBurned ?? 0) + ' kcal</div></div>';
+    html += '<div class="workout-stat"><div class="workout-stat-label">' + widgets.workouts.duration + '</div><div class="workout-stat-value">' + fmtDuration(w.duration ?? 0) + '</div></div>';
+    html += '<div class="workout-stat"><div class="workout-stat-label">' + widgets.workouts.calories + '</div><div class="workout-stat-value">' + Math.round(w.energyBurned ?? 0) + ' ' + widgets.workouts.caloriesUnit + '</div></div>';
     if (w.distance && w.distance > 0) {
-      html += '<div class="workout-stat"><div class="workout-stat-label">Distance</div><div class="workout-stat-value">' + (w.distance / 1000).toFixed(2) + ' km</div></div>';
+      html += '<div class="workout-stat"><div class="workout-stat-label">' + widgets.workouts.distance + '</div><div class="workout-stat-value">' + (w.distance / 1000).toFixed(2) + ' ' + widgets.workouts.distanceUnit + '</div></div>';
     }
     html += '</div>';
     html += '</div>';
@@ -151,7 +152,7 @@ export function updateNightSummary(data: AdaptedSleep): void {
     });
 
     const insight = document.getElementById('sleepInsight');
-    if (insight) insight.innerHTML = '<span class="sleep-insight-empty">No sleep data recorded</span>';
+    if (insight) insight.innerHTML = `<span class="sleep-insight-empty">${widgets.nightSummary.empty}</span>`;
 
     const timestamp = document.getElementById('sleepTimestamp');
     if (timestamp) timestamp.textContent = 'no data';
@@ -188,11 +189,17 @@ export function updateNightSummary(data: AdaptedSleep): void {
 
   const insight = document.getElementById('sleepInsight');
   if (insight) {
-    insight.innerHTML = '<span>' + data.derived.deepPct + '% deep</span> &mdash; <span>' + data.derived.remPct + '% REM</span> &mdash; restorative sleep';
+    // Source the words from copy; split the ICU template on the em-dash to keep
+    // the percentage clauses in their own styled <span>s (mirrors NightSummary.astro).
+    const clauses = widgets.nightSummary.restorative.split('—').map((c) => c.trim());
+    const deepClause = (clauses[0] ?? '').replace('{deep}', String(data.derived.deepPct));
+    const remClause = (clauses[1] ?? '').replace('{rem}', String(data.derived.remPct));
+    const tailClause = clauses[2] ?? '';
+    insight.innerHTML = '<span>' + deepClause + '</span> &mdash; <span>' + remClause + '</span> &mdash; ' + tailClause;
   }
 
   const timestamp = document.getElementById('sleepTimestamp');
-  if (timestamp) timestamp.textContent = 'last night';
+  if (timestamp) timestamp.textContent = widgets.nightSummary.timestampLastNight;
 
   document.getElementById('cardSleep')?.classList.remove('is-loading');
 }
@@ -227,7 +234,7 @@ export function updateHydration(data: AdaptedHealth): void {
 
   const coffeeLabel = document.getElementById('hydraCoffeeLabel');
   if (coffeeLabel) {
-    coffeeLabel.textContent = 'Caffeine';
+    coffeeLabel.textContent = widgets.hydration.caffeine;
   }
 
   document.getElementById('cardHydration')?.classList.remove('is-loading');
@@ -328,7 +335,7 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
       for (let p = 1; p <= totalPages; p++) {
         const activeClass = p === page ? ' article-page-active' : '';
         const ariaCurrent = p === page ? ' aria-current="page"' : '';
-        html += '<button class="article-page-btn' + activeClass + '"' + ariaCurrent + ' data-page="' + p + '" aria-label="Page ' + p + ' of ' + totalPages + '">' + p + '</button>';
+        html += '<button class="article-page-btn' + activeClass + '"' + ariaCurrent + ' data-page="' + p + '" aria-label="' + a11y.readingFeed.pagination.replace('{page}', String(p)).replace('{total}', String(totalPages)) + '">' + p + '</button>';
       }
       html += '</div>';
     }
@@ -385,14 +392,17 @@ export function updateSystemStatus(timestamps: Record<string, string | null>): v
         keyEl.className = 'sys-key sys-key-' + lineColor;
       }
       valEl.className = 'sys-val-green';
-      valEl.innerHTML = 'ACTIVE <span class="sys-val">(' + ago + ')</span>';
+      // Copy stores natural case ('Active'); this site renders all-caps with no
+      // CSS transform, so uppercase at the call site to preserve the pixels.
+      valEl.innerHTML = widgets.systemStatus.valueActive.toUpperCase() + ' <span class="sys-val">(' + ago + ')</span>';
     } else {
       dot.className = 'sys-dot sys-dot-red';
       if (keyEl) {
         keyEl.className = 'sys-key';
       }
       valEl.className = 'sys-val-red';
-      valEl.textContent = 'OFFLINE';
+      // Copy stores natural case ('Offline'); uppercase at the call site (no CSS transform here).
+      valEl.textContent = widgets.systemStatus.valueOffline.toUpperCase();
     }
   });
 }
@@ -519,7 +529,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
         notes: b.notes || null,
       }));
 
-      el.setAttribute('aria-label', b.title + ' by ' + b.author);
+      el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author));
 
       const img = el.querySelector('img') as HTMLImageElement | null;
       if (img) {
@@ -561,7 +571,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const status = el.querySelector('.shelf-book-status');
       if (status) {
         status.className = 'shelf-book-status shelf-status-' + b.status;
-        status.textContent = b.status === 'in_progress' ? 'READING' : statusLabels[b.status];
+        status.textContent = b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status];
       }
 
       // Stars: only for non-in_progress books
@@ -648,7 +658,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc;
       const displayCardSrc = localCardSrc || null;
       const displayCoverSrc = localCoverSrc ?? coverSrc;
-      html += '<div class="shelf-book' + activeClass + '" style="animation-delay: ' + (i * 0.08) + 's" data-book=\'' + bookData.replace(/'/g, '&#39;') + '\' tabindex="0" aria-label="' + esc(b.title) + ' by ' + esc(b.author) + '">';
+      html += '<div class="shelf-book' + activeClass + '" style="animation-delay: ' + (i * 0.08) + 's" data-book=\'' + bookData.replace(/'/g, '&#39;') + '\' tabindex="0" aria-label="' + a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) + '">';
       html += '<div class="shelf-cover-wrapper">';
       const srcsetAttr = displayCardSrc ? ' srcset="' + esc(displayCardSrc) + ' 1x, ' + esc(displayCoverSrc) + ' 2x"' : '';
       var avifSrcset = '';
@@ -664,7 +674,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
       html += '</div>';
       html += '<div class="shelf-book-title"><span>' + esc(b.title) + '</span></div>';
       html += '<div class="shelf-book-author">' + esc(b.author) + '</div>';
-      html += '<div class="shelf-book-status shelf-status-' + b.status + '">' + (b.status === 'in_progress' ? 'READING' : statusLabels[b.status]) + '</div>';
+      html += '<div class="shelf-book-status shelf-status-' + b.status + '">' + (b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status]) + '</div>';
       if (b.status === 'in_progress' && b.progress != null) {
         html += '<div class="shelf-book-progress-bar"><div class="shelf-book-progress-fill" style="width:' + b.progress + '%"></div></div>';
         html += '<div class="shelf-book-progress">' + b.progress + '%</div>';

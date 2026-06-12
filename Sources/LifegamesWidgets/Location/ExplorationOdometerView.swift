@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let explorationCopy = CopyLoader.widgets.exploration
 
 public struct ExplorationOdometerView: View {
     public let totalVisits: Int
@@ -19,17 +22,17 @@ public struct ExplorationOdometerView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "EXPLORATION", dotColor: Color.colorAccentBlue, timestamp: "odometer")
+            WidgetHeaderView(label: explorationCopy.title.uppercased(), dotColor: Color.colorAccentBlue, timestamp: "odometer")
 
             VStack(spacing: 14) {
                 HStack {
-                    OdometerStat(value: "\(totalVisits)", label: "Visits", color: Color.colorAccentBlue)
+                    OdometerStat(value: "\(totalVisits)", label: explorationCopy.visits, color: Color.colorAccentBlue)
                     Divider().frame(height: 28).overlay(Color.white.opacity(0.08))
-                    OdometerStat(value: "\(totalPlaces)", label: "Places", color: Color.colorAccentBlue)
+                    OdometerStat(value: "\(totalPlaces)", label: explorationCopy.places, color: Color.colorAccentBlue)
                     Divider().frame(height: 28).overlay(Color.white.opacity(0.08))
-                    OdometerStat(value: "\(citiesVisited)", label: "Cities", color: Color.colorAccentBlue)
+                    OdometerStat(value: "\(citiesVisited)", label: explorationCopy.cities, color: Color.colorAccentBlue)
                     Divider().frame(height: 28).overlay(Color.white.opacity(0.08))
-                    OdometerStat(value: "\(totalStates)", label: "States", color: Color.colorAccentBlue)
+                    OdometerStat(value: "\(totalStates)", label: explorationCopy.states, color: Color.colorAccentBlue)
                 }
 
                 if let city = currentCity {

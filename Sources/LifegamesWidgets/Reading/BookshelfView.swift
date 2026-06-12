@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let bookshelfCopy = CopyLoader.widgets.bookshelf
 
 public struct BookshelfView: View {
     private let state: WidgetState<BookshelfProps>
@@ -30,7 +33,7 @@ private struct BookshelfPopulatedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "BOOKSHELF", dotColor: Color.colorAccentAmber, timestamp: "library")
+            WidgetHeaderView(label: bookshelfCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: bookshelfCopy.timestampLibrary)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {
@@ -49,18 +52,18 @@ private struct BookshelfPopulatedView: View {
 private struct BookshelfEmptyView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "BOOKSHELF", dotColor: Color.colorAccentAmber, timestamp: "library")
+            WidgetHeaderView(label: bookshelfCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: bookshelfCopy.timestampLibrary)
 
             VStack(spacing: 12) {
                 Image(systemName: "books.vertical")
                     .font(.system(size: 32))
                     .foregroundStyle(Color.colorAccentAmber.opacity(0.6))
 
-                Text("No Books Yet")
+                Text(bookshelfCopy.emptyTitle)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Color.colorTextTitle)
 
-                Text("Books you add will appear here")
+                Text(bookshelfCopy.emptyBody)
                     .font(.system(size: 11))
                     .foregroundStyle(Color.colorTextMuted)
             }
@@ -75,7 +78,7 @@ private struct BookshelfEmptyView: View {
 private struct BookshelfSkeletonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "BOOKSHELF", dotColor: Color.colorAccentAmber, timestamp: "library")
+            WidgetHeaderView(label: bookshelfCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: bookshelfCopy.timestampLibrary)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {

@@ -1,0 +1,1330 @@
+{
+  "heartRate": {
+    "title": {
+      "value": "Heart Rate",
+      "_meta": {
+        "description": "Heart Rate widget title. Canonical Title Case; iOS renders it all-caps via .textCase(.uppercase) (display-only, D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:31 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:54,204,241 (WidgetHeaderView label, uppercased)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "bpm": {
+      "value": "BPM",
+      "_meta": {
+        "description": "Beats-per-minute unit shown beside the pulse value. An acronym, intentionally upper-case (not a casing transform).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:73 (.pulse-bpm-unit)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:76"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Established acronym for the unit; stored upper-case because that IS the canonical spelling of the unit, not a display transform."
+      }
+    },
+    "hrv": {
+      "value": "HRV",
+      "_meta": {
+        "description": "Heart-rate-variability metric label (acronym).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:78 (.hr-hrv-label)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:103"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Acronym; canonical spelling is upper-case."
+      }
+    },
+    "hrvUnit": {
+      "value": "ms",
+      "_meta": {
+        "description": "Unit (milliseconds) for the HRV value.",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:80 (.hr-hrv-unit)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:112"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 4 }
+      }
+    },
+    "rhr": {
+      "value": "RHR",
+      "_meta": {
+        "description": "Resting-heart-rate footer label (acronym).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:86 (.hr-footer-label)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:160 (VitalRibbonCell label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Acronym; canonical spelling is upper-case."
+      }
+    },
+    "rhrUnit": {
+      "value": "bpm",
+      "_meta": {
+        "description": "Unit (beats per minute) for the resting-heart-rate footer value. Lower-case here (distinct from the prominent 'BPM' unit beside the live pulse).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:87 (.hr-footer-unit)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:160 (VitalRibbonCell unit)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Deliberately lower-case in the quiet footer ribbon; the main pulse unit 'BPM' is a separate, upper-case key (heartRate.bpm)."
+      }
+    },
+    "rr": {
+      "value": "RR",
+      "_meta": {
+        "description": "Respiratory-rate footer label (acronym).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:90 (.hr-footer-label)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:162 (VitalRibbonCell label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Acronym; canonical spelling is upper-case."
+      }
+    },
+    "rrUnit": {
+      "value": "br/m",
+      "_meta": {
+        "description": "Unit (breaths per minute) for the respiratory-rate footer value.",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:91 (.hr-footer-unit)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:162 (VitalRibbonCell unit)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 }
+      }
+    },
+    "temp": {
+      "value": "Temp",
+      "_meta": {
+        "description": "Wrist-temperature-delta footer label. Web stores 'Temp'; iOS renders 'TEMP' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:94 (.hr-footer-label)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:164 (VitalRibbonCell label 'TEMP', uppercased display)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 8 },
+        "rationale": "Canonical Title Case 'Temp'; iOS shows 'TEMP' as a display transform consistent with the rest of the footer ribbon."
+      }
+    },
+    "empty": {
+      "value": "No heart rate data",
+      "_meta": {
+        "description": "Empty-state message when no heart-rate data is available. Reconciled wording: iOS phrasing kept as the more descriptive canonical (web currently shows the terser 'No data').",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:57 (.hr-empty-label, currently 'No data')",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:247"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Wording reconciliation: web 'No data' vs iOS 'No heart rate data' — chose the more descriptive iOS wording as canonical. The web HeartRate.astro empty-state will adopt this value (from 'No data') once it reads the copy package. FLAGGED for user confirmation."
+      }
+    },
+    "zoneBradycardia": {
+      "value": "Bradycardia",
+      "_meta": {
+        "description": "HR zone label for very low resting heart rate (<45 bpm).",
+        "usage": [
+          "web:packages/web/src/runtime/heart-rate.ts:19 (classifyHeartRate zone)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateZone.swift:9"
+        ],
+        "tone": "clinical",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "zoneResting": {
+      "value": "Resting Zone",
+      "_meta": {
+        "description": "HR zone label for resting heart rate (45–59 bpm).",
+        "usage": [
+          "web:packages/web/src/runtime/heart-rate.ts:31 (classifyHeartRate zone)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateZone.swift:10"
+        ],
+        "tone": "clinical",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "zoneNormal": {
+      "value": "Normal Zone",
+      "_meta": {
+        "description": "HR zone label for normal heart rate (60–100 bpm).",
+        "usage": [
+          "web:packages/web/src/runtime/heart-rate.ts:45 (classifyHeartRate zone)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateZone.swift:11"
+        ],
+        "tone": "clinical",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "zoneFatBurn": {
+      "value": "Fat Burn",
+      "_meta": {
+        "description": "HR zone label for elevated heart rate (101–140 bpm).",
+        "usage": [
+          "web:packages/web/src/runtime/heart-rate.ts:59 (classifyHeartRate zone)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateZone.swift:12"
+        ],
+        "tone": "clinical",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "zonePeak": {
+      "value": "Peak Zone",
+      "_meta": {
+        "description": "HR zone label for peak heart rate (>140 bpm).",
+        "usage": [
+          "web:packages/web/src/runtime/heart-rate.ts:74 (classifyHeartRate zone)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateZone.swift:13"
+        ],
+        "tone": "clinical",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "timestampLive": {
+      "value": "live",
+      "_meta": {
+        "description": "Timestamp badge indicating the Heart Rate widget streams live data. Per-widget (distinct from other widgets' 'live' badges).",
+        "usage": [
+          "web:packages/web/src/widgets/health/HeartRate.astro:34 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift:54,204 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 },
+        "rationale": "Kept as a per-widget timestamp key (not shared) so each widget's badge can diverge independently later."
+      }
+    }
+  },
+  "movement": {
+    "title": {
+      "value": "Movement",
+      "_meta": {
+        "description": "Movement Rings widget title. Web renders an inner header; iOS drops the inner header (outer section header labels it).",
+        "usage": ["web:packages/web/src/widgets/health/MovementRings.astro:91 (.widget-label)"],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "steps": {
+      "value": "Steps",
+      "_meta": {
+        "description": "Steps chip label. Web stores 'Steps'; iOS renders 'STEPS' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:149 (.mv-chip-label)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:70 (MovementChip 'STEPS', uppercased display)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "distance": {
+      "value": "Distance",
+      "_meta": {
+        "description": "Distance chip label. iOS renders 'DISTANCE (km)' (uppercased, with inline unit); web stores label and unit separately.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:153 (.mv-chip-label)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:71 (MovementChip 'DISTANCE (km)')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "distanceUnit": {
+      "value": "km",
+      "_meta": {
+        "description": "Distance unit (kilometres) for the Movement steps/distance chip.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:153 (Distance chip unit)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:71 (inline '(km)')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 4 }
+      }
+    },
+    "flights": {
+      "value": "Flights",
+      "_meta": {
+        "description": "Flights-climbed chip label. Web stores 'Flights'; iOS renders 'FLIGHTS' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:157 (.mv-chip-label)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:72 (MovementChip 'FLIGHTS')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "calories": {
+      "value": "Calories",
+      "_meta": {
+        "description": "Full 'Calories' legend label (Move ring). The center-ring 'CAL' acronym is a separate key (movement.caloriesShort).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:166 (.mv-swatch-label-full)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "caloriesShort": {
+      "value": "Cal",
+      "_meta": {
+        "description": "Abbreviated calories label for the compact swatch / ring-center cap. Web stores 'Cal'; iOS uses 'Cal' (legend) and 'CAL' (ring center, uppercased display).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:167 (.mv-swatch-label-short)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:88 (MovementSwatch 'Cal'), :194 (ring center 'CAL' uppercased)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Kept distinct from movement.calories: the compact swatch + odometer cap need the short form; canonical natural case 'Cal', iOS ring-center uppercases to 'CAL' as a display transform."
+      }
+    },
+    "exercise": {
+      "value": "Exercise",
+      "_meta": {
+        "description": "Full 'Exercise' legend label (Exercise ring).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:174 (.mv-swatch-label-full)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:95 (MovementSwatch label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "exerciseShort": {
+      "value": "Ex",
+      "_meta": {
+        "description": "Abbreviated exercise label for the compact swatch.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:175 (.mv-swatch-label-short)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 },
+        "rationale": "Short form for the narrow swatch row; distinct from movement.exercise."
+      }
+    },
+    "stand": {
+      "value": "Stand",
+      "_meta": {
+        "description": "Stand ring legend label.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro (Stand swatch label)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:102 (MovementSwatch label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "empty": {
+      "value": "No movement yet today",
+      "_meta": {
+        "description": "Empty-state message when no movement data is recorded for the day.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:120 (.mv-empty-label)"
+        ],
+        "tone": "encouraging",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "daylightCaption": {
+      "value": "{minutes} min in daylight today",
+      "_meta": {
+        "description": "Daylight-exposure caption (sun-arc footer). ICU MF1 template; consumers interpolate the minutes count (D2-A).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro (mv-sun-caption)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:365 (interpolated '\\(daylightMin) min in daylight today')"
+        ],
+        "tone": "encouraging",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "daylightGoal": {
+      "value": "goal {minutes} min",
+      "_meta": {
+        "description": "Daylight goal caption fragment shown beside the daylight caption. ICU MF1 template; consumers interpolate the goal minutes (D2-A).",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro (mv-sun-caption goal)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:370 (interpolated 'goal \\(goalDaylightMin) min')"
+        ],
+        "tone": "encouraging",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "timestampToday": {
+      "value": "today",
+      "_meta": {
+        "description": "Timestamp badge for the Movement widget (today's accumulating data). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:94 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift:45,408 ('today')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "workouts": {
+    "title": {
+      "value": "Workouts",
+      "_meta": {
+        "description": "Workouts widget title. Web stores 'Workouts'; iOS renders 'WORKOUTS' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:16 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:33,50,80 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "recoveryDay": {
+      "value": "Recovery Day",
+      "_meta": {
+        "description": "Heading shown on a rest day with no workouts (recovery empty-state).",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:79 (.workout-rest-heading)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:57"
+        ],
+        "tone": "encouraging",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "none": {
+      "value": "No workouts recorded",
+      "_meta": {
+        "description": "Sub-line under 'Recovery Day' stating no workouts were recorded.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:80 (.workout-rest-sub)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:61"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "recoveryBody": {
+      "value": "Your body recovers while you rest",
+      "_meta": {
+        "description": "Encouraging insight line on the recovery-day empty-state.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:81 (.workout-rest-insight)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:65"
+        ],
+        "tone": "encouraging",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "duration": {
+      "value": "Duration",
+      "_meta": {
+        "description": "Workout duration stat label.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:54 (.workout-stat-label)",
+          "web:packages/web/src/runtime/updaters.ts (workout-stat-label re-render path)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:148 (StatPill label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "calories": {
+      "value": "Calories",
+      "_meta": {
+        "description": "Workout calories stat label.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:58 (.workout-stat-label)",
+          "web:packages/web/src/runtime/updaters.ts:122 (workout-stat-label re-render path)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:149 (StatPill label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "caloriesUnit": {
+      "value": "kcal",
+      "_meta": {
+        "description": "Calories unit (kilocalories) for the workout calories stat.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:59 (workout-stat-value suffix)",
+          "web:packages/web/src/runtime/updaters.ts:122 (re-render path suffix)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:149 (StatPill value suffix)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 6 }
+      }
+    },
+    "distance": {
+      "value": "Distance",
+      "_meta": {
+        "description": "Workout distance stat label.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:63 (.workout-stat-label)",
+          "web:packages/web/src/runtime/updaters.ts:124 (workout-stat-label re-render path)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:151 (StatPill label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "distanceUnit": {
+      "value": "km",
+      "_meta": {
+        "description": "Workout distance unit (kilometres).",
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts:124 (workout-stat-value suffix)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:151 (StatPill value suffix)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 4 }
+      }
+    },
+    "timestampToday": {
+      "value": "today",
+      "_meta": {
+        "description": "Timestamp badge for the Workouts widget (today's workouts). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Workouts.astro:19 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Health/WorkoutsView.swift:33,50,80 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "hydration": {
+    "title": {
+      "value": "Hydration",
+      "_meta": {
+        "description": "Hydration widget title. Web stores 'Hydration'; iOS renders 'HYDRATION' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/Hydration.astro:16 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Health/HydrationView.swift:18 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "water": {
+      "value": "Water",
+      "_meta": {
+        "description": "Water vessel readout label.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Hydration.astro:60 (.hydra-label)",
+          "ios:Sources/LifegamesWidgets/Health/HydrationView.swift:97 (VesselReadout label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "caffeine": {
+      "value": "Caffeine",
+      "_meta": {
+        "description": "Caffeine vessel readout label.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Hydration.astro:89 (.hydra-label)",
+          "ios:Sources/LifegamesWidgets/Health/HydrationView.swift:136 (VesselReadout label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "timestampToday": {
+      "value": "today",
+      "_meta": {
+        "description": "Timestamp badge for the Hydration widget (today's intake). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/health/Hydration.astro:19 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Health/HydrationView.swift:18 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "nightSummary": {
+    "title": {
+      "value": "Night Summary",
+      "_meta": {
+        "description": "Night Summary (sleep) widget title. Web stores 'Night Summary'; iOS renders 'NIGHT SUMMARY' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:17 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:51,192,219 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "score": {
+      "value": "Score",
+      "_meta": {
+        "description": "Sleep-score label under the moon score readout.",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:59 (.sleep-moon-score-label)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:63"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "phaseDeep": {
+      "value": "Deep",
+      "_meta": {
+        "description": "Sleep-phase legend label for deep sleep.",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:9 (phase label)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:42 (PhaseInfo label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 8 }
+      }
+    },
+    "phaseRem": {
+      "value": "REM",
+      "_meta": {
+        "description": "Sleep-phase legend label for REM sleep (acronym).",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:10 (phase label)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:43 (PhaseInfo label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 8 },
+        "rationale": "Acronym; canonical spelling is upper-case."
+      }
+    },
+    "phaseCore": {
+      "value": "Core",
+      "_meta": {
+        "description": "Sleep-phase legend label for core sleep.",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:11 (phase label)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:44 (PhaseInfo label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 8 }
+      }
+    },
+    "phaseAwake": {
+      "value": "Awake",
+      "_meta": {
+        "description": "Sleep-phase legend label for awake periods.",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:12 (phase label)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:45 (PhaseInfo label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 8 }
+      }
+    },
+    "restorative": {
+      "value": "{deep}% deep — {rem}% REM — restorative sleep",
+      "_meta": {
+        "description": "Sleep-quality summary caption. ICU MF1 template; consumers interpolate the deep/rem percentages (D2-A). The em-dash separators are preserved literally.",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:76 (composed '{deepPct}% deep — {remPct}% REM — restorative sleep')",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:88 (interpolated '\\(props.deepPct)% deep — \\(props.remPct)% REM — restorative sleep')"
+        ],
+        "tone": "encouraging",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Stored as a single ICU template (not split into prefix/suffix) per D2-A. Placeholder names {deep}/{rem} are the canonical copy placeholders; consumers map their own deepPct/remPct values into them."
+      }
+    },
+    "empty": {
+      "value": "No sleep data",
+      "_meta": {
+        "description": "Empty-state when no sleep data is available. iOS uses 'No sleep data'; the web JS re-render path uses the longer 'No sleep data recorded' — reconciled to the shorter canonical here.",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:225",
+          "web:packages/web/src/runtime/updaters.ts:154 (sleep-insight-empty, currently 'No sleep data recorded')"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Wording reconciliation: iOS 'No sleep data' vs web 'No sleep data recorded' — chose the shorter iOS wording as canonical (matches the terse badge style). The web updaters.ts will adopt this value once it reads the copy package. FLAGGED for user confirmation."
+      }
+    },
+    "timestampLastNight": {
+      "value": "last night",
+      "_meta": {
+        "description": "Timestamp badge for the Night Summary widget (last night's sleep). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/health/NightSummary.astro:20 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Health/NightSummaryView.swift:51,192,219 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    }
+  },
+  "exploration": {
+    "title": {
+      "value": "Exploration",
+      "_meta": {
+        "description": "Exploration odometer widget title. Web stores 'Exploration'; iOS renders 'EXPLORATION' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/location/ExplorationOdometerV3.astro:5 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Location/ExplorationOdometerView.swift:22 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "visits": {
+      "value": "Visits",
+      "_meta": {
+        "description": "Odometer stat label — total visits.",
+        "usage": [
+          "web:packages/web/src/widgets/location/ExplorationOdometerV3.astro:25 (.v3-label)",
+          "ios:Sources/LifegamesWidgets/Location/ExplorationOdometerView.swift:26 (OdometerStat label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "places": {
+      "value": "Places",
+      "_meta": {
+        "description": "Odometer stat label — total places.",
+        "usage": [
+          "web:packages/web/src/widgets/location/ExplorationOdometerV3.astro:30 (.v3-label)",
+          "ios:Sources/LifegamesWidgets/Location/ExplorationOdometerView.swift:28 (OdometerStat label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "cities": {
+      "value": "Cities",
+      "_meta": {
+        "description": "Odometer stat label — cities visited.",
+        "usage": [
+          "web:packages/web/src/widgets/location/ExplorationOdometerV3.astro:35 (.v3-label)",
+          "ios:Sources/LifegamesWidgets/Location/ExplorationOdometerView.swift:30 (OdometerStat label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "states": {
+      "value": "States",
+      "_meta": {
+        "description": "Odometer stat label — states visited.",
+        "usage": [
+          "web:packages/web/src/widgets/location/ExplorationOdometerV3.astro:40 (.v3-label)",
+          "ios:Sources/LifegamesWidgets/Location/ExplorationOdometerView.swift:32 (OdometerStat label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "topPlaces": {
+    "title": {
+      "value": "Top Places",
+      "_meta": {
+        "description": "Top Places leaderboard widget title. Web stores 'Top Places'; iOS renders 'TOP PLACES' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/location/PlaceLeaderboardV3.astro:5 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Location/PlaceLeaderboardView.swift:20 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "empty": {
+      "value": "No places recorded yet",
+      "_meta": {
+        "description": "Empty-state when no places are on the leaderboard.",
+        "usage": [
+          "web:packages/web/src/runtime/place-leaderboard-init.ts:24 (podium empty markup)",
+          "web:packages/web/src/runtime/updaters-leaderboard-variations.ts:25 (podium empty markup)"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "readingFeed": {
+    "title": {
+      "value": "Reading Feed",
+      "_meta": {
+        "description": "Reading Feed widget title. Web stores 'Reading Feed'; iOS renders 'READING FEED' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/reading/ReadingFeed.astro:7 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:33,71,91 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "empty": {
+      "value": "No articles yet",
+      "_meta": {
+        "description": "Empty-state when no reading articles are available.",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:77"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Canonical empty-state authored from the iOS render site; the web Reading Feed has no rendered empty literal today, so the web will adopt this value where it renders its empty state."
+      }
+    },
+    "timestampRecent": {
+      "value": "recent",
+      "_meta": {
+        "description": "Timestamp badge for the Reading Feed widget (recently read). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/reading/ReadingFeed.astro:10 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:33,71,91 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "bookshelf": {
+    "title": {
+      "value": "Bookshelf",
+      "_meta": {
+        "description": "Bookshelf widget title. Web stores 'Bookshelf'; iOS renders 'BOOKSHELF' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/reading/Bookshelf.astro:24 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:33,52,78 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "emptyTitle": {
+      "value": "No Books Yet",
+      "_meta": {
+        "description": "Empty-state heading when the bookshelf has no books.",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:59"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Authored from the iOS empty-state; web bookshelf has no rendered empty literal today (the web will adopt it where applicable)."
+      }
+    },
+    "emptyBody": {
+      "value": "Books you add will appear here",
+      "_meta": {
+        "description": "Empty-state body explaining how books appear once added.",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:63"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "statusReading": {
+      "value": "Reading",
+      "_meta": {
+        "description": "In-progress book status badge. Web and iOS both render 'READING' (uppercase) today; stored canonical natural case 'Reading' with display uppercasing applied by consumers (D3).",
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts:564,667 (in_progress status badge 'READING')",
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfProps.swift:35 (status 'READING'), Sources/LifegamesWidgets/Reading/BookModalView.swift:275 (statusLabel 'READING')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 },
+        "rationale": "Both surfaces currently store the all-caps 'READING'. Per D3 we store natural-case 'Reading'; consumers uppercase via display transform. FLAGGED: an all-caps→natural-case conversion the user should confirm."
+      }
+    },
+    "timestampLibrary": {
+      "value": "library",
+      "_meta": {
+        "description": "Timestamp badge for the Bookshelf widget (the personal library). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/reading/Bookshelf.astro:27 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:33,52,78 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "theatreReviews": {
+    "title": {
+      "value": "Theatre Reviews",
+      "_meta": {
+        "description": "Theatre Reviews widget title. Web stores 'Theatre Reviews'; iOS renders 'THEATRE REVIEWS' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/reading/TheatreReviews.astro:3 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift:33,52,72 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "empty": {
+      "value": "No reviews yet",
+      "_meta": {
+        "description": "Empty-state when no theatre reviews are available.",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift:58"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Authored from the iOS empty-state; web Theatre Reviews has no rendered empty literal today (the web will adopt it where applicable)."
+      }
+    }
+  },
+  "bookModal": {
+    "notes": {
+      "value": "Notes",
+      "_meta": {
+        "description": "Book detail modal — notes section label.",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts:108 (.book-modal-notes-label)",
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:143"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "empty": {
+      "value": "No book selected",
+      "_meta": {
+        "description": "Book detail modal — empty-state when no book is selected.",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:240"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "pages": {
+      "value": "Pages",
+      "_meta": {
+        "description": "Book detail modal — page-count stat label.",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts:88 (.book-modal-stat-label)",
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:116 (StatBlock label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "published": {
+      "value": "Published",
+      "_meta": {
+        "description": "Book detail modal — publication-year stat label.",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts:89 (.book-modal-stat-label)",
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:117 (StatBlock label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "status": {
+      "value": "Status",
+      "_meta": {
+        "description": "Book detail modal — reading-status stat label.",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts:90 (.book-modal-stat-label)",
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:118 (StatBlock label)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "amazonCta": {
+      "value": "View on Amazon →",
+      "_meta": {
+        "description": "Book detail modal — call-to-action link to the Amazon product page. The trailing arrow is part of the rendered label (web uses the &rarr; entity).",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts:113 (.book-modal-amazon, 'View on Amazon &rarr;')"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 24 },
+        "rationale": "Web-only today; iOS book modal has no Amazon CTA. The literal arrow glyph '→' is stored (web renders it from &rarr;)."
+      }
+    },
+    "progressSuffix": {
+      "value": "{percent}% complete",
+      "_meta": {
+        "description": "Book detail modal — reading-progress caption. ICU MF1 template; consumers interpolate the percent (D2-A).",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts:94 ('{progress}% complete')",
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:124 (interpolated '\\(progress)% complete')"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "devLog": {
+    "title": {
+      "value": "Dev Log",
+      "_meta": {
+        "description": "Dev Log (GitHub activity) production widget title. Canonical 'Dev Log' from the web production widget; iOS renders 'ACTIVITY LOG' (a wording variant — see rationale).",
+        "usage": [
+          "web:packages/web/src/widgets/github/DevActivityLog.astro:45 (.widget-label 'Dev Log')",
+          "ios:Sources/LifegamesWidgets/GitHub/DevActivityLogView.swift:14 (WidgetHeaderView label 'ACTIVITY LOG')"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 },
+        "rationale": "Wording reconciliation: web 'Dev Log' vs iOS 'Activity Log'. Chose the web wording 'Dev Log' as canonical. FLAGGED for user confirmation; iOS would adopt 'Dev Log' (display-uppercased) once it reads the copy package."
+      }
+    },
+    "timestampLive": {
+      "value": "live",
+      "_meta": {
+        "description": "Timestamp badge for the Dev Log widget (live activity). Per-widget. iOS currently shows 'terminal' (a per-widget badge variant) — reconciled to 'live'.",
+        "usage": [
+          "web:packages/web/src/widgets/github/DevActivityLog.astro:48 (.widget-timestamp 'live')",
+          "ios:Sources/LifegamesWidgets/GitHub/DevActivityLogView.swift:14 (WidgetHeaderView timestamp 'terminal')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 },
+        "rationale": "Timestamp-badge reconciliation: web 'live' vs iOS 'terminal'. Chose 'live' per the Wave-1 scope set. FLAGGED for user confirmation."
+      }
+    }
+  },
+  "starredRepos": {
+    "title": {
+      "value": "Starred Repos",
+      "_meta": {
+        "description": "Starred Repos production widget title. Web stores 'Starred Repos'; iOS renders 'STARRED REPOS' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/github/StarredRepoList.astro:21 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/GitHub/StarredRepoListView.swift:18 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "timestampRecent": {
+      "value": "recent",
+      "_meta": {
+        "description": "Timestamp badge for the Starred Repos widget (recently starred). Per-widget. iOS currently shows 'list' (a per-widget badge variant) — reconciled to 'recent'.",
+        "usage": [
+          "web:packages/web/src/widgets/github/StarredRepoList.astro:24 (.widget-timestamp 'recent')",
+          "ios:Sources/LifegamesWidgets/GitHub/StarredRepoListView.swift:18 (WidgetHeaderView timestamp 'list')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 },
+        "rationale": "Timestamp-badge reconciliation: web 'recent' vs iOS 'list'. Chose 'recent' per the Wave-1 scope set. FLAGGED for user confirmation."
+      }
+    }
+  },
+  "bio": {
+    "title": {
+      "value": "Bio",
+      "_meta": {
+        "description": "Bio terminal widget title. Web stores 'Bio'; iOS renders 'BIO' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro:7 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Identity/BioTerminalView.swift:15 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "terminalTitle": {
+      "value": "zsh — about",
+      "_meta": {
+        "description": "Terminal title-bar text in the Bio widget (mimics a zsh shell titled 'about'). The em-dash is preserved literally.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro:19 (.terminal-title 'zsh — about')",
+          "ios:Sources/LifegamesWidgets/Identity/BioTerminalView.swift:49 ('zsh — about')"
+        ],
+        "tone": "playful",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 24 }
+      }
+    },
+    "timestampBash": {
+      "value": "bash",
+      "_meta": {
+        "description": "Timestamp badge for the Bio widget (shell flavor). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro:10 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Identity/BioTerminalView.swift:15 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "systemStatus": {
+    "title": {
+      "value": "System Status",
+      "_meta": {
+        "description": "System Status widget title. Web stores 'System Status'; iOS renders 'SYSTEM STATUS' via display uppercasing (D3).",
+        "usage": [
+          "web:packages/web/src/widgets/other/SystemStatus.astro:30,49 (.widget-label)",
+          "ios:Sources/LifegamesWidgets/Other/SystemStatusView.swift:35 (WidgetHeaderView label)"
+        ],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 20 }
+      }
+    },
+    "valueActive": {
+      "value": "Active",
+      "_meta": {
+        "description": "Per-source status value when a data source is reporting (e.g. Health, Sleep, Location). Web renders it all-caps ('ACTIVE') via the JS updater; stored canonical natural case 'Active' with display uppercasing applied by the consumer (D3).",
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts:388 (sys-val 'ACTIVE')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 },
+        "rationale": "All-caps→natural-case conversion: web stores 'ACTIVE'. Per D3 we store 'Active'; the consumer uppercases via display transform. FLAGGED for user confirmation."
+      }
+    },
+    "valueOffline": {
+      "value": "Offline",
+      "_meta": {
+        "description": "Per-source status value when a data source is not reporting. Web renders it all-caps ('OFFLINE') via the JS updater; stored canonical natural case 'Offline' (D3).",
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts:395 (sys-val 'OFFLINE')"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 },
+        "rationale": "All-caps→natural-case conversion: web stores 'OFFLINE'. Per D3 we store 'Offline'; the consumer uppercases via display transform. FLAGGED for user confirmation."
+      }
+    },
+    "timestampRealtime": {
+      "value": "realtime",
+      "_meta": {
+        "description": "Timestamp badge for the System Status widget (realtime). Per-widget.",
+        "usage": [
+          "web:packages/web/src/widgets/other/SystemStatus.astro:33,52 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Other/SystemStatusView.swift:35 (WidgetHeaderView timestamp)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 12 }
+      }
+    }
+  },
+  "identityCard": {
+    "github": {
+      "value": "GitHub",
+      "_meta": {
+        "description": "Identity card — GitHub link pill label.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:20,63 (neon-pill)",
+          "ios:Sources/LifegamesWidgets/Identity/IdentityCardView.swift:55 (NeonPillButton label)"
+        ],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "linkedin": {
+      "value": "LinkedIn",
+      "_meta": {
+        "description": "Identity card — LinkedIn link pill label.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:21,64 (neon-pill)",
+          "ios:Sources/LifegamesWidgets/Identity/IdentityCardView.swift:56 (NeonPillButton label)"
+        ],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "site": {
+      "value": "Site",
+      "_meta": {
+        "description": "Identity card — personal-site link pill label. Web-only today; iOS identity card renders only GitHub + LinkedIn pills.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:22,65 (neon-pill)"
+        ],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "mastodon": {
+      "value": "Mastodon",
+      "_meta": {
+        "description": "Identity card — Mastodon link pill label. Web-only today.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:23,66 (neon-pill)"
+        ],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    },
+    "bluesky": {
+      "value": "Bluesky",
+      "_meta": {
+        "description": "Identity card — Bluesky link pill label. Web-only today.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:24,67 (neon-pill)"
+        ],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "constraints": { "maxChars": 16 }
+      }
+    }
+  }
+}

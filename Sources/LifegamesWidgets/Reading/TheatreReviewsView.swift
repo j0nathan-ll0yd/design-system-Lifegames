@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let theatreReviewsCopy = CopyLoader.widgets.theatreReviews
 
 public struct TheatreReviewsView: View {
     private let state: WidgetState<TheatreReviewsProps>
@@ -30,7 +33,7 @@ private struct TheatreReviewsPopulatedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "THEATRE REVIEWS", dotColor: Color.colorAccentAmber, timestamp: "\(props.totalCount) reviews")
+            WidgetHeaderView(label: theatreReviewsCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: "\(props.totalCount) reviews")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {
@@ -49,13 +52,13 @@ private struct TheatreReviewsPopulatedView: View {
 private struct TheatreReviewsEmptyView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "THEATRE REVIEWS", dotColor: Color.colorAccentAmber, timestamp: "0 reviews")
+            WidgetHeaderView(label: theatreReviewsCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: "0 reviews")
 
             VStack(spacing: 8) {
                 Image(systemName: "theatermasks")
                     .font(.system(size: 24))
                     .foregroundStyle(Color.colorAccentAmber.opacity(0.4))
-                Text("No reviews yet")
+                Text(theatreReviewsCopy.empty)
                     .font(.system(size: 11))
                     .foregroundStyle(Color.colorTextMuted)
             }
@@ -69,7 +72,7 @@ private struct TheatreReviewsEmptyView: View {
 private struct TheatreReviewsSkeletonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "THEATRE REVIEWS", dotColor: Color.colorAccentAmber, timestamp: "reviews")
+            WidgetHeaderView(label: theatreReviewsCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: "reviews")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {

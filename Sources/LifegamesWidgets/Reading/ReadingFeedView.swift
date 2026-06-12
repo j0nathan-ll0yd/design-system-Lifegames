@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let readingFeedCopy = CopyLoader.widgets.readingFeed
 
 public struct ReadingFeedView: View {
     private let state: WidgetState<ReadingFeedProps>
@@ -30,7 +33,7 @@ private struct ReadingFeedPopulatedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "READING FEED", dotColor: Color.colorAccentAmber, timestamp: "recent")
+            WidgetHeaderView(label: readingFeedCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: readingFeedCopy.timestampRecent)
 
             VStack(spacing: 0) {
                 ForEach(Array(props.articles.enumerated()), id: \.offset) { index, article in
@@ -68,13 +71,13 @@ private struct ReadingFeedPopulatedView: View {
 private struct ReadingFeedEmptyView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "READING FEED", dotColor: Color.colorAccentAmber, timestamp: "recent")
+            WidgetHeaderView(label: readingFeedCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: readingFeedCopy.timestampRecent)
 
             VStack(spacing: 8) {
                 Image(systemName: "doc.text")
                     .font(.system(size: 24))
                     .foregroundStyle(Color.colorAccentAmber.opacity(0.4))
-                Text("No articles yet")
+                Text(readingFeedCopy.empty)
                     .font(.system(size: 11))
                     .foregroundStyle(Color.colorTextMuted)
             }
@@ -88,7 +91,7 @@ private struct ReadingFeedEmptyView: View {
 private struct ReadingFeedSkeletonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "READING FEED", dotColor: Color.colorAccentAmber, timestamp: "recent")
+            WidgetHeaderView(label: readingFeedCopy.title.uppercased(), dotColor: Color.colorAccentAmber, timestamp: readingFeedCopy.timestampRecent)
 
             VStack(spacing: 0) {
                 ForEach(0 ..< 4, id: \.self) { index in

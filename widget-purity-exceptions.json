@@ -23,7 +23,7 @@
     },
     {
       "file": "Sources/LifegamesWidgets/GitHub/StarredRepoListView.swift",
-      "line": 23,
+      "line": 26,
       "reason": "Runtime data: repository's primary-language color from the API; rendered as a 6pt dot in the repo row."
     },
     {

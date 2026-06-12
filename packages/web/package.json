@@ -38,6 +38,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@lifegames/copy": "workspace:*",
     "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
     "@lifegames/tokens": "workspace:*"
   },

@@ -1,3 +1,5 @@
+import { widgets } from '@lifegames/copy';
+
 export interface HeartRateZone {
   zone: string;
   accentClass: string;
@@ -15,7 +17,7 @@ export interface HeartRateZone {
 export function classifyHeartRate(hr: number): HeartRateZone {
   if (hr < 45) {
     return {
-      zone: 'Bradycardia',
+      zone: widgets.heartRate.zoneBradycardia,
       accentClass: 'tri-card-accent-pink',
       dotClass: 'live-dot-pink',
       bpmColor: '#3a86ff',
@@ -29,7 +31,7 @@ export function classifyHeartRate(hr: number): HeartRateZone {
     };
   } else if (hr < 60) {
     return {
-      zone: 'Resting Zone',
+      zone: widgets.heartRate.zoneResting,
       accentClass: 'tri-card-accent-pink',
       dotClass: 'live-dot-pink',
       bpmColor: '#ff006e',
@@ -43,7 +45,7 @@ export function classifyHeartRate(hr: number): HeartRateZone {
     };
   } else if (hr <= 100) {
     return {
-      zone: 'Normal Zone',
+      zone: widgets.heartRate.zoneNormal,
       accentClass: 'tri-card-accent-pink',
       dotClass: 'live-dot-pink',
       bpmColor: '#ff006e',
@@ -57,7 +59,7 @@ export function classifyHeartRate(hr: number): HeartRateZone {
     };
   } else if (hr <= 140) {
     return {
-      zone: 'Fat Burn',
+      zone: widgets.heartRate.zoneFatBurn,
       accentClass: 'tri-card-accent-amber',
       dotClass: 'live-dot-amber',
       bpmColor: '#f59e0b',
@@ -71,7 +73,7 @@ export function classifyHeartRate(hr: number): HeartRateZone {
     };
   } else {
     return {
-      zone: 'Peak Zone',
+      zone: widgets.heartRate.zonePeak,
       accentClass: 'tri-card-accent-red',
       dotClass: 'live-dot-red',
       bpmColor: '#ef4444',

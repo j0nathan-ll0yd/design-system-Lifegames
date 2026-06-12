@@ -1,13 +1,15 @@
 ---
+import { widgets } from '@lifegames/copy';
+
 const { profile } = Astro.props;
 const terminalLines = profile.terminalLines;
 ---
 <div class="tri-card tri-card-accent-indigo left-panel-bio" id="cardBio">
   <div class="widget-header">
-    <h2 class="widget-label">Bio</h2>
+    <h2 class="widget-label">{widgets.bio.title}</h2>
     <div class="widget-header-right">
       <div class="live-dot live-dot-indigo"></div>
-      <span class="widget-timestamp">bash</span>
+      <span class="widget-timestamp">{widgets.bio.timestampBash}</span>
     </div>
   </div>
   <div class="widget-body" style="padding: 0;">
@@ -16,7 +18,7 @@ const terminalLines = profile.terminalLines;
         <div class="terminal-btn terminal-btn-red"></div>
         <div class="terminal-btn terminal-btn-yellow"></div>
         <div class="terminal-btn terminal-btn-green"></div>
-        <div class="terminal-title">zsh &mdash; about</div>
+        <div class="terminal-title">{widgets.bio.terminalTitle}</div>
       </div>
       <div class="terminal-body" id="terminalBody">
         {terminalLines.map((line: any) => {

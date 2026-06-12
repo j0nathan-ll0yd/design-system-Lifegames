@@ -1,0 +1,10 @@
+{
+  "validation": {
+    "bookNoFields": "At least one field besides asin must be provided",
+    "dateFormat": "date must be YYYY-MM-DD"
+  },
+  "client": {
+    "connectionSuccess": "Success! Connected.",
+    "serverReturned": "Server returned {code}"
+  }
+}

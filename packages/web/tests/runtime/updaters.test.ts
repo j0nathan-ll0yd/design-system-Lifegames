@@ -358,7 +358,7 @@ describe('updateNightSummary', () => {
   it('sets insight to no-data message when isEmpty', () => {
     setup();
     updateNightSummary(emptySleep);
-    expect(el('sleepInsight').innerHTML).toContain('No sleep data recorded');
+    expect(el('sleepInsight').innerHTML).toContain('No sleep data');
   });
 
   it('does not throw when elements are missing', () => {
@@ -729,9 +729,13 @@ describe('updateBookshelf', () => {
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('Test Author');
   });
 
-  it('renders READING status for in_progress', () => {
+  it('renders the in_progress status badge (natural-case source, CSS uppercases to READING)', () => {
     updateBookshelf(makeBooks());
-    expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('READING');
+    // The badge text is sourced from @lifegames/copy (widgets.bookshelf.statusReading,
+    // canonical natural-case 'Reading'); .shelf-book-status applies text-transform:uppercase
+    // so the visible pixels remain 'READING' (D3 display transform).
+    const html = document.getElementById('dashShelfRow')!.innerHTML;
+    expect(html).toContain('class="shelf-book-status shelf-status-in_progress">Reading<');
   });
 
   it('renders progress bar for in_progress book', () => {

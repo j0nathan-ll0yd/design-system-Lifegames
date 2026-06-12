@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let devLogCopy = CopyLoader.widgets.devLog
 
 public struct DevActivityLogView: View {
     public let props: DevActivityProps
@@ -11,7 +14,7 @@ public struct DevActivityLogView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "ACTIVITY LOG", dotColor: Color.colorAccentGreen, timestamp: "terminal")
+            WidgetHeaderView(label: devLogCopy.title.uppercased(), dotColor: Color.colorAccentGreen, timestamp: devLogCopy.timestampLive)
 
             VStack(alignment: .leading, spacing: 2) {
                 ForEach(Array(props.events.enumerated()), id: \.offset) { _, event in

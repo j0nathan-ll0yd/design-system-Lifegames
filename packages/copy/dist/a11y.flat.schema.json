@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.a11y.flat.schema.json",
+  "type": "object",
+  "title": "Accessibility",
+  "description": "Rich authoring schema for the a11y (accessibility) slice of @lifegames/copy. Every customer-facing accessibility string — aria-labels, image alt text, dialog labels, and pagination/region labels — is a CopyString leaf carrying authoring context in _meta. The two identity-slice a11y strings (skipToMain, ogImageAlt) intentionally remain in the identity namespace and are NOT duplicated here. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax; interpolated templates are substituted at the call site (no MessageFormat runtime). Casing is natural case: a11y copy needs no display uppercasing transform. The $defs block is byte-identical to schema/identity.schema.json and schema/widgets.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+  "properties": {
+    "movement": {
+      "type": "object",
+      "title": "A11yMovement",
+      "description": "Movement Rings widget accessibility labels — the rings progress summary and the daylight sun-arc image label.",
+      "properties": {
+        "rings": {
+          "type": "string"
+        },
+        "daylight": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rings",
+        "daylight"
+      ],
+      "additionalProperties": false
+    },
+    "identity": {
+      "type": "object",
+      "title": "A11yIdentity",
+      "description": "Identity card accessibility labels — the avatar image alt text and the social-links nav region label.",
+      "properties": {
+        "avatarAlt": {
+          "type": "string"
+        },
+        "socialNav": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "avatarAlt",
+        "socialNav"
+      ],
+      "additionalProperties": false
+    },
+    "bookshelf": {
+      "type": "object",
+      "title": "A11yBookshelf",
+      "description": "Bookshelf widget accessibility label — the per-book list-item aria-label template.",
+      "properties": {
+        "bookItem": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "bookItem"
+      ],
+      "additionalProperties": false
+    },
+    "bookModal": {
+      "type": "object",
+      "title": "A11yBookModal",
+      "description": "Book detail modal accessibility label — the dialog region label.",
+      "properties": {
+        "dialog": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "dialog"
+      ],
+      "additionalProperties": false
+    },
+    "modal": {
+      "type": "object",
+      "title": "A11yModal",
+      "description": "Generic modal accessibility label — the close-button aria-label (shared modal chrome).",
+      "properties": {
+        "close": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "close"
+      ],
+      "additionalProperties": false
+    },
+    "readingFeed": {
+      "type": "object",
+      "title": "A11yReadingFeed",
+      "description": "Reading Feed widget accessibility label — the article pagination button aria-label template.",
+      "properties": {
+        "pagination": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pagination"
+      ],
+      "additionalProperties": false
+    },
+    "nav": {
+      "type": "object",
+      "title": "A11yNav",
+      "description": "Top-level navigation landmark labels (web shell) — profile aside and dashboard nav.",
+      "properties": {
+        "profile": {
+          "type": "string"
+        },
+        "dashboard": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile",
+        "dashboard"
+      ],
+      "additionalProperties": false
+    },
+    "region": {
+      "type": "object",
+      "title": "A11yRegion",
+      "description": "Triptych column region landmark labels (web shell) — the Body and Mind sections.",
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "mind": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "body",
+        "mind"
+      ],
+      "additionalProperties": false
+    },
+    "clock": {
+      "type": "object",
+      "title": "A11yClock",
+      "description": "Live clock accessibility label (web shell) — the top-bar current-time readout.",
+      "properties": {
+        "currentTime": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "currentTime"
+      ],
+      "additionalProperties": false
+    },
+    "page404": {
+      "type": "object",
+      "title": "A11yPage404",
+      "description": "404 page accessibility label (web shell) — the glitch error region.",
+      "properties": {
+        "region": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "region"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "movement",
+    "identity",
+    "bookshelf",
+    "bookModal",
+    "modal",
+    "readingFeed",
+    "nav",
+    "region",
+    "clock",
+    "page404"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,85 @@
+{
+  "health": {
+    "app": {
+      "value": "Life Portal reads your health data — including activity goals, time in daylight, and overnight wrist temperature — to display metrics and sync with your server.",
+      "_meta": {
+        "description": "NSHealthShareUsageDescription for the iPhone app target. Shown in the HealthKit read-authorization sheet. The app variant adds 'to display metrics' because the iPhone app renders the Health dashboard locally.",
+        "usage": [
+          "ios:LifePortal/project.yml:98 (LifePortal app target Info.plist NSHealthShareUsageDescription)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "watch": {
+      "value": "Life Portal reads your health data — including activity goals, time in daylight, and overnight wrist temperature — to sync with your server.",
+      "_meta": {
+        "description": "NSHealthShareUsageDescription for the watchOS target. Shown in the HealthKit read-authorization sheet on the watch. The watch variant omits 'display metrics' because the watch only syncs to the server.",
+        "usage": [
+          "ios:LifePortal/project.yml:157 (LifePortalWatch target Info.plist NSHealthShareUsageDescription)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Intentionally distinct from permissions.health.app (D6b): the watch has no local metric display, so it omits the 'to display metrics' clause."
+      }
+    }
+  },
+  "locationWhenInUse": {
+    "app": {
+      "value": "Life Portal needs your location to track and display your movement history.",
+      "_meta": {
+        "description": "NSLocationWhenInUseUsageDescription for the iPhone app target. Shown in the foreground-location authorization sheet. The app variant tracks and displays movement history.",
+        "usage": [
+          "ios:LifePortal/project.yml:99 (LifePortal app target Info.plist NSLocationWhenInUseUsageDescription)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    },
+    "watch": {
+      "value": "Life Portal needs your location to display your current position.",
+      "_meta": {
+        "description": "NSLocationWhenInUseUsageDescription for the watchOS target. Shown in the foreground-location authorization sheet on the watch. The watch variant only displays the current position.",
+        "usage": [
+          "ios:LifePortal/project.yml:158 (LifePortalWatch target Info.plist NSLocationWhenInUseUsageDescription)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Intentionally distinct from permissions.locationWhenInUse.app (D6b): the watch only shows current position rather than tracking/displaying history."
+      }
+    }
+  },
+  "locationAlways": {
+    "app": {
+      "value": "Life Portal needs continuous location access to track your movements in the background.",
+      "_meta": {
+        "description": "NSLocationAlwaysAndWhenInUseUsageDescription for the iPhone app target. Shown in the always-on (background) location authorization sheet. App-only: the watch target declares no always-on location usage description.",
+        "usage": [
+          "ios:LifePortal/project.yml:100 (LifePortal app target Info.plist NSLocationAlwaysAndWhenInUseUsageDescription)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11"
+      }
+    }
+  },
+  "motion": {
+    "app": {
+      "value": "LifePortal uses motion data to detect when you arrive at and leave places, improving visit tracking accuracy.",
+      "_meta": {
+        "description": "NSMotionUsageDescription for the iPhone app target. Shown in the Core Motion authorization sheet; motion data refines arrival/departure detection. App-only: the watch target declares no motion usage description.",
+        "usage": [
+          "ios:LifePortal/project.yml:101 (LifePortal app target Info.plist NSMotionUsageDescription)"
+        ],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-11",
+        "rationale": "Source uses 'LifePortal' (no space) where the other permission strings use 'Life Portal'; preserved verbatim from project.yml:101 to match the live Info.plist."
+      }
+    }
+  }
+}

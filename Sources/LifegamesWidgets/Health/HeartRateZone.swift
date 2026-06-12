@@ -1,3 +1,4 @@
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
 
@@ -5,12 +6,13 @@ public enum HeartRateZone {
     case bradycardia, restingZone, normalZone, fatBurn, peakZone
 
     public var name: String {
+        let copy = CopyLoader.widgets.heartRate
         switch self {
-        case .bradycardia: "Bradycardia"
-        case .restingZone: "Resting Zone"
-        case .normalZone: "Normal Zone"
-        case .fatBurn: "Fat Burn"
-        case .peakZone: "Peak Zone"
+        case .bradycardia: return copy.zoneBradycardia
+        case .restingZone: return copy.zoneResting
+        case .normalZone: return copy.zoneNormal
+        case .fatBurn: return copy.zoneFatBurn
+        case .peakZone: return copy.zonePeak
         }
     }
 

@@ -1,8 +1,9 @@
 ---
+import { widgets } from '@lifegames/copy';
 ---
 <div class="tri-card tri-card-accent-blue is-loading" id="cardExplorationOdometerV3">
   <div class="widget-header">
-    <h3 class="widget-label">Exploration</h3>
+    <h3 class="widget-label">{widgets.exploration.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-blue"></div>
       <span class="widget-timestamp">since 3/2/26</span>
@@ -22,22 +23,22 @@
       <div class="v3-stats-row">
         <div class="v3-stat">
           <span class="v3-number" data-loc="odo-v3-visits">---</span>
-          <span class="v3-label">Visits</span>
+          <span class="v3-label">{widgets.exploration.visits}</span>
         </div>
         <div class="v3-divider" aria-hidden="true"></div>
         <div class="v3-stat">
           <span class="v3-number" data-loc="odo-v3-places">---</span>
-          <span class="v3-label">Places</span>
+          <span class="v3-label">{widgets.exploration.places}</span>
         </div>
         <div class="v3-divider" aria-hidden="true"></div>
         <div class="v3-stat">
           <span class="v3-number" data-loc="odo-v3-cities">---</span>
-          <span class="v3-label">Cities</span>
+          <span class="v3-label">{widgets.exploration.cities}</span>
         </div>
         <div class="v3-divider" aria-hidden="true"></div>
         <div class="v3-stat">
           <span class="v3-number" data-loc="odo-v3-states">---</span>
-          <span class="v3-label">States</span>
+          <span class="v3-label">{widgets.exploration.states}</span>
         </div>
       </div>
       <div class="v3-homebase">

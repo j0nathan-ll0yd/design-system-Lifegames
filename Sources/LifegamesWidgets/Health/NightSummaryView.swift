@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let nightSummaryCopy = CopyLoader.widgets.nightSummary
 
 public struct NightSummaryView: View {
     private let state: WidgetState<NightSummaryProps>
@@ -39,16 +42,16 @@ private struct NightSummaryPopulatedView: View {
 
     private var phases: [PhaseInfo] {
         [
-            PhaseInfo(id: 0, label: "Deep", formatted: props.deepFormatted, color: LGColor.sleepDeep),
-            PhaseInfo(id: 1, label: "REM", formatted: props.remFormatted, color: LGColor.accentPurple),
-            PhaseInfo(id: 2, label: "Core", formatted: props.coreFormatted, color: LGColor.accentBlue),
-            PhaseInfo(id: 3, label: "Awake", formatted: props.awakeFormatted, color: LGColor.accentAmber),
+            PhaseInfo(id: 0, label: nightSummaryCopy.phaseDeep, formatted: props.deepFormatted, color: LGColor.sleepDeep),
+            PhaseInfo(id: 1, label: nightSummaryCopy.phaseRem, formatted: props.remFormatted, color: LGColor.accentPurple),
+            PhaseInfo(id: 2, label: nightSummaryCopy.phaseCore, formatted: props.coreFormatted, color: LGColor.accentBlue),
+            PhaseInfo(id: 3, label: nightSummaryCopy.phaseAwake, formatted: props.awakeFormatted, color: LGColor.accentAmber),
         ]
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "NIGHT SUMMARY", dotColor: LGColor.accentPurple, timestamp: "last night")
+            WidgetHeaderView(label: nightSummaryCopy.title.uppercased(), dotColor: LGColor.accentPurple, timestamp: nightSummaryCopy.timestampLastNight)
 
             VStack(spacing: 16) {
                 HStack(spacing: 16) {
@@ -60,7 +63,7 @@ private struct NightSummaryPopulatedView: View {
                             .foregroundStyle(LGColor.textTitle)
 
                         HStack(spacing: 8) {
-                            Text("Score")
+                            Text(nightSummaryCopy.score)
                                 .font(.system(size: 10))
                                 .foregroundStyle(LGColor.textMuted)
 
@@ -85,7 +88,9 @@ private struct NightSummaryPopulatedView: View {
 
                 PhasePillsRow(phases: phases)
 
-                Text("\(props.deepPct)% deep — \(props.remPct)% REM — restorative sleep")
+                Text(nightSummaryCopy.restorative
+                    .replacingOccurrences(of: "{deep}", with: "\(props.deepPct)")
+                    .replacingOccurrences(of: "{rem}", with: "\(props.remPct)"))
                     .font(.system(size: 10))
                     .foregroundStyle(LGColor.textMuted)
             }
@@ -189,7 +194,7 @@ private struct CrescentMoonIcon: View {
 private struct NightSummarySkeletonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "NIGHT SUMMARY", dotColor: LGColor.accentPurple, timestamp: "last night")
+            WidgetHeaderView(label: nightSummaryCopy.title.uppercased(), dotColor: LGColor.accentPurple, timestamp: nightSummaryCopy.timestampLastNight)
 
             VStack(alignment: .center, spacing: 10) {
                 SkeletonBar(width: 40, height: 40, cornerRadius: 20)
@@ -216,13 +221,13 @@ private struct NightSummarySkeletonView: View {
 private struct NightSummaryEmptyView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "NIGHT SUMMARY", dotColor: LGColor.accentPurple, timestamp: "last night")
+            WidgetHeaderView(label: nightSummaryCopy.title.uppercased(), dotColor: LGColor.accentPurple, timestamp: nightSummaryCopy.timestampLastNight)
 
             VStack(spacing: 8) {
                 Image(systemName: "moon.zzz")
                     .font(.system(size: 28))
                     .foregroundStyle(LGColor.accentPurple.opacity(0.4))
-                Text("No sleep data")
+                Text(nightSummaryCopy.empty)
                     .font(.system(size: 13))
                     .foregroundStyle(LGColor.textMuted)
             }

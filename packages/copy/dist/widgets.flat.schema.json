@@ -1,0 +1,544 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.widgets.flat.schema.json",
+  "type": "object",
+  "title": "Widgets",
+  "description": "Rich authoring schema for the widgets slice of @lifegames/copy. Every customer-facing widget label, unit, empty-state, zone/phase name, and timestamp badge is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax. Casing is canonical natural case: consumers apply any uppercasing as a display-only transform; no all-caps literals are stored. The $defs block is byte-identical to schema/identity.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+  "properties": {
+    "heartRate": {
+      "type": "object",
+      "description": "Heart Rate widget — title, metric labels/units, HR zone names, empty-state, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "bpm": {
+          "type": "string"
+        },
+        "hrv": {
+          "type": "string"
+        },
+        "hrvUnit": {
+          "type": "string"
+        },
+        "rhr": {
+          "type": "string"
+        },
+        "rhrUnit": {
+          "type": "string"
+        },
+        "rr": {
+          "type": "string"
+        },
+        "rrUnit": {
+          "type": "string"
+        },
+        "temp": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        },
+        "zoneBradycardia": {
+          "type": "string"
+        },
+        "zoneResting": {
+          "type": "string"
+        },
+        "zoneNormal": {
+          "type": "string"
+        },
+        "zoneFatBurn": {
+          "type": "string"
+        },
+        "zonePeak": {
+          "type": "string"
+        },
+        "timestampLive": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "bpm",
+        "hrv",
+        "hrvUnit",
+        "rhr",
+        "rhrUnit",
+        "rr",
+        "rrUnit",
+        "temp",
+        "empty",
+        "zoneBradycardia",
+        "zoneResting",
+        "zoneNormal",
+        "zoneFatBurn",
+        "zonePeak",
+        "timestampLive"
+      ],
+      "additionalProperties": false
+    },
+    "movement": {
+      "type": "object",
+      "description": "Movement Rings widget — title, ring/metric labels + short variants, units, empty-state, daylight caption template, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "string"
+        },
+        "distance": {
+          "type": "string"
+        },
+        "distanceUnit": {
+          "type": "string"
+        },
+        "flights": {
+          "type": "string"
+        },
+        "calories": {
+          "type": "string"
+        },
+        "caloriesShort": {
+          "type": "string"
+        },
+        "exercise": {
+          "type": "string"
+        },
+        "exerciseShort": {
+          "type": "string"
+        },
+        "stand": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        },
+        "daylightCaption": {
+          "type": "string"
+        },
+        "daylightGoal": {
+          "type": "string"
+        },
+        "timestampToday": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "steps",
+        "distance",
+        "distanceUnit",
+        "flights",
+        "calories",
+        "caloriesShort",
+        "exercise",
+        "exerciseShort",
+        "stand",
+        "empty",
+        "daylightCaption",
+        "daylightGoal",
+        "timestampToday"
+      ],
+      "additionalProperties": false
+    },
+    "workouts": {
+      "type": "object",
+      "description": "Workouts widget — title, recovery-day empty-state chrome, stat labels/units, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "recoveryDay": {
+          "type": "string"
+        },
+        "none": {
+          "type": "string"
+        },
+        "recoveryBody": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "string"
+        },
+        "calories": {
+          "type": "string"
+        },
+        "caloriesUnit": {
+          "type": "string"
+        },
+        "distance": {
+          "type": "string"
+        },
+        "distanceUnit": {
+          "type": "string"
+        },
+        "timestampToday": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "recoveryDay",
+        "none",
+        "recoveryBody",
+        "duration",
+        "calories",
+        "caloriesUnit",
+        "distance",
+        "distanceUnit",
+        "timestampToday"
+      ],
+      "additionalProperties": false
+    },
+    "hydration": {
+      "type": "object",
+      "description": "Hydration widget — title, vessel labels, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "water": {
+          "type": "string"
+        },
+        "caffeine": {
+          "type": "string"
+        },
+        "timestampToday": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "water",
+        "caffeine",
+        "timestampToday"
+      ],
+      "additionalProperties": false
+    },
+    "nightSummary": {
+      "type": "object",
+      "description": "Night Summary (sleep) widget — title, score label, sleep-phase names, restorative caption template, empty-state, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "score": {
+          "type": "string"
+        },
+        "phaseDeep": {
+          "type": "string"
+        },
+        "phaseRem": {
+          "type": "string"
+        },
+        "phaseCore": {
+          "type": "string"
+        },
+        "phaseAwake": {
+          "type": "string"
+        },
+        "restorative": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        },
+        "timestampLastNight": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "score",
+        "phaseDeep",
+        "phaseRem",
+        "phaseCore",
+        "phaseAwake",
+        "restorative",
+        "empty",
+        "timestampLastNight"
+      ],
+      "additionalProperties": false
+    },
+    "exploration": {
+      "type": "object",
+      "description": "Exploration odometer widget — title + the four odometer stat labels.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "visits": {
+          "type": "string"
+        },
+        "places": {
+          "type": "string"
+        },
+        "cities": {
+          "type": "string"
+        },
+        "states": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "visits",
+        "places",
+        "cities",
+        "states"
+      ],
+      "additionalProperties": false
+    },
+    "topPlaces": {
+      "type": "object",
+      "description": "Top Places leaderboard widget — title + empty-state.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "empty"
+      ],
+      "additionalProperties": false
+    },
+    "readingFeed": {
+      "type": "object",
+      "description": "Reading Feed widget — title, empty-state, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        },
+        "timestampRecent": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "empty",
+        "timestampRecent"
+      ],
+      "additionalProperties": false
+    },
+    "bookshelf": {
+      "type": "object",
+      "description": "Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "emptyTitle": {
+          "type": "string"
+        },
+        "emptyBody": {
+          "type": "string"
+        },
+        "statusReading": {
+          "type": "string"
+        },
+        "timestampLibrary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "emptyTitle",
+        "emptyBody",
+        "statusReading",
+        "timestampLibrary"
+      ],
+      "additionalProperties": false
+    },
+    "theatreReviews": {
+      "type": "object",
+      "description": "Theatre Reviews widget — title + empty-state.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "empty"
+      ],
+      "additionalProperties": false
+    },
+    "bookModal": {
+      "type": "object",
+      "description": "Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template.",
+      "properties": {
+        "notes": {
+          "type": "string"
+        },
+        "empty": {
+          "type": "string"
+        },
+        "pages": {
+          "type": "string"
+        },
+        "published": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "amazonCta": {
+          "type": "string"
+        },
+        "progressSuffix": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "notes",
+        "empty",
+        "pages",
+        "published",
+        "status",
+        "amazonCta",
+        "progressSuffix"
+      ],
+      "additionalProperties": false
+    },
+    "devLog": {
+      "type": "object",
+      "description": "Dev Log (GitHub activity) production widget — title + live timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "timestampLive": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "timestampLive"
+      ],
+      "additionalProperties": false
+    },
+    "starredRepos": {
+      "type": "object",
+      "description": "Starred Repos production widget — title + recent timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "timestampRecent": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "timestampRecent"
+      ],
+      "additionalProperties": false
+    },
+    "bio": {
+      "type": "object",
+      "description": "Bio terminal widget — widget title, terminal title-bar text, bash timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "terminalTitle": {
+          "type": "string"
+        },
+        "timestampBash": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "terminalTitle",
+        "timestampBash"
+      ],
+      "additionalProperties": false
+    },
+    "systemStatus": {
+      "type": "object",
+      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "valueActive": {
+          "type": "string"
+        },
+        "valueOffline": {
+          "type": "string"
+        },
+        "timestampRealtime": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "valueActive",
+        "valueOffline",
+        "timestampRealtime"
+      ],
+      "additionalProperties": false
+    },
+    "identityCard": {
+      "type": "object",
+      "description": "Identity card — the social/link pill labels.",
+      "properties": {
+        "github": {
+          "type": "string"
+        },
+        "linkedin": {
+          "type": "string"
+        },
+        "site": {
+          "type": "string"
+        },
+        "mastodon": {
+          "type": "string"
+        },
+        "bluesky": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "github",
+        "linkedin",
+        "site",
+        "mastodon",
+        "bluesky"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "heartRate",
+    "movement",
+    "workouts",
+    "hydration",
+    "nightSummary",
+    "exploration",
+    "topPlaces",
+    "readingFeed",
+    "bookshelf",
+    "theatreReviews",
+    "bookModal",
+    "devLog",
+    "starredRepos",
+    "bio",
+    "systemStatus",
+    "identityCard"
+  ],
+  "additionalProperties": false
+}

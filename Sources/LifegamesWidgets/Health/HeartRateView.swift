@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let heartRateCopy = CopyLoader.widgets.heartRate
 
 public struct HeartRateView: View {
     private let state: WidgetState<HeartRateProps>
@@ -51,7 +54,7 @@ private struct HeartRatePopulatedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "HEART RATE", dotColor: zone.accentColor, timestamp: "live")
+            WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: zone.accentColor, timestamp: heartRateCopy.timestampLive)
 
             // widget-body padding: 14px top, 18px horizontal, 16px bottom
             VStack(alignment: .leading, spacing: 0) {
@@ -73,7 +76,7 @@ private struct HeartRatePopulatedView: View {
                                     .shadow(color: zone.accentColor.opacity(0.6), radius: 8, x: 0, y: 0)
                                     .shadow(color: zone.accentColor.opacity(0.25), radius: 20, x: 0, y: 0)
                                 // web: cap2 ≈ 10pt, letter-spacing 2px, weight 500, margin-left 6px
-                                Text("BPM")
+                                Text(heartRateCopy.bpm)
                                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                                     .kerning(2)
                                     .foregroundStyle(LGColor.textMuted)
@@ -100,7 +103,7 @@ private struct HeartRatePopulatedView: View {
                         // web: hrv-label letter-spacing 0.18em → kerning(1.8); hrv-value dual glow;
                         //      hrv-unit letter-spacing 0.10em → kerning(1.0)
                         VStack(alignment: .trailing, spacing: 2) {
-                            Text("HRV")
+                            Text(heartRateCopy.hrv)
                                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .kerning(1.8)
                                 .foregroundStyle(LGColor.textMuted)
@@ -109,7 +112,7 @@ private struct HeartRatePopulatedView: View {
                                 .foregroundStyle(hrvColor(props.hrv))
                                 .shadow(color: hrvColor(props.hrv).opacity(0.5), radius: 6, x: 0, y: 0)
                                 .shadow(color: hrvColor(props.hrv).opacity(0.2), radius: 15, x: 0, y: 0)
-                            Text("ms")
+                            Text(heartRateCopy.hrvUnit)
                                 .font(.system(size: 10, design: .monospaced))
                                 .kerning(1.0)
                                 .foregroundStyle(LGColor.textMuted)
@@ -157,11 +160,11 @@ private struct DailyVitalsFooterView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            VitalRibbonCell(label: "RHR", value: rhrValue, unit: "bpm")
+            VitalRibbonCell(label: heartRateCopy.rhr, value: rhrValue, unit: heartRateCopy.rhrUnit)
             Spacer()
-            VitalRibbonCell(label: "RR", value: rrValue, unit: "br/m")
+            VitalRibbonCell(label: heartRateCopy.rr, value: rrValue, unit: heartRateCopy.rrUnit)
             Spacer()
-            VitalRibbonCell(label: "TEMP", value: tempValue, unit: "°C")
+            VitalRibbonCell(label: heartRateCopy.temp.uppercased(), value: tempValue, unit: "°C")
         }
         .padding(.vertical, 3)
         .padding(.top, 8) // margin above the divider
@@ -201,7 +204,7 @@ private struct VitalRibbonCell: View {
 private struct HeartRateSkeletonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "HEART RATE", dotColor: LGColor.accentPink, timestamp: "live")
+            WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: heartRateCopy.timestampLive)
 
             VStack(alignment: .leading, spacing: 0) {
                 ZStack {
@@ -238,13 +241,13 @@ private struct HeartRateSkeletonView: View {
 private struct HeartRateEmptyView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "HEART RATE", dotColor: LGColor.accentPink)
+            WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: LGColor.accentPink)
 
             VStack {
                 Image(systemName: "heart.slash")
                     .font(.system(size: 28))
                     .foregroundStyle(LGColor.textMuted)
-                Text("No heart rate data")
+                Text(heartRateCopy.empty)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(LGColor.textMuted)
             }
