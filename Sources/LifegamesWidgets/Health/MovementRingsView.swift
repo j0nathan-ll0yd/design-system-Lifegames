@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let movementCopy = CopyLoader.widgets.movement
 
 public struct MovementRingsView: View {
     private let state: WidgetState<MovementRingsProps>
@@ -42,7 +45,7 @@ private struct MovementRingsPopulatedView: View {
                         .fill(LGColor.healthRed)
                         .frame(width: 6, height: 6)
                         .shadow(color: LGColor.healthRed.opacity(0.6), radius: 4)
-                    Text("today")
+                    Text(movementCopy.timestampToday)
                         .font(.system(size: 9, design: .monospaced))
                         .kerning(1.5)
                         .foregroundStyle(LGColor.textMuted)
@@ -67,9 +70,9 @@ private struct MovementRingsPopulatedView: View {
                     // web: mv-chips flex-direction:column; gap:8px (Spacing.s200)
                     // DISTANCE label carries "(km)" so the value side is just the number — prevents wrapping
                     VStack(alignment: .trailing, spacing: Spacing.s200) {
-                        MovementChip(label: "STEPS", value: formatThousands(props.steps))
-                        MovementChip(label: "DISTANCE (km)", value: formatDistanceValue(props.distanceMeters))
-                        MovementChip(label: "FLIGHTS", value: "\(props.flights)")
+                        MovementChip(label: movementCopy.steps.uppercased(), value: formatThousands(props.steps))
+                        MovementChip(label: "\(movementCopy.distance.uppercased()) (\(movementCopy.distanceUnit))", value: formatDistanceValue(props.distanceMeters))
+                        MovementChip(label: movementCopy.flights.uppercased(), value: "\(props.flights)")
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
@@ -85,21 +88,21 @@ private struct MovementRingsPopulatedView: View {
                     HStack(spacing: 0) {
                         MovementSwatch(
                             color: LGColor.healthRed,
-                            label: "Cal",
+                            label: movementCopy.caloriesShort,
                             value: Int(props.moveKcal.rounded()),
                             goal: Int(props.goals.moveKcal.rounded())
                         )
                         Spacer(minLength: 4)
                         MovementSwatch(
                             color: LGColor.accentGreen,
-                            label: "Exercise",
+                            label: movementCopy.exercise,
                             value: Int(props.exerciseMin.rounded()),
                             goal: Int(props.goals.exerciseMin.rounded())
                         )
                         Spacer(minLength: 4)
                         MovementSwatch(
                             color: LGColor.accentBlue,
-                            label: "Stand",
+                            label: movementCopy.stand,
                             value: Int(props.standHr.rounded()),
                             goal: Int(props.goals.standHr.rounded())
                         )
@@ -191,7 +194,7 @@ private struct ConcentricRingsView: View {
                     .font(.system(size: 15, weight: .bold, design: .monospaced))
                     .tracking(-0.15)
                     .foregroundStyle(LGColor.textTitle)
-                Text("CAL")
+                Text(movementCopy.caloriesShort.uppercased())
                     .font(.system(size: 8, weight: .medium, design: .monospaced))
                     .kerning(2.5)
                     .foregroundStyle(LGColor.textMuted)
@@ -362,12 +365,12 @@ private struct SunArcFooterView: View {
             // web: mv-sun-caption text-align:center, cap2 monospaced, letter-spacing 0.09em
             // hit checkmark uses health-green with glow
             HStack(spacing: 4) {
-                Text("\(Int(daylightMin)) min in daylight today")
+                Text(movementCopy.daylightCaption.replacingOccurrences(of: "{minutes}", with: "\(Int(daylightMin))"))
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(LGColor.textMuted)
                 Text("·")
                     .foregroundStyle(LGColor.textMuted.opacity(0.5))
-                Text("goal \(Int(goalDaylightMin)) min")
+                Text(movementCopy.daylightGoal.replacingOccurrences(of: "{minutes}", with: "\(Int(goalDaylightMin))"))
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(LGColor.textMuted)
                 if daylightMin >= goalDaylightMin {
@@ -405,7 +408,7 @@ private struct MovementRingsSkeletonView: View {
                         .fill(LGColor.healthRed)
                         .frame(width: 6, height: 6)
                         .shadow(color: LGColor.healthRed.opacity(0.6), radius: 4)
-                    Text("today")
+                    Text(movementCopy.timestampToday)
                         .font(.system(size: 9, design: .monospaced))
                         .kerning(1.5)
                         .foregroundStyle(LGColor.textMuted)

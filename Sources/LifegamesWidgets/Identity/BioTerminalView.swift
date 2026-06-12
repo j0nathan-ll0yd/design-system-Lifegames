@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let bioCopy = CopyLoader.widgets.bio
 
 public struct BioTerminalView: View {
     public let props: BioTerminalProps
@@ -12,7 +15,7 @@ public struct BioTerminalView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "BIO", dotColor: Color.colorAccentDefault, timestamp: "bash")
+            WidgetHeaderView(label: bioCopy.title.uppercased(), dotColor: Color.colorAccentDefault, timestamp: bioCopy.timestampBash)
 
             VStack(spacing: 0) {
                 terminalTitleBar
@@ -46,7 +49,7 @@ public struct BioTerminalView: View {
             Circle().fill(Color.colorAccentAmber).frame(width: 10, height: 10)
             Circle().fill(Color.colorAccentGreen).frame(width: 10, height: 10)
             Spacer()
-            Text("zsh \u{2014} about")
+            Text(bioCopy.terminalTitle)
                 .font(.system(size: 10, design: .monospaced))
                 .foregroundStyle(Color.colorTextMuted)
             Spacer()

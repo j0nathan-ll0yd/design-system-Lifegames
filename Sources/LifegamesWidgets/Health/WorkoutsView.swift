@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let workoutsCopy = CopyLoader.widgets.workouts
 
 public struct WorkoutsView: View {
     private let state: WidgetState<WorkoutsProps>
@@ -30,7 +33,7 @@ private struct WorkoutsPopulatedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "WORKOUTS", dotColor: LGColor.accentPink, timestamp: "today")
+            WidgetHeaderView(label: workoutsCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: workoutsCopy.timestampToday)
 
             VStack(spacing: 10) {
                 ForEach(Array(props.workouts.enumerated()), id: \.offset) { _, workout in
@@ -47,22 +50,22 @@ private struct WorkoutsPopulatedView: View {
 private struct WorkoutsRestDayView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "WORKOUTS", dotColor: LGColor.accentPink, timestamp: "today")
+            WidgetHeaderView(label: workoutsCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: workoutsCopy.timestampToday)
 
             VStack(spacing: 12) {
                 Image(systemName: "figure.mind.and.body")
                     .font(.system(size: 32))
                     .foregroundStyle(LGColor.accentPink.opacity(0.6))
 
-                Text("Recovery Day")
+                Text(workoutsCopy.recoveryDay)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(LGColor.textTitle)
 
-                Text("No workouts recorded")
+                Text(workoutsCopy.none)
                     .font(.system(size: 11))
                     .foregroundStyle(LGColor.textMuted)
 
-                Text("Your body recovers while you rest")
+                Text(workoutsCopy.recoveryBody)
                     .font(.system(size: 10))
                     .foregroundStyle(LGColor.textMuted.opacity(0.7))
             }
@@ -77,7 +80,7 @@ private struct WorkoutsRestDayView: View {
 private struct WorkoutsSkeletonView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "WORKOUTS", dotColor: LGColor.accentPink, timestamp: "today")
+            WidgetHeaderView(label: workoutsCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: workoutsCopy.timestampToday)
 
             VStack(spacing: 10) {
                 ForEach(0 ..< 2, id: \.self) { _ in
@@ -145,10 +148,10 @@ private struct WorkoutCard: View {
             }
 
             HStack(spacing: 16) {
-                StatPill(label: "Duration", value: workout.durationFormatted)
-                StatPill(label: "Calories", value: "\(workout.energyBurned) kcal")
+                StatPill(label: workoutsCopy.duration, value: workout.durationFormatted)
+                StatPill(label: workoutsCopy.calories, value: "\(workout.energyBurned) \(workoutsCopy.caloriesUnit)")
                 if workout.distance > 0 {
-                    StatPill(label: "Distance", value: String(format: "%.2f km", Double(workout.distance) / 1000.0))
+                    StatPill(label: workoutsCopy.distance, value: String(format: "%.2f \(workoutsCopy.distanceUnit)", Double(workout.distance) / 1000.0))
                 }
             }
         }

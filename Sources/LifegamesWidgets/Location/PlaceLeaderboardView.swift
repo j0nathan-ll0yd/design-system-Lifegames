@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let topPlacesCopy = CopyLoader.widgets.topPlaces
 
 public struct PlaceLeaderboardView: View {
     public let places: [LocationProps.Place]
@@ -17,7 +20,7 @@ public struct PlaceLeaderboardView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "TOP PLACES", dotColor: Color.colorAccentBlue, timestamp: "leaderboard")
+            WidgetHeaderView(label: topPlacesCopy.title.uppercased(), dotColor: Color.colorAccentBlue, timestamp: "leaderboard")
 
             VStack(spacing: 0) {
                 VStack(spacing: 6) {

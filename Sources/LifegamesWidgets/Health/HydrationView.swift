@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let hydrationCopy = CopyLoader.widgets.hydration
 
 public struct HydrationView: View {
     private let state: WidgetState<HydrationProps>
@@ -15,7 +18,7 @@ public struct HydrationView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "HYDRATION", dotColor: LGColor.accentPink, timestamp: "today")
+            WidgetHeaderView(label: hydrationCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: hydrationCopy.timestampToday)
 
             switch state {
             case .loading:
@@ -94,7 +97,7 @@ private struct WaterBottleColumn: View {
                 )
             }
 
-            VesselReadout(value: value, label: "Water", color: LGColor.accentBlue)
+            VesselReadout(value: value, label: hydrationCopy.water, color: LGColor.accentBlue)
         }
         .frame(maxWidth: .infinity)
     }
@@ -133,7 +136,7 @@ private struct CoffeeMugColumn: View {
                 }
             }
 
-            VesselReadout(value: value, label: "Caffeine", color: LGColor.accentAmber)
+            VesselReadout(value: value, label: hydrationCopy.caffeine, color: LGColor.accentAmber)
         }
         .frame(maxWidth: .infinity)
     }

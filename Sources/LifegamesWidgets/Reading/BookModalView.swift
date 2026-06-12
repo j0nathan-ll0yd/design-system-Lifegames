@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let bookModalCopy = CopyLoader.widgets.bookModal
 
 public struct BookModalView: View {
     private let state: WidgetState<BookModalProps>
@@ -113,15 +116,15 @@ private struct BookModalPopulatedView: View {
     private var bodySection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 20) {
-                StatBlock(value: props.pages.map(String.init) ?? "\u{2014}", label: "Pages")
-                StatBlock(value: props.year.map(String.init) ?? "\u{2014}", label: "Published")
-                StatBlock(value: props.statusLabel, label: "Status")
+                StatBlock(value: props.pages.map(String.init) ?? "\u{2014}", label: bookModalCopy.pages)
+                StatBlock(value: props.year.map(String.init) ?? "\u{2014}", label: bookModalCopy.published)
+                StatBlock(value: props.statusLabel, label: bookModalCopy.status)
             }
 
             if props.status == "in_progress", let progress = props.progress {
                 VStack(spacing: 4) {
                     ReadingProgressBar(progress: Double(progress) / 100)
-                    Text("\(progress)% complete")
+                    Text(bookModalCopy.progressSuffix.replacingOccurrences(of: "{percent}", with: "\(progress)"))
                         .font(.system(size: 10))
                         .foregroundStyle(Color.colorTextMuted)
                 }
@@ -140,7 +143,7 @@ private struct BookModalPopulatedView: View {
 
             if let notes = props.notes, props.status == "completed" {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Notes")
+                    Text(bookModalCopy.notes)
                         .font(.system(size: 9, weight: .medium))
                         .foregroundStyle(Color.colorTextMuted)
                         .textCase(.uppercase)
@@ -237,7 +240,7 @@ private struct BookModalEmptyView: View {
                     .font(.system(size: 32))
                     .foregroundStyle(Color.colorTextMuted.opacity(0.4))
 
-                Text("No book selected")
+                Text(bookModalCopy.empty)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(Color.colorTextTitle)
             }

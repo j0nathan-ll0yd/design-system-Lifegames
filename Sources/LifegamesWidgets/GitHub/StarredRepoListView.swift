@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let starredReposCopy = CopyLoader.widgets.starredRepos
 
 public struct StarredRepoListView: View {
     public let props: StarredRepoListProps
@@ -15,7 +18,7 @@ public struct StarredRepoListView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: "STARRED REPOS", dotColor: Color.colorAccentPink, timestamp: "list")
+            WidgetHeaderView(label: starredReposCopy.title.uppercased(), dotColor: Color.colorAccentPink, timestamp: starredReposCopy.timestampRecent)
 
             VStack(spacing: 3) {
                 ForEach(Array(props.repos.enumerated()), id: \.offset) { _, repo in

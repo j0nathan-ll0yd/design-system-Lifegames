@@ -1,6 +1,9 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
+
+private let identityCardCopy = CopyLoader.widgets.identityCard
 
 public struct IdentityCardView: View {
     public let props: IdentityCardProps
@@ -52,8 +55,8 @@ public struct IdentityCardView: View {
                 .foregroundStyle(Color.colorTextMuted.opacity(0.7))
 
             HStack(spacing: 12) {
-                NeonPillButton(label: "GitHub")
-                NeonPillButton(label: "LinkedIn")
+                NeonPillButton(label: identityCardCopy.github)
+                NeonPillButton(label: identityCardCopy.linkedin)
             }
         }
         .padding(24)
