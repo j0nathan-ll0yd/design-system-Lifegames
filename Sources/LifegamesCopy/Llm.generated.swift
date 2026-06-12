@@ -4,8 +4,8 @@
 
 import Foundation
 
-/// Rich authoring schema for the llm slice of @lifegames/copy (V2). Every hardcoded
-/// English-prose string in the backend LLM-content Eta templates
+/// Rich authoring schema for the llm slice of @lifegames/copy. Every hardcoded English-prose
+/// string in the backend LLM-content Eta templates
 /// (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent
 /// Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two
 /// groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full`
@@ -14,12 +14,13 @@ import Foundation
 /// build derives a FLAT schema from this one (stripping _meta) for all consumer codegen
 /// (TS/Zod/Swift). Values are stored as the literal template line text with each Eta
 /// interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and
-/// all literal markdown markers/punctuation preserved verbatim — so Wave 4 can reconstruct
-/// byte-identical template output. Casing is the source's natural case. Every object group
-/// has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across
+/// all literal markdown markers/punctuation preserved verbatim — so the rendered template
+/// output stays byte-identical. Casing is the source's natural case. Every object group has
+/// a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across
 /// namespaces. The $defs block is byte-identical to schema/identity.schema.json,
 /// schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and
-/// schema/permissions.schema.json (per-file inlined, no cross-file $ref — §3.2).
+/// schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file
+/// $ref), which the flat-schema derivation requires.
 // MARK: - Llm
 public struct Llm: Codable, Sendable {
     /// Prose strings from llms-full.eta — the complete LLM data dump (/llms-full.txt +

@@ -129,7 +129,7 @@ for (const ns of NAMESPACES) {
 }
 
 describe('@lifegames/copy cross-namespace invariants', () => {
-  it('the $defs block is byte-identical across every schema (per-file inlined, §3.2)', () => {
+  it('the $defs block is byte-identical across every schema (inlined per file, no cross-file $ref)', () => {
     const defs = NAMESPACES.map((ns) => {
       const schema = readJson(join(PKG, 'schema', `${ns.name}.schema.json`)) as Record<string, unknown>;
       return JSON.stringify(schema['$defs']);

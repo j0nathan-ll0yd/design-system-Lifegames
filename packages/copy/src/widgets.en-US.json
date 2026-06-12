@@ -143,7 +143,7 @@
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Wording reconciliation: web 'No data' vs iOS 'No heart rate data' — chose the more descriptive iOS wording as canonical. Wave 1b will update the web HeartRate.astro empty-state from 'No data' to this value. FLAGGED for user confirmation."
+        "rationale": "Wording reconciliation: web 'No data' vs iOS 'No heart rate data' — chose the more descriptive iOS wording as canonical. The web HeartRate.astro empty-state will adopt this value (from 'No data') once it reads the copy package. FLAGGED for user confirmation."
       }
     },
     "zoneBradycardia": {
@@ -735,7 +735,7 @@
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Wording reconciliation: iOS 'No sleep data' vs web 'No sleep data recorded' — chose the shorter iOS wording as canonical (matches the terse badge style). Wave 1b updates updaters.ts. FLAGGED for user confirmation."
+        "rationale": "Wording reconciliation: iOS 'No sleep data' vs web 'No sleep data recorded' — chose the shorter iOS wording as canonical (matches the terse badge style). The web updaters.ts will adopt this value once it reads the copy package. FLAGGED for user confirmation."
       }
     },
     "timestampLastNight": {
@@ -879,7 +879,7 @@
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Canonical empty-state authored from the iOS render site; the web Reading Feed has no rendered empty literal today, so Wave 1b will add this where web renders its empty state."
+        "rationale": "Canonical empty-state authored from the iOS render site; the web Reading Feed has no rendered empty literal today, so the web will adopt this value where it renders its empty state."
       }
     },
     "timestampRecent": {
@@ -922,7 +922,7 @@
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Authored from the iOS empty-state; web bookshelf has no rendered empty literal today (Wave 1b adds it where applicable)."
+        "rationale": "Authored from the iOS empty-state; web bookshelf has no rendered empty literal today (the web will adopt it where applicable)."
       }
     },
     "emptyBody": {
@@ -992,7 +992,7 @@
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Authored from the iOS empty-state; web Theatre Reviews has no rendered empty literal today (Wave 1b adds it where applicable)."
+        "rationale": "Authored from the iOS empty-state; web Theatre Reviews has no rendered empty literal today (the web will adopt it where applicable)."
       }
     }
   },
@@ -1106,7 +1106,7 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "constraints": { "maxChars": 20 },
-        "rationale": "Wording reconciliation: web 'Dev Log' vs iOS 'Activity Log'. Chose the web wording 'Dev Log' as canonical per the Wave-1 scope set. FLAGGED for user confirmation; Wave 1b would update iOS to 'Dev Log' (display-uppercased)."
+        "rationale": "Wording reconciliation: web 'Dev Log' vs iOS 'Activity Log'. Chose the web wording 'Dev Log' as canonical. FLAGGED for user confirmation; iOS would adopt 'Dev Log' (display-uppercased) once it reads the copy package."
       }
     },
     "timestampLive": {

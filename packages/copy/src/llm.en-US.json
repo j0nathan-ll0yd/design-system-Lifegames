@@ -460,7 +460,7 @@
         "tone": "llm-prose",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Literal markdown anchor '{#profile}' is ICU-MF1-escaped as '{#profile}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+        "rationale": "Literal markdown anchor '{#profile}' is ICU-MF1-escaped as '{#profile}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
       }
     },
     "profileNameLine": {
@@ -601,7 +601,7 @@
         "tone": "llm-prose",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Literal markdown anchor '{#body}' is ICU-MF1-escaped as '{#body}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+        "rationale": "Literal markdown anchor '{#body}' is ICU-MF1-escaped as '{#body}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
       }
     },
     "bodyDataAsOf": {
@@ -842,7 +842,7 @@
         "tone": "llm-prose",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Literal markdown anchor '{#mind}' is ICU-MF1-escaped as '{#mind}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+        "rationale": "Literal markdown anchor '{#mind}' is ICU-MF1-escaped as '{#mind}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
       }
     },
     "githubHeading": {
@@ -1213,7 +1213,7 @@
         "tone": "llm-prose",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Literal markdown anchor '{#system}' is ICU-MF1-escaped as '{#system}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+        "rationale": "Literal markdown anchor '{#system}' is ICU-MF1-escaped as '{#system}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
       }
     },
     "freshnessHeading": {
@@ -1254,7 +1254,7 @@
         "tone": "llm-prose",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "rationale": "Literal markdown anchor '{#streams}' is ICU-MF1-escaped as '{#streams}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text in Wave 4."
+        "rationale": "Literal markdown anchor '{#streams}' is ICU-MF1-escaped as '{#streams}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
       }
     },
     "streamsBody": {

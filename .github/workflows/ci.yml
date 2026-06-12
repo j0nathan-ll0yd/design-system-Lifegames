@@ -52,7 +52,7 @@ jobs:
       - run: pnpm -F @lifegames/copy build
       - run: pnpm -F @lifegames/copy test
       - run: pnpm -F @lifegames/copy lint
-      # Grep gate (plan §3.4): fail if a migrated copy value reappears hardcoded
+      # Grep gate: fail if a migrated copy value reappears hardcoded
       # in consumer source (DS web widgets + runtime + Swift widgets).
       - run: pnpm -F @lifegames/copy grep-gate
 

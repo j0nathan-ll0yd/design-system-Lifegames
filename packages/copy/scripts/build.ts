@@ -1,11 +1,11 @@
 #!/usr/bin/env tsx
 /**
- * build.ts — @lifegames/copy build + codegen pipeline (Plan A4; V2 Wave 0).
+ * build.ts — @lifegames/copy build + codegen pipeline.
  *
  * Single producer of every copy artifact. Manifest-driven: the NAMESPACES
- * array parametrizes the per-namespace pipeline. V2 Wave 0 ships with exactly
- * one entry (identity), producing byte-identical output to the single-file
- * generator it replaced. New namespaces are added as additional manifest entries.
+ * array parametrizes the per-namespace pipeline. Each manifest entry maps one
+ * copy namespace to its rich authoring file, flat schema, and generated outputs.
+ * New namespaces are added as additional manifest entries.
  *
  * Per-namespace pipeline:
  *   1. Validate the RICH authoring file (src/<name>.en-US.json) against the
@@ -32,9 +32,10 @@
  * would emit colliding Swift structs across files. After generating every
  * namespace the build asserts the set of top-level Swift type names is unique.
  *
- * D9 boundary: @lifegames/copy is a zero-dependency leaf — the src/ tree must not
- * import any @lifegames/* or UI package. The authoring schema lives in schema/
- * and is read here in scripts/; consumers read the flat dist/ outputs only.
+ * Leaf boundary: @lifegames/copy is a zero-runtime-dependency leaf — the src/
+ * tree must not import any @lifegames/* or UI package (enforced by the
+ * leaf-boundary ESLint rule, GOVERNANCE P3.1). The authoring schema lives in
+ * schema/ and is read here in scripts/; consumers read the flat dist/ outputs only.
  */
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
@@ -60,7 +61,7 @@ type JsonSchema = Record<string, any>;
 
 /**
  * One copy namespace. Everything the single-file generator hardcoded for
- * `identity` is parametrized here. V2 Wave 0 ships exactly one entry.
+ * `identity` is parametrized here so additional namespaces are pure data entries.
  */
 interface Namespace {
   /** Namespace key, used for src/dist/resource basenames (e.g. 'identity'). */

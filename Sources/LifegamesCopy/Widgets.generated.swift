@@ -4,14 +4,15 @@
 
 import Foundation
 
-/// Rich authoring schema for the widgets slice of @lifegames/copy (V2 Wave 1a). Every
-/// customer-facing widget label, unit, empty-state, zone/phase name, and timestamp badge is
-/// a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build
+/// Rich authoring schema for the widgets slice of @lifegames/copy. Every customer-facing
+/// widget label, unit, empty-state, zone/phase name, and timestamp badge is a
+/// CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build
 /// derives a FLAT schema from this one (stripping _meta) for all consumer codegen
 /// (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax. Casing is canonical
-/// natural-case (D3): consumers apply any uppercasing as a display-only transform; no
-/// all-caps literals are stored. The $defs block is byte-identical to
-/// schema/identity.schema.json (per-file inlined, no cross-file $ref — §3.2).
+/// natural case: consumers apply any uppercasing as a display-only transform; no all-caps
+/// literals are stored. The $defs block is byte-identical to schema/identity.schema.json;
+/// the $defs are inlined per schema file (no cross-file $ref), which the flat-schema
+/// derivation requires.
 // MARK: - Widgets
 public struct Widgets: Codable, Sendable {
     /// Bio terminal widget — widget title, terminal title-bar text, bash timestamp.

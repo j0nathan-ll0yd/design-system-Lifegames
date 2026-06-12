@@ -4,20 +4,21 @@
 
 import Foundation
 
-/// Rich authoring schema for the errors slice of @lifegames/copy (V2). Cross-repo
-/// user-facing error display text (Decision D7-B): the backend becomes the canonical source
-/// of these strings and the iOS client is rewired to decode + present them rather than
-/// hardcode their own. Two groups: `validation` (backend Zod request-validation messages
-/// returned to the client) and `client` (iOS networking connection-test result strings).
-/// Each leaf is a CopyString carrying authoring context in _meta, with usage citing BOTH the
-/// backend and iOS render sites. The copy build derives a FLAT schema from this one
-/// (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU
-/// MessageFormat 1 syntax; the client.serverReturned leaf is an interpolated template
-/// carrying its ICU placeholder ({code}). Casing is NATURAL case (D3). Every object group
-/// has a UNIQUE title (Err*) so quicktype-derived Swift struct names never collide across
-/// namespaces. The $defs block is byte-identical to schema/identity.schema.json,
-/// schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and
-/// schema/permissions.schema.json (per-file inlined, no cross-file $ref — §3.2).
+/// Rich authoring schema for the errors slice of @lifegames/copy. Cross-repo user-facing
+/// error display text: the backend is the canonical source of these strings and the iOS
+/// client decodes + presents them rather than hardcoding its own. Two groups: `validation`
+/// (backend Zod request-validation messages returned to the client) and `client` (iOS
+/// networking connection-test result strings). Each leaf is a CopyString carrying authoring
+/// context in _meta, with usage citing BOTH the backend and iOS render sites. The copy build
+/// derives a FLAT schema from this one (stripping _meta) for all consumer codegen
+/// (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax; the
+/// client.serverReturned leaf is an interpolated template carrying its ICU placeholder
+/// ({code}). Stored in natural case. Every object group has a UNIQUE title (Err*) so
+/// quicktype-derived Swift struct names never collide across namespaces. The $defs block is
+/// byte-identical to schema/identity.schema.json, schema/widgets.schema.json,
+/// schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the
+/// $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation
+/// requires.
 // MARK: - Errors
 public struct Errors: Codable, Sendable {
     /// iOS client networking connection-test result strings (connection-success message and

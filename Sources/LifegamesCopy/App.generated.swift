@@ -4,7 +4,7 @@
 
 import Foundation
 
-/// Rich authoring schema for the app slice of @lifegames/copy (V2). Every customer-facing UI
+/// Rich authoring schema for the app slice of @lifegames/copy. Every customer-facing UI
 /// string in the iOS/watchOS LifePortal app — navigation titles, tab labels, section
 /// headers, buttons, alerts, field labels, placeholders, and interpolated templates — is a
 /// CopyString leaf carrying authoring context in _meta. Source of truth is
@@ -13,13 +13,13 @@ import Foundation
 /// (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU
 /// MessageFormat 1 syntax; interpolated templates carry their ICU placeholders ({count},
 /// {percent}, {relative}, …) and ICU plural syntax where the source pluralizes — consumers
-/// keep their native plural logic in V2. Casing is NATURAL case (D3): the app uppercases
-/// section headers / buttons at the call site via .textCase / .kerning, so stored values are
-/// natural-case ('Sync Now', not 'SYNC NOW'). Every object group has a UNIQUE title (App* /
+/// keep their native plural logic. Stored in natural case: the app uppercases section
+/// headers / buttons at the call site via .textCase / .kerning, so stored values are natural
+/// case ('Sync Now', not 'SYNC NOW'). Every object group has a UNIQUE title (App* /
 /// Perm-free App-prefixed) so quicktype-derived Swift struct names never collide across
 /// namespaces. The $defs block is byte-identical to schema/identity.schema.json,
-/// schema/widgets.schema.json, and schema/a11y.schema.json (per-file inlined, no cross-file
-/// $ref — §3.2).
+/// schema/widgets.schema.json, and schema/a11y.schema.json; the $defs are inlined per schema
+/// file (no cross-file $ref), which the flat-schema derivation requires.
 // MARK: - App
 public struct App: Codable, Sendable {
     /// Add Saved Place sheet — header, field labels, placeholders, radius template, and

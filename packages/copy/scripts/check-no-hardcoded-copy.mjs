@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * check-no-hardcoded-copy.mjs — @lifegames/copy V2 grep gate (plan §3.4).
+ * check-no-hardcoded-copy.mjs — @lifegames/copy grep gate.
  *
  * Fails CI if a migrated copy VALUE reappears as a hardcoded quoted literal in
  * CONSUMER source — the highest-tier enforcement of "zero hardcoded
- * customer-facing text" (per B10). Robustness rules baked in:
+ * customer-facing text". Robustness rules baked in:
  *
  *   1. SCOPE to consumer source dirs only (CONSUMER_ROOTS). NEVER scans
  *      packages/copy/** (the authoring file legitimately holds every value and
@@ -19,7 +19,7 @@
  *      natural-case value ("Heart Rate").
  *
  * Pure Node (no ripgrep/grep dependency) so it runs anywhere CI does.
- * Extend NAMESPACES as each wave migrates a namespace.
+ * Extend NAMESPACES whenever a new namespace is migrated into @lifegames/copy.
  */
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
