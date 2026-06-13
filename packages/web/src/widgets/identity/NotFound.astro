@@ -1,0 +1,14 @@
+---
+import './NotFound.css';
+import type { NotFoundProps } from './NotFound.types';
+
+const { regionLabel = 'Error 404 — page not found' } = Astro.props as NotFoundProps;
+---
+<main id="main-content" class="glitch-page" aria-label={regionLabel}>
+  <div class="glitch-container">
+    <div class="glitch-404" aria-hidden="true">404</div>
+    <div class="glitch-subtitle">Glitch Protocol Engaged</div>
+    <div class="glitch-sub2">datastream integrity compromised</div>
+  </div>
+  <a href="/" class="glitch-return">Return to Dashboard</a>
+</main>

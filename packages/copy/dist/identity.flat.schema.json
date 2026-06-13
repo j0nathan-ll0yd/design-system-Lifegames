@@ -18,6 +18,9 @@
         "lastName": {
           "type": "string"
         },
+        "handle": {
+          "type": "string"
+        },
         "jobTitle": {
           "type": "string"
         },
@@ -37,6 +40,12 @@
           }
         },
         "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sameAs": {
           "type": "array",
           "items": {
             "type": "string"
@@ -62,12 +71,14 @@
         "name",
         "firstName",
         "lastName",
+        "handle",
         "jobTitle",
         "location",
         "yearsExperience",
         "philosophy",
         "skills",
         "interests",
+        "sameAs",
         "shortBio",
         "socialBio",
         "longBio",

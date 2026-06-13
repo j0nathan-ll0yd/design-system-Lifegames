@@ -127,17 +127,20 @@ public extension A11Y {
 /// Identity facts and biographical voices for Jonathan Lloyd.
 // MARK: - Person
 public struct Person: Codable, Sendable {
-    public let experiencePhrase, firstName, flavorBio: String
+    public let experiencePhrase, firstName, flavorBio, handle: String
     public let interests: [String]
     public let jobTitle, lastName, location, longBio: String
-    public let name, philosophy, shortBio: String
+    public let name, philosophy: String
+    public let sameAs: [String]
+    public let shortBio: String
     public let skills: [String]
     public let socialBio, yearsExperience: String
 
-    public init(experiencePhrase: String, firstName: String, flavorBio: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+    public init(experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
         self.experiencePhrase = experiencePhrase
         self.firstName = firstName
         self.flavorBio = flavorBio
+        self.handle = handle
         self.interests = interests
         self.jobTitle = jobTitle
         self.lastName = lastName
@@ -145,6 +148,7 @@ public struct Person: Codable, Sendable {
         self.longBio = longBio
         self.name = name
         self.philosophy = philosophy
+        self.sameAs = sameAs
         self.shortBio = shortBio
         self.skills = skills
         self.socialBio = socialBio
@@ -174,6 +178,7 @@ public extension Person {
         experiencePhrase: String? = nil,
         firstName: String? = nil,
         flavorBio: String? = nil,
+        handle: String? = nil,
         interests: [String]? = nil,
         jobTitle: String? = nil,
         lastName: String? = nil,
@@ -181,6 +186,7 @@ public extension Person {
         longBio: String? = nil,
         name: String? = nil,
         philosophy: String? = nil,
+        sameAs: [String]? = nil,
         shortBio: String? = nil,
         skills: [String]? = nil,
         socialBio: String? = nil,
@@ -190,6 +196,7 @@ public extension Person {
             experiencePhrase: experiencePhrase ?? self.experiencePhrase,
             firstName: firstName ?? self.firstName,
             flavorBio: flavorBio ?? self.flavorBio,
+            handle: handle ?? self.handle,
             interests: interests ?? self.interests,
             jobTitle: jobTitle ?? self.jobTitle,
             lastName: lastName ?? self.lastName,
@@ -197,6 +204,7 @@ public extension Person {
             longBio: longBio ?? self.longBio,
             name: name ?? self.name,
             philosophy: philosophy ?? self.philosophy,
+            sameAs: sameAs ?? self.sameAs,
             shortBio: shortBio ?? self.shortBio,
             skills: skills ?? self.skills,
             socialBio: socialBio ?? self.socialBio,

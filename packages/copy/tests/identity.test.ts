@@ -52,8 +52,8 @@ interface NamespaceFixture {
 }
 
 const NAMESPACES: NamespaceFixture[] = [
-  // identity: person 14 + site 5 + seo 4 + a11y 2.
-  { name: 'identity', expectedLeaves: 25 },
+  // identity: person 16 + site 5 + seo 4 + a11y 2.
+  { name: 'identity', expectedLeaves: 27 },
   // widgets: heartRate 16 + movement 14 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 5 + theatreReviews 2
   //   + bookModal 7 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.

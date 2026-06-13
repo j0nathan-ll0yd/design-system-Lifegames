@@ -5,6 +5,7 @@ export { default as BioTerminal } from './BioTerminal.astro';
 export { default as BookModal } from './BookModal.astro';
 export { default as ComingSoon } from './ComingSoon.astro';
 export { default as IdentityCard } from './IdentityCard.astro';
+export { default as NotFound } from './NotFound.astro';
 export { default as Hydration } from './Hydration.astro';
 // Static passthrough islands
 export { default as SystemStatus } from './SystemStatus.astro';

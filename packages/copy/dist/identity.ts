@@ -13,12 +13,14 @@ export interface Identity {
     name: string;
     firstName: string;
     lastName: string;
+    handle: string;
     jobTitle: string;
     location: string;
     yearsExperience: string;
     philosophy: string;
     skills: string[];
     interests: string[];
+    sameAs: string[];
     shortBio: string;
     socialBio: string;
     longBio: string;

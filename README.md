@@ -7,7 +7,7 @@ Unified cross-platform design system powering the Lifegames portfolio — a sing
 ```
 tokens/          DTCG JSON source of truth (W3C Design Token Community Group format)
 packages/tokens  @lifegames/tokens — CSS custom properties, JS/JSON outputs via Style Dictionary v4
-packages/web     @lifegames/web — Astro components, 29 page-specific widgets, Storybook stories
+packages/web     @lifegames/web — Astro components, 30 page-specific widgets, Storybook stories
 Sources/         Swift packages — LifegamesTokens, LifegamesComponents, LifegamesWidgets (SPM)
 apps/docs        Astro Starlight documentation site
 apps/storybook   Storybook 10 component workshop
@@ -53,7 +53,7 @@ primitive → semantic → component → widget
 | Package | Language | Description |
 |---------|----------|-------------|
 | `@lifegames/tokens` | CSS/JS/JSON | Design tokens for any platform |
-| `@lifegames/web` | Astro | Web components and 29 widgets |
+| `@lifegames/web` | Astro | Web components and 30 widgets |
 | `LifegamesTokens` | Swift | Generated Color, Font, Spacing extensions |
 | `LifegamesComponents` | Swift | iOS/macOS SwiftUI primitives |
 | `LifegamesComponentsWatch` | Swift | Watch-safe component subset |
