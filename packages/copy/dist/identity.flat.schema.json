@@ -18,7 +18,7 @@
         "lastName": {
           "type": "string"
         },
-        "alternateName": {
+        "handle": {
           "type": "string"
         },
         "jobTitle": {
@@ -71,7 +71,7 @@
         "name",
         "firstName",
         "lastName",
-        "alternateName",
+        "handle",
         "jobTitle",
         "location",
         "yearsExperience",

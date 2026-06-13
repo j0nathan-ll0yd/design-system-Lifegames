@@ -13,7 +13,7 @@ export interface Identity {
     name: string;
     firstName: string;
     lastName: string;
-    alternateName: string;
+    handle: string;
     jobTitle: string;
     location: string;
     yearsExperience: string;

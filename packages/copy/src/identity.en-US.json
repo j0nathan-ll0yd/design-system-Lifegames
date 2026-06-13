@@ -35,14 +35,14 @@
         "lastReviewed": "2026-06-11"
       }
     },
-    "alternateName": {
+    "handle": {
       "value": "j0nathan-ll0yd",
       "_meta": {
-        "description": "Canonical online handle (the GitHub/leetspeak username). Same value across locales; used as the Person JSON-LD alternateName.",
+        "description": "Canonical online handle (the GitHub/leetspeak screen-name). Platform-neutral identity role; same value across locales. The web layer maps it into the Person JSON-LD alternateName.",
         "usage": ["web:Dashboard.astro (Person JSON-LD alternateName)"],
         "tone": "neutral",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-12"
+        "lastReviewed": "2026-06-13"
       }
     },
     "jobTitle": {
