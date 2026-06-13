@@ -35,6 +35,16 @@
         "lastReviewed": "2026-06-11"
       }
     },
+    "alternateName": {
+      "value": "j0nathan-ll0yd",
+      "_meta": {
+        "description": "Canonical online handle (the GitHub/leetspeak username). Same value across locales; used as the Person JSON-LD alternateName.",
+        "usage": ["web:Dashboard.astro (Person JSON-LD alternateName)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-12"
+      }
+    },
     "jobTitle": {
       "value": "Engineering Director",
       "_meta": {
@@ -97,6 +107,16 @@
         "tone": "casual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
+      }
+    },
+    "sameAs": {
+      "value": ["https://www.linkedin.com/in/lifegames/", "https://github.com/j0nathan-ll0yd"],
+      "_meta": {
+        "description": "Canonical profile URLs that identify the same person across the web. Locale-invariant; used as the Person JSON-LD sameAs array.",
+        "usage": ["web:Dashboard.astro (Person JSON-LD sameAs)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-12"
       }
     },
     "shortBio": {
