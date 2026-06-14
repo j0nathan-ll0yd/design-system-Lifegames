@@ -570,6 +570,25 @@ describe('adaptGithubEvents', () => {
     expect(result[0].additions).toBe(10);
     expect(result[0].deletions).toBe(3);
   });
+
+  it('uses an injected now timestamp for relative date formatting', () => {
+    // No fake timers: the injected `now` (3w after the event) is the only clock.
+    const now = new Date('2026-01-15T10:30:00Z').getTime();
+    const events = [
+      { type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc' },
+    ];
+    const result = adaptGithubEvents(makeGithubEvents(events), now);
+    expect(result[0].date).toBe('3w ago');
+  });
+
+  it('falls back to Date.now() when now is omitted (backward compatible)', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    const events = [
+      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc' },
+    ];
+    expect(adaptGithubEvents(makeGithubEvents(events))[0].date).toBe('15m ago');
+  });
 });
 
 // ── adaptBooks ────────────────────────────────────────────────────
@@ -1058,6 +1077,60 @@ describe('adaptArticles', () => {
     ]);
     const result = adaptArticles(articles);
     expect(result[0].source).toBe('');
+  });
+
+  it('uses an injected now timestamp for relative date formatting', () => {
+    // No fake timers: the injected `now` (3w after savedAt) is the only clock.
+    const now = new Date('2026-01-15T10:30:00Z').getTime();
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2025-12-25T10:30:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
+    expect(adaptArticles(articles, now)[0].date).toBe('3w ago');
+  });
+
+  it('falls back to Date.now() when now is omitted (backward compatible)', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2026-01-15T10:00:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
+    expect(adaptArticles(articles)[0].date).toBe('30m ago');
   });
 });
 
