@@ -16,8 +16,8 @@ struct FileDetailNeonConsole: View {
                         .overlay(
                             Image(systemName: file.thumbnailSystemImage)
                                 .font(.system(size: 64))
-                                .foregroundStyle(LGColor.accentBlue.opacity(0.7))
-                                .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 16)
+                                .foregroundStyle(OMDPalette.playback.opacity(0.8))
+                                .shadow(color: OMDPalette.playback.opacity(0.5), radius: 16)
                         )
                         .frame(maxWidth: .infinity)
                         .frame(height: 220)
@@ -25,91 +25,79 @@ struct FileDetailNeonConsole: View {
                     DurationBadgeView(duration: file.duration, style: .neonConsole)
                         .padding(Spacing.s300)
                 }
-                .glassCard(tint: LGColor.accentBlue)
+                .glassCard(tint: OMDPalette.primary)
 
-                // Title + author
+                // Title + author (author = playback/identity cyan)
                 VStack(alignment: .leading, spacing: Spacing.s100) {
                     Text(file.title)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(OMDFont.bold(20))
                         .foregroundStyle(LGColor.textTitle)
 
                     Text(file.author)
-                        .font(.system(size: 14, design: .monospaced))
-                        .foregroundStyle(LGColor.accentCyan)
-                        .shadow(color: LGColor.accentCyan.opacity(0.4), radius: 4)
+                        .font(OMDFont.medium(14))
+                        .foregroundStyle(OMDPalette.playback)
+                        .shadow(color: OMDPalette.playback.opacity(0.4), radius: 4)
                 }
 
-                // Neon metric blocks
-                HStack(spacing: Spacing.s300) {
-                    neonMetric(
-                        value: formattedViews(file.viewCount),
-                        label: "VIEWS",
-                        icon: "eye.fill",
-                        accent: LGColor.accentBlue
-                    )
-                    neonMetric(
-                        value: file.duration,
-                        label: "DURATION",
-                        icon: "timer",
-                        accent: LGColor.accentCyan
-                    )
-                    neonMetric(
-                        value: file.fileSize,
-                        label: "SIZE",
-                        icon: "internaldrive.fill",
-                        accent: LGColor.accentPink
-                    )
+                // Metric blocks — colored by meaning: views = playback (cyan),
+                // duration = primary (blue), size = storage/queued (amber).
+                HStack(alignment: .top, spacing: Spacing.s300) {
+                    neonMetric(value: formattedViews(file.viewCount), label: "VIEWS", icon: "eye.fill", accent: OMDPalette.playback)
+                    neonMetric(value: file.duration, label: "DURATION", icon: "timer", accent: OMDPalette.primary)
+                    neonMetric(value: file.fileSize, label: "SIZE", icon: "internaldrive.fill", accent: OMDPalette.queued)
                 }
 
-                // Description (expandable)
+                // Description — content lives in a distinct PURPLE card so it
+                // reads as description, set apart from the data metric boxes.
                 VStack(alignment: .leading, spacing: Spacing.s200) {
                     Text("About this video")
-                        .font(.system(size: 12, weight: .bold, design: .monospaced))
-                        .foregroundStyle(LGColor.accentBlue)
+                        .font(OMDFont.bold(12))
+                        .foregroundStyle(OMDPalette.content)
                         .textCase(.uppercase)
-                        .shadow(color: LGColor.accentBlue.opacity(0.4), radius: 3)
+                        .shadow(color: OMDPalette.content.opacity(0.4), radius: 3)
 
                     Text(sampleDescription)
-                        .font(.system(size: 14))
+                        .font(OMDFont.regular(14))
                         .foregroundStyle(LGColor.textPrimary)
                         .lineLimit(nil)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                .neonCard(accent: LGColor.accentBlue)
+                .neonCard(accent: OMDPalette.content)
 
                 // File details row
                 HStack(spacing: Spacing.s300) {
                     Label("2024-03-15", systemImage: "calendar")
-                        .font(.system(size: 11, design: .monospaced))
+                        .font(OMDFont.mono(11))
                         .foregroundStyle(LGColor.textSubtle)
 
                     Spacer()
 
                     Label(file.fileSize, systemImage: "doc.fill")
-                        .font(.system(size: 11, design: .monospaced))
+                        .font(OMDFont.mono(11))
                         .foregroundStyle(LGColor.textSubtle)
                 }
 
-                // Primary action
+                // Primary action — download is the core action, so it's blue.
                 Button {} label: {
                     Label("Download", systemImage: "arrow.down.circle.fill")
-                        .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                        .font(OMDFont.semibold(16))
                         .foregroundStyle(LGColor.surfaceBase)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, Spacing.s400)
-                        .background(LGColor.accentBlue)
+                        .background(OMDPalette.primary)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: LGColor.accentBlue.opacity(0.6), radius: 12, x: 0, y: 4)
+                        .shadow(color: OMDPalette.primary.opacity(0.6), radius: 12, x: 0, y: 4)
                 }
                 .frame(minWidth: 44, minHeight: 44)
                 .contentShape(.rect)
 
-                // Secondary actions — single horizontal row
+                // Secondary actions — play = playback, cancel = queued,
+                // delete = destructive, share = primary.
                 HStack(spacing: Spacing.s200) {
-                    secondaryButton(label: "Play", icon: "play.fill", accent: LGColor.accentCyan)
-                    secondaryButton(label: "Cancel", icon: "xmark.circle", accent: LGColor.accentAmber)
-                    secondaryButton(label: "Delete", icon: "trash", accent: LGColor.accentPink)
-                    secondaryButton(label: "Share", icon: "square.and.arrow.up", accent: LGColor.accentBlue)
+                    secondaryButton(label: "Play", icon: "play.fill", accent: OMDPalette.playback)
+                    secondaryButton(label: "Cancel", icon: "xmark.circle", accent: OMDPalette.queued)
+                    secondaryButton(label: "Delete", icon: "trash", accent: OMDPalette.destructive)
+                    secondaryButton(label: "Share", icon: "square.and.arrow.up", accent: OMDPalette.primary)
                 }
             }
             .padding(Spacing.s400)
@@ -129,13 +117,13 @@ struct FileDetailNeonConsole: View {
                 .shadow(color: accent.opacity(0.5), radius: 4)
 
             Text(value)
-                .font(.system(size: 15, weight: .bold, design: .monospaced))
+                .font(OMDFont.bold(16))
                 .foregroundStyle(LGColor.textTitle)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
             Text(label)
-                .font(.system(size: 9, weight: .medium, design: .monospaced))
+                .font(OMDFont.medium(9))
                 .foregroundStyle(LGColor.textSubtle)
                 .lineLimit(1)
         }
@@ -152,7 +140,7 @@ struct FileDetailNeonConsole: View {
                     .shadow(color: accent.opacity(0.5), radius: 4)
 
                 Text(label)
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(OMDFont.medium(10))
                     .foregroundStyle(LGColor.textMuted)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
