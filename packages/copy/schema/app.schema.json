@@ -18,7 +18,8 @@
     "location",
     "bookshelf",
     "watch",
-    "sections"
+    "sections",
+    "page404"
   ],
   "properties": {
     "nav": {
@@ -753,6 +754,17 @@
       "properties": {
         "body": { "$ref": "#/$defs/CopyString" },
         "mind": { "$ref": "#/$defs/CopyString" }
+      }
+    },
+    "page404": {
+      "type": "object",
+      "title": "AppPage404",
+      "description": "404 page chrome/SEO copy used on the web shell (404.astro) — document title and meta description.",
+      "additionalProperties": false,
+      "required": ["title", "description"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "description": { "$ref": "#/$defs/CopyString" }
       }
     }
   },

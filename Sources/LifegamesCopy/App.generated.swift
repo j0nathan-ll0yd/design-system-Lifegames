@@ -42,6 +42,9 @@ public struct App: Codable, Sendable {
     public let location: AppLocation
     /// Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle).
     public let nav: AppNav
+    /// 404 page chrome/SEO copy used on the web shell (404.astro) — document title and meta
+    /// description.
+    public let page404: AppPage404
     /// Saved Places list — empty state and per-row radius label.
     public let savedPlaces: AppSavedPlaces
     /// Dashboard triptych column header labels used on the web dashboard (index.astro).
@@ -58,7 +61,7 @@ public struct App: Codable, Sendable {
     /// complication strings.
     public let watch: AppWatch
 
-    public init(addPlace: AppAddPlace, bookshelf: AppBookshelf, common: AppCommon, health: AppHealth, home: AppHome, location: AppLocation, nav: AppNav, savedPlaces: AppSavedPlaces, sections: AppSections, settings: AppSettings, sleep: AppSleep, tab: AppTab, watch: AppWatch) {
+    public init(addPlace: AppAddPlace, bookshelf: AppBookshelf, common: AppCommon, health: AppHealth, home: AppHome, location: AppLocation, nav: AppNav, page404: AppPage404, savedPlaces: AppSavedPlaces, sections: AppSections, settings: AppSettings, sleep: AppSleep, tab: AppTab, watch: AppWatch) {
         self.addPlace = addPlace
         self.bookshelf = bookshelf
         self.common = common
@@ -66,6 +69,7 @@ public struct App: Codable, Sendable {
         self.home = home
         self.location = location
         self.nav = nav
+        self.page404 = page404
         self.savedPlaces = savedPlaces
         self.sections = sections
         self.settings = settings
@@ -101,6 +105,7 @@ public extension App {
         home: AppHome? = nil,
         location: AppLocation? = nil,
         nav: AppNav? = nil,
+        page404: AppPage404? = nil,
         savedPlaces: AppSavedPlaces? = nil,
         sections: AppSections? = nil,
         settings: AppSettings? = nil,
@@ -116,6 +121,7 @@ public extension App {
             home: home ?? self.home,
             location: location ?? self.location,
             nav: nav ?? self.nav,
+            page404: page404 ?? self.page404,
             savedPlaces: savedPlaces ?? self.savedPlaces,
             sections: sections ?? self.sections,
             settings: settings ?? self.settings,
@@ -1658,6 +1664,55 @@ public extension AppNav {
             savedPlaces: savedPlaces ?? self.savedPlaces,
             settings: settings ?? self.settings,
             topPlaces: topPlaces ?? self.topPlaces
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// 404 page chrome/SEO copy used on the web shell (404.astro) — document title and meta
+/// description.
+// MARK: - AppPage404
+public struct AppPage404: Codable, Sendable {
+    public let description, title: String
+
+    public init(description: String, title: String) {
+        self.description = description
+        self.title = title
+    }
+}
+
+// MARK: AppPage404 convenience initializers and mutators
+
+public extension AppPage404 {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(AppPage404.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        description: String? = nil,
+        title: String? = nil
+    ) -> AppPage404 {
+        return AppPage404(
+            description: description ?? self.description,
+            title: title ?? self.title
         )
     }
 

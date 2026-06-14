@@ -300,5 +300,9 @@
   "sections": {
     "body": "Body",
     "mind": "Mind"
+  },
+  "page404": {
+    "title": "Page Not Found — Jonathan Lloyd",
+    "description": "The requested page could not be found."
   }
 }

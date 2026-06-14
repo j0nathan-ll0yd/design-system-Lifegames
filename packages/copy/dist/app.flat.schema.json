@@ -1230,6 +1230,21 @@
       },
       "required": ["body", "mind"],
       "additionalProperties": false
+    },
+    "page404": {
+      "type": "object",
+      "title": "AppPage404",
+      "description": "404 page chrome/SEO copy used on the web shell (404.astro) — document title and meta description.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": ["title", "description"],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -1245,7 +1260,8 @@
     "location",
     "bookshelf",
     "watch",
-    "sections"
+    "sections",
+    "page404"
   ],
   "additionalProperties": false
 }

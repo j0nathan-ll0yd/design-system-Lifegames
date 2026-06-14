@@ -2771,5 +2771,27 @@
         "lastReviewed": "2026-06-12"
       }
     }
+  },
+  "page404": {
+    "title": {
+      "value": "Page Not Found — Jonathan Lloyd",
+      "_meta": {
+        "description": "404 page <title> / document title (web shell). Em dash (U+2014) separator.",
+        "usage": ["webshell:src/pages/404.astro (document title)"],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-13"
+      }
+    },
+    "description": {
+      "value": "The requested page could not be found.",
+      "_meta": {
+        "description": "404 page meta description (web shell).",
+        "usage": ["webshell:src/pages/404.astro (meta description)"],
+        "tone": "functional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-13"
+      }
+    }
   }
 }
