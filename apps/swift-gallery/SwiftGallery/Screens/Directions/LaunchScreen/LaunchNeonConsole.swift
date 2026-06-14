@@ -1,36 +1,34 @@
 import LifegamesComponents
 import LifegamesComponentsCore
+import LifegamesTemplates
 import LifegamesTokens
 import SwiftUI
 
 struct LaunchNeonConsole: View {
     var body: some View {
-        ZStack {
-            // Colorful base: deep vertical wash + neon radial accents.
-            LinearGradient(
-                colors: [LGColor.surfaceDeep, LGColor.surfaceBase],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            OMDBrand.colorWashes
-                .ignoresSafeArea()
-
+        // Built on AuthScaffold: pure Launch = no primaryAction. The wordmark is
+        // a self-contained gradient SpaceGrotesk display face, so `title` is nil
+        // (the scaffold renders no second system-font headline). The buffering
+        // backdrop sits in its own zone BELOW the wordmark, inside the branding
+        // slot, so the branding is never obstructed. The OMD color washes are
+        // supplied via the scaffold's `background` slot.
+        AuthScaffold(accent: LGColor.accentBlue) {
             VStack(spacing: 0) {
-                Spacer()
-
                 wordmark
 
-                // The buffering backdrop sits in its own zone BELOW the wordmark
-                // so the branding is never obstructed.
                 BufferRingAnimation()
                     .frame(height: 200)
                     .padding(.top, Spacing.s700)
-
-                Spacer()
             }
-            .padding(.horizontal, Spacing.s600)
+        } background: {
+            ZStack {
+                LinearGradient(
+                    colors: [LGColor.surfaceDeep, LGColor.surfaceBase],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                OMDBrand.colorWashes
+            }
         }
     }
 

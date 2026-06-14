@@ -1,5 +1,6 @@
 import LifegamesComponents
 import LifegamesComponentsCore
+import LifegamesTemplates
 import LifegamesTokens
 import SwiftUI
 
@@ -8,20 +9,23 @@ struct AccountNeonConsole: View {
     private let style = DirectionStyle.neonConsole
 
     var body: some View {
-        ScrollView {
+        // Built on ProfileScaffold: the scaffold owns the centered header zone
+        // (with the accent glow) over a scrolling content zone + the surface
+        // background. The OMD identity card fills `header`; stats, settings, and
+        // sign-out fill `content`. Nav chrome stays host-owned.
+        ProfileScaffold(accent: LGColor.accentCyan) {
+            headerSection
+        } content: {
             VStack(spacing: Spacing.s500) {
-                headerSection
                 statSection
                 settingsSections
                 signOutButton
             }
-            .padding(Spacing.s400)
         }
-        .background(LGColor.surfaceBase.ignoresSafeArea())
         #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.inline)
         #endif
-            .navigationTitle("Account")
+        .navigationTitle("Account")
     }
 
     private var headerSection: some View {

@@ -29,6 +29,30 @@ struct ScaffoldInstantiationTests {
         _ = view.body
     }
 
+    @Test func authScaffoldTitlelessBrandingOnlyInstantiates() {
+        // A host whose branding slot carries a self-contained wordmark passes
+        // `title: nil` so the scaffold renders no second system-font headline.
+        let view = AuthScaffold(accent: LGColor.accentBlue) {
+            Text("OFFLINE")
+        }
+        #expect(view.title == nil)
+        _ = view.body
+    }
+
+    @Test func authScaffoldCustomBackgroundInstantiates() {
+        // A host with a richer backdrop supplies its own full-bleed background.
+        let view = AuthScaffold(accent: LGColor.accentBlue) {
+            Text("OFFLINE")
+        } background: {
+            LinearGradient(
+                colors: [LGColor.surfaceDeep, LGColor.surfaceBase],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+        _ = view.body
+    }
+
     @Test func settingsScaffoldInstantiates() {
         let toggle = Binding<Bool>(get: { true }, set: { _ in })
         let view = SettingsScaffold(

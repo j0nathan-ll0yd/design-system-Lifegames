@@ -1,18 +1,26 @@
 import LifegamesComponents
 import LifegamesComponentsCore
+import LifegamesTemplates
 import LifegamesTokens
 import SwiftUI
 
 struct DownloadSettingsNeonConsole: View {
     private let config = OMDFixtures.sampleConfig
     private let style = DirectionStyle.neonConsole
+    @State private var cellularEnabled = OMDFixtures.sampleConfig.cellularEnabled
 
     var body: some View {
+        // Partially built on SettingsScaffold. The closed row taxonomy
+        // (toggle / navigation / value / destructive) cannot express the custom
+        // radio-style quality picker (selection rings, glow, checkmarks), and
+        // there is no `custom(AnyView)` escape hatch by design — so the quality
+        // picker is a HOST-rendered sibling section above the scaffold. The
+        // cellular toggle DOES fit, so it lives in the scaffold; the info copy
+        // is the scaffold section's footer.
         ScrollView {
             VStack(spacing: Spacing.s500) {
                 qualitySection
-                cellularSection
-                infoBox
+                cellularSettings
             }
             .padding(Spacing.s400)
         }
@@ -21,6 +29,31 @@ struct DownloadSettingsNeonConsole: View {
             .navigationBarTitleDisplayMode(.inline)
         #endif
             .navigationTitle("Download Settings")
+    }
+
+    /// The cellular toggle expressed through SettingsScaffold's closed taxonomy.
+    /// Rendered inside its own fixed-height container so the host ScrollView can
+    /// stack it below the bespoke quality picker. The info copy is the section
+    /// footer.
+    private var cellularSettings: some View {
+        SettingsScaffold(
+            sections: [
+                SettingsScaffold.Section(
+                    title: "Network",
+                    footer: "Higher quality requires more storage space and longer download times. Files already downloaded will not be affected by quality changes.",
+                    rows: [
+                        .toggle(
+                            label: "Cellular Downloads",
+                            systemImage: "antenna.radiowaves.left.and.right",
+                            isOn: $cellularEnabled
+                        ),
+                    ]
+                ),
+            ],
+            accent: LGColor.accentCyan
+        )
+        .frame(height: 180)
+        .scrollDisabled(true)
     }
 
     private var qualitySection: some View {
@@ -87,73 +120,6 @@ struct DownloadSettingsNeonConsole: View {
             color: isSelected ? LGColor.accentBlue.opacity(0.2) : .clear,
             radius: isSelected ? 10 : 0
         )
-    }
-
-    private var cellularSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.s300) {
-            Text("Network")
-                .font(OMDFont.semibold(11))
-                .foregroundStyle(LGColor.accentCyan)
-                .textCase(.uppercase)
-                .tracking(1.5)
-
-            HStack(spacing: Spacing.s400) {
-                Image(systemName: "antenna.radiowaves.left.and.right")
-                    .font(.system(size: 20))
-                    .foregroundStyle(LGColor.accentCyan)
-                    .shadow(color: LGColor.accentCyan.opacity(0.5), radius: 6)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Cellular Downloads")
-                        .font(OMDFont.semibold(15))
-                        .foregroundStyle(LGColor.textTitle)
-
-                    Text("May use significant data")
-                        .font(OMDFont.regular(11))
-                        .foregroundStyle(LGColor.textSubtle)
-                }
-
-                Spacer()
-
-                glowingToggle(isOn: config.cellularEnabled, accent: LGColor.accentCyan)
-            }
-            .padding(Spacing.s450)
-            .neonCard(accent: LGColor.accentCyan)
-        }
-    }
-
-    private func glowingToggle(isOn: Bool, accent: Color) -> some View {
-        RoundedRectangle(cornerRadius: 14)
-            .fill(isOn ? accent : LGColor.surfaceRaised)
-            .frame(width: 44, height: 26)
-            .overlay(
-                Circle()
-                    .fill(LGColor.textTitle)
-                    .frame(width: 20, height: 20)
-                    .shadow(color: isOn ? accent.opacity(0.6) : .clear, radius: 4)
-                    .offset(x: isOn ? 9 : -9)
-            )
-            .shadow(color: isOn ? accent.opacity(0.4) : .clear, radius: 8)
-    }
-
-    private var infoBox: some View {
-        HStack(alignment: .top, spacing: Spacing.s300) {
-            Image(systemName: "info.circle.fill")
-                .font(.system(size: 16))
-                .foregroundStyle(LGColor.accentBlue.opacity(0.7))
-
-            Text("Higher quality requires more storage space and longer download times. Files already downloaded will not be affected by quality changes.")
-                .font(OMDFont.regular(12))
-                .foregroundStyle(LGColor.textMuted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(Spacing.s400)
-        .background(LGColor.accentBlue.opacity(0.05))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(LGColor.accentBlue.opacity(0.2), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     private func qualitySubtitle(_ quality: OMDFixtures.Quality) -> String {

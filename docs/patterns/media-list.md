@@ -4,7 +4,9 @@ iOS-platform pattern — no web parity obligation (web is read-only).
 
 ## 1. Intent
 
-A generic list shell that renders host-supplied rows over a tokenized surface, with pull-to-refresh and an optional empty state. Abstracted from OMD's `FileList` / `SampleFiles`, it carries no media semantics — the host supplies row content (e.g. OMD's `FileRow`) and the empty-state copy.
+A generic list shell that renders host-supplied rows over a tokenized surface, with pull-to-refresh and an optional empty state. Abstracted from OMD's `FileList`, it carries no media semantics — the host supplies row content (e.g. OMD's `FileRow`) and the empty-state copy.
+
+> **Scope note (from dogfooding):** `ListScaffold` is for **row-driven** lists. OMD's `SampleFiles` screen — a guest-preview/upsell with a hero, a benefits card, and a CTA (no rows) — does **not** fit and is kept bespoke. A marketing/hero or detail scaffold would be the right home for it, not this list shell. The scaffold is intentionally the whole `List` and does not compose header/footer sibling content; screens that need that keep their own layout.
 
 ## 2. Anatomy
 

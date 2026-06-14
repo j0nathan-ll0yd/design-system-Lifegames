@@ -1,28 +1,38 @@
 import LifegamesComponents
 import LifegamesComponentsCore
+import LifegamesTemplates
 import LifegamesTokens
 import SwiftUI
 
 struct FileListNeonConsole: View {
     var body: some View {
+        // Built on ListScaffold: the media rows ARE the `row` slot
+        // (`FileRowNeon` keeps its own neon card + swipe affordances). The
+        // floating add button, the NavigationStack title, and the toolbar stay
+        // host-owned. An `emptyState` is supplied per the scaffold contract even
+        // though the sample data is always populated. The neon cards own their
+        // own surfaces, so the row background / separators / insets are cleared.
         ZStack(alignment: .bottomTrailing) {
-            ScrollView {
-                VStack(spacing: Spacing.s300) {
-                    ForEach(OMDFixtures.sampleFiles) { file in
-                        FileRowNeon(file: file)
-                    }
-                }
-                .padding(Spacing.s400)
-                .padding(.bottom, 80)
-            }
-            .background(
-                LinearGradient(
-                    colors: [LGColor.surfaceBase, LGColor.surfaceDeep],
-                    startPoint: .top,
-                    endPoint: .bottom
+            ListScaffold(
+                items: OMDFixtures.sampleFiles,
+                accent: LGColor.accentBlue,
+                emptyState: LGEmptyState(
+                    title: "No Files Yet",
+                    systemImage: "tray",
+                    description: "Files you download will appear in your library.",
+                    accent: LGColor.accentBlue
                 )
-            )
-            .gradientBackground()
+            ) { file in
+                FileRowNeon(file: file)
+                    .listRowInsets(EdgeInsets(
+                        top: Spacing.s150,
+                        leading: Spacing.s400,
+                        bottom: Spacing.s150,
+                        trailing: Spacing.s400
+                    ))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+            }
 
             // Floating add button
             Button {} label: {

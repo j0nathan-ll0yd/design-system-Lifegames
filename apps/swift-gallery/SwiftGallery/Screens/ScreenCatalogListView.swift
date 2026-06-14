@@ -3,29 +3,15 @@ import SwiftUI
 
 // MARK: - ScreenBrowseView
 
-// Entry view wired into RootGalleryView by T6. Segmented picker toggles By Screen / By Direction.
+// Entry view wired into RootGalleryView. Only the Neon Console direction
+// survives, so the browse mode picker is gone — the screen catalog renders
+// directly.
 
 struct ScreenBrowseView: View {
-    @State private var selection = 0
-
     var body: some View {
-        VStack(spacing: 0) {
-            Picker("Browse Mode", selection: $selection) {
-                Text("By Screen").tag(0)
-                Text("By Direction").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .padding(Spacing.s400)
+        ScreenCatalogListView()
             .background(LGColor.surfaceBase)
-
-            if selection == 0 {
-                ScreenCatalogListView()
-            } else {
-                DirectionCatalogListView()
-            }
-        }
-        .background(LGColor.surfaceBase)
-        .navigationTitle("Screens")
+            .navigationTitle("Screens")
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif

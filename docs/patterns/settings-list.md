@@ -39,8 +39,10 @@ Row kind is the only variant axis; it is a **closed** taxonomy. There is intenti
 
 ## 6. Host-owned boundaries (Part 2)
 
-- A row that doesn't fit the closed taxonomy is rendered in a host-owned sibling section, not pushed into the scaffold.
+- A row that doesn't fit the closed taxonomy is rendered in a host-owned sibling section, not pushed into the scaffold. (Validated by dogfooding: OMD's custom radio-style quality picker lives in a host sibling section above the scaffold; the cellular toggle lives in the scaffold.)
 - `.insetGrouped` presentation and system-appearance respect are honored; the host owns navigation chrome (title, toolbar).
+
+> **Composition note (Part 2 follow-up):** `SettingsScaffold` is itself a full-screen `List`, so embedding it _beside_ bespoke sibling sections in a host `ScrollView` requires a fixed-height frame + `.scrollDisabled`. For mixed settings screens (closed-taxonomy rows + bespoke controls), consider adding an **embeddable / non-scrolling variant** of `SettingsScaffold` rather than forcing the full-screen `List` into a sub-region.
 
 ## 7. Accessibility
 

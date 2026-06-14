@@ -8,9 +8,10 @@ A single branded auth shell that serves both the Launch (pre-auth splash) and Lo
 
 ## 2. Anatomy
 
-- **Branding slot** — `@ViewBuilder branding` — host-supplied wordmark / backdrop / logo zone. The design system supplies layout and an ambient accent-tinted radial glow only.
-- **Title** — `LocalizedStringKey`, prominent rounded-bold, centered.
-- **Subtitle** — optional `LocalizedStringKey`, muted, centered.
+- **Branding slot** — `@ViewBuilder branding` — host-supplied wordmark / backdrop / logo zone. When the host's wordmark is self-contained (custom font / gradient), it lives here and `title` is passed `nil`.
+- **Title** — optional `LocalizedStringKey?` (default `nil`), prominent rounded-bold, centered. Omitted entirely when `nil` so a self-contained branding wordmark is not double-headlined.
+- **Subtitle** — optional `LocalizedStringKey?`, muted, centered.
+- **Background slot** — optional `@ViewBuilder background` — full-bleed backdrop behind the content (ignores safe areas). Omit it (convenience init) to get the scaffold's default neutral surface + accent-tinted radial glow; supply it for a richer host backdrop (layered washes / gradients).
 - **Primary action slot** — `@ViewBuilder primaryAction` (defaults to `EmptyView`) — host owns the control and its style/corner-radius.
 - **Footer slot** — `@ViewBuilder footer` (defaults to `EmptyView`) — legal copy / alternate actions.
 
@@ -18,14 +19,17 @@ A single branded auth shell that serves both the Launch (pre-auth splash) and Lo
 
 Swift type: [`AuthScaffold`](../../Sources/LifegamesTemplates/AuthScaffold.swift)
 
-| Field           | Type                               | Notes                                                         |
-| --------------- | ---------------------------------- | ------------------------------------------------------------- |
-| `title`         | `LocalizedStringKey`               | Required. Host-owned copy.                                    |
-| `subtitle`      | `LocalizedStringKey?`              | Optional secondary line.                                      |
-| `accent`        | `Color`                            | Default `LGColor.accentDefault`. Tints the ambient glow only. |
-| `branding`      | `@ViewBuilder () -> Branding`      | Wordmark / backdrop zone.                                     |
-| `primaryAction` | `@ViewBuilder () -> PrimaryAction` | Defaults to `EmptyView` → Launch. Fill for Login.             |
-| `footer`        | `@ViewBuilder () -> Footer`        | Defaults to `EmptyView`. Legal / alternate actions.           |
+| Field           | Type                               | Notes                                                                         |
+| --------------- | ---------------------------------- | ----------------------------------------------------------------------------- |
+| `title`         | `LocalizedStringKey?`              | Optional (default `nil`). Pass `nil` when branding owns the headline.         |
+| `subtitle`      | `LocalizedStringKey?`              | Optional secondary line.                                                      |
+| `accent`        | `Color`                            | Default `LGColor.accentDefault`. Tints the default ambient glow.              |
+| `branding`      | `@ViewBuilder () -> Branding`      | Wordmark / backdrop zone.                                                     |
+| `primaryAction` | `@ViewBuilder () -> PrimaryAction` | Defaults to `EmptyView` → Launch. Fill for Login.                             |
+| `footer`        | `@ViewBuilder () -> Footer`        | Defaults to `EmptyView`. Legal / alternate actions.                           |
+| `background`    | `@ViewBuilder () -> Background`    | Full-bleed backdrop. Omit (convenience init) → default surface + accent glow. |
+
+Two initializers: the full one takes the `background` slot; a convenience init (where `Background == AuthScaffoldDefaultBackground`) omits it for the neutral default. Both default `primaryAction`/`footer` to `EmptyView`.
 
 ## 4. States
 
