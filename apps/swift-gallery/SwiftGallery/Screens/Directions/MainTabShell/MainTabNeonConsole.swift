@@ -31,14 +31,8 @@ struct MainTabNeonConsole: View {
 
             neonTabBar
         }
-        .frame(height: 540)
-        .frame(maxWidth: .infinity)
-        .background(LGColor.surfaceBase)
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(LGColor.accentBlue.opacity(0.15), lineWidth: 1)
-        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(LGColor.surfaceBase.ignoresSafeArea())
     }
 
     private var neonTabBar: some View {
