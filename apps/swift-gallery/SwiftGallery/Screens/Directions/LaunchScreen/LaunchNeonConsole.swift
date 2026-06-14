@@ -10,8 +10,15 @@ struct LaunchNeonConsole: View {
 
     var body: some View {
         ZStack {
-            // Deep base wash so the neon backdrop reads against true black.
-            LGColor.surfaceBase
+            // Colorful base: deep vertical wash + neon radial accents.
+            LinearGradient(
+                colors: [LGColor.surfaceDeep, LGColor.surfaceBase],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            OMDBrand.colorWashes
                 .ignoresSafeArea()
 
             // Selected candidate animation lives BEHIND the branding.
@@ -35,22 +42,23 @@ struct LaunchNeonConsole: View {
 
     // MARK: - Branding (the hero)
 
-    /// OFFLINE rendered large in the established monospaced/bold/tracked brand
-    /// treatment, with "media downloader" demoted to a muted subheading.
+    /// OFFLINE in the brand SpaceGrotesk display face with a cyan→blue→pink
+    /// gradient fill and neon glow; "media downloader" demoted to a cyan subhead.
     private var wordmark: some View {
         VStack(spacing: Spacing.s300) {
             Text("OFFLINE")
-                .font(.system(size: 56, weight: .heavy, design: .monospaced))
-                .foregroundStyle(LGColor.textTitle)
-                .tracking(10)
+                .font(.custom("SpaceGrotesk-Bold", size: 54))
+                .tracking(5)
+                .foregroundStyle(OMDBrand.wordmarkGradient)
+                .shadow(color: LGColor.accentCyan.opacity(0.5), radius: 18)
+                .shadow(color: LGColor.accentPink.opacity(0.3), radius: 28)
                 .minimumScaleFactor(0.6)
                 .lineLimit(1)
-                .shadow(color: LGColor.accentBlue.opacity(0.35), radius: 18)
 
             Text("media downloader")
-                .font(.system(size: 14, weight: .regular, design: .monospaced))
-                .foregroundStyle(LGColor.textMuted)
-                .tracking(6)
+                .font(.custom("SpaceGrotesk-Medium", size: 15))
+                .tracking(5)
+                .foregroundStyle(LGColor.accentCyan.opacity(0.9))
         }
     }
 
@@ -61,7 +69,7 @@ struct LaunchNeonConsole: View {
     private var animationPicker: some View {
         VStack(spacing: Spacing.s200) {
             Text("BACKDROP")
-                .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                .font(.custom("SpaceGrotesk-Medium", size: 9))
                 .foregroundStyle(LGColor.textSubtle)
                 .tracking(4)
 
@@ -74,7 +82,7 @@ struct LaunchNeonConsole: View {
             .tint(LGColor.accentBlue)
 
             Text(selectedAnimation.summary)
-                .font(.system(size: 10, weight: .regular, design: .monospaced))
+                .font(.custom("SpaceGrotesk-Regular", size: 11))
                 .foregroundStyle(LGColor.textSubtle)
                 .multilineTextAlignment(.center)
                 .animation(.easeInOut(duration: 0.2), value: selectedAnimation)

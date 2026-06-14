@@ -72,9 +72,10 @@ struct DurationBadgeView: View {
 
 // MARK: - FileRowNeon
 
-// A media row: thumbnail-left, title, a per-channel colored author, and an
-// icon-based meta line (duration / size / views). The card's top-edge accent
-// matches the channel color so a scrolling list reads as alternating channels.
+// A media row: thumbnail-left, title, author, and an icon-based meta line
+// (size / views; duration lives on the thumbnail badge). Colors are kept
+// consistent across every row — a single accent for the author and the card
+// edge — so the list reads calmly rather than as a rainbow.
 
 struct FileRowNeon: View {
     let file: OMDFixtures.MediaFile
@@ -91,12 +92,12 @@ struct FileRowNeon: View {
                     .truncationMode(.tail)
 
                 HStack(spacing: Spacing.s100) {
-                    Circle()
-                        .fill(channelColor)
-                        .frame(width: 5, height: 5)
+                    Image(systemName: "person.circle.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(LGColor.accentCyan)
                     Text(file.author)
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(channelColor)
+                        .foregroundStyle(LGColor.accentCyan)
                         .lineLimit(1)
                 }
 
@@ -112,13 +113,7 @@ struct FileRowNeon: View {
 
             DownloadProgressView(state: file.downloadState, style: .neonConsole)
         }
-        .neonCard(accent: channelColor)
-    }
-
-    /// Stable per-channel accent: a deterministic fold of the author name into the
-    /// neon palette, so the same channel always reads in the same color.
-    private var channelColor: Color {
-        OMDChannelPalette.color(for: file.author)
+        .neonCard(accent: LGColor.accentBlue)
     }
 
     private func metaItem(icon: String, text: String) -> some View {
@@ -133,17 +128,33 @@ struct FileRowNeon: View {
     }
 }
 
-// MARK: - OMDChannelPalette
+// MARK: - OMDBrand
 
-enum OMDChannelPalette {
-    private static let colors: [Color] = [
-        LGColor.accentBlue, LGColor.accentCyan, LGColor.accentPink,
-        LGColor.accentGreen, LGColor.accentAmber, LGColor.accentPurple,
-    ]
+/// Shared brand treatment for the OFFLINE / "media downloader" surfaces
+/// (Launch, Login): a cyan→blue→pink wordmark gradient plus colorful neon
+/// radial washes for the background.
+enum OMDBrand {
+    static let wordmarkGradient = LinearGradient(
+        colors: [LGColor.accentCyan, LGColor.accentBlue, LGColor.accentPink],
+        startPoint: .leading,
+        endPoint: .trailing
+    )
 
-    static func color(for author: String) -> Color {
-        let fold = author.unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
-        return colors[fold % colors.count]
+    static var colorWashes: some View {
+        ZStack {
+            RadialGradient(
+                colors: [LGColor.accentCyan.opacity(0.18), .clear],
+                center: UnitPoint(x: 0.2, y: 0.22), startRadius: 0, endRadius: 300
+            )
+            RadialGradient(
+                colors: [LGColor.accentPink.opacity(0.15), .clear],
+                center: UnitPoint(x: 0.85, y: 0.8), startRadius: 0, endRadius: 320
+            )
+            RadialGradient(
+                colors: [LGColor.accentPurple.opacity(0.12), .clear],
+                center: UnitPoint(x: 0.5, y: 0.5), startRadius: 0, endRadius: 380
+            )
+        }
     }
 }
 
