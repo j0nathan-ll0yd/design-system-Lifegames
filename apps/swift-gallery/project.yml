@@ -60,3 +60,5 @@ targets:
         product: LifegamesComponents
       - package: LifegamesDesignSystem
         product: LifegamesWidgets
+      - package: LifegamesDesignSystem
+        product: LifegamesTemplates

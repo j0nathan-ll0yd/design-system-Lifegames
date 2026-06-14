@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "LifegamesDesignSystem",
-    platforms: [.iOS(.v26), .watchOS(.v26), .macOS(.v13)],
+    platforms: [.iOS(.v26), .watchOS(.v26), .macOS(.v14)],
     products: [
         .library(name: "LifegamesTokens", targets: ["LifegamesTokens"]),
         .library(name: "LifegamesSchemas", targets: ["LifegamesSchemas"]),
@@ -12,6 +12,7 @@ let package = Package(
         .library(name: "LifegamesComponents", targets: ["LifegamesComponents"]),
         .library(name: "LifegamesComponentsWatch", targets: ["LifegamesComponentsWatch"]),
         .library(name: "LifegamesOnboarding", targets: ["LifegamesOnboarding"]),
+        .library(name: "LifegamesTemplates", targets: ["LifegamesTemplates"]),
         .library(name: "LifegamesWidgets", targets: ["LifegamesWidgets"]),
         .library(name: "LifegamesWidgetsWatch", targets: ["LifegamesWidgetsWatch"]),
     ],
@@ -26,6 +27,9 @@ let package = Package(
         .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens"]),
         .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens", "LifegamesComponentsCore"]),
         .target(name: "LifegamesOnboarding", dependencies: ["LifegamesComponents"], exclude: ["README.md"]),
+        .target(name: "LifegamesTemplates", dependencies: [
+            "LifegamesComponents", "LifegamesComponentsCore", "LifegamesTokens",
+        ]),
         .target(name: "LifegamesComponentsWatch", dependencies: ["LifegamesTokens", "LifegamesComponentsCore"]),
         .target(name: "LifegamesWidgets", dependencies: ["LifegamesComponents", "LifegamesSchemas", "LifegamesCopy"],
                 resources: [.process("Resources")]),
@@ -46,6 +50,9 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesOnboardingTests", dependencies: [
             "LifegamesOnboarding",
+        ]),
+        .testTarget(name: "LifegamesTemplatesTests", dependencies: [
+            "LifegamesTemplates",
         ]),
         .testTarget(name: "LifegamesSchemasTests", dependencies: [
             "LifegamesSchemas",

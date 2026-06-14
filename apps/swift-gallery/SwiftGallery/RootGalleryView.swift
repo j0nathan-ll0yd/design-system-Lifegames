@@ -48,6 +48,13 @@ struct RootGalleryView: View {
                     destination: CategoryListView()
                 )
                 galleryRow(
+                    title: "Templates",
+                    subtitle: "Brand-agnostic slot-based screen scaffolds (Experimental)",
+                    icon: "rectangle.split.2x2.fill",
+                    color: LGColor.accentCyan,
+                    destination: TemplatesShowcase()
+                )
+                galleryRow(
                     title: "Screens",
                     subtitle: "OMD app screen mockups (Neon Console)",
                     icon: "rectangle.on.rectangle.angled",
