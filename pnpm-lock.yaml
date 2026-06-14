@@ -139,6 +139,9 @@ importers:
       json-schema-to-zod:
         specifier: ^2.8.1
         version: 2.8.1
+      prettier-plugin-astro:
+        specifier: 0.14.1
+        version: 0.14.1
       quicktype:
         specifier: ^23.2.6
         version: 23.2.6(@swc/core@1.15.40)
