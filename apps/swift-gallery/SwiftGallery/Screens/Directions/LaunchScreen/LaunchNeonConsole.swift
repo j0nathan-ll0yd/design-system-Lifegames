@@ -4,10 +4,6 @@ import LifegamesTokens
 import SwiftUI
 
 struct LaunchNeonConsole: View {
-    /// Which of the five candidate backdrops is shown below the wordmark.
-    /// Defaults to animation 1 (Buffer Ring) per the review brief.
-    @State private var selectedAnimation: LaunchAnimationKind = .bufferRing
-
     var body: some View {
         ZStack {
             // Colorful base: deep vertical wash + neon radial accents.
@@ -26,23 +22,17 @@ struct LaunchNeonConsole: View {
 
                 wordmark
 
-                // The candidate backdrop sits in its own zone BELOW the wordmark
-                // so the branding is never obstructed by the animation.
-                LaunchAnimationView(kind: selectedAnimation)
+                // The buffering backdrop sits in its own zone BELOW the wordmark
+                // so the branding is never obstructed.
+                BufferRingAnimation()
                     .frame(height: 200)
                     .padding(.top, Spacing.s700)
-                    .animation(.easeInOut(duration: 0.35), value: selectedAnimation)
 
                 Spacer()
-
-                animationPicker
-                    .padding(.bottom, Spacing.s800)
             }
             .padding(.horizontal, Spacing.s600)
         }
     }
-
-    // MARK: - Branding (the hero)
 
     /// OFFLINE in the brand SpaceGrotesk display face with a cyan→blue→pink
     /// gradient fill and neon glow; "media downloader" demoted to a cyan subhead.
@@ -62,42 +52,6 @@ struct LaunchNeonConsole: View {
                 .tracking(5)
                 .foregroundStyle(LGColor.accentCyan.opacity(0.9))
         }
-    }
-
-    // MARK: - Comparison control
-
-    /// Small segmented control for reviewing the five candidates. Segmented
-    /// picker style is cross-platform, so no `#if os(iOS)` guard is required.
-    private var animationPicker: some View {
-        VStack(spacing: Spacing.s200) {
-            Text("BACKDROP")
-                .font(OMDFont.medium(9))
-                .foregroundStyle(LGColor.textSubtle)
-                .tracking(4)
-
-            Picker("Backdrop animation", selection: $selectedAnimation) {
-                ForEach(LaunchAnimationKind.allCases) { kind in
-                    Text(kind.label).tag(kind)
-                }
-            }
-            .pickerStyle(.segmented)
-            .tint(LGColor.accentBlue)
-
-            Text(selectedAnimation.summary)
-                .font(OMDFont.regular(11))
-                .foregroundStyle(LGColor.textSubtle)
-                .multilineTextAlignment(.center)
-                .animation(.easeInOut(duration: 0.2), value: selectedAnimation)
-        }
-        .padding(Spacing.s400)
-        .background(
-            RoundedRectangle(cornerRadius: 14)
-                .fill(LGColor.surfaceDeep.opacity(0.7))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 14)
-                        .stroke(LGColor.accentBlue.opacity(0.25), lineWidth: 1)
-                )
-        )
     }
 }
 

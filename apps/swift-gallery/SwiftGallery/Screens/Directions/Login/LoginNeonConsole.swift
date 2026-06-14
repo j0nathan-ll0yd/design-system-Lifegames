@@ -24,7 +24,7 @@ struct LoginNeonConsole: View {
 
                 // The Buffer backdrop sits BELOW the welcome copy in its own
                 // zone so the headline and CTA are never obstructed.
-                LaunchAnimationView(kind: .bufferRing)
+                BufferRingAnimation()
                     .frame(height: 170)
                     .padding(.top, Spacing.s600)
 
