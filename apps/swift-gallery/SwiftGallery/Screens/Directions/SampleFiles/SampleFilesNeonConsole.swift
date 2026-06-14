@@ -191,8 +191,8 @@ struct SampleFilesNeonConsole: View {
             Text(label)
                 .font(.system(size: 9, weight: .medium, design: .monospaced))
                 .foregroundStyle(LGColor.textSubtle)
+                .lineLimit(1)
         }
-        .padding(Spacing.s300)
         .frame(maxWidth: .infinity, alignment: .leading)
         .neonCard(accent: accent)
     }

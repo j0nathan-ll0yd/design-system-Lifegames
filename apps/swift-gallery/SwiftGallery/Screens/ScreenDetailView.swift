@@ -5,6 +5,19 @@ struct ScreenDetailView: View {
     let entry: ScreenEntry
 
     var body: some View {
+        if entry.directions.count == 1, let only = entry.directions.first {
+            // Single direction: render the screen full-viewport, exactly as it
+            // appears in the app. The screen view owns its own scroll, background,
+            // and navigation chrome — no gallery card wrapper.
+            only.make()
+        } else {
+            comparisonStack
+        }
+    }
+
+    /// Multi-direction comparison: each rendering sits in a labeled, inset card so
+    /// directions can be browsed side by side. Used only when >1 direction exists.
+    private var comparisonStack: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Spacing.s600) {
                 ForEach(entry.directions) { direction in

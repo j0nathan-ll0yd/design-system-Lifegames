@@ -70,11 +70,11 @@ struct DurationBadgeView: View {
     }
 }
 
-// MARK: - FileRowView (forked)
+// MARK: - FileRowNeon
 
-// Decision: Forked into three structs. Neon wraps in a neonCard with thumbnail-left layout;
-// Editorial uses full-width thumbnail above text with hairline divider; Utility is a compact
-// single-line band. The three layouts share <30% body — a single switch would be unreadable.
+// A media row: thumbnail-left, title, a per-channel colored author, and an
+// icon-based meta line (duration / size / views). The card's top-edge accent
+// matches the channel color so a scrolling list reads as alternating channels.
 
 struct FileRowNeon: View {
     let file: OMDFixtures.MediaFile
@@ -83,36 +83,67 @@ struct FileRowNeon: View {
         HStack(alignment: .top, spacing: Spacing.s300) {
             MediaThumbnailView(file: file, style: .neonConsole)
 
-            VStack(alignment: .leading, spacing: Spacing.s100) {
+            VStack(alignment: .leading, spacing: Spacing.s150) {
                 Text(file.title)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(LGColor.textTitle)
                     .lineLimit(2)
                     .truncationMode(.tail)
 
-                Text(file.author)
-                    .font(.system(size: 12))
-                    .foregroundStyle(LGColor.textPrimary)
+                HStack(spacing: Spacing.s100) {
+                    Circle()
+                        .fill(channelColor)
+                        .frame(width: 5, height: 5)
+                    Text(file.author)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(channelColor)
+                        .lineLimit(1)
+                }
 
+                // Duration lives on the thumbnail badge; the meta line carries
+                // size + views so neither truncates in the row's text column.
                 HStack(spacing: Spacing.s300) {
-                    Text(file.fileSize)
-                        .font(.system(size: 11, design: .monospaced))
-                        .foregroundStyle(LGColor.textSubtle)
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-
-                    Text("\(formattedViews(file.viewCount)) views")
-                        .font(.system(size: 11, design: .monospaced))
-                        .foregroundStyle(LGColor.textSubtle)
-                        .lineLimit(1)
+                    metaItem(icon: "arrow.down.doc.fill", text: file.fileSize)
+                    metaItem(icon: "eye.fill", text: formattedViews(file.viewCount))
                 }
             }
 
-            Spacer()
+            Spacer(minLength: Spacing.s200)
 
             DownloadProgressView(state: file.downloadState, style: .neonConsole)
         }
-        .neonCard(accent: LGColor.accentBlue)
+        .neonCard(accent: channelColor)
+    }
+
+    /// Stable per-channel accent: a deterministic fold of the author name into the
+    /// neon palette, so the same channel always reads in the same color.
+    private var channelColor: Color {
+        OMDChannelPalette.color(for: file.author)
+    }
+
+    private func metaItem(icon: String, text: String) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: icon)
+                .font(.system(size: 9))
+            Text(text)
+                .font(.system(size: 11, design: .monospaced))
+                .lineLimit(1)
+        }
+        .foregroundStyle(LGColor.textSubtle)
+    }
+}
+
+// MARK: - OMDChannelPalette
+
+enum OMDChannelPalette {
+    private static let colors: [Color] = [
+        LGColor.accentBlue, LGColor.accentCyan, LGColor.accentPink,
+        LGColor.accentGreen, LGColor.accentAmber, LGColor.accentPurple,
+    ]
+
+    static func color(for author: String) -> Color {
+        let fold = author.unicodeScalars.reduce(0) { $0 &+ Int($1.value) }
+        return colors[fold % colors.count]
     }
 }
 
@@ -189,17 +220,19 @@ struct StatCardView: View {
             Text(value)
                 .font(
                     style.monospacedNumerics
-                        ? .system(size: 22, weight: .bold, design: .monospaced)
-                        : .system(size: 22, weight: .bold)
+                        ? .system(size: 16, weight: .bold, design: .monospaced)
+                        : .system(size: 16, weight: .bold)
                 )
                 .foregroundStyle(LGColor.textTitle)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
             Text(label)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(LGColor.textMuted)
                 .textCase(.uppercase)
+                .lineLimit(1)
         }
-        .padding(style.cardPadding)
     }
 }
 
