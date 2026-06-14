@@ -47,21 +47,25 @@ describe('updatePollStatus', () => {
   });
 
   it('shows "Partial" when some errors >= 3 but not all', () => {
-    updatePollStatus(status({
-      connected: true,
-      wsConnected: false,
-      errorCounts: { health: 3, sleep: 0 },
-    }));
+    updatePollStatus(
+      status({
+        connected: true,
+        wsConnected: false,
+        errorCounts: { health: 3, sleep: 0 },
+      }),
+    );
     expect(label().textContent).toBe('Partial');
     expect(dot().className).toContain('poll-dot--warn');
   });
 
   it('shows "Degraded" when all sources have errors >= 3 and online', () => {
-    updatePollStatus(status({
-      connected: true,
-      wsConnected: false,
-      errorCounts: { health: 3, sleep: 5 },
-    }));
+    updatePollStatus(
+      status({
+        connected: true,
+        wsConnected: false,
+        errorCounts: { health: 3, sleep: 5 },
+      }),
+    );
     expect(label().textContent).toBe('Degraded');
     expect(dot().className).toContain('poll-dot--error');
   });
@@ -85,11 +89,13 @@ describe('updatePollStatus', () => {
   });
 
   it('ignores null errorCount entries', () => {
-    updatePollStatus(status({
-      connected: true,
-      wsConnected: false,
-      errorCounts: { health: undefined as any, sleep: undefined as any },
-    }));
+    updatePollStatus(
+      status({
+        connected: true,
+        wsConnected: false,
+        errorCounts: { health: undefined as any, sleep: undefined as any },
+      }),
+    );
     // null entries filtered → no errors → Polling
     expect(label().textContent).toBe('Polling');
   });

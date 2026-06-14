@@ -72,7 +72,10 @@
       "value": "24+",
       "_meta": {
         "description": "Years of professional experience, expressed as an open-ended figure (e.g. '24+'). Also baked into longBio prose as '24+ years'.",
-        "usage": ["backend:profile.ts PROFILE.yearsExperience", "backend:llms-txt.eta:7 About prose"],
+        "usage": [
+          "backend:profile.ts PROFILE.yearsExperience",
+          "backend:llms-txt.eta:7 About prose"
+        ],
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -92,7 +95,10 @@
       "value": ["aws", "typescript", "serverless", "swift", "go", "perl"],
       "_meta": {
         "description": "Lowercase technology/skill tokens as authored for the backend profile. Distinct from seo.expertise (title-case marketing phrases) — kept separate uniqueness-first.",
-        "usage": ["backend:profile.ts PROFILE.skills", "backend:llms-full profile block (joined with ', ')"],
+        "usage": [
+          "backend:profile.ts PROFILE.skills",
+          "backend:llms-full profile block (joined with ', ')"
+        ],
         "tone": "terse",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -103,7 +109,10 @@
       "value": ["programming", "pc gaming", "musical theatre", "edm", "conversation"],
       "_meta": {
         "description": "Lowercase personal-interest tokens. Backend-only today.",
-        "usage": ["backend:profile.ts PROFILE.interests", "backend:llms-full profile block (joined with ', ')"],
+        "usage": [
+          "backend:profile.ts PROFILE.interests",
+          "backend:llms-full profile block (joined with ', ')"
+        ],
         "tone": "casual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -135,7 +144,9 @@
       "value": "A living data dashboard by engineering director Jonathan Lloyd. Real biometrics — heart rate, sleep, hydration, coding, reading. Jack into his human datastream.",
       "_meta": {
         "description": "OpenGraph + Twitter card description (og:description / twitter:description). Slightly longer, names specific biometrics.",
-        "usage": ["web:Dashboard.astro:6 (ogDescription prop → og:description, twitter:description)"],
+        "usage": [
+          "web:Dashboard.astro:6 (ogDescription prop → og:description, twitter:description)"
+        ],
         "tone": "marketing",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -169,7 +180,9 @@
       "value": "24+ years professionally & counting",
       "_meta": {
         "description": "Formatted experience phrase rendered on the OpenGraph share image. Distinct from yearsExperience ('24+'): this is the full display phrase.",
-        "usage": ["design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (experience default)"],
+        "usage": [
+          "design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (experience default)"
+        ],
         "tone": "marketing",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -181,7 +194,10 @@
       "value": "Human Datastream",
       "_meta": {
         "description": "Brand/site short name.",
-        "usage": ["web:Dashboard.astro:44 (og:site_name)", "web:Dashboard.astro:107 (Dataset name, machine metadata)"],
+        "usage": [
+          "web:Dashboard.astro:44 (og:site_name)",
+          "web:Dashboard.astro:107 (Dataset name, machine metadata)"
+        ],
         "tone": "brand",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -300,7 +316,9 @@
       "value": "Jack into his human datastream",
       "_meta": {
         "description": "The brand quote/CTA rendered on the OpenGraph share image. The recurring tagline fragment from the bios, as a standalone line.",
-        "usage": ["design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (quote default)"],
+        "usage": [
+          "design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (quote default)"
+        ],
         "tone": "brand",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -322,7 +340,10 @@
       "value": "Jonathan Lloyd — Human Datastream dashboard",
       "_meta": {
         "description": "Alt text for the OpenGraph / Twitter share image.",
-        "usage": ["web:Dashboard.astro:43 (og:image:alt)", "web:Dashboard.astro:52 (twitter:image:alt)"],
+        "usage": [
+          "web:Dashboard.astro:43 (og:image:alt)",
+          "web:Dashboard.astro:52 (twitter:image:alt)"
+        ],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",

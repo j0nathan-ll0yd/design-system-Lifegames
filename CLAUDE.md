@@ -60,6 +60,16 @@ Phase 2 flips to npm `^X.Y.Z` from GitHub Packages without source changes.
 
 All use Vite 7 (unified from prior Vite 6/7 split).
 
+## Formatting
+
+- **Formatter:** Prettier 3.x (exact-pinned). Config: `.prettierrc.mjs` at repo root.
+- **Run locally:** `pnpm format` (write) / `pnpm format:check` (CI-equivalent check).
+- **CI gate:** `format` job in `ci.yml` runs `pnpm format:check` and is **required for merge**.
+- **Generated artifacts** (`packages/copy/dist`, `packages/schemas/dist`, `packages/schemas/fixture-map.json`) are formatted **in-generator** using `prettier.resolveConfig()` + the root `.prettierrc.mjs`. Do not add them to `.prettierignore`.
+- **Pre-commit:** `lint-staged` runs `prettier --write` on staged files (via `.husky/pre-commit`). Personal-data scan also runs.
+- **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
+- **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts.
+
 ## Commits
 
 Conventional commit format with trailers. No AI attribution.

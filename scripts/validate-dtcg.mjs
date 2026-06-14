@@ -15,14 +15,29 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import * as prettier from 'prettier';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const REPORT_ONLY = process.argv.includes('--report');
 
 const VALID_TYPES = new Set([
-  'color', 'dimension', 'fontFamily', 'fontWeight', 'duration', 'cubicBezier',
-  'number', 'string', 'boolean', 'null', 'shadow', 'typography', 'transition',
-  'gradient', 'strokeStyle', 'border', 'composite',
+  'color',
+  'dimension',
+  'fontFamily',
+  'fontWeight',
+  'duration',
+  'cubicBezier',
+  'number',
+  'string',
+  'boolean',
+  'null',
+  'shadow',
+  'typography',
+  'transition',
+  'gradient',
+  'strokeStyle',
+  'border',
+  'composite',
 ]);
 
 // ── file collection ───────────────────────────────────────────────────────────
@@ -41,7 +56,7 @@ function walk(dir, ext) {
 }
 
 const sourceFiles = walk(path.join(ROOT, 'tokens'), '.tokens.json').filter(
-  (f) => !f.includes(`${path.sep}projections${path.sep}`)
+  (f) => !f.includes(`${path.sep}projections${path.sep}`),
 );
 
 const distFiles = walk(path.join(ROOT, 'packages/tokens/dist'), '.dtcg.json');
@@ -153,7 +168,8 @@ function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
             file: relFile,
             path: currentPath,
             rule: 'TYPOGRAPHY_MISSING_FIELDS',
-            detail: 'Typography composite $value has none of the standard DTCG fields: fontFamily, fontSize, fontWeight, lineHeight, letterSpacing.',
+            detail:
+              'Typography composite $value has none of the standard DTCG fields: fontFamily, fontSize, fontWeight, lineHeight, letterSpacing.',
           });
         }
       } else if (typeof val !== 'string') {
@@ -312,7 +328,14 @@ ${distFiles.length > 0 ? distFiles.map((f) => `- \`${path.relative(ROOT, f)}\``)
 
 // ── write report ──────────────────────────────────────────────────────────────
 fs.mkdirSync(path.join(ROOT, 'docs'), { recursive: true });
-fs.writeFileSync(path.join(ROOT, 'docs/dtcg-audit.md'), report);
+const auditPath = path.join(ROOT, 'docs/dtcg-audit.md');
+const auditPrettierCfg = await prettier.resolveConfig(auditPath);
+const formattedReport = await prettier.format(report, {
+  ...auditPrettierCfg,
+  parser: 'markdown',
+  filepath: auditPath,
+});
+fs.writeFileSync(auditPath, formattedReport);
 console.log(`Wrote docs/dtcg-audit.md`);
 
 // ── print summary ─────────────────────────────────────────────────────────────
@@ -333,14 +356,16 @@ console.log('');
 if (!REPORT_ONLY && totalViolations > 0) {
   // MISSING_DESCRIPTION is advisory (many tokens legitimately lack it)
   // Only hard-fail on structural violations
-  const hardViolations = allViolations.filter(
-    (v) => v.rule !== 'MISSING_DESCRIPTION'
-  );
+  const hardViolations = allViolations.filter((v) => v.rule !== 'MISSING_DESCRIPTION');
   if (hardViolations.length > 0) {
-    console.error(`ERROR: ${hardViolations.length} hard DTCG conformance violation(s). See docs/dtcg-audit.md for details.`);
+    console.error(
+      `ERROR: ${hardViolations.length} hard DTCG conformance violation(s). See docs/dtcg-audit.md for details.`,
+    );
     process.exit(1);
   } else {
-    console.warn(`WARN: ${totalViolations} advisory violation(s) (MISSING_DESCRIPTION only). See docs/dtcg-audit.md.`);
+    console.warn(
+      `WARN: ${totalViolations} advisory violation(s) (MISSING_DESCRIPTION only). See docs/dtcg-audit.md.`,
+    );
   }
 } else if (totalViolations === 0) {
   console.log('All files pass DTCG 2025.10 conformance checks.');

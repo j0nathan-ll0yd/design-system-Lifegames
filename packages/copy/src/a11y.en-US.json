@@ -121,9 +121,7 @@
       "value": "Profile",
       "_meta": {
         "description": "Accessibility label for the left-panel profile aside landmark (web shell).",
-        "usage": [
-          "webshell:src/pages/index.astro:22 (.left-panel aria-label)"
-        ],
+        "usage": ["webshell:src/pages/index.astro:22 (.left-panel aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -134,9 +132,7 @@
       "value": "Dashboard",
       "_meta": {
         "description": "Accessibility label for the top-bar dashboard nav landmark (web shell).",
-        "usage": [
-          "webshell:src/pages/index.astro:29 (nav aria-label)"
-        ],
+        "usage": ["webshell:src/pages/index.astro:29 (nav aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -149,9 +145,7 @@
       "value": "Body",
       "_meta": {
         "description": "Accessibility label for the Body triptych column region (web shell).",
-        "usage": [
-          "webshell:src/pages/index.astro:43 (.triptych-column-body section aria-label)"
-        ],
+        "usage": ["webshell:src/pages/index.astro:43 (.triptych-column-body section aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -162,9 +156,7 @@
       "value": "Mind",
       "_meta": {
         "description": "Accessibility label for the Mind triptych column region (web shell).",
-        "usage": [
-          "webshell:src/pages/index.astro:54 (.triptych-column-mind section aria-label)"
-        ],
+        "usage": ["webshell:src/pages/index.astro:54 (.triptych-column-mind section aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -177,9 +169,7 @@
       "value": "Current time",
       "_meta": {
         "description": "Accessibility label for the top-bar live clock readout (web shell).",
-        "usage": [
-          "webshell:src/pages/index.astro:36 (.top-bar-clock #liveClock aria-label)"
-        ],
+        "usage": ["webshell:src/pages/index.astro:36 (.top-bar-clock #liveClock aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -192,9 +182,7 @@
       "value": "404 error page",
       "_meta": {
         "description": "Accessibility label for the 404 glitch error region (web shell).",
-        "usage": [
-          "webshell:src/pages/404.astro:6 (.glitch-container aria-label)"
-        ],
+        "usage": ["webshell:src/pages/404.astro:6 (.glitch-container aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",

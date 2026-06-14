@@ -46,6 +46,16 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { compile } from 'json-schema-to-typescript';
 import jsonSchemaToZod from 'json-schema-to-zod';
+import * as prettier from 'prettier';
+
+async function formatWithPrettier(
+  src: string,
+  outPath: string,
+  parser: 'typescript' | 'json',
+): Promise<string> {
+  const cfg = await prettier.resolveConfig(outPath);
+  return prettier.format(src, { ...cfg, parser, filepath: outPath });
+}
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -142,7 +152,9 @@ function deriveFlat(node: JsonSchema): JsonSchema {
   if (node && typeof node === 'object' && typeof node.$ref === 'string') {
     if (node.$ref === STRING_REF) return { type: 'string' };
     if (node.$ref === LIST_REF) return { type: 'array', items: { type: 'string' } };
-    throw new Error(`deriveFlat: unexpected $ref "${node.$ref}" — only CopyString/CopyStringList leaves are allowed`);
+    throw new Error(
+      `deriveFlat: unexpected $ref "${node.$ref}" — only CopyString/CopyStringList leaves are allowed`,
+    );
   }
   if (node && node.type === 'object' && node.properties) {
     const properties: JsonSchema = {};
@@ -265,28 +277,37 @@ for (const ns of NAMESPACES) {
   console.log('  flat derivation + round-trip OK.');
 
   // ── 4. Write JSON artifacts ─────────────────────────────────────────────────
-  const flatSchemaJson = JSON.stringify(flatSchema, null, 2) + '\n';
-  const flatInstanceJson = JSON.stringify(flatInstance, null, 2) + '\n';
   const flatSchemaPath = join(DIST, `${ns.name}.flat.schema.json`);
+  const flatInstancePath = join(DIST, `${ns.name}.flat.json`);
+  const flatInstanceRaw = JSON.stringify(flatInstance, null, 2) + '\n';
+  const flatSchemaJson = await formatWithPrettier(
+    JSON.stringify(flatSchema, null, 2) + '\n',
+    flatSchemaPath,
+    'json',
+  );
+  const flatInstanceJson = await formatWithPrettier(flatInstanceRaw, flatInstancePath, 'json');
   writeFileSync(flatSchemaPath, flatSchemaJson);
-  writeFileSync(join(DIST, `${ns.name}.flat.json`), flatInstanceJson);
+  writeFileSync(flatInstancePath, flatInstanceJson);
 
   // ── 5. TS types ─────────────────────────────────────────────────────────────
   console.log(`copy:build — TS (json-schema-to-typescript, ${ns.name})...`);
-  const ts = await compile(flatSchema as Parameters<typeof compile>[0], ns.topLevelType, {
+  const tsRaw = await compile(flatSchema as Parameters<typeof compile>[0], ns.topLevelType, {
     bannerComment: '',
     additionalProperties: false,
     declareExternallyReferenced: true,
     enableConstEnums: false,
-    style: { singleQuote: true },
+    format: false,
   });
-  writeFileSync(join(DIST, `${ns.name}.ts`), genHeader(ns.name) + ts);
+  const tsPath = join(DIST, `${ns.name}.ts`);
+  const ts = await formatWithPrettier(genHeader(ns.name) + tsRaw, tsPath, 'typescript');
+  writeFileSync(tsPath, ts);
 
   // ── 6. Zod (validates the FLAT JSON the web collection reads) ────────────────
   console.log(`copy:build — Zod (json-schema-to-zod, ${ns.name})...`);
-  let zod = jsonSchemaToZod(flatSchema, { name: `${ns.name}Schema`, module: 'esm' });
-  if (!zod.endsWith('\n')) zod += '\n';
-  writeFileSync(join(DIST, `${ns.name}.zod.ts`), genHeader(ns.name) + zod);
+  const zodRaw = jsonSchemaToZod(flatSchema, { name: `${ns.name}Schema`, module: 'esm' });
+  const zodPath = join(DIST, `${ns.name}.zod.ts`);
+  const zod = await formatWithPrettier(genHeader(ns.name) + zodRaw, zodPath, 'typescript');
+  writeFileSync(zodPath, zod);
 
   // ── 7. Swift (quicktype over the flat schema) ───────────────────────────────
   console.log(`copy:build — Swift (quicktype, ${ns.name})...`);
@@ -294,12 +315,17 @@ for (const ns of NAMESPACES) {
   execFileSync(
     QUICKTYPE_BIN,
     [
-      '--src-lang', 'schema',
-      '--lang', 'swift',
-      '--top-level', ns.topLevelType,
-      '--access-level', 'public',
+      '--src-lang',
+      'schema',
+      '--lang',
+      'swift',
+      '--top-level',
+      ns.topLevelType,
+      '--access-level',
+      'public',
       '--sendable',
-      '-o', swiftTmp,
+      '-o',
+      swiftTmp,
       flatSchemaPath,
     ],
     { stdio: 'pipe' },
@@ -329,7 +355,8 @@ for (const ns of NAMESPACES) {
   }
 
   // ── 8. Resource (flat values shipped to device) ─────────────────────────────
-  writeFileSync(join(SWIFT_RESOURCES, `${ns.name}.en-US.json`), flatInstanceJson);
+  // Swift resources are prettierignored — write unformatted raw JSON.
+  writeFileSync(join(SWIFT_RESOURCES, `${ns.name}.en-US.json`), flatInstanceRaw);
 
   swiftTopLevelNames.push({ name: ns.topLevelType, namespace: ns.name });
   built.push({ name: ns.name, topLevelType: ns.topLevelType });
@@ -383,7 +410,9 @@ for (const b of built) {
   barrel += `export type { ${b.topLevelType} } from './${b.name}';\n\n`;
   barrel += `export const ${b.name}: ${b.topLevelType} = ${dataBinding};\n`;
 }
-writeFileSync(join(DIST, 'index.ts'), barrel);
+const indexPath = join(DIST, 'index.ts');
+const formattedBarrel = await formatWithPrettier(barrel, indexPath, 'typescript');
+writeFileSync(indexPath, formattedBarrel);
 
 console.log('copy:build — done.');
 for (const b of built) {

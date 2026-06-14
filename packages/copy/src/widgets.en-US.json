@@ -374,9 +374,7 @@
       "value": "No movement yet today",
       "_meta": {
         "description": "Empty-state message when no movement data is recorded for the day.",
-        "usage": [
-          "web:packages/web/src/widgets/health/MovementRings.astro:120 (.mv-empty-label)"
-        ],
+        "usage": ["web:packages/web/src/widgets/health/MovementRings.astro:120 (.mv-empty-label)"],
         "tone": "encouraging",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -873,9 +871,7 @@
       "value": "No articles yet",
       "_meta": {
         "description": "Empty-state when no reading articles are available.",
-        "usage": [
-          "ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:77"
-        ],
+        "usage": ["ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:77"],
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -916,9 +912,7 @@
       "value": "No Books Yet",
       "_meta": {
         "description": "Empty-state heading when the bookshelf has no books.",
-        "usage": [
-          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:59"
-        ],
+        "usage": ["ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:59"],
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -929,9 +923,7 @@
       "value": "Books you add will appear here",
       "_meta": {
         "description": "Empty-state body explaining how books appear once added.",
-        "usage": [
-          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:63"
-        ],
+        "usage": ["ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:63"],
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -986,9 +978,7 @@
       "value": "No reviews yet",
       "_meta": {
         "description": "Empty-state when no theatre reviews are available.",
-        "usage": [
-          "ios:Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift:58"
-        ],
+        "usage": ["ios:Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift:58"],
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -1015,9 +1005,7 @@
       "value": "No book selected",
       "_meta": {
         "description": "Book detail modal — empty-state when no book is selected.",
-        "usage": [
-          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:240"
-        ],
+        "usage": ["ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:240"],
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
@@ -1219,9 +1207,7 @@
       "value": "Active",
       "_meta": {
         "description": "Per-source status value when a data source is reporting (e.g. Health, Sleep, Location). Web renders it all-caps ('ACTIVE') via the JS updater; stored canonical natural case 'Active' with display uppercasing applied by the consumer (D3).",
-        "usage": [
-          "web:packages/web/src/runtime/updaters.ts:388 (sys-val 'ACTIVE')"
-        ],
+        "usage": ["web:packages/web/src/runtime/updaters.ts:388 (sys-val 'ACTIVE')"],
         "tone": "terse",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -1233,9 +1219,7 @@
       "value": "Offline",
       "_meta": {
         "description": "Per-source status value when a data source is not reporting. Web renders it all-caps ('OFFLINE') via the JS updater; stored canonical natural case 'Offline' (D3).",
-        "usage": [
-          "web:packages/web/src/runtime/updaters.ts:395 (sys-val 'OFFLINE')"
-        ],
+        "usage": ["web:packages/web/src/runtime/updaters.ts:395 (sys-val 'OFFLINE')"],
         "tone": "terse",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -1291,9 +1275,7 @@
       "value": "Site",
       "_meta": {
         "description": "Identity card — personal-site link pill label. Web-only today; iOS identity card renders only GitHub + LinkedIn pills.",
-        "usage": [
-          "web:packages/web/src/widgets/identity/IdentityCard.astro:22,65 (neon-pill)"
-        ],
+        "usage": ["web:packages/web/src/widgets/identity/IdentityCard.astro:22,65 (neon-pill)"],
         "tone": "brand",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -1304,9 +1286,7 @@
       "value": "Mastodon",
       "_meta": {
         "description": "Identity card — Mastodon link pill label. Web-only today.",
-        "usage": [
-          "web:packages/web/src/widgets/identity/IdentityCard.astro:23,66 (neon-pill)"
-        ],
+        "usage": ["web:packages/web/src/widgets/identity/IdentityCard.astro:23,66 (neon-pill)"],
         "tone": "brand",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
@@ -1317,9 +1297,7 @@
       "value": "Bluesky",
       "_meta": {
         "description": "Identity card — Bluesky link pill label. Web-only today.",
-        "usage": [
-          "web:packages/web/src/widgets/identity/IdentityCard.astro:24,67 (neon-pill)"
-        ],
+        "usage": ["web:packages/web/src/widgets/identity/IdentityCard.astro:24,67 (neon-pill)"],
         "tone": "brand",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",

@@ -24,72 +24,107 @@ import var_refactor from '@fixtures/github/commit-log.refactor-sprint.json';
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CommitLog — Lifegames Design System</title>
-</head>
-<body>
-  <div class="wd-page">
-    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CommitLog — Lifegames Design System</title>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
 
-    <div class="wd-header">
-      <h1 class="wd-title">CommitLog</h1>
-      <span class="wd-badge wd-badge--dev">Alternate</span>
-      <span class="wd-cat">github</span>
-    </div>
+      <div class="wd-header">
+        <h1 class="wd-title">CommitLog</h1>
+        <span class="wd-badge wd-badge--dev">Alternate</span>
+        <span class="wd-cat">github</span>
+      </div>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Live Demo</h2>
-      <ResponsiveDemo widgetName="CommitLog" category="github" fixture={fixture} Comp={CommitLog} />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="CommitLog"
+          category="github"
+          fixture={fixture}
+          Comp={CommitLog}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">State Matrix</h2>
-      <StateMatrix
-        widgetName="CommitLog"
-        category="github"
-        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="CommitLog"
+          category="github"
+          states={[
+            { state: 'skeleton', fixture: fixture_skeleton },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Variations</h2>
-      <VariationGrid
-        widgetName="CommitLog"
-        category="github"
-        variations={[
-          { label: "conventional-discipline", fixture: var_conventional, caption: "All commits use feat:, fix:, chore:, docs: prefixes with tidy messages — ada-dev maintaining consistent commit hygiene on acme-corp/api-gateway." },
-          { label: "messy-history", fixture: var_messy, caption: "Messages like 'wip', 'fix stuff', 'asdf' — r-mendez on a personal side project with authentic chaos." },
-          { label: "refactor-sprint", fixture: var_refactor, caption: "All commits are refactor: scope with high file churn (deletions > additions) — j-howard cleaning up legacy code in northbridge-labs/sensor-mesh." },
-        ]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="CommitLog"
+          category="github"
+          variations={[
+            {
+              label: 'conventional-discipline',
+              fixture: var_conventional,
+              caption:
+                'All commits use feat:, fix:, chore:, docs: prefixes with tidy messages — ada-dev maintaining consistent commit hygiene on acme-corp/api-gateway.',
+            },
+            {
+              label: 'messy-history',
+              fixture: var_messy,
+              caption:
+                "Messages like 'wip', 'fix stuff', 'asdf' — r-mendez on a personal side project with authentic chaos.",
+            },
+            {
+              label: 'refactor-sprint',
+              fixture: var_refactor,
+              caption:
+                'All commits are refactor: scope with high file churn (deletions > additions) — j-howard cleaning up legacy code in northbridge-labs/sensor-mesh.',
+            },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Props</h2>
-      <p class="wd-text">
-        See <code>packages/web/src/widgets/github/CommitLog.types.ts</code> for the full interface.
-      </p>
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/github/CommitLog.types.ts</code> for the full interface.
+        </p>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Usage</h2>
-      <pre class="wd-code"><code>---
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
 import CommitLog from '@lifegames/web/widgets/github/CommitLog.astro';
 ---
 &lt;CommitLog &#123;...data&#125; /&gt;</code></pre>
-    </section>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Cross-Platform</h2>
-      <ul class="wd-list">
-        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/CommitLog.astro</code></li>
-        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/CommitLogView.swift</code></li>
-        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/commit-log.json</code></li>
-      </ul>
-    </section>
-  </div>
-  <WidgetPageScript />
-</body>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/github/CommitLog.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/GitHub/CommitLogView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/github/commit-log.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <WidgetPageScript />
+  </body>
 </html>

@@ -6,7 +6,12 @@ const defaultLines = [
   { key: 'Health', value: 'ACTIVE (7h ago)', valClass: 'sys-val-green', dotClass: 'sys-dot-red' },
   { key: 'Sleep', value: 'ACTIVE (3h ago)', valClass: 'sys-val-green', dotClass: 'sys-dot-purple' },
   { key: 'Books', value: 'ACTIVE (2d ago)', valClass: 'sys-val-green', dotClass: 'sys-dot-amber' },
-  { key: 'Github Events', value: 'ACTIVE (58m ago)', valClass: 'sys-val-green', dotClass: 'sys-dot-green' },
+  {
+    key: 'Github Events',
+    value: 'ACTIVE (58m ago)',
+    valClass: 'sys-val-green',
+    dotClass: 'sys-dot-green',
+  },
 ];
 
 const dotColor: Record<string, string> = {
@@ -22,23 +27,39 @@ function renderStatus(lines: typeof defaultLines) {
     return html`
       <div id="cardStatus" class="tri-card">
         <div class="widget-header"><span class="widget-label">System Status</span></div>
-        <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-muted); text-align: center;">No services configured</div>
+        <div
+          class="widget-body"
+          style="padding: 16px; color: var(--lg-color-text-muted); text-align: center;"
+        >
+          No services configured
+        </div>
       </div>
     `;
   }
   return html`
     <div id="cardStatus" class="tri-card">
       <div class="widget-header"><span class="widget-label">System Status</span></div>
-      <div class="widget-body" style="padding: 8px 16px; font-family: monospace; color: var(--lg-color-text-primary);">
-        ${lines.map((l) => html`
-          <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85em;">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <span style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor[l.dotClass] ?? 'var(--lg-color-text-muted)'}; display: inline-block;"></span>
-              <span style="color: var(--lg-color-text-muted);">${l.key}</span>
+      <div
+        class="widget-body"
+        style="padding: 8px 16px; font-family: monospace; color: var(--lg-color-text-primary);"
+      >
+        ${lines.map(
+          (l) => html`
+            <div
+              style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85em;"
+            >
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span
+                  style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor[
+                    l.dotClass
+                  ] ?? 'var(--lg-color-text-muted)'}; display: inline-block;"
+                ></span>
+                <span style="color: var(--lg-color-text-muted);">${l.key}</span>
+              </div>
+              <span style="color: var(--lg-color-accent-green);">${l.value}</span>
             </div>
-            <span style="color: var(--lg-color-accent-green);">${l.value}</span>
-          </div>
-        `)}
+          `,
+        )}
       </div>
     </div>
   `;
@@ -62,7 +83,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

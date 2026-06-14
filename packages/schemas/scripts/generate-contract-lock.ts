@@ -14,7 +14,7 @@ function sha256(content: string): string {
 }
 
 const schemaFiles = readdirSync(RAW_SCHEMAS_DIR)
-  .filter(f => f.endsWith('.schema.json'))
+  .filter((f) => f.endsWith('.schema.json'))
   .sort();
 
 const checksums: Record<string, string> = {};
@@ -24,7 +24,7 @@ for (const file of schemaFiles) {
 }
 
 const combinedContent = schemaFiles
-  .map(f => readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'))
+  .map((f) => readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'))
   .join('');
 const aggregateChecksum = `sha256:${sha256(combinedContent)}`;
 
@@ -41,6 +41,8 @@ const lock = {
 
 writeFileSync(LOCK_FILE, JSON.stringify(lock, null, 2) + '\n');
 console.log(`[contract-lock] Generated ${LOCK_FILE}`);
-console.log(`  upstream: ${lock.generatedFrom.repo}@${lock.generatedFrom.sha?.slice(0, 8) ?? 'unknown'}`);
+console.log(
+  `  upstream: ${lock.generatedFrom.repo}@${lock.generatedFrom.sha?.slice(0, 8) ?? 'unknown'}`,
+);
 console.log(`  aggregate: ${aggregateChecksum}`);
 console.log(`  files: ${schemaFiles.length}`);

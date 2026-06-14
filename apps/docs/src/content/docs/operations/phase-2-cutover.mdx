@@ -13,8 +13,8 @@ When `vars.REMOTE_ENABLED` flips to `true`, the publish workflow will start push
 to real npm version ranges — **no source changes required**.
 
 <Aside type="caution">
-Do not perform this cutover until the npm publish workflow has successfully published
-at least one version. Confirm with `npm view @lifegames/tokens --registry https://npm.pkg.github.com`.
+  Do not perform this cutover until the npm publish workflow has successfully published at least one
+  version. Confirm with `npm view @lifegames/tokens --registry https://npm.pkg.github.com`.
 </Aside>
 
 ---
@@ -177,11 +177,11 @@ If a publish goes sideways and consumers pull a broken version:
 
 After cutover, keep these versions in sync:
 
-| Package | npm (GitHub Packages) | SPM tag |
-|---------|----------------------|---------|
-| `@lifegames/tokens` | `^X.Y.Z` | `X.Y.Z` |
-| `@lifegames/web` | `^X.Y.Z` | — (web-only) |
-| `@lifegames/schemas` | `^X.Y.Z` | `X.Y.Z` |
+| Package              | npm (GitHub Packages) | SPM tag      |
+| -------------------- | --------------------- | ------------ |
+| `@lifegames/tokens`  | `^X.Y.Z`              | `X.Y.Z`      |
+| `@lifegames/web`     | `^X.Y.Z`              | — (web-only) |
+| `@lifegames/schemas` | `^X.Y.Z`              | `X.Y.Z`      |
 
 SPM and npm versions are kept in lock-step via Changesets: `pnpm changeset:version`
 bumps all three `package.json` versions, then the release workflow tags and publishes.

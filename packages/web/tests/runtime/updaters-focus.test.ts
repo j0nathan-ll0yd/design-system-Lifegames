@@ -70,7 +70,9 @@ describe('updateFocusOverlay', () => {
 
   it('does not throw when overlay elements are missing', () => {
     document.body.innerHTML = '';
-    expect(() => updateFocusOverlay({ generatedAt: '2026-01-01T00:00:00Z', currentFocus: 'Work' })).not.toThrow();
+    expect(() =>
+      updateFocusOverlay({ generatedAt: '2026-01-01T00:00:00Z', currentFocus: 'Work' }),
+    ).not.toThrow();
   });
 
   it('transitions from Work to null hiding the overlay', () => {

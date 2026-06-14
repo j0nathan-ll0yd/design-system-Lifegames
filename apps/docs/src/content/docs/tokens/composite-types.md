@@ -14,7 +14,7 @@ Semantic typography tokens provide role-based shorthand for the primitive type s
 Each typography token emits per-property CSS custom properties:
 
 ```css
---lg-typography-body-font-size: clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem);
+--lg-typography-body-font-size: clamp(0.72rem, 0.65rem + 0.2vw, 0.82rem);
 --lg-typography-body-font-weight: 400;
 --lg-typography-body-line-height: 1.5;
 --lg-typography-body-font-family: 'Space Grotesk', sans-serif;
@@ -22,15 +22,15 @@ Each typography token emits per-property CSS custom properties:
 
 ### Available tokens
 
-| Token | Role | Font size |
-|---|---|---|
-| `typography.display` | Hero/display headings | clamp(1.80rem … 2.20rem) |
-| `typography.heading1` | Section headings | clamp(1.60rem … 2.00rem) |
-| `typography.heading2` | Subsection headings | clamp(1.20rem … 1.50rem) |
-| `typography.body` | Default body text | clamp(0.72rem … 0.82rem) |
-| `typography.label` | Form labels, UI labels | clamp(0.72rem … 0.82rem) |
-| `typography.caption` | Supporting text | clamp(0.70rem … 0.78rem) |
-| `typography.code` | Monospaced code | clamp(0.70rem … 0.78rem) |
+| Token                 | Role                   | Font size                |
+| --------------------- | ---------------------- | ------------------------ |
+| `typography.display`  | Hero/display headings  | clamp(1.80rem … 2.20rem) |
+| `typography.heading1` | Section headings       | clamp(1.60rem … 2.00rem) |
+| `typography.heading2` | Subsection headings    | clamp(1.20rem … 1.50rem) |
+| `typography.body`     | Default body text      | clamp(0.72rem … 0.82rem) |
+| `typography.label`    | Form labels, UI labels | clamp(0.72rem … 0.82rem) |
+| `typography.caption`  | Supporting text        | clamp(0.70rem … 0.78rem) |
+| `typography.code`     | Monospaced code        | clamp(0.70rem … 0.78rem) |
 
 ### CSS consumption
 
@@ -51,7 +51,8 @@ Shadow tokens use `$type: shadow` with `$value` as an array of shadow layer obje
 
 ```css
 /* Emitted as standard CSS box-shadow shorthand */
---lg-shadow-glow-pink: 0px 0px 20px 0px rgba(255,0,110,0.3), 0px 0px 40px 0px rgba(255,0,110,0.15);
+--lg-shadow-glow-pink:
+  0px 0px 20px 0px rgba(255, 0, 110, 0.3), 0px 0px 40px 0px rgba(255, 0, 110, 0.15);
 ```
 
 ### CSS consumption
@@ -80,18 +81,20 @@ Each transition token emits a single shorthand CSS custom property:
 
 ### Available tokens
 
-| Token | Duration | Easing | Use case |
-|---|---|---|---|
-| `transition.default` | 300ms | standard | Most interactive elements |
-| `transition.fast` | 150ms | standard | Hover states, focus rings |
-| `transition.enter` | 300ms | decelerate | Entering/appearing elements |
-| `transition.exit` | 150ms | accelerate | Exiting/disappearing elements |
-| `transition.spring` | 500ms | overshoot | Playful spring/bounce |
+| Token                | Duration | Easing     | Use case                      |
+| -------------------- | -------- | ---------- | ----------------------------- |
+| `transition.default` | 300ms    | standard   | Most interactive elements     |
+| `transition.fast`    | 150ms    | standard   | Hover states, focus rings     |
+| `transition.enter`   | 300ms    | decelerate | Entering/appearing elements   |
+| `transition.exit`    | 150ms    | accelerate | Exiting/disappearing elements |
+| `transition.spring`  | 500ms    | overshoot  | Playful spring/bounce         |
 
 ### CSS consumption
 
 ```css
 .interactive-button {
-  transition: background-color var(--lg-transition-fast), transform var(--lg-transition-enter);
+  transition:
+    background-color var(--lg-transition-fast),
+    transform var(--lg-transition-enter);
 }
 ```

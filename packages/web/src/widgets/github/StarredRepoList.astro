@@ -28,19 +28,28 @@ const { repos } = Astro.props;
   </div>
   <div class="widget-body">
     <div class="gh-starred-list">
-      {repos.map((repo: Repo) => (
-        <div class="gh-sl-row">
-          <a class="gh-sl-name" href={repo.url} target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">
-            <span class="gh-sl-owner">{repo.owner}/</span>{repo.name}
-          </a>
-          <span class="gh-sl-stars">★ {repo.stars.toLocaleString()}</span>
-          <span class="gh-sl-lang">
-            <span class="gh-sl-lang-dot" style={`background: ${repo.languageColor};`}></span>
-            {repo.language}
-          </span>
-          <span class="gh-sl-date">{repo.starredAt}</span>
-        </div>
-      ))}
+      {
+        repos.map((repo: Repo) => (
+          <div class="gh-sl-row">
+            <a
+              class="gh-sl-name"
+              href={repo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-sa-link-event="repo_click"
+            >
+              <span class="gh-sl-owner">{repo.owner}/</span>
+              {repo.name}
+            </a>
+            <span class="gh-sl-stars">★ {repo.stars.toLocaleString()}</span>
+            <span class="gh-sl-lang">
+              <span class="gh-sl-lang-dot" style={`background: ${repo.languageColor};`} />
+              {repo.language}
+            </span>
+            <span class="gh-sl-date">{repo.starredAt}</span>
+          </div>
+        ))
+      }
     </div>
   </div>
 </div>
@@ -125,14 +134,27 @@ const { repos } = Astro.props;
   }
 
   @container (max-width: 350px) {
-    .gh-sl-row { flex-wrap: wrap; gap: var(--space-4) var(--space-10); }
-    .gh-sl-name { flex-basis: 100%; }
-    .gh-sl-lang { min-width: auto; }
-    .gh-sl-date { min-width: auto; margin-left: auto; }
+    .gh-sl-row {
+      flex-wrap: wrap;
+      gap: var(--space-4) var(--space-10);
+    }
+    .gh-sl-name {
+      flex-basis: 100%;
+    }
+    .gh-sl-lang {
+      min-width: auto;
+    }
+    .gh-sl-date {
+      min-width: auto;
+      margin-left: auto;
+    }
   }
 
   @container (max-width: 250px) {
-    .gh-sl-lang, .gh-sl-date { display: none; }
+    .gh-sl-lang,
+    .gh-sl-date {
+      display: none;
+    }
   }
 
   /* Detail-page tri-card (>500px) shows tighter rows. */

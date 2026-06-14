@@ -58,9 +58,9 @@ let gaps = 0;
 // Only web-platform entries have an .astro mirror + fixture + manifest entry.
 // Swift-platform entries (R7 registry completion) are tracked for governance
 // (consumers/status/plannedSurface) but have no web artifacts to check here.
-const webRegistry = registry.filter(w => w.platform !== 'swift');
+const webRegistry = registry.filter((w) => w.platform !== 'swift');
 
-webRegistry.forEach(widget => {
+webRegistry.forEach((widget) => {
   const astroExists = fileExists(`packages/web/src/widgets/${widget.fileRelativeToWidgets}`);
   const manifestKey = MANIFEST_ALIASES[widget.name] || widget.name;
   const manifestEntry = manifestByName.get(manifestKey);
@@ -68,25 +68,36 @@ webRegistry.forEach(widget => {
 
   let hasFixture = false;
   if (manifestEntry) {
-    hasFixture = fileExists(`Sources/LifegamesWidgets/Resources/widgets/${manifestEntry.fixturePath}`);
+    hasFixture = fileExists(
+      `Sources/LifegamesWidgets/Resources/widgets/${manifestEntry.fixturePath}`,
+    );
   } else {
     const category = widget.fileRelativeToWidgets.split('/')[0];
-    const kebabName = widget.name.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/V(\d)/g, '-v$1').toLowerCase();
-    hasFixture = fileExists(`Sources/LifegamesWidgets/Resources/widgets/${category}/${kebabName}.json`);
+    const kebabName = widget.name
+      .replace(/([a-z])([A-Z])/g, '$1-$2')
+      .replace(/V(\d)/g, '-v$1')
+      .toLowerCase();
+    hasFixture = fileExists(
+      `Sources/LifegamesWidgets/Resources/widgets/${category}/${kebabName}.json`,
+    );
   }
 
   if (!astroExists || !hasFixture || !inManifest) gaps++;
 
-  console.log([
-    widget.name.padEnd(widths[0]),
-    widget.status.padEnd(widths[1]),
-    (astroExists ? 'YES' : 'NO').padEnd(widths[2]),
-    (hasFixture ? 'YES' : 'NO').padEnd(widths[3]),
-    (inManifest ? 'YES' : 'NO').padEnd(widths[4]),
-  ].join(' '));
+  console.log(
+    [
+      widget.name.padEnd(widths[0]),
+      widget.status.padEnd(widths[1]),
+      (astroExists ? 'YES' : 'NO').padEnd(widths[2]),
+      (hasFixture ? 'YES' : 'NO').padEnd(widths[3]),
+      (inManifest ? 'YES' : 'NO').padEnd(widths[4]),
+    ].join(' '),
+  );
 });
 
-console.log(`\nTotal: ${webRegistry.length} web widgets (${webRegistry.filter(w => w.buildStatus === 'shipped').length} shipped, ${webRegistry.filter(w => w.buildStatus === 'dev-only').length} dev-only); ${registry.length - webRegistry.length} swift entries (governance-tracked, no web artifacts)`);
+console.log(
+  `\nTotal: ${webRegistry.length} web widgets (${webRegistry.filter((w) => w.buildStatus === 'shipped').length} shipped, ${webRegistry.filter((w) => w.buildStatus === 'dev-only').length} dev-only); ${registry.length - webRegistry.length} swift entries (governance-tracked, no web artifacts)`,
+);
 
 if (gaps > 0) {
   console.log(`\n${gaps} widget(s) have compliance gaps.`);

@@ -14,7 +14,9 @@ interface Props {
 
 const { widgetName, category, variations, island } = Astro.props;
 
-const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
+const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', {
+  eager: true,
+});
 const componentMap: Record<string, any> = {};
 for (const [path, mod] of Object.entries(widgetModules)) {
   const fileName = path.split('/').pop()!.replace('.astro', '');
@@ -33,25 +35,27 @@ function formatLabel(label: string): string {
 ---
 
 <div class="variation-grid">
-  {variations.map(({ label, fixture, caption }) => (
-    <div class="variation-row">
-      <div class="variation-label">
-        {formatLabel(label)}
-        {caption && <div class="variation-caption">{caption}</div>}
+  {
+    variations.map(({ label, fixture, caption }) => (
+      <div class="variation-row">
+        <div class="variation-label">
+          {formatLabel(label)}
+          {caption && <div class="variation-caption">{caption}</div>}
+        </div>
+        <div class="variation-preview">
+          {Island ? (
+            <Island fixture={fixture} />
+          ) : Comp ? (
+            <div data-widget-preview>
+              <Comp {...fixture} />
+            </div>
+          ) : (
+            <div class="variation-placeholder">Component missing</div>
+          )}
+        </div>
       </div>
-      <div class="variation-preview">
-        {Island ? (
-          <Island fixture={fixture} />
-        ) : Comp ? (
-          <div data-widget-preview>
-            <Comp {...fixture} />
-          </div>
-        ) : (
-          <div class="variation-placeholder">Component missing</div>
-        )}
-      </div>
-    </div>
-  ))}
+    ))
+  }
 </div>
 
 <style>

@@ -93,7 +93,7 @@ export function buildECGPath(heartRate: number): string {
   const baseline = 55;
   const segments = 8;
   const spikeScale = Math.min(heartRate / 80, 1.8);
-  const spikeHeight = 30 + (spikeScale * 15);
+  const spikeHeight = 30 + spikeScale * 15;
   let p = 'M 0 ' + baseline;
   for (let i = 0; i < segments; i++) {
     const x = i * segmentWidth;
@@ -124,11 +124,11 @@ export function generateECGSamples(bpm: number, samplesPerBeat: number): number[
   // [amplitude, center, width] — R normalized to 1.0 and dominant; P/T small broad
   // bumps; Q/S sharp negative flanks. Kept in sync with the iOS ECGBackgroundView.
   const waves: [number, number, number][] = [
-    [0.1,   0.16,    0.022],  // P
-    [-0.13, 0.30,    0.013],  // Q
-    [1.0,   0.335,   0.013],  // R
-    [-0.30, 0.365,   0.016],  // S
-    [0.22,  tCenter, 0.060],  // T
+    [0.1, 0.16, 0.022], // P
+    [-0.13, 0.3, 0.013], // Q
+    [1.0, 0.335, 0.013], // R
+    [-0.3, 0.365, 0.016], // S
+    [0.22, tCenter, 0.06], // T
   ];
 
   const samples: number[] = new Array(samplesPerBeat);

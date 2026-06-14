@@ -27,6 +27,7 @@ const fmtTemp = (() => {
   return sign + v.toFixed(1);
 })();
 ---
+
 <div class={`tri-card ${state.accentClass}`} id="cardHR">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.heartRate.title}</h3>
@@ -38,7 +39,11 @@ const fmtTemp = (() => {
   <div class="widget-body">
     <div class="skeleton-state">
       <div style="position: relative; min-height: 100px;">
-        <div class="skeleton-bar" style="width: 100%; height: 60px; border-radius: 8px; margin-bottom: 12px;"></div>
+        <div
+          class="skeleton-bar"
+          style="width: 100%; height: 60px; border-radius: 8px; margin-bottom: 12px;"
+        >
+        </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div class="skeleton-bar" style="width: 80px; height: 28px;"></div>
           <div class="skeleton-bar" style="width: 50px; height: 18px; border-radius: 50px;"></div>
@@ -46,58 +51,98 @@ const fmtTemp = (() => {
         <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
           <div class="skeleton-bar" style="width: 60px; height: 10px;"></div>
         </div>
-        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);">
+        <div
+          style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.06);"
+        >
           <div class="skeleton-bar" style="width: 48px; height: 8px; border-radius: 3px;"></div>
           <div class="skeleton-bar" style="width: 48px; height: 8px; border-radius: 3px;"></div>
           <div class="skeleton-bar" style="width: 40px; height: 8px; border-radius: 3px;"></div>
         </div>
       </div>
     </div>
-    {isEmpty ? (
-      <div class="hr-empty">
-        <span class="hr-empty-label">{widgets.heartRate.empty}</span>
-      </div>
-    ) : (
-      <>
-        <div class="hr-layout">
-          <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
-            <canvas class="ecg-canvas" id="hrEcgCanvas"
-              data-bpm={String(hr)}
-              data-hrv={String(hrv)}
-              data-stroke={state.ecgStroke}
-              width="400" height="120">
-            </canvas>
-          </div>
-          <div class="hr-overlay">
-            <div class="hr-overlay-left">
-              <div>
-                <span class="pulse-bpm" id="pulseBpm" style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}>{hr}</span><span class="pulse-bpm-unit">{widgets.heartRate.bpm}</span>
+    {
+      isEmpty ? (
+        <div class="hr-empty">
+          <span class="hr-empty-label">{widgets.heartRate.empty}</span>
+        </div>
+      ) : (
+        <>
+          <div class="hr-layout">
+            <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
+              <canvas
+                class="ecg-canvas"
+                id="hrEcgCanvas"
+                data-bpm={String(hr)}
+                data-hrv={String(hrv)}
+                data-stroke={state.ecgStroke}
+                width="400"
+                height="120"
+              />
+            </div>
+            <div class="hr-overlay">
+              <div class="hr-overlay-left">
+                <div>
+                  <>
+                    <span
+                      class="pulse-bpm"
+                      id="pulseBpm"
+                      style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}
+                    >
+                      {hr}
+                    </span>
+                    <span class="pulse-bpm-unit">{widgets.heartRate.bpm}</span>
+                  </>
+                </div>
+                <span
+                  class="pulse-status-badge"
+                  id="hrZoneBadge"
+                  style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}
+                >
+                  {state.zone}
+                </span>
               </div>
-              <span class="pulse-status-badge" id="hrZoneBadge" style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}>{state.zone}</span>
+              <div class="hr-overlay-right">
+                <span class="hr-hrv-label">{widgets.heartRate.hrv}</span>
+                <span
+                  class="hr-hrv-value"
+                  id="hrHrvValue"
+                  style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}
+                >
+                  {hrv}
+                </span>
+                <span class="hr-hrv-unit">{widgets.heartRate.hrvUnit}</span>
+              </div>
             </div>
-            <div class="hr-overlay-right">
-              <span class="hr-hrv-label">{widgets.heartRate.hrv}</span>
-              <span class="hr-hrv-value" id="hrHrvValue" style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}>{hrv}</span>
-              <span class="hr-hrv-unit">{widgets.heartRate.hrvUnit}</span>
+          </div>
+          <div class="hr-footer">
+            <div class="hr-footer-cell">
+              <span class="hr-footer-label">{widgets.heartRate.rhr}</span>
+              <>
+                <span class="hr-footer-value" id="hrFooterRhr">
+                  {fmtRhr}
+                </span>
+                <span class="hr-footer-unit">{widgets.heartRate.rhrUnit}</span>
+              </>
+            </div>
+            <div class="hr-footer-cell">
+              <span class="hr-footer-label">{widgets.heartRate.rr}</span>
+              <>
+                <span class="hr-footer-value" id="hrFooterRr">
+                  {fmtRr}
+                </span>
+                <span class="hr-footer-unit">{widgets.heartRate.rrUnit}</span>
+              </>
+            </div>
+            <div class="hr-footer-cell">
+              <span class="hr-footer-label">{widgets.heartRate.temp}</span>
+              <span class="hr-footer-value" id="hrFooterTemp">
+                {fmtTemp}
+              </span>
             </div>
           </div>
-        </div>
-        <div class="hr-footer">
-          <div class="hr-footer-cell">
-            <span class="hr-footer-label">{widgets.heartRate.rhr}</span>
-            <span class="hr-footer-value" id="hrFooterRhr">{fmtRhr}</span><span class="hr-footer-unit">{widgets.heartRate.rhrUnit}</span>
-          </div>
-          <div class="hr-footer-cell">
-            <span class="hr-footer-label">{widgets.heartRate.rr}</span>
-            <span class="hr-footer-value" id="hrFooterRr">{fmtRr}</span><span class="hr-footer-unit">{widgets.heartRate.rrUnit}</span>
-          </div>
-          <div class="hr-footer-cell">
-            <span class="hr-footer-label">{widgets.heartRate.temp}</span>
-            <span class="hr-footer-value" id="hrFooterTemp">{fmtTemp}</span>
-          </div>
-        </div>
-      </>
-    )}
+        </>
+      )
+    }
   </div>
 </div>
 

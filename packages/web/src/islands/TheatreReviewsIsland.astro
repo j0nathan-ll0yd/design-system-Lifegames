@@ -2,6 +2,7 @@
 import TheatreReviews from '@widgets/reading/TheatreReviews.astro';
 const { fixture } = Astro.props;
 ---
+
 <div data-widget-preview data-fixture={JSON.stringify(fixture)}>
   <TheatreReviews {...fixture} />
 </div>

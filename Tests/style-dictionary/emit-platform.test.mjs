@@ -48,7 +48,10 @@ console.log('\nTest 3: missing-reference error');
     emitPlatform({ name: 'test', aliasMap, tokens: sampleTokens });
   } catch (e) {
     threw = true;
-    assert(e.message.includes('unresolved alias reference'), 'error message mentions unresolved alias');
+    assert(
+      e.message.includes('unresolved alias reference'),
+      'error message mentions unresolved alias',
+    );
   }
   assert(threw, 'throws on missing alias reference');
 }
@@ -59,7 +62,10 @@ console.log('\nTest 4: transform function');
   const aliasMap = { 'test-accent': '{color.accent.pink}' };
   const transform = (value) => `transformed(${value})`;
   const out = emitPlatform({ name: 'test', aliasMap, tokens: sampleTokens, transform });
-  assert(out.includes('--test-accent: transformed(#ff006e);'), 'transform applied to resolved value');
+  assert(
+    out.includes('--test-accent: transformed(#ff006e);'),
+    'transform applied to resolved value',
+  );
 }
 
 // --- Test 5: custom header ---

@@ -1,6 +1,7 @@
 ---
 import { widgets } from '@lifegames/copy';
 ---
+
 <div class="tri-card tri-card-accent-blue" id="cardPlaceLeaderboardV3">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.topPlaces.title}</h3>
@@ -60,14 +61,14 @@ import { widgets } from '@lifegames/copy';
     border-left: 3px solid transparent;
   }
 
-  .lb-v3-podium-row[data-rank="1"] {
+  .lb-v3-podium-row[data-rank='1'] {
     border-left-color: var(--lg-color-podium-gold);
     background: rgba(255, 215, 0, 0.04);
   }
-  .lb-v3-podium-row[data-rank="2"] {
+  .lb-v3-podium-row[data-rank='2'] {
     border-left-color: var(--lg-color-podium-silver);
   }
-  .lb-v3-podium-row[data-rank="3"] {
+  .lb-v3-podium-row[data-rank='3'] {
     border-left-color: var(--lg-color-podium-bronze);
   }
 
@@ -81,9 +82,15 @@ import { widgets } from '@lifegames/copy';
     color: rgba(58, 134, 255, 0.5);
   }
 
-  .lb-v3-podium-row[data-rank="1"] .lb-v3-podium-rank { color: var(--lg-color-podium-gold); }
-  .lb-v3-podium-row[data-rank="2"] .lb-v3-podium-rank { color: var(--lg-color-podium-silver); }
-  .lb-v3-podium-row[data-rank="3"] .lb-v3-podium-rank { color: var(--lg-color-podium-bronze); }
+  .lb-v3-podium-row[data-rank='1'] .lb-v3-podium-rank {
+    color: var(--lg-color-podium-gold);
+  }
+  .lb-v3-podium-row[data-rank='2'] .lb-v3-podium-rank {
+    color: var(--lg-color-podium-silver);
+  }
+  .lb-v3-podium-row[data-rank='3'] .lb-v3-podium-rank {
+    color: var(--lg-color-podium-bronze);
+  }
 
   .lb-v3-podium-info {
     display: flex;
@@ -102,7 +109,7 @@ import { widgets } from '@lifegames/copy';
     white-space: nowrap;
   }
 
-  .lb-v3-podium-row[data-rank="1"] .lb-v3-podium-name {
+  .lb-v3-podium-row[data-rank='1'] .lb-v3-podium-name {
     font-weight: 600;
     color: var(--lg-color-text-primary);
   }
@@ -128,7 +135,7 @@ import { widgets } from '@lifegames/copy';
     text-align: right;
   }
 
-  .lb-v3-podium-row[data-rank="1"] .lb-v3-podium-count {
+  .lb-v3-podium-row[data-rank='1'] .lb-v3-podium-count {
     color: var(--lg-color-podium-gold);
   }
 

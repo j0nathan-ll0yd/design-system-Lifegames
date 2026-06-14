@@ -26,11 +26,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "totalNeighborhoods",
-        "totalCities",
-        "totalStates"
-      ]
+      "required": ["totalNeighborhoods", "totalCities", "totalStates"]
     }
   },
   "required": [

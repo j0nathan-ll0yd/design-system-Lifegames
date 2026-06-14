@@ -17,16 +17,18 @@ interface Props {
 const { events } = Astro.props;
 
 const iconMap: Record<string, { symbol: string; color: string; label: string }> = {
-  'commit':       { symbol: '\u2192', color: 'var(--lg-color-accent-green)',  label: 'Commit' },
-  'pr_opened':    { symbol: '\u2295', color: 'var(--lg-color-accent-blue)',   label: 'PR Opened' },
-  'pr_closed':    { symbol: '\u2296', color: 'var(--lg-color-accent-blue)',   label: 'PR Closed' },
-  'pr_merged':    { symbol: '\u229E', color: 'var(--lg-color-accent-blue)',   label: 'PR Merged' },
-  'issue_opened': { symbol: '\u25C9', color: 'var(--lg-color-accent-amber)',  label: 'Issue Opened' },
-  'issue_closed': { symbol: '\u2714', color: 'var(--lg-color-accent-amber)',  label: 'Issue Closed' },
+  commit: { symbol: '\u2192', color: 'var(--lg-color-accent-green)', label: 'Commit' },
+  pr_opened: { symbol: '\u2295', color: 'var(--lg-color-accent-blue)', label: 'PR Opened' },
+  pr_closed: { symbol: '\u2296', color: 'var(--lg-color-accent-blue)', label: 'PR Closed' },
+  pr_merged: { symbol: '\u229E', color: 'var(--lg-color-accent-blue)', label: 'PR Merged' },
+  issue_opened: { symbol: '\u25C9', color: 'var(--lg-color-accent-amber)', label: 'Issue Opened' },
+  issue_closed: { symbol: '\u2714', color: 'var(--lg-color-accent-amber)', label: 'Issue Closed' },
 };
 
 function getIcon(type: string) {
-  return iconMap[type] || { symbol: '\u00B7', color: 'var(--lg-color-accent-green)', label: 'Event' };
+  return (
+    iconMap[type] || { symbol: '\u00B7', color: 'var(--lg-color-accent-green)', label: 'Event' }
+  );
 }
 
 function getDetail(event: Event): string {
@@ -39,6 +41,7 @@ function getDetail(event: Event): string {
   return '';
 }
 ---
+
 <div class="tri-card tri-card-accent-green">
   <div class="widget-header">
     <span class="widget-label">Dev Activity</span>
@@ -49,24 +52,33 @@ function getDetail(event: Event): string {
   </div>
   <div class="widget-body">
     <div class="gh-dac-feed">
-      {events.map((event: Event) => {
-        const icon = getIcon(event.type);
-        const detail = getDetail(event);
-        return (
-          <div class="gh-dac-card" style={`border-left-color: ${icon.color};`}>
-            <div class="gh-dac-header">
-              <span class="gh-dac-icon" style={`color: ${icon.color}; background: ${icon.color}15;`}>{icon.symbol}</span>
-              <span class="gh-dac-type" style={`color: ${icon.color};`}>{icon.label}</span>
-              <span class="gh-dac-date">{event.date}</span>
+      {
+        events.map((event: Event) => {
+          const icon = getIcon(event.type);
+          const detail = getDetail(event);
+          return (
+            <div class="gh-dac-card" style={`border-left-color: ${icon.color};`}>
+              <div class="gh-dac-header">
+                <span
+                  class="gh-dac-icon"
+                  style={`color: ${icon.color}; background: ${icon.color}15;`}
+                >
+                  {icon.symbol}
+                </span>
+                <span class="gh-dac-type" style={`color: ${icon.color};`}>
+                  {icon.label}
+                </span>
+                <span class="gh-dac-date">{event.date}</span>
+              </div>
+              <div class="gh-dac-title">{event.title}</div>
+              <div class="gh-dac-footer">
+                <span class="gh-dac-repo">{event.repo}</span>
+                {detail && <span class="gh-dac-detail">{detail}</span>}
+              </div>
             </div>
-            <div class="gh-dac-title">{event.title}</div>
-            <div class="gh-dac-footer">
-              <span class="gh-dac-repo">{event.repo}</span>
-              {detail && <span class="gh-dac-detail">{detail}</span>}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })
+      }
     </div>
   </div>
 </div>

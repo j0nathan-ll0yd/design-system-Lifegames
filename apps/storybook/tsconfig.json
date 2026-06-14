@@ -12,11 +12,6 @@
     "skipLibCheck": true,
     "types": ["vitest/globals"]
   },
-  "include": [
-    "vitest.config.ts",
-    ".storybook/**/*.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "include": ["vitest.config.ts", ".storybook/**/*.ts", "src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }

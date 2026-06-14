@@ -17,13 +17,13 @@ pnpm widget:inventory --check
 
 ## Fields per Widget
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | string | Widget name matching the `*.types.ts` filename stem |
-| `category` | string | Directory category (`github`, `health`, `identity`, `location`, `other`, `reading`) |
-| `hasStory` | boolean | Whether a `*.stories.tsx` file exists alongside the types file |
-| `hasSwiftMirror` | boolean | Whether matching `*Props.swift` or `*View.swift` exists in `Sources/LifegamesWidgets` |
-| `schemaExempt` | boolean | Whether the types file carries a `// schema-exempt:` comment (W16) |
+| Field                 | Type    | Description                                                                           |
+| --------------------- | ------- | ------------------------------------------------------------------------------------- |
+| `id`                  | string  | Widget name matching the `*.types.ts` filename stem                                   |
+| `category`            | string  | Directory category (`github`, `health`, `identity`, `location`, `other`, `reading`)   |
+| `hasStory`            | boolean | Whether a `*.stories.tsx` file exists alongside the types file                        |
+| `hasSwiftMirror`      | boolean | Whether matching `*Props.swift` or `*View.swift` exists in `Sources/LifegamesWidgets` |
+| `schemaExempt`        | boolean | Whether the types file carries a `// schema-exempt:` comment (W16)                    |
 | `consumedByPortfolio` | boolean | Whether the widget is imported from `@lifegames/web/production` in the portfolio repo |
 
 ## `consumedByPortfolio` Algorithm

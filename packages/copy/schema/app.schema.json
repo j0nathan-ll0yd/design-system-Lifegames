@@ -26,7 +26,18 @@
       "title": "AppNav",
       "description": "Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle).",
       "additionalProperties": false,
-      "required": ["home", "health", "settings", "location", "journey", "activityMap", "topPlaces", "bookshelf", "diagnostics", "savedPlaces"],
+      "required": [
+        "home",
+        "health",
+        "settings",
+        "location",
+        "journey",
+        "activityMap",
+        "topPlaces",
+        "bookshelf",
+        "diagnostics",
+        "savedPlaces"
+      ],
       "properties": {
         "home": { "$ref": "#/$defs/CopyString" },
         "health": { "$ref": "#/$defs/CopyString" },
@@ -76,9 +87,18 @@
       "description": "Home dashboard strings — loading state, health/location summary cards, and the sync-status banner.",
       "additionalProperties": false,
       "required": [
-        "loading", "stepsUnit", "goalProgress", "visitsToday", "unsynced",
-        "sectionHealth", "sectionLocation", "noLocation", "tracking", "notTracking",
-        "notSynced", "syncStatus"
+        "loading",
+        "stepsUnit",
+        "goalProgress",
+        "visitsToday",
+        "unsynced",
+        "sectionHealth",
+        "sectionLocation",
+        "noLocation",
+        "tracking",
+        "notTracking",
+        "notSynced",
+        "syncStatus"
       ],
       "properties": {
         "loading": { "$ref": "#/$defs/CopyString" },
@@ -101,12 +121,35 @@
       "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.",
       "additionalProperties": false,
       "required": [
-        "sectionLocation", "sectionServer", "sectionData", "sectionDiagnostics", "sectionAbout",
-        "savedPlacesTitle", "savedPlacesSubtitle", "apiBaseUrl", "apiBaseUrlPlaceholder",
-        "apiToken", "apiTokenPlaceholder", "totalVisits", "unsyncedVisits", "lastHealthSync",
-        "fullResync", "deleteAll", "watchLogEntries", "fileSize", "diagEmpty", "recentEntries",
-        "shareLog", "clearLogs", "reload", "aboutName", "aboutTitle", "aboutVersion", "aboutBuild",
-        "aboutPlatform", "alerts"
+        "sectionLocation",
+        "sectionServer",
+        "sectionData",
+        "sectionDiagnostics",
+        "sectionAbout",
+        "savedPlacesTitle",
+        "savedPlacesSubtitle",
+        "apiBaseUrl",
+        "apiBaseUrlPlaceholder",
+        "apiToken",
+        "apiTokenPlaceholder",
+        "totalVisits",
+        "unsyncedVisits",
+        "lastHealthSync",
+        "fullResync",
+        "deleteAll",
+        "watchLogEntries",
+        "fileSize",
+        "diagEmpty",
+        "recentEntries",
+        "shareLog",
+        "clearLogs",
+        "reload",
+        "aboutName",
+        "aboutTitle",
+        "aboutVersion",
+        "aboutBuild",
+        "aboutPlatform",
+        "alerts"
       ],
       "properties": {
         "sectionLocation": { "$ref": "#/$defs/CopyString" },
@@ -142,7 +185,15 @@
           "title": "AppSettingsAlerts",
           "description": "Settings destructive-action confirmation alerts (delete-all, full re-sync, clear-logs).",
           "additionalProperties": false,
-          "required": ["deleteAllTitle", "deleteAllMessage", "resyncTitle", "resyncMessage", "resyncConfirm", "clearLogsTitle", "clearLogsMessage"],
+          "required": [
+            "deleteAllTitle",
+            "deleteAllMessage",
+            "resyncTitle",
+            "resyncMessage",
+            "resyncConfirm",
+            "clearLogsTitle",
+            "clearLogsMessage"
+          ],
           "properties": {
             "deleteAllTitle": { "$ref": "#/$defs/CopyString" },
             "deleteAllMessage": { "$ref": "#/$defs/CopyString" },
@@ -174,8 +225,15 @@
       "description": "Add Saved Place sheet — header, field labels, placeholders, radius template, and coordinate tip.",
       "additionalProperties": false,
       "required": [
-        "title", "sectionNewLocation", "fieldName", "fieldNamePlaceholder", "fieldCategory",
-        "fieldLatitude", "fieldLongitude", "fieldRadius", "tip"
+        "title",
+        "sectionNewLocation",
+        "fieldName",
+        "fieldNamePlaceholder",
+        "fieldCategory",
+        "fieldLatitude",
+        "fieldLongitude",
+        "fieldRadius",
+        "tip"
       ],
       "properties": {
         "title": { "$ref": "#/$defs/CopyString" },
@@ -195,10 +253,26 @@
       "description": "Health dashboard — section headers, workouts, HealthKit authorization, sync, and data-mode toggle.",
       "additionalProperties": false,
       "required": [
-        "sectionHeart", "sectionMovement", "sectionSleep", "sectionWorkouts", "sectionData",
-        "sectionDataMode", "todaysWorkouts", "recoveryDay", "noWorkouts", "workoutDuration",
-        "workoutCalories", "sectionHealthkit", "authorization", "authorized", "lastSync",
-        "syncing", "syncNow", "useRealHR", "realActive", "simActive"
+        "sectionHeart",
+        "sectionMovement",
+        "sectionSleep",
+        "sectionWorkouts",
+        "sectionData",
+        "sectionDataMode",
+        "todaysWorkouts",
+        "recoveryDay",
+        "noWorkouts",
+        "workoutDuration",
+        "workoutCalories",
+        "sectionHealthkit",
+        "authorization",
+        "authorized",
+        "lastSync",
+        "syncing",
+        "syncNow",
+        "useRealHR",
+        "realActive",
+        "simActive"
       ],
       "properties": {
         "sectionHeart": { "$ref": "#/$defs/CopyString" },
@@ -228,7 +302,16 @@
       "title": "AppSleep",
       "description": "Sleep-score entry sheet — title, prompt, placeholder, buttons, and a11y labels for the add/edit affordance.",
       "additionalProperties": false,
-      "required": ["title", "prompt", "placeholder", "save", "deleteScore", "cancel", "a11yAdd", "a11yEdit"],
+      "required": [
+        "title",
+        "prompt",
+        "placeholder",
+        "save",
+        "deleteScore",
+        "cancel",
+        "a11yAdd",
+        "a11yEdit"
+      ],
       "properties": {
         "title": { "$ref": "#/$defs/CopyString" },
         "prompt": { "$ref": "#/$defs/CopyString" },
@@ -246,8 +329,17 @@
       "description": "Location feature — grouped by sub-screen (journey, visit correction, place rename, top places, heat map, today stats, week chart, now-at hero, merge, current-location ribbon, visit duration).",
       "additionalProperties": false,
       "required": [
-        "journey", "visitCorrection", "placeRename", "topPlaces", "heatMap", "todayStats",
-        "weekChart", "nowAt", "merge", "ribbon", "visitDuration"
+        "journey",
+        "visitCorrection",
+        "placeRename",
+        "topPlaces",
+        "heatMap",
+        "todayStats",
+        "weekChart",
+        "nowAt",
+        "merge",
+        "ribbon",
+        "visitDuration"
       ],
       "properties": {
         "journey": {
@@ -256,9 +348,19 @@
           "description": "Journey timeline screen — empty state, per-visit actions, and the delete-visit alert.",
           "additionalProperties": false,
           "required": [
-            "viewYesterday", "mapUnavailable", "placesVisited", "emptyTitle", "emptyMessage",
-            "actionCorrect", "actionSavePlace", "actionMerge", "actionDelete", "visitFallback",
-            "unknown", "deleteVisitTitle", "deleteVisitMessage"
+            "viewYesterday",
+            "mapUnavailable",
+            "placesVisited",
+            "emptyTitle",
+            "emptyMessage",
+            "actionCorrect",
+            "actionSavePlace",
+            "actionMerge",
+            "actionDelete",
+            "visitFallback",
+            "unknown",
+            "deleteVisitTitle",
+            "deleteVisitMessage"
           ],
           "properties": {
             "viewYesterday": { "$ref": "#/$defs/CopyString" },
@@ -282,8 +384,16 @@
           "description": "Visit Correction sheet — header, tab hints, time pickers, and confirm button.",
           "additionalProperties": false,
           "required": [
-            "title", "unknownVisit", "dragPin", "searchPlaceholder", "adjustTimes",
-            "arrived", "departed", "confirming", "confirm", "pinnedLocation"
+            "title",
+            "unknownVisit",
+            "dragPin",
+            "searchPlaceholder",
+            "adjustTimes",
+            "arrived",
+            "departed",
+            "confirming",
+            "confirm",
+            "pinnedLocation"
           ],
           "properties": {
             "title": { "$ref": "#/$defs/CopyString" },
@@ -303,7 +413,15 @@
           "title": "AppLocationPlaceRename",
           "description": "Place Rename sheet — title, subtitle template, success template, fields.",
           "additionalProperties": false,
-          "required": ["title", "subtitle", "result", "done", "newName", "newNamePlaceholder", "category"],
+          "required": [
+            "title",
+            "subtitle",
+            "result",
+            "done",
+            "newName",
+            "newNamePlaceholder",
+            "category"
+          ],
           "properties": {
             "title": { "$ref": "#/$defs/CopyString" },
             "subtitle": { "$ref": "#/$defs/CopyString" },
@@ -320,8 +438,19 @@
           "description": "Top Places card + full screen — header, counts, empty state, sort options, and per-place actions.",
           "additionalProperties": false,
           "required": [
-            "header", "seeAll", "empty", "uniqueLocations", "emptyTitle", "emptyMessage",
-            "sort", "sortMostVisited", "sortMostRecent", "recentVisits", "rename", "lastVisit", "visitsUnit"
+            "header",
+            "seeAll",
+            "empty",
+            "uniqueLocations",
+            "emptyTitle",
+            "emptyMessage",
+            "sort",
+            "sortMostVisited",
+            "sortMostRecent",
+            "recentVisits",
+            "rename",
+            "lastVisit",
+            "visitsUnit"
           ],
           "properties": {
             "header": { "$ref": "#/$defs/CopyString" },
@@ -383,8 +512,14 @@
           "description": "Now-At hero card — contextual header labels and fallbacks for current/last location.",
           "additionalProperties": false,
           "required": [
-            "atHome", "currentlyHere", "lastVisited", "lastKnown", "location",
-            "homeFallback", "unknownLocation", "waiting"
+            "atHome",
+            "currentlyHere",
+            "lastVisited",
+            "lastKnown",
+            "location",
+            "homeFallback",
+            "unknownLocation",
+            "waiting"
           ],
           "properties": {
             "atHome": { "$ref": "#/$defs/CopyString" },
@@ -402,7 +537,15 @@
           "title": "AppLocationMerge",
           "description": "Merge Visits sheet — header, keep/absorb/result labels, and merged-samples template.",
           "additionalProperties": false,
-          "required": ["title", "subtitle", "combining", "keep", "absorb", "result", "samplesMerged"],
+          "required": [
+            "title",
+            "subtitle",
+            "combining",
+            "keep",
+            "absorb",
+            "result",
+            "samplesMerged"
+          ],
           "properties": {
             "title": { "$ref": "#/$defs/CopyString" },
             "subtitle": { "$ref": "#/$defs/CopyString" },
@@ -443,10 +586,25 @@
       "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.",
       "additionalProperties": false,
       "required": [
-        "navTitle", "pages", "sectionUpNext", "sectionPending", "sectionRecentlyFinished",
-        "currentlyReading", "pageOf", "enriching", "tileHeader", "tileComplete", "tileBooks",
-        "tileReading", "statusPending", "statusReading", "statusUpNext", "statusFinished",
-        "addBook", "editBook", "alerts"
+        "navTitle",
+        "pages",
+        "sectionUpNext",
+        "sectionPending",
+        "sectionRecentlyFinished",
+        "currentlyReading",
+        "pageOf",
+        "enriching",
+        "tileHeader",
+        "tileComplete",
+        "tileBooks",
+        "tileReading",
+        "statusPending",
+        "statusReading",
+        "statusUpNext",
+        "statusFinished",
+        "addBook",
+        "editBook",
+        "alerts"
       ],
       "properties": {
         "navTitle": { "$ref": "#/$defs/CopyString" },
@@ -485,11 +643,30 @@
           "description": "Edit Book screen — title, buttons, placeholders, section headers, and metadata field labels.",
           "additionalProperties": false,
           "required": [
-            "title", "save", "delete", "notesPlaceholder", "descriptionPlaceholder", "page", "of",
-            "sectionDetails", "sectionDescription", "sectionPublication", "sectionCategories",
-            "sectionStatus", "sectionProgress", "sectionRating", "sectionNotes", "fieldSeries",
-            "fieldSeriesPlaceholder", "fieldSeriesNum", "fieldSeriesTotal", "fieldDate",
-            "fieldDatePlaceholder", "fieldYear", "fieldGenres", "fieldGenresPlaceholder"
+            "title",
+            "save",
+            "delete",
+            "notesPlaceholder",
+            "descriptionPlaceholder",
+            "page",
+            "of",
+            "sectionDetails",
+            "sectionDescription",
+            "sectionPublication",
+            "sectionCategories",
+            "sectionStatus",
+            "sectionProgress",
+            "sectionRating",
+            "sectionNotes",
+            "fieldSeries",
+            "fieldSeriesPlaceholder",
+            "fieldSeriesNum",
+            "fieldSeriesTotal",
+            "fieldDate",
+            "fieldDatePlaceholder",
+            "fieldYear",
+            "fieldGenres",
+            "fieldGenresPlaceholder"
           ],
           "properties": {
             "title": { "$ref": "#/$defs/CopyString" },
@@ -539,9 +716,18 @@
       "description": "watchOS app + sync-status complication — diagnostics chrome, sync action labels, and complication strings.",
       "additionalProperties": false,
       "required": [
-        "diagTitle", "diagA11yLabel", "diagA11yHint", "transferSent", "openIphone", "authorize",
-        "sync", "syncFailed", "complicationNotSynced", "complicationSyncAgo",
-        "complicationDisplayName", "complicationDescription"
+        "diagTitle",
+        "diagA11yLabel",
+        "diagA11yHint",
+        "transferSent",
+        "openIphone",
+        "authorize",
+        "sync",
+        "syncFailed",
+        "complicationNotSynced",
+        "complicationSyncAgo",
+        "complicationDisplayName",
+        "complicationDescription"
       ],
       "properties": {
         "diagTitle": { "$ref": "#/$defs/CopyString" },

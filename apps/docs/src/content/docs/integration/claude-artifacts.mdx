@@ -30,34 +30,34 @@ import '@lifegames/tokens/shadcn';
 All shadcn role vars map directly to Lifegames semantic tokens and are emitted in OKLCH
 for wide-gamut display fidelity.
 
-| shadcn var | Lifegames semantic token | Resolved value (dark) |
-|---|---|---|
-| `--background` | `color.surface.base` | `oklch(12.80% 0.0213 282.97)` |
-| `--foreground` | `color.text.title` | `oklch(98.51% 0.0000 0)` |
-| `--primary` | `color.accent.indigo` | `oklch(68.01% 0.1583 276.93)` |
-| `--primary-foreground` | `color.zinc.100` | `oklch(98.51% 0.0000 0)` |
-| `--secondary` | `color.surface.deep` | `oklch(14.73% 0.0107 285.01)` |
-| `--muted` | `color.surface.inset` | `oklch(100.00% 0.0000 0 / 0.03)` |
-| `--muted-foreground` | `color.text.muted` | `oklch(71.37% 0.0192 261.32)` |
-| `--accent` | `color.accent.pink` | `oklch(64.06% 0.2565 8.07)` |
-| `--destructive` | `color.accent.red` | `oklch(63.68% 0.2078 25.33)` |
-| `--border` | `color.border.default` | `oklch(100.00% 0.0000 0 / 0.06)` |
-| `--input` | `color.border.subtle` | `oklch(100.00% 0.0000 0 / 0.10)` |
-| `--ring` | `color.accent.indigo` | `oklch(68.01% 0.1583 276.93)` |
-| `--radius` | `card.cornerRadius` | `16px` |
+| shadcn var             | Lifegames semantic token | Resolved value (dark)            |
+| ---------------------- | ------------------------ | -------------------------------- |
+| `--background`         | `color.surface.base`     | `oklch(12.80% 0.0213 282.97)`    |
+| `--foreground`         | `color.text.title`       | `oklch(98.51% 0.0000 0)`         |
+| `--primary`            | `color.accent.indigo`    | `oklch(68.01% 0.1583 276.93)`    |
+| `--primary-foreground` | `color.zinc.100`         | `oklch(98.51% 0.0000 0)`         |
+| `--secondary`          | `color.surface.deep`     | `oklch(14.73% 0.0107 285.01)`    |
+| `--muted`              | `color.surface.inset`    | `oklch(100.00% 0.0000 0 / 0.03)` |
+| `--muted-foreground`   | `color.text.muted`       | `oklch(71.37% 0.0192 261.32)`    |
+| `--accent`             | `color.accent.pink`      | `oklch(64.06% 0.2565 8.07)`      |
+| `--destructive`        | `color.accent.red`       | `oklch(63.68% 0.2078 25.33)`     |
+| `--border`             | `color.border.default`   | `oklch(100.00% 0.0000 0 / 0.06)` |
+| `--input`              | `color.border.subtle`    | `oklch(100.00% 0.0000 0 / 0.10)` |
+| `--ring`               | `color.accent.indigo`    | `oklch(68.01% 0.1583 276.93)`    |
+| `--radius`             | `card.cornerRadius`      | `16px`                           |
 
 ## AI-surface extras
 
 The following vars are emitted as native `--lg-*` properties alongside the shadcn roles.
 They have no shadcn equivalents but are essential for styling LLM-rendered surfaces:
 
-| var | Purpose |
-|---|---|
-| `--lg-color-surface-thinking` | AI reasoning/thinking indicator background |
-| `--lg-color-surface-citation` | Citation reference surface |
-| `--lg-color-surface-tool-use` | Tool-use disclosure background (indigo tint) |
-| `--lg-color-surface-artifact-frame` | Artifact container frame |
-| `--lg-color-surface-code-block` | Code block background |
+| var                                 | Purpose                                      |
+| ----------------------------------- | -------------------------------------------- |
+| `--lg-color-surface-thinking`       | AI reasoning/thinking indicator background   |
+| `--lg-color-surface-citation`       | Citation reference surface                   |
+| `--lg-color-surface-tool-use`       | Tool-use disclosure background (indigo tint) |
+| `--lg-color-surface-artifact-frame` | Artifact container frame                     |
+| `--lg-color-surface-code-block`     | Code block background                        |
 
 ## Usage in a Claude Artifact
 
@@ -74,9 +74,7 @@ They have no shadcn equivalents but are essential for styling LLM-rendered surfa
    ```tsx
    export default function App() {
      return (
-       <div className="dark min-h-screen bg-background text-foreground">
-         {/* your content */}
-       </div>
+       <div className="dark min-h-screen bg-background text-foreground">{/* your content */}</div>
      );
    }
    ```
@@ -105,11 +103,11 @@ They have no shadcn equivalents but are essential for styling LLM-rendered surfa
 ## End-to-end smoke evidence
 
 <Aside type="note">
-End-to-end smoke testing (screenshot in Claude Artifact) is tracked at
-`apps/docs/public/integration-evidence/`. When `REMOTE_ENABLED` flips and packages
-are published, capture a screenshot of the rendered Artifact and commit it at
-`apps/docs/public/integration-evidence/claude-artifact-shadcn-YYYY-MM-DD.png`
-with a write-up at `apps/docs/src/content/docs/integration-evidence/`.
+  End-to-end smoke testing (screenshot in Claude Artifact) is tracked at
+  `apps/docs/public/integration-evidence/`. When `REMOTE_ENABLED` flips and packages are published,
+  capture a screenshot of the rendered Artifact and commit it at
+  `apps/docs/public/integration-evidence/claude-artifact-shadcn-YYYY-MM-DD.png` with a write-up at
+  `apps/docs/src/content/docs/integration-evidence/`.
 </Aside>
 
 ## Updating the mapping

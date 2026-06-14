@@ -18,22 +18,24 @@ const { weeks, maxWeek } = Astro.props;
   <div class="widget-body">
     <div class="gh-pulse">
       <div class="gh-pulse-bars">
-        {weeks.map((week, idx) => {
-          const heightPct = maxWeek > 0 ? (week.total / maxWeek) * 100 : 0;
-          const isCurrent = idx === weeks.length - 1;
-          return (
-            <div class="gh-pulse-bar">
-              <div
-                class={`gh-pulse-bar-fill ${isCurrent ? 'gh-pulse-bar-current' : ''}`}
-                style={`height: ${heightPct}%`}
-                title={`${week.label}: ${week.total} contributions`}
-              >
-                <span class="gh-pulse-bar-count">{week.total}</span>
+        {
+          weeks.map((week, idx) => {
+            const heightPct = maxWeek > 0 ? (week.total / maxWeek) * 100 : 0;
+            const isCurrent = idx === weeks.length - 1;
+            return (
+              <div class="gh-pulse-bar">
+                <div
+                  class={`gh-pulse-bar-fill ${isCurrent ? 'gh-pulse-bar-current' : ''}`}
+                  style={`height: ${heightPct}%`}
+                  title={`${week.label}: ${week.total} contributions`}
+                >
+                  <span class="gh-pulse-bar-count">{week.total}</span>
+                </div>
+                <span class="gh-pulse-label">{week.label}</span>
               </div>
-              <span class="gh-pulse-label">{week.label}</span>
-            </div>
-          );
-        })}
+            );
+          })
+        }
       </div>
     </div>
   </div>
@@ -63,7 +65,7 @@ const { weeks, maxWeek } = Astro.props;
   .gh-pulse-bar-fill {
     width: 100%;
     min-height: 2px;
-    background: rgba(6,214,160,0.35);
+    background: rgba(6, 214, 160, 0.35);
     border-radius: 3px 3px 0 0;
     position: relative;
     transition: height 0.3s ease;
@@ -73,12 +75,14 @@ const { weeks, maxWeek } = Astro.props;
   }
 
   .gh-pulse-bar-fill:hover {
-    background: rgba(6,214,160,0.55);
+    background: rgba(6, 214, 160, 0.55);
   }
 
   .gh-pulse-bar-current {
     background: var(--lg-color-accent-green);
-    box-shadow: 0 0 8px rgba(6,214,160,0.5), 0 0 20px rgba(6,214,160,0.2);
+    box-shadow:
+      0 0 8px rgba(6, 214, 160, 0.5),
+      0 0 20px rgba(6, 214, 160, 0.2);
   }
 
   .gh-pulse-bar-current:hover {

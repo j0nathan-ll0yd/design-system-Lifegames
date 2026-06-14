@@ -33,10 +33,10 @@ The ESLint rule `lifegames-local/no-deprecated-tokens` enforces deprecation at t
 
 ### What it catches
 
-| Pattern | Example | Message ID |
-|---|---|---|
-| CSS var reference | `var(--lg-color-old-surface)` | `deprecatedCssVar` |
-| Swift accessor | `Color.oldSurface` or `LGColor.oldSurface` | `deprecatedSwiftAccess` |
+| Pattern           | Example                                    | Message ID              |
+| ----------------- | ------------------------------------------ | ----------------------- |
+| CSS var reference | `var(--lg-color-old-surface)`              | `deprecatedCssVar`      |
+| Swift accessor    | `Color.oldSurface` or `LGColor.oldSurface` | `deprecatedSwiftAccess` |
 
 The rule checks string literals and template literals in `.ts`, `.tsx`, `.js`, `.jsx`, and `.css` files under `packages/web/src/`.
 
@@ -45,7 +45,8 @@ The rule checks string literals and template literals in `.ts`, `.tsx`, `.js`, `
 `warn` — violations surface in CI lint output but do not block merges. This mirrors the W16 (`widget-props-extends-schema`) pattern: advisory enforcement with a clear remediation path.
 
 <Aside type="note">
-The rule reads `packages/tokens/dist/deprecated-tokens.json` at lint time. If the build output does not exist (fresh checkout, pre-build), the rule silently no-ops rather than erroring.
+  The rule reads `packages/tokens/dist/deprecated-tokens.json` at lint time. If the build output
+  does not exist (fresh checkout, pre-build), the rule silently no-ops rather than erroring.
 </Aside>
 
 ## Deprecation Lifecycle
@@ -77,9 +78,9 @@ The `replacement` field in the emitted JSON is derived from `$description` when 
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| `packages/tokens/dist/deprecated-tokens.json` | Build artifact — list of all deprecated tokens |
-| `eslint-local-rules/no-deprecated-tokens.js` | ESLint rule implementation |
-| `eslint-local-rules/__tests__/no-deprecated-tokens.test.js` | Rule unit tests (Node RuleTester) |
-| `packages/web/eslint.config.js` | Rule registration + severity config |
+| File                                                        | Purpose                                        |
+| ----------------------------------------------------------- | ---------------------------------------------- |
+| `packages/tokens/dist/deprecated-tokens.json`               | Build artifact — list of all deprecated tokens |
+| `eslint-local-rules/no-deprecated-tokens.js`                | ESLint rule implementation                     |
+| `eslint-local-rules/__tests__/no-deprecated-tokens.test.js` | Rule unit tests (Node RuleTester)              |
+| `packages/web/eslint.config.js`                             | Rule registration + severity config            |

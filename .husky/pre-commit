@@ -1,1 +1,18 @@
+#!/usr/bin/env sh
+# Tier 1 (fast). Heavy CI-parity checks live in pre-push.
 bash scripts/scan-personal-data.sh
+npx lint-staged
+
+# Generated-artifact freshness guard (mirrors mantle's conditional contract:check).
+# Only fires when a copy/schemas generator input OR output is staged, so normal
+# commits stay fast. Keeps generated TS/Zod/JSON formatted and in sync with sources.
+staged=$(git diff --cached --name-only)
+if echo "$staged" | grep -qE '^(packages/copy/(src/|scripts/)|packages/copy/dist/|Sources/LifegamesCopy/|packages/schemas/(src/|scripts/|dist/|swift/|generated/|fixture-map\.json))'; then
+  echo "[pre-commit] Generator input/output staged — verifying codegen freshness..."
+  if ! pnpm check:schemas-freshness; then
+    echo "ERROR: generated artifacts are stale or unformatted." >&2
+    echo "  Run the generators, then stage the regenerated files and re-commit:" >&2
+    echo "    pnpm -F @lifegames/copy build && pnpm -F @lifegames/schemas codegen" >&2
+    exit 1
+  fi
+fi

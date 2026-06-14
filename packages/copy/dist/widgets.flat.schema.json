@@ -209,12 +209,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "water",
-        "caffeine",
-        "timestampToday"
-      ],
+      "required": ["title", "water", "caffeine", "timestampToday"],
       "additionalProperties": false
     },
     "nightSummary": {
@@ -282,13 +277,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "visits",
-        "places",
-        "cities",
-        "states"
-      ],
+      "required": ["title", "visits", "places", "cities", "states"],
       "additionalProperties": false
     },
     "topPlaces": {
@@ -302,10 +291,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "empty"
-      ],
+      "required": ["title", "empty"],
       "additionalProperties": false
     },
     "readingFeed": {
@@ -322,11 +308,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "empty",
-        "timestampRecent"
-      ],
+      "required": ["title", "empty", "timestampRecent"],
       "additionalProperties": false
     },
     "bookshelf": {
@@ -349,13 +331,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "emptyTitle",
-        "emptyBody",
-        "statusReading",
-        "timestampLibrary"
-      ],
+      "required": ["title", "emptyTitle", "emptyBody", "statusReading", "timestampLibrary"],
       "additionalProperties": false
     },
     "theatreReviews": {
@@ -369,10 +345,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "empty"
-      ],
+      "required": ["title", "empty"],
       "additionalProperties": false
     },
     "bookModal": {
@@ -401,15 +374,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "notes",
-        "empty",
-        "pages",
-        "published",
-        "status",
-        "amazonCta",
-        "progressSuffix"
-      ],
+      "required": ["notes", "empty", "pages", "published", "status", "amazonCta", "progressSuffix"],
       "additionalProperties": false
     },
     "devLog": {
@@ -423,10 +388,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "timestampLive"
-      ],
+      "required": ["title", "timestampLive"],
       "additionalProperties": false
     },
     "starredRepos": {
@@ -440,10 +402,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "timestampRecent"
-      ],
+      "required": ["title", "timestampRecent"],
       "additionalProperties": false
     },
     "bio": {
@@ -460,11 +419,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "terminalTitle",
-        "timestampBash"
-      ],
+      "required": ["title", "terminalTitle", "timestampBash"],
       "additionalProperties": false
     },
     "systemStatus": {
@@ -484,12 +439,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "valueActive",
-        "valueOffline",
-        "timestampRealtime"
-      ],
+      "required": ["title", "valueActive", "valueOffline", "timestampRealtime"],
       "additionalProperties": false
     },
     "identityCard": {
@@ -512,13 +462,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "github",
-        "linkedin",
-        "site",
-        "mastodon",
-        "bluesky"
-      ],
+      "required": ["github", "linkedin", "site", "mastodon", "bluesky"],
       "additionalProperties": false
     }
   },

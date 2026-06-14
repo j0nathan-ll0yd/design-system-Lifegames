@@ -44,7 +44,7 @@ module.exports = {
           const ast = sourceCode.ast;
           const reportNode =
             ast.body.find(
-              n =>
+              (n) =>
                 n.type === 'ExportNamedDeclaration' ||
                 n.type === 'TSInterfaceDeclaration' ||
                 n.type === 'TSTypeAliasDeclaration',

@@ -17,7 +17,9 @@ const meta: Meta = {
     const style = [
       args.width ? `width:${args.width}` : '',
       args.height ? `height:${args.height}` : '',
-    ].filter(Boolean).join(';');
+    ]
+      .filter(Boolean)
+      .join(';');
     return html`<div class="${cls}" style="${style}" aria-hidden="true"></div>`;
   },
 };

@@ -68,14 +68,21 @@ function findTokenFiles(dir) {
 }
 
 // Composite $value types whose internals must NOT be recursively flattened.
-const COMPOSITE_TYPES = new Set(['shadow', 'typography', 'transition', 'gradient', 'border', 'strokeStyle']);
+const COMPOSITE_TYPES = new Set([
+  'shadow',
+  'typography',
+  'transition',
+  'gradient',
+  'border',
+  'strokeStyle',
+]);
 
 function flattenTokens(obj, path = [], type = null) {
   const tokens = [];
   const currentType = obj.$type || type;
   for (const [key, val] of Object.entries(obj)) {
     if (key.startsWith('$')) continue;
-    if (val && typeof val === 'object' && ('$value' in val)) {
+    if (val && typeof val === 'object' && '$value' in val) {
       const tokenType = val.$type || currentType;
       tokens.push({
         path: [...path, key],
@@ -140,47 +147,58 @@ function resolveAllTokens(tokens) {
 // --- Fluid values from web source ---
 
 const FLUID_SPACING = {
-  '50':   'clamp(1px, 0.02rem + 0.13vw, 2px)',
-  '100':  'clamp(3px, 0.14rem + 0.13vw, 4px)',
-  '150':  'clamp(4px, 0.16rem + 0.25vw, 6px)',
-  '200':  'clamp(6px, 0.28rem + 0.25vw, 8px)',
-  '250':  'clamp(7px, 0.30rem + 0.38vw, 10px)',
-  '300':  'clamp(8px, 0.31rem + 0.50vw, 12px)',
-  '350':  'clamp(10px, 0.44rem + 0.50vw, 14px)',
-  '400':  'clamp(11px, 0.45rem + 0.63vw, 16px)',
-  '450':  'clamp(12px, 0.47rem + 0.75vw, 18px)',
-  '500':  'clamp(14px, 0.59rem + 0.75vw, 20px)',
-  '600':  'clamp(16px, 0.63rem + 1.00vw, 24px)',
-  '700':  'clamp(18px, 0.66rem + 1.25vw, 28px)',
-  '800':  'clamp(22px, 0.91rem + 1.25vw, 32px)',
-  '900':  'clamp(24px, 0.94rem + 1.50vw, 36px)',
-  '1000': 'clamp(28px, 1.19rem + 1.50vw, 40px)',
-  '1200': 'clamp(32px, 1.25rem + 2.00vw, 48px)',
+  50: 'clamp(1px, 0.02rem + 0.13vw, 2px)',
+  100: 'clamp(3px, 0.14rem + 0.13vw, 4px)',
+  150: 'clamp(4px, 0.16rem + 0.25vw, 6px)',
+  200: 'clamp(6px, 0.28rem + 0.25vw, 8px)',
+  250: 'clamp(7px, 0.30rem + 0.38vw, 10px)',
+  300: 'clamp(8px, 0.31rem + 0.50vw, 12px)',
+  350: 'clamp(10px, 0.44rem + 0.50vw, 14px)',
+  400: 'clamp(11px, 0.45rem + 0.63vw, 16px)',
+  450: 'clamp(12px, 0.47rem + 0.75vw, 18px)',
+  500: 'clamp(14px, 0.59rem + 0.75vw, 20px)',
+  600: 'clamp(16px, 0.63rem + 1.00vw, 24px)',
+  700: 'clamp(18px, 0.66rem + 1.25vw, 28px)',
+  800: 'clamp(22px, 0.91rem + 1.25vw, 32px)',
+  900: 'clamp(24px, 0.94rem + 1.50vw, 36px)',
+  1000: 'clamp(28px, 1.19rem + 1.50vw, 40px)',
+  1200: 'clamp(32px, 1.25rem + 2.00vw, 48px)',
 };
 
 const FLUID_TYPOGRAPHY = {
-  'caption2': 'clamp(0.625rem, 0.58rem + 0.12vw, 0.72rem)',
-  'caption':  'clamp(0.7rem, 0.64rem + 0.14vw, 0.78rem)',
-  'footnote': 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
-  'body':     'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
-  'callout':  'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
-  'subhead':  'clamp(0.88rem, 0.75rem + 0.34vw, 1.05rem)',
-  'headline': 'clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)',
-  'title3':   'clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)',
-  'title2':   'clamp(1.90rem, 1.53rem + 1.00vw, 2.40rem)',
-  'title1':   'clamp(2.10rem, 1.70rem + 1.05vw, 2.625rem)',
-  'hero':     'clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)',
+  caption2: 'clamp(0.625rem, 0.58rem + 0.12vw, 0.72rem)',
+  caption: 'clamp(0.7rem, 0.64rem + 0.14vw, 0.78rem)',
+  footnote: 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
+  body: 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
+  callout: 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
+  subhead: 'clamp(0.88rem, 0.75rem + 0.34vw, 1.05rem)',
+  headline: 'clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)',
+  title3: 'clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)',
+  title2: 'clamp(1.90rem, 1.53rem + 1.00vw, 2.40rem)',
+  title1: 'clamp(2.10rem, 1.70rem + 1.05vw, 2.625rem)',
+  hero: 'clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)',
 };
 
 const IOS_TEXT_STYLE = {
-  'caption2': '.caption2', 'caption': '.caption', 'footnote': '.footnote',
-  'body': '.body', 'callout': '.callout', 'subhead': '.subheadline',
-  'headline': '.headline', 'title3': '.title3', 'title2': '.title2',
-  'title1': '.title', 'hero': '.largeTitle',
+  caption2: '.caption2',
+  caption: '.caption',
+  footnote: '.footnote',
+  body: '.body',
+  callout: '.callout',
+  subhead: '.subheadline',
+  headline: '.headline',
+  title3: '.title3',
+  title2: '.title2',
+  title1: '.title',
+  hero: '.largeTitle',
 };
 
 const SWIFT_FONT_WEIGHT = {
-  300: 'Light', 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold',
+  300: 'Light',
+  400: 'Regular',
+  500: 'Medium',
+  600: 'SemiBold',
+  700: 'Bold',
 };
 
 // --- Helpers ---
@@ -206,15 +224,18 @@ function rgbaToSwiftColor(rgba) {
   const g = parseInt(match[2]) / 255.0;
   const b = parseInt(match[3]) / 255.0;
   const a = match[4] !== undefined ? parseFloat(match[4]) : 1.0;
-  if (a === 1.0) return `Color(red: ${r.toFixed(3)}, green: ${g.toFixed(3)}, blue: ${b.toFixed(3)})`;
+  if (a === 1.0)
+    return `Color(red: ${r.toFixed(3)}, green: ${g.toFixed(3)}, blue: ${b.toFixed(3)})`;
   return `Color(red: ${r.toFixed(3)}, green: ${g.toFixed(3)}, blue: ${b.toFixed(3)}, opacity: ${a})`;
 }
 
 function toCamelCase(path) {
-  return path.map((p, i) => {
-    const clean = p.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
-    return i === 0 ? clean : clean.charAt(0).toUpperCase() + clean.slice(1);
-  }).join('');
+  return path
+    .map((p, i) => {
+      const clean = p.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
+      return i === 0 ? clean : clean.charAt(0).toUpperCase() + clean.slice(1);
+    })
+    .join('');
 }
 
 function toCssVar(path) {
@@ -306,9 +327,12 @@ function emitTokensCss() {
     const val = t.resolvedValue;
     if (!val) continue;
     const layers = Array.isArray(val) ? val : [val];
-    const cssShadow = layers.map(l =>
-      `${l.offsetX || 0}px ${l.offsetY || 0}px ${l.blur || 0}px ${l.spread || 0}px ${l.color}`
-    ).join(', ');
+    const cssShadow = layers
+      .map(
+        (l) =>
+          `${l.offsetX || 0}px ${l.offsetY || 0}px ${l.blur || 0}px ${l.spread || 0}px ${l.color}`,
+      )
+      .join(', ');
     css += `  ${toCssVar(t.path)}: ${cssShadow};\n`;
   }
 
@@ -322,7 +346,10 @@ function emitTokensCss() {
     if (val.fontWeight !== undefined) css += `${prefix}-font-weight: ${val.fontWeight};\n`;
     if (val.lineHeight !== undefined) css += `${prefix}-line-height: ${val.lineHeight};\n`;
     if (val.fontFamily) {
-      const resolvedFamily = resolveReference(val.fontFamily, new Map(tokens.map(t => [t.path.join('.'), t])));
+      const resolvedFamily = resolveReference(
+        val.fontFamily,
+        new Map(tokens.map((t) => [t.path.join('.'), t])),
+      );
       css += `${prefix}-font-family: '${resolvedFamily}', sans-serif;\n`;
     }
     if (val.letterSpacing) css += `${prefix}-letter-spacing: ${val.letterSpacing};\n`;
@@ -394,7 +421,11 @@ function buildJsonTokens() {
 }
 
 function emitTokensJs(jsonTokens) {
-  return '// Generated by Style Dictionary — do not edit\nexport default ' + JSON.stringify(jsonTokens, null, 2) + ';\n';
+  return (
+    '// Generated by Style Dictionary — do not edit\nexport default ' +
+    JSON.stringify(jsonTokens, null, 2) +
+    ';\n'
+  );
 }
 
 function emitTokensJson(jsonTokens) {
@@ -427,23 +458,29 @@ function rgbaToXcassetsComponents(rgba) {
 }
 
 function colorsetContents(components) {
-  return JSON.stringify({
-    colors: [
+  return (
+    JSON.stringify(
       {
-        color: {
-          'color-space': 'srgb',
-          components: {
-            red: components.red,
-            green: components.green,
-            blue: components.blue,
-            alpha: components.alpha,
+        colors: [
+          {
+            color: {
+              'color-space': 'srgb',
+              components: {
+                red: components.red,
+                green: components.green,
+                blue: components.blue,
+                alpha: components.alpha,
+              },
+            },
+            idiom: 'universal',
           },
-        },
-        idiom: 'universal',
+        ],
+        info: { author: 'style-dictionary', version: 1 },
       },
-    ],
-    info: { author: 'style-dictionary', version: 1 },
-  }, null, 2) + '\n';
+      null,
+      2,
+    ) + '\n'
+  );
 }
 
 const xcassetsColorNames = [];
@@ -461,7 +498,12 @@ function emitXcassetsColorsets() {
     }
     if (!components) continue;
     const assetName = t.path
-      .map(seg => seg.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^-/, ''))
+      .map((seg) =>
+        seg
+          .replace(/([A-Z])/g, '-$1')
+          .toLowerCase()
+          .replace(/^-/, ''),
+      )
       .join('-');
     const colorsetDir = resolve(xcassetsDir, `${assetName}.colorset`);
     mkdirSync(colorsetDir, { recursive: true });
@@ -475,7 +517,8 @@ function emitColorTokensSwift() {
   let swiftColors = '// Generated by Style Dictionary — do not edit\nimport SwiftUI\n\n';
   swiftColors += '/// Token-backed color constants resolved from the asset catalog.\n';
   swiftColors += '/// Use `LGColor.accentPink` (etc.) in new code.\n';
-  swiftColors += '/// Legacy `Color.colorAccentPink` aliases live in `_Legacy/` during transition.\n';
+  swiftColors +=
+    '/// Legacy `Color.colorAccentPink` aliases live in `_Legacy/` during transition.\n';
   swiftColors += 'public enum LGColor {\n';
   for (const { name, camel } of xcassetsColorNames) {
     const shortCamel = camel.startsWith('color')
@@ -488,7 +531,8 @@ function emitColorTokensSwift() {
 }
 
 function emitSpacingSwift() {
-  let swiftSpacing = '// Generated by Style Dictionary — do not edit\nimport CoreGraphics\n\npublic enum Spacing {\n';
+  let swiftSpacing =
+    '// Generated by Style Dictionary — do not edit\nimport CoreGraphics\n\npublic enum Spacing {\n';
   for (const t of tokens) {
     if (t.$type !== 'dimension' || t.path[0] !== 'space') continue;
     const key = t.path[t.path.length - 1];
@@ -501,7 +545,8 @@ function emitSpacingSwift() {
 }
 
 function emitFontTokensSwift() {
-  let swiftFonts = '// Generated by Style Dictionary — do not edit\nimport SwiftUI\n\npublic extension Font {\n    enum Tokens {\n';
+  let swiftFonts =
+    '// Generated by Style Dictionary — do not edit\nimport SwiftUI\n\npublic extension Font {\n    enum Tokens {\n';
   const seenFontNames = new Set();
   for (const t of tokens) {
     if (t.$type !== 'typography') continue;
@@ -530,7 +575,7 @@ function emitFontTokensSwift() {
 }
 
 function emitShadowTokensSwift() {
-  const shadowTokens = tokens.filter(t => t.$type === 'shadow');
+  const shadowTokens = tokens.filter((t) => t.$type === 'shadow');
   let swiftShadows = '// Generated by Style Dictionary — do not edit\nimport SwiftUI\n\n';
   swiftShadows += 'public enum ShadowTokens {\n';
   for (const t of shadowTokens) {
@@ -549,7 +594,8 @@ function emitShadowTokensSwift() {
     for (const layer of layers) {
       const swift = rgbaToSwiftColor(layer.color);
       const radius = (layer.blur || 0) / 2;
-      if (swift) swiftShadows += `            .shadow(color: ${swift}, radius: ${radius}, x: ${layer.offsetX || 0}, y: ${layer.offsetY || 0})\n`;
+      if (swift)
+        swiftShadows += `            .shadow(color: ${swift}, radius: ${radius}, x: ${layer.offsetX || 0}, y: ${layer.offsetY || 0})\n`;
     }
     swiftShadows += `    }\n}\n\n`;
   }
@@ -577,7 +623,8 @@ function emitReducedMotionSwift() {
   rm += '        return full\n';
   rm += '        #endif\n';
   rm += '    }\n';
-  rm += '    /// Returns `.linear(duration: 0)` if reduce-motion is enabled, otherwise returns provided animation.\n';
+  rm +=
+    '    /// Returns `.linear(duration: 0)` if reduce-motion is enabled, otherwise returns provided animation.\n';
   rm += '    @MainActor\n';
   rm += '    public static func animation(_ full: Animation) -> Animation {\n';
   rm += '        #if os(iOS) || os(tvOS)\n';
@@ -595,9 +642,14 @@ function emitAISurfacesSwift() {
   ai += '/// Color tokens for surfaces rendered by AI clients (thinking indicators,\n';
   ai += '/// citations, tool-use disclosure, artifact frames, code blocks).\n';
   ai += 'public enum AISurfaces {\n';
-  const aiSurfaceTokens = tokens.filter(t =>
-    t.$type === 'color' && t.path[0] === 'color' && t.path[1] === 'surface' &&
-    ['thinking', 'citation', 'tool-use', 'artifact-frame', 'code-block', 'code-block-diff'].some(s => t.path.includes(s))
+  const aiSurfaceTokens = tokens.filter(
+    (t) =>
+      t.$type === 'color' &&
+      t.path[0] === 'color' &&
+      t.path[1] === 'surface' &&
+      ['thinking', 'citation', 'tool-use', 'artifact-frame', 'code-block', 'code-block-diff'].some(
+        (s) => t.path.includes(s),
+      ),
   );
   for (const t of aiSurfaceTokens) {
     const name = toCamelCase(t.path.slice(1));
@@ -615,9 +667,15 @@ function emitAISurfacesSwift() {
 }
 
 function emitDesignMd() {
-  function tokensOfType(type) { return tokens.filter(t => t.$type === type); }
-  function tokensUnderPath(prefix) { return tokens.filter(t => t.path[0] === prefix); }
-  function fmtRef(t) { return t.path.join('.'); }
+  function tokensOfType(type) {
+    return tokens.filter((t) => t.$type === type);
+  }
+  function tokensUnderPath(prefix) {
+    return tokens.filter((t) => t.path[0] === prefix);
+  }
+  function fmtRef(t) {
+    return t.path.join('.');
+  }
   function fmtValue(v) {
     if (v === undefined || v === null) return '';
     if (typeof v === 'object') return JSON.stringify(v);
@@ -629,32 +687,59 @@ function emitDesignMd() {
   md += '> Generated from `tokens/*.tokens.json` — do not edit by hand.\n';
   md += '> Re-upload to claude.ai/design after every meaningful token change.\n\n';
   md += '## Brand & Voice\n\n';
-  md += 'Lifegames is a dark-first, neon-accented, cross-platform design system spanning web (Astro) and iOS (SwiftUI). ';
-  md += 'Visual language: deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), ';
-  md += 'fluid typography that scales with viewport, and motion that favors decelerated easing.\n\n';
+  md +=
+    'Lifegames is a dark-first, neon-accented, cross-platform design system spanning web (Astro) and iOS (SwiftUI). ';
+  md +=
+    'Visual language: deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), ';
+  md +=
+    'fluid typography that scales with viewport, and motion that favors decelerated easing.\n\n';
   md += '## Token Architecture\n\n';
   md += 'Four tiers, applied in order of specificity:\n\n';
-  md += '1. **Primitive** — raw values (`color.pink.500 = #ff006e`). Never reference these directly from components.\n';
-  md += '2. **Semantic** — role-based aliases (`color.accent.pink → {color.pink.500}`). The consumer-facing layer.\n';
+  md +=
+    '1. **Primitive** — raw values (`color.pink.500 = #ff006e`). Never reference these directly from components.\n';
+  md +=
+    '2. **Semantic** — role-based aliases (`color.accent.pink → {color.pink.500}`). The consumer-facing layer.\n';
   md += '3. **Component** — component-scoped overrides (`card.background`).\n';
   md += '4. **Widget** — widget-scoped overrides (optional tier).\n\n';
-  md += '**Rule:** Token names encode ROLE, not value. Use `color.accent.pink`, never `color.ff006e`.\n\n';
+  md +=
+    '**Rule:** Token names encode ROLE, not value. Use `color.accent.pink`, never `color.ff006e`.\n\n';
   md += '## Color Palette\n\n';
   md += '### Primitive colors\n\n';
   md += '| Token | Value |\n|---|---|\n';
   for (const t of tokensOfType('color')) {
     if (t.path[0] !== 'color') continue;
     if (t.path.length < 2) continue;
-    if (t.path[1] === 'surface' || t.path[1] === 'border' || t.path[1] === 'text' ||
-        t.path[1] === 'accent' || t.path[1] === 'accent-hc' || t.path[1] === 'health' ||
-        t.path[1] === 'interactive' || t.path[1] === 'status' || t.path[1] === 'overlay') continue;
+    if (
+      t.path[1] === 'surface' ||
+      t.path[1] === 'border' ||
+      t.path[1] === 'text' ||
+      t.path[1] === 'accent' ||
+      t.path[1] === 'accent-hc' ||
+      t.path[1] === 'health' ||
+      t.path[1] === 'interactive' ||
+      t.path[1] === 'status' ||
+      t.path[1] === 'overlay'
+    )
+      continue;
     md += `| \`${fmtRef(t)}\` | \`${fmtValue(t.resolvedValue)}\` |\n`;
   }
   md += '\n';
   md += '### Semantic roles\n\n';
-  const semanticGroups = ['surface', 'border', 'text', 'accent', 'accent-hc', 'health', 'interactive', 'status', 'overlay'];
+  const semanticGroups = [
+    'surface',
+    'border',
+    'text',
+    'accent',
+    'accent-hc',
+    'health',
+    'interactive',
+    'status',
+    'overlay',
+  ];
   for (const group of semanticGroups) {
-    const groupTokens = tokens.filter(t => t.$type === 'color' && t.path[0] === 'color' && t.path[1] === group);
+    const groupTokens = tokens.filter(
+      (t) => t.$type === 'color' && t.path[0] === 'color' && t.path[1] === group,
+    );
     if (groupTokens.length === 0) continue;
     md += `#### color.${group}\n\n`;
     md += '| Token | Resolves to | Description |\n|---|---|---|\n';
@@ -665,8 +750,10 @@ function emitDesignMd() {
     md += '\n';
   }
   md += '## Typography\n\n';
-  md += 'Fluid type scale via `clamp()` on web; SwiftUI `Font.custom(..., relativeTo:)` on iOS for Dynamic Type. ';
-  md += 'Font family: **Space Grotesk** (PostScript names: `SpaceGrotesk-Regular`, `-Medium`, `-SemiBold`, `-Bold`, `-Light`).\n\n';
+  md +=
+    'Fluid type scale via `clamp()` on web; SwiftUI `Font.custom(..., relativeTo:)` on iOS for Dynamic Type. ';
+  md +=
+    'Font family: **Space Grotesk** (PostScript names: `SpaceGrotesk-Regular`, `-Medium`, `-SemiBold`, `-Bold`, `-Light`).\n\n';
   md += '| Style | Fluid size (web) | iOS text style | Weight |\n|---|---|---|---|\n';
   for (const t of tokensOfType('typography')) {
     const name = t.path[t.path.length - 1];
@@ -699,23 +786,32 @@ function emitDesignMd() {
     const curve = Array.isArray(v) ? `cubic-bezier(${v.join(', ')})` : fmtValue(v);
     md += `| \`${fmtRef(t)}\` | \`${curve}\` |\n`;
   }
-  md += '\n**Default behavior:** prefer `standard` for most transitions, `decelerate` for entering elements, `overshoot` for playful affordances.\n\n';
+  md +=
+    '\n**Default behavior:** prefer `standard` for most transitions, `decelerate` for entering elements, `overshoot` for playful affordances.\n\n';
   md += '## Shadows\n\n';
   md += '| Token | Layers |\n|---|---|\n';
   for (const t of tokensOfType('shadow')) {
     const v = t.resolvedValue;
     if (!v) continue;
     const layers = Array.isArray(v) ? v : [v];
-    const summary = layers.map(l =>
-      `${l.offsetX || 0}px ${l.offsetY || 0}px ${l.blur || 0}px ${l.spread || 0}px ${l.color}`
-    ).join(' / ');
+    const summary = layers
+      .map(
+        (l) =>
+          `${l.offsetX || 0}px ${l.offsetY || 0}px ${l.blur || 0}px ${l.spread || 0}px ${l.color}`,
+      )
+      .join(' / ');
     md += `| \`${fmtRef(t)}\` | \`${summary}\` |\n`;
   }
   md += '\n';
   md += '## Component Tokens\n\n';
   const componentRoots = new Set();
   for (const t of tokens) {
-    if (['color', 'space', 'motion', 'typography', 'iosTypography', 'shadow', 'font'].includes(t.path[0])) continue;
+    if (
+      ['color', 'space', 'motion', 'typography', 'iosTypography', 'shadow', 'font'].includes(
+        t.path[0],
+      )
+    )
+      continue;
     if (t.path[0]) componentRoots.add(t.path[0]);
   }
   for (const root of [...componentRoots].sort()) {
@@ -726,7 +822,10 @@ function emitDesignMd() {
     md += '\n';
   }
   md += '## Widget Catalog\n\n';
-  const manifestPath = resolve(__dirname, 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json');
+  const manifestPath = resolve(
+    __dirname,
+    'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json',
+  );
   if (existsSync(manifestPath)) {
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
     const byCategory = {};
@@ -747,17 +846,22 @@ function emitDesignMd() {
   }
   md += '## Authoring Rules\n\n';
   md += '- **No raw hex** in component or widget source files. Use semantic tokens.\n';
-  md += '- **No raw `Color(hex:)` or `Color(red:green:blue:)`** in Swift component files — use generated `LifegamesTokens` constants.\n';
+  md +=
+    '- **No raw `Color(hex:)` or `Color(red:green:blue:)`** in Swift component files — use generated `LifegamesTokens` constants.\n';
   md += '- **No raw hex in CSS** — use `var(--lg-*)` custom properties from `@lifegames/tokens`.\n';
   md += '- All neon colors MUST resolve to **identical hex values** across web and iOS.\n';
   md += '- All SwiftUI `#Preview` blocks MUST include `.preferredColorScheme(.dark)`.\n';
-  md += '- Fluid typography and spacing via `clamp()` on web; SwiftUI uses `relativeTo:` for Dynamic Type on iOS.\n\n';
+  md +=
+    '- Fluid typography and spacing via `clamp()` on web; SwiftUI uses `relativeTo:` for Dynamic Type on iOS.\n\n';
   md += '## CSS Custom Property Naming\n\n';
-  md += 'All web-consumed tokens are exposed as CSS custom properties prefixed `--lg-`. Example: `color.accent.pink → var(--lg-color-accent-pink)`.\n\n';
+  md +=
+    'All web-consumed tokens are exposed as CSS custom properties prefixed `--lg-`. Example: `color.accent.pink → var(--lg-color-accent-pink)`.\n\n';
   md += '## Source of Truth\n\n';
-  md += '- DTCG JSON: `tokens/*.tokens.json` in [design-system-Lifegames](https://github.com/) (canonical)\n';
+  md +=
+    '- DTCG JSON: `tokens/*.tokens.json` in [design-system-Lifegames](https://github.com/) (canonical)\n';
   md += '- Build: `pnpm build:tokens`\n';
-  md += '- Outputs: `packages/tokens/dist/{tokens.css,tokens.js,tokens.json}`, `Sources/LifegamesTokens/*.swift`\n';
+  md +=
+    '- Outputs: `packages/tokens/dist/{tokens.css,tokens.js,tokens.json}`, `Sources/LifegamesTokens/*.swift`\n';
   md += '- This file: `packages/tokens/dist/DESIGN.md` — regenerated on every build.\n';
   return md;
 }
@@ -769,10 +873,12 @@ function emitShadcnCss() {
       const oklch = toOklch(hex);
       if (!oklch) return hex;
       const l = (oklch.l * 100).toFixed(2);
-      const c = (oklch.c).toFixed(4);
+      const c = oklch.c.toFixed(4);
       const h = isNaN(oklch.h) ? '0' : oklch.h.toFixed(2);
       return `oklch(${l}% ${c} ${h})`;
-    } catch { return hex; }
+    } catch {
+      return hex;
+    }
   }
   function valueToOklch(value) {
     if (typeof value !== 'string') return String(value ?? '');
@@ -782,11 +888,13 @@ function emitShadcnCss() {
         const oklch = toOklch(value);
         if (!oklch) return value;
         const l = (oklch.l * 100).toFixed(2);
-        const c = (oklch.c).toFixed(4);
+        const c = oklch.c.toFixed(4);
         const h = isNaN(oklch.h) ? '0' : oklch.h.toFixed(2);
         const a = oklch.alpha !== undefined && oklch.alpha < 1 ? ` / ${oklch.alpha}` : '';
         return `oklch(${l}% ${c} ${h}${a})`;
-      } catch { return value; }
+      } catch {
+        return value;
+      }
     }
     return value;
   }
@@ -821,8 +929,11 @@ function emitShadcnCss() {
     }
   }
   for (const t of tokens) {
-    if (t.path[0] === 'color' && t.path[1] === 'surface' &&
-        ['thinking', 'citation', 'tool-use', 'artifact-frame', 'code-block'].includes(t.path[2])) {
+    if (
+      t.path[0] === 'color' &&
+      t.path[1] === 'surface' &&
+      ['thinking', 'citation', 'tool-use', 'artifact-frame', 'code-block'].includes(t.path[2])
+    ) {
       const varName = '--lg-' + t.path.join('-');
       shadcnCss += `  ${varName}: ${t.resolvedValue};\n`;
     }
@@ -840,8 +951,12 @@ function emitShadcnCss() {
 
 function emitDeprecatedTokensJson() {
   const deprecatedTokens = tokens
-    .filter(t => t.$deprecated === true)
-    .map(t => ({ path: t.path, cssVar: '--lg-' + t.path.join('-'), swiftName: toCamelCase(t.path) }));
+    .filter((t) => t.$deprecated === true)
+    .map((t) => ({
+      path: t.path,
+      cssVar: '--lg-' + t.path.join('-'),
+      swiftName: toCamelCase(t.path),
+    }));
   return JSON.stringify(deprecatedTokens, null, 2) + '\n';
 }
 
@@ -875,12 +990,18 @@ function emitTokensDtcgJson() {
 // can read fs.statSync(...).mtime on the file itself.
 function emitBuildReportJson(emittedFilesAndSizes) {
   const totalBytes = emittedFilesAndSizes.reduce((sum, f) => sum + f.bytes, 0);
-  return JSON.stringify({
-    tokens: tokens.length,
-    files: emittedFilesAndSizes.map(f => ({ path: f.path, bytes: f.bytes })),
-    totalBytes,
-    engine: 'style-dictionary@5',
-  }, null, 2) + '\n';
+  return (
+    JSON.stringify(
+      {
+        tokens: tokens.length,
+        files: emittedFilesAndSizes.map((f) => ({ path: f.path, bytes: f.bytes })),
+        totalBytes,
+        engine: 'style-dictionary@5',
+      },
+      null,
+      2,
+    ) + '\n'
+  );
 }
 
 // --- StyleDictionary v5 platform / format registration ---
@@ -915,9 +1036,7 @@ const sd = new StyleDictionary({
     },
     'ios/xcassets': {
       buildPath: xcassetsDir + '/',
-      files: [
-        { destination: 'Contents.json', format: 'lifegames/xcassets-root' },
-      ],
+      files: [{ destination: 'Contents.json', format: 'lifegames/xcassets-root' }],
     },
     'ios/swift': {
       buildPath: swiftDir + '/',
@@ -943,7 +1062,7 @@ const jsonTokens = buildJsonTokens();
 const tokensJsOut = emitTokensJs(jsonTokens);
 const tokensJsonOut = emitTokensJson(jsonTokens);
 const xcassetsRootOut = emitXcassetsColorsets(); // sidecar-writes 92 colorsets
-const colorTokensOut = emitColorTokensSwift();   // consumes xcassetsColorNames
+const colorTokensOut = emitColorTokensSwift(); // consumes xcassetsColorNames
 const spacingOut = emitSpacingSwift();
 const fontOut = emitFontTokensSwift();
 const shadowOut = emitShadowTokensSwift();
@@ -999,7 +1118,9 @@ console.log('  CSS:      packages/tokens/dist/tokens-layered.css');
 console.log('  JS:       packages/tokens/dist/tokens.js');
 console.log('  JSON:     packages/tokens/dist/tokens.json');
 console.log('  MD:       packages/tokens/dist/DESIGN.md');
-console.log(`  xcassets: Sources/LifegamesTokens/Resources/Colors.xcassets (${xcassetsColorNames.length} colorsets)`);
+console.log(
+  `  xcassets: Sources/LifegamesTokens/Resources/Colors.xcassets (${xcassetsColorNames.length} colorsets)`,
+);
 console.log('  Swift:    Sources/LifegamesTokens/Color+Tokens.swift');
 console.log('  Swift:    Sources/LifegamesTokens/Spacing.swift');
 console.log('  Swift:    Sources/LifegamesTokens/Font+Tokens.swift');
@@ -1007,5 +1128,7 @@ console.log('  Swift:    Sources/LifegamesTokens/Shadow+Tokens.swift');
 
 if (designMdChanged && previousMd !== '') {
   console.log('');
-  console.log('  ⚠  DESIGN.md changed — re-upload to Claude Design with `pnpm sync:claude-design`');
+  console.log(
+    '  ⚠  DESIGN.md changed — re-upload to Claude Design with `pnpm sync:claude-design`',
+  );
 }

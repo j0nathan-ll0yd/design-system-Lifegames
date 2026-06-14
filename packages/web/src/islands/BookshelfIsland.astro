@@ -2,6 +2,7 @@
 import Bookshelf from '@widgets/reading/Bookshelf.astro';
 const { fixture } = Astro.props;
 ---
+
 <div data-widget-preview data-fixture={JSON.stringify(fixture)}>
   <Bookshelf {...fixture} />
 </div>

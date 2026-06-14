@@ -1,0 +1,45 @@
+# Dependencies
+**/node_modules
+
+# Swift source (D-6: explicit exemption — no Swift formatter in scope)
+**/*.swift
+Sources/**
+packages/*/swift/**
+
+# Token build outputs (Style Dictionary-emitted; not hand-written)
+packages/tokens/dist/**
+
+# Token golden snapshots — byte-identical mirrors of the raw Style Dictionary
+# build output (which is itself unformatted). Formatting these would desync the
+# golden byte-compare test (packages/tokens/__tests__/build-output.spec.ts).
+packages/tokens/__tests__/golden/**
+
+# Build artifacts
+**/storybook-static/**
+**/.astro/**
+**/coverage/**
+
+# Lockfiles
+pnpm-lock.yaml
+
+# Binary / image assets
+**/*.png
+**/*.jpg
+**/*.svg
+**/*.woff
+**/*.woff2
+**/*.ttf
+
+# Maintenance docs with intentionally abbreviated/invalid JSON examples
+docs/maintenance/**
+
+# Golden MDX fixtures use <$> custom shortcode syntax not parseable by Prettier
+Tests/golden-mdx/**
+
+# Generated, non-deterministic inventory data (scripts/widget-inventory.mjs).
+# Has no byte gate of its own; formatting it is pointless and would churn diffs.
+widget-consumers.json
+
+# prettier-plugin-astro parser bug: [].slice.call() in <script is:inline> is
+# misidentified as JSX array syntax. File has 5 is:inline scripts (W9 ES5 conv.)
+apps/portfolio/src/layouts/Dashboard.astro

@@ -16,7 +16,9 @@ function sha256(content: string): string {
 }
 
 if (!existsSync(LOCK_FILE)) {
-  console.warn('[contract-check] No .contract-lock.json found — run `pnpm contract:generate` first');
+  console.warn(
+    '[contract-check] No .contract-lock.json found — run `pnpm contract:generate` first',
+  );
   process.exit(WARNING_MODE ? 0 : 1);
 }
 
@@ -25,7 +27,7 @@ const expectedChecksums: Record<string, string> = lock.files ?? {};
 const expectedAggregate: string = lock.generatedFrom?.checksum ?? '';
 
 const schemaFiles = readdirSync(RAW_SCHEMAS_DIR)
-  .filter(f => f.endsWith('.schema.json'))
+  .filter((f) => f.endsWith('.schema.json'))
   .sort();
 
 let drifted = false;
@@ -55,7 +57,7 @@ for (const file of Object.keys(expectedChecksums)) {
 }
 
 const combinedContent = schemaFiles
-  .map(f => readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'))
+  .map((f) => readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'))
   .join('');
 const actualAggregate = `sha256:${sha256(combinedContent)}`;
 
@@ -84,6 +86,8 @@ if (drifted) {
   }
 } else {
   console.log('[contract-check] OK: Schema contract verified.');
-  console.log(`  upstream: ${lock.generatedFrom?.repo ?? 'unknown'}@${lock.generatedFrom?.sha?.slice(0, 8) ?? 'unknown'}`);
+  console.log(
+    `  upstream: ${lock.generatedFrom?.repo ?? 'unknown'}@${lock.generatedFrom?.sha?.slice(0, 8) ?? 'unknown'}`,
+  );
   console.log(`  aggregate: ${actualAggregate}`);
 }

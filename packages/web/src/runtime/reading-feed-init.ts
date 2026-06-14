@@ -30,7 +30,12 @@ function paginateReadingFeed(card: HTMLElement, debug: boolean): void {
     btn.className = 'article-page-btn' + (p === 1 ? ' article-page-active' : '');
     btn.dataset.page = String(p);
     btn.textContent = String(p);
-    btn.setAttribute('aria-label', a11y.readingFeed.pagination.replace('{page}', String(p)).replace('{total}', String(totalPages)));
+    btn.setAttribute(
+      'aria-label',
+      a11y.readingFeed.pagination
+        .replace('{page}', String(p))
+        .replace('{total}', String(totalPages)),
+    );
     if (p === 1) btn.setAttribute('aria-current', 'page');
     pager.appendChild(btn);
   }
@@ -70,7 +75,15 @@ export function initReadingFeedPagination(selector: string): void {
   const debug = new URLSearchParams(location.search).has('debug');
   function run() {
     const cards = document.querySelectorAll<HTMLElement>(selector);
-    if (debug) console.debug('[ReadingFeed] selector =', selector, 'cards =', cards.length, 'readyState =', document.readyState);
+    if (debug)
+      console.debug(
+        '[ReadingFeed] selector =',
+        selector,
+        'cards =',
+        cards.length,
+        'readyState =',
+        document.readyState,
+      );
     cards.forEach((card) => paginateReadingFeed(card, debug));
   }
   if (document.readyState === 'loading') {

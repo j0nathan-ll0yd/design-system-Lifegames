@@ -10,14 +10,14 @@ open apps/swift-gallery/SwiftGallery.xcodeproj
 
 ## Sections
 
-| Section | What it shows |
-|---|---|
-| Colors | All `LGColor.*` token swatches grouped by role |
-| Typography | Type scale samples (widget header → hero header) |
-| Cards | `.portalCard()`, `.glassMorphic()`, `.neonCard()`, `.glassCard()`, `.minimalSection()` |
-| Components | HealthRingView, StatItemView, MetricCardView, WidgetHeaderView, SyncStatusBanner, LiveDotView, PulsingMapMarker, ECGBackgroundView |
-| Neon Effects | `neonGlow()` on text, accent bars, glow radii, animated effects |
-| Widgets | IdentityCard, Hydration, HeartRate (DSWidgets) + all health widget states (HeartRate, Hydration, NightSummary, Workouts) |
+| Section      | What it shows                                                                                                                      |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Colors       | All `LGColor.*` token swatches grouped by role                                                                                     |
+| Typography   | Type scale samples (widget header → hero header)                                                                                   |
+| Cards        | `.portalCard()`, `.glassMorphic()`, `.neonCard()`, `.glassCard()`, `.minimalSection()`                                             |
+| Components   | HealthRingView, StatItemView, MetricCardView, WidgetHeaderView, SyncStatusBanner, LiveDotView, PulsingMapMarker, ECGBackgroundView |
+| Neon Effects | `neonGlow()` on text, accent bars, glow radii, animated effects                                                                    |
+| Widgets      | IdentityCard, Hydration, HeartRate (DSWidgets) + all health widget states (HeartRate, Hydration, NightSummary, Workouts)           |
 
 ## Dropped from DesignGalleryFeature
 

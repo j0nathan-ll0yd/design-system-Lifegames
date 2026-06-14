@@ -74,93 +74,257 @@ const meta: Meta<MovementRingsArgs> = {
           </div>
         </div>
         <div class="widget-body">
-          ${isLoading ? html`
-            <div class="skeleton-state">
-              <div style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;">
-                <div class="skeleton-circle" style="width: 120px; height: 120px; border-radius: 50%;"></div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
-                  <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
-                  <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
+          ${isLoading
+            ? html`
+                <div class="skeleton-state">
+                  <div
+                    style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;"
+                  >
+                    <div
+                      class="skeleton-circle"
+                      style="width: 120px; height: 120px; border-radius: 50%;"
+                    ></div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                      <div
+                        class="skeleton-bar"
+                        style="width: 100%; height: 28px; border-radius: 8px;"
+                      ></div>
+                      <div
+                        class="skeleton-bar"
+                        style="width: 100%; height: 28px; border-radius: 8px;"
+                      ></div>
+                      <div
+                        class="skeleton-bar"
+                        style="width: 100%; height: 28px; border-radius: 8px;"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ` : isEmpty ? html`
-            <div style="display: flex; align-items: center; justify-content: center; padding: 32px 0;">
-              <span style="font-size: var(--lg-font-size-caption); color: var(--lg-color-text-muted); letter-spacing: 1px; text-transform: uppercase;">No movement yet today</span>
-            </div>
-          ` : html`
-            <div style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;">
-              <div style="width: 144px; height: 144px; position: relative;">
-                <svg viewBox="0 0 144 144" style="display: block; width: 100%; height: 100%;" role="img" aria-label="Movement rings">
-                  <circle class="mv-ring-track mv-ring-track-move"     cx="72" cy="72" r="60" fill="none" stroke-width="12" stroke-linecap="round" opacity="0.18" stroke="var(--lg-color-health-red)"></circle>
-                  <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" fill="none" stroke-width="12" stroke-linecap="round" opacity="0.18" stroke="var(--lg-color-health-green)"></circle>
-                  <circle class="mv-ring-track mv-ring-track-stand"    cx="72" cy="72" r="28" fill="none" stroke-width="12" stroke-linecap="round" opacity="0.18" stroke="var(--lg-color-accent-blue)"></circle>
-                  <circle cx="72" cy="72" r="60" fill="none" stroke-width="12" stroke-linecap="round"
-                    stroke="var(--lg-color-health-red)"
-                    stroke-dasharray="${CIRC.move.toFixed(2)}"
-                    stroke-dashoffset="${offset(CIRC.move, movePct)}"
-                    style="transform: rotate(-90deg); transform-origin: center;"></circle>
-                  <circle cx="72" cy="72" r="44" fill="none" stroke-width="12" stroke-linecap="round"
-                    stroke="var(--lg-color-health-green)"
-                    stroke-dasharray="${CIRC.exercise.toFixed(2)}"
-                    stroke-dashoffset="${offset(CIRC.exercise, exPct)}"
-                    style="transform: rotate(-90deg); transform-origin: center;"></circle>
-                  <circle cx="72" cy="72" r="28" fill="none" stroke-width="12" stroke-linecap="round"
-                    stroke="var(--lg-color-accent-blue)"
-                    stroke-dasharray="${CIRC.stand.toFixed(2)}"
-                    stroke-dashoffset="${offset(CIRC.stand, standPct)}"
-                    style="transform: rotate(-90deg); transform-origin: center;"></circle>
-                </svg>
-                <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; gap: 2px;">
-                  <span style="font-family: var(--lg-font-family-system); font-size: 0.92rem; font-weight: var(--lg-font-weight-bold); color: var(--lg-color-text-title);">${centerPct}%</span>
-                  <span style="font-family: var(--lg-font-family-system); font-size: 0.50rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--lg-color-text-muted);">cal</span>
-                </div>
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--lg-radius-md);">
-                  <span style="font-size: var(--lg-font-size-caption2); text-transform: uppercase; letter-spacing: 1.8px; color: var(--lg-color-text-muted);">Steps</span>
-                  <strong style="font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-body); font-weight: var(--lg-font-weight-semibold); color: var(--lg-color-text-title);">${steps.toLocaleString()}</strong>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--lg-radius-md);">
-                  <span style="font-size: var(--lg-font-size-caption2); text-transform: uppercase; letter-spacing: 1.8px; color: var(--lg-color-text-muted);">Distance</span>
-                  <strong style="font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-body); font-weight: var(--lg-font-weight-semibold); color: var(--lg-color-text-title);">${distanceKm}<span style="font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted); margin-left: 3px;">km</span></strong>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--lg-radius-md);">
-                  <span style="font-size: var(--lg-font-size-caption2); text-transform: uppercase; letter-spacing: 1.8px; color: var(--lg-color-text-muted);">Flights</span>
-                  <strong style="font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-body); font-weight: var(--lg-font-weight-semibold); color: var(--lg-color-text-title);">${flights}</strong>
-                </div>
-              </div>
-            </div>
-            <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
-              <div style="display: flex; align-items: center; gap: 6px; font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted);">
-                <span style="width: 8px; height: 8px; border-radius: 2px; background: var(--lg-color-health-red); flex-shrink: 0;"></span>
-                Cal <span style="color: var(--lg-color-text-title); font-weight: var(--lg-font-weight-semibold);">${moveVal}/${goalMove}</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 6px; font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted);">
-                <span style="width: 8px; height: 8px; border-radius: 2px; background: var(--lg-color-health-green); flex-shrink: 0;"></span>
-                Ex <span style="color: var(--lg-color-text-title); font-weight: var(--lg-font-weight-semibold);">${exVal}/${goalEx}</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 6px; font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted);">
-                <span style="width: 8px; height: 8px; border-radius: 2px; background: var(--lg-color-accent-blue); flex-shrink: 0;"></span>
-                Stand <span style="color: var(--lg-color-text-title); font-weight: var(--lg-font-weight-semibold);">${standVal}/${goalStand}</span>
-              </div>
-            </div>
-            <div style="border-top: 1px solid rgba(255,255,255,0.06); margin-top: 14px; padding-top: 12px;">
-              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <span style="font-size: 0.82rem; color: var(--lg-color-accent-amber);">&#9728;</span>
-                <span style="font-family: var(--lg-font-family-system); font-size: 0.56rem; letter-spacing: 0.10em; color: var(--lg-color-text-subtle);">${sunrise}</span>
-                <div style="flex: 1; position: relative; height: 4px; border-radius: 2px; background: linear-gradient(90deg, rgba(94,92,230,0.25) 0%, rgba(245,158,11,0.55) 50%, rgba(94,92,230,0.25) 100%);">
-                  <div style="position: absolute; top: 50%; left: ${sunPct}%; width: 8px; height: 8px; border-radius: 50%; background: var(--lg-color-accent-amber); transform: translate(-50%, -50%); box-shadow: 0 0 8px rgba(245,158,11,0.9);"></div>
-                </div>
-                <span style="font-family: var(--lg-font-family-system); font-size: 0.56rem; letter-spacing: 0.10em; color: var(--lg-color-text-subtle);">${sunset}</span>
-                <span style="font-size: 0.82rem; opacity: 0.45; color: var(--lg-color-accent-amber);">&#9790;</span>
-              </div>
-              <p style="text-align: center; font-family: var(--lg-font-family-system); font-size: 0.60rem; letter-spacing: 0.09em; color: var(--lg-color-text-muted); margin: 0;">
-                ${daylightMin} min in daylight today &middot; goal ${args.daylightMin ?? 20} min${daylightHit ? html` <span style="color: var(--lg-color-health-green);">&#10003;</span>` : ''}
-              </p>
-            </div>
-          `}
+              `
+            : isEmpty
+              ? html`
+                  <div
+                    style="display: flex; align-items: center; justify-content: center; padding: 32px 0;"
+                  >
+                    <span
+                      style="font-size: var(--lg-font-size-caption); color: var(--lg-color-text-muted); letter-spacing: 1px; text-transform: uppercase;"
+                      >No movement yet today</span
+                    >
+                  </div>
+                `
+              : html`
+                  <div
+                    style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;"
+                  >
+                    <div style="width: 144px; height: 144px; position: relative;">
+                      <svg
+                        viewBox="0 0 144 144"
+                        style="display: block; width: 100%; height: 100%;"
+                        role="img"
+                        aria-label="Movement rings"
+                      >
+                        <circle
+                          class="mv-ring-track mv-ring-track-move"
+                          cx="72"
+                          cy="72"
+                          r="60"
+                          fill="none"
+                          stroke-width="12"
+                          stroke-linecap="round"
+                          opacity="0.18"
+                          stroke="var(--lg-color-health-red)"
+                        ></circle>
+                        <circle
+                          class="mv-ring-track mv-ring-track-exercise"
+                          cx="72"
+                          cy="72"
+                          r="44"
+                          fill="none"
+                          stroke-width="12"
+                          stroke-linecap="round"
+                          opacity="0.18"
+                          stroke="var(--lg-color-health-green)"
+                        ></circle>
+                        <circle
+                          class="mv-ring-track mv-ring-track-stand"
+                          cx="72"
+                          cy="72"
+                          r="28"
+                          fill="none"
+                          stroke-width="12"
+                          stroke-linecap="round"
+                          opacity="0.18"
+                          stroke="var(--lg-color-accent-blue)"
+                        ></circle>
+                        <circle
+                          cx="72"
+                          cy="72"
+                          r="60"
+                          fill="none"
+                          stroke-width="12"
+                          stroke-linecap="round"
+                          stroke="var(--lg-color-health-red)"
+                          stroke-dasharray="${CIRC.move.toFixed(2)}"
+                          stroke-dashoffset="${offset(CIRC.move, movePct)}"
+                          style="transform: rotate(-90deg); transform-origin: center;"
+                        ></circle>
+                        <circle
+                          cx="72"
+                          cy="72"
+                          r="44"
+                          fill="none"
+                          stroke-width="12"
+                          stroke-linecap="round"
+                          stroke="var(--lg-color-health-green)"
+                          stroke-dasharray="${CIRC.exercise.toFixed(2)}"
+                          stroke-dashoffset="${offset(CIRC.exercise, exPct)}"
+                          style="transform: rotate(-90deg); transform-origin: center;"
+                        ></circle>
+                        <circle
+                          cx="72"
+                          cy="72"
+                          r="28"
+                          fill="none"
+                          stroke-width="12"
+                          stroke-linecap="round"
+                          stroke="var(--lg-color-accent-blue)"
+                          stroke-dasharray="${CIRC.stand.toFixed(2)}"
+                          stroke-dashoffset="${offset(CIRC.stand, standPct)}"
+                          style="transform: rotate(-90deg); transform-origin: center;"
+                        ></circle>
+                      </svg>
+                      <div
+                        style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; gap: 2px;"
+                      >
+                        <span
+                          style="font-family: var(--lg-font-family-system); font-size: 0.92rem; font-weight: var(--lg-font-weight-bold); color: var(--lg-color-text-title);"
+                          >${centerPct}%</span
+                        >
+                        <span
+                          style="font-family: var(--lg-font-family-system); font-size: 0.50rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--lg-color-text-muted);"
+                          >cal</span
+                        >
+                      </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                      <div
+                        style="display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--lg-radius-md);"
+                      >
+                        <span
+                          style="font-size: var(--lg-font-size-caption2); text-transform: uppercase; letter-spacing: 1.8px; color: var(--lg-color-text-muted);"
+                          >Steps</span
+                        >
+                        <strong
+                          style="font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-body); font-weight: var(--lg-font-weight-semibold); color: var(--lg-color-text-title);"
+                          >${steps.toLocaleString()}</strong
+                        >
+                      </div>
+                      <div
+                        style="display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--lg-radius-md);"
+                      >
+                        <span
+                          style="font-size: var(--lg-font-size-caption2); text-transform: uppercase; letter-spacing: 1.8px; color: var(--lg-color-text-muted);"
+                          >Distance</span
+                        >
+                        <strong
+                          style="font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-body); font-weight: var(--lg-font-weight-semibold); color: var(--lg-color-text-title);"
+                          >${distanceKm}<span
+                            style="font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted); margin-left: 3px;"
+                            >km</span
+                          ></strong
+                        >
+                      </div>
+                      <div
+                        style="display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 8px; padding: 6px 10px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--lg-radius-md);"
+                      >
+                        <span
+                          style="font-size: var(--lg-font-size-caption2); text-transform: uppercase; letter-spacing: 1.8px; color: var(--lg-color-text-muted);"
+                          >Flights</span
+                        >
+                        <strong
+                          style="font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-body); font-weight: var(--lg-font-weight-semibold); color: var(--lg-color-text-title);"
+                          >${flights}</strong
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="display: flex; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);"
+                  >
+                    <div
+                      style="display: flex; align-items: center; gap: 6px; font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted);"
+                    >
+                      <span
+                        style="width: 8px; height: 8px; border-radius: 2px; background: var(--lg-color-health-red); flex-shrink: 0;"
+                      ></span>
+                      Cal
+                      <span
+                        style="color: var(--lg-color-text-title); font-weight: var(--lg-font-weight-semibold);"
+                        >${moveVal}/${goalMove}</span
+                      >
+                    </div>
+                    <div
+                      style="display: flex; align-items: center; gap: 6px; font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted);"
+                    >
+                      <span
+                        style="width: 8px; height: 8px; border-radius: 2px; background: var(--lg-color-health-green); flex-shrink: 0;"
+                      ></span>
+                      Ex
+                      <span
+                        style="color: var(--lg-color-text-title); font-weight: var(--lg-font-weight-semibold);"
+                        >${exVal}/${goalEx}</span
+                      >
+                    </div>
+                    <div
+                      style="display: flex; align-items: center; gap: 6px; font-family: var(--lg-font-family-system); font-size: var(--lg-font-size-caption2); color: var(--lg-color-text-muted);"
+                    >
+                      <span
+                        style="width: 8px; height: 8px; border-radius: 2px; background: var(--lg-color-accent-blue); flex-shrink: 0;"
+                      ></span>
+                      Stand
+                      <span
+                        style="color: var(--lg-color-text-title); font-weight: var(--lg-font-weight-semibold);"
+                        >${standVal}/${goalStand}</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    style="border-top: 1px solid rgba(255,255,255,0.06); margin-top: 14px; padding-top: 12px;"
+                  >
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                      <span style="font-size: 0.82rem; color: var(--lg-color-accent-amber);"
+                        >&#9728;</span
+                      >
+                      <span
+                        style="font-family: var(--lg-font-family-system); font-size: 0.56rem; letter-spacing: 0.10em; color: var(--lg-color-text-subtle);"
+                        >${sunrise}</span
+                      >
+                      <div
+                        style="flex: 1; position: relative; height: 4px; border-radius: 2px; background: linear-gradient(90deg, rgba(94,92,230,0.25) 0%, rgba(245,158,11,0.55) 50%, rgba(94,92,230,0.25) 100%);"
+                      >
+                        <div
+                          style="position: absolute; top: 50%; left: ${sunPct}%; width: 8px; height: 8px; border-radius: 50%; background: var(--lg-color-accent-amber); transform: translate(-50%, -50%); box-shadow: 0 0 8px rgba(245,158,11,0.9);"
+                        ></div>
+                      </div>
+                      <span
+                        style="font-family: var(--lg-font-family-system); font-size: 0.56rem; letter-spacing: 0.10em; color: var(--lg-color-text-subtle);"
+                        >${sunset}</span
+                      >
+                      <span
+                        style="font-size: 0.82rem; opacity: 0.45; color: var(--lg-color-accent-amber);"
+                        >&#9790;</span
+                      >
+                    </div>
+                    <p
+                      style="text-align: center; font-family: var(--lg-font-family-system); font-size: 0.60rem; letter-spacing: 0.09em; color: var(--lg-color-text-muted); margin: 0;"
+                    >
+                      ${daylightMin} min in daylight today &middot; goal ${args.daylightMin ?? 20}
+                      min${daylightHit
+                        ? html` <span style="color: var(--lg-color-health-green);">&#10003;</span>`
+                        : ''}
+                    </p>
+                  </div>
+                `}
         </div>
       </div>
     `;

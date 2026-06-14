@@ -2,6 +2,7 @@ import tsParser from '@typescript-eslint/parser';
 import astroParser from 'astro-eslint-parser';
 import astroPlugin from 'eslint-plugin-astro';
 import { createRequire } from 'module';
+import eslintConfigPrettier from 'eslint-config-prettier';
 
 const require = createRequire(import.meta.url);
 const lifegamesLocal = require('../../eslint-local-rules/index.js');
@@ -16,7 +17,7 @@ export default [
       'lifegames-local': lifegamesLocal,
     },
     rules: {
-      'lifegames-local/widget-props-extends-schema': 'warn',  // W16: advisory only — see CLAUDE.md
+      'lifegames-local/widget-props-extends-schema': 'warn', // W16: advisory only — see CLAUDE.md
     },
   },
   {
@@ -30,7 +31,7 @@ export default [
       'lifegames-local': lifegamesLocal,
     },
     rules: {
-      'lifegames-local/no-app-module-imports': 'warn',  // P3: advisory only
+      'lifegames-local/no-app-module-imports': 'warn', // P3: advisory only
     },
   },
   {
@@ -46,7 +47,7 @@ export default [
       'lifegames-local': lifegamesLocal,
     },
     rules: {
-      'lifegames-local/no-deprecated-tokens': 'warn',  // D4: warn on deprecated token refs
+      'lifegames-local/no-deprecated-tokens': 'warn', // D4: warn on deprecated token refs
     },
   },
   // P1 — no raw hex in widgets: TS/JS variant.
@@ -59,7 +60,7 @@ export default [
       'lifegames-local': lifegamesLocal,
     },
     rules: {
-      'lifegames-local/no-raw-hex-in-widgets': 'error',  // P1: token-as-truth boundary
+      'lifegames-local/no-raw-hex-in-widgets': 'error', // P1: token-as-truth boundary
     },
   },
   // P1 — no raw hex in widgets: .astro variant. astro-eslint-parser exposes
@@ -78,4 +79,5 @@ export default [
       'lifegames-local/no-raw-hex-in-widgets': 'error',
     },
   },
+  eslintConfigPrettier,
 ];

@@ -89,15 +89,18 @@ describe('fetchWithTimeout', () => {
   });
 
   it('returns null on timeout (AbortError)', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockImplementation((_url: string, opts: { signal?: AbortSignal }) => {
-      return new Promise((_resolve, reject) => {
-        if (opts?.signal) {
-          opts.signal.addEventListener('abort', () => {
-            reject(new DOMException('The operation was aborted.', 'AbortError'));
-          });
-        }
-      });
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation((_url: string, opts: { signal?: AbortSignal }) => {
+        return new Promise((_resolve, reject) => {
+          if (opts?.signal) {
+            opts.signal.addEventListener('abort', () => {
+              reject(new DOMException('The operation was aborted.', 'AbortError'));
+            });
+          }
+        });
+      }),
+    );
 
     const promise = fetchWithTimeout('https://example.com/slow.json', 1000);
     vi.advanceTimersByTime(1000);
@@ -117,17 +120,18 @@ describe('fetchAllEndpoints', () => {
     // Order matches Promise.all in fetchAllEndpoints.
     // In the vitest environment import.meta.env.DEV=true, so location IS fetched:
     // health, sleep, workouts, books, githubEvents, starredRepos, articles, location, focus, theatreReviews
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(makeFetchResponse(healthFixture))      // health
-      .mockResolvedValueOnce(makeFetchResponse(sleepFixture))       // sleep
-      .mockResolvedValueOnce(makeFetchResponse(workoutsFixture))    // workouts
-      .mockResolvedValueOnce(makeFetchResponse(booksFixture))       // books
-      .mockResolvedValueOnce(makeFetchResponse(githubEventsFixture))// githubEvents
-      .mockResolvedValueOnce(makeFetchResponse(starredReposFixture))// starredRepos
-      .mockResolvedValueOnce(makeFetchResponse(articlesFixture))    // articles
-      .mockResolvedValueOnce(makeFetchResponse(locationFixture))    // location (DEV=true)
-      .mockResolvedValueOnce(makeFetchResponse(focusFixture))       // focus
-      .mockResolvedValueOnce(makeFetchResponse(theatreFixture));    // theatreReviews
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(makeFetchResponse(healthFixture)) // health
+      .mockResolvedValueOnce(makeFetchResponse(sleepFixture)) // sleep
+      .mockResolvedValueOnce(makeFetchResponse(workoutsFixture)) // workouts
+      .mockResolvedValueOnce(makeFetchResponse(booksFixture)) // books
+      .mockResolvedValueOnce(makeFetchResponse(githubEventsFixture)) // githubEvents
+      .mockResolvedValueOnce(makeFetchResponse(starredReposFixture)) // starredRepos
+      .mockResolvedValueOnce(makeFetchResponse(articlesFixture)) // articles
+      .mockResolvedValueOnce(makeFetchResponse(locationFixture)) // location (DEV=true)
+      .mockResolvedValueOnce(makeFetchResponse(focusFixture)) // focus
+      .mockResolvedValueOnce(makeFetchResponse(theatreFixture)); // theatreReviews
     vi.stubGlobal('fetch', fetchMock);
 
     const result = await fetchAllEndpoints();
@@ -142,7 +146,8 @@ describe('fetchAllEndpoints', () => {
   });
 
   it('returns null for failing endpoints without rejecting', async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockRejectedValueOnce(new Error('fail')) // health fails
       .mockResolvedValueOnce(makeFetchResponse(sleepFixture))
       .mockResolvedValueOnce(makeFetchResponse(workoutsFixture))
@@ -150,7 +155,7 @@ describe('fetchAllEndpoints', () => {
       .mockResolvedValueOnce(makeFetchResponse(githubEventsFixture))
       .mockResolvedValueOnce(makeFetchResponse(starredReposFixture))
       .mockResolvedValueOnce(makeFetchResponse(articlesFixture))
-      .mockResolvedValueOnce(makeFetchResponse(locationFixture))    // location (DEV=true)
+      .mockResolvedValueOnce(makeFetchResponse(locationFixture)) // location (DEV=true)
       .mockResolvedValueOnce(makeFetchResponse(focusFixture))
       .mockResolvedValueOnce(makeFetchResponse(theatreFixture));
     vi.stubGlobal('fetch', fetchMock);
@@ -177,7 +182,8 @@ describe('fetchAllEndpoints', () => {
   });
 
   it('populates timestamps from generatedAt fields', async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce(makeFetchResponse(healthFixture))
       .mockResolvedValueOnce(makeFetchResponse(sleepFixture))
       .mockResolvedValueOnce(makeFetchResponse(workoutsFixture))
@@ -185,7 +191,7 @@ describe('fetchAllEndpoints', () => {
       .mockResolvedValueOnce(makeFetchResponse(githubEventsFixture))
       .mockResolvedValueOnce(makeFetchResponse(starredReposFixture))
       .mockResolvedValueOnce(makeFetchResponse(articlesFixture))
-      .mockResolvedValueOnce(makeFetchResponse(locationFixture))    // location (DEV=true)
+      .mockResolvedValueOnce(makeFetchResponse(locationFixture)) // location (DEV=true)
       .mockResolvedValueOnce(makeFetchResponse(focusFixture))
       .mockResolvedValueOnce(makeFetchResponse(theatreFixture));
     vi.stubGlobal('fetch', fetchMock);

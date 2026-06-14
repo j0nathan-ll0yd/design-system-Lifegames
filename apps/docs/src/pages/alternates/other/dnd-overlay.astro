@@ -22,70 +22,97 @@ import var_default from '@fixtures/other/dnd-overlay.default.json';
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DndOverlay — Lifegames Design System</title>
-</head>
-<body>
-  <div class="wd-page">
-    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DndOverlay — Lifegames Design System</title>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
 
-    <div class="wd-header">
-      <h1 class="wd-title">DndOverlay</h1>
-      <span class="wd-badge wd-badge--dev">Alternate</span>
-      <span class="wd-cat">other</span>
-    </div>
+      <div class="wd-header">
+        <h1 class="wd-title">DndOverlay</h1>
+        <span class="wd-badge wd-badge--dev">Alternate</span>
+        <span class="wd-cat">other</span>
+      </div>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Live Demo</h2>
-      <ResponsiveDemo widgetName="DndOverlay" category="other" fixture={fixture} Comp={DndOverlay} />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="DndOverlay"
+          category="other"
+          fixture={fixture}
+          Comp={DndOverlay}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">State Matrix</h2>
-      <StateMatrix
-        widgetName="DndOverlay"
-        category="other"
-        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="DndOverlay"
+          category="other"
+          states={[
+            { state: 'skeleton', fixture: fixture_skeleton },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Variations</h2>
-      <VariationGrid
-        widgetName="DndOverlay"
-        category="other"
-        variations={[
-          { label: "default", fixture: var_default, caption: "This widget is presentational — no state variations." },
-        ]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="DndOverlay"
+          category="other"
+          variations={[
+            {
+              label: 'default',
+              fixture: var_default,
+              caption: 'This widget is presentational — no state variations.',
+            },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Props</h2>
-      <p class="wd-text">
-        See <code>packages/web/src/widgets/other/DndOverlay.types.ts</code> for the full interface. DndOverlay accepts no props — it renders as a fixed privacy shield overlay activated by <code>live-data.ts</code> when <code>currentFocus === 'Do Not Disturb'</code>.
-      </p>
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/other/DndOverlay.types.ts</code> for the full interface.
+          DndOverlay accepts no props — it renders as a fixed privacy shield overlay activated by <code
+            >live-data.ts</code
+          > when <code>currentFocus === 'Do Not Disturb'</code>.
+        </p>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Usage</h2>
-      <pre class="wd-code"><code>---
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
 import DndOverlay from '@lifegames/web/widgets/other/DndOverlay.astro';
 ---
 &lt;DndOverlay /&gt;</code></pre>
-    </section>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Cross-Platform</h2>
-      <ul class="wd-list">
-        <li><strong>Web:</strong> <code>packages/web/src/widgets/other/DndOverlay.astro</code></li>
-        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Other/DndOverlayView.swift</code></li>
-        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.json</code></li>
-      </ul>
-    </section>
-  </div>
-  <WidgetPageScript />
-</body>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/other/DndOverlay.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/Other/DndOverlayView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <WidgetPageScript />
+  </body>
 </html>

@@ -1373,9 +1373,7 @@
       "value": "LLM-friendly complete content",
       "_meta": {
         "description": "Title attribute for the <link rel=\"alternate\" type=\"text/markdown\"> tag pointing at llms-full.txt.",
-        "usage": [
-          "web:src/layouts/Dashboard.astro:30 (<link rel=\"alternate\" title=\"...\">)"
-        ],
+        "usage": ["web:src/layouts/Dashboard.astro:30 (<link rel=\"alternate\" title=\"...\">)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
@@ -1385,9 +1383,7 @@
       "value": "LLM discovery index",
       "_meta": {
         "description": "Title attribute for the <link rel=\"alternate\" type=\"text/plain\"> tag pointing at /llms.txt.",
-        "usage": [
-          "web:src/layouts/Dashboard.astro:31 (<link rel=\"alternate\" title=\"...\">)"
-        ],
+        "usage": ["web:src/layouts/Dashboard.astro:31 (<link rel=\"alternate\" title=\"...\">)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
@@ -1397,9 +1393,7 @@
       "value": "Live biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON.",
       "_meta": {
         "description": "JSON-LD Dataset.description prose for the Human Datastream structured-data block.",
-        "usage": [
-          "web:src/layouts/Dashboard.astro:100 (JSON-LD Dataset.description)"
-        ],
+        "usage": ["web:src/layouts/Dashboard.astro:100 (JSON-LD Dataset.description)"],
         "tone": "llm-prose",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"

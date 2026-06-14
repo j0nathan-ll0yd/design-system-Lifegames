@@ -10,10 +10,7 @@
             "type": "string"
           },
           "category": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "visitCount": {
             "type": "number"
@@ -22,25 +19,14 @@
             "type": "number"
           },
           "lastVisitAt": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           }
         },
-        "required": [
-          "name",
-          "category",
-          "visitCount",
-          "totalDurationMinutes",
-          "lastVisitAt"
-        ]
+        "required": ["name", "category", "visitCount", "totalDurationMinutes", "lastVisitAt"]
       }
     }
   },
-  "required": [
-    "topPlaces"
-  ],
+  "required": ["topPlaces"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/place-leaderboard-v3.json",
   "title": "PlaceLeaderboardV3Props"

@@ -19,12 +19,16 @@ const meta: Meta = {
       <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-primary);">
         <div style="display: flex; align-items: center; gap: 16px;">
           <div style="text-align: center;">
-            <div style="font-size: 2.5em; font-weight: bold; color: var(--lg-color-accent-purple);">${args.sleepScore ?? '—'}</div>
+            <div style="font-size: 2.5em; font-weight: bold; color: var(--lg-color-accent-purple);">
+              ${args.sleepScore ?? '—'}
+            </div>
             <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">score</div>
           </div>
           <div>
             <div style="font-size: 1.2em;">${args.sleepDuration ?? '—'}</div>
-            <div style="font-size: 0.8em; color: var(--lg-color-text-muted);">Deep: ${args.deepPct ?? 0}% · REM: ${args.remPct ?? 0}%</div>
+            <div style="font-size: 0.8em; color: var(--lg-color-text-muted);">
+              Deep: ${args.deepPct ?? 0}% · REM: ${args.remPct ?? 0}%
+            </div>
           </div>
         </div>
       </div>
@@ -51,7 +55,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

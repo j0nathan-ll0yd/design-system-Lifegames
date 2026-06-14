@@ -19,19 +19,27 @@ const meta: Meta = {
       <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-primary);">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div style="text-align: center;">
-            <div style="font-size: 2em; font-weight: bold; color: var(--lg-color-accent-cyan);">${args.totalVisits ?? '—'}</div>
+            <div style="font-size: 2em; font-weight: bold; color: var(--lg-color-accent-cyan);">
+              ${args.totalVisits ?? '—'}
+            </div>
             <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">Total Visits</div>
           </div>
           <div style="text-align: center;">
-            <div style="font-size: 2em; font-weight: bold; color: var(--lg-color-accent-green);">${args.totalPlaces ?? '—'}</div>
+            <div style="font-size: 2em; font-weight: bold; color: var(--lg-color-accent-green);">
+              ${args.totalPlaces ?? '—'}
+            </div>
             <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">Places</div>
           </div>
           <div style="text-align: center;">
-            <div style="font-size: 2em; font-weight: bold; color: var(--lg-color-accent-blue);">${args.citiesVisited ?? '—'}</div>
+            <div style="font-size: 2em; font-weight: bold; color: var(--lg-color-accent-blue);">
+              ${args.citiesVisited ?? '—'}
+            </div>
             <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">Cities</div>
           </div>
           <div style="text-align: center;">
-            <div style="font-size: 1em; font-weight: bold; color: var(--lg-color-accent-pink);">${args.currentCity ?? '—'}</div>
+            <div style="font-size: 1em; font-weight: bold; color: var(--lg-color-accent-pink);">
+              ${args.currentCity ?? '—'}
+            </div>
             <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">Current City</div>
           </div>
         </div>
@@ -59,7 +67,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

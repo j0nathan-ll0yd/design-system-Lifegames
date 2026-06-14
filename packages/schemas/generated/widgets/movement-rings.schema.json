@@ -47,12 +47,7 @@
                   "type": "number"
                 }
               },
-              "required": [
-                "moveKcal",
-                "exerciseMin",
-                "standHr",
-                "daylightMin"
-              ]
+              "required": ["moveKcal", "exerciseMin", "standHr", "daylightMin"]
             },
             "solar": {
               "type": "object",
@@ -67,26 +62,13 @@
                   "type": "number"
                 }
               },
-              "required": [
-                "sunriseHHmm",
-                "sunsetHHmm",
-                "currentProgressPct"
-              ]
+              "required": ["sunriseHHmm", "sunsetHHmm", "currentProgressPct"]
             }
           },
-          "required": [
-            "moveKcal",
-            "exerciseMin",
-            "standHr",
-            "steps",
-            "distanceMeters",
-            "flights"
-          ]
+          "required": ["moveKcal", "exerciseMin", "standHr", "steps", "distanceMeters", "flights"]
         }
       },
-      "required": [
-        "movement"
-      ]
+      "required": ["movement"]
     }
   }
 }

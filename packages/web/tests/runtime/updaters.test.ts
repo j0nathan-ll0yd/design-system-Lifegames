@@ -14,7 +14,14 @@ import {
   getCategoryColor,
   esc,
 } from '../../src/runtime/updaters';
-import type { AdaptedHealth, AdaptedSleep, WorkoutEntry, AdaptedGithubEvent, AdaptedArticle, AdaptedBooks } from '../../src/runtime/adapters';
+import type {
+  AdaptedHealth,
+  AdaptedSleep,
+  WorkoutEntry,
+  AdaptedGithubEvent,
+  AdaptedArticle,
+  AdaptedBooks,
+} from '../../src/runtime/adapters';
 import type { LocationExport } from '../../src/types/exports';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -72,8 +79,20 @@ function makeLocation(overrides: Partial<LocationExport> = {}): LocationExport {
       { date: '2026-01-03', count: 5, uniquePlaces: 3, totalDurationMinutes: 120 },
     ],
     topPlaces: [
-      { name: 'Coffee Shop', category: 'Dining', visitCount: 40, totalDurationMinutes: 800, lastVisitAt: null },
-      { name: 'Gym', category: 'Fitness & Outdoors', visitCount: 30, totalDurationMinutes: 600, lastVisitAt: null },
+      {
+        name: 'Coffee Shop',
+        category: 'Dining',
+        visitCount: 40,
+        totalDurationMinutes: 800,
+        lastVisitAt: null,
+      },
+      {
+        name: 'Gym',
+        category: 'Fitness & Outdoors',
+        visitCount: 30,
+        totalDurationMinutes: 600,
+        lastVisitAt: null,
+      },
     ],
     cityBreakdown: [
       { city: 'Los Angeles', visitCount: 300 },
@@ -427,8 +446,24 @@ describe('updateHydration', () => {
 
 describe('updateDevActivityLog', () => {
   const events: AdaptedGithubEvent[] = [
-    { type: 'commit', repo: 'my-repo', title: 'Fix bug', date: '2h ago', hash: 'abc123', additions: 10, deletions: 5, url: 'https://github.com/test/commit/abc123' },
-    { type: 'pr_opened', repo: 'other-repo', title: 'Add feature', date: '1d ago', number: 42, url: 'https://github.com/test/pull/42' },
+    {
+      type: 'commit',
+      repo: 'my-repo',
+      title: 'Fix bug',
+      date: '2h ago',
+      hash: 'abc123',
+      additions: 10,
+      deletions: 5,
+      url: 'https://github.com/test/commit/abc123',
+    },
+    {
+      type: 'pr_opened',
+      repo: 'other-repo',
+      title: 'Add feature',
+      date: '1d ago',
+      number: 42,
+      url: 'https://github.com/test/pull/42',
+    },
   ];
 
   beforeEach(() => {
@@ -482,8 +517,22 @@ describe('updateDevActivityLog', () => {
 
 describe('updateReadingFeed', () => {
   const articles: AdaptedArticle[] = [
-    { title: 'Article 1', url: 'https://example.com/1', source: 'Source A', date: '1h ago', hasNotes: false, noteText: null },
-    { title: 'Article 2', url: 'https://example.com/2', source: 'Source B', date: '2h ago', hasNotes: true, noteText: 'My note' },
+    {
+      title: 'Article 1',
+      url: 'https://example.com/1',
+      source: 'Source A',
+      date: '1h ago',
+      hasNotes: false,
+      noteText: null,
+    },
+    {
+      title: 'Article 2',
+      url: 'https://example.com/2',
+      source: 'Source B',
+      date: '2h ago',
+      hasNotes: true,
+      noteText: 'My note',
+    },
   ];
 
   beforeEach(() => {
@@ -608,22 +657,30 @@ describe('updateExplorationOdometer', () => {
 
   it('sets visits count', () => {
     updateExplorationOdometer(makeLocation());
-    expect(el('cardExplorationOdometer').querySelector('[data-loc="odo-visits"]')!.textContent).toMatch(/500/);
+    expect(
+      el('cardExplorationOdometer').querySelector('[data-loc="odo-visits"]')!.textContent,
+    ).toMatch(/500/);
   });
 
   it('sets places count', () => {
     updateExplorationOdometer(makeLocation());
-    expect(el('cardExplorationOdometer').querySelector('[data-loc="odo-places"]')!.textContent).toMatch(/80/);
+    expect(
+      el('cardExplorationOdometer').querySelector('[data-loc="odo-places"]')!.textContent,
+    ).toMatch(/80/);
   });
 
   it('sets cities count', () => {
     updateExplorationOdometer(makeLocation());
-    expect(el('cardExplorationOdometer').querySelector('[data-loc="odo-cities"]')!.textContent).toMatch(/5/);
+    expect(
+      el('cardExplorationOdometer').querySelector('[data-loc="odo-cities"]')!.textContent,
+    ).toMatch(/5/);
   });
 
   it('sets subtitle with current city when present', () => {
     updateExplorationOdometer(makeLocation());
-    const subtitle = el('cardExplorationOdometer').querySelector('[data-loc="odo-subtitle"]') as HTMLElement;
+    const subtitle = el('cardExplorationOdometer').querySelector(
+      '[data-loc="odo-subtitle"]',
+    ) as HTMLElement;
     expect(subtitle.innerHTML).toContain('Los Angeles');
   });
 
@@ -705,7 +762,12 @@ describe('updateBookshelf', () => {
         },
       ],
       bookMeta: {},
-      statusLabels: { in_progress: 'Reading', next: 'Up Next', completed: 'Finished', finished: 'Finished' },
+      statusLabels: {
+        in_progress: 'Reading',
+        next: 'Up Next',
+        completed: 'Finished',
+        finished: 'Finished',
+      },
       stats: { total: 1, reading: 1, completed: 0, upcoming: 0 },
       ...overrides,
     };
@@ -755,27 +817,31 @@ describe('updateBookshelf', () => {
 
   it('adds shelf-book-active class for in_progress book', () => {
     updateBookshelf(makeBooks());
-    expect(document.querySelector('.shelf-book')!.classList.contains('shelf-book-active')).toBe(true);
+    expect(document.querySelector('.shelf-book')!.classList.contains('shelf-book-active')).toBe(
+      true,
+    );
   });
 
   it('renders stars for completed books with rating', () => {
     const books = makeBooks({
-      books: [{
-        title: 'Done Book',
-        author: 'Author',
-        asin: 'B002TEST',
-        status: 'completed',
-        rating: 4,
-        progress: undefined,
-        link: 'https://amazon.com/dp/B002TEST',
-        cover: null,
-        coverThumb: null,
-        coverCard: null,
-        coverAvif: null,
-        coverThumbAvif: null,
-        coverCardAvif: null,
-        notes: null,
-      }],
+      books: [
+        {
+          title: 'Done Book',
+          author: 'Author',
+          asin: 'B002TEST',
+          status: 'completed',
+          rating: 4,
+          progress: undefined,
+          link: 'https://amazon.com/dp/B002TEST',
+          cover: null,
+          coverThumb: null,
+          coverCard: null,
+          coverAvif: null,
+          coverThumbAvif: null,
+          coverCardAvif: null,
+          notes: null,
+        },
+      ],
     });
     updateBookshelf(books);
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('star-on');

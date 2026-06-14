@@ -28,21 +28,11 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "description",
-          "stars",
-          "forks",
-          "language",
-          "languageColor",
-          "url"
-        ]
+        "required": ["name", "description", "stars", "forks", "language", "languageColor", "url"]
       }
     }
   },
-  "required": [
-    "repos"
-  ],
+  "required": ["repos"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/pinned-repos.json",
   "title": "PinnedReposProps"

@@ -9,4 +9,5 @@ import type { SystemStatusProps } from '../widgets/other/SystemStatus.types';
 
 const { compact = true, ...rest } = Astro.props as SystemStatusProps;
 ---
+
 <SystemStatus {...rest} compact={compact} />

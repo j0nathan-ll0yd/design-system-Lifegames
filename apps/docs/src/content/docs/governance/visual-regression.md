@@ -7,11 +7,11 @@ Visual regression testing catches unintended visual changes in Lifegames widgets
 
 ## Stack
 
-| Tool | Role |
-|---|---|
+| Tool                     | Role                                                                   |
+| ------------------------ | ---------------------------------------------------------------------- |
 | `@storybook/test-runner` | Jest-based test runner that drives Playwright against a live Storybook |
-| `jest-image-snapshot` | Pixel-diff assertion — compares screenshots to committed baselines |
-| Playwright (Chromium) | Headless browser for rendering and screenshot capture |
+| `jest-image-snapshot`    | Pixel-diff assertion — compares screenshots to committed baselines     |
+| Playwright (Chromium)    | Headless browser for rendering and screenshot capture                  |
 
 **Decision:** Playwright snapshots only — no Chromatic or other SaaS vendor. All baselines are committed to the repository.
 
@@ -58,15 +58,15 @@ Then commit the updated `.png` files in `apps/storybook/__snapshots__/`. Include
 
 Snapshots are generated for every story exported from the Storybook. The 19 production island stories (A4) are the primary targets:
 
-| Category | Stories |
-|---|---|
-| Health | HeartRate, MovementRings, Hydration, NightSummary, Workouts |
-| Github | DevActivityLog, StarredRepoList |
-| Identity | BioTerminal, IdentityCard, ComingSoon |
-| Location | ExplorationOdometerV3, PlaceLeaderboardV3 |
-| Reading | BookModal, Bookshelf, ReadingFeed, TheatreReviews |
-| Overlays | DndOverlay, FocusOverlay |
-| System | SystemStatus |
+| Category | Stories                                                     |
+| -------- | ----------------------------------------------------------- |
+| Health   | HeartRate, MovementRings, Hydration, NightSummary, Workouts |
+| Github   | DevActivityLog, StarredRepoList                             |
+| Identity | BioTerminal, IdentityCard, ComingSoon                       |
+| Location | ExplorationOdometerV3, PlaceLeaderboardV3                   |
+| Reading  | BookModal, Bookshelf, ReadingFeed, TheatreReviews           |
+| Overlays | DndOverlay, FocusOverlay                                    |
+| System   | SystemStatus                                                |
 
 Plus integration stories (`Integration/shadcn`) and component stories (Card, Modal, Pill, PollStatus, Skeleton).
 

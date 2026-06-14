@@ -5,7 +5,10 @@ let clockInterval: ReturnType<typeof setInterval> | null = null;
 export function updateFocusOverlay(data: FocusExport | null): void {
   const workOverlay = document.getElementById('focusOverlay');
   const dndOverlay = document.getElementById('dndOverlay');
-  if (clockInterval) { clearInterval(clockInterval); clockInterval = null; }
+  if (clockInterval) {
+    clearInterval(clockInterval);
+    clockInterval = null;
+  }
 
   // Hide both overlays first
   if (workOverlay) workOverlay.style.display = 'none';
@@ -33,7 +36,7 @@ export function updateFocusOverlay(data: FocusExport | null): void {
           hour12: false,
           hour: '2-digit',
           minute: '2-digit',
-          second: '2-digit'
+          second: '2-digit',
         });
       };
       updateClock();

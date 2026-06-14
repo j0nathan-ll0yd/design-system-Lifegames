@@ -12,7 +12,11 @@ const meta: Meta = {
     loading: { control: 'boolean' },
   },
   render: (args) => html`
-    <div class="lg-card ${args.accent ? `lg-card-accent-${args.accent}` : ''} ${args.loading ? 'is-loading' : ''}">
+    <div
+      class="lg-card ${args.accent ? `lg-card-accent-${args.accent}` : ''} ${args.loading
+        ? 'is-loading'
+        : ''}"
+    >
       <div class="widget-header">
         <span class="widget-label">Sample Widget</span>
       </div>

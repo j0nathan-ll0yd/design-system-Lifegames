@@ -4,10 +4,10 @@
 
 export interface CommitTimelineProps {
   commits: {
-  hash: string;
-  message: string;
-  repo: string;
-  date: string;
-  repoColor: string;
-}[];
+    hash: string;
+    message: string;
+    repo: string;
+    date: string;
+    repoColor: string;
+  }[];
 }

@@ -14,8 +14,16 @@ const distDir = path.join(tmpRoot, 'packages', 'tokens', 'dist');
 fs.mkdirSync(distDir, { recursive: true });
 
 const deprecatedFixture = [
-  { cssVar: '--lg-color-deprecated-one', swiftName: 'Color.deprecatedOne', replacement: '--lg-color-new-one' },
-  { cssVar: '--lg-color-deprecated-two', swiftName: 'Color.deprecatedTwo', replacement: '--lg-color-new-two' },
+  {
+    cssVar: '--lg-color-deprecated-one',
+    swiftName: 'Color.deprecatedOne',
+    replacement: '--lg-color-new-one',
+  },
+  {
+    cssVar: '--lg-color-deprecated-two',
+    swiftName: 'Color.deprecatedTwo',
+    replacement: '--lg-color-new-two',
+  },
 ];
 fs.writeFileSync(path.join(distDir, 'deprecated-tokens.json'), JSON.stringify(deprecatedFixture));
 
@@ -32,7 +40,9 @@ function freshRule() {
 
 // Cleanup on exit
 process.on('exit', () => {
-  try { fs.rmSync(tmpRoot, { recursive: true, force: true }); } catch (_) {}
+  try {
+    fs.rmSync(tmpRoot, { recursive: true, force: true });
+  } catch (_) {}
 });
 
 // ─── RuleTester setup ──────────────────────────────────────────────────────────

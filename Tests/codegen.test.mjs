@@ -31,7 +31,7 @@ let failures = 0;
 for (const { widget, file } of goldenFiles) {
   const output = execSync(
     `node scripts/generate-widget-docs.mjs --dry-run --emit-stdout --widget=${widget}`,
-    { cwd: ROOT, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }
+    { cwd: ROOT, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] },
   );
 
   const blocks = parseCodegenOutput(output);

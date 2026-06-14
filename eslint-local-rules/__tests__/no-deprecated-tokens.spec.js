@@ -44,7 +44,7 @@ function buildTmpProject(deprecatedRecords) {
   fs.mkdirSync(path.join(root, 'packages/web/src/widgets/foo'), { recursive: true });
   fs.writeFileSync(
     path.join(root, 'packages/tokens/dist/deprecated-tokens.json'),
-    JSON.stringify(deprecatedRecords)
+    JSON.stringify(deprecatedRecords),
   );
   return root;
 }
@@ -78,17 +78,13 @@ const tester = new RuleTester({
       {
         filename: widgetFile,
         code: 'const s = "color: var(--lg-color-legacy-pink)";',
-        errors: [
-          { messageId: 'deprecatedCssVar', data: { var: '--lg-color-legacy-pink' } },
-        ],
+        errors: [{ messageId: 'deprecatedCssVar', data: { var: '--lg-color-legacy-pink' } }],
       },
       // (b) reference to deprecated Swift accessor → flagged
       {
         filename: widgetFile,
         code: 'const s = "LGColor.legacyPink";',
-        errors: [
-          { messageId: 'deprecatedSwiftAccess', data: { name: 'Color.legacyPink' } },
-        ],
+        errors: [{ messageId: 'deprecatedSwiftAccess', data: { name: 'Color.legacyPink' } }],
       },
     ],
   });

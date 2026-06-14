@@ -17,11 +17,32 @@
    Consumers that want the reset import `@lifegames/tokens/reset`. Starlight
    (which ships its own reset) intentionally does NOT import this file. */
 
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-body, h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd, blockquote, figure, pre {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl,
+dd,
+blockquote,
+figure,
+pre {
   margin: 0;
   padding: 0;
 }
 
-ul, ol { list-style: none; }
+ul,
+ol {
+  list-style: none;
+}

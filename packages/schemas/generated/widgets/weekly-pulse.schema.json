@@ -13,20 +13,14 @@
             "type": "string"
           }
         },
-        "required": [
-          "total",
-          "label"
-        ]
+        "required": ["total", "label"]
       }
     },
     "maxWeek": {
       "type": "number"
     }
   },
-  "required": [
-    "weeks",
-    "maxWeek"
-  ],
+  "required": ["weeks", "maxWeek"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/weekly-pulse.json",
   "title": "WeeklyPulseProps"

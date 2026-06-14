@@ -1,5 +1,6 @@
-@layer lifegames { @layer compat {
-/* =================================================================
+@layer lifegames {
+  @layer compat {
+    /* =================================================================
    BACKWARDS-COMPATIBILITY SHIM — bare --* aliases to --lg-* tokens
    =================================================================
 
@@ -15,124 +16,124 @@
    references — always use --lg-* in new code.
    ================================================================= */
 
-:root {
-  /* --- Color Palette (10 accent colors) --- */
-  --neon-pink: var(--lg-color-accent-pink);
-  --neon-blue: var(--lg-color-accent-blue);
-  --neon-green: var(--lg-color-accent-green);
-  --neon-amber: var(--lg-color-accent-amber);
-  --neon-purple: var(--lg-color-accent-purple);
-  --neon-red: var(--lg-color-accent-red);
-  --neon-cyan: var(--lg-color-accent-cyan);
-  --neon-orange: var(--lg-color-accent-orange);
-  --neon-indigo: var(--lg-color-accent-indigo);
-  --bg: var(--lg-color-surface-base);
+    :root {
+      /* --- Color Palette (10 accent colors) --- */
+      --neon-pink: var(--lg-color-accent-pink);
+      --neon-blue: var(--lg-color-accent-blue);
+      --neon-green: var(--lg-color-accent-green);
+      --neon-amber: var(--lg-color-accent-amber);
+      --neon-purple: var(--lg-color-accent-purple);
+      --neon-red: var(--lg-color-accent-red);
+      --neon-cyan: var(--lg-color-accent-cyan);
+      --neon-orange: var(--lg-color-accent-orange);
+      --neon-indigo: var(--lg-color-accent-indigo);
+      --bg: var(--lg-color-surface-base);
 
-  /* --- High-Contrast Accent Variants --- */
-  --neon-pink-hc: var(--lg-color-accent-hc-pink);
-  --neon-purple-hc: var(--lg-color-accent-hc-purple);
-  --neon-red-hc: var(--lg-color-accent-hc-red);
+      /* --- High-Contrast Accent Variants --- */
+      --neon-pink-hc: var(--lg-color-accent-hc-pink);
+      --neon-purple-hc: var(--lg-color-accent-hc-purple);
+      --neon-red-hc: var(--lg-color-accent-hc-red);
 
-  /* --- Glass-morphism --- */
-  --glass-bg: var(--lg-color-surface-raised);
-  --glass-border: var(--lg-color-border-subtle);
-  --glass-bg-inset: var(--lg-color-surface-inset);
-  --glass-bg-raised: rgba(255,255,255,0.11);
-  --glass-border-strong: var(--lg-color-border-strong);
+      /* --- Glass-morphism --- */
+      --glass-bg: var(--lg-color-surface-raised);
+      --glass-border: var(--lg-color-border-subtle);
+      --glass-bg-inset: var(--lg-color-surface-inset);
+      --glass-bg-raised: rgba(255, 255, 255, 0.11);
+      --glass-border-strong: var(--lg-color-border-strong);
 
-  /* --- Text --- */
-  --text: var(--lg-color-text-primary);
-  --text-muted: var(--lg-color-text-muted);
+      /* --- Text --- */
+      --text: var(--lg-color-text-primary);
+      --text-muted: var(--lg-color-text-muted);
 
-  /* --- Typography --- */
-  --font-family: var(--lg-font-family-brand);
-  /* --font-mono uses a literal value — --lg-font-family-brand resolves
+      /* --- Typography --- */
+      --font-family: var(--lg-font-family-brand);
+      /* --font-mono uses a literal value — --lg-font-family-brand resolves
      to 'Space Grotesk', sans-serif which lacks the Fallback font and
      uses the wrong generic family. */
-  --font-mono: 'Space Grotesk', 'Space Grotesk Fallback', monospace;
-  --font-size-xs: var(--lg-font-size-caption2);
-  --font-size-sm: var(--lg-font-size-caption);
-  --font-size-base: var(--lg-font-size-footnote);
-  --font-size-md: var(--lg-font-size-body);
-  --font-size-lg: var(--lg-font-size-subhead);
-  --font-size-xl: var(--lg-font-size-headline);
-  --font-size-2xl: var(--lg-font-size-title3);
-  --font-size-3xl: var(--lg-font-size-title2);
-  --font-size-hero: var(--lg-font-size-hero);
+      --font-mono: 'Space Grotesk', 'Space Grotesk Fallback', monospace;
+      --font-size-xs: var(--lg-font-size-caption2);
+      --font-size-sm: var(--lg-font-size-caption);
+      --font-size-base: var(--lg-font-size-footnote);
+      --font-size-md: var(--lg-font-size-body);
+      --font-size-lg: var(--lg-font-size-subhead);
+      --font-size-xl: var(--lg-font-size-headline);
+      --font-size-2xl: var(--lg-font-size-title3);
+      --font-size-3xl: var(--lg-font-size-title2);
+      --font-size-hero: var(--lg-font-size-hero);
 
-  /* Bridge --lg-font-size-{xs,sm,md,lg,xl,2xl,3xl,base} → Apple-style tokens.
+      /* Bridge --lg-font-size-{xs,sm,md,lg,xl,2xl,3xl,base} → Apple-style tokens.
      Several production widgets (StarredRepoList, PlaceLeaderboardV3,
      ExplorationOdometerV3, LanguageGrid/Bars/Stack, etc.) reference the
      legacy `--lg-font-size-*` naming. Without these aliases the variables
      are undefined and fonts render at browser default (16px = TOO LARGE). */
-  --lg-font-size-xs: var(--lg-font-size-caption2);
-  --lg-font-size-sm: var(--lg-font-size-caption);
-  --lg-font-size-base: var(--lg-font-size-footnote);
-  --lg-font-size-md: var(--lg-font-size-body);
-  --lg-font-size-lg: var(--lg-font-size-subhead);
-  --lg-font-size-xl: var(--lg-font-size-headline);
-  --lg-font-size-2xl: var(--lg-font-size-title3);
-  --lg-font-size-3xl: var(--lg-font-size-title2);
+      --lg-font-size-xs: var(--lg-font-size-caption2);
+      --lg-font-size-sm: var(--lg-font-size-caption);
+      --lg-font-size-base: var(--lg-font-size-footnote);
+      --lg-font-size-md: var(--lg-font-size-body);
+      --lg-font-size-lg: var(--lg-font-size-subhead);
+      --lg-font-size-xl: var(--lg-font-size-headline);
+      --lg-font-size-2xl: var(--lg-font-size-title3);
+      --lg-font-size-3xl: var(--lg-font-size-title2);
 
-  /* --- Spacing (bare --space-N to --lg-space-NNN) --- */
-  --space-2: var(--lg-space-50);
-  --space-4: var(--lg-space-100);
-  --space-6: var(--lg-space-150);
-  --space-8: var(--lg-space-200);
-  --space-10: var(--lg-space-250);
-  --space-12: var(--lg-space-300);
-  --space-14: var(--lg-space-350);
-  --space-16: var(--lg-space-400);
-  --space-18: var(--lg-space-450);
-  --space-20: var(--lg-space-500);
-  --space-24: var(--lg-space-600);
-  --space-28: var(--lg-space-700);
-  --space-32: var(--lg-space-800);
-  --space-36: var(--lg-space-900);
-  --space-40: var(--lg-space-1000);
-  --space-48: var(--lg-space-1200);
+      /* --- Spacing (bare --space-N to --lg-space-NNN) --- */
+      --space-2: var(--lg-space-50);
+      --space-4: var(--lg-space-100);
+      --space-6: var(--lg-space-150);
+      --space-8: var(--lg-space-200);
+      --space-10: var(--lg-space-250);
+      --space-12: var(--lg-space-300);
+      --space-14: var(--lg-space-350);
+      --space-16: var(--lg-space-400);
+      --space-18: var(--lg-space-450);
+      --space-20: var(--lg-space-500);
+      --space-24: var(--lg-space-600);
+      --space-28: var(--lg-space-700);
+      --space-32: var(--lg-space-800);
+      --space-36: var(--lg-space-900);
+      --space-40: var(--lg-space-1000);
+      --space-48: var(--lg-space-1200);
 
-  /* --- Border Radius --- */
-  --radius-sm: var(--lg-radius-sm);
-  --radius-md: var(--lg-radius-md);
-  --radius-lg: var(--lg-radius-lg);
-  --radius-xl: var(--lg-radius-xl);
-  --radius-pill: var(--lg-radius-pill);
+      /* --- Border Radius --- */
+      --radius-sm: var(--lg-radius-sm);
+      --radius-md: var(--lg-radius-md);
+      --radius-lg: var(--lg-radius-lg);
+      --radius-xl: var(--lg-radius-xl);
+      --radius-pill: var(--lg-radius-pill);
 
-  /* --- Blur --- */
-  --blur-sm: var(--lg-blur-sm);
-  --blur-md: var(--lg-blur-md);
-  --blur-lg: var(--lg-blur-lg);
-  --blur-xl: var(--lg-blur-xl);
+      /* --- Blur --- */
+      --blur-sm: var(--lg-blur-sm);
+      --blur-md: var(--lg-blur-md);
+      --blur-lg: var(--lg-blur-lg);
+      --blur-xl: var(--lg-blur-xl);
 
-  /* --- Glow Shadows (9 standard + 9 small) --- */
-  --glow-pink: var(--lg-shadow-glow-pink);
-  --glow-blue: var(--lg-shadow-glow-blue);
-  --glow-green: var(--lg-shadow-glow-green);
-  --glow-amber: var(--lg-shadow-glow-amber);
-  --glow-purple: var(--lg-shadow-glow-purple);
-  --glow-red: var(--lg-shadow-glow-red);
-  --glow-cyan: var(--lg-shadow-glow-cyan);
-  --glow-orange: var(--lg-shadow-glow-orange);
-  --glow-indigo: var(--lg-shadow-glow-indigo);
-  --glow-pink-sm: var(--lg-shadow-glow-pinkSm);
-  --glow-blue-sm: var(--lg-shadow-glow-blueSm);
-  --glow-green-sm: var(--lg-shadow-glow-greenSm);
-  --glow-amber-sm: var(--lg-shadow-glow-amberSm);
-  --glow-purple-sm: var(--lg-shadow-glow-purpleSm);
-  --glow-red-sm: var(--lg-shadow-glow-redSm);
-  --glow-cyan-sm: var(--lg-shadow-glow-cyanSm);
-  --glow-orange-sm: var(--lg-shadow-glow-orangeSm);
-  --glow-indigo-sm: var(--lg-shadow-glow-indigoSm);
+      /* --- Glow Shadows (9 standard + 9 small) --- */
+      --glow-pink: var(--lg-shadow-glow-pink);
+      --glow-blue: var(--lg-shadow-glow-blue);
+      --glow-green: var(--lg-shadow-glow-green);
+      --glow-amber: var(--lg-shadow-glow-amber);
+      --glow-purple: var(--lg-shadow-glow-purple);
+      --glow-red: var(--lg-shadow-glow-red);
+      --glow-cyan: var(--lg-shadow-glow-cyan);
+      --glow-orange: var(--lg-shadow-glow-orange);
+      --glow-indigo: var(--lg-shadow-glow-indigo);
+      --glow-pink-sm: var(--lg-shadow-glow-pinkSm);
+      --glow-blue-sm: var(--lg-shadow-glow-blueSm);
+      --glow-green-sm: var(--lg-shadow-glow-greenSm);
+      --glow-amber-sm: var(--lg-shadow-glow-amberSm);
+      --glow-purple-sm: var(--lg-shadow-glow-purpleSm);
+      --glow-red-sm: var(--lg-shadow-glow-redSm);
+      --glow-cyan-sm: var(--lg-shadow-glow-cyanSm);
+      --glow-orange-sm: var(--lg-shadow-glow-orangeSm);
+      --glow-indigo-sm: var(--lg-shadow-glow-indigoSm);
 
-  /* --- Layout (no --lg-* equivalents; literal values from source) --- */
-  --left-width: 35%;
-  --right-width: 65%;
-  --top-bar-height: clamp(40px, 2.13rem + 1.00vw, 48px);
-  --max-site-width: 2400px;
-}
+      /* --- Layout (no --lg-* equivalents; literal values from source) --- */
+      --left-width: 35%;
+      --right-width: 65%;
+      --top-bar-height: clamp(40px, 2.13rem + 1vw, 48px);
+      --max-site-width: 2400px;
+    }
 
-/* =================================================================
+    /* =================================================================
    STATIC-RENDER VISIBILITY OVERRIDE
    =================================================================
 
@@ -144,12 +145,12 @@
    (docs site, Storybook) at all viewport widths.
    ================================================================= */
 
-[data-widget-preview] .tri-card {
-  opacity: 1;
-  transform: none;
-}
+    [data-widget-preview] .tri-card {
+      opacity: 1;
+      transform: none;
+    }
 
-/* =================================================================
+    /* =================================================================
    WIDGET BOX-MODEL NORMALIZATION (parity with production)
    =================================================================
 
@@ -167,14 +168,14 @@
    untouched.
    ================================================================= */
 
-.tri-card,
-.identity-card,
-.left-panel-status,
-.left-panel-bio {
-  box-sizing: border-box;
-}
+    .tri-card,
+    .identity-card,
+    .left-panel-status,
+    .left-panel-bio {
+      box-sizing: border-box;
+    }
 
-/* =================================================================
+    /* =================================================================
    DETAIL-PAGE LIVE DEMO CONSTRAINTS
    =================================================================
 
@@ -188,29 +189,29 @@
    in the production layout, instead of a stretched-out version.
    ================================================================= */
 
-.wd-demo > .tri-card,
-.wd-demo > .identity-card,
-.wd-demo > .left-panel-status,
-.wd-demo > .left-panel-bio,
-.wd-demo > div > .tri-card,
-.wd-demo > div > .identity-card,
-.wd-demo > div > .left-panel-status,
-.wd-demo > div > .left-panel-bio {
-  width: 100%;
-  max-width: 420px;
-  margin-left: auto;
-  margin-right: auto;
-}
+    .wd-demo > .tri-card,
+    .wd-demo > .identity-card,
+    .wd-demo > .left-panel-status,
+    .wd-demo > .left-panel-bio,
+    .wd-demo > div > .tri-card,
+    .wd-demo > div > .identity-card,
+    .wd-demo > div > .left-panel-status,
+    .wd-demo > div > .left-panel-bio {
+      width: 100%;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-/* Some demos wrap the widget in [data-widget-preview]; ensure that
+    /* Some demos wrap the widget in [data-widget-preview]; ensure that
    wrapper takes the demo block's full width so the inner widget's
    max-width logic functions correctly (default would be min-content). */
-.wd-demo > [data-widget-preview] {
-  display: block;
-  width: 100%;
-}
+    .wd-demo > [data-widget-preview] {
+      display: block;
+      width: 100%;
+    }
 
-/* =================================================================
+    /* =================================================================
    COLUMN-GUTTER LINE CLAMP
    =================================================================
 
@@ -224,17 +225,17 @@
    Reduce shadow blur radius so the glow stays within the gap.
    ================================================================= */
 
-/* Production has these decorative neon gutter lines BUT they consistently
+    /* Production has these decorative neon gutter lines BUT they consistently
    read as visual noise overlapping content in the docs site rendering
    context (different viewport widths, different scrollbar behavior).
    Disable them entirely in docs. Production layout.css keeps the original
    behavior since this only affects the docs `<body>` consuming compat.css. */
-body .triptych-column-body::before,
-body .triptych-column-mind::before {
-  display: none;
-}
+    body .triptych-column-body::before,
+    body .triptych-column-mind::before {
+      display: none;
+    }
 
-/* =================================================================
+    /* =================================================================
    BOOKMODAL ANIMATION FIX
    =================================================================
 
@@ -251,44 +252,45 @@ body .triptych-column-mind::before {
    Same pattern applied to .book-modal which has the parallel keyframes.
    ================================================================= */
 
-/* `!important` is required because components.css loads AFTER compat.css
+    /* `!important` is required because components.css loads AFTER compat.css
    and re-declares `animation: bookOverlayIn 0.2s` on the base selector.
    The animation runs while `display: none` (never restarts on display
    flip) and leaves opacity stuck at the 0% keyframe (opacity: 0). Per
    CSS Cascade Level 4, `!important` on a declaration beats the animation
    keyframe value at any time. */
-.book-overlay {
-  animation: none !important;
-  opacity: 0 !important;
-  transition: opacity 0.2s ease-out !important;
-}
+    .book-overlay {
+      animation: none !important;
+      opacity: 0 !important;
+      transition: opacity 0.2s ease-out !important;
+    }
 
-.book-overlay.visible {
-  opacity: 1 !important;
-}
+    .book-overlay.visible {
+      opacity: 1 !important;
+    }
 
-.book-modal {
-  animation: none !important;
-  transform: scale(0.95) !important;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
+    .book-modal {
+      animation: none !important;
+      transform: scale(0.95) !important;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
 
-.book-overlay.visible .book-modal {
-  transform: scale(1) !important;
-}
+    .book-overlay.visible .book-modal {
+      transform: scale(1) !important;
+    }
 
-/* =================================================================
+    /* =================================================================
    DEV ACTIVITY LOG — tighter line spacing on detail page
    ================================================================= */
 
-[data-widget-preview] .gh-dal-terminal,
-.wd-demo .gh-dal-terminal {
-  padding: var(--space-8) var(--space-10);
-}
+    [data-widget-preview] .gh-dal-terminal,
+    .wd-demo .gh-dal-terminal {
+      padding: var(--space-8) var(--space-10);
+    }
 
-[data-widget-preview] .gh-dal-line,
-.wd-demo .gh-dal-line {
-  padding: 0 var(--space-4);
-  margin: 0 calc(-1 * var(--space-4));
+    [data-widget-preview] .gh-dal-line,
+    .wd-demo .gh-dal-line {
+      padding: 0 var(--space-4);
+      margin: 0 calc(-1 * var(--space-4));
+    }
+  }
 }
-} }

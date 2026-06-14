@@ -25,20 +25,11 @@
             "type": "number"
           }
         },
-        "required": [
-          "hash",
-          "message",
-          "repo",
-          "date",
-          "additions",
-          "deletions"
-        ]
+        "required": ["hash", "message", "repo", "date", "additions", "deletions"]
       }
     }
   },
-  "required": [
-    "commits"
-  ],
+  "required": ["commits"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/commit-log.json",
   "title": "CommitLogProps"

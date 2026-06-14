@@ -17,18 +17,20 @@ const sorted = [...languages].sort((a, b) => b.pct - a.pct);
   </div>
   <div class="widget-body">
     <div class="gh-lang-bars">
-      {sorted.map((lang) => (
-        <div class="gh-lb-row">
-          <div class="gh-lb-info">
-            <span class="gh-lb-dot" style={`background: ${lang.color};`}></span>
-            <span class="gh-lb-name">{lang.name}</span>
-            <span class="gh-lb-pct">{lang.pct}%</span>
+      {
+        sorted.map((lang) => (
+          <div class="gh-lb-row">
+            <div class="gh-lb-info">
+              <span class="gh-lb-dot" style={`background: ${lang.color};`} />
+              <span class="gh-lb-name">{lang.name}</span>
+              <span class="gh-lb-pct">{lang.pct}%</span>
+            </div>
+            <div class="gh-lb-track">
+              <div class="gh-lb-fill" style={`width: ${lang.pct}%; background: ${lang.color};`} />
+            </div>
           </div>
-          <div class="gh-lb-track">
-            <div class="gh-lb-fill" style={`width: ${lang.pct}%; background: ${lang.color};`}></div>
-          </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </div>

@@ -83,7 +83,12 @@
           "required": ["low", "normal", "high", "unit"],
           "properties": {
             "low": { "type": "number" },
-            "normal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "normal": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
             "high": { "type": "number" },
             "unit": { "type": "string", "examples": ["bpm"] }
           }
@@ -93,9 +98,24 @@
           "additionalProperties": false,
           "required": ["excellent", "good", "fair", "poor"],
           "properties": {
-            "excellent": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-            "good": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-            "fair": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "excellent": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "good": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "fair": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
             "poor": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
           }
         },
@@ -104,10 +124,30 @@
           "additionalProperties": false,
           "required": ["poor", "fair", "good", "excellent"],
           "properties": {
-            "poor": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-            "fair": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-            "good": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-            "excellent": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
+            "poor": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "fair": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "good": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "excellent": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            }
           }
         },
         "respiratoryRate": {
@@ -116,7 +156,12 @@
           "required": ["low", "normal", "high"],
           "properties": {
             "low": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
-            "normal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+            "normal": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2
+            },
             "high": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }
           }
         },
@@ -125,7 +170,11 @@
           "additionalProperties": false,
           "required": ["goal"],
           "properties": {
-            "goal": { "type": "number", "description": "Daily step count goal.", "examples": [10000] }
+            "goal": {
+              "type": "number",
+              "description": "Daily step count goal.",
+              "examples": [10000]
+            }
           }
         },
         "activeEnergy": {
@@ -133,7 +182,11 @@
           "additionalProperties": false,
           "required": ["goal"],
           "properties": {
-            "goal": { "type": "number", "description": "Daily active energy goal in kilocalories.", "examples": [300] }
+            "goal": {
+              "type": "number",
+              "description": "Daily active energy goal in kilocalories.",
+              "examples": [300]
+            }
           }
         },
         "exerciseTime": {
@@ -141,7 +194,11 @@
           "additionalProperties": false,
           "required": ["goal"],
           "properties": {
-            "goal": { "type": "number", "description": "Daily exercise time goal in minutes.", "examples": [30] }
+            "goal": {
+              "type": "number",
+              "description": "Daily exercise time goal in minutes.",
+              "examples": [30]
+            }
           }
         },
         "standTime": {
@@ -149,7 +206,11 @@
           "additionalProperties": false,
           "required": ["goal"],
           "properties": {
-            "goal": { "type": "number", "description": "Daily stand time goal in minutes.", "examples": [60] }
+            "goal": {
+              "type": "number",
+              "description": "Daily stand time goal in minutes.",
+              "examples": [60]
+            }
           }
         },
         "sleep": {
@@ -157,10 +218,30 @@
           "additionalProperties": false,
           "required": ["targetHours", "deepPctIdeal", "remPctIdeal", "efficiencyGood"],
           "properties": {
-            "targetHours": { "type": "number", "description": "Target sleep duration in hours.", "examples": [7] },
-            "deepPctIdeal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Ideal deep-sleep percentage range [min, max]." },
-            "remPctIdeal": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "Ideal REM percentage range [min, max]." },
-            "efficiencyGood": { "type": "number", "description": "Minimum sleep efficiency percentage considered good.", "examples": [85] }
+            "targetHours": {
+              "type": "number",
+              "description": "Target sleep duration in hours.",
+              "examples": [7]
+            },
+            "deepPctIdeal": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2,
+              "description": "Ideal deep-sleep percentage range [min, max]."
+            },
+            "remPctIdeal": {
+              "type": "array",
+              "items": { "type": "number" },
+              "minItems": 2,
+              "maxItems": 2,
+              "description": "Ideal REM percentage range [min, max]."
+            },
+            "efficiencyGood": {
+              "type": "number",
+              "description": "Minimum sleep efficiency percentage considered good.",
+              "examples": [85]
+            }
           }
         }
       }
@@ -169,14 +250,41 @@
       "type": "object",
       "description": "Pre-computed derived metrics used directly by the widget to avoid runtime calculation.",
       "additionalProperties": false,
-      "required": ["totalSleepSeconds", "timeInBedSeconds", "sleepEfficiency", "totalCalories", "distanceKm", "deepPct", "remPct", "corePct"],
+      "required": [
+        "totalSleepSeconds",
+        "timeInBedSeconds",
+        "sleepEfficiency",
+        "totalCalories",
+        "distanceKm",
+        "deepPct",
+        "remPct",
+        "corePct"
+      ],
       "properties": {
-        "totalSleepSeconds": { "type": "number", "description": "Total sleep duration in seconds (sum of all phases)." },
-        "timeInBedSeconds": { "type": "number", "description": "Total time in bed in seconds including awake periods." },
-        "sleepEfficiency": { "type": "number", "description": "Sleep efficiency as a percentage (totalSleep / timeInBed * 100)." },
-        "totalCalories": { "type": "number", "description": "Total calories burned (active + basal) in kilocalories." },
-        "distanceKm": { "type": "number", "description": "Total walking/running distance in kilometres." },
-        "deepPct": { "type": "number", "description": "Deep sleep as a percentage of total sleep." },
+        "totalSleepSeconds": {
+          "type": "number",
+          "description": "Total sleep duration in seconds (sum of all phases)."
+        },
+        "timeInBedSeconds": {
+          "type": "number",
+          "description": "Total time in bed in seconds including awake periods."
+        },
+        "sleepEfficiency": {
+          "type": "number",
+          "description": "Sleep efficiency as a percentage (totalSleep / timeInBed * 100)."
+        },
+        "totalCalories": {
+          "type": "number",
+          "description": "Total calories burned (active + basal) in kilocalories."
+        },
+        "distanceKm": {
+          "type": "number",
+          "description": "Total walking/running distance in kilometres."
+        },
+        "deepPct": {
+          "type": "number",
+          "description": "Deep sleep as a percentage of total sleep."
+        },
         "remPct": { "type": "number", "description": "REM sleep as a percentage of total sleep." },
         "corePct": { "type": "number", "description": "Core sleep as a percentage of total sleep." }
       }
@@ -213,7 +321,10 @@
         "properties": {
           "activity_type": { "type": "string", "description": "Human-readable workout type." },
           "duration": { "type": "number", "description": "Duration in seconds." },
-          "energy_burned": { "type": "number", "description": "Active energy burned in kilocalories." },
+          "energy_burned": {
+            "type": "number",
+            "description": "Active energy burned in kilocalories."
+          },
           "distance": { "type": "number", "description": "Distance in meters." }
         }
       }
@@ -222,16 +333,43 @@
       "type": "object",
       "description": "Daily hydration and caffeine intake values and reference ranges.",
       "additionalProperties": false,
-      "required": ["waterOz", "caffeineMg", "waterMax", "caffeineMax", "waterRangeLo", "waterRangeHi", "caffeineRangeLo", "caffeineRangeHi"],
+      "required": [
+        "waterOz",
+        "caffeineMg",
+        "waterMax",
+        "caffeineMax",
+        "waterRangeLo",
+        "waterRangeHi",
+        "caffeineRangeLo",
+        "caffeineRangeHi"
+      ],
       "properties": {
         "waterOz": { "type": "number", "description": "Water consumed in fluid ounces." },
         "caffeineMg": { "type": "number", "description": "Caffeine consumed in milligrams." },
-        "waterMax": { "type": "number", "description": "Maximum daily water intake goal in fluid ounces." },
-        "caffeineMax": { "type": "number", "description": "Maximum recommended caffeine in milligrams." },
-        "waterRangeLo": { "type": "number", "description": "Lower bound of healthy water intake range in fluid ounces." },
-        "waterRangeHi": { "type": "number", "description": "Upper bound of healthy water intake range in fluid ounces." },
-        "caffeineRangeLo": { "type": "number", "description": "Lower bound of moderate caffeine range in milligrams." },
-        "caffeineRangeHi": { "type": "number", "description": "Upper bound of moderate caffeine range in milligrams." }
+        "waterMax": {
+          "type": "number",
+          "description": "Maximum daily water intake goal in fluid ounces."
+        },
+        "caffeineMax": {
+          "type": "number",
+          "description": "Maximum recommended caffeine in milligrams."
+        },
+        "waterRangeLo": {
+          "type": "number",
+          "description": "Lower bound of healthy water intake range in fluid ounces."
+        },
+        "waterRangeHi": {
+          "type": "number",
+          "description": "Upper bound of healthy water intake range in fluid ounces."
+        },
+        "caffeineRangeLo": {
+          "type": "number",
+          "description": "Lower bound of moderate caffeine range in milligrams."
+        },
+        "caffeineRangeHi": {
+          "type": "number",
+          "description": "Upper bound of moderate caffeine range in milligrams."
+        }
       }
     }
   }

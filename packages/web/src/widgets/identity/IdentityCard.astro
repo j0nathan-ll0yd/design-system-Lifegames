@@ -3,76 +3,169 @@ import { widgets, a11y } from '@lifegames/copy';
 
 const { profile, compact = false } = Astro.props;
 ---
-{compact ? (
-  <div class="identity-card" id="identityCard">
-    {profile.github || profile.linkedin ? (
-      <picture>
-        <source srcset="/assets/avatar.webp" type="image/webp">
-        <img class="id-avatar" src="/assets/avatar.jpg" alt={a11y.identity.avatarAlt.replace('{name}', profile.name)} fetchpriority="high" width="200" height="200">
-      </picture>
-    ) : null}
-    <div class="id-info-inline">
-      <h1 class="id-name">{profile.name}</h1>
-      {profile.title && <div class="id-title">{profile.title}</div>}
-    </div>
-    {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
-    {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
-    {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
-      <nav class="id-links" aria-label={a11y.identity.socialNav}>
-        {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.github}</a>}
-        {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.linkedin}</a>}
-        {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.site}</a>}
-        {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.mastodon}</a>}
-        {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">{widgets.identityCard.bluesky}</a>}
-      </nav>
-    )}
-  </div>
-) : (
-  <div class="tri-card tri-card-accent-indigo" id="identityCard">
-    <div class="widget-header">
-      <h3 class="widget-label">Identity</h3>
-      <div class="widget-header-right">
-        <div class="live-dot live-dot-indigo"></div>
-        <span class="widget-timestamp">profile</span>
+
+{
+  compact ? (
+    <div class="identity-card" id="identityCard">
+      {profile.github || profile.linkedin ? (
+        <picture>
+          <source srcset="/assets/avatar.webp" type="image/webp" />
+          <img
+            class="id-avatar"
+            src="/assets/avatar.jpg"
+            alt={a11y.identity.avatarAlt.replace('{name}', profile.name)}
+            fetchpriority="high"
+            width="200"
+            height="200"
+          />
+        </picture>
+      ) : null}
+      <div class="id-info-inline">
+        <h1 class="id-name">{profile.name}</h1>
+        {profile.title && <div class="id-title">{profile.title}</div>}
       </div>
+      {profile.bio && (
+        <div class="id-bio">
+          <em>{profile.bio}</em>
+        </div>
+      )}
+      {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
+      {(profile.github ||
+        profile.linkedin ||
+        profile.site ||
+        profile.mastodon ||
+        profile.bluesky) && (
+        <nav class="id-links" aria-label={a11y.identity.socialNav}>
+          {profile.github && (
+            <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">
+              {widgets.identityCard.github}
+            </a>
+          )}
+          {profile.linkedin && (
+            <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">
+              {widgets.identityCard.linkedin}
+            </a>
+          )}
+          {profile.site && (
+            <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">
+              {widgets.identityCard.site}
+            </a>
+          )}
+          {profile.mastodon && (
+            <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">
+              {widgets.identityCard.mastodon}
+            </a>
+          )}
+          {profile.bluesky && (
+            <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">
+              {widgets.identityCard.bluesky}
+            </a>
+          )}
+        </nav>
+      )}
     </div>
-    <div class="widget-body">
-      <div class="skeleton-state">
-        <div class="id-skeleton-layout">
-          <div class="skeleton-circle" style="width: 64px; height: 64px;"></div>
-          <div class="id-skeleton-bars">
-            <div class="skeleton-bar" style="width: 120px; height: 18px;"></div>
-            <div class="skeleton-bar" style="width: 180px; height: 14px;"></div>
-            <div class="skeleton-bar" style="width: 100%; height: 12px;"></div>
+  ) : (
+    <div class="tri-card tri-card-accent-indigo" id="identityCard">
+      <div class="widget-header">
+        <h3 class="widget-label">Identity</h3>
+        <div class="widget-header-right">
+          <div class="live-dot live-dot-indigo" />
+          <span class="widget-timestamp">profile</span>
+        </div>
+      </div>
+      <div class="widget-body">
+        <div class="skeleton-state">
+          <div class="id-skeleton-layout">
+            <div class="skeleton-circle" style="width: 64px; height: 64px;" />
+            <div class="id-skeleton-bars">
+              <div class="skeleton-bar" style="width: 120px; height: 18px;" />
+              <div class="skeleton-bar" style="width: 180px; height: 14px;" />
+              <div class="skeleton-bar" style="width: 100%; height: 12px;" />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="identity-card">
-        {profile.github || profile.linkedin ? (
-          <picture>
-            <source srcset="/assets/avatar.webp" type="image/webp">
-            <img class="id-avatar" src="/assets/avatar.jpg" alt={a11y.identity.avatarAlt.replace('{name}', profile.name)} fetchpriority="high" width="200" height="200">
-          </picture>
-        ) : null}
-        <div class="id-info-inline">
-          <h1 class="id-name">{profile.name}</h1>
-          {profile.title && <div class="id-title">{profile.title}</div>}
+        <div class="identity-card">
+          {profile.github || profile.linkedin ? (
+            <picture>
+              <source srcset="/assets/avatar.webp" type="image/webp" />
+              <img
+                class="id-avatar"
+                src="/assets/avatar.jpg"
+                alt={a11y.identity.avatarAlt.replace('{name}', profile.name)}
+                fetchpriority="high"
+                width="200"
+                height="200"
+              />
+            </picture>
+          ) : null}
+          <div class="id-info-inline">
+            <h1 class="id-name">{profile.name}</h1>
+            {profile.title && <div class="id-title">{profile.title}</div>}
+          </div>
+          {profile.bio && (
+            <div class="id-bio">
+              <em>{profile.bio}</em>
+            </div>
+          )}
+          {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
+          {(profile.github ||
+            profile.linkedin ||
+            profile.site ||
+            profile.mastodon ||
+            profile.bluesky) && (
+            <nav class="id-links" aria-label={a11y.identity.socialNav}>
+              {profile.github && (
+                <a
+                  href={profile.github}
+                  class="neon-pill"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+              )}
+              {profile.linkedin && (
+                <a
+                  href={profile.linkedin}
+                  class="neon-pill"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
+              )}
+              {profile.site && (
+                <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">
+                  Site
+                </a>
+              )}
+              {profile.mastodon && (
+                <a
+                  href={profile.mastodon}
+                  class="neon-pill"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Mastodon
+                </a>
+              )}
+              {profile.bluesky && (
+                <a
+                  href={profile.bluesky}
+                  class="neon-pill"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Bluesky
+                </a>
+              )}
+            </nav>
+          )}
         </div>
-        {profile.bio && <div class="id-bio"><em>{profile.bio}</em></div>}
-        {profile.tagline && <div class="id-tagline">{profile.tagline}</div>}
-        {(profile.github || profile.linkedin || profile.site || profile.mastodon || profile.bluesky) && (
-          <nav class="id-links" aria-label={a11y.identity.socialNav}>
-            {profile.github && <a href={profile.github} class="neon-pill" target="_blank" rel="noopener noreferrer">GitHub</a>}
-            {profile.linkedin && <a href={profile.linkedin} class="neon-pill" target="_blank" rel="noopener noreferrer">LinkedIn</a>}
-            {profile.site && <a href={profile.site} class="neon-pill" target="_blank" rel="noopener noreferrer">Site</a>}
-            {profile.mastodon && <a href={profile.mastodon} class="neon-pill" target="_blank" rel="noopener noreferrer">Mastodon</a>}
-            {profile.bluesky && <a href={profile.bluesky} class="neon-pill" target="_blank" rel="noopener noreferrer">Bluesky</a>}
-          </nav>
-        )}
       </div>
     </div>
-  </div>
-)}
+  )
+}
 
 <style>
   .id-skeleton-layout {
@@ -106,4 +199,3 @@ const { profile, compact = false } = Astro.props;
      production/IdentityCard.astro's comment and the consumer's
      public/js/social-click-track.js. CSP `script-src 'self'` rejects inline
      script bodies, so analytics wiring lives in an external file, never here. -->
-

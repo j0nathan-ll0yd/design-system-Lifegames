@@ -11,12 +11,7 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": [
-                  "cursor",
-                  "blank",
-                  "prompt",
-                  "output"
-                ]
+                "enum": ["cursor", "blank", "prompt", "output"]
               },
               "text": {
                 "anyOf": [
@@ -29,20 +24,14 @@
                 ]
               }
             },
-            "required": [
-              "type"
-            ]
+            "required": ["type"]
           }
         }
       },
-      "required": [
-        "terminalLines"
-      ]
+      "required": ["terminalLines"]
     }
   },
-  "required": [
-    "profile"
-  ],
+  "required": ["profile"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/bio-terminal.json",
   "title": "BioTerminalProps"

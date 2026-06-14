@@ -46,7 +46,13 @@
       "type": "object",
       "description": "Aggregate reading statistics computed by the DS pipeline from LP articles-export data.",
       "additionalProperties": false,
-      "required": ["totalSubscriptions", "unreadCount", "articlesThisWeek", "articlesLastWeek", "starredCount"],
+      "required": [
+        "totalSubscriptions",
+        "unreadCount",
+        "articlesThisWeek",
+        "articlesLastWeek",
+        "starredCount"
+      ],
       "properties": {
         "totalSubscriptions": {
           "type": "integer",

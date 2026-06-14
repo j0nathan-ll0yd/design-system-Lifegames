@@ -1,7 +1,12 @@
 ---
 import Dashboard from '../layouts/Dashboard.astro';
 ---
-<Dashboard title="Page Not Found — Jonathan Lloyd" description="The requested page could not be found." robots="noindex">
+
+<Dashboard
+  title="Page Not Found — Jonathan Lloyd"
+  description="The requested page could not be found."
+  robots="noindex"
+>
   <main id="main-content" class="glitch-page">
     <div class="glitch-container" aria-label="404 error page">
       <div class="glitch-404" aria-hidden="true">404</div>
@@ -57,21 +62,50 @@ import Dashboard from '../layouts/Dashboard.astro';
   }
 
   @keyframes glitch-scanline {
-    0% { background-position: 0 0; }
-    100% { background-position: 0 100px; }
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 100px;
+    }
   }
 
   @keyframes glitch-bar {
-    0%   { top: 10%; opacity: 0; }
-    5%   { opacity: 1; }
-    10%  { top: 10%; opacity: 0; }
-    40%  { top: 65%; opacity: 0; }
-    42%  { opacity: 0.8; }
-    44%  { opacity: 0; }
-    70%  { top: 30%; opacity: 0; }
-    72%  { opacity: 1; }
-    74%  { opacity: 0; }
-    100% { top: 30%; opacity: 0; }
+    0% {
+      top: 10%;
+      opacity: 0;
+    }
+    5% {
+      opacity: 1;
+    }
+    10% {
+      top: 10%;
+      opacity: 0;
+    }
+    40% {
+      top: 65%;
+      opacity: 0;
+    }
+    42% {
+      opacity: 0.8;
+    }
+    44% {
+      opacity: 0;
+    }
+    70% {
+      top: 30%;
+      opacity: 0;
+    }
+    72% {
+      opacity: 1;
+    }
+    74% {
+      opacity: 0;
+    }
+    100% {
+      top: 30%;
+      opacity: 0;
+    }
   }
 
   .glitch-container {
@@ -119,46 +153,162 @@ import Dashboard from '../layouts/Dashboard.astro';
   }
 
   @keyframes glitch-main {
-    0%   { transform: translate(0, 0); }
-    5%   { transform: translate(-2px, 1px); }
-    6%   { transform: translate(0, 0); }
-    35%  { transform: translate(0, 0); }
-    36%  { transform: translate(1px, -1px); }
-    37%  { transform: translate(0, 0); }
-    72%  { transform: translate(0, 0); }
-    73%  { transform: translate(-1px, 2px); }
-    74%  { transform: translate(0, 0); }
-    100% { transform: translate(0, 0); }
+    0% {
+      transform: translate(0, 0);
+    }
+    5% {
+      transform: translate(-2px, 1px);
+    }
+    6% {
+      transform: translate(0, 0);
+    }
+    35% {
+      transform: translate(0, 0);
+    }
+    36% {
+      transform: translate(1px, -1px);
+    }
+    37% {
+      transform: translate(0, 0);
+    }
+    72% {
+      transform: translate(0, 0);
+    }
+    73% {
+      transform: translate(-1px, 2px);
+    }
+    74% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(0, 0);
+    }
   }
 
   @keyframes glitch-red {
-    0%   { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
-    5%   { transform: translate(-3px, 0); clip-path: inset(20% 0 40% 0); opacity: 1; }
-    6%   { transform: translate(2px, 0);  clip-path: inset(60% 0 10% 0); opacity: 1; }
-    7%   { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
-    35%  { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
-    36%  { transform: translate(-4px, 1px); clip-path: inset(10% 0 70% 0); opacity: 1; }
-    37%  { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
-    72%  { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
-    73%  { transform: translate(-2px, 0); clip-path: inset(45% 0 20% 0); opacity: 1; }
-    74%  { transform: translate(3px, 0);  clip-path: inset(5% 0 80% 0); opacity: 1; }
-    75%  { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
-    100% { transform: translate(0, 0);    clip-path: inset(0 0 100% 0); opacity: 0; }
+    0% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    5% {
+      transform: translate(-3px, 0);
+      clip-path: inset(20% 0 40% 0);
+      opacity: 1;
+    }
+    6% {
+      transform: translate(2px, 0);
+      clip-path: inset(60% 0 10% 0);
+      opacity: 1;
+    }
+    7% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    35% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    36% {
+      transform: translate(-4px, 1px);
+      clip-path: inset(10% 0 70% 0);
+      opacity: 1;
+    }
+    37% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    72% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    73% {
+      transform: translate(-2px, 0);
+      clip-path: inset(45% 0 20% 0);
+      opacity: 1;
+    }
+    74% {
+      transform: translate(3px, 0);
+      clip-path: inset(5% 0 80% 0);
+      opacity: 1;
+    }
+    75% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
   }
 
   @keyframes glitch-cyan {
-    0%   { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
-    5%   { transform: translate(3px, 0); clip-path: inset(40% 0 30% 0); opacity: 1; }
-    6%   { transform: translate(-1px, 0);clip-path: inset(70% 0 5% 0);  opacity: 1; }
-    7%   { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
-    35%  { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
-    36%  { transform: translate(4px, -1px); clip-path: inset(30% 0 50% 0); opacity: 1; }
-    37%  { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
-    72%  { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
-    73%  { transform: translate(2px, 0); clip-path: inset(15% 0 55% 0); opacity: 1; }
-    74%  { transform: translate(-3px, 0);clip-path: inset(80% 0 2% 0);  opacity: 1; }
-    75%  { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
-    100% { transform: translate(0, 0);   clip-path: inset(0 0 100% 0); opacity: 0; }
+    0% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    5% {
+      transform: translate(3px, 0);
+      clip-path: inset(40% 0 30% 0);
+      opacity: 1;
+    }
+    6% {
+      transform: translate(-1px, 0);
+      clip-path: inset(70% 0 5% 0);
+      opacity: 1;
+    }
+    7% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    35% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    36% {
+      transform: translate(4px, -1px);
+      clip-path: inset(30% 0 50% 0);
+      opacity: 1;
+    }
+    37% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    72% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    73% {
+      transform: translate(2px, 0);
+      clip-path: inset(15% 0 55% 0);
+      opacity: 1;
+    }
+    74% {
+      transform: translate(-3px, 0);
+      clip-path: inset(80% 0 2% 0);
+      opacity: 1;
+    }
+    75% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
+    100% {
+      transform: translate(0, 0);
+      clip-path: inset(0 0 100% 0);
+      opacity: 0;
+    }
   }
 
   .glitch-subtitle {
@@ -171,14 +321,30 @@ import Dashboard from '../layouts/Dashboard.astro';
   }
 
   @keyframes glitch-flicker {
-    0%   { opacity: 1; }
-    48%  { opacity: 1; }
-    49%  { opacity: 0.2; }
-    50%  { opacity: 1; }
-    80%  { opacity: 1; }
-    81%  { opacity: 0; }
-    82%  { opacity: 1; }
-    100% { opacity: 1; }
+    0% {
+      opacity: 1;
+    }
+    48% {
+      opacity: 1;
+    }
+    49% {
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    81% {
+      opacity: 0;
+    }
+    82% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 
   .glitch-sub2 {
@@ -205,7 +371,9 @@ import Dashboard from '../layouts/Dashboard.astro';
     z-index: 100;
     white-space: nowrap;
   }
-  .glitch-return:hover { opacity: 1; }
+  .glitch-return:hover {
+    opacity: 1;
+  }
   .glitch-return:focus {
     outline: 2px solid var(--neon-red);
     outline-offset: 4px;
@@ -215,11 +383,25 @@ import Dashboard from '../layouts/Dashboard.astro';
 
   /* Reduced motion: static fallback */
   @media (prefers-reduced-motion: reduce) {
-    .glitch-page::before { animation: none; }
-    .glitch-page::after { display: none; }
-    .glitch-404 { animation: none; color: var(--neon-red); }
-    .glitch-404::before { display: none; }
-    .glitch-404::after { display: none; }
-    .glitch-subtitle { animation: none; opacity: 1; }
+    .glitch-page::before {
+      animation: none;
+    }
+    .glitch-page::after {
+      display: none;
+    }
+    .glitch-404 {
+      animation: none;
+      color: var(--neon-red);
+    }
+    .glitch-404::before {
+      display: none;
+    }
+    .glitch-404::after {
+      display: none;
+    }
+    .glitch-subtitle {
+      animation: none;
+      opacity: 1;
+    }
   }
 </style>

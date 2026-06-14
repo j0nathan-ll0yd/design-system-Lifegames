@@ -15,7 +15,7 @@ function addRange(
   const zone = document.createElement('div');
   zone.className = 'hydra-range ' + cssClass;
   zone.style.bottom = loPct + '%';
-  zone.style.height = (hiPct - loPct) + '%';
+  zone.style.height = hiPct - loPct + '%';
   const topLbl = document.createElement('div');
   topLbl.className = 'hydra-range-label hydra-range-label-top ' + labelClass;
   topLbl.textContent = hiLabel;
@@ -27,7 +27,12 @@ function addRange(
   parent.appendChild(zone);
 }
 
-function countUp(el: HTMLElement | null, target: number, unit: string, reducedMotion: boolean): void {
+function countUp(
+  el: HTMLElement | null,
+  target: number,
+  unit: string,
+  reducedMotion: boolean,
+): void {
   if (!el) return;
   if (reducedMotion) {
     el.textContent = target + ' ' + unit;

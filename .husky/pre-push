@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+# Tier 2: local CI-parity gate, run once per push (replaces branch protection's
+# required status checks). Mirrors the non-Swift CI jobs. Also blocks direct
+# pushes to main/master.
+#
+# Bypass for genuine emergencies (CI re-verifies on the PR):
+#   DS_SKIP_PREPUSH=1 git push
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  echo "ERROR: Direct push to $branch is not allowed. Open a pull request."
+  exit 1
+fi
+
+if [ "${DS_SKIP_PREPUSH:-0}" = "1" ]; then
+  echo "[pre-push] DS_SKIP_PREPUSH=1 — skipping local CI gate. Remote CI will re-verify."
+  exit 0
+fi
+
+# Run a labelled step; abort the push on the first failure with a clear message.
+step() {
+  printf '[pre-push] %s\n' "$1"
+  shift
+  if ! "$@"; then
+    echo "ERROR: pre-push check failed: $*" >&2
+    echo "  Fix the issue (or bypass with DS_SKIP_PREPUSH=1 git push for emergencies)." >&2
+    exit 1
+  fi
+}
+
+echo "[pre-push] Running local CI-parity gate (format, lint, freshness, tests, governance)..."
+
+# ── Formatting, lint, generated-artifact freshness ──────────────────────────
+step "format:check"            pnpm format:check
+step "lint"                    pnpm lint
+step "schemas freshness"       pnpm check:schemas-freshness
+
+# ── Tier 2: cheap CI-job mirrors (typecheck, unit tests, contract, audits) ──
+step "web typecheck"           pnpm --filter @lifegames/web tsc --noEmit
+step "copy tests"              pnpm -F @lifegames/copy test
+step "copy grep-gate"          pnpm -F @lifegames/copy grep-gate
+step "web inline-script audit" pnpm -F @lifegames/web audit:inline-scripts
+step "schema contract verify"  pnpm -F @lifegames/schemas contract:verify
+step "DTCG conformance"        pnpm dtcg:validate
+
+# ── Tier 3: governance gates (need token-dist; mirror CI governance-gates) ──
+step "build tokens (prereq)"   pnpm build:tokens
+step "widget inventory drift"  pnpm widget:inventory -- --check
+step "token parity (P1)"       pnpm tokens:parity
+step "WCAG-AA contrast"        pnpm check:contrast
+step "Swift widget purity (P3)" pnpm swift:purity
+step "watch exclusions (F-014)" pnpm watch:exclusions
+step "promotion gate (P4/P7)"  pnpm promotion:check
+step "tokens golden test"      pnpm -F @lifegames/tokens test
+
+echo "[pre-push] All checks passed."

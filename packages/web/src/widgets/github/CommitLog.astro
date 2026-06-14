@@ -14,6 +14,7 @@ interface Props {
 
 const { commits } = Astro.props;
 ---
+
 <div class="tri-card tri-card-accent-green">
   <div class="widget-header">
     <span class="widget-label">Commit Log</span>
@@ -24,18 +25,20 @@ const { commits } = Astro.props;
   </div>
   <div class="widget-body">
     <div class="gh-commit-log">
-      {commits.map((c: Commit) => (
-        <div class="gh-cl-line">
-          <span class="gh-cl-hash">{c.hash}</span>
-          <span class="gh-cl-msg">{c.message}</span>
-          <span class="gh-cl-repo">{c.repo}</span>
-          <span class="gh-cl-stats">
-            <span class="gh-cl-additions">+{c.additions}</span>
-            <span class="gh-cl-deletions">-{c.deletions}</span>
-          </span>
-          <span class="gh-cl-date">{c.date}</span>
-        </div>
-      ))}
+      {
+        commits.map((c: Commit) => (
+          <div class="gh-cl-line">
+            <span class="gh-cl-hash">{c.hash}</span>
+            <span class="gh-cl-msg">{c.message}</span>
+            <span class="gh-cl-repo">{c.repo}</span>
+            <span class="gh-cl-stats">
+              <span class="gh-cl-additions">+{c.additions}</span>
+              <span class="gh-cl-deletions">-{c.deletions}</span>
+            </span>
+            <span class="gh-cl-date">{c.date}</span>
+          </div>
+        ))
+      }
     </div>
   </div>
 </div>

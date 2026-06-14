@@ -5,7 +5,15 @@ import {
   formatPhase,
   computeSleepPercentages,
 } from './sleep';
-import type { HealthExport, SleepExport, WorkoutsExport, BooksExport, GithubEventsExport, ArticlesExport, GithubStarredReposExport } from '../types/exports';
+import type {
+  HealthExport,
+  SleepExport,
+  WorkoutsExport,
+  BooksExport,
+  GithubEventsExport,
+  ArticlesExport,
+  GithubStarredReposExport,
+} from '../types/exports';
 
 // ── Adapted output types (what adapters produce for updaters) ──────
 
@@ -133,7 +141,10 @@ export interface AdaptedStarredRepo {
 
 // ── Adapter functions ──────────────────────────────────────────────
 
-export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | null): AdaptedHealth {
+export function adaptHealth(
+  healthData: HealthExport,
+  sleepData: SleepExport | null,
+): AdaptedHealth {
   const q = { ...healthData.quantities };
 
   // 1. Rename heartRateVariabilitySDNN → hrvSDNN
@@ -318,7 +329,7 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
     const mappedStatus = statusMap[b.status ?? ''] ?? b.status ?? 'next';
     let progress: number | undefined;
     if (b.currentPage != null && b.totalPages != null && b.totalPages > 0) {
-      progress = Math.round(b.currentPage / b.totalPages * 100);
+      progress = Math.round((b.currentPage / b.totalPages) * 100);
     }
     return {
       title: b.title,
@@ -327,7 +338,10 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       status: mappedStatus,
       rating: b.rating ?? null,
       progress,
-      link: 'https://www.amazon.com/dp/' + b.asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
+      link:
+        'https://www.amazon.com/dp/' +
+        b.asin +
+        '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
       // CloudFront URLs flow through unchanged. The updater conditionally rewrites
       // to a local /images/books/<asin>-*.webp path only for ASINs that were in
       // the SSR fixture (`ssrAsins`) — those are the only ASINs that have a
@@ -377,7 +391,10 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
   };
 }
 
-export function adaptStarredRepos(data: GithubStarredReposExport, now?: number): AdaptedStarredRepo[] {
+export function adaptStarredRepos(
+  data: GithubStarredReposExport,
+  now?: number,
+): AdaptedStarredRepo[] {
   const ts = now ?? Date.now();
   return (data.repos || []).slice(0, 5).map((r) => {
     const msAgo = ts - new Date(r.starredAt).getTime();

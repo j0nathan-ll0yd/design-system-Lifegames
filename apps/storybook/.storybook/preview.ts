@@ -17,9 +17,7 @@ const preview: Preview = {
     },
     a11y: {
       config: {
-        rules: [
-          { id: 'region', enabled: false },
-        ],
+        rules: [{ id: 'region', enabled: false }],
       },
       test: 'error',
     },

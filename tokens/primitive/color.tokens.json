@@ -7,7 +7,10 @@
     },
     "blue": {
       "500": { "$value": "#3a86ff", "$description": "Neon blue (web --neon-blue, iOS neonBlue)" },
-      "550": { "$value": "#0c69ff", "$description": "Sleep core blue (WCAG AA for white text on bg)" },
+      "550": {
+        "$value": "#0c69ff",
+        "$description": "Sleep core blue (WCAG AA for white text on bg)"
+      },
       "600": { "$value": "#3b82f6", "$description": "Accent blue (iOS accentBlue)" },
       "700": { "$value": "#5676e2", "$description": "Deep blue (sleep.deep, WCAG AA on dark)" }
     },
@@ -18,8 +21,14 @@
       "500": { "$value": "#f59e0b", "$description": "Neon amber (web --neon-amber, iOS neonAmber)" }
     },
     "purple": {
-      "500": { "$value": "#a855f7", "$description": "Neon purple (web --neon-purple, iOS neonPurple)" },
-      "550": { "$value": "#9e41f6", "$description": "Sleep REM purple (WCAG AA for white text on bg)" },
+      "500": {
+        "$value": "#a855f7",
+        "$description": "Neon purple (web --neon-purple, iOS neonPurple)"
+      },
+      "550": {
+        "$value": "#9e41f6",
+        "$description": "Sleep REM purple (WCAG AA for white text on bg)"
+      },
       "400": { "$value": "#c084fc", "$description": "High-contrast purple (WCAG AAA)" },
       "600": { "$value": "#8b5cf6", "$description": "Accent purple (iOS accentPurple)" }
     },
@@ -38,7 +47,10 @@
       "500": { "$value": "#ffd600", "$description": "Status warning yellow (iOS statusWarning)" }
     },
     "gold": {
-      "500": { "$value": "#ffd700", "$description": "Podium gold (1st place; distinct from yellow.500)" }
+      "500": {
+        "$value": "#ffd700",
+        "$description": "Podium gold (1st place; distinct from yellow.500)"
+      }
     },
     "silver": {
       "500": { "$value": "#c0c0c0", "$description": "Podium silver (2nd place)" }
@@ -52,7 +64,10 @@
       "700": { "$value": "#5e5ce6", "$description": "Apple system indigo (iOS healthPurple)" }
     },
     "gray": {
-      "950": { "$value": "#06060f", "$description": "Deep background (web --bg, iOS backgroundDeep)" },
+      "950": {
+        "$value": "#06060f",
+        "$description": "Deep background (web --bg, iOS backgroundDeep)"
+      },
       "900": { "$value": "#0a0a0f", "$description": "Background (iOS background)" }
     },
     "zinc": {
@@ -61,7 +76,10 @@
       "300": { "$value": "#f0f0f0", "$description": "Primary text (web --text)" },
       "400": { "$value": "#9ca3af", "$description": "Muted text (web --text-muted)" },
       "500": { "$value": "#8e8e97", "$description": "Muted text (iOS textMuted, WCAG AA on dark)" },
-      "600": { "$value": "#85858e", "$description": "Subtle text (iOS textSubtle, WCAG AA on dark)" },
+      "600": {
+        "$value": "#85858e",
+        "$description": "Subtle text (iOS textSubtle, WCAG AA on dark)"
+      },
       "700": { "$value": "#7c7c84", "$description": "Card arrow (iOS cardArrow, WCAG AA on dark)" }
     },
     "white": {
@@ -72,14 +90,38 @@
     },
     "alpha": {
       "$description": "Neutral alpha primitives for layered glass surfaces. Name encodes the alpha percentage; semantic tier references these to keep all surface/border opacities aligned.",
-      "white3":  { "$value": "rgba(255,255,255,0.03)", "$description": "3% white overlay (inset surface)" },
-      "white4":  { "$value": "rgba(255,255,255,0.04)", "$description": "4% white overlay (AI artifact frame)" },
-      "white5":  { "$value": "rgba(255,255,255,0.05)", "$description": "5% white overlay (raised hover)" },
-      "white6":  { "$value": "rgba(255,255,255,0.06)", "$description": "6% white overlay (default border)" },
-      "white7":  { "$value": "rgba(255,255,255,0.07)", "$description": "7% white overlay (raised surface)" },
-      "white10": { "$value": "rgba(255,255,255,0.1)",  "$description": "10% white overlay (subtle border)" },
-      "white18": { "$value": "rgba(255,255,255,0.18)", "$description": "18% white overlay (strong border)" },
-      "black35": { "$value": "rgba(0,0,0,0.35)",       "$description": "35% black overlay (AI code-block background)" }
+      "white3": {
+        "$value": "rgba(255,255,255,0.03)",
+        "$description": "3% white overlay (inset surface)"
+      },
+      "white4": {
+        "$value": "rgba(255,255,255,0.04)",
+        "$description": "4% white overlay (AI artifact frame)"
+      },
+      "white5": {
+        "$value": "rgba(255,255,255,0.05)",
+        "$description": "5% white overlay (raised hover)"
+      },
+      "white6": {
+        "$value": "rgba(255,255,255,0.06)",
+        "$description": "6% white overlay (default border)"
+      },
+      "white7": {
+        "$value": "rgba(255,255,255,0.07)",
+        "$description": "7% white overlay (raised surface)"
+      },
+      "white10": {
+        "$value": "rgba(255,255,255,0.1)",
+        "$description": "10% white overlay (subtle border)"
+      },
+      "white18": {
+        "$value": "rgba(255,255,255,0.18)",
+        "$description": "18% white overlay (strong border)"
+      },
+      "black35": {
+        "$value": "rgba(0,0,0,0.35)",
+        "$description": "35% black overlay (AI code-block background)"
+      }
     }
   }
 }

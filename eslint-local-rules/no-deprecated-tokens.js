@@ -53,8 +53,8 @@ module.exports = {
     const deprecated = getDeprecatedTokens(projectRoot);
     if (!deprecated.length) return {};
 
-    const deprecatedCssVars = new Set(deprecated.map(t => t.cssVar));
-    const deprecatedSwiftNames = new Set(deprecated.map(t => t.swiftName));
+    const deprecatedCssVars = new Set(deprecated.map((t) => t.cssVar));
+    const deprecatedSwiftNames = new Set(deprecated.map((t) => t.swiftName));
 
     // Match `var(--lg-foo-bar)` patterns in template literals, strings, and JSX attributes
     const CSS_VAR_RE = /var\((--lg-[a-z0-9-]+)\)/g;

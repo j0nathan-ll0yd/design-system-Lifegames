@@ -107,13 +107,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "name",
-        "fullName",
-        "tagline",
-        "description",
-        "pwaDescription"
-      ],
+      "required": ["name", "fullName", "tagline", "description", "pwaDescription"],
       "additionalProperties": false
     },
     "seo": {
@@ -139,12 +133,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "title",
-        "keywords",
-        "expertise",
-        "ogImageQuote"
-      ],
+      "required": ["title", "keywords", "expertise", "ogImageQuote"],
       "additionalProperties": false
     },
     "a11y": {
@@ -158,18 +147,10 @@
           "type": "string"
         }
       },
-      "required": [
-        "skipToMain",
-        "ogImageAlt"
-      ],
+      "required": ["skipToMain", "ogImageAlt"],
       "additionalProperties": false
     }
   },
-  "required": [
-    "person",
-    "site",
-    "seo",
-    "a11y"
-  ],
+  "required": ["person", "site", "seo", "a11y"],
   "additionalProperties": false
 }

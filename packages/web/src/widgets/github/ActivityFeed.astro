@@ -14,11 +14,11 @@ interface Props {
 const { events } = Astro.props;
 
 const iconMap: Record<string, { symbol: string; colorClass: string }> = {
-  'pushed':       { symbol: '\u2192', colorClass: 'gh-act-icon-green' },
-  'opened PR':    { symbol: '\u2295', colorClass: 'gh-act-icon-blue' },
+  pushed: { symbol: '\u2192', colorClass: 'gh-act-icon-green' },
+  'opened PR': { symbol: '\u2295', colorClass: 'gh-act-icon-blue' },
   'opened issue': { symbol: '\u25C9', colorClass: 'gh-act-icon-amber' },
-  'starred':      { symbol: '\u2605', colorClass: 'gh-act-icon-pink' },
-  'created':      { symbol: '+',      colorClass: 'gh-act-icon-green' },
+  starred: { symbol: '\u2605', colorClass: 'gh-act-icon-pink' },
+  created: { symbol: '+', colorClass: 'gh-act-icon-green' },
 };
 
 function getIcon(type: string) {
@@ -36,24 +36,26 @@ function getIcon(type: string) {
   </div>
   <div class="widget-body">
     <div class="gh-activity">
-      {events.map((event) => {
-        const icon = getIcon(event.type);
-        return (
-          <div class="gh-act-item">
-            <span class={`gh-act-icon ${icon.colorClass}`}>{icon.symbol}</span>
-            <div class="gh-act-content">
-              <div class="gh-act-top-row">
-                <span class="gh-act-repo">{event.repo}</span>
-                <span class="gh-act-date">{event.date}</span>
-              </div>
-              <div class="gh-act-bottom-row">
-                <span class="gh-act-title">{event.title}</span>
-                {event.detail && <span class="gh-act-detail">{event.detail}</span>}
+      {
+        events.map((event) => {
+          const icon = getIcon(event.type);
+          return (
+            <div class="gh-act-item">
+              <span class={`gh-act-icon ${icon.colorClass}`}>{icon.symbol}</span>
+              <div class="gh-act-content">
+                <div class="gh-act-top-row">
+                  <span class="gh-act-repo">{event.repo}</span>
+                  <span class="gh-act-date">{event.date}</span>
+                </div>
+                <div class="gh-act-bottom-row">
+                  <span class="gh-act-title">{event.title}</span>
+                  {event.detail && <span class="gh-act-detail">{event.detail}</span>}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      }
     </div>
   </div>
 </div>
@@ -69,7 +71,7 @@ function getIcon(type: string) {
     align-items: flex-start;
     gap: 10px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .gh-act-item:last-child {
@@ -90,7 +92,7 @@ function getIcon(type: string) {
     justify-content: center;
     font-size: 0.85rem;
     border-radius: 4px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     margin-top: 1px;
   }
 

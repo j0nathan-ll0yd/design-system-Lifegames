@@ -17,18 +17,21 @@ interface Props {
 const { events } = Astro.props;
 
 const iconMap: Record<string, { symbol: string; color: string; label: string }> = {
-  'commit':       { symbol: '\u2192', color: 'var(--lg-color-accent-green)',  label: 'PUSHED' },
-  'pr_opened':    { symbol: '\u2295', color: 'var(--lg-color-accent-blue)',   label: 'PR OPENED' },
-  'pr_closed':    { symbol: '\u2296', color: 'var(--lg-color-accent-blue)',   label: 'PR CLOSED' },
-  'pr_merged':    { symbol: '\u229E', color: 'var(--lg-color-accent-blue)',   label: 'PR MERGED' },
-  'issue_opened': { symbol: '\u25C9', color: 'var(--lg-color-accent-amber)',  label: 'ISSUE' },
-  'issue_closed': { symbol: '\u2714', color: 'var(--lg-color-accent-amber)',  label: 'CLOSED' },
+  commit: { symbol: '\u2192', color: 'var(--lg-color-accent-green)', label: 'PUSHED' },
+  pr_opened: { symbol: '\u2295', color: 'var(--lg-color-accent-blue)', label: 'PR OPENED' },
+  pr_closed: { symbol: '\u2296', color: 'var(--lg-color-accent-blue)', label: 'PR CLOSED' },
+  pr_merged: { symbol: '\u229E', color: 'var(--lg-color-accent-blue)', label: 'PR MERGED' },
+  issue_opened: { symbol: '\u25C9', color: 'var(--lg-color-accent-amber)', label: 'ISSUE' },
+  issue_closed: { symbol: '\u2714', color: 'var(--lg-color-accent-amber)', label: 'CLOSED' },
 };
 
 function getIcon(type: string) {
-  return iconMap[type] || { symbol: '\u00B7', color: 'var(--lg-color-accent-green)', label: 'EVENT' };
+  return (
+    iconMap[type] || { symbol: '\u00B7', color: 'var(--lg-color-accent-green)', label: 'EVENT' }
+  );
 }
 ---
+
 <div class="tri-card tri-card-accent-green">
   <div class="widget-header">
     <span class="widget-label">Dev Timeline</span>
@@ -40,34 +43,42 @@ function getIcon(type: string) {
   <div class="widget-body">
     <div class="gh-dat-timeline">
       <div class="gh-dat-line"></div>
-      {events.map((event: Event) => {
-        const icon = getIcon(event.type);
-        return (
-          <div class="gh-dat-item">
-            <div class="gh-dat-dot" style={`background: ${icon.color}; box-shadow: 0 0 8px ${icon.color};`}></div>
-            <div class="gh-dat-content">
-              <span class="gh-dat-title">{event.title}</span>
-              <div class="gh-dat-meta">
-                <span class="gh-dat-badge" style={`background: ${icon.color}15; border-color: ${icon.color}40; color: ${icon.color};`}>
-                  {icon.symbol} {icon.label}
-                </span>
-                <span class="gh-dat-repo">{event.repo}</span>
-                <span class="gh-dat-date">{event.date}</span>
-              </div>
-              {event.type === 'commit' && event.hash && (
-                <div class="gh-dat-commit-detail">
-                  <span class="gh-dat-hash">{event.hash}</span>
-                  <span class="gh-dat-additions">+{event.additions || 0}</span>
-                  <span class="gh-dat-deletions">-{event.deletions || 0}</span>
+      {
+        events.map((event: Event) => {
+          const icon = getIcon(event.type);
+          return (
+            <div class="gh-dat-item">
+              <div
+                class="gh-dat-dot"
+                style={`background: ${icon.color}; box-shadow: 0 0 8px ${icon.color};`}
+              />
+              <div class="gh-dat-content">
+                <span class="gh-dat-title">{event.title}</span>
+                <div class="gh-dat-meta">
+                  <span
+                    class="gh-dat-badge"
+                    style={`background: ${icon.color}15; border-color: ${icon.color}40; color: ${icon.color};`}
+                  >
+                    {icon.symbol} {icon.label}
+                  </span>
+                  <span class="gh-dat-repo">{event.repo}</span>
+                  <span class="gh-dat-date">{event.date}</span>
                 </div>
-              )}
-              {event.type !== 'commit' && event.number !== undefined && (
-                <div class="gh-dat-ref">#{event.number}</div>
-              )}
+                {event.type === 'commit' && event.hash && (
+                  <div class="gh-dat-commit-detail">
+                    <span class="gh-dat-hash">{event.hash}</span>
+                    <span class="gh-dat-additions">+{event.additions || 0}</span>
+                    <span class="gh-dat-deletions">-{event.deletions || 0}</span>
+                  </div>
+                )}
+                {event.type !== 'commit' && event.number !== undefined && (
+                  <div class="gh-dat-ref">#{event.number}</div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      }
     </div>
   </div>
 </div>

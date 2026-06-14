@@ -17,6 +17,7 @@ import type { HydrationProps } from '../widgets/health/Hydration.types';
 
 const props = Astro.props as HydrationProps;
 ---
+
 <Hydration {...props} />
 <div id="cardHydrationData" data-hydration-fixture={JSON.stringify(props)} hidden></div>
 <script>

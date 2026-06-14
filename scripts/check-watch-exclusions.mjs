@@ -104,7 +104,9 @@ console.log(`Scanned dirs: ${WATCH_DIRS.map((d) => path.relative(ROOT, d)).join(
 console.log(`Forbidden symbols: ${FORBIDDEN_SYMBOLS.join(', ')}\n`);
 
 if (findings.length === 0) {
-  console.log('No Watch exclusion violations. ECG / PulsingMapMarker are absent from Watch targets.');
+  console.log(
+    'No Watch exclusion violations. ECG / PulsingMapMarker are absent from Watch targets.',
+  );
 } else {
   console.log(`WATCH EXCLUSION VIOLATIONS: ${findings.length} hit(s):\n`);
   for (const v of findings) {

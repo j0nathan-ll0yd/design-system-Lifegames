@@ -14,9 +14,16 @@ const meta: Meta = {
       <div class="widget-header">
         <span class="widget-label">Coming Soon</span>
       </div>
-      <div class="widget-body" style="padding: 24px; text-align: center; color: var(--lg-color-text-muted);">
-        <p style="font-size: 1.2em; color: var(--lg-color-text-title);">${args.label ?? 'Something new is brewing...'}</p>
-        <p id="dossierId" style="font-size: 0.75em; letter-spacing: 0.1em;">CC-${args.dossierYear ?? new Date().getFullYear()}-XXXX</p>
+      <div
+        class="widget-body"
+        style="padding: 24px; text-align: center; color: var(--lg-color-text-muted);"
+      >
+        <p style="font-size: 1.2em; color: var(--lg-color-text-title);">
+          ${args.label ?? 'Something new is brewing...'}
+        </p>
+        <p id="dossierId" style="font-size: 0.75em; letter-spacing: 0.1em;">
+          CC-${args.dossierYear ?? new Date().getFullYear()}-XXXX
+        </p>
       </div>
     </div>
   `,
@@ -37,7 +44,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

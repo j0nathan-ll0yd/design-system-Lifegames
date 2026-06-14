@@ -2,6 +2,7 @@
 import HeartRate from '@widgets/health/HeartRate.astro';
 const { fixture } = Astro.props;
 ---
+
 <div data-widget-preview data-fixture={JSON.stringify(fixture)}>
   <HeartRate {...fixture} />
 </div>

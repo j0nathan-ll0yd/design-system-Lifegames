@@ -3,9 +3,28 @@ import { updateFocusOverlay } from './updaters-focus';
 import { updateTheatreReviews } from './updaters-theatre';
 import { updatePollStatus } from './updaters-status';
 import { updateMovementRings, updateHeartRateFooter } from './updaters-movement';
-import type { HealthExport, SleepExport, WorkoutsExport, BooksExport, GithubEventsExport, GithubStarredReposExport, ArticlesExport, LocationExport, FocusExport, TheatreReviewsExport } from '../types/exports';
+import type {
+  HealthExport,
+  SleepExport,
+  WorkoutsExport,
+  BooksExport,
+  GithubEventsExport,
+  GithubStarredReposExport,
+  ArticlesExport,
+  LocationExport,
+  FocusExport,
+  TheatreReviewsExport,
+} from '../types/exports';
 import { CLOUDFRONT_BASE, ENDPOINTS, WEBSOCKET_URL } from './constants';
-import { adaptHealth, adaptSleep, adaptWorkouts, adaptBooks, adaptGithubEvents, adaptStarredRepos, adaptArticles } from './adapters';
+import {
+  adaptHealth,
+  adaptSleep,
+  adaptWorkouts,
+  adaptBooks,
+  adaptGithubEvents,
+  adaptStarredRepos,
+  adaptArticles,
+} from './adapters';
 import { WSClient } from './ws-client';
 import {
   updateHeartRate,
@@ -23,8 +42,15 @@ import { updateExplorationOdometerV3 } from './updaters-odometer-variations';
 import { PollEngine, type ResourceKey } from './poll-engine';
 
 const LIVE_CARDS = [
-  'cardHR', 'cardMovement', 'cardSleep', 'cardHydration', 'cardBooks', 'cardDevLog', 'cardReading',
-  'cardStarredRepos', 'cardTheatreReviews',
+  'cardHR',
+  'cardMovement',
+  'cardSleep',
+  'cardHydration',
+  'cardBooks',
+  'cardDevLog',
+  'cardReading',
+  'cardStarredRepos',
+  'cardTheatreReviews',
   ...(import.meta.env.DEV ? ['cardPlaceLeaderboardV3', 'cardExplorationOdometerV3'] : []),
 ];
 
@@ -61,7 +87,10 @@ const RESOURCE_DISCRIMINANTS: Record<ResourceKey, string> = {
   starredRepos: 'repos',
 };
 
-function validateResource<K extends ResourceKey>(key: K, rawData: unknown): ResourceTypeMap[K] | null {
+function validateResource<K extends ResourceKey>(
+  key: K,
+  rawData: unknown,
+): ResourceTypeMap[K] | null {
   if (typeof rawData !== 'object' || rawData === null) return null;
   const obj = rawData as Record<string, unknown>;
   if (typeof obj.generatedAt !== 'string') return null;
@@ -138,11 +167,11 @@ function handleResourceUpdate(key: ResourceKey, rawData: unknown): void {
 }
 
 // ── Skeleton loading ─────────────────────────────────────────────────
-LIVE_CARDS.forEach(id => document.getElementById(id)?.classList.add('is-loading'));
+LIVE_CARDS.forEach((id) => document.getElementById(id)?.classList.add('is-loading'));
 
 // Fallback: remove skeletons after 8s if data never arrives
 let fallbackTimer: ReturnType<typeof setTimeout> | null = setTimeout(() => {
-  LIVE_CARDS.forEach(id => document.getElementById(id)?.classList.remove('is-loading'));
+  LIVE_CARDS.forEach((id) => document.getElementById(id)?.classList.remove('is-loading'));
 }, 8000);
 
 // ── Initial fetch + start continuous polling ─────────────────────────
@@ -152,7 +181,9 @@ const startFetch = async () => {
   try {
     const focusData = await fetchWithTimeout<FocusExport>(focusBase + ENDPOINTS.focus);
     updateFocusOverlay(focusData);
-  } catch { /* graceful fallback — no overlay on failure */ }
+  } catch {
+    /* graceful fallback — no overlay on failure */
+  }
 
   const data = await fetchAllEndpoints();
 
@@ -242,7 +273,7 @@ const startFetch = async () => {
   updateSystemStatus(data.timestamps);
 
   // Clean up any remaining skeletons (handles partial endpoint failures)
-  LIVE_CARDS.forEach(id => document.getElementById(id)?.classList.remove('is-loading'));
+  LIVE_CARDS.forEach((id) => document.getElementById(id)?.classList.remove('is-loading'));
   if (fallbackTimer) clearTimeout(fallbackTimer);
 
   // ── Start continuous polling ───────────────────────────────────────
