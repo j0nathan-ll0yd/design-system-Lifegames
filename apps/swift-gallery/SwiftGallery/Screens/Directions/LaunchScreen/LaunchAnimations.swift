@@ -9,24 +9,25 @@ import SwiftUI
 // Five self-contained, token-pure, looping neon backdrops for the Launch /
 // Login screens. Each is a presentational `View` that fills its container and
 // is designed to sit BEHIND the OFFLINE / "media downloader" branding without
-// obscuring it. All motion is driven by `TimelineView` or `.repeatForever`
-// animations (no heavy timers) for smooth, low-cost playback.
+// obscuring it. All motion is driven by `TimelineView` (no heavy timers) for
+// smooth, low-cost playback. Every backdrop reads as a media-download motif so
+// the set stays consistent with the app's premise (saving videos for offline).
 //
 // Catalog:
-//   1. PulseRingsAnimation     — concentric neon sonar rings expanding outward
+//   1. BufferRingAnimation     — play glyph inside a sweeping buffer/loader ring
 //   2. DataStreamAnimation     — vertical "download" motes raining into a tray
-//   3. ParticleConvergeAnimation — particle field drawn toward a glowing core
+//   3. ScrubTimelineAnimation  — playback scrubber sweeping a waveform timeline
 //   4. WaveformPulseAnimation  — equalizer / waveform bars breathing in place
-//   5. PolygonOrbitAnimation   — rotating neon geometric polygon with a halo
+//   5. TileGridAnimation       — a shimmering grid of saved-video tiles
 
 /// Identifies the five selectable launch backdrops. `Int` raw values keep the
 /// segmented picker selection stable and let "animation 1" remain the default.
 enum LaunchAnimationKind: Int, CaseIterable, Identifiable {
-    case pulseRings = 0
-    case dataStream
-    case particleConverge
-    case waveformPulse
-    case polygonOrbit
+    case bufferRing = 0
+    case downloadStream
+    case scrubTimeline
+    case waveform
+    case tileGrid
 
     var id: Int {
         rawValue
@@ -35,22 +36,22 @@ enum LaunchAnimationKind: Int, CaseIterable, Identifiable {
     /// Short label used by the comparison picker / chips.
     var label: String {
         switch self {
-        case .pulseRings: return "Rings"
-        case .dataStream: return "Stream"
-        case .particleConverge: return "Converge"
-        case .waveformPulse: return "Waveform"
-        case .polygonOrbit: return "Polygon"
+        case .bufferRing: return "Buffer"
+        case .downloadStream: return "Download"
+        case .scrubTimeline: return "Scrubber"
+        case .waveform: return "Waveform"
+        case .tileGrid: return "Library"
         }
     }
 
     /// One-line description for documentation / review surfaces.
     var summary: String {
         switch self {
-        case .pulseRings: return "Concentric neon sonar rings expanding outward"
-        case .dataStream: return "Vertical download motes raining into a tray"
-        case .particleConverge: return "Particle field converging toward a glowing core"
-        case .waveformPulse: return "Equalizer / waveform bars breathing in place"
-        case .polygonOrbit: return "Rotating neon geometric polygon with a halo"
+        case .bufferRing: return "Play glyph inside a sweeping buffer ring"
+        case .downloadStream: return "Download motes raining into a collection tray"
+        case .scrubTimeline: return "Playback scrubber sweeping a waveform timeline"
+        case .waveform: return "Equalizer / waveform bars breathing in place"
+        case .tileGrid: return "A shimmering grid of saved-video tiles"
         }
     }
 }
@@ -64,11 +65,11 @@ struct LaunchAnimationView: View {
     var body: some View {
         Group {
             switch kind {
-            case .pulseRings: PulseRingsAnimation()
-            case .dataStream: DataStreamAnimation()
-            case .particleConverge: ParticleConvergeAnimation()
-            case .waveformPulse: WaveformPulseAnimation()
-            case .polygonOrbit: PolygonOrbitAnimation()
+            case .bufferRing: BufferRingAnimation()
+            case .downloadStream: DataStreamAnimation()
+            case .scrubTimeline: ScrubTimelineAnimation()
+            case .waveform: WaveformPulseAnimation()
+            case .tileGrid: TileGridAnimation()
             }
         }
         .opacity(dimmed ? 0.45 : 1.0)
@@ -76,57 +77,63 @@ struct LaunchAnimationView: View {
     }
 }
 
-// MARK: - 1. Pulse Rings (concentric neon sonar)
+// MARK: - 1. Buffer Ring (play glyph + sweeping loader)
 
-/// Concentric rings that bloom from the center and fade as they expand —
-/// reads like a radar / sonar sweep. Driven by a single phase value so the
-/// rings stay evenly staggered.
-struct PulseRingsAnimation: View {
-    private let ringCount = 4
-    private let period: Double = 3.4
-
+/// A central play triangle inside a circular track, with a bright arc sweeping
+/// around it like a video buffering / loading indicator, plus a soft halo that
+/// expands to fill the space. Reads as "preparing media".
+struct BufferRingAnimation: View {
     var body: some View {
         TimelineView(.animation) { context in
-            let t = context.date.timeIntervalSinceReferenceDate
             Canvas { ctx, size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                let maxRadius = min(size.width, size.height) * 0.62
-
-                for index in 0 ..< ringCount {
-                    // Stagger each ring evenly across the period.
-                    let offset = Double(index) / Double(ringCount)
-                    let phase = ((t / period) + offset).truncatingRemainder(dividingBy: 1.0)
-                    let radius = maxRadius * phase
-                    let fade = 1.0 - phase
-                    guard radius > 1 else { continue }
-
-                    let rect = CGRect(
-                        x: center.x - radius,
-                        y: center.y - radius,
-                        width: radius * 2,
-                        height: radius * 2
-                    )
-                    let stroke = index.isMultiple(of: 2) ? LGColor.accentBlue : LGColor.accentCyan
-                    ctx.stroke(
-                        Path(ellipseIn: rect),
-                        with: .color(stroke.opacity(fade * 0.55)),
-                        lineWidth: 1.5
-                    )
-                }
-
-                // Steady core glow at the origin.
-                let coreRadius: CGFloat = 6
-                let coreRect = CGRect(
-                    x: center.x - coreRadius,
-                    y: center.y - coreRadius,
-                    width: coreRadius * 2,
-                    height: coreRadius * 2
-                )
-                ctx.fill(Path(ellipseIn: coreRect), with: .color(LGColor.accentBlue.opacity(0.5)))
+                Self.draw(in: &ctx, size: size, t: context.date.timeIntervalSinceReferenceDate)
             }
         }
         .blendMode(.screen)
         .allowsHitTesting(false)
+    }
+
+    private static func draw(in ctx: inout GraphicsContext, size: CGSize, t: Double) {
+        let center = CGPoint(x: size.width / 2, y: size.height / 2)
+        let radius = min(size.width, size.height) * 0.2
+
+        // Faint full track ring.
+        let trackRect = CGRect(
+            x: center.x - radius, y: center.y - radius,
+            width: radius * 2, height: radius * 2
+        )
+        ctx.stroke(Path(ellipseIn: trackRect), with: .color(LGColor.accentBlue.opacity(0.18)), lineWidth: 3)
+
+        // Sweeping buffer arc — a ~100° segment rotating once every 1.6s.
+        let sweep = (t / 1.6).truncatingRemainder(dividingBy: 1.0)
+        let startAngle = Angle(radians: sweep * 2 * .pi - .pi / 2)
+        let endAngle = Angle(radians: (sweep + 0.28) * 2 * .pi - .pi / 2)
+        var arc = Path()
+        arc.addArc(center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: false)
+        ctx.stroke(arc, with: .color(LGColor.accentCyan.opacity(0.85)), style: StrokeStyle(lineWidth: 3, lineCap: .round))
+
+        // Center play triangle, gently pulsing.
+        let s = radius * 0.55
+        let pulse = (sin(t * 2.0) + 1) / 2
+        var tri = Path()
+        tri.move(to: CGPoint(x: center.x - s * 0.4, y: center.y - s * 0.62))
+        tri.addLine(to: CGPoint(x: center.x - s * 0.4, y: center.y + s * 0.62))
+        tri.addLine(to: CGPoint(x: center.x + s * 0.72, y: center.y))
+        tri.closeSubpath()
+        ctx.fill(tri, with: .color(LGColor.accentBlue.opacity(0.55 + pulse * 0.35)))
+
+        // Expanding halo ring.
+        let haloPhase = (t / 2.6).truncatingRemainder(dividingBy: 1.0)
+        let haloRadius = radius + CGFloat(haloPhase) * radius * 1.8
+        let haloRect = CGRect(
+            x: center.x - haloRadius, y: center.y - haloRadius,
+            width: haloRadius * 2, height: haloRadius * 2
+        )
+        ctx.stroke(
+            Path(ellipseIn: haloRect),
+            with: .color(LGColor.accentBlue.opacity((1.0 - haloPhase) * 0.28)),
+            lineWidth: 1.5
+        )
     }
 }
 
@@ -199,55 +206,53 @@ struct DataStreamAnimation: View {
     }
 }
 
-// MARK: - 3. Particle Converge
+// MARK: - 3. Scrub Timeline (playback scrubber)
 
-/// A ring of motes that drifts inward toward a pulsing core, then resets —
-/// suggesting data being gathered into one place. Particles are placed on a
-/// circle by index so the loop is perfectly seamless.
-struct ParticleConvergeAnimation: View {
-    private let particleCount = 22
-    private let period: Double = 4.0
+/// A horizontal playback scrubber: a track with a filling progress portion, a
+/// glowing playhead sweeping left→right, and a row of waveform ticks beneath
+/// that light up as the playhead passes — the core "watching media" gesture.
+struct ScrubTimelineAnimation: View {
+    private let tickCount = 44
 
     var body: some View {
         TimelineView(.animation) { context in
-            let t = context.date.timeIntervalSinceReferenceDate
             Canvas { ctx, size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                let outerRadius = min(size.width, size.height) * 0.55
-
-                for i in 0 ..< particleCount {
-                    let angle = (Double(i) / Double(particleCount)) * 2 * .pi
-                    // Each particle has a staggered convergence phase.
-                    let stagger = Double(i % 5) / 5.0
-                    let phase = ((t / period) + stagger).truncatingRemainder(dividingBy: 1.0)
-                    let radius = outerRadius * (1.0 - phase)
-                    let fade = sin(phase * .pi) // bright mid-flight, dim at ends
-
-                    let px = center.x + CGFloat(cos(angle)) * radius
-                    let py = center.y + CGFloat(sin(angle)) * radius
-                    let dot: CGFloat = 2.4
-                    let rect = CGRect(x: px - dot, y: py - dot, width: dot * 2, height: dot * 2)
-                    let tint = i.isMultiple(of: 4) ? LGColor.accentPink : LGColor.accentCyan
-                    ctx.fill(Path(ellipseIn: rect), with: .color(tint.opacity(fade * 0.7)))
-                }
-
-                // Pulsing core the particles converge on.
-                let pulse = (sin(t * 1.8) + 1) / 2
-                let coreRadius = 4 + pulse * 5
-                let coreRect = CGRect(
-                    x: center.x - coreRadius,
-                    y: center.y - coreRadius,
-                    width: coreRadius * 2,
-                    height: coreRadius * 2
-                )
-                ctx.fill(
-                    Path(ellipseIn: coreRect),
-                    with: .color(LGColor.accentBlue.opacity(0.35 + pulse * 0.35))
-                )
+                Self.draw(in: &ctx, size: size, t: context.date.timeIntervalSinceReferenceDate, tickCount: tickCount)
             }
         }
         .blendMode(.screen)
         .allowsHitTesting(false)
+    }
+
+    private static func draw(in ctx: inout GraphicsContext, size: CGSize, t: Double, tickCount: Int) {
+        let midY = size.height / 2
+        let left = size.width * 0.1
+        let right = size.width * 0.9
+        let width = right - left
+        let progress = (t / 5.0).truncatingRemainder(dividingBy: 1.0)
+        let playX = left + width * CGFloat(progress)
+
+        // Base track + filled (played) portion.
+        let track = CGRect(x: left, y: midY - 1.5, width: width, height: 3)
+        ctx.fill(Path(roundedRect: track, cornerRadius: 1.5), with: .color(LGColor.accentBlue.opacity(0.18)))
+        let filled = CGRect(x: left, y: midY - 1.5, width: width * CGFloat(progress), height: 3)
+        ctx.fill(Path(roundedRect: filled, cornerRadius: 1.5), with: .color(LGColor.accentCyan.opacity(0.75)))
+
+        // Waveform ticks beneath the track; ticks the playhead has passed glow brighter.
+        for i in 0 ..< tickCount {
+            let frac = (Double(i) + 0.5) / Double(tickCount)
+            let x = left + width * CGFloat(frac)
+            let h = CGFloat((sin(Double(i) * 0.7) + sin(Double(i) * 1.9)) * 0.25 + 0.6) * 18 + 3
+            let passed = frac <= progress
+            let tint = passed ? LGColor.accentCyan : LGColor.accentBlue
+            let bar = CGRect(x: x - 0.9, y: midY + 8, width: 1.8, height: h)
+            ctx.fill(Path(roundedRect: bar, cornerRadius: 0.9), with: .color(tint.opacity(passed ? 0.5 : 0.2)))
+        }
+
+        // Glowing playhead with a soft halo.
+        let head = CGRect(x: playX - 4.5, y: midY - 4.5, width: 9, height: 9)
+        ctx.fill(Path(ellipseIn: head.insetBy(dx: -4, dy: -4)), with: .color(LGColor.accentCyan.opacity(0.25)))
+        ctx.fill(Path(ellipseIn: head), with: .color(LGColor.accentCyan))
     }
 }
 
@@ -300,13 +305,13 @@ struct WaveformPulseAnimation: View {
     }
 }
 
-// MARK: - 5. Polygon Orbit (rotating neon geometry)
+// MARK: - 5. Tile Grid (saved-video library)
 
-/// A slowly rotating neon polygon with a soft halo and orbiting vertex motes —
-/// the most overtly "geometric" of the set. Rotation and breathing scale are
-/// driven by continuous time for a seamless loop.
-struct PolygonOrbitAnimation: View {
-    private let sides = 6
+/// A grid of rounded video tiles, each marked with a tiny play glyph, shimmering
+/// in a diagonal wave — evokes a library of saved videos ready for offline play.
+struct TileGridAnimation: View {
+    private let columns = 4
+    private let rows = 6
 
     var body: some View {
         TimelineView(.animation) { context in
@@ -315,7 +320,8 @@ struct PolygonOrbitAnimation: View {
                     in: &ctx,
                     size: size,
                     t: context.date.timeIntervalSinceReferenceDate,
-                    sides: sides
+                    columns: columns,
+                    rows: rows
                 )
             }
         }
@@ -323,55 +329,40 @@ struct PolygonOrbitAnimation: View {
         .allowsHitTesting(false)
     }
 
-    /// Drawing is factored out of `body` into an explicitly-typed helper so the
-    /// SwiftUI type-checker doesn't have to solve the whole Canvas closure as one
-    /// expression — that expression timed out on CI's toolchain (error: "unable to
-    /// type-check this expression in reasonable time").
-    private static func draw(in ctx: inout GraphicsContext, size: CGSize, t: Double, sides: Int) {
-        let center = CGPoint(x: size.width / 2, y: size.height / 2)
-        let breathe = (sin(t * 0.9) + 1) / 2
-        let radius = min(size.width, size.height) * (0.30 + 0.04 * breathe)
-        let rotation = t * 0.35
+    private static let palette: [Color] = [LGColor.accentBlue, LGColor.accentCyan, LGColor.accentPink]
 
-        // Build the polygon path.
-        var path = Path()
-        var vertices: [CGPoint] = []
-        for i in 0 ..< sides {
-            let angle = rotation + (Double(i) / Double(sides)) * 2 * .pi
-            let p = CGPoint(
-                x: center.x + CGFloat(cos(angle)) * radius,
-                y: center.y + CGFloat(sin(angle)) * radius
-            )
-            vertices.append(p)
-            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
+    private static func draw(in ctx: inout GraphicsContext, size: CGSize, t: Double, columns: Int, rows: Int) {
+        let pad: CGFloat = 12
+        let cellW = (size.width - pad * CGFloat(columns + 1)) / CGFloat(columns)
+        let cellH = cellW * 0.62
+        let gridH = cellH * CGFloat(rows) + pad * CGFloat(rows - 1)
+        let topY = (size.height - gridH) / 2
+
+        for r in 0 ..< rows {
+            for c in 0 ..< columns {
+                let x = pad + CGFloat(c) * (cellW + pad)
+                let y = topY + CGFloat(r) * (cellH + pad)
+                // Diagonal shimmer wave across the grid.
+                let glow = (sin(t * 1.4 - Double(r + c) * 0.55) + 1) / 2
+                let tint = palette[(r + c) % palette.count]
+
+                let rect = CGRect(x: x, y: y, width: cellW, height: cellH)
+                let tile = Path(roundedRect: rect, cornerRadius: 5)
+                ctx.fill(tile, with: .color(tint.opacity(0.05 + glow * 0.14)))
+                ctx.stroke(tile, with: .color(tint.opacity(0.14 + glow * 0.34)), lineWidth: 1)
+
+                // Tiny centered play glyph.
+                let cx = x + cellW / 2
+                let cy = y + cellH / 2
+                let s = cellH * 0.22
+                var play = Path()
+                play.move(to: CGPoint(x: cx - s * 0.4, y: cy - s * 0.6))
+                play.addLine(to: CGPoint(x: cx - s * 0.4, y: cy + s * 0.6))
+                play.addLine(to: CGPoint(x: cx + s * 0.7, y: cy))
+                play.closeSubpath()
+                ctx.fill(play, with: .color(tint.opacity(0.35 + glow * 0.5)))
+            }
         }
-        path.closeSubpath()
-
-        // Outer halo (faint, larger).
-        ctx.stroke(path, with: .color(LGColor.accentBlue.opacity(0.18)), lineWidth: 6)
-        // Crisp neon edge.
-        ctx.stroke(path, with: .color(LGColor.accentCyan.opacity(0.6)), lineWidth: 1.5)
-
-        // Vertex motes.
-        for p in vertices {
-            let dot: CGFloat = 3
-            let rect = CGRect(x: p.x - dot, y: p.y - dot, width: dot * 2, height: dot * 2)
-            ctx.fill(Path(ellipseIn: rect), with: .color(LGColor.accentPink.opacity(0.7)))
-        }
-
-        // Inner counter-rotating polygon for depth.
-        var inner = Path()
-        let innerRadius = radius * 0.5
-        for i in 0 ..< sides {
-            let angle = -rotation + (Double(i) / Double(sides)) * 2 * .pi
-            let p = CGPoint(
-                x: center.x + CGFloat(cos(angle)) * innerRadius,
-                y: center.y + CGFloat(sin(angle)) * innerRadius
-            )
-            if i == 0 { inner.move(to: p) } else { inner.addLine(to: p) }
-        }
-        inner.closeSubpath()
-        ctx.stroke(inner, with: .color(LGColor.accentBlue.opacity(0.35)), lineWidth: 1)
     }
 }
 

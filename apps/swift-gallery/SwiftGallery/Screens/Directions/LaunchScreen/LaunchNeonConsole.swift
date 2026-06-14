@@ -5,8 +5,8 @@ import SwiftUI
 
 struct LaunchNeonConsole: View {
     /// Which of the five candidate backdrops is shown behind the wordmark.
-    /// Defaults to animation 1 (Pulse Rings) per the review brief.
-    @State private var selectedAnimation: LaunchAnimationKind = .pulseRings
+    /// Defaults to animation 1 (Buffer Ring) per the review brief.
+    @State private var selectedAnimation: LaunchAnimationKind = .bufferRing
 
     var body: some View {
         ZStack {

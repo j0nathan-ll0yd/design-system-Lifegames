@@ -10,9 +10,9 @@ struct LoginNeonConsole: View {
             LGColor.surfaceBase
                 .ignoresSafeArea()
 
-            // Default launch backdrop (#1 Pulse Rings), subtly dimmed so the
+            // Default launch backdrop (#1 Buffer Ring), subtly dimmed so the
             // WELCOME headline and Apple sign-in content stay readable.
-            LaunchAnimationView(kind: .pulseRings, dimmed: true)
+            LaunchAnimationView(kind: .bufferRing, dimmed: true)
                 .ignoresSafeArea()
 
             // Extra scrim over the animation to guarantee text contrast.
