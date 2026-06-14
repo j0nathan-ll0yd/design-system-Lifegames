@@ -1,0 +1,11 @@
+{
+  "date": "2026-01-01",
+  "quantities": {},
+  "sleep": {
+    "awake": { "seconds": 0 },
+    "core": { "seconds": 0 },
+    "deep": { "seconds": 0 },
+    "rem": { "seconds": 0 }
+  },
+  "workouts": []
+}

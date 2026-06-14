@@ -1,0 +1,10 @@
+# Generated fixture output under src/ is intentionally committed (plan #04
+# decision: freshness-gated like @lifegames/schemas + @lifegames/copy).
+# src/generated/**/*.json (raw pre-adapter) and src/post-adapter/*.ts +
+# src/post-adapter/*.json (post-adapter display shapes) are produced by
+# `scripts/generate.ts` and MUST be committed so the freshness git-diff gate
+# can detect drift and reviewers see the output. Regenerate with
+# `pnpm -F @lifegames/fixtures build`.
+#
+# The root .gitignore only ignores dist/, not src/, so nothing here needs
+# negating — this file documents intent only.

@@ -279,15 +279,18 @@ export function adaptWorkouts(workoutsData: WorkoutsExport | null): WorkoutEntry
   });
 }
 
-export function adaptGithubEvents(data: GithubEventsExport | null): AdaptedGithubEvent[] {
+export function adaptGithubEvents(
+  data: GithubEventsExport | null,
+  now?: number,
+): AdaptedGithubEvent[] {
   if (!data) return [];
   const events = data.events || [];
-  const now = Date.now();
+  const ts = now ?? Date.now();
 
   return events.slice(0, 10).map((e) => {
     let date = e.date;
     if (date && date.includes('T')) {
-      const msAgo = now - new Date(date).getTime();
+      const msAgo = ts - new Date(date).getTime();
       const minutesAgo = Math.floor(msAgo / 60000);
       const hoursAgo = Math.floor(minutesAgo / 60);
       const daysAgo = Math.floor(hoursAgo / 24);
@@ -418,17 +421,17 @@ export function adaptStarredRepos(
   });
 }
 
-export function adaptArticles(data: ArticlesExport | null): AdaptedArticle[] {
+export function adaptArticles(data: ArticlesExport | null, now?: number): AdaptedArticle[] {
   if (!data || !data.articles) return [];
 
-  const now = Date.now();
+  const ts = now ?? Date.now();
 
   return data.articles
     .slice()
     .sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())
     .slice(0, 30)
     .map((a) => {
-      const msAgo = now - new Date(a.savedAt).getTime();
+      const msAgo = ts - new Date(a.savedAt).getTime();
       const minutesAgo = Math.floor(msAgo / 60000);
       const hoursAgo = Math.floor(minutesAgo / 60);
       const daysAgo = Math.floor(hoursAgo / 24);

@@ -1,0 +1,25 @@
+{
+  "_comment": "Package-local fixture→schema map for @lifegames/fixtures validation. Decision (plan #04): kept LOCAL to this package rather than overloading @lifegames/schemas/fixture-map.json (which is codegen-generated and freshness-gated for a different purpose). 'raw' entries validate src/generated/<dir>/*.json against the portal-contract raw export schema file. 'postAdapter' entries validate src/post-adapter/<domain>.*.json against a @lifegames/schemas authored/ or generated/ schema (by title). scripts/validate.ts reads this.",
+  "raw": {
+    "_comment": "kebab on-disk dir → portal-contract raw-schemas/<file>. Every JSON under src/generated/<dir>/ validates against the mapped raw export schema.",
+    "health": "health-export.schema.json",
+    "sleep": "sleep-export.schema.json",
+    "workouts": "workouts-export.schema.json",
+    "books": "books-export.schema.json",
+    "location": "location-export.schema.json",
+    "github-events": "github-events-export.schema.json",
+    "github-starred-repos": "github-starred-repos-export.schema.json",
+    "articles": "articles-export.schema.json",
+    "focus": "focus-export.schema.json",
+    "theatre-reviews": "theatre-reviews-export.schema.json"
+  },
+  "postAdapter": {
+    "_comment": "post-adapter domain prefix → @lifegames/schemas schema title. src/post-adapter/<domain>.<variation>.json validates against the named schema. starredRepos has no standalone post-adapter schema (it is AdaptedStarredRepo[], an array of widget-pinned-repos-like items) so it is validated structurally by the package's own vitest, not Ajv here.",
+    "profile": "Profile",
+    "system": "System",
+    "health": "DashboardHealth",
+    "github": "DashboardGithub",
+    "reading": "DashboardReading",
+    "books": "DashboardBooks"
+  }
+}

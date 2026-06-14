@@ -1,0 +1,46 @@
+{
+  "name": "@lifegames/fixtures",
+  "version": "0.1.0",
+  "description": "Canonical cross-consumer fixtures for the Lifegames dashboard. Produces BOTH raw pre-adapter export fixtures (for the web's Playwright CloudFront route-interception layer) AND post-adapter display-shape fixtures (the SSR shell consumed by loadDashboardData). Single source of truth: web + iOS + showcase consume these instead of hand-baking local snapshots.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./raw": "./src/raw.ts",
+    "./raw/*": "./src/variations/*.ts",
+    "./post-adapter": "./src/post-adapter.ts",
+    "./post-adapter/*": "./src/post-adapter/*.ts",
+    "./generated/*": "./src/generated/*",
+    "./fixture-map.json": "./fixture-map.json"
+  },
+  "files": [
+    "src",
+    "fixture-map.json"
+  ],
+  "scripts": {
+    "generate": "tsx scripts/generate.ts",
+    "validate": "tsx scripts/validate.ts",
+    "build": "pnpm generate && pnpm validate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\" \"scripts/**/*.{ts,mjs}\""
+  },
+  "dependencies": {
+    "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
+    "@lifegames/schemas": "workspace:*",
+    "@lifegames/web": "workspace:*"
+  },
+  "dependenciesMeta": {
+    "@lifegames/portal-contract": {
+      "injected": true
+    }
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "^8.61.0",
+    "ajv": "~8.20.0",
+    "ajv-formats": "~3.0.1",
+    "eslint": "^10.4.1",
+    "prettier": "3.6.0",
+    "tsx": "^4.22.4",
+    "vitest": "^4.1.8"
+  }
+}

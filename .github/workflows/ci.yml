@@ -72,6 +72,29 @@ jobs:
       # in consumer source (DS web widgets + runtime + Swift widgets).
       - run: pnpm -F @lifegames/copy grep-gate
 
+  fixtures:
+    # @lifegames/fixtures: generate (deterministic raw + post-adapter fixtures) +
+    # validate (Ajv against portal-contract raw + @lifegames/schemas display schemas)
+    # + unit tests (barrel shape + starredRepos adapter-derived determinism) + lint.
+    # The freshness git-diff of the committed fixture output is covered by the
+    # schemas-freshness job above (it re-runs `pnpm -F @lifegames/fixtures generate`).
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
+        env:
+          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -F @lifegames/fixtures build
+      - run: pnpm -F @lifegames/fixtures test
+      - run: pnpm -F @lifegames/fixtures lint
+
   build-tokens:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]

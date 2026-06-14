@@ -1,0 +1,47 @@
+[
+  {
+    "owner": "code-yeongyu",
+    "name": "oh-my-openagent",
+    "url": "https://github.com/code-yeongyu/oh-my-openagent",
+    "stars": 53920,
+    "language": "JavaScript",
+    "languageColor": "#f1e05a",
+    "starredAt": "2 days ago"
+  },
+  {
+    "owner": "memvid",
+    "name": "claude-brain",
+    "url": "https://github.com/memvid/claude-brain",
+    "stars": 465,
+    "language": "TypeScript",
+    "languageColor": "#3178c6",
+    "starredAt": "5 days ago"
+  },
+  {
+    "owner": "alienplatform",
+    "name": "alien",
+    "url": "https://github.com/alienplatform/alien",
+    "stars": 151,
+    "language": "Shell",
+    "languageColor": "#89e051",
+    "starredAt": "1 week ago"
+  },
+  {
+    "owner": "macOS26",
+    "name": "Agent",
+    "url": "https://github.com/macOS26/Agent",
+    "stars": 380,
+    "language": "HTML",
+    "languageColor": "#e34c26",
+    "starredAt": "2 weeks ago"
+  },
+  {
+    "owner": "zindexai",
+    "name": "zindex",
+    "url": "https://github.com/zindexai/zindex",
+    "stars": 5,
+    "language": "Unknown",
+    "languageColor": "#8b949e",
+    "starredAt": "3 weeks ago"
+  }
+]

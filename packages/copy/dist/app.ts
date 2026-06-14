@@ -19,6 +19,7 @@ export interface App {
   bookshelf: AppBookshelf;
   watch: AppWatch;
   sections: AppSections;
+  page404: AppPage404;
 }
 /**
  * Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle).
@@ -420,4 +421,11 @@ export interface AppWatch {
 export interface AppSections {
   body: string;
   mind: string;
+}
+/**
+ * 404 page chrome/SEO copy used on the web shell (404.astro) — document title and meta description.
+ */
+export interface AppPage404 {
+  title: string;
+  description: string;
 }

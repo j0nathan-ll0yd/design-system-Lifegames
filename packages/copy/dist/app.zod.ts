@@ -416,6 +416,12 @@ export const appSchema = z
       .object({ body: z.string(), mind: z.string() })
       .strict()
       .describe('Dashboard triptych column header labels used on the web dashboard (index.astro).'),
+    page404: z
+      .object({ title: z.string(), description: z.string() })
+      .strict()
+      .describe(
+        '404 page chrome/SEO copy used on the web shell (404.astro) — document title and meta description.',
+      ),
   })
   .strict()
   .describe(

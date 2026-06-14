@@ -101,6 +101,48 @@ _(Cite: single-source-of-truth content modeling; ICU MessageFormat; Ousterhout d
 
 ---
 
+### P3.2 — Fixtures are a single-source-of-truth content leaf
+
+`@lifegames/fixtures` (`packages/fixtures/`) is the single source of truth for the
+representative dashboard content every consumer renders before live data arrives. It is
+the **data analogue of P3.1's copy leaf** — factories in, deterministic fixtures out — and
+of the P3 presentational-purity boundary. Live production data is _real_ but not
+_comprehensive_; fixtures supply the all-states-populated (empty, sparse, full, edge)
+content that an SSR shell and visual tests need. Rules:
+
+- **One home for fixtures.** Canonical fixtures are source-of-truth in
+  `@lifegames/fixtures`. The factories, named variations, and their committed generated
+  output (raw `src/generated/` + post-adapter `src/post-adapter/`) all live in the DS
+  package. Consumers (web, iOS, future surfaces) **MUST NOT hand-bake or commit local
+  fixture snapshots** — per the cross-plan Invariant I2, any consumer-side fixture is a
+  smell that re-introduces the silent-staleness surface this rule exists to eliminate.
+- **`baseline` is the default SSR content.** The build-time SSR shell uses the `baseline`
+  post-adapter variation by default. `baseline` represents the typical state — neither
+  misleadingly empty nor unrealistically full.
+- **Visual tests select named variations explicitly.** State-specific screenshots (empty,
+  sparse, full, plus domain-specific edge cases like `single-language` or `old-timestamp`)
+  select a named variation by key — type-safe, never random, never default-only.
+- **Runtime polling is the live-data source — never read fixtures at runtime.** Fixtures
+  are build-time only. After page load, runtime polling (PollEngine 30s fast / 120s slow)
+  overwrites the SSR shell with live CloudFront data. The staleness window is the polling
+  interval, not "freshness of last manual sync."
+- **Deterministic, validated output.** Factories inject a stable clock so time-relative
+  adapter output (e.g. "weeks ago") is reproducible; `generate` is deterministic and its
+  output is committed. Raw variations validate against the backend raw-export schemas;
+  post-adapter variations validate against the DS `Dashboard*` display schemas.
+
+**Enforcement:** the consumer-side `audit:fixtures` gate (`scripts/audit-fixtures.mjs` in
+each consumer, run in `prebuild` + CI — fails the build if any `data/**`,
+`test/fixtures/**`, or `src/**/fixtures/**` JSON reappears, per Invariant I2); the DS
+`fixtures` CI job (`pnpm -F @lifegames/fixtures build`/`test`/`lint`); and the freshness
+git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in
+`packages/schemas/scripts/check-freshness.sh` (re-runs `pnpm -F @lifegames/fixtures
+generate` and fails on drift).
+
+_(Cite: Plan #04 `04-fixtures-as-ssr-shell.md` — DS-owned fixtures as the SSR shell; Invariant I2 — no consumer-side fixtures; Ousterhout deep modules — a simple `getDashboardFixture()` interface over a rich factory/adapter/codegen implementation.)_
+
+---
+
 ### P4 — The last-responsible-moment promotion test
 
 A component earns DS placement when it is presentational (P3) **and**:
@@ -231,22 +273,25 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 
 ## 5. Enforcement Map
 
-| Principle                                       | Tier                           | Mechanism                                                                                                                                                                                                                                                                                                                                 | Hook                                                                   |
-| ----------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **P1** Tokens tiered / no raw hex               | Lint (existing) + Script (NEW) | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); **NEW** `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff)                                                                                                               | `check-token-parity` → CI; `validate-dtcg` → `pnpm test`               |
-| **P2** Native reimpl / spec parity / divergence | Agent-review → script after R7 | Parity script deferred: registry 15/~55 — false greens if run now. Divergence traced via mandatory ADR in `docs/adr/`. Upgrade to `scripts/widget-compliance.mjs` after R7.                                                                                                                                                               | ADR presence → agent-review                                            |
-| **P3** Presentational purity                    | Lint + Agent-review            | **NEW** `eslint-local-rules/no-app-module-imports.js` (web); **NEW** `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation). Local-vs-domain-state judgment → agent-review.                                                                          | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI |
-| **P4** 1-surface-now + credible-2nd test        | Script (NEW)                   | **NEW** `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Requires `consumers: []` + `plannedSurface` fields (R6) + complete registry (R7). Showcase/stub excluded by name-allowlist. | CI (advisory; blocking only on structural errors after R6+R7)          |
-| **P5** Surface-differentiated consumption       | Agent-review + doc             | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence.                                                                                                                                                                                                                                                  | Agent-review checklist                                                 |
-| **P6** Organism pattern-first                   | Agent-review + doc             | Judgment. ADR required if organism promoted without pattern-first stage.                                                                                                                                                                                                                                                                  | Agent-review checklist                                                 |
-| **P7** Lifecycle labels                         | Script (existing, extended)    | Extend `scripts/widget-inventory.mjs --check`: fail on missing `status`; advisory when `Stable` but <2 consumers in registry. Depends on R7.                                                                                                                                                                                              | CI (blocking after R7)                                                 |
-| **P8** Governance stack                         | Advisory                       | Changesets configured (`.changeset/config.json`). `changeset status` → non-blocking CI advisory on publish only. `widget-inventory --check` surfaces per-platform count vs ~20–40 cap.                                                                                                                                                    | CI advisory only                                                       |
+| Principle                                       | Tier                           | Mechanism                                                                                                                                                                                                                                                                                                                                          | Hook                                                                                  |
+| ----------------------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **P1** Tokens tiered / no raw hex               | Lint (existing) + Script (NEW) | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); **NEW** `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff)                                                                                                                        | `check-token-parity` → CI; `validate-dtcg` → `pnpm test`                              |
+| **P2** Native reimpl / spec parity / divergence | Agent-review → script after R7 | Parity script deferred: registry 15/~55 — false greens if run now. Divergence traced via mandatory ADR in `docs/adr/`. Upgrade to `scripts/widget-compliance.mjs` after R7.                                                                                                                                                                        | ADR presence → agent-review                                                           |
+| **P3** Presentational purity                    | Lint + Agent-review            | **NEW** `eslint-local-rules/no-app-module-imports.js` (web); **NEW** `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation). Local-vs-domain-state judgment → agent-review.                                                                                   | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI                |
+| **P3.2** Fixtures are a DS-owned content leaf   | Script (consumer + DS) + CI    | Consumer-side `audit:fixtures` (`scripts/audit-fixtures.mjs`) bans `data/**`, `test/fixtures/**`, `src/**/fixtures/**` JSON (Invariant I2); DS `fixtures` CI job (`pnpm -F @lifegames/fixtures build`/`test`/`lint`); freshness git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in `check-freshness.sh` (re-runs `generate`). | `audit:fixtures` → consumer `prebuild` + CI; `fixtures` + `schemas-freshness` → DS CI |
+| **P4** 1-surface-now + credible-2nd test        | Script (NEW)                   | **NEW** `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Requires `consumers: []` + `plannedSurface` fields (R6) + complete registry (R7). Showcase/stub excluded by name-allowlist.          | CI (advisory; blocking only on structural errors after R6+R7)                         |
+| **P5** Surface-differentiated consumption       | Agent-review + doc             | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence.                                                                                                                                                                                                                                                           | Agent-review checklist                                                                |
+| **P6** Organism pattern-first                   | Agent-review + doc             | Judgment. ADR required if organism promoted without pattern-first stage.                                                                                                                                                                                                                                                                           | Agent-review checklist                                                                |
+| **P7** Lifecycle labels                         | Script (existing, extended)    | Extend `scripts/widget-inventory.mjs --check`: fail on missing `status`; advisory when `Stable` but <2 consumers in registry. Depends on R7.                                                                                                                                                                                                       | CI (blocking after R7)                                                                |
+| **P8** Governance stack                         | Advisory                       | Changesets configured (`.changeset/config.json`). `changeset status` → non-blocking CI advisory on publish only. `widget-inventory --check` surfaces per-platform count vs ~20–40 cap.                                                                                                                                                             | CI advisory only                                                                      |
 
 **Existing checks — mapped:**
 
 - `eslint-local-rules/no-deprecated-tokens.js` → P1
 - `eslint-local-rules/widget-props-extends-schema.js` → P3
 - `eslint-local-rules/copy-src-no-dependencies.js` → P3.1 (D9 copy leaf boundary)
+- `scripts/audit-fixtures.mjs` (consumer-side) → P3.2 (Invariant I2 — no consumer-side fixtures)
+- `packages/schemas/scripts/check-freshness.sh` → P3.1 + P3.2 + schemas (git-diff freshness over generated output)
 - `scripts/widget-compliance.mjs` → P2 (gated on R7)
 - `scripts/widget-inventory.mjs --check` → P7 (extend for `status` field)
 - `scripts/scan-personal-data.sh` → `.husky/pre-commit` (personal data, not governance)
