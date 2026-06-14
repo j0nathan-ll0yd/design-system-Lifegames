@@ -26,6 +26,9 @@ targets:
     deploymentTarget: '26.0'
     sources:
       - path: SwiftGallery
+        excludes:
+          - '**/.omc/**'
+          - '**/.omc'
     resources:
       - path: SwiftGallery/Resources/Assets.xcassets
     info:
