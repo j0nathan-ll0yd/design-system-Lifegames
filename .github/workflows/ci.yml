@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
+        env:
+          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
 
