@@ -26,7 +26,7 @@ struct DownloadSettingsNeonConsole: View {
     private var qualitySection: some View {
         VStack(alignment: .leading, spacing: Spacing.s300) {
             Text("Quality")
-                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .font(OMDFont.semibold(11))
                 .foregroundStyle(LGColor.accentBlue)
                 .textCase(.uppercase)
                 .tracking(1.5)
@@ -56,11 +56,11 @@ struct DownloadSettingsNeonConsole: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(quality.rawValue)
-                    .font(.system(size: 15, weight: isSelected ? .semibold : .regular, design: .monospaced))
+                    .font(isSelected ? OMDFont.semibold(15) : OMDFont.regular(15))
                     .foregroundStyle(isSelected ? LGColor.textTitle : LGColor.textMuted)
 
                 Text(qualitySubtitle(quality))
-                    .font(.system(size: 11, design: .monospaced))
+                    .font(OMDFont.regular(11))
                     .foregroundStyle(LGColor.textSubtle)
             }
 
@@ -92,7 +92,7 @@ struct DownloadSettingsNeonConsole: View {
     private var cellularSection: some View {
         VStack(alignment: .leading, spacing: Spacing.s300) {
             Text("Network")
-                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .font(OMDFont.semibold(11))
                 .foregroundStyle(LGColor.accentCyan)
                 .textCase(.uppercase)
                 .tracking(1.5)
@@ -105,11 +105,11 @@ struct DownloadSettingsNeonConsole: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Cellular Downloads")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(OMDFont.semibold(15))
                         .foregroundStyle(LGColor.textTitle)
 
                     Text("May use significant data")
-                        .font(.system(size: 11, design: .monospaced))
+                        .font(OMDFont.regular(11))
                         .foregroundStyle(LGColor.textSubtle)
                 }
 
@@ -143,7 +143,7 @@ struct DownloadSettingsNeonConsole: View {
                 .foregroundStyle(LGColor.accentBlue.opacity(0.7))
 
             Text("Higher quality requires more storage space and longer download times. Files already downloaded will not be affected by quality changes.")
-                .font(.system(size: 12, design: .monospaced))
+                .font(OMDFont.regular(12))
                 .foregroundStyle(LGColor.textMuted)
                 .fixedSize(horizontal: false, vertical: true)
         }

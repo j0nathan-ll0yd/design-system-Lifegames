@@ -23,7 +23,7 @@ struct ScreenDetailView: View {
                 ForEach(entry.directions) { direction in
                     VStack(alignment: .leading, spacing: Spacing.s200) {
                         Text(direction.label.uppercased())
-                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .font(OMDFont.bold(10))
                             .kerning(1.2)
                             .foregroundStyle(LGColor.textSubtle)
                             .padding(.horizontal, Spacing.s400)

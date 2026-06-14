@@ -31,11 +31,11 @@ struct DirectionCatalogListView: View {
 
                     VStack(alignment: .leading, spacing: Spacing.s50) {
                         Text(direction.label)
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(OMDFont.semibold(16))
                             .foregroundStyle(LGColor.textTitle)
 
                         Text(direction.subtitle)
-                            .font(.system(size: 12))
+                            .font(OMDFont.regular(12))
                             .foregroundStyle(LGColor.textMuted)
                     }
                 }

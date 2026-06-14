@@ -31,11 +31,11 @@ struct AccountNeonConsole: View {
 
             VStack(alignment: .leading, spacing: Spacing.s100) {
                 Text(user.name)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(OMDFont.bold(20))
                     .foregroundStyle(LGColor.textTitle)
 
                 Text(user.email)
-                    .font(.system(size: 13, design: .monospaced))
+                    .font(OMDFont.mono(13))
                     .foregroundStyle(LGColor.accentBlue)
             }
 
@@ -48,7 +48,7 @@ struct AccountNeonConsole: View {
     private var statSection: some View {
         VStack(alignment: .leading, spacing: Spacing.s200) {
             Text("Activity")
-                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .font(OMDFont.semibold(11))
                 .foregroundStyle(LGColor.accentBlue)
                 .textCase(.uppercase)
                 .tracking(1.5)
@@ -136,7 +136,7 @@ struct AccountNeonConsole: View {
     ) -> some View {
         VStack(alignment: .leading, spacing: Spacing.s200) {
             Text(title)
-                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .font(OMDFont.semibold(11))
                 .foregroundStyle(accent)
                 .textCase(.uppercase)
                 .tracking(1.5)
@@ -155,7 +155,7 @@ struct AccountNeonConsole: View {
             HStack {
                 Spacer()
                 Text("Sign Out")
-                    .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                    .font(OMDFont.semibold(16))
                     .foregroundStyle(LGColor.accentPink)
                 Spacer()
             }

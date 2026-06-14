@@ -63,7 +63,7 @@ struct MainTabNeonConsole: View {
                     .font(.system(size: 20))
                     .shadow(color: isSelected ? LGColor.accentBlue.opacity(0.7) : .clear, radius: 8)
                 Text(label)
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .font(OMDFont.medium(10))
             }
             .foregroundStyle(isSelected ? LGColor.accentBlue : LGColor.textMuted)
             .frame(maxWidth: .infinity)
@@ -84,7 +84,7 @@ private struct NeonFilesStub: View {
                     .foregroundStyle(LGColor.accentBlue)
                     .shadow(color: LGColor.accentBlue.opacity(0.6), radius: 12)
                 Text("FILES")
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .font(OMDFont.medium(12))
                     .foregroundStyle(LGColor.textMuted)
                     .tracking(3)
             }
@@ -102,7 +102,7 @@ private struct NeonAccountStub: View {
                     .foregroundStyle(LGColor.accentPink)
                     .shadow(color: LGColor.accentPink.opacity(0.6), radius: 12)
                 Text("ACCOUNT")
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .font(OMDFont.medium(12))
                     .foregroundStyle(LGColor.textMuted)
                     .tracking(3)
             }

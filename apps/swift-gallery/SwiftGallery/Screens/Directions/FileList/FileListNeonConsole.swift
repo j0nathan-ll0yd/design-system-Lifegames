@@ -48,7 +48,7 @@ struct FileListNeonConsole: View {
             #if os(iOS)
                 ToolbarItem(placement: .principal) {
                     Text("LIBRARY")
-                        .font(.system(size: 13, weight: .bold, design: .monospaced))
+                        .font(OMDFont.bold(13))
                         .foregroundStyle(LGColor.accentBlue)
                         .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 4)
                 }

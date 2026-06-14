@@ -28,12 +28,12 @@ struct SampleFilesNeonConsole: View {
                 // Header
                 VStack(alignment: .leading, spacing: Spacing.s200) {
                     Text("GUEST PREVIEW")
-                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                        .font(OMDFont.semibold(11))
                         .foregroundStyle(LGColor.accentBlue)
                         .tracking(2)
 
                     Text("Try a Sample File")
-                        .font(.system(size: 24, weight: .bold))
+                        .font(OMDFont.bold(24))
                         .foregroundStyle(LGColor.textTitle)
                 }
                 .padding(.horizontal, Spacing.s400)
@@ -46,7 +46,7 @@ struct SampleFilesNeonConsole: View {
                 // Benefits — all items inside a single container
                 VStack(alignment: .leading, spacing: Spacing.s300) {
                     Text("UNLOCK FULL ACCESS")
-                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .font(OMDFont.semibold(10))
                         .foregroundStyle(LGColor.textMuted)
                         .tracking(2)
                         .padding(.horizontal, Spacing.s400)
@@ -88,7 +88,7 @@ struct SampleFilesNeonConsole: View {
                 VStack(spacing: Spacing.s300) {
                     Button {} label: {
                         Text("Sign Up Free")
-                            .font(.system(size: 16, weight: .bold, design: .monospaced))
+                            .font(OMDFont.bold(16))
                             .foregroundStyle(LGColor.surfaceBase)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
@@ -101,7 +101,7 @@ struct SampleFilesNeonConsole: View {
 
                     Button {} label: {
                         Text("Sign In")
-                            .font(.system(size: 14, weight: .medium, design: .monospaced))
+                            .font(OMDFont.medium(14))
                             .foregroundStyle(LGColor.accentBlue)
                     }
                     .frame(minWidth: 44, minHeight: 44)
@@ -142,11 +142,11 @@ struct SampleFilesNeonConsole: View {
             // Title + author
             VStack(alignment: .leading, spacing: Spacing.s100) {
                 Text(file.title)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(OMDFont.bold(20))
                     .foregroundStyle(LGColor.textTitle)
 
                 Text(file.author)
-                    .font(.system(size: 14, design: .monospaced))
+                    .font(OMDFont.regular(14))
                     .foregroundStyle(LGColor.accentCyan)
                     .shadow(color: LGColor.accentCyan.opacity(0.4), radius: 4)
             }
@@ -183,13 +183,13 @@ struct SampleFilesNeonConsole: View {
                 .shadow(color: accent.opacity(0.5), radius: 4)
 
             Text(value)
-                .font(.system(size: 15, weight: .bold, design: .monospaced))
+                .font(OMDFont.mono(15))
                 .foregroundStyle(LGColor.textTitle)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
             Text(label)
-                .font(.system(size: 9, weight: .medium, design: .monospaced))
+                .font(OMDFont.medium(9))
                 .foregroundStyle(LGColor.textSubtle)
                 .lineLimit(1)
         }
@@ -216,10 +216,10 @@ struct SampleFilesNeonConsole: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(OMDFont.semibold(14))
                     .foregroundStyle(LGColor.textTitle)
                 Text(detail)
-                    .font(.system(size: 12))
+                    .font(OMDFont.regular(12))
                     .foregroundStyle(LGColor.textMuted)
             }
 

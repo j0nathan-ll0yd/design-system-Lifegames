@@ -27,7 +27,7 @@ struct DirectionDetailView: View {
                         if let direction = entry.directions.first(where: { $0.id == directionId }) {
                             VStack(alignment: .leading, spacing: Spacing.s200) {
                                 Text(entry.title.uppercased())
-                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                    .font(OMDFont.bold(10))
                                     .kerning(1.2)
                                     .foregroundStyle(LGColor.textSubtle)
                                     .padding(.horizontal, Spacing.s400)

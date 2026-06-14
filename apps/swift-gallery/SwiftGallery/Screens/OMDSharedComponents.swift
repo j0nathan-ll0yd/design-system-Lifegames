@@ -57,11 +57,7 @@ struct DurationBadgeView: View {
 
     var body: some View {
         Text(duration)
-            .font(
-                style.monospacedNumerics
-                    ? .system(size: 10, weight: .medium, design: .monospaced)
-                    : .system(size: 10, weight: .medium)
-            )
+            .font(style.monospacedNumerics ? OMDFont.mono(10) : OMDFont.medium(10))
             .foregroundStyle(LGColor.textTitle)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
@@ -86,7 +82,7 @@ struct FileRowNeon: View {
 
             VStack(alignment: .leading, spacing: Spacing.s150) {
                 Text(file.title)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(OMDFont.semibold(14))
                     .foregroundStyle(LGColor.textTitle)
                     .lineLimit(2)
                     .truncationMode(.tail)
@@ -96,7 +92,7 @@ struct FileRowNeon: View {
                         .font(.system(size: 11))
                         .foregroundStyle(LGColor.accentCyan)
                     Text(file.author)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(OMDFont.medium(12))
                         .foregroundStyle(LGColor.accentCyan)
                         .lineLimit(1)
                 }
@@ -121,7 +117,7 @@ struct FileRowNeon: View {
             Image(systemName: icon)
                 .font(.system(size: 9))
             Text(text)
-                .font(.system(size: 11, design: .monospaced))
+                .font(OMDFont.mono(11))
                 .lineLimit(1)
         }
         .foregroundStyle(LGColor.textSubtle)
@@ -156,6 +152,44 @@ enum OMDBrand {
             )
         }
     }
+}
+
+// MARK: - OMD type & color system
+
+/// Brand type: every OMD text style resolves to SpaceGrotesk (no system fonts).
+/// `mono` keeps tabular figures for aligned numerics (sizes, durations, counts).
+enum OMDFont {
+    static func bold(_ size: CGFloat) -> Font {
+        .custom("SpaceGrotesk-Bold", size: size)
+    }
+
+    static func semibold(_ size: CGFloat) -> Font {
+        .custom("SpaceGrotesk-SemiBold", size: size)
+    }
+
+    static func medium(_ size: CGFloat) -> Font {
+        .custom("SpaceGrotesk-Medium", size: size)
+    }
+
+    static func regular(_ size: CGFloat) -> Font {
+        .custom("SpaceGrotesk-Regular", size: size)
+    }
+
+    static func mono(_ size: CGFloat) -> Font {
+        .custom("SpaceGrotesk-Medium", size: size).monospacedDigit()
+    }
+}
+
+/// Color by MEANING, not decoration — this app saves videos for offline play:
+///   primary / download = blue · playback & identity = cyan · complete = green
+///   queued / storage = amber · destructive = pink · description / library = purple
+enum OMDPalette {
+    static let primary = LGColor.accentBlue
+    static let playback = LGColor.accentCyan
+    static let complete = LGColor.accentGreen
+    static let queued = LGColor.accentAmber
+    static let destructive = LGColor.accentPink
+    static let content = LGColor.accentPurple
 }
 
 // MARK: - DownloadProgressView
@@ -229,17 +263,13 @@ struct StatCardView: View {
             }
 
             Text(value)
-                .font(
-                    style.monospacedNumerics
-                        ? .system(size: 16, weight: .bold, design: .monospaced)
-                        : .system(size: 16, weight: .bold)
-                )
+                .font(OMDFont.bold(16))
                 .foregroundStyle(LGColor.textTitle)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
             Text(label)
-                .font(.system(size: 11, weight: .medium))
+                .font(OMDFont.medium(11))
                 .foregroundStyle(LGColor.textMuted)
                 .textCase(.uppercase)
                 .lineLimit(1)
@@ -268,7 +298,7 @@ struct SettingRowView: View {
                 .frame(width: 24)
 
             Text(label)
-                .font(.system(size: 15))
+                .font(OMDFont.regular(15))
                 .foregroundStyle(LGColor.textPrimary)
 
             Spacer()
@@ -292,7 +322,7 @@ struct SettingRowView: View {
 
             case let .value(text):
                 Text(text)
-                    .font(.system(size: 14))
+                    .font(OMDFont.regular(14))
                     .foregroundStyle(LGColor.textSubtle)
             }
         }
@@ -318,7 +348,7 @@ struct InitialsAvatarView: View {
                 )
 
             Text(initials)
-                .font(.system(size: size * 0.35, weight: .semibold, design: .rounded))
+                .font(OMDFont.semibold(size * 0.35))
                 .foregroundStyle(LGColor.textTitle)
         }
         .frame(width: size, height: size)
@@ -347,7 +377,7 @@ struct ActiveDownloadBannerView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(file.title)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(OMDFont.medium(12))
                     .foregroundStyle(LGColor.textPrimary)
                     .lineLimit(1)
 
@@ -356,11 +386,7 @@ struct ActiveDownloadBannerView: View {
                         ? String(format: "%.0f%%", progress * 100)
                         : "Downloading..."
                 )
-                .font(
-                    style.monospacedNumerics
-                        ? .system(size: 10, design: .monospaced)
-                        : .system(size: 10)
-                )
+                .font(style.monospacedNumerics ? OMDFont.mono(10) : OMDFont.regular(10))
                 .foregroundStyle(style.accent)
             }
 

@@ -40,11 +40,11 @@ struct ScreenCatalogListView: View {
             NavigationLink(destination: ScreenDetailView(entry: entry)) {
                 VStack(alignment: .leading, spacing: Spacing.s50) {
                     Text(entry.title)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(OMDFont.semibold(16))
                         .foregroundStyle(LGColor.textTitle)
 
                     Text(entry.directions.map(\.label).joined(separator: ", "))
-                        .font(.system(size: 12))
+                        .font(OMDFont.regular(12))
                         .foregroundStyle(LGColor.textMuted)
                 }
                 .padding(.vertical, Spacing.s100)
