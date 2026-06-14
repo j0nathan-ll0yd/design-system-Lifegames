@@ -3,6 +3,19 @@ import { createGenerator } from 'ts-json-schema-generator';
 import { writeFileSync, readFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, resolve, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as prettier from 'prettier';
+
+// Format emitted JSON through Prettier (root .prettierrc.mjs) so generated
+// artifacts stay readable and byte-stable for `format:check` (issue #54).
+async function writeJson(outPath, data) {
+  const cfg = await prettier.resolveConfig(outPath);
+  const formatted = await prettier.format(JSON.stringify(data, null, 2), {
+    ...cfg,
+    parser: 'json',
+    filepath: outPath,
+  });
+  writeFileSync(outPath, formatted);
+}
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const PKG_ROOT = resolve(__dirname, '..');
@@ -266,17 +279,25 @@ const MANUAL_SCHEMAS = {
       transferStatus: { type: 'string' },
       referenceDate: { type: 'string' },
     },
-    required: ['totalEventCount', 'counts', 'fileSizeBytes', 'entries', 'transferStatus', 'referenceDate'],
+    required: [
+      'totalEventCount',
+      'counts',
+      'fileSizeBytes',
+      'entries',
+      'transferStatus',
+      'referenceDate',
+    ],
   },
 };
 
 const EMPTY_WIDGETS = ['dnd-overlay', 'focus-overlay', 'book-modal', 'coming-soon'];
 
 function generateEmptySchema(slug) {
-  const title = slug
-    .split('-')
-    .map(w => w[0].toUpperCase() + w.slice(1))
-    .join('') + 'Props';
+  const title =
+    slug
+      .split('-')
+      .map((w) => w[0].toUpperCase() + w.slice(1))
+      .join('') + 'Props';
   return {
     $schema: 'http://json-schema.org/draft-07/schema#',
     $id: `https://lifegames.org/schemas/widget/${slug}.json`,
@@ -302,7 +323,7 @@ for (const category of CATEGORIES) {
   const catDir = join(WEB_WIDGETS, category);
   let files;
   try {
-    files = readdirSync(catDir).filter(f => f.endsWith('.types.ts'));
+    files = readdirSync(catDir).filter((f) => f.endsWith('.types.ts'));
   } catch {
     continue;
   }
@@ -316,7 +337,7 @@ for (const category of CATEGORIES) {
     if (MANUAL_SCHEMAS[slug]) {
       const schema = MANUAL_SCHEMAS[slug];
       const outPath = join(OUT_DIR, `${slug}.schema.json`);
-      writeFileSync(outPath, JSON.stringify(schema, null, 2) + '\n');
+      await writeJson(outPath, schema);
       generated.push(slug);
       continue;
     }
@@ -324,7 +345,7 @@ for (const category of CATEGORIES) {
     if (EMPTY_WIDGETS.includes(slug)) {
       const schema = generateEmptySchema(slug);
       const outPath = join(OUT_DIR, `${slug}.schema.json`);
-      writeFileSync(outPath, JSON.stringify(schema, null, 2) + '\n');
+      await writeJson(outPath, schema);
       generated.push(slug);
       continue;
     }
@@ -341,7 +362,7 @@ for (const category of CATEGORIES) {
       schema.title = typeName;
 
       const outPath = join(OUT_DIR, `${slug}.schema.json`);
-      writeFileSync(outPath, JSON.stringify(schema, null, 2) + '\n');
+      await writeJson(outPath, schema);
       generated.push(slug);
     } catch (err) {
       errors.push({ slug, error: err.message });
@@ -353,7 +374,7 @@ for (const slug of Object.keys(MANUAL_SCHEMAS)) {
   if (!generated.includes(slug)) {
     const schema = MANUAL_SCHEMAS[slug];
     const outPath = join(OUT_DIR, `${slug}.schema.json`);
-    writeFileSync(outPath, JSON.stringify(schema, null, 2) + '\n');
+    await writeJson(outPath, schema);
     generated.push(slug);
   }
 }
@@ -372,17 +393,21 @@ fixtureBaseToTitle['exploration-odometer-v3'] = 'ExplorationOdometerV3Props';
 fixtureBaseToTitle['place-leaderboard-v3'] = 'PlaceLeaderboardV3Props';
 
 const schemaTitles = new Set();
-for (const f of readdirSync(OUT_DIR).filter(f => f.endsWith('.schema.json'))) {
+for (const f of readdirSync(OUT_DIR).filter((f) => f.endsWith('.schema.json'))) {
   const s = JSON.parse(readFileSync(join(OUT_DIR, f), 'utf-8'));
   if (s.title) schemaTitles.add(s.title);
 }
 
 const dsEntries = {};
-const widgetCats = readdirSync(WIDGETS_ROOT).filter(d => {
-  try { return !d.includes('.') && readdirSync(join(WIDGETS_ROOT, d)).length > 0; } catch { return false; }
+const widgetCats = readdirSync(WIDGETS_ROOT).filter((d) => {
+  try {
+    return !d.includes('.') && readdirSync(join(WIDGETS_ROOT, d)).length > 0;
+  } catch {
+    return false;
+  }
 });
 for (const cat of widgetCats) {
-  for (const f of readdirSync(join(WIDGETS_ROOT, cat)).filter(f => f.endsWith('.json'))) {
+  for (const f of readdirSync(join(WIDGETS_ROOT, cat)).filter((f) => f.endsWith('.json'))) {
     const rel = `Sources/LifegamesWidgets/Resources/widgets/${cat}/${f}`;
     const fullBase = f.replace(/\.json$/, '');
     const baseOnly = fullBase.replace(/\.[^.]+$/, '');
@@ -396,9 +421,11 @@ for (const cat of widgetCats) {
 const fixtureMapPath = join(PKG_ROOT, 'fixture-map.json');
 const fixtureMap = JSON.parse(readFileSync(fixtureMapPath, 'utf-8'));
 fixtureMap.ds = dsEntries;
-writeFileSync(fixtureMapPath, JSON.stringify(fixtureMap, null, 2) + '\n');
+await writeJson(fixtureMapPath, fixtureMap);
 
-process.stdout.write(`[generate-widget-schemas] Generated ${generated.length} schemas, wired ${Object.keys(dsEntries).length} fixture-map entries.\n`);
+process.stdout.write(
+  `[generate-widget-schemas] Generated ${generated.length} schemas, wired ${Object.keys(dsEntries).length} fixture-map entries.\n`,
+);
 if (errors.length > 0) {
   process.stderr.write(`[generate-widget-schemas] ${errors.length} errors:\n`);
   for (const e of errors) {

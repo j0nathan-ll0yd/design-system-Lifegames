@@ -128,7 +128,7 @@ export interface DashboardGithub {
     number,
     number,
     number,
-    number
+    number,
   ];
   /**
    * Commit counts for each of the past N weeks, ordered oldest-first.

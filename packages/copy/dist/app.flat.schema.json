@@ -76,13 +76,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "home",
-        "health",
-        "location",
-        "books",
-        "settings"
-      ],
+      "required": ["home", "health", "location", "books", "settings"],
       "additionalProperties": false
     },
     "common": {
@@ -112,15 +106,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "cancel",
-        "delete",
-        "clear",
-        "ok",
-        "done",
-        "save",
-        "add"
-      ],
+      "required": ["cancel", "delete", "clear", "ok", "done", "save", "add"],
       "additionalProperties": false
     },
     "home": {
@@ -360,12 +346,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "emptyTitle",
-        "emptyBody",
-        "addHome",
-        "radius"
-      ],
+      "required": ["emptyTitle", "emptyBody", "addHome", "radius"],
       "additionalProperties": false
     },
     "addPlace": {
@@ -787,14 +768,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "header",
-            "seeMonth",
-            "legendLess",
-            "legendMore",
-            "totalVisits",
-            "scale"
-          ],
+          "required": ["header", "seeMonth", "legendLess", "legendMore", "totalVisits", "scale"],
           "additionalProperties": false
         },
         "todayStats": {
@@ -812,11 +786,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "visits",
-            "timeOut",
-            "distance"
-          ],
+          "required": ["visits", "timeOut", "distance"],
           "additionalProperties": false
         },
         "weekChart": {
@@ -831,10 +801,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "header",
-            "totalVisits"
-          ],
+          "required": ["header", "totalVisits"],
           "additionalProperties": false
         },
         "nowAt": {
@@ -932,11 +899,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "lastSeenPrefix",
-            "near",
-            "exploring"
-          ],
+          "required": ["lastSeenPrefix", "near", "exploring"],
           "additionalProperties": false
         },
         "visitDuration": {
@@ -948,9 +911,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "inProgress"
-          ],
+          "required": ["inProgress"],
           "additionalProperties": false
         }
       },
@@ -1043,13 +1004,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "title",
-            "searchPlaceholder",
-            "emptyPrompt",
-            "asin",
-            "add"
-          ],
+          "required": ["title", "searchPlaceholder", "emptyPrompt", "asin", "add"],
           "additionalProperties": false
         },
         "editBook": {
@@ -1176,12 +1131,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "failedToLoad",
-            "failedToAddBook",
-            "failedToUpdate",
-            "failedToDelete"
-          ],
+          "required": ["failedToLoad", "failedToAddBook", "failedToUpdate", "failedToDelete"],
           "additionalProperties": false
         }
       },
@@ -1278,10 +1228,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "body",
-        "mind"
-      ],
+      "required": ["body", "mind"],
       "additionalProperties": false
     }
   },

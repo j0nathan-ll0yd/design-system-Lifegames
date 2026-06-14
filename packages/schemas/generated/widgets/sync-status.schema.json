@@ -34,11 +34,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "status",
-    "lastSyncDate",
-    "referenceDate",
-    "errorMessage",
-    "primaryActionLabel"
-  ]
+  "required": ["status", "lastSyncDate", "referenceDate", "errorMessage", "primaryActionLabel"]
 }

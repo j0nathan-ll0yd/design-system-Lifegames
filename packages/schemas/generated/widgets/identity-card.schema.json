@@ -60,13 +60,7 @@
           ]
         }
       },
-      "required": [
-        "name",
-        "title",
-        "bio",
-        "github",
-        "linkedin"
-      ]
+      "required": ["name", "title", "bio", "github", "linkedin"]
     },
     "compact": {
       "anyOf": [
@@ -79,9 +73,7 @@
       ]
     }
   },
-  "required": [
-    "profile"
-  ],
+  "required": ["profile"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/identity-card.json",
   "title": "IdentityCardProps"

@@ -19,10 +19,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "category",
-          "count"
-        ]
+        "required": ["category", "count"]
       }
     },
     "fileSizeBytes": {
@@ -46,12 +43,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "category",
-          "timestamp",
-          "message"
-        ]
+        "required": ["id", "category", "timestamp", "message"]
       }
     },
     "transferStatus": {

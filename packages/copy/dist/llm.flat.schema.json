@@ -584,18 +584,10 @@
           "type": "string"
         }
       },
-      "required": [
-        "alternateLinkMarkdown",
-        "alternateLinkPlain",
-        "datasetDescription"
-      ],
+      "required": ["alternateLinkMarkdown", "alternateLinkPlain", "datasetDescription"],
       "additionalProperties": false
     }
   },
-  "required": [
-    "txt",
-    "full",
-    "dashboard"
-  ],
+  "required": ["txt", "full", "dashboard"],
   "additionalProperties": false
 }

@@ -8,25 +8,9 @@
     "location": "San Francisco, CA",
     "yearsExperience": "24+",
     "philosophy": "Enjoying the passage of time",
-    "skills": [
-      "aws",
-      "typescript",
-      "serverless",
-      "swift",
-      "go",
-      "perl"
-    ],
-    "interests": [
-      "programming",
-      "pc gaming",
-      "musical theatre",
-      "edm",
-      "conversation"
-    ],
-    "sameAs": [
-      "https://www.linkedin.com/in/lifegames/",
-      "https://github.com/j0nathan-ll0yd"
-    ],
+    "skills": ["aws", "typescript", "serverless", "swift", "go", "perl"],
+    "interests": ["programming", "pc gaming", "musical theatre", "edm", "conversation"],
+    "sameAs": ["https://www.linkedin.com/in/lifegames/", "https://github.com/j0nathan-ll0yd"],
     "shortBio": "A living data dashboard by engineer, Jonathan Lloyd — tracking body (health, activity, hydration) and mind (coding, reading). Jack into his human datastream.",
     "socialBio": "A living data dashboard by engineering director Jonathan Lloyd. Real biometrics — heart rate, sleep, hydration, coding, reading. Jack into his human datastream.",
     "longBio": "Engineering director and backend engineer with 24+ years of experience. Built this portfolio as a living data dashboard — real biometrics and constant updates of body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",

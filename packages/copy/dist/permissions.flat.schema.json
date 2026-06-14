@@ -17,10 +17,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "app",
-        "watch"
-      ],
+      "required": ["app", "watch"],
       "additionalProperties": false
     },
     "locationWhenInUse": {
@@ -35,10 +32,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "app",
-        "watch"
-      ],
+      "required": ["app", "watch"],
       "additionalProperties": false
     },
     "locationAlways": {
@@ -50,9 +44,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "app"
-      ],
+      "required": ["app"],
       "additionalProperties": false
     },
     "motion": {
@@ -64,17 +56,10 @@
           "type": "string"
         }
       },
-      "required": [
-        "app"
-      ],
+      "required": ["app"],
       "additionalProperties": false
     }
   },
-  "required": [
-    "health",
-    "locationWhenInUse",
-    "locationAlways",
-    "motion"
-  ],
+  "required": ["health", "locationWhenInUse", "locationAlways", "motion"],
   "additionalProperties": false
 }

@@ -26,12 +26,7 @@
               "type": "string"
             }
           },
-          "required": [
-            "deep",
-            "rem",
-            "core",
-            "awake"
-          ]
+          "required": ["deep", "rem", "core", "awake"]
         },
         "derived": {
           "type": "object",
@@ -43,23 +38,13 @@
               "type": "number"
             }
           },
-          "required": [
-            "deepPct",
-            "remPct"
-          ]
+          "required": ["deepPct", "remPct"]
         }
       },
-      "required": [
-        "sleepScore",
-        "sleepDurationFormatted",
-        "sleepPhaseFormatted",
-        "derived"
-      ]
+      "required": ["sleepScore", "sleepDurationFormatted", "sleepPhaseFormatted", "derived"]
     }
   },
-  "required": [
-    "health"
-  ],
+  "required": ["health"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/night-summary.json",
   "title": "NightSummaryProps"

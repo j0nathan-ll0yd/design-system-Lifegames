@@ -22,55 +22,31 @@
             "type": "string"
           },
           "rating": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "ratingNumeric": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           },
           "excerpt": {
             "type": "string"
           },
           "imageUrl": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "imageUrlAvif": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "imageUrlCard": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "imageUrlCardAvif": {
-            "type": [
-              "string",
-              "null"
-            ]
+            "type": ["string", "null"]
           },
           "imageWidth": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           },
           "imageHeight": {
-            "type": [
-              "number",
-              "null"
-            ]
+            "type": ["number", "null"]
           }
         },
         "required": [
@@ -95,10 +71,7 @@
       "type": "number"
     }
   },
-  "required": [
-    "reviews",
-    "totalReviews"
-  ],
+  "required": ["reviews", "totalReviews"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/theatre-reviews.json",
   "title": "TheatreReviewsProps"

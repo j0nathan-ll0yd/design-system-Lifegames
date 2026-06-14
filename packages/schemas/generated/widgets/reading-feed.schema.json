@@ -19,22 +19,14 @@
                 "type": "string"
               }
             },
-            "required": [
-              "title",
-              "source",
-              "date"
-            ]
+            "required": ["title", "source", "date"]
           }
         }
       },
-      "required": [
-        "articles"
-      ]
+      "required": ["articles"]
     }
   },
-  "required": [
-    "reading"
-  ],
+  "required": ["reading"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/reading-feed.json",
   "title": "ReadingFeedProps"

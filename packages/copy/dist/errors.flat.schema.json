@@ -17,10 +17,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "bookNoFields",
-        "dateFormat"
-      ],
+      "required": ["bookNoFields", "dateFormat"],
       "additionalProperties": false
     },
     "client": {
@@ -35,16 +32,10 @@
           "type": "string"
         }
       },
-      "required": [
-        "connectionSuccess",
-        "serverReturned"
-      ],
+      "required": ["connectionSuccess", "serverReturned"],
       "additionalProperties": false
     }
   },
-  "required": [
-    "validation",
-    "client"
-  ],
+  "required": ["validation", "client"],
   "additionalProperties": false
 }

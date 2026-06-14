@@ -22,19 +22,11 @@
             "type": "string"
           }
         },
-        "required": [
-          "hash",
-          "message",
-          "repo",
-          "date",
-          "repoColor"
-        ]
+        "required": ["hash", "message", "repo", "date", "repoColor"]
       }
     }
   },
-  "required": [
-    "commits"
-  ],
+  "required": ["commits"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/commit-timeline.json",
   "title": "CommitTimelineProps"

@@ -26,22 +26,13 @@
               "type": "number"
             }
           },
-          "required": [
-            "repos",
-            "stars",
-            "contributions"
-          ]
+          "required": ["repos", "stars", "contributions"]
         }
       },
-      "required": [
-        "contributions",
-        "stats"
-      ]
+      "required": ["contributions", "stats"]
     }
   },
-  "required": [
-    "github"
-  ],
+  "required": ["github"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/git-hub-heatmap.json",
   "title": "GitHubHeatmapProps"

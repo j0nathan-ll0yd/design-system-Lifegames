@@ -17,10 +17,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "rings",
-        "daylight"
-      ],
+      "required": ["rings", "daylight"],
       "additionalProperties": false
     },
     "identity": {
@@ -35,10 +32,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "avatarAlt",
-        "socialNav"
-      ],
+      "required": ["avatarAlt", "socialNav"],
       "additionalProperties": false
     },
     "bookshelf": {
@@ -50,9 +44,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "bookItem"
-      ],
+      "required": ["bookItem"],
       "additionalProperties": false
     },
     "bookModal": {
@@ -64,9 +56,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "dialog"
-      ],
+      "required": ["dialog"],
       "additionalProperties": false
     },
     "modal": {
@@ -78,9 +68,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "close"
-      ],
+      "required": ["close"],
       "additionalProperties": false
     },
     "readingFeed": {
@@ -92,9 +80,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "pagination"
-      ],
+      "required": ["pagination"],
       "additionalProperties": false
     },
     "nav": {
@@ -109,10 +95,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "profile",
-        "dashboard"
-      ],
+      "required": ["profile", "dashboard"],
       "additionalProperties": false
     },
     "region": {
@@ -127,10 +110,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "body",
-        "mind"
-      ],
+      "required": ["body", "mind"],
       "additionalProperties": false
     },
     "clock": {
@@ -142,9 +122,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "currentTime"
-      ],
+      "required": ["currentTime"],
       "additionalProperties": false
     },
     "page404": {
@@ -156,9 +134,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "region"
-      ],
+      "required": ["region"],
       "additionalProperties": false
     }
   },

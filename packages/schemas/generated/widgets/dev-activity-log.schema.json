@@ -34,16 +34,9 @@
             "type": "number"
           }
         },
-        "required": [
-          "type",
-          "repo",
-          "title",
-          "date"
-        ]
+        "required": ["type", "repo", "title", "date"]
       }
     }
   },
-  "required": [
-    "events"
-  ]
+  "required": ["events"]
 }

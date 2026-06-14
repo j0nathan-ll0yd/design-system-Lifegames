@@ -20,11 +20,5 @@
       "type": "string"
     }
   },
-  "required": [
-    "avatarUrl",
-    "name",
-    "title",
-    "quote",
-    "experience"
-  ]
+  "required": ["avatarUrl", "name", "title", "quote", "experience"]
 }

@@ -16,17 +16,11 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "pct",
-          "color"
-        ]
+        "required": ["name", "pct", "color"]
       }
     }
   },
-  "required": [
-    "languages"
-  ],
+  "required": ["languages"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/language-bars.json",
   "title": "LanguageBarsProps"

@@ -22,23 +22,14 @@
                 "type": "number"
               }
             },
-            "required": [
-              "activity_type",
-              "duration",
-              "energy_burned",
-              "distance"
-            ]
+            "required": ["activity_type", "duration", "energy_burned", "distance"]
           }
         }
       },
-      "required": [
-        "workouts"
-      ]
+      "required": ["workouts"]
     }
   },
-  "required": [
-    "health"
-  ],
+  "required": ["health"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/workouts.json",
   "title": "WorkoutsProps"
