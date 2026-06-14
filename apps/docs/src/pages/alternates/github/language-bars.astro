@@ -24,72 +24,107 @@ import var_c from '@fixtures/github/language-bars.variation-c.json';
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LanguageBars — Lifegames Design System</title>
-</head>
-<body>
-  <div class="wd-page">
-    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LanguageBars — Lifegames Design System</title>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
 
-    <div class="wd-header">
-      <h1 class="wd-title">LanguageBars</h1>
-      <span class="wd-badge wd-badge--dev">Alternate</span>
-      <span class="wd-cat">github</span>
-    </div>
+      <div class="wd-header">
+        <h1 class="wd-title">LanguageBars</h1>
+        <span class="wd-badge wd-badge--dev">Alternate</span>
+        <span class="wd-cat">github</span>
+      </div>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Live Demo</h2>
-      <ResponsiveDemo widgetName="LanguageBars" category="github" fixture={fixture} Comp={LanguageBars} />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="LanguageBars"
+          category="github"
+          fixture={fixture}
+          Comp={LanguageBars}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">State Matrix</h2>
-      <StateMatrix
-        widgetName="LanguageBars"
-        category="github"
-        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="LanguageBars"
+          category="github"
+          states={[
+            { state: 'skeleton', fixture: fixture_skeleton },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Variations</h2>
-      <VariationGrid
-        widgetName="LanguageBars"
-        category="github"
-        variations={[
-          { label: "single-dominant", fixture: var_a, caption: "TypeScript at 91% — mira-c frontend specialist with near-monochrome bar chart across three repos." },
-          { label: "systems-heavy", fixture: var_b, caption: "Rust 52%, C 28%, Assembly 12% — r-mendez embedded systems engineer at kelvin-foundry, no web languages." },
-          { label: "data-science-mix", fixture: var_c, caption: "Python 68%, Jupyter Notebook 19%, R 8% — mira-c data scientist role with notebooks prominent." },
-        ]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="LanguageBars"
+          category="github"
+          variations={[
+            {
+              label: 'single-dominant',
+              fixture: var_a,
+              caption:
+                'TypeScript at 91% — mira-c frontend specialist with near-monochrome bar chart across three repos.',
+            },
+            {
+              label: 'systems-heavy',
+              fixture: var_b,
+              caption:
+                'Rust 52%, C 28%, Assembly 12% — r-mendez embedded systems engineer at kelvin-foundry, no web languages.',
+            },
+            {
+              label: 'data-science-mix',
+              fixture: var_c,
+              caption:
+                'Python 68%, Jupyter Notebook 19%, R 8% — mira-c data scientist role with notebooks prominent.',
+            },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Props</h2>
-      <p class="wd-text">
-        See <code>packages/web/src/widgets/github/LanguageBars.types.ts</code> for the full interface.
-      </p>
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/github/LanguageBars.types.ts</code> for the full interface.
+        </p>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Usage</h2>
-      <pre class="wd-code"><code>---
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
 import LanguageBars from '@lifegames/web/widgets/github/LanguageBars.astro';
 ---
 &lt;LanguageBars &#123;...data&#125; /&gt;</code></pre>
-    </section>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Cross-Platform</h2>
-      <ul class="wd-list">
-        <li><strong>Web:</strong> <code>packages/web/src/widgets/github/LanguageBars.astro</code></li>
-        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/GitHub/LanguageBarsView.swift</code></li>
-        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/github/language-bars.json</code></li>
-      </ul>
-    </section>
-  </div>
-  <WidgetPageScript />
-</body>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/github/LanguageBars.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/GitHub/LanguageBarsView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/github/language-bars.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <WidgetPageScript />
+  </body>
 </html>

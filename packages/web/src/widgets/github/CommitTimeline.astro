@@ -13,6 +13,7 @@ interface Props {
 
 const { commits } = Astro.props;
 ---
+
 <div class="tri-card tri-card-accent-green">
   <div class="widget-header">
     <span class="widget-label">Commit Timeline</span>
@@ -24,18 +25,28 @@ const { commits } = Astro.props;
   <div class="widget-body">
     <div class="gh-timeline">
       <div class="gh-tl-line"></div>
-      {commits.map((c: Commit) => (
-        <div class="gh-tl-item">
-          <div class="gh-tl-dot" style={`background: ${c.repoColor}; box-shadow: 0 0 8px ${c.repoColor};`}></div>
-          <div class="gh-tl-content">
-            <span class="gh-tl-msg">{c.message}</span>
-            <div class="gh-tl-meta">
-              <span class="gh-tl-repo-badge" style={`background: ${c.repoColor}20; border-color: ${c.repoColor}40; color: ${c.repoColor};`}>{c.repo}</span>
-              <span class="gh-tl-date">{c.date}</span>
+      {
+        commits.map((c: Commit) => (
+          <div class="gh-tl-item">
+            <div
+              class="gh-tl-dot"
+              style={`background: ${c.repoColor}; box-shadow: 0 0 8px ${c.repoColor};`}
+            />
+            <div class="gh-tl-content">
+              <span class="gh-tl-msg">{c.message}</span>
+              <div class="gh-tl-meta">
+                <span
+                  class="gh-tl-repo-badge"
+                  style={`background: ${c.repoColor}20; border-color: ${c.repoColor}40; color: ${c.repoColor};`}
+                >
+                  {c.repo}
+                </span>
+                <span class="gh-tl-date">{c.date}</span>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </div>

@@ -44,21 +44,21 @@ function arg(name, fallback) {
 
 const DS_ROOT = path.resolve(import.meta.dirname, '..');
 const WEB_ROOT = path.resolve(
-  arg('--web-root', path.join(process.env.HOME ?? '', 'Repositories/j0nathan-ll0yd.github.io'))
+  arg('--web-root', path.join(process.env.HOME ?? '', 'Repositories/j0nathan-ll0yd.github.io')),
 );
 const MAX_AGE_DAYS = Number.parseInt(arg('--max-age-days', '90'), 10);
 const DAY_MS = 24 * 60 * 60 * 1000;
 const now = Date.now();
 
 const BASELINE_LOCATIONS = [
-  { repo: 'DS',  abs: path.join(DS_ROOT, 'Tests/visual/baselines') },
-  { repo: 'DS',  abs: path.join(DS_ROOT, 'apps/storybook/__snapshots__') },
+  { repo: 'DS', abs: path.join(DS_ROOT, 'Tests/visual/baselines') },
+  { repo: 'DS', abs: path.join(DS_ROOT, 'apps/storybook/__snapshots__') },
   { repo: 'web', abs: path.join(WEB_ROOT, 'tests/visual/__screenshots__') },
   { repo: 'web', abs: path.join(WEB_ROOT, 'tests/drift/__screenshots__') },
 ];
 
 const CHANGELOG_BY_REPO = {
-  DS:  path.join(DS_ROOT, 'CHANGELOG.md'),
+  DS: path.join(DS_ROOT, 'CHANGELOG.md'),
   web: path.join(WEB_ROOT, 'CHANGELOG.md'),
 };
 
@@ -107,7 +107,9 @@ for (const loc of BASELINE_LOCATIONS) {
   const clAgeDesc = clMtime
     ? `CHANGELOG.md last touched ${fmtAgeDays(now - clMtime)}d ago`
     : 'no CHANGELOG.md found';
-  console.log(`[scan] ${path.relative(process.cwd(), loc.abs)} (${files.length} files; ${clAgeDesc})`);
+  console.log(
+    `[scan] ${path.relative(process.cwd(), loc.abs)} (${files.length} files; ${clAgeDesc})`,
+  );
 
   for (const f of files) {
     totalScanned++;
@@ -127,7 +129,9 @@ for (const loc of BASELINE_LOCATIONS) {
 }
 
 console.log();
-console.log(`Scanned ${totalScanned} baseline file(s); ${totalAged} aged beyond ${MAX_AGE_DAYS} days.`);
+console.log(
+  `Scanned ${totalScanned} baseline file(s); ${totalAged} aged beyond ${MAX_AGE_DAYS} days.`,
+);
 
 if (flagged.length > 0) {
   console.log('\nAged baselines (CHANGELOG newer than baseline mtime):');

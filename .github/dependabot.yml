@@ -20,14 +20,14 @@ updates:
       # version mismatch). Replaces the former major-version ignore rules.
       storybook:
         patterns:
-          - "@storybook/*"
+          - '@storybook/*'
           - storybook
       # Group Astro stack so integrations always bump alongside the core.
       # Mismatched astro / @astrojs/* versions historically break the build.
       astro-docs:
         patterns:
-          - "astro"
-          - "@astrojs/*"
+          - 'astro'
+          - '@astrojs/*'
     ignore:
       # ajv majors require coordinated migration of validate.ts and all
       # consumer schemas. Bump manually after testing.
@@ -40,7 +40,7 @@ updates:
       # @astrojs/starlight is pre-1.0 -- minors can contain breaking
       # changes. Block only majors; minors are safe on the verified 0.39.x
       # release (docs site confirmed working 2026-05-31).
-      - dependency-name: "@astrojs/starlight"
+      - dependency-name: '@astrojs/starlight'
         update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
@@ -51,5 +51,5 @@ updates:
     groups:
       github-artifacts:
         patterns:
-          - "actions/upload-artifact"
-          - "actions/download-artifact"
+          - 'actions/upload-artifact'
+          - 'actions/download-artifact'

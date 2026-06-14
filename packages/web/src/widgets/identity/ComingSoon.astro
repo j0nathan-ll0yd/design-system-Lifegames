@@ -2,6 +2,7 @@
 // Coming Soon overlay — "Mission Pending" dossier card
 // Remove this component (and its import in index.astro) to reveal the live site.
 ---
+
 <div id="coming-soon-overlay">
   <div class="dossier">
     <div class="dossier-header">
@@ -37,7 +38,10 @@
         </div>
         <div class="field">
           <span class="field-label">Briefing</span>
-          <span class="field-value dim">A datastream-themed portfolio is under construction. The operative is assembling systems, running diagnostics, and preparing for deployment.</span>
+          <span class="field-value dim"
+            >A datastream-themed portfolio is under construction. The operative is assembling
+            systems, running diagnostics, and preparing for deployment.</span
+          >
         </div>
       </div>
       <div class="divider"></div>
@@ -164,11 +168,22 @@
     font-weight: 500;
     color: var(--lg-color-text-primary);
   }
-  .field-value.highlight-blue { color: var(--lg-color-accent-blue); }
-  .field-value.highlight-pink { color: var(--lg-color-accent-pink); }
-  .field-value.highlight-green { color: var(--lg-color-accent-green); }
-  .field-value.highlight-amber { color: var(--lg-color-accent-amber); }
-  .field-value.dim { color: var(--lg-color-text-muted); font-weight: 400; }
+  .field-value.highlight-blue {
+    color: var(--lg-color-accent-blue);
+  }
+  .field-value.highlight-pink {
+    color: var(--lg-color-accent-pink);
+  }
+  .field-value.highlight-green {
+    color: var(--lg-color-accent-green);
+  }
+  .field-value.highlight-amber {
+    color: var(--lg-color-accent-amber);
+  }
+  .field-value.dim {
+    color: var(--lg-color-text-muted);
+    font-weight: 400;
+  }
   .divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.06);
@@ -223,15 +238,28 @@
     color: rgba(255, 255, 255, 0.12);
   }
   @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
   }
   @media (max-width: 600px) {
-    .dossier-body { padding: 20px; }
-    .field-row { grid-template-columns: 1fr; gap: 12px; }
+    .dossier-body {
+      padding: 20px;
+    }
+    .field-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .status-dot { animation: none; opacity: 1; }
+    .status-dot {
+      animation: none;
+      opacity: 1;
+    }
   }
 </style>
 
@@ -239,4 +267,3 @@
      stamps the random dossier ID into #dossierId via a bundled module script.
      CSP `script-src 'self'` rejects inline script bodies, so the runtime lives
      in the bundled production path, never as an inline block here. -->
-

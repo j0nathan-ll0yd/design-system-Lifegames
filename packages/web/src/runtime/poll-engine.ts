@@ -21,7 +21,13 @@ interface PollEngineOptions {
 // Fast tier: resources that change frequently (iOS syncs multiple times per hour)
 const FAST_KEYS: ResourceKey[] = ['health', 'sleep', 'workouts', 'focus'];
 // Slow tier: resources that change infrequently
-const SLOW_KEYS: ResourceKey[] = ['books', 'articles', 'githubEvents', 'starredRepos', 'theatreReviews'];
+const SLOW_KEYS: ResourceKey[] = [
+  'books',
+  'articles',
+  'githubEvents',
+  'starredRepos',
+  'theatreReviews',
+];
 // DEV-only: location polling (tree-shaken in production)
 const DEV_KEYS: ResourceKey[] = import.meta.env.DEV ? ['location'] : [];
 
@@ -135,12 +141,18 @@ export class PollEngine {
   }
 
   private clearTimers(): void {
-    if (this.fastTimer) { clearInterval(this.fastTimer); this.fastTimer = null; }
-    if (this.slowTimer) { clearInterval(this.slowTimer); this.slowTimer = null; }
+    if (this.fastTimer) {
+      clearInterval(this.fastTimer);
+      this.fastTimer = null;
+    }
+    if (this.slowTimer) {
+      clearInterval(this.slowTimer);
+      this.slowTimer = null;
+    }
   }
 
   private async pollTier(keys: ResourceKey[]): Promise<void> {
-    await Promise.all(keys.map(k => this.fetchResource(k)));
+    await Promise.all(keys.map((k) => this.fetchResource(k)));
     this.lastPollAt = new Date().toISOString();
     this.emitStatus();
   }

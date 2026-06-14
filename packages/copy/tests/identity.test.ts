@@ -24,8 +24,17 @@ interface Leaf {
 }
 
 function collectLeaves(node: unknown, path: string, out: Leaf[]): void {
-  if (node && typeof node === 'object' && !Array.isArray(node) && 'value' in node && '_meta' in node) {
-    const leaf = node as { value: string | string[]; _meta?: { constraints?: { maxChars?: number } } };
+  if (
+    node &&
+    typeof node === 'object' &&
+    !Array.isArray(node) &&
+    'value' in node &&
+    '_meta' in node
+  ) {
+    const leaf = node as {
+      value: string | string[];
+      _meta?: { constraints?: { maxChars?: number } };
+    };
     out.push({
       path,
       values: Array.isArray(leaf.value) ? leaf.value : [leaf.value],
@@ -131,7 +140,10 @@ for (const ns of NAMESPACES) {
 describe('@lifegames/copy cross-namespace invariants', () => {
   it('the $defs block is byte-identical across every schema (inlined per file, no cross-file $ref)', () => {
     const defs = NAMESPACES.map((ns) => {
-      const schema = readJson(join(PKG, 'schema', `${ns.name}.schema.json`)) as Record<string, unknown>;
+      const schema = readJson(join(PKG, 'schema', `${ns.name}.schema.json`)) as Record<
+        string,
+        unknown
+      >;
       return JSON.stringify(schema['$defs']);
     });
     for (let i = 1; i < defs.length; i++) {

@@ -26,12 +26,22 @@ const meta: Meta = {
         <span class="widget-label">Identity</span>
       </div>
       <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-primary);">
-        ${args.name ? html`<h2 style="margin: 0 0 4px; color: var(--lg-color-text-title);">${args.name}</h2>` : ''}
-        <p style="margin: 0 0 8px; color: var(--lg-color-text-muted); font-size: 0.85em;">${args.title}</p>
+        ${args.name
+          ? html`<h2 style="margin: 0 0 4px; color: var(--lg-color-text-title);">${args.name}</h2>`
+          : ''}
+        <p style="margin: 0 0 8px; color: var(--lg-color-text-muted); font-size: 0.85em;">
+          ${args.title}
+        </p>
         <p style="margin: 0 0 12px;">${args.bio}</p>
         <div class="id-links" style="display: flex; gap: 8px;">
-          ${args.github ? html`<a href="${args.github}" style="color: var(--lg-color-accent-pink);">GitHub</a>` : ''}
-          ${args.linkedin ? html`<a href="${args.linkedin}" style="color: var(--lg-color-accent-blue);">LinkedIn</a>` : ''}
+          ${args.github
+            ? html`<a href="${args.github}" style="color: var(--lg-color-accent-pink);">GitHub</a>`
+            : ''}
+          ${args.linkedin
+            ? html`<a href="${args.linkedin}" style="color: var(--lg-color-accent-blue);"
+                >LinkedIn</a
+              >`
+            : ''}
         </div>
       </div>
     </div>
@@ -51,7 +61,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

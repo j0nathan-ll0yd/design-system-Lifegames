@@ -86,7 +86,7 @@ function resolveOpaque(name) {
 function srgbToY({ r, g, b }) {
   // sRGB EOTF (simple-IEC) with the small-value linear segment.
   const lin = (v) => Math.pow(v, 2.4);
-  return 0.2126729 * lin(r) + 0.7151522 * lin(g) + 0.0721750 * lin(b);
+  return 0.2126729 * lin(r) + 0.7151522 * lin(g) + 0.072175 * lin(b);
 }
 function apcaLc(textRgb, bgRgb) {
   const Yt = srgbToY(textRgb);
@@ -144,22 +144,25 @@ const ACCENT_PAIRINGS = ACCENT_FGS.flatMap((fg) =>
 );
 
 const PAIRINGS = [
-  ['--lg-color-text-title',   '--lg-color-surface-base',    3.0, 'large/heading'],
-  ['--lg-color-text-title',   '--lg-color-surface-deep',    3.0, 'large/heading'],
-  ['--lg-color-text-title',   '--lg-color-surface-raised',  3.0, 'large/heading'],
-  ['--lg-color-text-primary', '--lg-color-surface-base',    4.5, 'body'],
-  ['--lg-color-text-primary', '--lg-color-surface-deep',    4.5, 'body'],
-  ['--lg-color-text-primary', '--lg-color-surface-raised',  4.5, 'body'],
-  ['--lg-color-text-muted',   '--lg-color-surface-base',    4.5, 'body'],
-  ['--lg-color-text-muted',   '--lg-color-surface-deep',    4.5, 'body'],
-  ['--lg-color-text-muted',   '--lg-color-surface-raised',  4.5, 'body'],
+  ['--lg-color-text-title', '--lg-color-surface-base', 3.0, 'large/heading'],
+  ['--lg-color-text-title', '--lg-color-surface-deep', 3.0, 'large/heading'],
+  ['--lg-color-text-title', '--lg-color-surface-raised', 3.0, 'large/heading'],
+  ['--lg-color-text-primary', '--lg-color-surface-base', 4.5, 'body'],
+  ['--lg-color-text-primary', '--lg-color-surface-deep', 4.5, 'body'],
+  ['--lg-color-text-primary', '--lg-color-surface-raised', 4.5, 'body'],
+  ['--lg-color-text-muted', '--lg-color-surface-base', 4.5, 'body'],
+  ['--lg-color-text-muted', '--lg-color-surface-deep', 4.5, 'body'],
+  ['--lg-color-text-muted', '--lg-color-surface-raised', 4.5, 'body'],
   ...ACCENT_PAIRINGS,
 ];
 
 function pairingId(textName, surfName) {
   // "--lg-color-accent-amber" → "accent.amber"
   const compact = (n) =>
-    n.replace(/^--lg-color-/, '').replace(/-/g, '.').replace(/\./, '.');
+    n
+      .replace(/^--lg-color-/, '')
+      .replace(/-/g, '.')
+      .replace(/\./, '.');
   return `${compact(textName)}-on-${compact(surfName)}`;
 }
 
@@ -175,8 +178,16 @@ for (const [textName, surfName, min, kind] of PAIRINGS) {
   const id = pairingId(textName, surfName);
   const allowedFail = !pass && ALLOW_FAIL.has(id);
   results.push({
-    id, textName, surfName, ratio, min, kind, pass,
-    allowedFail, lc, surfHex: formatHex(surf),
+    id,
+    textName,
+    surfName,
+    ratio,
+    min,
+    kind,
+    pass,
+    allowedFail,
+    lc,
+    surfHex: formatHex(surf),
   });
   if (!pass && !allowedFail) {
     failures.push({ id, textName, surfName, ratio, min });
@@ -202,15 +213,21 @@ console.log('─'.repeat(colW + surW + 50));
 
 const allowedFailCount = results.filter((r) => r.allowedFail).length;
 if (allowedFailCount) {
-  console.log(`Note: ${allowedFailCount} pairing(s) below threshold are whitelisted via --allow-fail.`);
+  console.log(
+    `Note: ${allowedFailCount} pairing(s) below threshold are whitelisted via --allow-fail.`,
+  );
 }
 
 if (failures.length) {
-  console.error(`\n${failures.length} violation(s) — fix the underlying tokens or whitelist via --allow-fail <id>.`);
+  console.error(
+    `\n${failures.length} violation(s) — fix the underlying tokens or whitelist via --allow-fail <id>.`,
+  );
   for (const f of failures) {
     console.error(`  ✗ ${f.id} → ${f.ratio.toFixed(2)}:1 (need ≥${f.min}:1)`);
   }
   process.exit(1);
 }
 
-console.log(`All ${results.length - allowedFailCount} gating pairings pass WCAG-AA${allowedFailCount ? ` (${allowedFailCount} whitelisted)` : ''}.`);
+console.log(
+  `All ${results.length - allowedFailCount} gating pairings pass WCAG-AA${allowedFailCount ? ` (${allowedFailCount} whitelisted)` : ''}.`,
+);

@@ -1,75 +1,177 @@
 ---
 import Variant from '../../layouts/Variant.astro';
 ---
+
 <Variant title="Stealth Mode — Work Mode">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; overflow: hidden; }
-  body { background: var(--bg); font-family: 'Space Grotesk', sans-serif; color: var(--text); display: flex; align-items: center; justify-content: center; }
-  .overlay {
-    display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-    align-items: center; justify-content: center; flex-direction: column; gap: 40px; cursor: default;
-  }
-  .radar { position: relative; width: 160px; height: 160px; }
-  .blip {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--neon-green);
-    box-shadow: 0 0 16px rgba(6,214,160,0.8), 0 0 40px rgba(6,214,160,0.3);
-  }
-  .blip-ring {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    border: 1px solid rgba(6,214,160,0.4); border-radius: 50%;
-    animation: blip-pulse 3s ease-out infinite;
-  }
-  .blip-ring:nth-child(2) { animation-delay: 0s; }
-  .blip-ring:nth-child(3) { animation-delay: 1s; }
-  .blip-ring:nth-child(4) { animation-delay: 2s; }
-  .hidden-content {
-    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;
-    opacity: 0; transform: translateY(6px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .overlay:hover .hidden-content, .hidden-content.revealed { opacity: 1; transform: translateY(0); }
-  .hidden-name { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.05em; color: var(--neon-green); }
-  .hidden-status { font-size: 0.65rem; font-weight: 400; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; }
-  .hidden-time { font-size: 0.6rem; font-weight: 400; color: rgba(6,214,160,0.5); font-variant-numeric: tabular-nums; letter-spacing: 0.1em; }
-  .hint {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    font-size: 0.5rem; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase;
-    color: rgba(255,255,255,0.1); transition: opacity 0.6s ease;
-  }
-  .overlay:hover .hint, .hint.hidden { opacity: 0; }
-  @keyframes blip-pulse {
-    0%   { width: 8px; height: 8px; opacity: 0.6; }
-    100% { width: 140px; height: 140px; opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .blip-ring { animation: none; opacity: 0; }
-    .hidden-content { opacity: 1; transform: none; transition: none; }
-    .hint { display: none; }
-  }
-</style>
-<div class="overlay" id="overlay">
-  <div class="radar">
-    <div class="blip"></div>
-    <div class="blip-ring"></div>
-    <div class="blip-ring"></div>
-    <div class="blip-ring"></div>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .overlay {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 40px;
+      cursor: default;
+    }
+    .radar {
+      position: relative;
+      width: 160px;
+      height: 160px;
+    }
+    .blip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow:
+        0 0 16px rgba(6, 214, 160, 0.8),
+        0 0 40px rgba(6, 214, 160, 0.3);
+    }
+    .blip-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(6, 214, 160, 0.4);
+      border-radius: 50%;
+      animation: blip-pulse 3s ease-out infinite;
+    }
+    .blip-ring:nth-child(2) {
+      animation-delay: 0s;
+    }
+    .blip-ring:nth-child(3) {
+      animation-delay: 1s;
+    }
+    .blip-ring:nth-child(4) {
+      animation-delay: 2s;
+    }
+    .hidden-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition:
+        opacity 0.6s ease,
+        transform 0.6s ease;
+    }
+    .overlay:hover .hidden-content,
+    .hidden-content.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .hidden-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--neon-green);
+    }
+    .hidden-status {
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .hidden-time {
+      font-size: 0.6rem;
+      font-weight: 400;
+      color: rgba(6, 214, 160, 0.5);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.1em;
+    }
+    .hint {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.5rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.1);
+      transition: opacity 0.6s ease;
+    }
+    .overlay:hover .hint,
+    .hint.hidden {
+      opacity: 0;
+    }
+    @keyframes blip-pulse {
+      0% {
+        width: 8px;
+        height: 8px;
+        opacity: 0.6;
+      }
+      100% {
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .blip-ring {
+        animation: none;
+        opacity: 0;
+      }
+      .hidden-content {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+      .hint {
+        display: none;
+      }
+    }
+  </style>
+  <div class="overlay" id="overlay">
+    <div class="radar">
+      <div class="blip"></div>
+      <div class="blip-ring"></div>
+      <div class="blip-ring"></div>
+      <div class="blip-ring"></div>
+    </div>
+    <div class="hidden-content" id="hiddenContent">
+      <div class="hidden-name">Jonathan Lloyd</div>
+      <div class="hidden-status">Stealth mode active</div>
+      <div class="hidden-time" id="stealthTime">Back online at 15:00 PST</div>
+    </div>
+    <div class="hint" id="hint">Hover to reveal</div>
   </div>
-  <div class="hidden-content" id="hiddenContent">
-    <div class="hidden-name">Jonathan Lloyd</div>
-    <div class="hidden-status">Stealth mode active</div>
-    <div class="hidden-time" id="stealthTime">Back online at 15:00 PST</div>
-  </div>
-  <div class="hint" id="hint">Hover to reveal</div>
-</div>
-<script>
-  (function() {
-    document.getElementById('overlay').addEventListener('touchstart', function() {
-      document.getElementById('hiddenContent').classList.toggle('revealed');
-      document.getElementById('hint').classList.toggle('hidden');
-    });
-  })();
-</script>
+  <script>
+    (function () {
+      document.getElementById('overlay').addEventListener('touchstart', function () {
+        document.getElementById('hiddenContent').classList.toggle('revealed');
+        document.getElementById('hint').classList.toggle('hidden');
+      });
+    })();
+  </script>
 </Variant>

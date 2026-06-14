@@ -73,7 +73,13 @@ describe('Style Dictionary build is byte-identical to golden snapshots', () => {
 
   describe('Sources/LifegamesTokens/Resources/Colors.xcassets/*.colorset/Contents.json outputs', () => {
     const goldenXcassetsDir = join(goldenRoot, 'xcassets');
-    const liveXcassetsDir = join(repoRoot, 'Sources', 'LifegamesTokens', 'Resources', 'Colors.xcassets');
+    const liveXcassetsDir = join(
+      repoRoot,
+      'Sources',
+      'LifegamesTokens',
+      'Resources',
+      'Colors.xcassets',
+    );
     const goldenFiles = readdirSync(goldenXcassetsDir);
 
     for (const file of goldenFiles) {

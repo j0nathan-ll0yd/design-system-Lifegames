@@ -16,9 +16,7 @@ const { visible = false, class: className } = Astro.props;
   data-modal-overlay
 >
   <div class="lg-modal">
-    <button class="lg-modal-close" aria-label={a11y.modal.close} data-modal-close>
-      &times;
-    </button>
+    <button class="lg-modal-close" aria-label={a11y.modal.close} data-modal-close> &times; </button>
     <div class="lg-modal-body">
       <slot />
     </div>
@@ -79,7 +77,9 @@ const { visible = false, class: className } = Astro.props;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition:
+      background 0.2s,
+      color 0.2s;
   }
 
   .lg-modal-close:hover {

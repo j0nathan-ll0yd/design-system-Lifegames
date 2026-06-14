@@ -105,13 +105,18 @@ for (var f = 0; f < files.length; f++) {
   while ((m = SCRIPT_BLOCK_RE.exec(content)) !== null) {
     var openTag = m[1];
     var body = m[2];
-    if (!isInline(openTag)) continue;        // bundled scripts are exempt
-    if (hasSrc(openTag)) continue;           // external reference is fine
-    if (isDataScript(openTag)) continue;     // inert data, not script
-    if (!/\S/.test(body)) continue;          // empty body
+    if (!isInline(openTag)) continue; // bundled scripts are exempt
+    if (hasSrc(openTag)) continue; // external reference is fine
+    if (isDataScript(openTag)) continue; // inert data, not script
+    if (!/\S/.test(body)) continue; // empty body
     violations++;
-    console.error('✗ ' + rel + ':' + lineAt(content, m.index) +
-      ' -- <script is:inline> with body (CSP script-src \'self\' blocks this).');
+    console.error(
+      '✗ ' +
+        rel +
+        ':' +
+        lineAt(content, m.index) +
+        " -- <script is:inline> with body (CSP script-src 'self' blocks this).",
+    );
   }
 
   // 2/3. define:vars and inline event-handler attributes (line-scanned).
@@ -123,21 +128,31 @@ for (var f = 0; f < files.length; f++) {
   for (var i = 0; i < lines.length; i++) {
     if (DEFINE_VARS_RE.test(lines[i])) {
       violations++;
-      console.error('✗ ' + rel + ':' + (i + 1 + lineOffset) +
-        ' -- define:vars (Astro emits an inline <script>; CSP blocks it).');
+      console.error(
+        '✗ ' +
+          rel +
+          ':' +
+          (i + 1 + lineOffset) +
+          ' -- define:vars (Astro emits an inline <script>; CSP blocks it).',
+      );
     }
     if (INLINE_HANDLER_RE.test(lines[i])) {
       violations++;
-      console.error('✗ ' + rel + ':' + (i + 1 + lineOffset) +
-        ' -- inline event handler (CSP rejects onX="..." without \'unsafe-hashes\').');
+      console.error(
+        '✗ ' +
+          rel +
+          ':' +
+          (i + 1 + lineOffset) +
+          ' -- inline event handler (CSP rejects onX="..." without \'unsafe-hashes\').',
+      );
     }
   }
 }
 
 if (violations > 0) {
   console.error('\n' + violations + ' inline-JS violation(s).');
-  console.error('CSP downstream is script-src \'self\'. Ship widgets scriptless;');
-  console.error('runtime belongs in the consumer\'s external public/js/*.js file.');
+  console.error("CSP downstream is script-src 'self'. Ship widgets scriptless;");
+  console.error("runtime belongs in the consumer's external public/js/*.js file.");
   process.exit(1);
 }
 

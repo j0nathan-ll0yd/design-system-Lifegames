@@ -50,14 +50,14 @@ primitive → semantic → component → widget
 
 ## Platforms
 
-| Package | Language | Description |
-|---------|----------|-------------|
-| `@lifegames/tokens` | CSS/JS/JSON | Design tokens for any platform |
-| `@lifegames/web` | Astro | Web components and 30 widgets |
-| `LifegamesTokens` | Swift | Generated Color, Font, Spacing extensions |
-| `LifegamesComponents` | Swift | iOS/macOS SwiftUI primitives |
-| `LifegamesComponentsWatch` | Swift | Watch-safe component subset |
-| `LifegamesWidgets` | Swift | 30 SwiftUI widget ports |
+| Package                    | Language    | Description                               |
+| -------------------------- | ----------- | ----------------------------------------- |
+| `@lifegames/tokens`        | CSS/JS/JSON | Design tokens for any platform            |
+| `@lifegames/web`           | Astro       | Web components and 30 widgets             |
+| `LifegamesTokens`          | Swift       | Generated Color, Font, Spacing extensions |
+| `LifegamesComponents`      | Swift       | iOS/macOS SwiftUI primitives              |
+| `LifegamesComponentsWatch` | Swift       | Watch-safe component subset               |
+| `LifegamesWidgets`         | Swift       | 30 SwiftUI widget ports                   |
 
 ## AI Platform Integration
 

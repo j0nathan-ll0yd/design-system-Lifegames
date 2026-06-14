@@ -46,10 +46,7 @@
             "enum": ["next", "in_progress", "completed"]
           },
           "rating": {
-            "anyOf": [
-              { "type": "integer", "minimum": 1, "maximum": 5 },
-              { "type": "null" }
-            ],
+            "anyOf": [{ "type": "integer", "minimum": 1, "maximum": 5 }, { "type": "null" }],
             "description": "User rating 1–5 stars, or null if unrated."
           },
           "progress": {
@@ -111,9 +108,21 @@
       "additionalProperties": false,
       "required": ["next", "in_progress", "completed"],
       "properties": {
-        "next": { "type": "string", "description": "Label for books queued to read next.", "examples": ["Up Next"] },
-        "in_progress": { "type": "string", "description": "Label for the book currently being read.", "examples": ["Reading"] },
-        "completed": { "type": "string", "description": "Label for recently finished books.", "examples": ["Recently Finished"] }
+        "next": {
+          "type": "string",
+          "description": "Label for books queued to read next.",
+          "examples": ["Up Next"]
+        },
+        "in_progress": {
+          "type": "string",
+          "description": "Label for the book currently being read.",
+          "examples": ["Reading"]
+        },
+        "completed": {
+          "type": "string",
+          "description": "Label for recently finished books.",
+          "examples": ["Recently Finished"]
+        }
       }
     },
     "stats": {

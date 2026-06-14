@@ -50,7 +50,7 @@ function assertDraft07(schema: { $schema?: string }, file: string): void {
 // Register all raw export schemas under their canonical vendored URIs.
 // Source is now @lifegames/portal-contract (resolved on disk); the canonical
 // `https://lifegames.dev/vendored/<file>` namespace is preserved unchanged.
-for (const f of readdirSync(RAW_SCHEMAS_DIR).filter(f => f.endsWith('.schema.json'))) {
+for (const f of readdirSync(RAW_SCHEMAS_DIR).filter((f) => f.endsWith('.schema.json'))) {
   const schema = JSON.parse(readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'));
   assertDraft07(schema, f);
   ajv.addSchema(schema, `https://lifegames.dev/vendored/${f}`);
@@ -60,7 +60,7 @@ for (const f of readdirSync(RAW_SCHEMAS_DIR).filter(f => f.endsWith('.schema.jso
 // can resolve cross-schema references without a file-system resolver.
 const authoredDir = join(PKG_ROOT, 'authored');
 const schemasByName: Record<string, unknown> = {};
-for (const f of readdirSync(authoredDir).filter(f => f.endsWith('.schema.json'))) {
+for (const f of readdirSync(authoredDir).filter((f) => f.endsWith('.schema.json'))) {
   let raw = readFileSync(join(authoredDir, f), 'utf-8');
   raw = raw.replace(
     /"\$ref":\s*"\.\.\/vendored\/([^"#]+\.schema\.json)([^"]*)"/g,
@@ -78,7 +78,7 @@ for (const f of readdirSync(authoredDir).filter(f => f.endsWith('.schema.json'))
 // Phase 3 deletes authored/dashboard-health.schema.json; validate resolves from here instead.
 const generatedDir = join(PKG_ROOT, 'generated');
 if (existsSync(generatedDir)) {
-  for (const f of readdirSync(generatedDir).filter(f => f.endsWith('.schema.json'))) {
+  for (const f of readdirSync(generatedDir).filter((f) => f.endsWith('.schema.json'))) {
     let raw = readFileSync(join(generatedDir, f), 'utf-8');
     raw = raw.replace(
       /"\$ref":\s*"\.\.\/vendored\/([^"#]+\.schema\.json)([^"]*)"/g,
@@ -96,7 +96,7 @@ if (existsSync(generatedDir)) {
 // Register per-widget generated schemas (from generate-widget-schemas.mjs).
 const widgetSchemaDir = join(generatedDir, 'widgets');
 if (existsSync(widgetSchemaDir)) {
-  for (const f of readdirSync(widgetSchemaDir).filter(f => f.endsWith('.schema.json'))) {
+  for (const f of readdirSync(widgetSchemaDir).filter((f) => f.endsWith('.schema.json'))) {
     const raw = readFileSync(join(widgetSchemaDir, f), 'utf-8');
     const schema = JSON.parse(raw) as { title?: string; $schema?: string };
     assertDraft07(schema, `widgets/${f}`);
@@ -128,13 +128,14 @@ for (const [file, name] of Object.entries(VENDORED_TITLE_MAP)) {
 }
 
 // Read fixture-map.json
-const fixtureMap = JSON.parse(
-  readFileSync(join(PKG_ROOT, 'fixture-map.json'), 'utf-8'),
-) as Record<string, unknown>;
+const fixtureMap = JSON.parse(readFileSync(join(PKG_ROOT, 'fixture-map.json'), 'utf-8')) as Record<
+  string,
+  unknown
+>;
 
 // Determine which buckets to validate (default: all)
 const args = process.argv.slice(2);
-const bucketArg = args.find(a => a.startsWith('--bucket='));
+const bucketArg = args.find((a) => a.startsWith('--bucket='));
 const buckets = bucketArg ? [bucketArg.split('=')[1]] : Object.keys(fixtureMap);
 
 let total = 0;

@@ -3,6 +3,7 @@ const { github } = Astro.props;
 const contributions = github.contributions;
 const stats = github.stats;
 ---
+
 <div class="tri-card tri-card-accent-green" id="cardGithub">
   <div class="widget-header">
     <span class="widget-label">GitHub Contributions</span>
@@ -13,13 +14,15 @@ const stats = github.stats;
   </div>
   <div class="widget-body">
     <div class="contrib-grid">
-      {contributions.map((week: number[]) => (
-        <div class="contrib-week">
-          {week.map((level: number) => (
-            <div class="contrib-cell" data-level={level}></div>
-          ))}
-        </div>
-      ))}
+      {
+        contributions.map((week: number[]) => (
+          <div class="contrib-week">
+            {week.map((level: number) => (
+              <div class="contrib-cell" data-level={level} />
+            ))}
+          </div>
+        ))
+      }
     </div>
     <div class="gh-stats-row">
       <div>

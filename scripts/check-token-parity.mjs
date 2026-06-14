@@ -42,8 +42,7 @@ const EXCEPTIONS_PATH = path.join(ROOT, 'tokens/parity-exceptions.json');
 // + semantic (surface/text/border/health/sleep/podium/status). Roles outside
 // this set are excluded — they're either internal helpers or surface-level
 // composites not yet promoted to cross-platform parity.
-const ROLE_FAMILIES =
-  'accent|neon|surface|text|border|health|sleep|podium|status';
+const ROLE_FAMILIES = 'accent|neon|surface|text|border|health|sleep|podium|status';
 const ROLE_BODY = `(?:${ROLE_FAMILIES})-[a-z0-9-]+`;
 
 // In-script skip-list (F-006 hardcoded gating). text-primary maps to zinc.300
@@ -61,10 +60,7 @@ function loadWebAccentHex() {
   const map = new Map();
   if (!fs.existsSync(CSS_PATH)) return map;
   const css = fs.readFileSync(CSS_PATH, 'utf-8');
-  const re = new RegExp(
-    `--lg-color-(${ROLE_BODY})\\s*:\\s*(#[0-9a-fA-F]{3,8})\\s*;`,
-    'g'
-  );
+  const re = new RegExp(`--lg-color-(${ROLE_BODY})\\s*:\\s*(#[0-9a-fA-F]{3,8})\\s*;`, 'g');
   let m;
   while ((m = re.exec(css)) !== null) {
     map.set(m[1], normalizeHex(m[2]));
@@ -116,10 +112,7 @@ function componentsToHex(comp) {
   const b = channelToByte(comp.blue);
   if (r === null || g === null || b === null) return null;
   return (
-    '#' +
-    [r, g, b]
-      .map((n) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0'))
-      .join('')
+    '#' + [r, g, b].map((n) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0')).join('')
   );
 }
 
@@ -169,7 +162,7 @@ console.log(`Swift source:  Colors.xcassets color-*.colorset (${swift.size} role
 console.log(
   `Exceptions:    ${exceptions.size} role(s) excluded from gating ` +
     `(${fileExceptions.size} from tokens/parity-exceptions.json + ` +
-    `${HARDCODED_SKIPS.size} hardcoded)\n`
+    `${HARDCODED_SKIPS.size} hardcoded)\n`,
 );
 
 const cols = ['Role', 'Web hex', 'Swift hex', 'Match'];
@@ -198,12 +191,14 @@ for (const role of sortedRoles) {
     match = 'swift-only';
     swiftOnly.push(role);
   }
-  console.log([
-    role.padEnd(widths[0]),
-    String(w ?? '-').padEnd(widths[1]),
-    String(s ?? '-').padEnd(widths[2]),
-    match.padEnd(widths[3]),
-  ].join(' '));
+  console.log(
+    [
+      role.padEnd(widths[0]),
+      String(w ?? '-').padEnd(widths[1]),
+      String(s ?? '-').padEnd(widths[2]),
+      match.padEnd(widths[3]),
+    ].join(' '),
+  );
 }
 
 console.log('\nCounts');
@@ -211,8 +206,12 @@ console.log('------');
 console.log(`Roles in both:      ${sortedRoles.length - webOnly.length - swiftOnly.length}`);
 console.log(`Hex mismatches:     ${mismatches.length}`);
 console.log(`Exempted mismatches:${exemptedMismatches.length}`);
-console.log(`Web-only roles:     ${webOnly.length}${webOnly.length ? ' (' + webOnly.join(', ') + ')' : ''}`);
-console.log(`Swift-only roles:   ${swiftOnly.length}${swiftOnly.length ? ' (' + swiftOnly.join(', ') + ')' : ''}`);
+console.log(
+  `Web-only roles:     ${webOnly.length}${webOnly.length ? ' (' + webOnly.join(', ') + ')' : ''}`,
+);
+console.log(
+  `Swift-only roles:   ${swiftOnly.length}${swiftOnly.length ? ' (' + swiftOnly.join(', ') + ')' : ''}`,
+);
 
 if (exemptedMismatches.length > 0) {
   console.log('\nExempted divergences (recorded in parity-exceptions.json or HARDCODED_SKIPS):');
@@ -227,7 +226,7 @@ if (mismatches.length > 0) {
     console.log(`  ${m.role}: web ${m.web} != swift ${m.swift}`);
   }
   console.log(
-    '\nTo intentionally allow a role to diverge, add it to tokens/parity-exceptions.json'
+    '\nTo intentionally allow a role to diverge, add it to tokens/parity-exceptions.json',
   );
   console.log('with an ADR reference in the same PR.');
 }

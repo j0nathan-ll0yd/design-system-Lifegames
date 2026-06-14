@@ -52,7 +52,7 @@
 }
 
 /* Hide system status relative timestamps (e.g. "3 hours ago") */
-[class*="sys-val-"] .sys-val {
+[class*='sys-val-'] .sys-val {
   visibility: hidden !important;
 }
 
@@ -70,7 +70,8 @@
    Dashboard.astro sets html,body { height: 100dvh } which caps document height
    even when overflow switches to auto at responsive breakpoints. Without this
    override, Playwright's fullPage:true captures only the viewport height. */
-html, body {
+html,
+body {
   height: auto !important;
   overflow: visible !important;
 }

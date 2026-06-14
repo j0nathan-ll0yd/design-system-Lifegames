@@ -65,9 +65,9 @@ export function updateMovementRings(data: AdaptedHealth): void {
   // Stand: HealthKit ships minutes; UI shows hours.
   const standRaw = q.standTime;
   const standHours = standRaw
-    ? (standRaw.unit === 'min'
-        ? Math.floor(standRaw.value / 60)
-        : Math.floor(standRaw.value))
+    ? standRaw.unit === 'min'
+      ? Math.floor(standRaw.value / 60)
+      : Math.floor(standRaw.value)
     : 0;
 
   const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;

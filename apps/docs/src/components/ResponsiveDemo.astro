@@ -20,22 +20,24 @@ const frames = [
 ---
 
 <div class="rd-stack">
-  {frames.map(({ label, maxWidth }) => (
-    <div class="rd-frame-wrap">
-      <div class="rd-demo" style={`max-width: ${maxWidth};`}>
-        <div class="rd-demo-width-label">{label}</div>
-        <div class="rd-demo-content" style="container-type: inline-size;">
-          {Island ? (
-            <Island fixture={fixture} />
-          ) : Component ? (
-            <div data-widget-preview>
-              <Component {...fixture} />
-            </div>
-          ) : null}
+  {
+    frames.map(({ label, maxWidth }) => (
+      <div class="rd-frame-wrap">
+        <div class="rd-demo" style={`max-width: ${maxWidth};`}>
+          <div class="rd-demo-width-label">{label}</div>
+          <div class="rd-demo-content" style="container-type: inline-size;">
+            {Island ? (
+              <Island fixture={fixture} />
+            ) : Component ? (
+              <div data-widget-preview>
+                <Component {...fixture} />
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
-    </div>
-  ))}
+    ))
+  }
 </div>
 
 <style>

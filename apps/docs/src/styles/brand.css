@@ -14,7 +14,7 @@
   color: var(--lg-color-accent-pink);
   margin-bottom: 20px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255,0,110,0.2);
+  border-bottom: 1px solid rgba(255, 0, 110, 0.2);
 }
 
 /* Color swatches */
@@ -27,7 +27,7 @@
 .swatch {
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .swatch-color {
@@ -36,7 +36,7 @@
 
 .swatch-info {
   padding: 10px 12px;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .swatch-name {
@@ -54,7 +54,7 @@
 .swatch-var {
   font-size: 0.52rem;
   font-family: 'Space Grotesk', monospace;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   margin-top: 2px;
 }
 
@@ -62,9 +62,9 @@
 .type-specimen {
   margin-bottom: 20px;
   padding: 16px 20px;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .type-specimen-label {
@@ -145,10 +145,11 @@
 
 /* Skeleton/shimmer bars */
 .skeleton-bar {
-  background: linear-gradient(90deg,
-    rgba(255,255,255,0.04) 25%,
-    rgba(255,255,255,0.08) 50%,
-    rgba(255,255,255,0.04) 75%
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 2s ease-in-out infinite;
@@ -163,8 +164,8 @@
 }
 
 .anim-demo {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 20px;
   text-align: center;

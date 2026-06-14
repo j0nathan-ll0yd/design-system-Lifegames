@@ -7,6 +7,7 @@
 ## What was attempted
 
 End-to-end smoke verification per B2 acceptance criteria:
+
 1. Import `packages/tokens/dist/m3.css` into a Material Web Components fixture
 2. Render `md-filled-button`, `md-elevated-card`, `md-outlined-text-field`
 3. Verify visual fidelity via screenshot

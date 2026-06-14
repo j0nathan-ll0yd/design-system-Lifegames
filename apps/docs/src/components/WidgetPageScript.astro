@@ -1,20 +1,24 @@
 <script is:inline>
-  (function() {
-    var s = [".tri-card", ".identity-card", ".left-panel-bio", ".left-panel-status"];
+  (function () {
+    var s = ['.tri-card', '.identity-card', '.left-panel-bio', '.left-panel-status'];
     for (var i = 0; i < s.length; i++) {
       var els = document.querySelectorAll(s[i]);
       for (var j = 0; j < els.length; j++) {
-        els[j].classList.add("visible");
+        els[j].classList.add('visible');
       }
     }
     var skels = document.querySelectorAll('[data-state="skeleton"] .tri-card');
-    for (var s2 = 0; s2 < skels.length; s2++) { skels[s2].classList.add("is-loading"); }
-    var loading = document.querySelectorAll(".tri-card.is-loading");
+    for (var s2 = 0; s2 < skels.length; s2++) {
+      skels[s2].classList.add('is-loading');
+    }
+    var loading = document.querySelectorAll('.tri-card.is-loading');
     for (var k = 0; k < loading.length; k++) {
       if (loading[k].closest('[data-state="skeleton"]')) continue;
-      loading[k].classList.remove("is-loading");
+      loading[k].classList.remove('is-loading');
     }
-    var wks = document.querySelectorAll("#cardWorkouts");
-    for (var w = 0; w < wks.length; w++) { wks[w].style.display = ""; }
+    var wks = document.querySelectorAll('#cardWorkouts');
+    for (var w = 0; w < wks.length; w++) {
+      wks[w].style.display = '';
+    }
   })();
 </script>

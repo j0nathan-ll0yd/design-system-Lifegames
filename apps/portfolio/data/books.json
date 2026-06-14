@@ -57,10 +57,7 @@
       "seriesNumber": 1,
       "seriesTotal": 2,
       "pages": 432,
-      "genres": [
-        "Fantasy",
-        "Mystery"
-      ],
+      "genres": ["Fantasy", "Mystery"],
       "year": 2024,
       "desc": "In an empire threatened by titanic creatures, an eccentric investigator and her assistant must solve a mysterious murder in a classic whodunit set in a fantastical world. Hugo Award Winner."
     },
@@ -69,10 +66,7 @@
       "seriesNumber": 1,
       "seriesTotal": 3,
       "pages": 505,
-      "genres": [
-        "Fantasy",
-        "Sci-Fi"
-      ],
+      "genres": ["Fantasy", "Sci-Fi"],
       "year": 2018,
       "desc": "In a city that runs on industrialized magic, a talented thief joins a secret war against the magical slave lords who run the city with their decadent hijacked sorcery."
     },
@@ -81,10 +75,7 @@
       "seriesNumber": 2,
       "seriesTotal": 2,
       "pages": 461,
-      "genres": [
-        "Fantasy",
-        "Mystery"
-      ],
+      "genres": ["Fantasy", "Mystery"],
       "year": 2025,
       "desc": "Ana and Din return to investigate a new series of impossible crimes in the outer rings, where the boundary between human civilization and leviathan territory grows thin."
     },
@@ -93,10 +84,7 @@
       "seriesNumber": 1,
       "seriesTotal": 3,
       "pages": 336,
-      "genres": [
-        "Fantasy",
-        "Dark Academia"
-      ],
+      "genres": ["Fantasy", "Dark Academia"],
       "year": 2020,
       "desc": "A school for the magically gifted where failure means death. El Higgins is determined to survive, but dark forces have other plans for her extraordinary powers."
     },
@@ -105,10 +93,7 @@
       "seriesNumber": null,
       "seriesTotal": null,
       "pages": 310,
-      "genres": [
-        "Tech",
-        "Leadership"
-      ],
+      "genres": ["Tech", "Leadership"],
       "year": 2025,
       "desc": "A practical guide to making thoughtful engineering decisions that solve complex organizational problems, from the author of Staff Engineer and An Elegant Puzzle."
     }

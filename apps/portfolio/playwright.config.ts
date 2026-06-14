@@ -41,8 +41,7 @@ export default defineConfig({
     },
   },
 
-  snapshotPathTemplate:
-    '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
+  snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
 
   projects: [
     {

@@ -86,7 +86,10 @@ async function startPreview() {
         resolve();
       }
     });
-    proc.on('error', (err) => { clearTimeout(timeout); reject(err); });
+    proc.on('error', (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
   });
   log(`Preview ready.`);
   return proc;
@@ -109,18 +112,32 @@ async function captureScreenshots() {
     await page.goto(BASE_URL + '/', { waitUntil: 'load', timeout: 30_000 });
     await page.evaluate(() => document.fonts.ready);
     try {
-      await page.waitForFunction(
-        () => document.querySelectorAll('.is-loading').length === 0,
-        { timeout: 10_000 },
-      );
-    } catch { /* fixture-less; skeletons may persist — OK for parity smoke */ }
+      await page.waitForFunction(() => document.querySelectorAll('.is-loading').length === 0, {
+        timeout: 10_000,
+      });
+    } catch {
+      /* fixture-less; skeletons may persist — OK for parity smoke */
+    }
     await page.addStyleTag({ content: stylesheet });
-    await page.waitForFunction(() => {
-      const h = document.documentElement.scrollHeight;
-      return new Promise((r) => setTimeout(() => r(document.documentElement.scrollHeight === h), 200));
-    }, { timeout: 5_000 }).catch(() => {});
+    await page
+      .waitForFunction(
+        () => {
+          const h = document.documentElement.scrollHeight;
+          return new Promise((r) =>
+            setTimeout(() => r(document.documentElement.scrollHeight === h), 200),
+          );
+        },
+        { timeout: 5_000 },
+      )
+      .catch(() => {});
     const out = path.join(OUTPUT_DIR, `portfolio-${vp.name}.png`);
-    await page.screenshot({ path: out, fullPage: true, animations: 'disabled', caret: 'hide', scale: 'css' });
+    await page.screenshot({
+      path: out,
+      fullPage: true,
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
+    });
     captured.push({ viewport: vp, capture: out });
     await ctx.close();
   }
@@ -178,13 +195,21 @@ async function main() {
     const ratio = diffPixels / totalPixels;
     const verdict = ratio <= MAX_DIFF_PIXEL_RATIO ? 'PASS' : 'FAIL';
     if (verdict === 'FAIL') anyFail = true;
-    log(`${verdict} ${viewport.name}: ${diffPixels.toLocaleString()}/${totalPixels.toLocaleString()} px (${(ratio * 100).toFixed(2)}%) | diff: ${outDiff}`);
+    log(
+      `${verdict} ${viewport.name}: ${diffPixels.toLocaleString()}/${totalPixels.toLocaleString()} px (${(ratio * 100).toFixed(2)}%) | diff: ${outDiff}`,
+    );
   }
 
   if (anyFail) {
-    log(`Threshold: ${(MAX_DIFF_PIXEL_RATIO * 100).toFixed(1)}%. Some viewports exceeded threshold.`);
-    log(`Note: apps/portfolio uses skeleton states by default; diff vs LIVE production may be expected.`);
-    log(`Inspect diff PNGs in ${OUTPUT_DIR} to determine whether differences are structural or data-driven.`);
+    log(
+      `Threshold: ${(MAX_DIFF_PIXEL_RATIO * 100).toFixed(1)}%. Some viewports exceeded threshold.`,
+    );
+    log(
+      `Note: apps/portfolio uses skeleton states by default; diff vs LIVE production may be expected.`,
+    );
+    log(
+      `Inspect diff PNGs in ${OUTPUT_DIR} to determine whether differences are structural or data-driven.`,
+    );
     process.exit(1);
   }
   log('All viewports within threshold.');

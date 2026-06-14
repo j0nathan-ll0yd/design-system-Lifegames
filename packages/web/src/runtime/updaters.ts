@@ -1,21 +1,30 @@
 import { widgets, a11y } from '@lifegames/copy';
 import { classifyHeartRate, classifyHRV } from './heart-rate';
 import { HYDRATION } from './constants';
-import type { AdaptedHealth, AdaptedSleep, AdaptedBooks, AdaptedGithubEvent, AdaptedStarredRepo, BookMeta, WorkoutEntry, AdaptedArticle } from './adapters';
+import type {
+  AdaptedHealth,
+  AdaptedSleep,
+  AdaptedBooks,
+  AdaptedGithubEvent,
+  AdaptedStarredRepo,
+  BookMeta,
+  WorkoutEntry,
+  AdaptedArticle,
+} from './adapters';
 import { LANG_COLORS } from './constants';
 import type { LocationExport } from '../types/exports';
 import { imgFallbackAttrs, localizeImageUrl } from './image-utils';
 
 const CATEGORY_COLORS: Record<string, string> = {
-  'Dining':              'var(--neon-orange, #ff6b00)',
-  'Fitness & Outdoors':  'var(--neon-green, #06d6a0)',
-  'Shopping':            'var(--neon-purple, #a855f7)',
-  'Entertainment':       'var(--neon-pink, #ff006e)',
-  'Travel':              'var(--neon-cyan, #00d4ff)',
-  'Health':              'var(--neon-red, #ef4444)',
-  'Work':                'var(--neon-blue, #3a86ff)',
-  'Education':           'var(--neon-indigo, #818cf8)',
-  'Services':            'var(--neon-amber, #f59e0b)',
+  Dining: 'var(--neon-orange, #ff6b00)',
+  'Fitness & Outdoors': 'var(--neon-green, #06d6a0)',
+  Shopping: 'var(--neon-purple, #a855f7)',
+  Entertainment: 'var(--neon-pink, #ff006e)',
+  Travel: 'var(--neon-cyan, #00d4ff)',
+  Health: 'var(--neon-red, #ef4444)',
+  Work: 'var(--neon-blue, #3a86ff)',
+  Education: 'var(--neon-indigo, #818cf8)',
+  Services: 'var(--neon-amber, #f59e0b)',
 };
 const CATEGORY_FALLBACK_COLOR = 'var(--text-muted, #9ca3af)';
 
@@ -25,9 +34,15 @@ export function getCategoryColor(category: string | null): string {
 }
 
 const ACCENT_CLASSES = [
-  'tri-card-accent-pink', 'tri-card-accent-blue', 'tri-card-accent-green',
-  'tri-card-accent-amber', 'tri-card-accent-red', 'tri-card-accent-purple',
-  'tri-card-accent-cyan', 'tri-card-accent-orange', 'tri-card-accent-indigo',
+  'tri-card-accent-pink',
+  'tri-card-accent-blue',
+  'tri-card-accent-green',
+  'tri-card-accent-amber',
+  'tri-card-accent-red',
+  'tri-card-accent-purple',
+  'tri-card-accent-cyan',
+  'tri-card-accent-orange',
+  'tri-card-accent-indigo',
 ];
 
 import { esc } from './html-utils';
@@ -115,14 +130,37 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
     html += '<div class="workout-sub-top">';
     html += getIcon(w.activityType);
     html += w.activityUrl
-      ? '<a class="workout-sub-type" href="' + esc(w.activityUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(w.activityType) + '</a>'
+      ? '<a class="workout-sub-type" href="' +
+        esc(w.activityUrl) +
+        '" target="_blank" rel="noopener noreferrer">' +
+        esc(w.activityType) +
+        '</a>'
       : '<div class="workout-sub-type">' + esc(w.activityType) + '</div>';
     html += '</div>';
     html += '<div class="workout-sub-stats">';
-    html += '<div class="workout-stat"><div class="workout-stat-label">' + widgets.workouts.duration + '</div><div class="workout-stat-value">' + fmtDuration(w.duration ?? 0) + '</div></div>';
-    html += '<div class="workout-stat"><div class="workout-stat-label">' + widgets.workouts.calories + '</div><div class="workout-stat-value">' + Math.round(w.energyBurned ?? 0) + ' ' + widgets.workouts.caloriesUnit + '</div></div>';
+    html +=
+      '<div class="workout-stat"><div class="workout-stat-label">' +
+      widgets.workouts.duration +
+      '</div><div class="workout-stat-value">' +
+      fmtDuration(w.duration ?? 0) +
+      '</div></div>';
+    html +=
+      '<div class="workout-stat"><div class="workout-stat-label">' +
+      widgets.workouts.calories +
+      '</div><div class="workout-stat-value">' +
+      Math.round(w.energyBurned ?? 0) +
+      ' ' +
+      widgets.workouts.caloriesUnit +
+      '</div></div>';
     if (w.distance && w.distance > 0) {
-      html += '<div class="workout-stat"><div class="workout-stat-label">' + widgets.workouts.distance + '</div><div class="workout-stat-value">' + (w.distance / 1000).toFixed(2) + ' ' + widgets.workouts.distanceUnit + '</div></div>';
+      html +=
+        '<div class="workout-stat"><div class="workout-stat-label">' +
+        widgets.workouts.distance +
+        '</div><div class="workout-stat-value">' +
+        (w.distance / 1000).toFixed(2) +
+        ' ' +
+        widgets.workouts.distanceUnit +
+        '</div></div>';
     }
     html += '</div>';
     html += '</div>';
@@ -152,7 +190,8 @@ export function updateNightSummary(data: AdaptedSleep): void {
     });
 
     const insight = document.getElementById('sleepInsight');
-    if (insight) insight.innerHTML = `<span class="sleep-insight-empty">${widgets.nightSummary.empty}</span>`;
+    if (insight)
+      insight.innerHTML = `<span class="sleep-insight-empty">${widgets.nightSummary.empty}</span>`;
 
     const timestamp = document.getElementById('sleepTimestamp');
     if (timestamp) timestamp.textContent = 'no data';
@@ -195,7 +234,13 @@ export function updateNightSummary(data: AdaptedSleep): void {
     const deepClause = (clauses[0] ?? '').replace('{deep}', String(data.derived.deepPct));
     const remClause = (clauses[1] ?? '').replace('{rem}', String(data.derived.remPct));
     const tailClause = clauses[2] ?? '';
-    insight.innerHTML = '<span>' + deepClause + '</span> &mdash; <span>' + remClause + '</span> &mdash; ' + tailClause;
+    insight.innerHTML =
+      '<span>' +
+      deepClause +
+      '</span> &mdash; <span>' +
+      remClause +
+      '</span> &mdash; ' +
+      tailClause;
   }
 
   const timestamp = document.getElementById('sleepTimestamp');
@@ -250,12 +295,12 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   if (!body) return;
 
   const iconMap: Record<string, { symbol: string; color: string }> = {
-    'commit':       { symbol: '\u2192', color: 'var(--neon-green)' },
-    'pr_opened':    { symbol: '\u2295', color: 'var(--neon-blue)' },
-    'pr_closed':    { symbol: '\u2296', color: 'var(--neon-blue)' },
-    'pr_merged':    { symbol: '\u229E', color: 'var(--neon-blue)' },
-    'issue_opened': { symbol: '\u25C9', color: 'var(--neon-amber)' },
-    'issue_closed': { symbol: '\u2714', color: 'var(--neon-amber)' },
+    commit: { symbol: '\u2192', color: 'var(--neon-green)' },
+    pr_opened: { symbol: '\u2295', color: 'var(--neon-blue)' },
+    pr_closed: { symbol: '\u2296', color: 'var(--neon-blue)' },
+    pr_merged: { symbol: '\u229E', color: 'var(--neon-blue)' },
+    issue_opened: { symbol: '\u25C9', color: 'var(--neon-amber)' },
+    issue_closed: { symbol: '\u2714', color: 'var(--neon-amber)' },
   };
   const fallbackIcon = { symbol: '\u00B7', color: 'var(--neon-green)' };
 
@@ -264,17 +309,26 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
     const icon = iconMap[e.type] || fallbackIcon;
     let detail = '';
     if (e.type === 'commit' && e.hash) {
-      detail = '<span style="color:var(--neon-green)">+' + (e.additions || 0) + '</span> <span style="color:var(--neon-red)">-' + (e.deletions || 0) + '</span>';
+      detail =
+        '<span style="color:var(--neon-green)">+' +
+        (e.additions || 0) +
+        '</span> <span style="color:var(--neon-red)">-' +
+        (e.deletions || 0) +
+        '</span>';
     } else if (e.number !== undefined) {
       detail = '#' + e.number;
     }
 
     if (e.url) {
-      html += '<a class="gh-dal-line" href="' + esc(e.url) + '" target="_blank" rel="noopener noreferrer">';
+      html +=
+        '<a class="gh-dal-line" href="' +
+        esc(e.url) +
+        '" target="_blank" rel="noopener noreferrer">';
     } else {
       html += '<a class="gh-dal-line">';
     }
-    html += '<span class="gh-dal-icon" style="color: ' + icon.color + ';">' + icon.symbol + '</span>';
+    html +=
+      '<span class="gh-dal-icon" style="color: ' + icon.color + ';">' + icon.symbol + '</span>';
     html += '<span class="gh-dal-repo">' + esc(e.repo) + '</span>';
     html += '<span class="gh-dal-title">' + esc(e.title) + '</span>';
     if (detail) {
@@ -309,18 +363,25 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
 
     let html = '<ul class="article-list" aria-live="polite">';
     pageArticles.forEach((a: AdaptedArticle, i: number) => {
-      html += '<li class="article-list-item" style="animation-delay: ' + (i * 0.07) + 's">';
+      html += '<li class="article-list-item" style="animation-delay: ' + i * 0.07 + 's">';
       if (a.hasNotes) {
         html += '<span class="article-list-note" title="' + esc(a.noteText || '') + '">';
-        html += '<svg class="article-list-note-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">';
-        html += '<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5l-3 3V3z" stroke="currentColor" stroke-width="1.2"/>';
+        html +=
+          '<svg class="article-list-note-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">';
+        html +=
+          '<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5l-3 3V3z" stroke="currentColor" stroke-width="1.2"/>';
         html += '<line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="1"/>';
         html += '<line x1="5" y1="8.5" x2="9" y2="8.5" stroke="currentColor" stroke-width="1"/>';
         html += '</svg>';
         html += '</span>';
       }
       if (a.url) {
-        html += '<a class="article-list-title" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer">' + esc(a.title) + '</a>';
+        html +=
+          '<a class="article-list-title" href="' +
+          esc(a.url) +
+          '" target="_blank" rel="noopener noreferrer">' +
+          esc(a.title) +
+          '</a>';
       } else {
         html += '<span class="article-list-title">' + esc(a.title) + '</span>';
       }
@@ -335,7 +396,20 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
       for (let p = 1; p <= totalPages; p++) {
         const activeClass = p === page ? ' article-page-active' : '';
         const ariaCurrent = p === page ? ' aria-current="page"' : '';
-        html += '<button class="article-page-btn' + activeClass + '"' + ariaCurrent + ' data-page="' + p + '" aria-label="' + a11y.readingFeed.pagination.replace('{page}', String(p)).replace('{total}', String(totalPages)) + '">' + p + '</button>';
+        html +=
+          '<button class="article-page-btn' +
+          activeClass +
+          '"' +
+          ariaCurrent +
+          ' data-page="' +
+          p +
+          '" aria-label="' +
+          a11y.readingFeed.pagination
+            .replace('{page}', String(p))
+            .replace('{total}', String(totalPages)) +
+          '">' +
+          p +
+          '</button>';
       }
       html += '</div>';
     }
@@ -394,7 +468,11 @@ export function updateSystemStatus(timestamps: Record<string, string | null>): v
       valEl.className = 'sys-val-green';
       // Copy stores natural case ('Active'); this site renders all-caps with no
       // CSS transform, so uppercase at the call site to preserve the pixels.
-      valEl.innerHTML = widgets.systemStatus.valueActive.toUpperCase() + ' <span class="sys-val">(' + ago + ')</span>';
+      valEl.innerHTML =
+        widgets.systemStatus.valueActive.toUpperCase() +
+        ' <span class="sys-val">(' +
+        ago +
+        ')</span>';
     } else {
       dot.className = 'sys-dot sys-dot-red';
       if (keyEl) {
@@ -444,22 +522,25 @@ export function updatePlaceLeaderboard(data: LocationExport): void {
     return;
   }
 
-  const maxVisits = Math.max(...data.topPlaces.map(p => p.visitCount), 1);
+  const maxVisits = Math.max(...data.topPlaces.map((p) => p.visitCount), 1);
 
-  listEl.innerHTML = data.topPlaces.slice(0, 8).map((place, i) => {
-    const barWidth = ((place.visitCount / maxVisits) * 100).toFixed(1);
-    const catColor = getCategoryColor(place.category);
-    const catBadge = place.category
-      ? `<span class="pl-cat" style="color:${catColor};border-color:${catColor}">${esc(place.category)}</span>`
-      : '';
-    return `<div class="pl-row">
+  listEl.innerHTML = data.topPlaces
+    .slice(0, 8)
+    .map((place, i) => {
+      const barWidth = ((place.visitCount / maxVisits) * 100).toFixed(1);
+      const catColor = getCategoryColor(place.category);
+      const catBadge = place.category
+        ? `<span class="pl-cat" style="color:${catColor};border-color:${catColor}">${esc(place.category)}</span>`
+        : '';
+      return `<div class="pl-row">
       <span class="pl-rank">${i + 1}</span>
       <span class="pl-name">${esc(place.name)}</span>
       ${catBadge}
       <div class="pl-bar-wrapper"><div class="pl-bar-fill" style="width:${barWidth}%"></div></div>
       <span class="pl-visits">${place.visitCount}</span>
     </div>`;
-  }).join('');
+    })
+    .join('');
 
   card.classList.remove('is-loading');
 }
@@ -481,16 +562,23 @@ export function updateBookshelf(data: AdaptedBooks): void {
   // Collect ASINs that have local images (present at SSR build time)
   const ssrBookEls = document.querySelectorAll('#dashShelfRow .shelf-book');
   const ssrAsins = new Set<string>();
-  ssrBookEls.forEach(el => {
+  ssrBookEls.forEach((el) => {
     try {
       const data = JSON.parse(el.getAttribute('data-book') || '{}');
       if (data.asin) ssrAsins.add(data.asin);
-    } catch { /* ignore parse errors */ }
+    } catch {
+      /* ignore parse errors */
+    }
   });
 
   const statusLabels = data.statusLabels;
   const bookMeta = data.bookMeta;
-  const statusOrder: Record<string, number> = { in_progress: 0, next: 1, completed: 2, finished: 2 };
+  const statusOrder: Record<string, number> = {
+    in_progress: 0,
+    next: 1,
+    completed: 2,
+    finished: 2,
+  };
   const sortedBooks = data.books.slice().sort((a, b) => {
     return (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99);
   });
@@ -501,35 +589,41 @@ export function updateBookshelf(data: AdaptedBooks): void {
   if (existingBooks.length === displayBooks.length) {
     displayBooks.forEach((b, i: number) => {
       const el = existingBooks[i];
-      const meta = bookMeta[b.asin] || {} as BookMeta;
+      const meta = bookMeta[b.asin] || ({} as BookMeta);
       const coverSrc = b.coverThumb
         ? b.coverThumb
         : b.cover
           ? b.cover.replace(/_SY\d+_SX\d+/, '_SY180_SX130')
-          : ('https://m.media-amazon.com/images/P/' + b.asin + '.01._SCLZZZZZZZ_SX200_.jpg');
+          : 'https://m.media-amazon.com/images/P/' + b.asin + '.01._SCLZZZZZZZ_SX200_.jpg';
       const cardSrc = b.coverCard || null;
 
-      el.setAttribute('data-book', JSON.stringify({
-        title: b.title,
-        author: b.author,
-        asin: b.asin,
-        status: b.status,
-        statusLabel: statusLabels[b.status],
-        rating: b.rating,
-        progress: b.progress,
-        link: b.link,
-        cover: b.cover,
-        series: meta.seriesName || null,
-        seriesNumber: meta.seriesNumber || null,
-        seriesTotal: meta.seriesTotal || null,
-        pages: meta.pages || null,
-        year: meta.year || null,
-        desc: meta.desc || null,
-        genres: meta.genres || [],
-        notes: b.notes || null,
-      }));
+      el.setAttribute(
+        'data-book',
+        JSON.stringify({
+          title: b.title,
+          author: b.author,
+          asin: b.asin,
+          status: b.status,
+          statusLabel: statusLabels[b.status],
+          rating: b.rating,
+          progress: b.progress,
+          link: b.link,
+          cover: b.cover,
+          series: meta.seriesName || null,
+          seriesNumber: meta.seriesNumber || null,
+          seriesTotal: meta.seriesTotal || null,
+          pages: meta.pages || null,
+          year: meta.year || null,
+          desc: meta.desc || null,
+          genres: meta.genres || [],
+          notes: b.notes || null,
+        }),
+      );
 
-      el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author));
+      el.setAttribute(
+        'aria-label',
+        a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author),
+      );
 
       const img = el.querySelector('img') as HTMLImageElement | null;
       if (img) {
@@ -547,7 +641,11 @@ export function updateBookshelf(data: AdaptedBooks): void {
         if (b.cover && coverSrc !== b.cover) {
           const fallbackUrl = b.cover;
           img.dataset.fallback = fallbackUrl;
-          img.onerror = function() { (this as HTMLImageElement).srcset = ''; (this as HTMLImageElement).src = fallbackUrl; this.onerror = null; };
+          img.onerror = function () {
+            (this as HTMLImageElement).srcset = '';
+            (this as HTMLImageElement).src = fallbackUrl;
+            this.onerror = null;
+          };
         }
       }
 
@@ -571,7 +669,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const status = el.querySelector('.shelf-book-status');
       if (status) {
         status.className = 'shelf-book-status shelf-status-' + b.status;
-        status.textContent = b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status];
+        status.textContent =
+          b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status];
       }
 
       // Stars: only for non-in_progress books
@@ -579,7 +678,12 @@ export function updateBookshelf(data: AdaptedBooks): void {
       if (b.status !== 'in_progress' && b.rating) {
         let starsHtml = '';
         for (let s = 1; s <= 5; s++) {
-          starsHtml += '<span class="' + (s <= b.rating ? 'star-on' : 'star-off') + '">' + (s <= b.rating ? '\u2605' : '\u2606') + '</span>';
+          starsHtml +=
+            '<span class="' +
+            (s <= b.rating ? 'star-on' : 'star-off') +
+            '">' +
+            (s <= b.rating ? '\u2605' : '\u2606') +
+            '</span>';
         }
         if (existingStars) {
           existingStars.innerHTML = starsHtml;
@@ -604,7 +708,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
         } else {
           const barDiv = document.createElement('div');
           barDiv.className = 'shelf-book-progress-bar';
-          barDiv.innerHTML = '<div class="shelf-book-progress-fill" style="width:' + b.progress + '%"></div>';
+          barDiv.innerHTML =
+            '<div class="shelf-book-progress-fill" style="width:' + b.progress + '%"></div>';
           const insertAfter = status;
           insertAfter!.insertAdjacentElement('afterend', barDiv);
         }
@@ -626,12 +731,12 @@ export function updateBookshelf(data: AdaptedBooks): void {
   } else {
     let html = '';
     displayBooks.forEach((b, i: number) => {
-      const meta = bookMeta[b.asin] || {} as BookMeta;
+      const meta = bookMeta[b.asin] || ({} as BookMeta);
       const coverSrc = b.coverThumb
         ? b.coverThumb
         : b.cover
           ? b.cover.replace(/_SY\d+_SX\d+/, '_SY180_SX130')
-          : ('https://m.media-amazon.com/images/P/' + b.asin + '.01._SCLZZZZZZZ_SX200_.jpg');
+          : 'https://m.media-amazon.com/images/P/' + b.asin + '.01._SCLZZZZZZZ_SX200_.jpg';
       const cardSrc = b.coverCard || null;
       const bookData = JSON.stringify({
         title: b.title,
@@ -658,14 +763,40 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc;
       const displayCardSrc = localCardSrc || null;
       const displayCoverSrc = localCoverSrc ?? coverSrc;
-      html += '<div class="shelf-book' + activeClass + '" style="animation-delay: ' + (i * 0.08) + 's" data-book=\'' + bookData.replace(/'/g, '&#39;') + '\' tabindex="0" aria-label="' + a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) + '">';
+      html +=
+        '<div class="shelf-book' +
+        activeClass +
+        '" style="animation-delay: ' +
+        i * 0.08 +
+        's" data-book=\'' +
+        bookData.replace(/'/g, '&#39;') +
+        '\' tabindex="0" aria-label="' +
+        a11y.bookshelf.bookItem
+          .replace('{title}', esc(b.title))
+          .replace('{author}', esc(b.author)) +
+        '">';
       html += '<div class="shelf-cover-wrapper">';
-      const srcsetAttr = displayCardSrc ? ' srcset="' + esc(displayCardSrc) + ' 1x, ' + esc(displayCoverSrc) + ' 2x"' : '';
+      const srcsetAttr = displayCardSrc
+        ? ' srcset="' + esc(displayCardSrc) + ' 1x, ' + esc(displayCoverSrc) + ' 2x"'
+        : '';
       var avifSrcset = '';
       if (b.coverCardAvif && b.coverThumbAvif) {
-        avifSrcset = ' srcset="' + esc(b.coverCardAvif) + ' 1x, ' + esc(b.coverThumbAvif) + ' 2x" type="image/avif"';
+        avifSrcset =
+          ' srcset="' +
+          esc(b.coverCardAvif) +
+          ' 1x, ' +
+          esc(b.coverThumbAvif) +
+          ' 2x" type="image/avif"';
       }
-      var imgAttrs = 'src="' + esc(displayCardSrc || displayCoverSrc) + '"' + srcsetAttr + ' width="80" height="120" alt="' + esc(b.title) + '" loading="lazy" decoding="async"' + imgFallbackAttrs(displayCardSrc || displayCoverSrc, b.cover);
+      var imgAttrs =
+        'src="' +
+        esc(displayCardSrc || displayCoverSrc) +
+        '"' +
+        srcsetAttr +
+        ' width="80" height="120" alt="' +
+        esc(b.title) +
+        '" loading="lazy" decoding="async"' +
+        imgFallbackAttrs(displayCardSrc || displayCoverSrc, b.cover);
       if (avifSrcset) {
         html += '<picture><source' + avifSrcset + '><img ' + imgAttrs + '></picture>';
       } else {
@@ -674,14 +805,27 @@ export function updateBookshelf(data: AdaptedBooks): void {
       html += '</div>';
       html += '<div class="shelf-book-title"><span>' + esc(b.title) + '</span></div>';
       html += '<div class="shelf-book-author">' + esc(b.author) + '</div>';
-      html += '<div class="shelf-book-status shelf-status-' + b.status + '">' + (b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status]) + '</div>';
+      html +=
+        '<div class="shelf-book-status shelf-status-' +
+        b.status +
+        '">' +
+        (b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status]) +
+        '</div>';
       if (b.status === 'in_progress' && b.progress != null) {
-        html += '<div class="shelf-book-progress-bar"><div class="shelf-book-progress-fill" style="width:' + b.progress + '%"></div></div>';
+        html +=
+          '<div class="shelf-book-progress-bar"><div class="shelf-book-progress-fill" style="width:' +
+          b.progress +
+          '%"></div></div>';
         html += '<div class="shelf-book-progress">' + b.progress + '%</div>';
       } else if (b.rating) {
         html += '<div class="shelf-book-stars">';
         for (let s = 1; s <= 5; s++) {
-          html += '<span class="' + (s <= b.rating ? 'star-on' : 'star-off') + '">' + (s <= b.rating ? '\u2605' : '\u2606') + '</span>';
+          html +=
+            '<span class="' +
+            (s <= b.rating ? 'star-on' : 'star-off') +
+            '">' +
+            (s <= b.rating ? '\u2605' : '\u2606') +
+            '</span>';
         }
         html += '</div>';
       }
@@ -706,7 +850,10 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
   repos.forEach((repo) => {
     const color = LANG_COLORS[repo.language] || repo.languageColor || '#8b949e';
     html += '<div class="gh-sl-row">';
-    html += '<a class="gh-sl-name" href="' + esc(repo.url) + '" target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">';
+    html +=
+      '<a class="gh-sl-name" href="' +
+      esc(repo.url) +
+      '" target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">';
     html += '<span class="gh-sl-owner">' + esc(repo.owner) + '/</span>' + esc(repo.name);
     html += '</a>';
     html += '<span class="gh-sl-stars">&#9733; ' + repo.stars.toLocaleString() + '</span>';

@@ -31,10 +31,22 @@
       "required": ["commits", "pullRequests", "issues", "reviews", "repositories"],
       "properties": {
         "commits": { "type": "integer", "minimum": 0, "description": "Number of commits." },
-        "pullRequests": { "type": "integer", "minimum": 0, "description": "Number of pull requests opened or merged." },
+        "pullRequests": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of pull requests opened or merged."
+        },
         "issues": { "type": "integer", "minimum": 0, "description": "Number of issues opened." },
-        "reviews": { "type": "integer", "minimum": 0, "description": "Number of code reviews submitted." },
-        "repositories": { "type": "integer", "minimum": 0, "description": "Number of distinct repositories contributed to." }
+        "reviews": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of code reviews submitted."
+        },
+        "repositories": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of distinct repositories contributed to."
+        }
       }
     },
     "streak": {
@@ -43,8 +55,16 @@
       "additionalProperties": false,
       "required": ["current", "longest"],
       "properties": {
-        "current": { "type": "integer", "minimum": 0, "description": "Active consecutive-day streak count." },
-        "longest": { "type": "integer", "minimum": 0, "description": "All-time longest consecutive-day streak count." }
+        "current": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active consecutive-day streak count."
+        },
+        "longest": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "All-time longest consecutive-day streak count."
+        }
       }
     },
     "languages": {
@@ -65,14 +85,40 @@
             "description": "Event type discriminant.",
             "examples": ["commit", "pr_opened", "pr_merged", "issue_opened"]
           },
-          "repo": { "type": "string", "description": "Short repository name.", "examples": ["mantle"] },
+          "repo": {
+            "type": "string",
+            "description": "Short repository name.",
+            "examples": ["mantle"]
+          },
           "title": { "type": "string", "description": "Commit message subject or PR/issue title." },
-          "date": { "type": "string", "description": "Human-readable relative date string.", "examples": ["2h ago", "1d ago"] },
-          "hash": { "type": "string", "description": "Short commit SHA. Present for commit events only.", "examples": ["a9421b5"] },
-          "number": { "type": "integer", "description": "PR or issue number. Present for pull request and issue events only." },
-          "additions": { "type": "integer", "minimum": 0, "description": "Lines added. Present for commit and PR events." },
-          "deletions": { "type": "integer", "minimum": 0, "description": "Lines deleted. Present for commit and PR events." },
-          "url": { "type": "string", "description": "Full URL to the commit, PR, or issue on GitHub." }
+          "date": {
+            "type": "string",
+            "description": "Human-readable relative date string.",
+            "examples": ["2h ago", "1d ago"]
+          },
+          "hash": {
+            "type": "string",
+            "description": "Short commit SHA. Present for commit events only.",
+            "examples": ["a9421b5"]
+          },
+          "number": {
+            "type": "integer",
+            "description": "PR or issue number. Present for pull request and issue events only."
+          },
+          "additions": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lines added. Present for commit and PR events."
+          },
+          "deletions": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Lines deleted. Present for commit and PR events."
+          },
+          "url": {
+            "type": "string",
+            "description": "Full URL to the commit, PR, or issue on GitHub."
+          }
         }
       }
     },
@@ -94,9 +140,21 @@
       "additionalProperties": false,
       "required": ["repos", "stars", "contributions"],
       "properties": {
-        "repos": { "type": "integer", "minimum": 0, "description": "Total number of public repositories." },
-        "stars": { "type": "integer", "minimum": 0, "description": "Total stargazers across all repositories." },
-        "contributions": { "type": "integer", "minimum": 0, "description": "Total contribution count (mirrors totalContributions)." }
+        "repos": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of public repositories."
+        },
+        "stars": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total stargazers across all repositories."
+        },
+        "contributions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total contribution count (mirrors totalContributions)."
+        }
       }
     },
     "topRepos": {

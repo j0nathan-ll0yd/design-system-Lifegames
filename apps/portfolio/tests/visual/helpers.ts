@@ -1,6 +1,9 @@
 import path from 'path';
 import type { Page } from '@playwright/test';
-import { CLOUDFRONT_BASE, WEBSOCKET_URL as WEBSOCKET_URL_WITH_PATH } from '@lifegames/portal-contract/constants';
+import {
+  CLOUDFRONT_BASE,
+  WEBSOCKET_URL as WEBSOCKET_URL_WITH_PATH,
+} from '@lifegames/portal-contract/constants';
 import { getScenarioFixtures, scenarioHasWorkouts, type ScenarioName } from './fixtures';
 
 // The contract's WEBSOCKET_URL carries the `/live` path; the route globs below
@@ -28,7 +31,7 @@ export const WIDGET_SELECTORS = {
 
 const TRANSPARENT_PIXEL = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQI12NgAAIABQAB' +
-  'Nl7BcQAAAABJRU5ErkJggg==',
+    'Nl7BcQAAAABJRU5ErkJggg==',
   'base64',
 );
 
@@ -90,13 +93,14 @@ export async function navigateAndWait(page: Page, options: NavigateOptions = {})
   await page.goto('/');
   await page.evaluate(() => document.fonts.ready);
 
-  await page.waitForFunction(
-    () => document.querySelectorAll('.is-loading').length === 0,
-    { timeout: HYDRATION_TIMEOUT_MS },
-  );
+  await page.waitForFunction(() => document.querySelectorAll('.is-loading').length === 0, {
+    timeout: HYDRATION_TIMEOUT_MS,
+  });
 
   if (options.waitForWorkouts) {
-    await page.locator('#cardWorkouts').waitFor({ state: 'visible', timeout: HYDRATION_TIMEOUT_MS });
+    await page
+      .locator('#cardWorkouts')
+      .waitFor({ state: 'visible', timeout: HYDRATION_TIMEOUT_MS });
   }
 
   if (options.waitForScrollHeight) {
@@ -114,7 +118,11 @@ export async function navigateAndWait(page: Page, options: NavigateOptions = {})
   }
 }
 
-export async function setupPage(page: Page, scenario: ScenarioName, options?: NavigateOptions): Promise<void> {
+export async function setupPage(
+  page: Page,
+  scenario: ScenarioName,
+  options?: NavigateOptions,
+): Promise<void> {
   await interceptRoutes(page, scenario);
   const hasWorkouts = options?.waitForWorkouts ?? scenarioHasWorkouts(scenario);
   await navigateAndWait(page, {

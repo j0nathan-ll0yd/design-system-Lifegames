@@ -65,9 +65,9 @@ describe('PollEngine', () => {
 
   describe('seed()', () => {
     it('seeds fingerprints so unchanged data is skipped', async () => {
-      const fetchMock = vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z', data: 'x' })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z', data: 'x' }));
       vi.stubGlobal('fetch', fetchMock);
 
       engine.seed({ health: '2024-01-01T00:00:00Z' });
@@ -142,9 +142,9 @@ describe('PollEngine', () => {
     });
 
     it('passive mode uses longer intervals (120s fast, 300s slow)', () => {
-      const fetchMock = vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' }));
       vi.stubGlobal('fetch', fetchMock);
 
       engine.start();
@@ -161,9 +161,9 @@ describe('PollEngine', () => {
     });
 
     it('active mode uses shorter intervals (30s fast)', () => {
-      const fetchMock = vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' }));
       vi.stubGlobal('fetch', fetchMock);
 
       engine.start();
@@ -174,22 +174,23 @@ describe('PollEngine', () => {
 
   describe('fetchResource()', () => {
     it('calls onUpdate with new data when fingerprint differs', async () => {
-      const fetchMock = vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-02T00:00:00Z', value: 42 })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-02T00:00:00Z', value: 42 }));
       vi.stubGlobal('fetch', fetchMock);
 
       engine.seed({ health: '2024-01-01T00:00:00Z' });
       await engine.pollResource('health');
 
-      expect(onUpdate).toHaveBeenCalledWith('health', { generatedAt: '2024-01-02T00:00:00Z', value: 42 });
+      expect(onUpdate).toHaveBeenCalledWith('health', {
+        generatedAt: '2024-01-02T00:00:00Z',
+        value: 42,
+      });
     });
 
     it('skips onUpdate when fingerprint is unchanged', async () => {
       const ts = '2024-01-01T00:00:00Z';
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: ts })
-      ));
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(makeFetchResponse({ generatedAt: ts })));
 
       engine.seed({ health: ts });
       await engine.pollResource('health');
@@ -198,13 +199,14 @@ describe('PollEngine', () => {
     });
 
     it('calls onError on HTTP error (non-ok response)', async () => {
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
-        makeFetchResponse(null, false, 500)
-      ));
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(makeFetchResponse(null, false, 500)));
 
       await engine.pollResource('health');
 
-      expect(onError).toHaveBeenCalledWith('health', expect.objectContaining({ message: 'HTTP 500' }));
+      expect(onError).toHaveBeenCalledWith(
+        'health',
+        expect.objectContaining({ message: 'HTTP 500' }),
+      );
     });
 
     it('calls onError on network error', async () => {
@@ -212,7 +214,10 @@ describe('PollEngine', () => {
 
       await engine.pollResource('health');
 
-      expect(onError).toHaveBeenCalledWith('health', expect.objectContaining({ message: 'Network failure' }));
+      expect(onError).toHaveBeenCalledWith(
+        'health',
+        expect.objectContaining({ message: 'Network failure' }),
+      );
     });
 
     it('increments errorCounts on repeated errors', async () => {
@@ -225,9 +230,12 @@ describe('PollEngine', () => {
     });
 
     it('clears errorCounts on successful fetch', async () => {
-      vi.stubGlobal('fetch', vi.fn()
-        .mockRejectedValueOnce(new Error('fail'))
-        .mockResolvedValueOnce(makeFetchResponse({ generatedAt: '2024-01-02T00:00:00Z' }))
+      vi.stubGlobal(
+        'fetch',
+        vi
+          .fn()
+          .mockRejectedValueOnce(new Error('fail'))
+          .mockResolvedValueOnce(makeFetchResponse({ generatedAt: '2024-01-02T00:00:00Z' })),
       );
 
       await engine.pollResource('health');
@@ -238,9 +246,10 @@ describe('PollEngine', () => {
     });
 
     it('updates lastPollAt after a poll', async () => {
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' })
-      ));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' })),
+      );
 
       expect(engine.getStatus().lastPollAt).toBeNull();
       await engine.pollResource('health');
@@ -266,9 +275,9 @@ describe('PollEngine', () => {
 
   describe('visibility change', () => {
     it('pauses timers when document becomes hidden', () => {
-      const fetchMock = vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' }));
       vi.stubGlobal('fetch', fetchMock);
 
       engine.start();
@@ -283,9 +292,9 @@ describe('PollEngine', () => {
     });
 
     it('resumes and immediately polls when document becomes visible', async () => {
-      const fetchMock = vi.fn().mockResolvedValue(
-        makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(makeFetchResponse({ generatedAt: '2024-01-01T00:00:00Z' }));
       vi.stubGlobal('fetch', fetchMock);
 
       engine.start();

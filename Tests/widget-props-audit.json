@@ -18,6 +18,7 @@
   "BioTerminal": "props",
   "ComingSoon": "static",
   "IdentityCard": "props",
+  "NotFound": "props",
   "ExplorationOdometerV3": "static",
   "PlaceLeaderboardV3": "static",
   "DndOverlay": "static",

@@ -212,7 +212,7 @@ describe('generateECGSamples', () => {
 
   it('returns all numbers', () => {
     const samples = generateECGSamples(60, 50);
-    samples.forEach(s => expect(typeof s).toBe('number'));
+    samples.forEach((s) => expect(typeof s).toBe('number'));
   });
 
   it('contains an R-peak close to amplitude 1.0 (within 0.1)', () => {

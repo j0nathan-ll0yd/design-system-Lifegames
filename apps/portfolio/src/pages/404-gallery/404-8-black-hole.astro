@@ -1,240 +1,326 @@
 ---
 import Variant from '../../layouts/Variant.astro';
 ---
-<Variant title="Black Hole — 404">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; overflow: hidden; }
-  body {
-    background: var(--bg);
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .star { position: absolute; border-radius: 50%; background: var(--text); }
-  .center-glow {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse at center, rgba(168,85,247,0.06) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  .four-o-four {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(8px,2vw,24px);
-    z-index: 10;
-  }
-  .digit-four {
-    font-size: clamp(4rem,10vw,8rem);
-    font-weight: 700;
-    color: var(--neon-purple);
-    text-shadow: 0 0 20px rgba(168,85,247,0.6), 0 0 40px rgba(168,85,247,0.3);
-    line-height: 1;
-    position: relative;
-  }
-  .digit-four.left  { transform: rotate(3deg) translateX(4px); }
-  .digit-four.right { transform: rotate(-3deg) translateX(-4px); }
-  .vortex-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: clamp(80px,15vw,160px);
-    height: clamp(80px,15vw,160px);
-  }
-  .vortex-core {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--bg) 30%, rgba(168,85,247,0.12) 60%, transparent 75%);
-    box-shadow: 0 0 0 1px rgba(168,85,247,0.1), 0 0 20px rgba(168,85,247,0.15), inset 0 0 20px rgba(168,85,247,0.08);
-    z-index: 2;
-  }
-  .vortex-swirl {
-    position: absolute;
-    inset: 8%;
-    border-radius: 50%;
-    border: 1px solid rgba(168,85,247,0.15);
-    border-top-color: rgba(168,85,247,0.4);
-    border-right-color: rgba(168,85,247,0.25);
-    animation: vortex-spin 3s linear infinite;
-    z-index: 3;
-  }
-  .vortex-swirl-2 {
-    position: absolute;
-    inset: 20%;
-    border-radius: 50%;
-    border: 1px solid rgba(168,85,247,0.1);
-    border-bottom-color: rgba(168,85,247,0.3);
-    animation: vortex-spin 2s linear infinite reverse;
-    z-index: 3;
-  }
-  @keyframes vortex-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .accretion-ring {
-    position: absolute;
-    border-radius: 50%;
-    border: 2px solid rgba(168,85,247,0.35);
-    transform: scaleY(0.35);
-    animation: ring-spin 8s linear infinite;
-    z-index: 1;
-  }
-  .accretion-ring.outer {
-    width: 140%; height: 140%;
-    border-color: rgba(168,85,247,0.35);
-    box-shadow: 0 0 8px rgba(168,85,247,0.2);
-    animation-duration: 8s;
-  }
-  .accretion-ring.inner {
-    width: 115%; height: 115%;
-    border-color: rgba(168,85,247,0.2);
-    animation-duration: 5s;
-    animation-direction: reverse;
-  }
-  @keyframes ring-spin {
-    from { transform: scaleY(0.35) rotate(0deg); }
-    to   { transform: scaleY(0.35) rotate(360deg); }
-  }
-  .particle-field { position: absolute; inset: -150px; pointer-events: none; z-index: 0; }
-  .particle {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: var(--neon-purple);
-    top: 50%;
-    left: 50%;
-    transform-origin: 0 0;
-  }
-  .caption {
-    margin-top: clamp(16px,3vw,28px);
-    font-size: clamp(0.55rem,1.2vw,0.75rem);
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(168,85,247,0.65);
-    text-align: center;
-    text-shadow: 0 0 10px rgba(168,85,247,0.3);
-    z-index: 10;
-    position: relative;
-  }
-  .return-link {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--neon-purple);
-    text-decoration: none;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-    z-index: 100;
-    white-space: nowrap;
-  }
-  .return-link:hover { opacity: 1; }
-  .return-link:focus { outline: 1px solid var(--neon-purple); outline-offset: 4px; opacity: 1; }
-  @media (prefers-reduced-motion: reduce) {
-    .vortex-swirl { animation: none; }
-    .vortex-swirl-2 { animation: none; }
-    .accretion-ring { animation: none; }
-    .accretion-ring.outer { transform: scaleY(0.35); }
-    .accretion-ring.inner { transform: scaleY(0.35); }
-    .particle { animation: none !important; opacity: 0.4; }
-  }
-</style>
-<div class="stars" id="stars" aria-hidden="true"></div>
-<div class="center-glow" aria-hidden="true"></div>
-<div class="four-o-four" role="main" aria-label="404 - Black Hole">
-  <div class="digit-four left" aria-hidden="true">4</div>
-  <div class="vortex-wrap">
-    <div class="accretion-ring outer" aria-hidden="true"></div>
-    <div class="accretion-ring inner" aria-hidden="true"></div>
-    <div class="particle-field" id="particleField" aria-hidden="true"></div>
-    <div class="vortex-core" aria-hidden="true">
-      <div class="vortex-swirl"></div>
-      <div class="vortex-swirl-2"></div>
-    </div>
-  </div>
-  <div class="digit-four right" aria-hidden="true">4</div>
-</div>
-<div class="caption">Event Horizon Reached</div>
-<a href="/" class="return-link">Return to Dashboard</a>
 
-<script>
-  (function() {
-    var starsEl = document.getElementById('stars');
-    var starCount = 28;
-    var i, star, size, x, y;
-    for (i = 0; i < starCount; i++) {
-      star = document.createElement('div');
-      star.className = 'star';
-      size = Math.random() < 0.7 ? 1 : 2;
-      x = Math.random() * 100; y = Math.random() * 100;
-      star.style.width = size + 'px'; star.style.height = size + 'px';
-      star.style.left = x + '%'; star.style.top = y + '%';
-      star.style.opacity = (0.2 + Math.random() * 0.5).toFixed(2);
-      starsEl.appendChild(star);
+<Variant title="Black Hole — 404">
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var field = document.getElementById('particleField');
-    var particleCount = 18;
-    for (i = 0; i < particleCount; i++) {
-      (function(idx) {
-        var p = document.createElement('span');
-        p.className = 'particle';
-        var startAngle = Math.random() * 360;
-        var startRadius = 90 + Math.random() * 110;
-        var duration = 3 + Math.random() * 5;
-        var delay = Math.random() * 6;
-        var opacity = 0.3 + Math.random() * 0.6;
-        var sz = Math.random() < 0.4 ? 2 : 3;
-        p.style.width = sz + 'px'; p.style.height = sz + 'px';
-        p.style.opacity = opacity.toFixed(2);
-        if (prefersReducedMotion) {
-          var rad = startAngle * Math.PI / 180;
-          var midRadius = startRadius * 0.6;
-          var cx = 150 + Math.cos(rad) * midRadius - sz / 2;
-          var cy = 150 + Math.sin(rad) * midRadius - sz / 2;
-          p.style.left = cx + 'px'; p.style.top = cy + 'px';
-          p.style.transform = 'none';
-          field.appendChild(p);
-        } else {
-          var animName = 'spiral-' + idx;
-          var keyframeSteps = 20;
-          var kf = '@keyframes ' + animName + ' {';
-          var j, pct, angle, radius, rcx, rcy, rrad;
-          for (j = 0; j <= keyframeSteps; j++) {
-            pct = (j / keyframeSteps * 100).toFixed(1);
-            angle = startAngle + (j / keyframeSteps) * 720;
-            radius = startRadius * (1 - j / keyframeSteps);
-            rrad = angle * Math.PI / 180;
-            rcx = 150 + Math.cos(rrad) * radius - sz / 2;
-            rcy = 150 + Math.sin(rrad) * radius - sz / 2;
-            var o = (j < keyframeSteps) ? opacity.toFixed(2) : '0';
-            kf += pct + '% { left: ' + rcx.toFixed(1) + 'px; top: ' + rcy.toFixed(1) + 'px; opacity: ' + o + '; }';
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--text);
+    }
+    .center-glow {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .four-o-four {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(8px, 2vw, 24px);
+      z-index: 10;
+    }
+    .digit-four {
+      font-size: clamp(4rem, 10vw, 8rem);
+      font-weight: 700;
+      color: var(--neon-purple);
+      text-shadow:
+        0 0 20px rgba(168, 85, 247, 0.6),
+        0 0 40px rgba(168, 85, 247, 0.3);
+      line-height: 1;
+      position: relative;
+    }
+    .digit-four.left {
+      transform: rotate(3deg) translateX(4px);
+    }
+    .digit-four.right {
+      transform: rotate(-3deg) translateX(-4px);
+    }
+    .vortex-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: clamp(80px, 15vw, 160px);
+      height: clamp(80px, 15vw, 160px);
+    }
+    .vortex-core {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        var(--bg) 30%,
+        rgba(168, 85, 247, 0.12) 60%,
+        transparent 75%
+      );
+      box-shadow:
+        0 0 0 1px rgba(168, 85, 247, 0.1),
+        0 0 20px rgba(168, 85, 247, 0.15),
+        inset 0 0 20px rgba(168, 85, 247, 0.08);
+      z-index: 2;
+    }
+    .vortex-swirl {
+      position: absolute;
+      inset: 8%;
+      border-radius: 50%;
+      border: 1px solid rgba(168, 85, 247, 0.15);
+      border-top-color: rgba(168, 85, 247, 0.4);
+      border-right-color: rgba(168, 85, 247, 0.25);
+      animation: vortex-spin 3s linear infinite;
+      z-index: 3;
+    }
+    .vortex-swirl-2 {
+      position: absolute;
+      inset: 20%;
+      border-radius: 50%;
+      border: 1px solid rgba(168, 85, 247, 0.1);
+      border-bottom-color: rgba(168, 85, 247, 0.3);
+      animation: vortex-spin 2s linear infinite reverse;
+      z-index: 3;
+    }
+    @keyframes vortex-spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .accretion-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(168, 85, 247, 0.35);
+      transform: scaleY(0.35);
+      animation: ring-spin 8s linear infinite;
+      z-index: 1;
+    }
+    .accretion-ring.outer {
+      width: 140%;
+      height: 140%;
+      border-color: rgba(168, 85, 247, 0.35);
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.2);
+      animation-duration: 8s;
+    }
+    .accretion-ring.inner {
+      width: 115%;
+      height: 115%;
+      border-color: rgba(168, 85, 247, 0.2);
+      animation-duration: 5s;
+      animation-direction: reverse;
+    }
+    @keyframes ring-spin {
+      from {
+        transform: scaleY(0.35) rotate(0deg);
+      }
+      to {
+        transform: scaleY(0.35) rotate(360deg);
+      }
+    }
+    .particle-field {
+      position: absolute;
+      inset: -150px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--neon-purple);
+      top: 50%;
+      left: 50%;
+      transform-origin: 0 0;
+    }
+    .caption {
+      margin-top: clamp(16px, 3vw, 28px);
+      font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(168, 85, 247, 0.65);
+      text-align: center;
+      text-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+      z-index: 10;
+      position: relative;
+    }
+    .return-link {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--neon-purple);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    .return-link:hover {
+      opacity: 1;
+    }
+    .return-link:focus {
+      outline: 1px solid var(--neon-purple);
+      outline-offset: 4px;
+      opacity: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vortex-swirl {
+        animation: none;
+      }
+      .vortex-swirl-2 {
+        animation: none;
+      }
+      .accretion-ring {
+        animation: none;
+      }
+      .accretion-ring.outer {
+        transform: scaleY(0.35);
+      }
+      .accretion-ring.inner {
+        transform: scaleY(0.35);
+      }
+      .particle {
+        animation: none !important;
+        opacity: 0.4;
+      }
+    }
+  </style>
+  <div class="stars" id="stars" aria-hidden="true"></div>
+  <div class="center-glow" aria-hidden="true"></div>
+  <div class="four-o-four" role="main" aria-label="404 - Black Hole">
+    <div class="digit-four left" aria-hidden="true">4</div>
+    <div class="vortex-wrap">
+      <div class="accretion-ring outer" aria-hidden="true"></div>
+      <div class="accretion-ring inner" aria-hidden="true"></div>
+      <div class="particle-field" id="particleField" aria-hidden="true"></div>
+      <div class="vortex-core" aria-hidden="true">
+        <div class="vortex-swirl"></div>
+        <div class="vortex-swirl-2"></div>
+      </div>
+    </div>
+    <div class="digit-four right" aria-hidden="true">4</div>
+  </div>
+  <div class="caption">Event Horizon Reached</div>
+  <a href="/" class="return-link">Return to Dashboard</a>
+
+  <script>
+    (function () {
+      var starsEl = document.getElementById('stars');
+      var starCount = 28;
+      var i, star, size, x, y;
+      for (i = 0; i < starCount; i++) {
+        star = document.createElement('div');
+        star.className = 'star';
+        size = Math.random() < 0.7 ? 1 : 2;
+        x = Math.random() * 100;
+        y = Math.random() * 100;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.left = x + '%';
+        star.style.top = y + '%';
+        star.style.opacity = (0.2 + Math.random() * 0.5).toFixed(2);
+        starsEl.appendChild(star);
+      }
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var field = document.getElementById('particleField');
+      var particleCount = 18;
+      for (i = 0; i < particleCount; i++) {
+        (function (idx) {
+          var p = document.createElement('span');
+          p.className = 'particle';
+          var startAngle = Math.random() * 360;
+          var startRadius = 90 + Math.random() * 110;
+          var duration = 3 + Math.random() * 5;
+          var delay = Math.random() * 6;
+          var opacity = 0.3 + Math.random() * 0.6;
+          var sz = Math.random() < 0.4 ? 2 : 3;
+          p.style.width = sz + 'px';
+          p.style.height = sz + 'px';
+          p.style.opacity = opacity.toFixed(2);
+          if (prefersReducedMotion) {
+            var rad = (startAngle * Math.PI) / 180;
+            var midRadius = startRadius * 0.6;
+            var cx = 150 + Math.cos(rad) * midRadius - sz / 2;
+            var cy = 150 + Math.sin(rad) * midRadius - sz / 2;
+            p.style.left = cx + 'px';
+            p.style.top = cy + 'px';
+            p.style.transform = 'none';
+            field.appendChild(p);
+          } else {
+            var animName = 'spiral-' + idx;
+            var keyframeSteps = 20;
+            var kf = '@keyframes ' + animName + ' {';
+            var j, pct, angle, radius, rcx, rcy, rrad;
+            for (j = 0; j <= keyframeSteps; j++) {
+              pct = ((j / keyframeSteps) * 100).toFixed(1);
+              angle = startAngle + (j / keyframeSteps) * 720;
+              radius = startRadius * (1 - j / keyframeSteps);
+              rrad = (angle * Math.PI) / 180;
+              rcx = 150 + Math.cos(rrad) * radius - sz / 2;
+              rcy = 150 + Math.sin(rrad) * radius - sz / 2;
+              var o = j < keyframeSteps ? opacity.toFixed(2) : '0';
+              kf +=
+                pct +
+                '% { left: ' +
+                rcx.toFixed(1) +
+                'px; top: ' +
+                rcy.toFixed(1) +
+                'px; opacity: ' +
+                o +
+                '; }';
+            }
+            kf += '}';
+            var styleEl = document.createElement('style');
+            styleEl.textContent = kf;
+            document.head.appendChild(styleEl);
+            var initRad = (startAngle * Math.PI) / 180;
+            var initCx = 150 + Math.cos(initRad) * startRadius - sz / 2;
+            var initCy = 150 + Math.sin(initRad) * startRadius - sz / 2;
+            p.style.left = initCx.toFixed(1) + 'px';
+            p.style.top = initCy.toFixed(1) + 'px';
+            p.style.animation =
+              animName + ' ' + duration.toFixed(2) + 's ' + delay.toFixed(2) + 's linear infinite';
+            field.appendChild(p);
           }
-          kf += '}';
-          var styleEl = document.createElement('style');
-          styleEl.textContent = kf;
-          document.head.appendChild(styleEl);
-          var initRad = startAngle * Math.PI / 180;
-          var initCx = 150 + Math.cos(initRad) * startRadius - sz / 2;
-          var initCy = 150 + Math.sin(initRad) * startRadius - sz / 2;
-          p.style.left = initCx.toFixed(1) + 'px'; p.style.top = initCy.toFixed(1) + 'px';
-          p.style.animation = animName + ' ' + duration.toFixed(2) + 's ' + delay.toFixed(2) + 's linear infinite';
-          field.appendChild(p);
-        }
-      })(i);
-    }
-  })();
-</script>
+        })(i);
+      }
+    })();
+  </script>
 </Variant>

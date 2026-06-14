@@ -23,13 +23,15 @@ Deprecation is a lifecycle state (see GOVERNANCE.md §3 P7). A `Deprecated` item
 Add the `$deprecated` field and a `$extensions.lifegames.replacedBy` pointer on the token entry in `tokens/*.tokens.json`:
 
 ```json
-"color.accent.magenta": {
-  "$value": "{color.neon.pink}",
-  "$type": "color",
-  "$deprecated": true,
-  "$extensions": {
-    "lifegames": {
-      "replacedBy": "color.accent.pink"
+{
+  "color.accent.magenta": {
+    "$value": "{color.neon.pink}",
+    "$type": "color",
+    "$deprecated": true,
+    "$extensions": {
+      "lifegames": {
+        "replacedBy": "color.accent.pink"
+      }
     }
   }
 }
@@ -75,9 +77,9 @@ Update the registry entry `"status": "Deprecated"` in `production-widgets.json` 
 
 A deprecated item must survive for **at least one MAJOR release** before removal.
 
-| Phase | Action |
-|---|---|
-| **Deprecate in vX.Y.Z** | Annotate as described above; add to `packages/tokens/dist/deprecated-tokens.json`; record in quarterly audit. |
+| Phase                    | Action                                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **Deprecate in vX.Y.Z**  | Annotate as described above; add to `packages/tokens/dist/deprecated-tokens.json`; record in quarterly audit.          |
 | **Remove in v(X+1).0.0** | Delete source, remove registry entry, remove from `deprecated-tokens.json`. Include a migration note in the CHANGELOG. |
 
 Exceptions (removal in a MINOR release) require an explicit ADR in `docs/adr/` justifying the accelerated timeline (e.g., security issue, license conflict).
@@ -135,10 +137,10 @@ The audit entry format in `docs/quarterly-checks.md`:
 ```markdown
 ### Q2 2026
 
-| Item | Type | Deprecated In | Target Removal | replacedBy | Decision |
-|---|---|---|---|---|---|
-| `color.accent.magenta` | token | 1.4.0 | 2.0.0 | `color.accent.pink` | remove |
-| `OldWidget` | Swift widget | 1.3.0 | 2.0.0 | `NewWidget` | extend (iOS consumer blocked) |
+| Item                   | Type         | Deprecated In | Target Removal | replacedBy          | Decision                      |
+| ---------------------- | ------------ | ------------- | -------------- | ------------------- | ----------------------------- |
+| `color.accent.magenta` | token        | 1.4.0         | 2.0.0          | `color.accent.pink` | remove                        |
+| `OldWidget`            | Swift widget | 1.3.0         | 2.0.0          | `NewWidget`         | extend (iOS consumer blocked) |
 ```
 
 ---

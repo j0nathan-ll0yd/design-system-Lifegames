@@ -2,121 +2,201 @@
 import Variant from '../../layouts/Variant.astro';
 
 const variants = [
-  { slug: 'dnd-1-meeting-in-progress', title: 'Meeting in Progress', color: 'var(--neon-blue)',   category: 'DnD',  desc: 'Animated mic icon, breathing glow card, PST clock' },
-  { slug: 'dnd-2-away',                title: 'Away',                color: 'var(--neon-indigo)', category: 'DnD',  desc: 'Lock icon, fade-in card, gradient heading, PST clock' },
-  { slug: 'dnd-3-privacy-screen',      title: 'Privacy Screen',      color: 'var(--neon-cyan)',   category: 'DnD',  desc: 'Shield icon, blur-in data rows, PST clock' },
-  { slug: 'dnd-4-be-right-back',       title: 'Be Right Back',       color: 'var(--neon-orange)', category: 'DnD',  desc: 'Pause bars, 15-min countdown with progress bar' },
-  { slug: 'dnd-5-system-offline',      title: 'System Offline',      color: 'var(--neon-pink)',   category: 'DnD',  desc: 'CRT shutdown animation, power icon fade-in' },
-  { slug: 'work-1-shift-active',       title: 'Shift Active',        color: 'var(--neon-red)',    category: 'Work', desc: 'No-entry icon, shift schedule, live PST clock' },
-  { slug: 'work-2-deep-focus',         title: 'Deep Focus',          color: 'var(--neon-amber)',  category: 'Work', desc: 'SVG ring countdown to 15:00 PST, scanline drift' },
-  { slug: 'work-3-access-suspended',   title: 'Access Suspended',    color: 'var(--neon-red)',    category: 'Work', desc: 'Terminal 403, staggered log lines, HH:MM:SS countdown' },
-  { slug: 'work-4-stealth-mode',       title: 'Stealth Mode',        color: 'var(--neon-green)',  category: 'Work', desc: 'Radar blip with expanding rings, hover/touch to reveal' },
-  { slug: 'work-5-in-the-zone',        title: 'In The Zone',         color: 'var(--neon-purple)', category: 'Work', desc: 'Canvas EEG waves, focus score + elapsed/remaining stats' },
+  {
+    slug: 'dnd-1-meeting-in-progress',
+    title: 'Meeting in Progress',
+    color: 'var(--neon-blue)',
+    category: 'DnD',
+    desc: 'Animated mic icon, breathing glow card, PST clock',
+  },
+  {
+    slug: 'dnd-2-away',
+    title: 'Away',
+    color: 'var(--neon-indigo)',
+    category: 'DnD',
+    desc: 'Lock icon, fade-in card, gradient heading, PST clock',
+  },
+  {
+    slug: 'dnd-3-privacy-screen',
+    title: 'Privacy Screen',
+    color: 'var(--neon-cyan)',
+    category: 'DnD',
+    desc: 'Shield icon, blur-in data rows, PST clock',
+  },
+  {
+    slug: 'dnd-4-be-right-back',
+    title: 'Be Right Back',
+    color: 'var(--neon-orange)',
+    category: 'DnD',
+    desc: 'Pause bars, 15-min countdown with progress bar',
+  },
+  {
+    slug: 'dnd-5-system-offline',
+    title: 'System Offline',
+    color: 'var(--neon-pink)',
+    category: 'DnD',
+    desc: 'CRT shutdown animation, power icon fade-in',
+  },
+  {
+    slug: 'work-1-shift-active',
+    title: 'Shift Active',
+    color: 'var(--neon-red)',
+    category: 'Work',
+    desc: 'No-entry icon, shift schedule, live PST clock',
+  },
+  {
+    slug: 'work-2-deep-focus',
+    title: 'Deep Focus',
+    color: 'var(--neon-amber)',
+    category: 'Work',
+    desc: 'SVG ring countdown to 15:00 PST, scanline drift',
+  },
+  {
+    slug: 'work-3-access-suspended',
+    title: 'Access Suspended',
+    color: 'var(--neon-red)',
+    category: 'Work',
+    desc: 'Terminal 403, staggered log lines, HH:MM:SS countdown',
+  },
+  {
+    slug: 'work-4-stealth-mode',
+    title: 'Stealth Mode',
+    color: 'var(--neon-green)',
+    category: 'Work',
+    desc: 'Radar blip with expanding rings, hover/touch to reveal',
+  },
+  {
+    slug: 'work-5-in-the-zone',
+    title: 'In The Zone',
+    color: 'var(--neon-purple)',
+    category: 'Work',
+    desc: 'Canvas EEG waves, focus score + elapsed/remaining stats',
+  },
 ];
 ---
+
 <Variant title="Overlay Gallery">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg);
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--text);
-    padding: 40px 32px 64px;
-    min-height: 100vh;
-  }
-  .gallery-header { margin-bottom: 40px; }
-  .gallery-title {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    font-weight: 700;
-    color: var(--neon-pink);
-    margin-bottom: 8px;
-  }
-  .gallery-desc {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
-  .category-section { margin-bottom: 40px; }
-  .category-label {
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-  .variant-card {
-    display: block;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 10px;
-    padding: 20px;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .variant-card:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.12);
-  }
-  .variant-card:focus {
-    outline: 2px solid var(--neon-pink);
-    outline-offset: 2px;
-  }
-  .variant-num {
-    font-size: 0.55rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-  .variant-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .variant-desc {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-  .variant-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: middle;
-    flex-shrink: 0;
-  }
-</style>
-<div class="gallery-header">
-  <h1 class="gallery-title">Overlay Gallery</h1>
-  <p class="gallery-desc">10 status overlay variants — 5 Do Not Disturb and 5 Work Mode. Each opens as a standalone preview.</p>
-</div>
-{(['DnD', 'Work'] as const).map((cat) => (
-  <div class="category-section">
-    <div class="category-label">{cat === 'DnD' ? 'Do Not Disturb' : 'Work Mode'}</div>
-    <div class="gallery-grid">
-      {variants.filter(v => v.category === cat).map((v, i) => (
-        <a href={`/overlay-gallery/${v.slug}`} class="variant-card">
-          <div class="variant-num">Variant {String(i + 1).padStart(2, '0')}</div>
-          <div class="variant-name">
-            <span class="variant-dot" style={`background: ${v.color}`}></span>
-            {v.title}
-          </div>
-          <div class="variant-desc">{v.desc}</div>
-        </a>
-      ))}
-    </div>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text);
+      padding: 40px 32px 64px;
+      min-height: 100vh;
+    }
+    .gallery-header {
+      margin-bottom: 40px;
+    }
+    .gallery-title {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--neon-pink);
+      margin-bottom: 8px;
+    }
+    .gallery-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .category-section {
+      margin-bottom: 40px;
+    }
+    .category-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .variant-card {
+      display: block;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition:
+        border-color 0.2s,
+        background 0.2s;
+    }
+    .variant-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .variant-card:focus {
+      outline: 2px solid var(--neon-pink);
+      outline-offset: 2px;
+    }
+    .variant-num {
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .variant-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .variant-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .variant-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+  </style>
+  <div class="gallery-header">
+    <h1 class="gallery-title">Overlay Gallery</h1>
+    <p class="gallery-desc">
+      10 status overlay variants — 5 Do Not Disturb and 5 Work Mode. Each opens as a standalone
+      preview.
+    </p>
   </div>
-))}
+  {
+    (['DnD', 'Work'] as const).map((cat) => (
+      <div class="category-section">
+        <div class="category-label">{cat === 'DnD' ? 'Do Not Disturb' : 'Work Mode'}</div>
+        <div class="gallery-grid">
+          {variants
+            .filter((v) => v.category === cat)
+            .map((v, i) => (
+              <a href={`/overlay-gallery/${v.slug}`} class="variant-card">
+                <div class="variant-num">Variant {String(i + 1).padStart(2, '0')}</div>
+                <div class="variant-name">
+                  <span class="variant-dot" style={`background: ${v.color}`} />
+                  {v.title}
+                </div>
+                <div class="variant-desc">{v.desc}</div>
+              </a>
+            ))}
+        </div>
+      </div>
+    ))
+  }
 </Variant>

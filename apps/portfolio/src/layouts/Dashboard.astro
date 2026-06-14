@@ -223,11 +223,13 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <!-- DNS prefetch fallbacks + preconnect hints -->
   <link rel="preconnect" href={CLOUDFRONT_BASE} crossorigin>
   {import.meta.env.PROD && (
-    <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.health}`} as="fetch" crossorigin>
-    <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.sleep}`} as="fetch" crossorigin>
-    <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.focus}`} as="fetch" crossorigin>
-    <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.books}`} as="fetch" crossorigin>
-    <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.theatreReviews}`} as="fetch" crossorigin>
+    <>
+      <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.health}`} as="fetch" crossorigin>
+      <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.sleep}`} as="fetch" crossorigin>
+      <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.focus}`} as="fetch" crossorigin>
+      <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.books}`} as="fetch" crossorigin>
+      <link rel="prefetch" href={`${CLOUDFRONT_BASE}${ENDPOINTS.theatreReviews}`} as="fetch" crossorigin>
+    </>
   )}
   <link rel="dns-prefetch" href="https://scripts.simpleanalyticscdn.com">
   <link rel="dns-prefetch" href="https://queue.simpleanalyticscdn.com">

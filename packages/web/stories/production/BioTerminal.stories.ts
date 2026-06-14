@@ -18,10 +18,15 @@ function renderTerminal(lines: typeof defaultLines) {
       <div class="widget-header">
         <span class="widget-label">Bio Terminal</span>
       </div>
-      <div class="widget-body" style="padding: 16px; font-family: monospace; color: var(--lg-color-text-primary);">
+      <div
+        class="widget-body"
+        style="padding: 16px; font-family: monospace; color: var(--lg-color-text-primary);"
+      >
         ${lines.map((l) => {
-          if (l.type === 'prompt') return html`<div style="color: var(--lg-color-accent-green);">${l.text}</div>`;
-          if (l.type === 'output') return html`<div style="color: var(--lg-color-text-muted);">${l.text}</div>`;
+          if (l.type === 'prompt')
+            return html`<div style="color: var(--lg-color-accent-green);">${l.text}</div>`;
+          if (l.type === 'output')
+            return html`<div style="color: var(--lg-color-text-muted);">${l.text}</div>`;
           if (l.type === 'cursor') return html`<span class="bio-cursor">▮</span>`;
           return html`<div>&nbsp;</div>`;
         })}
@@ -59,7 +64,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

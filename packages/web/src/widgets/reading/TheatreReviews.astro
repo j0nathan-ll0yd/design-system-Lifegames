@@ -1,12 +1,19 @@
 ---
 import { widgets } from '@lifegames/copy';
 ---
+
 <div class="tri-card tri-card-accent-yellow" id="cardTheatreReviews">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.theatreReviews.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <a class="widget-timestamp theatre-count-link" id="theatreCount" href="https://www.coasttocoastreviews.com" target="_blank" rel="noopener noreferrer">reviews</a>
+      <a
+        class="widget-timestamp theatre-count-link"
+        id="theatreCount"
+        href="https://www.coasttocoastreviews.com"
+        target="_blank"
+        rel="noopener noreferrer">reviews</a
+      >
     </div>
   </div>
   <div class="widget-body">
@@ -36,7 +43,7 @@ import { widgets } from '@lifegames/copy';
 <style is:global>
   .tri-card-accent-yellow {
     border-top: 2px solid var(--lg-color-status-warning);
-    box-shadow: 0 0 20px rgba(255,214,0,0.08);
+    box-shadow: 0 0 20px rgba(255, 214, 0, 0.08);
   }
 
   .theatre-row {
@@ -46,20 +53,29 @@ import { widgets } from '@lifegames/copy';
     scroll-snap-type: x mandatory;
     padding: 0 0 4px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,214,0,0.3) transparent;
+    scrollbar-color: rgba(255, 214, 0, 0.3) transparent;
     list-style: none;
     margin: 0;
   }
-  .theatre-row::-webkit-scrollbar { height: 4px; }
-  .theatre-row::-webkit-scrollbar-track { background: transparent; }
-  .theatre-row::-webkit-scrollbar-thumb { background: rgba(255,214,0,0.3); border-radius: 4px; }
+  .theatre-row::-webkit-scrollbar {
+    height: 4px;
+  }
+  .theatre-row::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .theatre-row::-webkit-scrollbar-thumb {
+    background: rgba(255, 214, 0, 0.3);
+    border-radius: 4px;
+  }
 
   .theatre-count-link {
     text-decoration: none;
     color: inherit;
     transition: color 0.2s ease;
   }
-  .theatre-count-link:hover { color: var(--lg-color-status-warning); }
+  .theatre-count-link:hover {
+    color: var(--lg-color-status-warning);
+  }
 
   .theatre-card {
     flex-shrink: 0;
@@ -74,8 +90,12 @@ import { widgets } from '@lifegames/copy';
   }
 
   @media (hover: hover) {
-    .theatre-card:hover { transform: translateY(-4px); }
-    .theatre-card:hover .theatre-title { color: var(--lg-color-status-warning); }
+    .theatre-card:hover {
+      transform: translateY(-4px);
+    }
+    .theatre-card:hover .theatre-title {
+      color: var(--lg-color-status-warning);
+    }
   }
 
   .theatre-poster-wrap {
@@ -85,7 +105,7 @@ import { widgets } from '@lifegames/copy';
     margin: 0 auto 8px;
     border-radius: 4px;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(255,214,0,0.12), rgba(58,134,255,0.08));
+    background: linear-gradient(135deg, rgba(255, 214, 0, 0.12), rgba(58, 134, 255, 0.08));
   }
 
   .theatre-poster-wrap img {
@@ -106,7 +126,7 @@ import { widgets } from '@lifegames/copy';
     padding: 4px 7px;
     border: 1.5px solid;
     border-radius: 4px;
-    background: rgba(6,6,15,0.85);
+    background: rgba(6, 6, 15, 0.85);
     backdrop-filter: blur(4px);
     letter-spacing: 0.5px;
   }

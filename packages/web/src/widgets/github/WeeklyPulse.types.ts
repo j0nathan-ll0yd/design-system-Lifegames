@@ -4,8 +4,8 @@
 
 export interface WeeklyPulseProps {
   weeks: {
-  total: number;
-  label: string;
-}[];
+    total: number;
+    label: string;
+  }[];
   maxWeek: number;
 }

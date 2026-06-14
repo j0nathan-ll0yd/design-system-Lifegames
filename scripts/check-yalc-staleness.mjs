@@ -82,10 +82,7 @@ function fmt(sha) {
 
 // ── consumer mode: compare DS-shipped hash to consumer's local yalc dist ──────
 if (CONSUMER_ROOT) {
-  const yalcRoot = path.resolve(
-    CONSUMER_ROOT,
-    '.yalc/@lifegames/tokens'
-  );
+  const yalcRoot = path.resolve(CONSUMER_ROOT, '.yalc/@lifegames/tokens');
   const shippedHashFile = path.join(yalcRoot, HASH_FILE_NAME);
   const yalcDist = path.join(yalcRoot, 'dist');
 
@@ -96,7 +93,7 @@ if (CONSUMER_ROOT) {
   if (!fs.existsSync(shippedHashFile)) {
     console.log(
       `WARN: ${shippedHashFile} missing — the DS publish did not write a content hash. ` +
-        `Run \`pnpm yalc:publish\` from the DS repo, then \`yalc update\` here.`
+        `Run \`pnpm yalc:publish\` from the DS repo, then \`yalc update\` here.`,
     );
     process.exit(MODE_CHECK ? 1 : 0);
   }
@@ -105,23 +102,23 @@ if (CONSUMER_ROOT) {
 
   if (expected === actual) {
     console.log(
-      `Yalc OK — @lifegames/tokens consumer dist matches DS-published hash ${fmt(actual)} (${fileCount} files).`
+      `Yalc OK — @lifegames/tokens consumer dist matches DS-published hash ${fmt(actual)} (${fileCount} files).`,
     );
     process.exit(0);
   }
   console.log(
     `Yalc DRIFT — @lifegames/tokens consumer dist hash ${fmt(actual)} ` +
-      `does not match DS-published hash ${fmt(expected)} (${fileCount} files).`
+      `does not match DS-published hash ${fmt(expected)} (${fileCount} files).`,
   );
-  console.log('Run `yalc update` to refresh, or `pnpm yalc:publish` from the DS if you just rebuilt.');
+  console.log(
+    'Run `yalc update` to refresh, or `pnpm yalc:publish` from the DS if you just rebuilt.',
+  );
   process.exit(MODE_CHECK ? 1 : 0);
 }
 
 // ── DS-side modes ─────────────────────────────────────────────────────────────
 if (!fs.existsSync(DIST_DIR)) {
-  console.error(
-    `ERROR: ${DIST_DIR} does not exist. Run \`pnpm build:tokens\` first.`
-  );
+  console.error(`ERROR: ${DIST_DIR} does not exist. Run \`pnpm build:tokens\` first.`);
   process.exit(1);
 }
 
@@ -131,10 +128,10 @@ if (MODE_WRITE) {
   fs.writeFileSync(HASH_FILE, currentHash + '\n');
   fs.writeFileSync(PACKAGE_HASH_FILE, currentHash + '\n');
   console.log(
-    `Wrote ${HASH_FILE_NAME} = ${fmt(currentHash)} (${fileCount} files under packages/tokens/dist/).`
+    `Wrote ${HASH_FILE_NAME} = ${fmt(currentHash)} (${fileCount} files under packages/tokens/dist/).`,
   );
   console.log(
-    `Also wrote packages/tokens/${HASH_FILE_NAME} so the hash travels with yalc publish.`
+    `Also wrote packages/tokens/${HASH_FILE_NAME} so the hash travels with yalc publish.`,
   );
   process.exit(0);
 }
@@ -143,27 +140,23 @@ if (MODE_CHECK) {
   if (!fs.existsSync(HASH_FILE)) {
     console.error(
       `ERROR: ${HASH_FILE_NAME} missing. Run \`node scripts/check-yalc-staleness.mjs --write\` ` +
-        `(or pnpm yalc:publish, which should invoke it) to record the current hash.`
+        `(or pnpm yalc:publish, which should invoke it) to record the current hash.`,
     );
     process.exit(1);
   }
   const stored = fs.readFileSync(HASH_FILE, 'utf-8').trim();
   if (stored === currentHash) {
-    console.log(
-      `${HASH_FILE_NAME} OK — ${fmt(currentHash)} (${fileCount} files).`
-    );
+    console.log(`${HASH_FILE_NAME} OK — ${fmt(currentHash)} (${fileCount} files).`);
     process.exit(0);
   }
   console.error(
     `STALE: ${HASH_FILE_NAME} = ${fmt(stored)} but current dist hashes to ${fmt(currentHash)} ` +
       `(${fileCount} files). Run \`node scripts/check-yalc-staleness.mjs --write\` after rebuild ` +
-      `and re-publish via \`pnpm yalc:publish\`.`
+      `and re-publish via \`pnpm yalc:publish\`.`,
   );
   process.exit(1);
 }
 
 // Default mode — print and exit 0.
-console.log(
-  `packages/tokens/dist/ sha256 = ${currentHash}  (${fileCount} files)`
-);
+console.log(`packages/tokens/dist/ sha256 = ${currentHash}  (${fileCount} files)`);
 process.exit(0);

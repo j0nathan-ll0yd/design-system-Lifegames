@@ -53,6 +53,7 @@ Gemini-generated Material Design Expressive UIs consume `--md-sys-color-*` CSS c
 ```
 
 This emits:
+
 - 29 `--md-sys-color-*` color role vars (+ `surface-tint`)
 - 8 fixed-tone variants (`--md-sys-color-primary-fixed`, etc.)
 - 4 state-layer opacity tokens (`--md-sys-state-hover-state-layer-opacity`, etc.)
@@ -83,6 +84,7 @@ For design tool plugins that import Design Token Community Group (DTCG) format, 
 ```
 
 **Tools that consume this pathway:**
+
 - Figma Variables (via [Tokens Studio for Figma](https://tokens.studio/) plugin)
 - Penpot (native DTCG import)
 - Supernova (token sync)
@@ -94,20 +96,20 @@ For design tool plugins that import Design Token Community Group (DTCG) format, 
 
 The `color.surface.*` AI-surface tokens ship natively as `--lg-color-surface-*` vars in all pathways — regardless of whether shadcn or M3 have equivalents.
 
-| Token | CSS property | Description |
-|---|---|---|
-| `color.surface.thinking` | `--lg-color-surface-thinking` | AI reasoning indicator |
-| `color.surface.citation` | `--lg-color-surface-citation` | Citation reference surface |
-| `color.surface.tool-use` | `--lg-color-surface-tool-use` | Tool-use disclosure (indigo tint) |
-| `color.surface.artifact-frame` | `--lg-color-surface-artifact-frame` | Artifact frame container |
-| `color.surface.code-block` | `--lg-color-surface-code-block` | Code block background |
+| Token                          | CSS property                        | Description                       |
+| ------------------------------ | ----------------------------------- | --------------------------------- |
+| `color.surface.thinking`       | `--lg-color-surface-thinking`       | AI reasoning indicator            |
+| `color.surface.citation`       | `--lg-color-surface-citation`       | Citation reference surface        |
+| `color.surface.tool-use`       | `--lg-color-surface-tool-use`       | Tool-use disclosure (indigo tint) |
+| `color.surface.artifact-frame` | `--lg-color-surface-artifact-frame` | Artifact frame container          |
+| `color.surface.code-block`     | `--lg-color-surface-code-block`     | Code block background             |
 
 See [AI-surface token reference](/tokens/ai-surfaces) for full details.
 
 ## Quick reference
 
-| Consumer | Import | Docs |
-|---|---|---|
-| Claude Artifacts | `@lifegames/tokens/dist/shadcn.css` | [/integration/claude-artifacts](/integration/claude-artifacts) |
-| Gemini / MWC | `@lifegames/tokens/dist/m3.css` | [/integration/material3](/integration/material3) |
-| Figma / Tokens Studio | `@lifegames/tokens/dist/tokens.json` | [/tokens/colors](/tokens/colors) |
+| Consumer              | Import                               | Docs                                                           |
+| --------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| Claude Artifacts      | `@lifegames/tokens/dist/shadcn.css`  | [/integration/claude-artifacts](/integration/claude-artifacts) |
+| Gemini / MWC          | `@lifegames/tokens/dist/m3.css`      | [/integration/material3](/integration/material3)               |
+| Figma / Tokens Studio | `@lifegames/tokens/dist/tokens.json` | [/tokens/colors](/tokens/colors)                               |

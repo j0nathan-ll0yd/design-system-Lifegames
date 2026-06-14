@@ -10,8 +10,12 @@ const { health: rawHealth } = Astro.props as MovementRingsProps;
 // runtime updater). The renderer continues to use the nested shape.
 const m = (rawHealth as any).movement as
   | {
-      moveKcal?: number; exerciseMin?: number; standHr?: number;
-      steps?: number; distanceMeters?: number; flights?: number;
+      moveKcal?: number;
+      exerciseMin?: number;
+      standHr?: number;
+      steps?: number;
+      distanceMeters?: number;
+      flights?: number;
       daylightMin?: number;
       goals?: MovementRingsProps['health']['goals'];
       solar?: MovementRingsProps['health']['solar'];
@@ -21,13 +25,13 @@ const health: MovementRingsProps['health'] = (rawHealth as any).quantities
   ? rawHealth
   : ({
       quantities: {
-        stepCount:              { value: m?.steps           ?? 0, unit: 'count' },
-        distanceWalkingRunning: { value: m?.distanceMeters  ?? 0, unit: 'm' },
-        flightsClimbed:         { value: m?.flights         ?? 0, unit: 'count' },
-        activeEnergyBurned:     { value: m?.moveKcal        ?? 0, unit: 'kcal' },
-        exerciseTime:           { value: m?.exerciseMin     ?? 0, unit: 'min' },
-        standTime:              { value: m?.standHr         ?? 0, unit: 'hr' },
-        timeInDaylight:         { value: m?.daylightMin     ?? 0, unit: 'min' },
+        stepCount: { value: m?.steps ?? 0, unit: 'count' },
+        distanceWalkingRunning: { value: m?.distanceMeters ?? 0, unit: 'm' },
+        flightsClimbed: { value: m?.flights ?? 0, unit: 'count' },
+        activeEnergyBurned: { value: m?.moveKcal ?? 0, unit: 'kcal' },
+        exerciseTime: { value: m?.exerciseMin ?? 0, unit: 'min' },
+        standTime: { value: m?.standHr ?? 0, unit: 'hr' },
+        timeInDaylight: { value: m?.daylightMin ?? 0, unit: 'min' },
       },
       goals: m?.goals,
       solar: m?.solar,
@@ -44,9 +48,10 @@ const goals = {
 
 // Normalise Stand: HealthKit ships minutes — convert if unit === 'min'.
 const standUnit = q.standTime?.unit ?? 'hr';
-const standHours = standUnit === 'min'
-  ? Math.floor((q.standTime?.value ?? 0) / 60)
-  : Math.floor(q.standTime?.value ?? 0);
+const standHours =
+  standUnit === 'min'
+    ? Math.floor((q.standTime?.value ?? 0) / 60)
+    : Math.floor(q.standTime?.value ?? 0);
 
 const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
 const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
@@ -87,6 +92,7 @@ function offset(circ: number, pct: number): number {
   return circ * (1 - visual);
 }
 ---
+
 <div class="tri-card tri-card-accent-red" id="cardMovement">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.movement.title}</h3>
@@ -105,104 +111,160 @@ function offset(circ: number, pct: number): number {
           <div class="skeleton-bar" style="width: 100%; height: 28px; border-radius: 8px;"></div>
         </div>
       </div>
-      <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);">
+      <div
+        style="display: flex; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04);"
+      >
         <div class="skeleton-bar" style="width: 64px; height: 12px;"></div>
         <div class="skeleton-bar" style="width: 64px; height: 12px;"></div>
         <div class="skeleton-bar" style="width: 64px; height: 12px;"></div>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);">
+      <div
+        style="display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);"
+      >
         <div class="skeleton-bar" style="width: 14px; height: 14px;"></div>
         <div class="skeleton-bar" style="flex: 1; height: 4px;"></div>
         <div class="skeleton-bar" style="width: 14px; height: 14px;"></div>
       </div>
     </div>
-    {isEmpty ? (
-      <div class="mv-empty">
-        <span class="mv-empty-label">{widgets.movement.empty}</span>
-      </div>
-    ) : (
-      <>
-        <div class="mv-layout">
-          <div class="mv-rings" aria-label={a11y.movement.rings.replace('{calories}', String(Math.round(movePct * 100))).replace('{exercise}', String(Math.round(exercisePct * 100))).replace('{stand}', String(Math.round(standPct * 100)))}>
-            <svg viewBox="0 0 144 144" role="img">
-              <!-- tracks -->
-              <circle class="mv-ring-track mv-ring-track-move"     cx="72" cy="72" r="60"></circle>
-              <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44"></circle>
-              <circle class="mv-ring-track mv-ring-track-stand"    cx="72" cy="72" r="28"></circle>
-              <!-- progress (animated by updater) -->
-              <circle class="mv-ring-progress mv-ring-move"     id="ringMove"     cx="72" cy="72" r="60"
-                stroke-dasharray={CIRC.move.toFixed(2)}
-                stroke-dashoffset={offset(CIRC.move, movePct).toFixed(2)}></circle>
-              <circle class="mv-ring-progress mv-ring-exercise" id="ringExercise" cx="72" cy="72" r="44"
-                stroke-dasharray={CIRC.exercise.toFixed(2)}
-                stroke-dashoffset={offset(CIRC.exercise, exercisePct).toFixed(2)}></circle>
-              <circle class="mv-ring-progress mv-ring-stand"    id="ringStand"    cx="72" cy="72" r="28"
-                stroke-dasharray={CIRC.stand.toFixed(2)}
-                stroke-dashoffset={offset(CIRC.stand, standPct).toFixed(2)}></circle>
-            </svg>
-            <div class="mv-rings-center">
-              <span class="mv-rings-center-pct" id="ringCenterPct">{centerPct}%</span>
-              <span class="mv-rings-center-cap">cal</span>
-            </div>
-          </div>
-          <div class="mv-chips">
-            <div class="mv-chip">
-              <span class="mv-chip-label">{widgets.movement.steps}</span>
-              <span class="mv-chip-value" data-mv-metric="steps">{steps.toLocaleString()}</span>
-            </div>
-            <div class="mv-chip">
-              <span class="mv-chip-label">{widgets.movement.distance}</span>
-              <span class="mv-chip-value" data-mv-metric="distance">{distanceKm}<span class="mv-chip-unit">{widgets.movement.distanceUnit}</span></span>
-            </div>
-            <div class="mv-chip">
-              <span class="mv-chip-label">{widgets.movement.flights}</span>
-              <span class="mv-chip-value" data-mv-metric="flights">{flights}</span>
-            </div>
-          </div>
+    {
+      isEmpty ? (
+        <div class="mv-empty">
+          <span class="mv-empty-label">{widgets.movement.empty}</span>
         </div>
-        <div class="mv-legend">
-          <div class="mv-legend-item">
-            <span class="mv-legend-swatch mv-legend-swatch-move"></span>
-            <span class="mv-swatch-label">
-              <span class="mv-swatch-label-full">{widgets.movement.calories}</span>
-              <span class="mv-swatch-label-short">{widgets.movement.caloriesShort}</span>
-            </span>
-            <span class="mv-legend-val" id="legendMove">{moveVal}/{goals.moveKcal}</span>
-          </div>
-          <div class="mv-legend-item">
-            <span class="mv-legend-swatch mv-legend-swatch-exercise"></span>
-            <span class="mv-swatch-label">
-              <span class="mv-swatch-label-full">{widgets.movement.exercise}</span>
-              <span class="mv-swatch-label-short">{widgets.movement.exerciseShort}</span>
-            </span>
-            <span class="mv-legend-val" id="legendExercise">{exerciseVal}/{goals.exerciseMin}</span>
-          </div>
-          <div class="mv-legend-item">
-            <span class="mv-legend-swatch mv-legend-swatch-stand"></span>
-            <span class="mv-swatch-label">
-              <span class="mv-swatch-label-full">{widgets.movement.stand}</span>
-              <span class="mv-swatch-label-short">{widgets.movement.stand}</span>
-            </span>
-            <span class="mv-legend-val" id="legendStand">{standHours}/{goals.standHr}</span>
-          </div>
-        </div>
-        <div class="mv-sun-footer">
-          <div class="mv-sun-arc-row">
-            <span class="mv-sun-glyph" aria-hidden="true">☀</span>
-            <span class="mv-sun-time" id="mvSunrise">{sunrise}</span>
-            <div class="mv-sun-track" role="img" aria-label={a11y.movement.daylight}>
-              <div class="mv-sun-track-line"></div>
-              <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`}></div>
+      ) : (
+        <>
+          <div class="mv-layout">
+            <div
+              class="mv-rings"
+              aria-label={a11y.movement.rings
+                .replace('{calories}', String(Math.round(movePct * 100)))
+                .replace('{exercise}', String(Math.round(exercisePct * 100)))
+                .replace('{stand}', String(Math.round(standPct * 100)))}
+            >
+              <svg viewBox="0 0 144 144" role="img">
+                {/* tracks */}
+                <circle class="mv-ring-track mv-ring-track-move" cx="72" cy="72" r="60" />
+                <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" />
+                <circle class="mv-ring-track mv-ring-track-stand" cx="72" cy="72" r="28" />
+                {/* progress (animated by updater) */}
+                <circle
+                  class="mv-ring-progress mv-ring-move"
+                  id="ringMove"
+                  cx="72"
+                  cy="72"
+                  r="60"
+                  stroke-dasharray={CIRC.move.toFixed(2)}
+                  stroke-dashoffset={offset(CIRC.move, movePct).toFixed(2)}
+                />
+                <circle
+                  class="mv-ring-progress mv-ring-exercise"
+                  id="ringExercise"
+                  cx="72"
+                  cy="72"
+                  r="44"
+                  stroke-dasharray={CIRC.exercise.toFixed(2)}
+                  stroke-dashoffset={offset(CIRC.exercise, exercisePct).toFixed(2)}
+                />
+                <circle
+                  class="mv-ring-progress mv-ring-stand"
+                  id="ringStand"
+                  cx="72"
+                  cy="72"
+                  r="28"
+                  stroke-dasharray={CIRC.stand.toFixed(2)}
+                  stroke-dashoffset={offset(CIRC.stand, standPct).toFixed(2)}
+                />
+              </svg>
+              <div class="mv-rings-center">
+                <span class="mv-rings-center-pct" id="ringCenterPct">
+                  {centerPct}%
+                </span>
+                <span class="mv-rings-center-cap">cal</span>
+              </div>
             </div>
-            <span class="mv-sun-time" id="mvSunset">{sunset}</span>
-            <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">☾</span>
+            <div class="mv-chips">
+              <div class="mv-chip">
+                <span class="mv-chip-label">{widgets.movement.steps}</span>
+                <span class="mv-chip-value" data-mv-metric="steps">
+                  {steps.toLocaleString()}
+                </span>
+              </div>
+              <div class="mv-chip">
+                <span class="mv-chip-label">{widgets.movement.distance}</span>
+                <span class="mv-chip-value" data-mv-metric="distance">
+                  {distanceKm}
+                  <span class="mv-chip-unit">{widgets.movement.distanceUnit}</span>
+                </span>
+              </div>
+              <div class="mv-chip">
+                <span class="mv-chip-label">{widgets.movement.flights}</span>
+                <span class="mv-chip-value" data-mv-metric="flights">
+                  {flights}
+                </span>
+              </div>
+            </div>
           </div>
-          <p class="mv-sun-caption">
-            <span id="mvDaylightMin">{daylightMin}</span>{widgets.movement.daylightCaption.replace('{minutes}', '')} &middot; {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}{daylightHit && (<span class="mv-sun-caption-hit">&#10003;</span>)}
-          </p>
-        </div>
-      </>
-    )}
+          <div class="mv-legend">
+            <div class="mv-legend-item">
+              <span class="mv-legend-swatch mv-legend-swatch-move" />
+              <span class="mv-swatch-label">
+                <span class="mv-swatch-label-full">{widgets.movement.calories}</span>
+                <span class="mv-swatch-label-short">{widgets.movement.caloriesShort}</span>
+              </span>
+              <span class="mv-legend-val" id="legendMove">
+                {moveVal}/{goals.moveKcal}
+              </span>
+            </div>
+            <div class="mv-legend-item">
+              <span class="mv-legend-swatch mv-legend-swatch-exercise" />
+              <span class="mv-swatch-label">
+                <span class="mv-swatch-label-full">{widgets.movement.exercise}</span>
+                <span class="mv-swatch-label-short">{widgets.movement.exerciseShort}</span>
+              </span>
+              <span class="mv-legend-val" id="legendExercise">
+                {exerciseVal}/{goals.exerciseMin}
+              </span>
+            </div>
+            <div class="mv-legend-item">
+              <span class="mv-legend-swatch mv-legend-swatch-stand" />
+              <span class="mv-swatch-label">
+                <span class="mv-swatch-label-full">{widgets.movement.stand}</span>
+                <span class="mv-swatch-label-short">{widgets.movement.stand}</span>
+              </span>
+              <span class="mv-legend-val" id="legendStand">
+                {standHours}/{goals.standHr}
+              </span>
+            </div>
+          </div>
+          <div class="mv-sun-footer">
+            <div class="mv-sun-arc-row">
+              <span class="mv-sun-glyph" aria-hidden="true">
+                ☀
+              </span>
+              <span class="mv-sun-time" id="mvSunrise">
+                {sunrise}
+              </span>
+              <div class="mv-sun-track" role="img" aria-label={a11y.movement.daylight}>
+                <div class="mv-sun-track-line" />
+                <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`} />
+              </div>
+              <span class="mv-sun-time" id="mvSunset">
+                {sunset}
+              </span>
+              <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">
+                ☾
+              </span>
+            </div>
+            <p class="mv-sun-caption">
+              <span id="mvDaylightMin">{daylightMin}</span>
+              {widgets.movement.daylightCaption.replace('{minutes}', '')} &middot;{' '}
+              {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}
+              {daylightHit && <span class="mv-sun-caption-hit">&#10003;</span>}
+            </p>
+          </div>
+        </>
+      )
+    }
   </div>
 </div>
 
@@ -301,7 +363,7 @@ function offset(circ: number, pct: number): number {
   }
   .mv-rings-center-cap {
     font-family: var(--lg-font-family-system);
-    font-size: 0.50rem;
+    font-size: 0.5rem;
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: var(--lg-color-text-muted);
@@ -413,7 +475,7 @@ function offset(circ: number, pct: number): number {
   .mv-sun-time {
     font-family: var(--lg-font-family-system);
     font-size: 0.56rem;
-    letter-spacing: 0.10em;
+    letter-spacing: 0.1em;
     color: var(--lg-color-text-subtle);
     flex-shrink: 0;
     line-height: 1;
@@ -441,7 +503,7 @@ function offset(circ: number, pct: number): number {
       90deg,
       rgba(255, 255, 255, 0.04) 0%,
       rgba(245, 158, 11, 0.18) 40%,
-      rgba(245, 158, 11, 0.30) 60%,
+      rgba(245, 158, 11, 0.3) 60%,
       rgba(255, 255, 255, 0.04) 100%
     );
   }
@@ -452,22 +514,29 @@ function offset(circ: number, pct: number): number {
     height: 8px;
     border-radius: 50%;
     background: var(--lg-color-accent-amber);
-    box-shadow: 0 0 8px rgba(245, 158, 11, 0.9), 0 0 16px rgba(245, 158, 11, 0.45);
+    box-shadow:
+      0 0 8px rgba(245, 158, 11, 0.9),
+      0 0 16px rgba(245, 158, 11, 0.45);
     transform: translate(-50%, -50%);
     animation: mvSunDotPulse 3s ease-in-out infinite;
   }
   @keyframes mvSunDotPulse {
-    0%, 100% {
-      box-shadow: 0 0 8px rgba(245, 158, 11, 0.9), 0 0 16px rgba(245, 158, 11, 0.45);
+    0%,
+    100% {
+      box-shadow:
+        0 0 8px rgba(245, 158, 11, 0.9),
+        0 0 16px rgba(245, 158, 11, 0.45);
     }
     50% {
-      box-shadow: 0 0 12px rgba(245, 158, 11, 1.0), 0 0 24px rgba(245, 158, 11, 0.65);
+      box-shadow:
+        0 0 12px rgba(245, 158, 11, 1),
+        0 0 24px rgba(245, 158, 11, 0.65);
     }
   }
   .mv-sun-caption {
     text-align: center;
     font-family: var(--lg-font-family-system);
-    font-size: 0.60rem;
+    font-size: 0.6rem;
     letter-spacing: 0.09em;
     color: var(--lg-color-text-muted);
     line-height: 1.4;
@@ -482,12 +551,20 @@ function offset(circ: number, pct: number): number {
   /* Container-query responsive swatch labels.
      Explicit defaults on both spans prevent the CSS minifier from
      collapsing same-selector rules across the @container boundary. */
-  .mv-swatch-label-full  { display: inline; }
-  .mv-swatch-label-short { display: none;   }
+  .mv-swatch-label-full {
+    display: inline;
+  }
+  .mv-swatch-label-short {
+    display: none;
+  }
 
   @container card-movement (max-width: 260px) {
-    .mv-swatch-label-full  { display: none;   }
-    .mv-swatch-label-short { display: inline; }
+    .mv-swatch-label-full {
+      display: none;
+    }
+    .mv-swatch-label-short {
+      display: inline;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -17,18 +17,12 @@
         "$type": { "$ref": "#/$defs/tokenType" },
         "$description": { "type": "string" },
         "$deprecated": {
-          "oneOf": [
-            { "type": "boolean" },
-            { "type": "string" }
-          ]
+          "oneOf": [{ "type": "boolean" }, { "type": "string" }]
         },
         "$extensions": { "type": "object" }
       },
       "not": {
-        "anyOf": [
-          { "required": ["value"] },
-          { "required": ["type"] }
-        ]
+        "anyOf": [{ "required": ["value"] }, { "required": ["type"] }]
       },
       "additionalProperties": false,
       "patternProperties": {}
@@ -65,10 +59,7 @@
         "$extensions": { "type": "object" }
       },
       "not": {
-        "anyOf": [
-          { "required": ["value"] },
-          { "required": ["type"] }
-        ]
+        "anyOf": [{ "required": ["value"] }, { "required": ["type"] }]
       }
     }
   },
@@ -77,9 +68,6 @@
   "description": "A DTCG token file is a JSON object whose top-level and nested keys are either token groups or token leaf nodes. Token leaf nodes are identified by the presence of the $value key.",
 
   "not": {
-    "anyOf": [
-      { "required": ["value"] },
-      { "required": ["type"] }
-    ]
+    "anyOf": [{ "required": ["value"] }, { "required": ["type"] }]
   }
 }

@@ -3,6 +3,7 @@
 // Activation is handled by live-data.ts via updateFocusOverlay().
 // Starts hidden (display: none); JS sets display: flex when active.
 ---
+
 <div id="focusOverlay">
   <div class="shift-badge">
     <span class="dot"></span>
@@ -184,19 +185,33 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .schedule-value.start { color: var(--lg-color-accent-red); }
-  .schedule-value.end { color: var(--lg-color-accent-green); }
+  .schedule-value.start {
+    color: var(--lg-color-accent-red);
+  }
+  .schedule-value.end {
+    color: var(--lg-color-accent-green);
+  }
 
   @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
 
   @media (max-width: 600px) {
-    .card { padding: 32px 24px; }
+    .card {
+      padding: 32px 24px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .shift-badge .dot { animation: none; opacity: 1; }
+    .shift-badge .dot {
+      animation: none;
+      opacity: 1;
+    }
   }
 </style>

@@ -6,8 +6,13 @@ import '@lifegames/tokens/effects';
 import '@lifegames/tokens/base';
 import manifest from '@manifest';
 
-const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
-const fixtureModules = import.meta.glob('/../../Sources/LifegamesWidgets/Resources/widgets/**/*.json', { eager: true });
+const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', {
+  eager: true,
+});
+const fixtureModules = import.meta.glob(
+  '/../../Sources/LifegamesWidgets/Resources/widgets/**/*.json',
+  { eager: true },
+);
 
 const componentMap: Record<string, any> = {};
 for (const [path, mod] of Object.entries(widgetModules)) {
@@ -24,7 +29,7 @@ for (const [path, mod] of Object.entries(fixtureModules)) {
 function resolveComponentName(manifestName: string): string {
   if (componentMap[manifestName]) return manifestName;
   const match = Object.keys(componentMap).find(
-    (k) => k.startsWith(manifestName) && k !== manifestName
+    (k) => k.startsWith(manifestName) && k !== manifestName,
   );
   return match || manifestName;
 }
@@ -47,15 +52,23 @@ interface ManifestEntry {
 }
 
 const PRODUCTION_NAMES = new Set([
-  'IdentityCard', 'BioTerminal', 'SystemStatus',
-  'HeartRate', 'Workouts', 'Hydration', 'NightSummary',
-  'DevActivityLog', 'ReadingFeed', 'StarredRepoList', 'Bookshelf', 'TheatreReviews',
-  'PlaceLeaderboard', 'ExplorationOdometer',
+  'IdentityCard',
+  'BioTerminal',
+  'SystemStatus',
+  'HeartRate',
+  'Workouts',
+  'Hydration',
+  'NightSummary',
+  'DevActivityLog',
+  'ReadingFeed',
+  'StarredRepoList',
+  'Bookshelf',
+  'TheatreReviews',
+  'PlaceLeaderboard',
+  'ExplorationOdometer',
 ]);
 
-const overlayWidgetNames = new Set([
-  'BookModal', 'FocusOverlay', 'DndOverlay', 'ComingSoon',
-]);
+const overlayWidgetNames = new Set(['BookModal', 'FocusOverlay', 'DndOverlay', 'ComingSoon']);
 
 const categoryLabel: Record<string, string> = {
   github: 'GitHub',
@@ -66,14 +79,13 @@ const categoryLabel: Record<string, string> = {
   other: 'Other',
 };
 
-const widgets = (manifest as { widgets: ManifestEntry[] }).widgets
-  .map((w) => {
-    const componentName = resolveComponentName(w.name);
-    const fixture = fixtureMap[w.fixturePath] || {};
-    const isProduction = w.production === true || PRODUCTION_NAMES.has(w.name);
-    const isOverlay = overlayWidgetNames.has(w.name);
-    return { entry: w, componentName, fixture, isProduction, isOverlay };
-  });
+const widgets = (manifest as { widgets: ManifestEntry[] }).widgets.map((w) => {
+  const componentName = resolveComponentName(w.name);
+  const fixture = fixtureMap[w.fixturePath] || {};
+  const isProduction = w.production === true || PRODUCTION_NAMES.has(w.name);
+  const isOverlay = overlayWidgetNames.has(w.name);
+  return { entry: w, componentName, fixture, isProduction, isOverlay };
+});
 
 const totalCount = widgets.length;
 const productionCount = widgets.filter((w) => w.isProduction).length;
@@ -82,303 +94,313 @@ const categories = [...new Set(widgets.map((w) => w.entry.category))];
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alternate Widget Variants — Lifegames Design System</title>
-  <style is:global>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg, #06060f);
-      color: var(--text, #e4e4e7);
-      font-family: var(--font-family, 'Space Grotesk', sans-serif);
-      min-height: 100vh;
-    }
-    .vb-header {
-      padding: var(--space-32) var(--space-32) var(--space-20);
-      border-bottom: 1px solid var(--card-border);
-    }
-    .vb-header-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: var(--space-20);
-      flex-wrap: wrap;
-    }
-    .vb-header h1 {
-      margin: 0;
-      font-size: var(--font-size-hero);
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    .vb-header .meta {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .vb-header .nav-link {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      text-decoration: none;
-      letter-spacing: 1px;
-      transition: color 0.18s ease;
-    }
-    .vb-header .nav-link:hover {
-      color: var(--text);
-    }
-    .vb-filters {
-      display: flex;
-      gap: var(--space-8);
-      padding: var(--space-12) var(--space-32);
-      border-bottom: 1px solid var(--card-border);
-      flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      background: rgba(6, 6, 15, 0.92);
-      backdrop-filter: blur(var(--blur-md));
-      z-index: 10;
-      align-items: center;
-    }
-    .vb-chip {
-      appearance: none;
-      border: 1px solid var(--card-border);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: var(--font-size-xs);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: var(--space-6) var(--space-12);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-      font-family: inherit;
-    }
-    .vb-chip:hover {
-      color: var(--text);
-      background: var(--card-bg-hover);
-    }
-    .vb-chip[aria-pressed="true"] {
-      color: var(--text);
-      background: var(--card-bg-hover);
-      border-color: var(--text-muted);
-    }
-    .vb-chip .count {
-      opacity: 0.6;
-      margin-left: var(--space-4);
-    }
-    .vb-sep {
-      width: 1px;
-      height: 1.2em;
-      background: var(--card-border);
-      margin: 0 var(--space-4);
-    }
-    .vb-cat-select {
-      appearance: none;
-      border: 1px solid var(--card-border);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: var(--font-size-xs);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: var(--space-6) var(--space-12);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      font-family: inherit;
-    }
-    main.vb-main {
-      padding: var(--space-32);
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-    .vb-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: var(--space-20);
-    }
-    .vb-card {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-8);
-      min-height: 200px;
-      color: inherit;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--card-border);
-      background: var(--card-bg);
-      overflow: hidden;
-      transition: border-color 0.18s ease, background 0.18s ease;
-    }
-    .vb-card:hover {
-      border-color: var(--text-muted);
-      background: var(--card-bg-hover);
-    }
-    .vb-card--production {
-      grid-column: span 2;
-    }
-    .vb-card-preview {
-      flex: 1;
-      min-height: 180px;
-      overflow: hidden;
-      padding: var(--space-12);
-      pointer-events: none;
-    }
-    .vb-card-preview > [data-widget-preview] {
-      transform: scale(0.85);
-      transform-origin: top left;
-    }
-    .vb-card-footer {
-      display: flex;
-      align-items: center;
-      gap: var(--space-8);
-      padding: var(--space-12) var(--space-16);
-      border-top: 1px solid var(--card-border);
-    }
-    .vb-card-name {
-      font-size: var(--font-size-sm);
-      font-weight: 600;
-      flex: 1;
-      color: inherit;
-      text-decoration: none;
-    }
-    .vb-card-name:hover {
-      color: var(--neon-green);
-    }
-    .vb-badge {
-      font-size: var(--font-size-xs);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: var(--space-2) var(--space-6);
-      border-radius: var(--radius-sm);
-      white-space: nowrap;
-    }
-    .vb-badge--category {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-muted);
-    }
-    .vb-badge--prod {
-      background: rgba(6, 214, 160, 0.12);
-      color: var(--neon-green);
-      border: 1px solid rgba(6, 214, 160, 0.25);
-    }
-    .vb-badge--overlay {
-      background: color-mix(in srgb, var(--neon-purple) 12%, transparent);
-      color: var(--neon-purple);
-      border: 1px solid color-mix(in srgb, var(--neon-purple) 25%, transparent);
-    }
-    @media (max-width: 720px) {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alternate Widget Variants — Lifegames Design System</title>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg, #06060f);
+        color: var(--text, #e4e4e7);
+        font-family: var(--font-family, 'Space Grotesk', sans-serif);
+        min-height: 100vh;
+      }
+      .vb-header {
+        padding: var(--space-32) var(--space-32) var(--space-20);
+        border-bottom: 1px solid var(--card-border);
+      }
+      .vb-header-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-20);
+        flex-wrap: wrap;
+      }
+      .vb-header h1 {
+        margin: 0;
+        font-size: var(--font-size-hero);
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+      .vb-header .meta {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .vb-header .nav-link {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        text-decoration: none;
+        letter-spacing: 1px;
+        transition: color 0.18s ease;
+      }
+      .vb-header .nav-link:hover {
+        color: var(--text);
+      }
+      .vb-filters {
+        display: flex;
+        gap: var(--space-8);
+        padding: var(--space-12) var(--space-32);
+        border-bottom: 1px solid var(--card-border);
+        flex-wrap: wrap;
+        position: sticky;
+        top: 0;
+        background: rgba(6, 6, 15, 0.92);
+        backdrop-filter: blur(var(--blur-md));
+        z-index: 10;
+        align-items: center;
+      }
+      .vb-chip {
+        appearance: none;
+        border: 1px solid var(--card-border);
+        background: transparent;
+        color: var(--text-muted);
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: var(--space-6) var(--space-12);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition:
+          color 0.18s ease,
+          background 0.18s ease,
+          border-color 0.18s ease;
+        font-family: inherit;
+      }
+      .vb-chip:hover {
+        color: var(--text);
+        background: var(--card-bg-hover);
+      }
+      .vb-chip[aria-pressed='true'] {
+        color: var(--text);
+        background: var(--card-bg-hover);
+        border-color: var(--text-muted);
+      }
+      .vb-chip .count {
+        opacity: 0.6;
+        margin-left: var(--space-4);
+      }
+      .vb-sep {
+        width: 1px;
+        height: 1.2em;
+        background: var(--card-border);
+        margin: 0 var(--space-4);
+      }
+      .vb-cat-select {
+        appearance: none;
+        border: 1px solid var(--card-border);
+        background: transparent;
+        color: var(--text-muted);
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: var(--space-6) var(--space-12);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-family: inherit;
+      }
+      main.vb-main {
+        padding: var(--space-32);
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+      .vb-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: var(--space-20);
+      }
+      .vb-card {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-8);
+        min-height: 200px;
+        color: inherit;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--card-border);
+        background: var(--card-bg);
+        overflow: hidden;
+        transition:
+          border-color 0.18s ease,
+          background 0.18s ease;
+      }
+      .vb-card:hover {
+        border-color: var(--text-muted);
+        background: var(--card-bg-hover);
+      }
       .vb-card--production {
-        grid-column: span 1;
+        grid-column: span 2;
       }
-    }
-  </style>
-</head>
-<body>
-  <header class="vb-header">
-    <div class="vb-header-row">
-      <h1>Alternate Variants</h1>
-      <span class="meta">{totalCount} widgets · {productionCount} production · {alternateCount} alternates</span>
-    </div>
-    <div style="margin-top: var(--space-12);">
-      <a class="nav-link" href="/">← Back to production mirror</a>
-    </div>
-  </header>
+      .vb-card-preview {
+        flex: 1;
+        min-height: 180px;
+        overflow: hidden;
+        padding: var(--space-12);
+        pointer-events: none;
+      }
+      .vb-card-preview > [data-widget-preview] {
+        transform: scale(0.85);
+        transform-origin: top left;
+      }
+      .vb-card-footer {
+        display: flex;
+        align-items: center;
+        gap: var(--space-8);
+        padding: var(--space-12) var(--space-16);
+        border-top: 1px solid var(--card-border);
+      }
+      .vb-card-name {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        flex: 1;
+        color: inherit;
+        text-decoration: none;
+      }
+      .vb-card-name:hover {
+        color: var(--neon-green);
+      }
+      .vb-badge {
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: var(--space-2) var(--space-6);
+        border-radius: var(--radius-sm);
+        white-space: nowrap;
+      }
+      .vb-badge--category {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+      }
+      .vb-badge--prod {
+        background: rgba(6, 214, 160, 0.12);
+        color: var(--neon-green);
+        border: 1px solid rgba(6, 214, 160, 0.25);
+      }
+      .vb-badge--overlay {
+        background: color-mix(in srgb, var(--neon-purple) 12%, transparent);
+        color: var(--neon-purple);
+        border: 1px solid color-mix(in srgb, var(--neon-purple) 25%, transparent);
+      }
+      @media (max-width: 720px) {
+        .vb-card--production {
+          grid-column: span 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="vb-header">
+      <div class="vb-header-row">
+        <h1>Alternate Variants</h1>
+        <span class="meta"
+          >{totalCount} widgets · {productionCount} production · {alternateCount} alternates</span
+        >
+      </div>
+      <div style="margin-top: var(--space-12);">
+        <a class="nav-link" href="/">← Back to production mirror</a>
+      </div>
+    </header>
 
-  <div class="vb-filters" role="toolbar" aria-label="Filter widgets">
-    <button class="vb-chip" data-filter="all" aria-pressed="true">
-      All<span class="count">{totalCount}</span>
-    </button>
-    <button class="vb-chip" data-filter="production" aria-pressed="false">
-      Production<span class="count">{productionCount}</span>
-    </button>
-    <button class="vb-chip" data-filter="alternate" aria-pressed="false">
-      Alternates<span class="count">{alternateCount}</span>
-    </button>
-    <div class="vb-sep" aria-hidden="true"></div>
-    <select class="vb-cat-select" id="categoryFilter" aria-label="Filter by category">
-      <option value="">All Categories</option>
-      {categories.map((cat) => (
-        <option value={cat}>{categoryLabel[cat] ?? cat}</option>
-      ))}
-    </select>
-  </div>
+    <div class="vb-filters" role="toolbar" aria-label="Filter widgets">
+      <button class="vb-chip" data-filter="all" aria-pressed="true">
+        All<span class="count">{totalCount}</span>
+      </button>
+      <button class="vb-chip" data-filter="production" aria-pressed="false">
+        Production<span class="count">{productionCount}</span>
+      </button>
+      <button class="vb-chip" data-filter="alternate" aria-pressed="false">
+        Alternates<span class="count">{alternateCount}</span>
+      </button>
+      <div class="vb-sep" aria-hidden="true"></div>
+      <select class="vb-cat-select" id="categoryFilter" aria-label="Filter by category">
+        <option value="">All Categories</option>
+        {categories.map((cat) => <option value={cat}>{categoryLabel[cat] ?? cat}</option>)}
+      </select>
+    </div>
 
-  <main class="vb-main">
-    <div class="vb-grid">
-      {widgets.map(({ entry, componentName, fixture, isProduction, isOverlay }) => {
-        const Comp = componentMap[componentName];
-        const kebab = toKebab(componentName);
-        const href = isProduction
-          ? `/widgets/${kebab}/`
-          : `/alternates/${entry.category}/${kebab}/`;
-        return (
-          <div
-            class={`vb-card${isProduction ? ' vb-card--production' : ''}`}
-            data-category={entry.category}
-            data-production={isProduction ? 'true' : 'false'}
-          >
-            <div class="vb-card-preview">
-              {Comp ? (
-                <div data-widget-preview>
-                  <Comp {...fixture} />
+    <main class="vb-main">
+      <div class="vb-grid">
+        {
+          widgets.map(({ entry, componentName, fixture, isProduction, isOverlay }) => {
+            const Comp = componentMap[componentName];
+            const kebab = toKebab(componentName);
+            const href = isProduction
+              ? `/widgets/${kebab}/`
+              : `/alternates/${entry.category}/${kebab}/`;
+            return (
+              <div
+                class={`vb-card${isProduction ? ' vb-card--production' : ''}`}
+                data-category={entry.category}
+                data-production={isProduction ? 'true' : 'false'}
+              >
+                <div class="vb-card-preview">
+                  {Comp ? (
+                    <div data-widget-preview>
+                      <Comp {...fixture} />
+                    </div>
+                  ) : (
+                    <div style="padding: var(--space-20); color: var(--text-muted); font-size: var(--font-size-sm);">
+                      Missing: {entry.name}
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div style="padding: var(--space-20); color: var(--text-muted); font-size: var(--font-size-sm);">
-                  Missing: {entry.name}
+                <div class="vb-card-footer">
+                  <a class="vb-card-name" href={href}>
+                    {entry.name}
+                  </a>
+                  <span class="vb-badge vb-badge--category">{entry.category}</span>
+                  {isOverlay && <span class="vb-badge vb-badge--overlay">Overlay</span>}
+                  {isProduction && <span class="vb-badge vb-badge--prod">Production</span>}
                 </div>
-              )}
-            </div>
-            <div class="vb-card-footer">
-              <a class="vb-card-name" href={href}>{entry.name}</a>
-              <span class="vb-badge vb-badge--category">{entry.category}</span>
-              {isOverlay && <span class="vb-badge vb-badge--overlay">Overlay</span>}
-              {isProduction && <span class="vb-badge vb-badge--prod">Production</span>}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </main>
+              </div>
+            );
+          })
+        }
+      </div>
+    </main>
 
-  <script>
-    function initFilters() {
-      const chips = document.querySelectorAll<HTMLButtonElement>('.vb-chip[data-filter]');
-      const catSelect = document.getElementById('categoryFilter') as HTMLSelectElement;
-      const cards = document.querySelectorAll<HTMLElement>('.vb-card[data-category]');
+    <script>
+      function initFilters() {
+        const chips = document.querySelectorAll<HTMLButtonElement>('.vb-chip[data-filter]');
+        const catSelect = document.getElementById('categoryFilter') as HTMLSelectElement;
+        const cards = document.querySelectorAll<HTMLElement>('.vb-card[data-category]');
 
-      let activeFilter = 'all';
-      let activeCategory = '';
+        let activeFilter = 'all';
+        let activeCategory = '';
 
-      function applyFilters() {
-        cards.forEach((card) => {
-          const isProd = card.dataset.production === 'true';
-          const cat = card.dataset.category || '';
+        function applyFilters() {
+          cards.forEach((card) => {
+            const isProd = card.dataset.production === 'true';
+            const cat = card.dataset.category || '';
 
-          let showByType = true;
-          if (activeFilter === 'production') showByType = isProd;
-          else if (activeFilter === 'alternate') showByType = !isProd;
+            let showByType = true;
+            if (activeFilter === 'production') showByType = isProd;
+            else if (activeFilter === 'alternate') showByType = !isProd;
 
-          const showByCat = !activeCategory || cat === activeCategory;
+            const showByCat = !activeCategory || cat === activeCategory;
 
-          card.hidden = !(showByType && showByCat);
+            card.hidden = !(showByType && showByCat);
+          });
+        }
+
+        chips.forEach((chip) => {
+          chip.addEventListener('click', () => {
+            activeFilter = chip.dataset.filter || 'all';
+            chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+            applyFilters();
+          });
         });
-      }
 
-      chips.forEach((chip) => {
-        chip.addEventListener('click', () => {
-          activeFilter = chip.dataset.filter || 'all';
-          chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+        catSelect?.addEventListener('change', () => {
+          activeCategory = catSelect.value;
           applyFilters();
         });
-      });
+      }
 
-      catSelect?.addEventListener('change', () => {
-        activeCategory = catSelect.value;
-        applyFilters();
-      });
-    }
-
-    initFilters();
-  </script>
-</body>
+      initFilters();
+    </script>
+  </body>
 </html>

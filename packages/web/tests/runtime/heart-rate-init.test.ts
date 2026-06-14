@@ -72,7 +72,11 @@ describe('initHeartRateInline test seam', () => {
       },
     );
     // matchMedia (prefers-reduced-motion: reduce) -> false by default.
-    vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener() {}, removeEventListener() {} }));
+    vi.stubGlobal('matchMedia', () => ({
+      matches: false,
+      addEventListener() {},
+      removeEventListener() {},
+    }));
     // requestAnimationFrame should NOT be needed in test mode (seam suppresses
     // the loop). Provide a throwing stub to prove it is never called.
     vi.stubGlobal('requestAnimationFrame', () => {

@@ -8,8 +8,8 @@ export function updatePollStatus(status: PollStatus): void {
 
   const online = navigator.onLine;
   const errorEntries = Object.values(status.errorCounts).filter((c): c is number => c != null);
-  const hasErrors = errorEntries.some(c => c >= 3);
-  const allFailing = !online || (errorEntries.length > 0 && errorEntries.every(c => c >= 3));
+  const hasErrors = errorEntries.some((c) => c >= 3);
+  const allFailing = !online || (errorEntries.length > 0 && errorEntries.every((c) => c >= 3));
 
   if (allFailing) {
     dot.className = 'poll-dot poll-dot--error';

@@ -15,17 +15,17 @@ Consumed by `@lifegames/web` and downstream Astro/SwiftUI consumers via
 `tokens.css`, `tokens.js`, and the generated `LifegamesTokens` Swift
 module (mirror).
 
-| Change                                                       | Bump   |
-|--------------------------------------------------------------|--------|
-| CSS var renamed or removed (`--lg-color-foo` → `--lg-color-bar`) | major  |
-| Swift accessor renamed or removed (`Color.foo` → `Color.bar`)  | major  |
-| Token role removed (semantic-tier role disappears)             | major  |
-| New CSS var or Swift accessor added                            | minor  |
-| New token family (e.g. new accent role)                        | minor  |
-| Value change that crosses the WCAG-AA threshold for an existing pairing | major  |
-| Value change that stays within the accessibility band (passes `check-contrast`) | patch  |
-| Description / metadata only (`$description`, comments)         | patch  |
-| Deprecation announced (`$deprecated: true`, still emitted)     | minor  |
+| Change                                                                          | Bump  |
+| ------------------------------------------------------------------------------- | ----- |
+| CSS var renamed or removed (`--lg-color-foo` → `--lg-color-bar`)                | major |
+| Swift accessor renamed or removed (`Color.foo` → `Color.bar`)                   | major |
+| Token role removed (semantic-tier role disappears)                              | major |
+| New CSS var or Swift accessor added                                             | minor |
+| New token family (e.g. new accent role)                                         | minor |
+| Value change that crosses the WCAG-AA threshold for an existing pairing         | major |
+| Value change that stays within the accessibility band (passes `check-contrast`) | patch |
+| Description / metadata only (`$description`, comments)                          | patch |
+| Deprecation announced (`$deprecated: true`, still emitted)                      | minor |
 
 Mapping to platform outputs (web vs iOS) is encoded in
 [GOVERNANCE.md §5](GOVERNANCE.md). The
@@ -37,17 +37,17 @@ without an entry in `tokens/parity-exceptions.json` is rejected at CI.
 
 Consumed by Astro apps (the portfolio site) and by Storybook.
 
-| Change                                                       | Bump   |
-|--------------------------------------------------------------|--------|
-| Widget Props type field renamed or removed                   | major  |
-| Widget Props type field changes shape (e.g. `string` → `Date`) | major  |
-| Widget export renamed or removed from `production` barrel    | major  |
-| New widget exported from `production` or category barrels    | minor  |
-| New optional Props field                                     | minor  |
-| Required Props field becomes optional (with default)         | minor  |
-| Pure visual / token-driven style change                      | patch  |
-| Internal refactor with no public API change                  | patch  |
-| Schema-exempt widget marker change (`// schema-exempt:`)     | minor  |
+| Change                                                         | Bump  |
+| -------------------------------------------------------------- | ----- |
+| Widget Props type field renamed or removed                     | major |
+| Widget Props type field changes shape (e.g. `string` → `Date`) | major |
+| Widget export renamed or removed from `production` barrel      | major |
+| New widget exported from `production` or category barrels      | minor |
+| New optional Props field                                       | minor |
+| Required Props field becomes optional (with default)           | minor |
+| Pure visual / token-driven style change                        | patch |
+| Internal refactor with no public API change                    | patch |
+| Schema-exempt widget marker change (`// schema-exempt:`)       | minor |
 
 The contract-test job (`pnpm --filter @lifegames/web tsc --noEmit`)
 plus the W16 ESLint advisory enforces that `*.types.ts` props match
@@ -58,14 +58,14 @@ against the public `production/index.ts` barrel.
 
 Consumed by `@lifegames/web` and the mantle backend (vendored).
 
-| Change                                                       | Bump   |
-|--------------------------------------------------------------|--------|
-| Schema field renamed or removed                              | major  |
-| Required field added (backend produces, consumer reads)      | major  |
-| Optional field added (graceful on old consumer)              | minor  |
-| Description or refinement that does not narrow valid range   | patch  |
-| Tightening validation (rejects previously-valid input)       | major  |
-| Loosening validation (accepts previously-rejected input)     | minor  |
+| Change                                                     | Bump  |
+| ---------------------------------------------------------- | ----- |
+| Schema field renamed or removed                            | major |
+| Required field added (backend produces, consumer reads)    | major |
+| Optional field added (graceful on old consumer)            | minor |
+| Description or refinement that does not narrow valid range | patch |
+| Tightening validation (rejects previously-valid input)     | major |
+| Loosening validation (accepts previously-rejected input)   | minor |
 
 Backend-driven changes flow into the DS via vendored sync (see
 `packages/schemas/CHANGELOG.md` for the propagation log).
@@ -75,17 +75,17 @@ Backend-driven changes flow into the DS via vendored sync (see
 Consumed by `ios-LifegamesPortal` via SPM. Versioned by repo git tag;
 SPM resolves the latest reachable tag matching the consumer's pin.
 
-| Change                                                       | Bump   |
-|--------------------------------------------------------------|--------|
-| Public API rename / removal (any of: type, function, property) | major  |
-| Public Init signature change                                 | major  |
-| New public type / function / property                        | minor  |
-| New SwiftUI widget added                                     | minor  |
-| Internal implementation change with stable public surface    | patch  |
-| Resource (xcassets, font) rename / removal                   | major  |
-| Resource added                                               | minor  |
-| Min iOS deployment target raised                             | major  |
-| Min iOS deployment target lowered                            | minor  |
+| Change                                                         | Bump  |
+| -------------------------------------------------------------- | ----- |
+| Public API rename / removal (any of: type, function, property) | major |
+| Public Init signature change                                   | major |
+| New public type / function / property                          | minor |
+| New SwiftUI widget added                                       | minor |
+| Internal implementation change with stable public surface      | patch |
+| Resource (xcassets, font) rename / removal                     | major |
+| Resource added                                                 | minor |
+| Min iOS deployment target raised                               | major |
+| Min iOS deployment target lowered                              | minor |
 
 The SPM-to-JS version mapping is documented in
 [docs/SPM-VERSION-MAPPING.md](docs/SPM-VERSION-MAPPING.md). When a

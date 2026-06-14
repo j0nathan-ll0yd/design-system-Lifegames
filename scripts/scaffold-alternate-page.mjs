@@ -25,7 +25,9 @@ const category = getArg('--category');
 const force = args.includes('--force');
 
 if (!name || !category) {
-  console.error('Usage: node scripts/scaffold-alternate-page.mjs --name <WidgetName> --category <category> [--force]');
+  console.error(
+    'Usage: node scripts/scaffold-alternate-page.mjs --name <WidgetName> --category <category> [--force]',
+  );
   process.exit(1);
 }
 
@@ -50,11 +52,12 @@ const kebab = toKebab(name);
 const catCapitalized = category.charAt(0).toUpperCase() + category.slice(1);
 
 // --- Load manifest ---
-const manifestPath = resolve(ROOT, 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json');
-const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-const widgetEntry = manifest.widgets.find(
-  (w) => w.name === name && w.category === category
+const manifestPath = resolve(
+  ROOT,
+  'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json',
 );
+const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+const widgetEntry = manifest.widgets.find((w) => w.name === name && w.category === category);
 
 if (!widgetEntry) {
   console.error(`Widget "${name}" with category "${category}" not found in widget-manifest.json`);
@@ -81,7 +84,9 @@ const swiftRelPath = `Sources/LifegamesWidgets/${swiftCategoryDir}/${swiftViewFi
 // --- Check for .astro component ---
 const astroComponentPath = resolve(ROOT, 'packages/web/src/widgets', category, `${name}.astro`);
 if (!existsSync(astroComponentPath)) {
-  console.warn(`Warning: No .astro component found at packages/web/src/widgets/${category}/${name}.astro`);
+  console.warn(
+    `Warning: No .astro component found at packages/web/src/widgets/${category}/${name}.astro`,
+  );
   console.warn('Skipping page generation (OGImage case or component not yet created).');
   process.exit(0);
 }
@@ -98,7 +103,14 @@ if (existsSync(pagePath) && !force) {
 } else {
   mkdirSync(pageDir, { recursive: true });
 
-  const page = generateAstroPage({ name, category, kebab, swiftExists, swiftRelPath, fixturePath: widgetEntry.fixturePath });
+  const page = generateAstroPage({
+    name,
+    category,
+    kebab,
+    swiftExists,
+    swiftRelPath,
+    fixturePath: widgetEntry.fixturePath,
+  });
   writeFileSync(pagePath, page, 'utf-8');
   console.log(`Created: apps/docs/src/pages/alternates/${category}/${kebab}.astro`);
 }
@@ -120,7 +132,9 @@ for (const fname of fixtureVariants) {
     console.log(`Skipping existing fixture: ${fname}`);
   } else {
     writeFileSync(fpath, '{}\n', 'utf-8');
-    console.log(`Created fixture stub: Sources/LifegamesWidgets/Resources/widgets/${category}/${fname}`);
+    console.log(
+      `Created fixture stub: Sources/LifegamesWidgets/Resources/widgets/${category}/${fname}`,
+    );
   }
 }
 

@@ -50,15 +50,15 @@ describe('esc', () => {
 
 describe('getCategoryColor', () => {
   const categories = [
-    ['Dining',             'var(--neon-orange, #ff6b00)'],
+    ['Dining', 'var(--neon-orange, #ff6b00)'],
     ['Fitness & Outdoors', 'var(--neon-green, #06d6a0)'],
-    ['Shopping',           'var(--neon-purple, #a855f7)'],
-    ['Entertainment',      'var(--neon-pink, #ff006e)'],
-    ['Travel',             'var(--neon-cyan, #00d4ff)'],
-    ['Health',             'var(--neon-red, #ef4444)'],
-    ['Work',               'var(--neon-blue, #3a86ff)'],
-    ['Education',          'var(--neon-indigo, #818cf8)'],
-    ['Services',           'var(--neon-amber, #f59e0b)'],
+    ['Shopping', 'var(--neon-purple, #a855f7)'],
+    ['Entertainment', 'var(--neon-pink, #ff006e)'],
+    ['Travel', 'var(--neon-cyan, #00d4ff)'],
+    ['Health', 'var(--neon-red, #ef4444)'],
+    ['Work', 'var(--neon-blue, #3a86ff)'],
+    ['Education', 'var(--neon-indigo, #818cf8)'],
+    ['Services', 'var(--neon-amber, #f59e0b)'],
   ] as const;
 
   categories.forEach(([category, expectedColor]) => {

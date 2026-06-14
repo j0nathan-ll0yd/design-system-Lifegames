@@ -153,9 +153,7 @@ for (const file of colorCorpus) {
       findings.push({
         file: rel,
         line: lineNo,
-        label: exempt
-          ? 'Color(hex:) [exempt: runtime data]'
-          : 'Color(hex:) raw literal',
+        label: exempt ? 'Color(hex:) [exempt: runtime data]' : 'Color(hex:) raw literal',
         text: text.trim(),
         exempt,
         blocking: !exempt,
@@ -190,15 +188,23 @@ const exempted = findings.filter((f) => f.exempt);
 
 console.log('Swift Widget Purity Check — P3 + F-015');
 console.log('======================================\n');
-console.log(`Scanned widgets:    ${swiftWidgetFiles.length} .swift files under Sources/LifegamesWidgets/`);
-console.log(`Scanned components: ${swiftComponentFiles.length} .swift files under Sources/LifegamesComponents/`);
+console.log(
+  `Scanned widgets:    ${swiftWidgetFiles.length} .swift files under Sources/LifegamesWidgets/`,
+);
+console.log(
+  `Scanned components: ${swiftComponentFiles.length} .swift files under Sources/LifegamesComponents/`,
+);
 console.log(`Forbidden imports:  ${FORBIDDEN_IMPORTS.map((f) => f.label).join(', ')}`);
-console.log(`Color exceptions:   ${colorHexExceptions.size} site(s) in widget-purity-exceptions.json\n`);
+console.log(
+  `Color exceptions:   ${colorHexExceptions.size} site(s) in widget-purity-exceptions.json\n`,
+);
 
 if (findings.length === 0) {
   console.log('No purity findings. All widgets and components satisfy P3 + F-015.');
 } else {
-  console.log(`Findings: ${findings.length} (${blocking.length} blocking, ${exempted.length} exempted):\n`);
+  console.log(
+    `Findings: ${findings.length} (${blocking.length} blocking, ${exempted.length} exempted):\n`,
+  );
   for (const v of findings) {
     const tag = v.exempt ? ' [EXEMPT]' : v.blocking ? '' : ' [info]';
     console.log(`  ${v.file}:${v.line}  [${v.label}]${tag}`);

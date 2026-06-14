@@ -14,7 +14,9 @@ interface Props {
 
 const { widgetName, category, states, island, noRangeStates = [] } = Astro.props;
 
-const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', { eager: true });
+const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', {
+  eager: true,
+});
 const componentMap: Record<string, any> = {};
 for (const [path, mod] of Object.entries(widgetModules)) {
   const fileName = path.split('/').pop()!.replace('.astro', '');
@@ -36,28 +38,32 @@ const stateLabels: Record<string, string> = {
 
 <div class="state-matrix">
   <div class="state-matrix-grid">
-    {states.map(({ state, fixture }) => (
-      <div class="state-matrix-slot" data-state={state}>
-        <div class="state-matrix-label">{stateLabels[state] ?? state}</div>
-        <div class="state-matrix-preview">
-          {fixture && Island && state !== 'skeleton' ? (
-            noRangeStates.includes(state) ? (
-              <div data-no-range><Island fixture={fixture} /></div>
+    {
+      states.map(({ state, fixture }) => (
+        <div class="state-matrix-slot" data-state={state}>
+          <div class="state-matrix-label">{stateLabels[state] ?? state}</div>
+          <div class="state-matrix-preview">
+            {fixture && Island && state !== 'skeleton' ? (
+              noRangeStates.includes(state) ? (
+                <div data-no-range>
+                  <Island fixture={fixture} />
+                </div>
+              ) : (
+                <Island fixture={fixture} />
+              )
+            ) : fixture && Comp ? (
+              <div data-widget-preview>
+                <Comp {...fixture} />
+              </div>
             ) : (
-              <Island fixture={fixture} />
-            )
-          ) : fixture && Comp ? (
-            <div data-widget-preview>
-              <Comp {...fixture} />
-            </div>
-          ) : (
-            <div class="state-matrix-placeholder">
-              {fixture === null ? 'Fixture needed' : 'Component missing'}
-            </div>
-          )}
+              <div class="state-matrix-placeholder">
+                {fixture === null ? 'Fixture needed' : 'Component missing'}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    ))}
+      ))
+    }
   </div>
 </div>
 

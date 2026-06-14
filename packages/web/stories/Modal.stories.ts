@@ -8,12 +8,19 @@ const meta: Meta = {
     visible: { control: 'boolean' },
   },
   render: (args) => html`
-    <div class="lg-modal-overlay ${args.visible ? 'visible' : ''}" role="dialog" aria-modal="true" aria-label="Modal">
+    <div
+      class="lg-modal-overlay ${args.visible ? 'visible' : ''}"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Modal"
+    >
       <div class="lg-modal">
         <button class="lg-modal-close" aria-label="Close">&times;</button>
         <div class="lg-modal-body">
           <h2 style="color: var(--lg-color-text-title);">Modal Title</h2>
-          <p style="color: var(--lg-color-text-muted);">Modal content goes here. This is a generic overlay pattern.</p>
+          <p style="color: var(--lg-color-text-muted);">
+            Modal content goes here. This is a generic overlay pattern.
+          </p>
         </div>
       </div>
     </div>

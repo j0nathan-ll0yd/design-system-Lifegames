@@ -19,19 +19,25 @@ that don't naturally fit in a single package's history.
 ## [Unreleased]
 
 ### Added
+
 - (placeholder — populated by the DS audit implementation rollout, F-001 → F-034)
 
 ### Changed
+
 - (placeholder)
 
 ### Deprecated
+
 - (placeholder)
 
 ### Removed
+
 - (placeholder)
 
 ### Fixed
+
 - (placeholder)
 
 ### Security
+
 - (placeholder)

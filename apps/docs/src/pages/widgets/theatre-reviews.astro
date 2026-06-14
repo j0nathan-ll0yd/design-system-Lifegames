@@ -27,192 +27,233 @@ import var_west_end_season from '@fixtures/reading/theatre-reviews.west-end-seas
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TheatreReviews — Lifegames Design System</title>
-  <style is:global>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg, #06060f);
-      color: var(--text, #e4e4e7);
-      font-family: var(--font-family, 'Space Grotesk', sans-serif);
-      min-height: 100vh;
-    }
-    .wd-page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: var(--space-32);
-    }
-    .wd-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-16);
-      margin-bottom: var(--space-32);
-      flex-wrap: wrap;
-    }
-    .wd-back {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      text-decoration: none;
-      letter-spacing: 1px;
-      transition: color 0.18s ease;
-    }
-    .wd-back:hover {
-      color: var(--text);
-    }
-    .wd-title {
-      font-size: var(--font-size-hero);
-      font-weight: 700;
-      margin: 0;
-      letter-spacing: 1px;
-    }
-    .wd-badge {
-      font-size: var(--font-size-xs);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: var(--space-2) var(--space-8);
-      border-radius: var(--radius-sm);
-    }
-    .wd-badge--shipped {
-      background: rgba(6, 214, 160, 0.12);
-      color: var(--neon-green);
-      border: 1px solid rgba(6, 214, 160, 0.25);
-    }
-    .wd-badge--dev {
-      background: rgba(245, 158, 11, 0.08);
-      color: var(--neon-amber);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-    }
-    .wd-cat {
-      font-size: var(--font-size-xs);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .wd-section {
-      margin-bottom: var(--space-32);
-    }
-    .wd-section-title {
-      font-size: var(--font-size-lg);
-      font-weight: 600;
-      margin: 0 0 var(--space-16);
-      letter-spacing: 1px;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: var(--space-8);
-    }
-    .wd-demo {
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-xl);
-      background: var(--card-bg);
-      padding: var(--space-20);
-      overflow: hidden;
-    }
-    .wd-text {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .wd-code {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-16);
-      font-size: var(--font-size-sm);
-      overflow-x: auto;
-      color: var(--text-muted);
-    }
-    .wd-code code {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .wd-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .wd-list li {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      padding: var(--space-6) 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    }
-    .wd-list li:last-child {
-      border-bottom: none;
-    }
-    .wd-list code {
-      font-size: var(--font-size-xs);
-      background: rgba(255, 255, 255, 0.06);
-      padding: var(--space-2) var(--space-4);
-      border-radius: var(--radius-sm);
-    }
-  </style>
-</head>
-<body>
-  <div class="wd-page">
-    <a class="wd-back" href="/">&#8592; Back to production mirror</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheatreReviews — Lifegames Design System</title>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg, #06060f);
+        color: var(--text, #e4e4e7);
+        font-family: var(--font-family, 'Space Grotesk', sans-serif);
+        min-height: 100vh;
+      }
+      .wd-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--space-32);
+      }
+      .wd-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-16);
+        margin-bottom: var(--space-32);
+        flex-wrap: wrap;
+      }
+      .wd-back {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        text-decoration: none;
+        letter-spacing: 1px;
+        transition: color 0.18s ease;
+      }
+      .wd-back:hover {
+        color: var(--text);
+      }
+      .wd-title {
+        font-size: var(--font-size-hero);
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 1px;
+      }
+      .wd-badge {
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: var(--space-2) var(--space-8);
+        border-radius: var(--radius-sm);
+      }
+      .wd-badge--shipped {
+        background: rgba(6, 214, 160, 0.12);
+        color: var(--neon-green);
+        border: 1px solid rgba(6, 214, 160, 0.25);
+      }
+      .wd-badge--dev {
+        background: rgba(245, 158, 11, 0.08);
+        color: var(--neon-amber);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+      }
+      .wd-cat {
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .wd-section {
+        margin-bottom: var(--space-32);
+      }
+      .wd-section-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        margin: 0 0 var(--space-16);
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: var(--space-8);
+      }
+      .wd-demo {
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-xl);
+        background: var(--card-bg);
+        padding: var(--space-20);
+        overflow: hidden;
+      }
+      .wd-text {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+      .wd-code {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-16);
+        font-size: var(--font-size-sm);
+        overflow-x: auto;
+        color: var(--text-muted);
+      }
+      .wd-code code {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .wd-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .wd-list li {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        padding: var(--space-6) 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .wd-list li:last-child {
+        border-bottom: none;
+      }
+      .wd-list code {
+        font-size: var(--font-size-xs);
+        background: rgba(255, 255, 255, 0.06);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-sm);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/">&#8592; Back to production mirror</a>
 
-    <div class="wd-header">
-      <h1 class="wd-title">TheatreReviews</h1>
-      <span class="wd-badge wd-badge--shipped">Shipped</span>
-      <span class="wd-cat">reading</span>
-    </div>
+      <div class="wd-header">
+        <h1 class="wd-title">TheatreReviews</h1>
+        <span class="wd-badge wd-badge--shipped">Shipped</span>
+        <span class="wd-cat">reading</span>
+      </div>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Live Demo</h2>
-      <ResponsiveDemo widgetName="TheatreReviews" category="reading" fixture={fixture} island={TheatreReviewsIsland} />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="TheatreReviews"
+          category="reading"
+          fixture={fixture}
+          island={TheatreReviewsIsland}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">State Matrix</h2>
-      <StateMatrix
-        widgetName="TheatreReviews"
-        category="reading"
-        island={TheatreReviewsIsland}
-        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="TheatreReviews"
+          category="reading"
+          island={TheatreReviewsIsland}
+          states={[
+            { state: 'skeleton', fixture: fixture_skeleton },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Variations</h2>
-      <VariationGrid
-        widgetName="TheatreReviews"
-        category="reading"
-        island={TheatreReviewsIsland}
-        variations={[
-          { label: "single-show", fixture: var_single_show, caption: "One review only — just back from opening night." },
-          { label: "subscription-season", fixture: var_subscription_season, caption: "Full subscription season — 5 shows across the year." },
-          { label: "mixed-ratings", fixture: var_mixed_ratings, caption: "A+ to C+ spread — demonstrates the full rating range." },
-          { label: "regional-tour", fixture: var_regional_tour, caption: "UK touring productions — Blood Brothers, Calendar Girls, Grease." },
-          { label: "west-end-season", fixture: var_west_end_season, caption: "London West End and Almeida season — all highly rated." },
-        ]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="TheatreReviews"
+          category="reading"
+          island={TheatreReviewsIsland}
+          variations={[
+            {
+              label: 'single-show',
+              fixture: var_single_show,
+              caption: 'One review only — just back from opening night.',
+            },
+            {
+              label: 'subscription-season',
+              fixture: var_subscription_season,
+              caption: 'Full subscription season — 5 shows across the year.',
+            },
+            {
+              label: 'mixed-ratings',
+              fixture: var_mixed_ratings,
+              caption: 'A+ to C+ spread — demonstrates the full rating range.',
+            },
+            {
+              label: 'regional-tour',
+              fixture: var_regional_tour,
+              caption: 'UK touring productions — Blood Brothers, Calendar Girls, Grease.',
+            },
+            {
+              label: 'west-end-season',
+              fixture: var_west_end_season,
+              caption: 'London West End and Almeida season — all highly rated.',
+            },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Props</h2>
-      <p class="wd-text">
-        See <code>packages/web/src/widgets/reading/TheatreReviews.types.ts</code> for the full interface.
-      </p>
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/reading/TheatreReviews.types.ts</code> for the full interface.
+        </p>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Usage</h2>
-      <pre class="wd-code"><code>---
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
 import TheatreReviews from '@lifegames/web/widgets/reading/TheatreReviews.astro';
 ---
 &lt;TheatreReviews &#123;...data&#125; /&gt;</code></pre>
-    </section>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Cross-Platform</h2>
-      <ul class="wd-list">
-        <li><strong>Web:</strong> <code>packages/web/src/widgets/reading/TheatreReviews.astro</code></li>
-        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift</code></li>
-        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.json</code></li>
-      </ul>
-    </section>
-  </div>
-  <WidgetPageScript />
-</body>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/reading/TheatreReviews.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <WidgetPageScript />
+  </body>
 </html>

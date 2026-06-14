@@ -4,6 +4,7 @@ import { widgets } from '@lifegames/copy';
 const { profile } = Astro.props;
 const terminalLines = profile.terminalLines;
 ---
+
 <div class="tri-card tri-card-accent-indigo left-panel-bio" id="cardBio">
   <div class="widget-header">
     <h2 class="widget-label">{widgets.bio.title}</h2>
@@ -21,24 +22,51 @@ const terminalLines = profile.terminalLines;
         <div class="terminal-title">{widgets.bio.terminalTitle}</div>
       </div>
       <div class="terminal-body" id="terminalBody">
-        {terminalLines.map((line: any) => {
-          if (line.type === 'cursor') {
-            return <div class="terminal-line"><span class="terminal-prompt">$ </span><span class="terminal-cursor"></span></div>;
-          } else if (line.type === 'blank') {
-            return <div class="terminal-line">&nbsp;</div>;
-          } else if (line.type === 'prompt') {
-            const parts = line.text.split(' ');
-            const cmd = parts.slice(1).join(' ');
-            return <div class="terminal-line" data-cmd={cmd}><span class="terminal-prompt">{parts[0]} </span><span class="terminal-command">{cmd}</span></div>;
-          } else {
-            const text = line.text as string;
-            const hasArrow = text.startsWith('\u2192');
-            if (hasArrow) {
-              return <div class="terminal-line" data-output={text.substring(2)}><span class="terminal-arrow">&rarr; </span><span class="terminal-output">{text.substring(2)}</span></div>;
+        {
+          terminalLines.map((line: any) => {
+            if (line.type === 'cursor') {
+              return (
+                <div class="terminal-line">
+                  <>
+                    <span class="terminal-prompt">$ </span>
+                    <span class="terminal-cursor" />
+                  </>
+                </div>
+              );
+            } else if (line.type === 'blank') {
+              return <div class="terminal-line">&nbsp;</div>;
+            } else if (line.type === 'prompt') {
+              const parts = line.text.split(' ');
+              const cmd = parts.slice(1).join(' ');
+              return (
+                <div class="terminal-line" data-cmd={cmd}>
+                  <>
+                    <span class="terminal-prompt">{parts[0]} </span>
+                    <span class="terminal-command">{cmd}</span>
+                  </>
+                </div>
+              );
+            } else {
+              const text = line.text as string;
+              const hasArrow = text.startsWith('\u2192');
+              if (hasArrow) {
+                return (
+                  <div class="terminal-line" data-output={text.substring(2)}>
+                    <>
+                      <span class="terminal-arrow">&rarr; </span>
+                      <span class="terminal-output">{text.substring(2)}</span>
+                    </>
+                  </div>
+                );
+              }
+              return (
+                <div class="terminal-line" data-output={text}>
+                  <span class="terminal-output">{text}</span>
+                </div>
+              );
             }
-            return <div class="terminal-line" data-output={text}><span class="terminal-output">{text}</span></div>;
-          }
-        })}
+          })
+        }
       </div>
     </div>
   </div>

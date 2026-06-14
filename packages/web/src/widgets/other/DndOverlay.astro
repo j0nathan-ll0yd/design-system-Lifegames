@@ -3,6 +3,7 @@
 // Activation is handled by live-data.ts via updateFocusOverlay().
 // Starts hidden (display: none); JS sets display: flex when active.
 ---
+
 <div id="dndOverlay">
   <div class="dnd-badge">
     <span class="dot"></span>
@@ -15,8 +16,8 @@
 
   <div class="heading">Content Redacted</div>
   <div class="subheading">
-    Do Not Disturb is active. Personal health, location, and activity data
-    has been temporarily redacted to protect privacy during this session.
+    Do Not Disturb is active. Personal health, location, and activity data has been temporarily
+    redacted to protect privacy during this session.
   </div>
 
   <div class="data-rows">
@@ -196,23 +197,45 @@
   }
 
   @keyframes dnd-pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
 
   @keyframes dnd-glow-pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
-    50% { box-shadow: 0 0 35px rgba(0, 212, 255, 0.35); }
+    0%,
+    100% {
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+    }
+    50% {
+      box-shadow: 0 0 35px rgba(0, 212, 255, 0.35);
+    }
   }
 
   @media (max-width: 600px) {
-    .heading { font-size: 1.1rem; }
-    .data-row-text { font-size: 0.7rem; }
-    #dndOverlay { padding: 24px 16px; }
+    .heading {
+      font-size: 1.1rem;
+    }
+    .data-row-text {
+      font-size: 0.7rem;
+    }
+    #dndOverlay {
+      padding: 24px 16px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .dnd-badge .dot { animation: none; opacity: 1; }
-    .shield-fill { animation: none; box-shadow: 0 0 20px rgba(0, 212, 255, 0.15); }
+    .dnd-badge .dot {
+      animation: none;
+      opacity: 1;
+    }
+    .shield-fill {
+      animation: none;
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+    }
   }
 </style>

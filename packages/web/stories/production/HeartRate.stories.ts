@@ -17,16 +17,27 @@ const meta: Meta = {
       <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-primary);">
         <div style="display: flex; gap: 24px; align-items: center;">
           <div>
-            <span style="color: var(--lg-color-text-muted); font-size: 0.8em;">Resting BPM</span><br />
-            <strong style="font-size: 2em; color: var(--lg-color-accent-red);">${args.heartRate ?? '—'}</strong>
+            <span style="color: var(--lg-color-text-muted); font-size: 0.8em;">Resting BPM</span
+            ><br />
+            <strong style="font-size: 2em; color: var(--lg-color-accent-red);"
+              >${args.heartRate ?? '—'}</strong
+            >
           </div>
           <div>
-            <span style="color: var(--lg-color-text-muted); font-size: 0.8em;">HRV (SDNN)</span><br />
-            <strong style="font-size: 2em; color: var(--lg-color-accent-green);">${args.hrv ?? '—'}</strong>
+            <span style="color: var(--lg-color-text-muted); font-size: 0.8em;">HRV (SDNN)</span
+            ><br />
+            <strong style="font-size: 2em; color: var(--lg-color-accent-green);"
+              >${args.hrv ?? '—'}</strong
+            >
             <span style="font-size: 0.75em; color: var(--lg-color-text-muted);"> ms</span>
           </div>
         </div>
-        <canvas id="hrEcgCanvas" width="300" height="60" style="width:100%; margin-top: 12px; opacity: 0.6;"></canvas>
+        <canvas
+          id="hrEcgCanvas"
+          width="300"
+          height="60"
+          style="width:100%; margin-top: 12px; opacity: 0.6;"
+        ></canvas>
       </div>
     </div>
   `,
@@ -51,7 +62,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

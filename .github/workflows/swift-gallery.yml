@@ -3,15 +3,15 @@ name: Swift Gallery
 on:
   pull_request:
     paths:
-      - "apps/swift-gallery/**"
-      - "Sources/LifegamesTokens/**"
-      - "Sources/LifegamesComponents/**"
-      - "Sources/LifegamesWidgets/**"
-      - "Sources/LifegamesOnboarding/**"
-      - "Sources/LifegamesSchemas/**"
-      - "Package.swift"
-      - "tokens/**"
-      - ".github/workflows/swift-gallery.yml"
+      - 'apps/swift-gallery/**'
+      - 'Sources/LifegamesTokens/**'
+      - 'Sources/LifegamesComponents/**'
+      - 'Sources/LifegamesWidgets/**'
+      - 'Sources/LifegamesOnboarding/**'
+      - 'Sources/LifegamesSchemas/**'
+      - 'Package.swift'
+      - 'tokens/**'
+      - '.github/workflows/swift-gallery.yml'
 
 jobs:
   build:

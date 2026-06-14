@@ -1,7 +1,15 @@
 ---
 import { a11y } from '@lifegames/copy';
 ---
-<div class="book-overlay" id="bookOverlay" role="dialog" aria-modal="true" aria-label={a11y.bookModal.dialog} aria-hidden="true">
+
+<div
+  class="book-overlay"
+  id="bookOverlay"
+  role="dialog"
+  aria-modal="true"
+  aria-label={a11y.bookModal.dialog}
+  aria-hidden="true"
+>
   <div class="book-modal" id="bookModal"></div>
 </div>
 
@@ -11,4 +19,3 @@ import { a11y } from '@lifegames/copy';
      implementation. CSP `script-src 'self'` rejects inline `<script>` bodies;
      the runtime must live in an external `public/js/*.js` file referenced via
      `<script is:inline src="..." defer>`. -->
-

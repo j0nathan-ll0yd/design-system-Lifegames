@@ -72,13 +72,11 @@ for (const w of widgets) {
 // ── step 3: detect hasSwiftMirror ────────────────────────────────────────────
 // A Swift mirror exists if a *Props.swift or *View.swift is found anywhere
 // under Sources/LifegamesWidgets matching the widget ID (case-insensitive).
-const swiftFiles = walk(SWIFT_WIDGETS, '.swift').map((f) =>
-  path.basename(f).toLowerCase()
-);
+const swiftFiles = walk(SWIFT_WIDGETS, '.swift').map((f) => path.basename(f).toLowerCase());
 for (const w of widgets) {
   const idLower = w.id.toLowerCase();
   w.hasSwiftMirror = swiftFiles.some(
-    (f) => f === `${idLower}props.swift` || f === `${idLower}view.swift`
+    (f) => f === `${idLower}props.swift` || f === `${idLower}view.swift`,
   );
 }
 
@@ -95,10 +93,7 @@ const portfolioComponents = path.join(PORTFOLIO_REPO, 'src/components');
 
 if (fs.existsSync(portfolioPages) || fs.existsSync(portfolioComponents)) {
   portfolioAvailable = true;
-  const astroFiles = [
-    ...walk(portfolioPages, '.astro'),
-    ...walk(portfolioComponents, '.astro'),
-  ];
+  const astroFiles = [...walk(portfolioPages, '.astro'), ...walk(portfolioComponents, '.astro')];
   for (const f of astroFiles) {
     const src = fs.readFileSync(f, 'utf-8');
     // Find `from '@lifegames/web/production'` import blocks (possibly multi-line)
@@ -107,7 +102,12 @@ if (fs.existsSync(portfolioPages) || fs.existsSync(portfolioComponents)) {
     while ((match = importBlockRe.exec(src)) !== null) {
       const names = match[1]
         .split(',')
-        .map((s) => s.trim().replace(/\s+as\s+\S+/, '').trim())
+        .map((s) =>
+          s
+            .trim()
+            .replace(/\s+as\s+\S+/, '')
+            .trim(),
+        )
         .filter(Boolean);
       for (const name of names) {
         consumedSet.add(name);
@@ -123,13 +123,13 @@ if (fs.existsSync(portfolioPages) || fs.existsSync(portfolioComponents)) {
         'ERROR: Portfolio repo not found at ' +
           PORTFOLIO_REPO +
           ' AND fallback manifest widget-consumers.json is missing.\n' +
-          'Run `pnpm widget:inventory` with the portfolio repo present to generate widget-consumers.json.'
+          'Run `pnpm widget:inventory` with the portfolio repo present to generate widget-consumers.json.',
       );
       process.exit(1);
     } else {
       console.warn(
         'WARN: Portfolio repo not available and no widget-consumers.json fallback. ' +
-          'consumedByPortfolio will be false for all widgets.'
+          'consumedByPortfolio will be false for all widgets.',
       );
     }
   } else {
@@ -144,14 +144,16 @@ for (const w of widgets) {
 }
 
 // ── step 5: build output ──────────────────────────────────────────────────────
-const inventory = widgets.map(({ id, category, hasStory, hasSwiftMirror, schemaExempt, consumedByPortfolio }) => ({
-  id,
-  category,
-  hasStory,
-  hasSwiftMirror,
-  schemaExempt,
-  consumedByPortfolio,
-}));
+const inventory = widgets.map(
+  ({ id, category, hasStory, hasSwiftMirror, schemaExempt, consumedByPortfolio }) => ({
+    id,
+    category,
+    hasStory,
+    hasSwiftMirror,
+    schemaExempt,
+    consumedByPortfolio,
+  }),
+);
 
 const totalCount = inventory.length;
 const portfolioCount = inventory.filter((w) => w.consumedByPortfolio).length;
@@ -172,16 +174,20 @@ if (CHECK_MODE) {
   if (diverged.length > 0) {
     console.error(
       `ERROR: README widget count(s) [${diverged.join(', ')}] diverge from script output (${totalCount}).\n` +
-        `Run \`pnpm widget:inventory\` to regenerate and update README.`
+        `Run \`pnpm widget:inventory\` to regenerate and update README.`,
     );
     process.exit(1);
   }
   // Also validate that docs/widget-inventory.json exists and is fresh
   if (!fileExists(OUTPUT_JSON)) {
-    console.error('ERROR: docs/widget-inventory.json does not exist. Run `pnpm widget:inventory` to generate.');
+    console.error(
+      'ERROR: docs/widget-inventory.json does not exist. Run `pnpm widget:inventory` to generate.',
+    );
     process.exit(1);
   }
-  console.log(`OK: Widget count in README (${totalCount}) matches script output. Portfolio consumed: ${portfolioCount}.`);
+  console.log(
+    `OK: Widget count in README (${totalCount}) matches script output. Portfolio consumed: ${portfolioCount}.`,
+  );
   process.exit(0);
 }
 
@@ -191,7 +197,16 @@ fs.mkdirSync(path.join(ROOT, 'docs'), { recursive: true });
 
 fs.writeFileSync(
   OUTPUT_JSON,
-  JSON.stringify({ generatedAt: new Date().toISOString(), totalCount, portfolioConsumedCount: portfolioCount, widgets: inventory }, null, 2) + '\n'
+  JSON.stringify(
+    {
+      generatedAt: new Date().toISOString(),
+      totalCount,
+      portfolioConsumedCount: portfolioCount,
+      widgets: inventory,
+    },
+    null,
+    2,
+  ) + '\n',
 );
 console.log(`Wrote ${OUTPUT_JSON}`);
 
@@ -205,15 +220,15 @@ if (existingManifest && Array.isArray(existingManifest.widgets)) {
   manifestOut.widgets = existingManifest.widgets;
 }
 manifestOut.generatedAt = new Date().toISOString();
-fs.writeFileSync(
-  FALLBACK_MANIFEST,
-  JSON.stringify(manifestOut, null, 2) + '\n'
-);
+fs.writeFileSync(FALLBACK_MANIFEST, JSON.stringify(manifestOut, null, 2) + '\n');
 console.log(`Wrote ${FALLBACK_MANIFEST} (fallback for CI without portfolio checkout)`);
 
 // Update README widget counts — replace any numeric count before "widget(s)" or "SwiftUI widget"
 let readmeSrc = fs.readFileSync(README, 'utf-8');
-readmeSrc = readmeSrc.replace(/\d+(\s+(?:page-specific\s+)?(?:SwiftUI\s+)?widgets?\b)/g, `${totalCount}$1`);
+readmeSrc = readmeSrc.replace(
+  /\d+(\s+(?:page-specific\s+)?(?:SwiftUI\s+)?widgets?\b)/g,
+  `${totalCount}$1`,
+);
 fs.writeFileSync(README, readmeSrc);
 console.log(`Updated README widget count to ${totalCount}`);
 

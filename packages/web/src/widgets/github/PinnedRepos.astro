@@ -26,20 +26,25 @@ const { repos } = Astro.props;
   </div>
   <div class="widget-body">
     <div class="gh-pinned">
-      {repos.map((repo: Repo) => (
-        <a class="gh-pin-card" href={repo.url}>
-          <div class="gh-pin-name">{repo.name}</div>
-          <div class="gh-pin-desc">{repo.description}</div>
-          <div class="gh-pin-meta">
-            <span class="gh-pin-lang">
-              <span class="gh-pin-lang-dot" style={`background: ${repo.languageColor}; box-shadow: 0 0 6px ${repo.languageColor};`}></span>
-              {repo.language}
-            </span>
-            <span class="gh-pin-stat">★ {repo.stars}</span>
-            <span class="gh-pin-stat">⑂ {repo.forks}</span>
-          </div>
-        </a>
-      ))}
+      {
+        repos.map((repo: Repo) => (
+          <a class="gh-pin-card" href={repo.url}>
+            <div class="gh-pin-name">{repo.name}</div>
+            <div class="gh-pin-desc">{repo.description}</div>
+            <div class="gh-pin-meta">
+              <span class="gh-pin-lang">
+                <span
+                  class="gh-pin-lang-dot"
+                  style={`background: ${repo.languageColor}; box-shadow: 0 0 6px ${repo.languageColor};`}
+                />
+                {repo.language}
+              </span>
+              <span class="gh-pin-stat">★ {repo.stars}</span>
+              <span class="gh-pin-stat">⑂ {repo.forks}</span>
+            </div>
+          </a>
+        ))
+      }
     </div>
   </div>
 </div>
@@ -58,7 +63,9 @@ const { repos } = Astro.props;
     border-radius: 10px;
     padding: 12px 14px;
     text-decoration: none;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
   }
 
   @media (hover: hover) {

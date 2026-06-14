@@ -26,195 +26,236 @@ import fixture_binge_week from '@fixtures/reading/reading-feed.binge-week.json';
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ReadingFeed — Lifegames Design System</title>
-  <style is:global>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg, #06060f);
-      color: var(--text, #e4e4e7);
-      font-family: var(--font-family, 'Space Grotesk', sans-serif);
-      min-height: 100vh;
-    }
-    .wd-page {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: var(--space-32);
-    }
-    .wd-header {
-      display: flex;
-      align-items: center;
-      gap: var(--space-16);
-      margin-bottom: var(--space-32);
-      flex-wrap: wrap;
-    }
-    .wd-back {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      text-decoration: none;
-      letter-spacing: 1px;
-      transition: color 0.18s ease;
-    }
-    .wd-back:hover {
-      color: var(--text);
-    }
-    .wd-title {
-      font-size: var(--font-size-hero);
-      font-weight: 700;
-      margin: 0;
-      letter-spacing: 1px;
-    }
-    .wd-badge {
-      font-size: var(--font-size-xs);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: var(--space-2) var(--space-8);
-      border-radius: var(--radius-sm);
-    }
-    .wd-badge--shipped {
-      background: rgba(6, 214, 160, 0.12);
-      color: var(--neon-green);
-      border: 1px solid rgba(6, 214, 160, 0.25);
-    }
-    .wd-badge--dev {
-      background: rgba(245, 158, 11, 0.08);
-      color: var(--neon-amber);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-    }
-    .wd-cat {
-      font-size: var(--font-size-xs);
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .wd-section {
-      margin-bottom: var(--space-32);
-    }
-    .wd-section-title {
-      font-size: var(--font-size-lg);
-      font-weight: 600;
-      margin: 0 0 var(--space-16);
-      letter-spacing: 1px;
-      border-bottom: 1px solid var(--card-border);
-      padding-bottom: var(--space-8);
-    }
-    .wd-demo {
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-xl);
-      background: var(--card-bg);
-      padding: var(--space-20);
-      overflow: hidden;
-    }
-    .wd-text {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .wd-code {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-16);
-      font-size: var(--font-size-sm);
-      overflow-x: auto;
-      color: var(--text-muted);
-    }
-    .wd-code code {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .wd-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .wd-list li {
-      font-size: var(--font-size-sm);
-      color: var(--text-muted);
-      padding: var(--space-6) 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    }
-    .wd-list li:last-child {
-      border-bottom: none;
-    }
-    .wd-list code {
-      font-size: var(--font-size-xs);
-      background: rgba(255, 255, 255, 0.06);
-      padding: var(--space-2) var(--space-4);
-      border-radius: var(--radius-sm);
-    }
-  </style>
-</head>
-<body>
-  <div class="wd-page">
-    <a class="wd-back" href="/">&#8592; Back to production mirror</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReadingFeed — Lifegames Design System</title>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg, #06060f);
+        color: var(--text, #e4e4e7);
+        font-family: var(--font-family, 'Space Grotesk', sans-serif);
+        min-height: 100vh;
+      }
+      .wd-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--space-32);
+      }
+      .wd-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-16);
+        margin-bottom: var(--space-32);
+        flex-wrap: wrap;
+      }
+      .wd-back {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        text-decoration: none;
+        letter-spacing: 1px;
+        transition: color 0.18s ease;
+      }
+      .wd-back:hover {
+        color: var(--text);
+      }
+      .wd-title {
+        font-size: var(--font-size-hero);
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 1px;
+      }
+      .wd-badge {
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: var(--space-2) var(--space-8);
+        border-radius: var(--radius-sm);
+      }
+      .wd-badge--shipped {
+        background: rgba(6, 214, 160, 0.12);
+        color: var(--neon-green);
+        border: 1px solid rgba(6, 214, 160, 0.25);
+      }
+      .wd-badge--dev {
+        background: rgba(245, 158, 11, 0.08);
+        color: var(--neon-amber);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+      }
+      .wd-cat {
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .wd-section {
+        margin-bottom: var(--space-32);
+      }
+      .wd-section-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        margin: 0 0 var(--space-16);
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: var(--space-8);
+      }
+      .wd-demo {
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-xl);
+        background: var(--card-bg);
+        padding: var(--space-20);
+        overflow: hidden;
+      }
+      .wd-text {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+      .wd-code {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-16);
+        font-size: var(--font-size-sm);
+        overflow-x: auto;
+        color: var(--text-muted);
+      }
+      .wd-code code {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .wd-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .wd-list li {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        padding: var(--space-6) 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .wd-list li:last-child {
+        border-bottom: none;
+      }
+      .wd-list code {
+        font-size: var(--font-size-xs);
+        background: rgba(255, 255, 255, 0.06);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-sm);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/">&#8592; Back to production mirror</a>
 
-    <div class="wd-header">
-      <h1 class="wd-title">ReadingFeed</h1>
-      <span class="wd-badge wd-badge--shipped">Shipped</span>
-      <span class="wd-cat">reading</span>
-    </div>
+      <div class="wd-header">
+        <h1 class="wd-title">ReadingFeed</h1>
+        <span class="wd-badge wd-badge--shipped">Shipped</span>
+        <span class="wd-cat">reading</span>
+      </div>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Live Demo</h2>
-      <ResponsiveDemo widgetName="ReadingFeed" category="reading" fixture={fixture} Comp={ReadingFeed} />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="ReadingFeed"
+          category="reading"
+          fixture={fixture}
+          Comp={ReadingFeed}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">State Matrix</h2>
-      <StateMatrix
-        widgetName="ReadingFeed"
-        category="reading"
-        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="ReadingFeed"
+          category="reading"
+          states={[
+            { state: 'skeleton', fixture: fixture_skeleton },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Props</h2>
-      <p class="wd-text">
-        See <code>packages/web/src/widgets/reading/ReadingFeed.types.ts</code> for the full interface.
-      </p>
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/reading/ReadingFeed.types.ts</code> for the full interface.
+        </p>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Usage</h2>
-      <pre class="wd-code"><code>---
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
 import ReadingFeed from '@lifegames/web/widgets/reading/ReadingFeed.astro';
 ---
 &lt;ReadingFeed &#123;...data&#125; /&gt;</code></pre>
-    </section>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Variations</h2>
-      <VariationGrid
-        widgetName="ReadingFeed"
-        category="reading"
-        variations={[
-          { label: "single-entry", fixture: fixture_single_entry, caption: "One article — minimum realistic reading activity." },
-          { label: "recent-burst", fixture: fixture_recent_burst, caption: "Five articles all read today — a focused reading sprint." },
-          { label: "mixed-types", fixture: fixture_mixed_types, caption: "Six articles spread across weeks from varied sources." },
-          { label: "quiet-week", fixture: fixture_quiet_week, caption: "Only two articles — a slow reading week." },
-          { label: "binge-week", fixture: fixture_binge_week, caption: "Twelve articles in five days — maximum realistic reading load." },
-        ]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="ReadingFeed"
+          category="reading"
+          variations={[
+            {
+              label: 'single-entry',
+              fixture: fixture_single_entry,
+              caption: 'One article — minimum realistic reading activity.',
+            },
+            {
+              label: 'recent-burst',
+              fixture: fixture_recent_burst,
+              caption: 'Five articles all read today — a focused reading sprint.',
+            },
+            {
+              label: 'mixed-types',
+              fixture: fixture_mixed_types,
+              caption: 'Six articles spread across weeks from varied sources.',
+            },
+            {
+              label: 'quiet-week',
+              fixture: fixture_quiet_week,
+              caption: 'Only two articles — a slow reading week.',
+            },
+            {
+              label: 'binge-week',
+              fixture: fixture_binge_week,
+              caption: 'Twelve articles in five days — maximum realistic reading load.',
+            },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Cross-Platform</h2>
-      <ul class="wd-list">
-        <li><strong>Web:</strong> <code>packages/web/src/widgets/reading/ReadingFeed.astro</code></li>
-        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Reading/ReadingFeedView.swift</code></li>
-        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.json</code></li>
-      </ul>
-    </section>
-  </div>
-  <script>
-    // Scope to .wd-demo so StateMatrix / VariationGrid cells do not paginate.
-    import { initReadingFeedPagination } from '@runtime/reading-feed-init';
-    initReadingFeedPagination('.wd-demo #cardReading');
-  </script>
-  <WidgetPageScript />
-</body>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/reading/ReadingFeed.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/Reading/ReadingFeedView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <script>
+      // Scope to .wd-demo so StateMatrix / VariationGrid cells do not paginate.
+      import { initReadingFeedPagination } from '@runtime/reading-feed-init';
+      initReadingFeedPagination('.wd-demo #cardReading');
+    </script>
+    <WidgetPageScript />
+  </body>
 </html>

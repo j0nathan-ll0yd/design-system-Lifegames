@@ -1,12 +1,16 @@
 {
   "card": {
-    "background":       { "$type": "color", "$value": "{color.surface.raised}" },
-    "border":           { "$type": "color", "$value": "{color.border.default}" },
-    "borderHover":      { "$type": "color", "$value": "{color.border.interactive}" },
-    "cornerRadius":     { "$type": "dimension", "$value": "{space.400}", "$description": "16px" },
-    "padding":          { "$type": "dimension", "$value": "{space.800}", "$description": "32px" },
-    "paddingCompact":   { "$type": "dimension", "$value": "{space.450}", "$description": "18px" },
-    "neonCornerRadius": { "$type": "dimension", "$value": "20px", "$description": "Neon card variant" },
-    "glassBorder":      { "$type": "color", "$value": "{color.border.subtle}" }
+    "background": { "$type": "color", "$value": "{color.surface.raised}" },
+    "border": { "$type": "color", "$value": "{color.border.default}" },
+    "borderHover": { "$type": "color", "$value": "{color.border.interactive}" },
+    "cornerRadius": { "$type": "dimension", "$value": "{space.400}", "$description": "16px" },
+    "padding": { "$type": "dimension", "$value": "{space.800}", "$description": "32px" },
+    "paddingCompact": { "$type": "dimension", "$value": "{space.450}", "$description": "18px" },
+    "neonCornerRadius": {
+      "$type": "dimension",
+      "$value": "20px",
+      "$description": "Neon card variant"
+    },
+    "glassBorder": { "$type": "color", "$value": "{color.border.subtle}" }
   }
 }

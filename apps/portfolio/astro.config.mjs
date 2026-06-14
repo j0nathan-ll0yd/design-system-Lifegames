@@ -27,7 +27,7 @@ const fixtureMiddleware = {
             join(process.cwd(), 'test/fixtures/generated', dataType, `${fixtureSet}.json`),
             join(process.cwd(), 'test/fixtures/generated', dataType, 'baseline.json'),
           ];
-          const match = candidates.find(p => existsSync(p));
+          const match = candidates.find((p) => existsSync(p));
           if (match) {
             console.log(`[fixtures] ${filename} → ${relative(process.cwd(), match)}`);
             res.setHeader('Content-Type', 'application/json');
@@ -37,8 +37,8 @@ const fixtureMiddleware = {
           }
         });
       }
-    }
-  }
+    },
+  },
 };
 
 export default defineConfig({
@@ -49,7 +49,10 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),
+        '@manifest': path.resolve(
+          __dirname,
+          '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json',
+        ),
         '@widgets': path.resolve(__dirname, '../../packages/web/src/widgets'),
         '@fixtures': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets'),
         '@islands': path.resolve(__dirname, '../../packages/web/src/islands'),
@@ -62,22 +65,23 @@ export default defineConfig({
           target: CLOUDFRONT_BASE,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/live/, ''),
-        }
-      }
-    }
+        },
+      },
+    },
   },
   integrations: [
     fixtureMiddleware,
     sitemap({
       filter: (page) => !page.includes('/showcase/'),
-      lastmod: new Date()
+      lastmod: new Date(),
     }),
     AstroPWA({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Jonathan Lloyd — Human Datastream',
         short_name: 'Human Datastream',
-        description: 'Living data dashboard — tracking body and mind. Jack into his human datastream.',
+        description:
+          'Living data dashboard — tracking body and mind. Jack into his human datastream.',
         start_url: '/',
         scope: '/',
         theme_color: '#06060f',
@@ -85,8 +89,13 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           { src: '/assets/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-        ]
+          {
+            src: '/assets/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
       },
       workbox: {
         globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,webmanifest,woff2}'],
@@ -98,29 +107,31 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'local-images',
-              expiration: { maxEntries: 200, maxAgeSeconds: 2592000 }
-            }
+              expiration: { maxEntries: 200, maxAgeSeconds: 2592000 },
+            },
           },
           {
             urlPattern: new RegExp(`^https:\\/\\/${CLOUDFRONT_HOST_RE}\\/images\\/`),
             handler: 'CacheFirst',
             options: {
               cacheName: 'optimized-images-fallback',
-              expiration: { maxEntries: 50, maxAgeSeconds: 604800 }
-            }
+              expiration: { maxEntries: 50, maxAgeSeconds: 604800 },
+            },
           },
           {
-            urlPattern: new RegExp(`^https:\\/\\/${CLOUDFRONT_HOST_RE}\\/(?!.*[?&]_poll=).*\\.json$`),
+            urlPattern: new RegExp(
+              `^https:\\/\\/${CLOUDFRONT_HOST_RE}\\/(?!.*[?&]_poll=).*\\.json$`,
+            ),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'live-data',
               networkTimeoutSeconds: 3,
               fetchOptions: { cache: 'no-store' },
-              expiration: { maxAgeSeconds: 300 }
-            }
-          }
-        ]
-      }
-    })
-  ]
+              expiration: { maxAgeSeconds: 300 },
+            },
+          },
+        ],
+      },
+    }),
+  ],
 });

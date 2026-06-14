@@ -45,7 +45,7 @@ function readJSON(relativePath) {
 // ── load registries ───────────────────────────────────────────────────────────
 const swiftRegistry = readJSON('Sources/LifegamesWidgets/Resources/production-widgets.json') ?? [];
 const webManifest = readJSON('widget-consumers.json');
-const webWidgets = (webManifest && Array.isArray(webManifest.widgets)) ? webManifest.widgets : [];
+const webWidgets = webManifest && Array.isArray(webManifest.widgets) ? webManifest.widgets : [];
 
 // Normalize both registries into a common shape for evaluation.
 function normalize(entry, sourceLabel) {
@@ -86,7 +86,9 @@ for (const e of entries) {
 console.log('Promotion Check — P4 admission gate');
 console.log('====================================\n');
 console.log(`Mode: ${BLOCKING ? 'BLOCKING' : 'ADVISORY (exit 0)'}`);
-console.log(`Registries: production-widgets.json (${swiftRegistry.length}), widget-consumers.json widgets[] (${webWidgets.length})`);
+console.log(
+  `Registries: production-widgets.json (${swiftRegistry.length}), widget-consumers.json widgets[] (${webWidgets.length})`,
+);
 console.log(`Total promoted entries evaluated: ${entries.length}\n`);
 
 const cols = ['Widget', 'Platform', 'Surfaces', 'Status', 'Finding'];
@@ -103,13 +105,15 @@ function findingLabel(e) {
 }
 
 for (const e of entries) {
-  console.log([
-    e.name.padEnd(widths[0]),
-    e.platform.padEnd(widths[1]),
-    String(e.consumers.length).padEnd(widths[2]),
-    String(e.status ?? '-').padEnd(widths[3]),
-    findingLabel(e).padEnd(widths[4]),
-  ].join(' '));
+  console.log(
+    [
+      e.name.padEnd(widths[0]),
+      e.platform.padEnd(widths[1]),
+      String(e.consumers.length).padEnd(widths[2]),
+      String(e.status ?? '-').padEnd(widths[3]),
+      findingLabel(e).padEnd(widths[4]),
+    ].join(' '),
+  );
 }
 
 console.log('\nCounts');

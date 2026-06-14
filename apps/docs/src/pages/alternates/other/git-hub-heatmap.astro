@@ -26,74 +26,119 @@ import var_seasonal_surge from '@fixtures/other/github-heatmap.seasonal-surge.js
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GitHubHeatmap — Lifegames Design System</title>
-</head>
-<body>
-  <div class="wd-page">
-    <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHubHeatmap — Lifegames Design System</title>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/alternates/">&#8592; Back to alternates</a>
 
-    <div class="wd-header">
-      <h1 class="wd-title">GitHubHeatmap</h1>
-      <span class="wd-badge wd-badge--dev">Alternate</span>
-      <span class="wd-cat">other</span>
-    </div>
+      <div class="wd-header">
+        <h1 class="wd-title">GitHubHeatmap</h1>
+        <span class="wd-badge wd-badge--dev">Alternate</span>
+        <span class="wd-cat">other</span>
+      </div>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Live Demo</h2>
-      <ResponsiveDemo widgetName="GitHubHeatmap" category="other" fixture={fixture} Comp={GitHubHeatmap} />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="GitHubHeatmap"
+          category="other"
+          fixture={fixture}
+          Comp={GitHubHeatmap}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">State Matrix</h2>
-      <StateMatrix
-        widgetName="GitHubHeatmap"
-        category="other"
-        states={[{ state: "skeleton", fixture: fixture_skeleton }, { state: "empty", fixture: fixture_empty }, { state: "populated-min", fixture: fixture_populated_min }, { state: "populated-max", fixture: fixture_populated_max }]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="GitHubHeatmap"
+          category="other"
+          states={[
+            { state: 'skeleton', fixture: fixture_skeleton },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Variations</h2>
-      <VariationGrid
-        widgetName="GitHubHeatmap"
-        category="other"
-        variations={[
-          { label: "sparse-year", fixture: var_sparse_year, caption: "Low-activity year — occasional contributor with scattered level-1 bursts, ~198 total contributions." },
-          { label: "burst-driven", fixture: var_burst_driven, caption: "Irregular contributor with 4 intense project sprints (level 3–4 clusters) across an otherwise quiet year." },
-          { label: "consistent-contributor", fixture: var_consistent_contributor, caption: "Professional developer committing daily — uniformly medium-green across all 52 weeks, ~987 contributions." },
-          { label: "weekend-warrior", fixture: var_weekend_warrior, caption: "Hobbyist active only on Sat/Sun — creates a distinctive striped pattern with dark weekday columns." },
-          { label: "seasonal-surge", fixture: var_seasonal_surge, caption: "Clear seasonal pattern: heavy Apr–Aug open source season, quiet Sep–Dec, light Jan–Mar warm-up." },
-        ]}
-      />
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="GitHubHeatmap"
+          category="other"
+          variations={[
+            {
+              label: 'sparse-year',
+              fixture: var_sparse_year,
+              caption:
+                'Low-activity year — occasional contributor with scattered level-1 bursts, ~198 total contributions.',
+            },
+            {
+              label: 'burst-driven',
+              fixture: var_burst_driven,
+              caption:
+                'Irregular contributor with 4 intense project sprints (level 3–4 clusters) across an otherwise quiet year.',
+            },
+            {
+              label: 'consistent-contributor',
+              fixture: var_consistent_contributor,
+              caption:
+                'Professional developer committing daily — uniformly medium-green across all 52 weeks, ~987 contributions.',
+            },
+            {
+              label: 'weekend-warrior',
+              fixture: var_weekend_warrior,
+              caption:
+                'Hobbyist active only on Sat/Sun — creates a distinctive striped pattern with dark weekday columns.',
+            },
+            {
+              label: 'seasonal-surge',
+              fixture: var_seasonal_surge,
+              caption:
+                'Clear seasonal pattern: heavy Apr–Aug open source season, quiet Sep–Dec, light Jan–Mar warm-up.',
+            },
+          ]}
+        />
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Props</h2>
-      <p class="wd-text">
-        See <code>packages/web/src/widgets/other/GitHubHeatmap.types.ts</code> for the full interface.
-      </p>
-    </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/other/GitHubHeatmap.types.ts</code> for the full interface.
+        </p>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Usage</h2>
-      <pre class="wd-code"><code>---
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
 import GitHubHeatmap from '@lifegames/web/widgets/other/GitHubHeatmap.astro';
 ---
 &lt;GitHubHeatmap &#123;...data&#125; /&gt;</code></pre>
-    </section>
+      </section>
 
-    <section class="wd-section">
-      <h2 class="wd-section-title">Cross-Platform</h2>
-      <ul class="wd-list">
-        <li><strong>Web:</strong> <code>packages/web/src/widgets/other/GitHubHeatmap.astro</code></li>
-        <li><strong>iOS:</strong> <code>Sources/LifegamesWidgets/Other/GitHubHeatmapView.swift</code></li>
-        <li><strong>Fixture:</strong> <code>Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.json</code></li>
-      </ul>
-    </section>
-  </div>
-  <WidgetPageScript />
-</body>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/other/GitHubHeatmap.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/Other/GitHubHeatmapView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <WidgetPageScript />
+  </body>
 </html>

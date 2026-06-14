@@ -16,14 +16,16 @@ export default defineConfig({
       plugins: [
         starlightLlmsTxt({
           projectName: 'Lifegames Design System',
-          description: 'Unified cross-platform design system powering the Lifegames portfolio — a single source of truth for tokens, components, and widgets across web (Astro) and iOS (SwiftUI).',
+          description:
+            'Unified cross-platform design system powering the Lifegames portfolio — a single source of truth for tokens, components, and widgets across web (Astro) and iOS (SwiftUI).',
         }),
       ],
       title: 'Lifegames Design System',
       head: [
         {
           tag: 'script',
-          content: '(function(){if(typeof localStorage!=="undefined"&&!localStorage.getItem("starlight-theme")){localStorage.setItem("starlight-theme","dark")}})();',
+          content:
+            '(function(){if(typeof localStorage!=="undefined"&&!localStorage.getItem("starlight-theme")){localStorage.setItem("starlight-theme","dark")}})();',
         },
       ],
       customCss: [
@@ -44,13 +46,21 @@ export default defineConfig({
         './src/styles/brand.css',
       ],
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames' },
+        {
+          icon: 'github',
+          label: 'GitHub',
+          href: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames',
+        },
       ],
       sidebar: [
         {
           label: 'Production',
           items: [
-            { label: 'Live Site (jonathanlloyd.me)', link: 'https://jonathanlloyd.me', attrs: { target: '_blank', rel: 'noopener' } },
+            {
+              label: 'Live Site (jonathanlloyd.me)',
+              link: 'https://jonathanlloyd.me',
+              attrs: { target: '_blank', rel: 'noopener' },
+            },
             { label: 'Local Showcase', link: '/showcase/' },
           ],
         },
@@ -74,7 +84,11 @@ export default defineConfig({
             { label: 'Bookshelf', link: '/widgets/bookshelf/' },
             { label: 'TheatreReviews', link: '/widgets/theatre-reviews/' },
             { label: 'PlaceLeaderboardV3', link: '/widgets/place-leaderboard-v3/', badge: 'Dev' },
-            { label: 'ExplorationOdometerV3', link: '/widgets/exploration-odometer-v3/', badge: 'Dev' },
+            {
+              label: 'ExplorationOdometerV3',
+              link: '/widgets/exploration-odometer-v3/',
+              badge: 'Dev',
+            },
             { label: 'All Alternates', link: '/alternates/' },
           ],
         },
@@ -100,16 +114,12 @@ export default defineConfig({
             {
               label: 'Reading',
               collapsed: true,
-              items: [
-                { label: 'BookModal', link: '/alternates/reading/book-modal/' },
-              ],
+              items: [{ label: 'BookModal', link: '/alternates/reading/book-modal/' }],
             },
             {
               label: 'Identity',
               collapsed: true,
-              items: [
-                { label: 'ComingSoon', link: '/alternates/identity/coming-soon/' },
-              ],
+              items: [{ label: 'ComingSoon', link: '/alternates/identity/coming-soon/' }],
             },
             {
               label: 'Other',
@@ -129,7 +139,10 @@ export default defineConfig({
   vite: {
     resolve: {
       alias: {
-        '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),
+        '@manifest': path.resolve(
+          __dirname,
+          '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json',
+        ),
         '@widgets': path.resolve(__dirname, '../../packages/web/src/widgets'),
         '@components': path.resolve(__dirname, '../../packages/web/src/components'),
         '@fixtures': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets'),

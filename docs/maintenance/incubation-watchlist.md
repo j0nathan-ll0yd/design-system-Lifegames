@@ -12,20 +12,20 @@ Per GOVERNANCE.md P8 (Solo BDFL governance stack), the design system tolerates i
 
 Today: **2026-06-06.** Hard absorb-or-ship deadline for the initial cohort: **2026-11-20** (6 months from first-incubation date 2026-05-20).
 
-| Widget | Source path | First incubation | Consumers | Absorb deadline | Notes |
-|--------|-------------|------------------|-----------|-----------------|-------|
-| ActivityFeed | `packages/web/src/widgets/github/ActivityFeed.astro` | 2026-05-20 | 0 | 2026-11-20 | GitHub cluster — one of 4 dev-activity surface explorations |
-| CommitLog | `packages/web/src/widgets/github/CommitLog.astro` | 2026-05-20 | 0 | 2026-11-20 | GitHub cluster — list-of-commits variant |
-| CommitTimeline | `packages/web/src/widgets/github/CommitTimeline.astro` | 2026-05-20 | 0 | 2026-11-20 | GitHub cluster — timeline-of-commits variant |
-| DevActivityCards | `packages/web/src/widgets/github/DevActivityCards.astro` | 2026-05-20 | 0 | 2026-11-20 | GitHub cluster — card-grid variant; competes with ActivityFeed/CommitLog/CommitTimeline for the dev-activity surface |
-| DevActivityTimeline | `packages/web/src/widgets/github/DevActivityTimeline.astro` | 2026-05-20 | 0 | 2026-11-20 | GitHub cluster — timeline-only variant (no commit detail); competes with CommitTimeline |
-| LanguageBars | `packages/web/src/widgets/github/LanguageBars.astro` | 2026-05-20 | 0 | 2026-11-20 | Language-mix variant — competes with LanguageStack |
-| LanguageStack | `packages/web/src/widgets/github/LanguageStack.astro` | 2026-05-20 | 0 | 2026-11-20 | Language-mix variant — competes with LanguageBars |
-| PinnedRepos | `packages/web/src/widgets/github/PinnedRepos.astro` | 2026-05-20 | 0 | 2026-11-20 | GitHub overview surface |
-| WeeklyPulse | `packages/web/src/widgets/github/WeeklyPulse.astro` | 2026-05-20 | 0 | 2026-11-20 | Aggregated weekly-activity glance |
-| ExplorationOdometerV3 | `packages/web/src/widgets/location/ExplorationOdometerV3.astro` | 2026-05-20 | 0 | 2026-11-20 | Location surface — listed in `production-widgets.json` as `status: Experimental` |
-| PlaceLeaderboardV3 | `packages/web/src/widgets/location/PlaceLeaderboardV3.astro` | 2026-05-20 | 0 | 2026-11-20 | Location surface — listed in `production-widgets.json` as `status: Experimental` |
-| GitHubHeatmap | `packages/web/src/widgets/other/GitHubHeatmap.astro` | 2026-05-20 | 0 | 2026-11-20 | Contribution-graph variant |
+| Widget                | Source path                                                     | First incubation | Consumers | Absorb deadline | Notes                                                                                                                |
+| --------------------- | --------------------------------------------------------------- | ---------------- | --------- | --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ActivityFeed          | `packages/web/src/widgets/github/ActivityFeed.astro`            | 2026-05-20       | 0         | 2026-11-20      | GitHub cluster — one of 4 dev-activity surface explorations                                                          |
+| CommitLog             | `packages/web/src/widgets/github/CommitLog.astro`               | 2026-05-20       | 0         | 2026-11-20      | GitHub cluster — list-of-commits variant                                                                             |
+| CommitTimeline        | `packages/web/src/widgets/github/CommitTimeline.astro`          | 2026-05-20       | 0         | 2026-11-20      | GitHub cluster — timeline-of-commits variant                                                                         |
+| DevActivityCards      | `packages/web/src/widgets/github/DevActivityCards.astro`        | 2026-05-20       | 0         | 2026-11-20      | GitHub cluster — card-grid variant; competes with ActivityFeed/CommitLog/CommitTimeline for the dev-activity surface |
+| DevActivityTimeline   | `packages/web/src/widgets/github/DevActivityTimeline.astro`     | 2026-05-20       | 0         | 2026-11-20      | GitHub cluster — timeline-only variant (no commit detail); competes with CommitTimeline                              |
+| LanguageBars          | `packages/web/src/widgets/github/LanguageBars.astro`            | 2026-05-20       | 0         | 2026-11-20      | Language-mix variant — competes with LanguageStack                                                                   |
+| LanguageStack         | `packages/web/src/widgets/github/LanguageStack.astro`           | 2026-05-20       | 0         | 2026-11-20      | Language-mix variant — competes with LanguageBars                                                                    |
+| PinnedRepos           | `packages/web/src/widgets/github/PinnedRepos.astro`             | 2026-05-20       | 0         | 2026-11-20      | GitHub overview surface                                                                                              |
+| WeeklyPulse           | `packages/web/src/widgets/github/WeeklyPulse.astro`             | 2026-05-20       | 0         | 2026-11-20      | Aggregated weekly-activity glance                                                                                    |
+| ExplorationOdometerV3 | `packages/web/src/widgets/location/ExplorationOdometerV3.astro` | 2026-05-20       | 0         | 2026-11-20      | Location surface — listed in `production-widgets.json` as `status: Experimental`                                     |
+| PlaceLeaderboardV3    | `packages/web/src/widgets/location/PlaceLeaderboardV3.astro`    | 2026-05-20       | 0         | 2026-11-20      | Location surface — listed in `production-widgets.json` as `status: Experimental`                                     |
+| GitHubHeatmap         | `packages/web/src/widgets/other/GitHubHeatmap.astro`            | 2026-05-20       | 0         | 2026-11-20      | Contribution-graph variant                                                                                           |
 
 **Cohort size:** 12 widgets (the audit anti-pattern #7 estimated "~11"; on enumeration it is 12).
 

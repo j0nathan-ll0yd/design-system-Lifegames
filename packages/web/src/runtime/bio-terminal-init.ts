@@ -81,8 +81,14 @@ export function initBioTerminal(container: HTMLElement, _fixture?: BioTerminalPr
   for (let k = 0; k < lines.length; k++) {
     const cmdSpan = lines[k].querySelector<HTMLElement>('.terminal-command');
     const outSpan = lines[k].querySelector<HTMLElement>('.terminal-output');
-    if (cmdSpan) { cmdSpan.style.opacity = '0'; cmdSpan.textContent = ''; }
-    if (outSpan) { outSpan.style.opacity = '0'; outSpan.textContent = ''; }
+    if (cmdSpan) {
+      cmdSpan.style.opacity = '0';
+      cmdSpan.textContent = '';
+    }
+    if (outSpan) {
+      outSpan.style.opacity = '0';
+      outSpan.textContent = '';
+    }
   }
 
   // Deterministic per-tile stagger: guarantees ≥150ms between tiles (above the

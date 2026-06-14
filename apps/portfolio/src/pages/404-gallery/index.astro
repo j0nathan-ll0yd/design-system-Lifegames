@@ -2,105 +2,170 @@
 import Variant from '../../layouts/Variant.astro';
 
 const variants = [
-  { slug: '404-1-glitch-protocol',       title: 'Glitch Protocol',        color: 'var(--neon-red)',    desc: 'RGB split glitch, scanline overlay, bar-flicker' },
-  { slug: '404-2-terminal-traceroute',    title: 'Terminal Traceroute',    color: 'var(--neon-green)',  desc: 'Typewriter traceroute terminal' },
-  { slug: '404-3-radar-sweep',            title: 'Radar Sweep',            color: 'var(--neon-cyan)',   desc: 'SVG radar with rotating sweep arm' },
-  { slug: '404-4-matrix-rain',            title: 'Matrix Rain',            color: 'var(--neon-green)',  desc: 'Canvas matrix rain with 404 formation' },
-  { slug: '404-5-heartbeat-flatline',     title: 'Heartbeat Flatline',     color: 'var(--neon-amber)',  desc: 'ECG monitor flatline animation' },
-  { slug: '404-6-asteroid-field',         title: 'Asteroid Field',         color: 'var(--neon-blue)',   desc: 'Mouse-following ship, drifting asteroids' },
-  { slug: '404-7-corrupted-transmission', title: 'Corrupted Transmission', color: 'var(--neon-orange)', desc: 'CRT/VHS artifacts and color bars' },
-  { slug: '404-8-black-hole',             title: 'Black Hole',             color: 'var(--neon-purple)', desc: 'Vortex with accretion disk and spiral particles' },
-  { slug: '404-9-system-reboot',          title: 'System Reboot',          color: 'var(--neon-cyan)',   desc: 'BIOS boot sequence with typewriter log' },
-  { slug: '404-10-ghost-in-the-machine',  title: 'Ghost in the Machine',   color: 'var(--neon-indigo)', desc: 'Floating ghost with rising particles' },
+  {
+    slug: '404-1-glitch-protocol',
+    title: 'Glitch Protocol',
+    color: 'var(--neon-red)',
+    desc: 'RGB split glitch, scanline overlay, bar-flicker',
+  },
+  {
+    slug: '404-2-terminal-traceroute',
+    title: 'Terminal Traceroute',
+    color: 'var(--neon-green)',
+    desc: 'Typewriter traceroute terminal',
+  },
+  {
+    slug: '404-3-radar-sweep',
+    title: 'Radar Sweep',
+    color: 'var(--neon-cyan)',
+    desc: 'SVG radar with rotating sweep arm',
+  },
+  {
+    slug: '404-4-matrix-rain',
+    title: 'Matrix Rain',
+    color: 'var(--neon-green)',
+    desc: 'Canvas matrix rain with 404 formation',
+  },
+  {
+    slug: '404-5-heartbeat-flatline',
+    title: 'Heartbeat Flatline',
+    color: 'var(--neon-amber)',
+    desc: 'ECG monitor flatline animation',
+  },
+  {
+    slug: '404-6-asteroid-field',
+    title: 'Asteroid Field',
+    color: 'var(--neon-blue)',
+    desc: 'Mouse-following ship, drifting asteroids',
+  },
+  {
+    slug: '404-7-corrupted-transmission',
+    title: 'Corrupted Transmission',
+    color: 'var(--neon-orange)',
+    desc: 'CRT/VHS artifacts and color bars',
+  },
+  {
+    slug: '404-8-black-hole',
+    title: 'Black Hole',
+    color: 'var(--neon-purple)',
+    desc: 'Vortex with accretion disk and spiral particles',
+  },
+  {
+    slug: '404-9-system-reboot',
+    title: 'System Reboot',
+    color: 'var(--neon-cyan)',
+    desc: 'BIOS boot sequence with typewriter log',
+  },
+  {
+    slug: '404-10-ghost-in-the-machine',
+    title: 'Ghost in the Machine',
+    color: 'var(--neon-indigo)',
+    desc: 'Floating ghost with rising particles',
+  },
 ];
 ---
+
 <Variant title="404 Gallery">
-<style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg);
-    font-family: 'Space Grotesk', sans-serif;
-    color: var(--text);
-    padding: 40px 32px 64px;
-    min-height: 100vh;
-  }
-  .gallery-header { margin-bottom: 40px; }
-  .gallery-title {
-    font-size: clamp(1.2rem, 3vw, 1.8rem);
-    font-weight: 700;
-    color: var(--neon-pink);
-    margin-bottom: 8px;
-  }
-  .gallery-desc {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-  }
-  .variant-card {
-    display: block;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 10px;
-    padding: 20px;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .variant-card:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.12);
-  }
-  .variant-card:focus {
-    outline: 2px solid var(--neon-pink);
-    outline-offset: 2px;
-  }
-  .variant-num {
-    font-size: 0.55rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-  .variant-name {
-    font-size: 0.95rem;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .variant-desc {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    line-height: 1.5;
-  }
-  .variant-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    margin-right: 8px;
-    vertical-align: middle;
-    flex-shrink: 0;
-  }
-</style>
-<div class="gallery-header">
-  <h1 class="gallery-title">404 Gallery</h1>
-  <p class="gallery-desc">10 themed 404 error page variants. Each opens as a standalone preview.</p>
-</div>
-<div class="gallery-grid">
-  {variants.map((v, i) => (
-    <a href={`/404-gallery/${v.slug}`} class="variant-card">
-      <div class="variant-num">Variant {String(i + 1).padStart(2, '0')}</div>
-      <div class="variant-name">
-        <span class="variant-dot" style={`background: ${v.color}`}></span>
-        {v.title}
-      </div>
-      <div class="variant-desc">{v.desc}</div>
-    </a>
-  ))}
-</div>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: var(--bg);
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--text);
+      padding: 40px 32px 64px;
+      min-height: 100vh;
+    }
+    .gallery-header {
+      margin-bottom: 40px;
+    }
+    .gallery-title {
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--neon-pink);
+      margin-bottom: 8px;
+    }
+    .gallery-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .variant-card {
+      display: block;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition:
+        border-color 0.2s,
+        background 0.2s;
+    }
+    .variant-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .variant-card:focus {
+      outline: 2px solid var(--neon-pink);
+      outline-offset: 2px;
+    }
+    .variant-num {
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .variant-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .variant-desc {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .variant-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+  </style>
+  <div class="gallery-header">
+    <h1 class="gallery-title">404 Gallery</h1>
+    <p class="gallery-desc">
+      10 themed 404 error page variants. Each opens as a standalone preview.
+    </p>
+  </div>
+  <div class="gallery-grid">
+    {
+      variants.map((v, i) => (
+        <a href={`/404-gallery/${v.slug}`} class="variant-card">
+          <div class="variant-num">Variant {String(i + 1).padStart(2, '0')}</div>
+          <div class="variant-name">
+            <span class="variant-dot" style={`background: ${v.color}`} />
+            {v.title}
+          </div>
+          <div class="variant-desc">{v.desc}</div>
+        </a>
+      ))
+    }
+  </div>
 </Variant>

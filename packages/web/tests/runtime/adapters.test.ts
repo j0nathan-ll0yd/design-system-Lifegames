@@ -9,7 +9,14 @@ import {
   adaptStarredRepos,
 } from '../../src/runtime/adapters';
 import { HYDRATION, STATUS_LABELS, CLOUDFRONT_BASE } from '../../src/runtime/constants';
-import type { HealthExport, SleepExport, WorkoutsExport, BooksExport, GithubEventsExport, ArticlesExport } from '../../src/types/exports';
+import type {
+  HealthExport,
+  SleepExport,
+  WorkoutsExport,
+  BooksExport,
+  GithubEventsExport,
+  ArticlesExport,
+} from '../../src/types/exports';
 
 // ── Fixture factories ─────────────────────────────────────────────
 
@@ -22,8 +29,8 @@ function makeHealth(overrides: Partial<HealthExport['quantities']> = {}): Health
       stepCount: { value: 8432, unit: 'count' },
       activeEnergyBurned: { value: 450, unit: 'kcal' },
       basalEnergyBurned: { value: 1800, unit: 'kcal' },
-      dietaryWater: { value: 2839.14, unit: 'mL' },   // ~96 oz
-      dietaryCaffeine: { value: 0.28, unit: 'g' },    // 280 mg
+      dietaryWater: { value: 2839.14, unit: 'mL' }, // ~96 oz
+      dietaryCaffeine: { value: 0.28, unit: 'g' }, // 280 mg
       heartRateVariabilitySDNN: { value: 45, unit: 'ms' },
       exerciseTime: { value: 30, unit: 'min' },
       sleepScore: { value: 82, unit: 'score' },
@@ -36,10 +43,10 @@ function makeSleep(overrides: Partial<SleepExport> = {}): SleepExport {
   return {
     date: '2026-01-15',
     generatedAt: '2026-01-15T08:00:00Z',
-    rem: { seconds: 5400 },    // 1h 30m
-    deep: { seconds: 3600 },   // 1h 0m
-    core: { seconds: 10800 },  // 3h 0m
-    awake: { seconds: 900 },   // 15m
+    rem: { seconds: 5400 }, // 1h 30m
+    deep: { seconds: 3600 }, // 1h 0m
+    core: { seconds: 10800 }, // 3h 0m
+    awake: { seconds: 900 }, // 15m
     ...overrides,
   };
 }
@@ -49,8 +56,20 @@ function makeWorkouts(overrides: Partial<WorkoutsExport> = {}): WorkoutsExport {
     date: '2026-01-15',
     generatedAt: '2026-01-15T10:30:00Z',
     workouts: [
-      { activityType: 'Other', duration: 55, energyBurned: 620, distance: null, source: 'Apple Watch' },
-      { activityType: 'Running', duration: 32, energyBurned: 380, distance: 4.2, source: 'Apple Watch' },
+      {
+        activityType: 'Other',
+        duration: 55,
+        energyBurned: 620,
+        distance: null,
+        source: 'Apple Watch',
+      },
+      {
+        activityType: 'Running',
+        duration: 32,
+        energyBurned: 380,
+        distance: 4.2,
+        source: 'Apple Watch',
+      },
     ],
     ...overrides,
   };
@@ -90,9 +109,10 @@ function makeBooks(bookOverrides: Partial<BooksExport['books'][0]>[] = []): Book
   };
   return {
     generatedAt: '2026-01-15T10:30:00Z',
-    books: bookOverrides.length > 0
-      ? bookOverrides.map((o) => ({ ...defaultBook, ...o }))
-      : [defaultBook],
+    books:
+      bookOverrides.length > 0
+        ? bookOverrides.map((o) => ({ ...defaultBook, ...o }))
+        : [defaultBook],
   };
 }
 
@@ -369,7 +389,15 @@ describe('adaptWorkouts', () => {
 
   it('handles workouts with null numeric fields', () => {
     const workouts = makeWorkouts({
-      workouts: [{ activityType: 'Running', duration: null, energyBurned: null, distance: null, source: 'iPhone' }],
+      workouts: [
+        {
+          activityType: 'Running',
+          duration: null,
+          energyBurned: null,
+          distance: null,
+          source: 'iPhone',
+        },
+      ],
     });
     const result = adaptWorkouts(workouts);
     expect(result![0].duration).toBeNull();
@@ -407,43 +435,75 @@ describe('adaptGithubEvents', () => {
   });
 
   it('strips org prefix from repo name', () => {
-    const events = [{ type: 'commit', repo: 'myorg/my-repo', title: 'Test', date: '2026-01-01', hash: 'abc123' }];
+    const events = [
+      { type: 'commit', repo: 'myorg/my-repo', title: 'Test', date: '2026-01-01', hash: 'abc123' },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].repo).toBe('my-repo');
   });
 
   it('preserves repo name without org prefix', () => {
-    const events = [{ type: 'commit', repo: 'standalone-repo', title: 'Test', date: '2026-01-01', hash: 'abc123' }];
+    const events = [
+      {
+        type: 'commit',
+        repo: 'standalone-repo',
+        title: 'Test',
+        date: '2026-01-01',
+        hash: 'abc123',
+      },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].repo).toBe('standalone-repo');
   });
 
   it('generates commit URL with full repo path and hash', () => {
-    const events = [{ type: 'commit', repo: 'myorg/my-repo', title: 'Fix bug', date: '2026-01-01', hash: 'deadbeef' }];
+    const events = [
+      {
+        type: 'commit',
+        repo: 'myorg/my-repo',
+        title: 'Fix bug',
+        date: '2026-01-01',
+        hash: 'deadbeef',
+      },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].url).toBe('https://github.com/myorg/my-repo/commit/deadbeef');
   });
 
   it('generates PR URL for pr_ event types', () => {
-    const events = [{ type: 'pr_opened', repo: 'myorg/my-repo', title: 'New PR', date: '2026-01-01', number: 42 }];
+    const events = [
+      { type: 'pr_opened', repo: 'myorg/my-repo', title: 'New PR', date: '2026-01-01', number: 42 },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].url).toBe('https://github.com/myorg/my-repo/pull/42');
   });
 
   it('generates PR URL for pr_merged event type', () => {
-    const events = [{ type: 'pr_merged', repo: 'myorg/my-repo', title: 'Merged PR', date: '2026-01-01', number: 99 }];
+    const events = [
+      {
+        type: 'pr_merged',
+        repo: 'myorg/my-repo',
+        title: 'Merged PR',
+        date: '2026-01-01',
+        number: 99,
+      },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].url).toBe('https://github.com/myorg/my-repo/pull/99');
   });
 
   it('generates issues URL for issue_ event types', () => {
-    const events = [{ type: 'issue_opened', repo: 'myorg/my-repo', title: 'Bug', date: '2026-01-01', number: 7 }];
+    const events = [
+      { type: 'issue_opened', repo: 'myorg/my-repo', title: 'Bug', date: '2026-01-01', number: 7 },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].url).toBe('https://github.com/myorg/my-repo/issues/7');
   });
 
   it('returns empty URL for unknown event type without number/hash', () => {
-    const events = [{ type: 'unknown_type', repo: 'myorg/my-repo', title: 'Something', date: '2026-01-01' }];
+    const events = [
+      { type: 'unknown_type', repo: 'myorg/my-repo', title: 'Something', date: '2026-01-01' },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].url).toBe('');
   });
@@ -451,7 +511,9 @@ describe('adaptGithubEvents', () => {
   it('formats date as minutes ago for recent events', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const events = [{ type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc' }];
+    const events = [
+      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc' },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].date).toBe('15m ago');
   });
@@ -459,7 +521,9 @@ describe('adaptGithubEvents', () => {
   it('formats date as hours ago', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const events = [{ type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T07:00:00Z', hash: 'abc' }];
+    const events = [
+      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T07:00:00Z', hash: 'abc' },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].date).toBe('3h ago');
   });
@@ -467,7 +531,9 @@ describe('adaptGithubEvents', () => {
   it('formats date as days ago', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const events = [{ type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-12T10:30:00Z', hash: 'abc' }];
+    const events = [
+      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-12T10:30:00Z', hash: 'abc' },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].date).toBe('3d ago');
   });
@@ -475,7 +541,9 @@ describe('adaptGithubEvents', () => {
   it('formats date as weeks ago', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const events = [{ type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc' }];
+    const events = [
+      { type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc' },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].date).toBe('3w ago');
   });
@@ -487,7 +555,17 @@ describe('adaptGithubEvents', () => {
   });
 
   it('preserves additions and deletions fields', () => {
-    const events = [{ type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-01', hash: 'abc', additions: 10, deletions: 3 }];
+    const events = [
+      {
+        type: 'commit',
+        repo: 'org/repo',
+        title: 'X',
+        date: '2026-01-01',
+        hash: 'abc',
+        additions: 10,
+        deletions: 3,
+      },
+    ];
     const result = adaptGithubEvents(makeGithubEvents(events));
     expect(result[0].additions).toBe(10);
     expect(result[0].deletions).toBe(3);
@@ -589,7 +667,9 @@ describe('adaptBooks', () => {
   });
 
   it('splits category on " > " for genres', () => {
-    const books = makeBooks([{ asin: 'B000TEST01', category: 'Technology > Software > Engineering' }]);
+    const books = makeBooks([
+      { asin: 'B000TEST01', category: 'Technology > Software > Engineering' },
+    ]);
     const result = adaptBooks(books);
     expect(result.bookMeta['B000TEST01'].genres).toEqual(['Technology', 'Software', 'Engineering']);
   });
@@ -604,9 +684,78 @@ describe('adaptBooks', () => {
     const books: BooksExport = {
       generatedAt: '2026-01-15T10:30:00Z',
       books: [
-        { asin: 'A1', title: 'T1', author: 'A', series: null, seriesNumber: null, seriesTotal: null, description: null, publicationDate: null, publishedYear: null, isbn10: null, isbn13: null, pageCount: null, mainImage: null, mainImageThumb: null, images: null, averageRating: null, category: null, status: 'reading', currentPage: null, totalPages: null, rating: null, notes: null },
-        { asin: 'A2', title: 'T2', author: 'A', series: null, seriesNumber: null, seriesTotal: null, description: null, publicationDate: null, publishedYear: null, isbn10: null, isbn13: null, pageCount: null, mainImage: null, mainImageThumb: null, images: null, averageRating: null, category: null, status: 'completed', currentPage: null, totalPages: null, rating: null, notes: null },
-        { asin: 'A3', title: 'T3', author: 'A', series: null, seriesNumber: null, seriesTotal: null, description: null, publicationDate: null, publishedYear: null, isbn10: null, isbn13: null, pageCount: null, mainImage: null, mainImageThumb: null, images: null, averageRating: null, category: null, status: 'upNext', currentPage: null, totalPages: null, rating: null, notes: null },
+        {
+          asin: 'A1',
+          title: 'T1',
+          author: 'A',
+          series: null,
+          seriesNumber: null,
+          seriesTotal: null,
+          description: null,
+          publicationDate: null,
+          publishedYear: null,
+          isbn10: null,
+          isbn13: null,
+          pageCount: null,
+          mainImage: null,
+          mainImageThumb: null,
+          images: null,
+          averageRating: null,
+          category: null,
+          status: 'reading',
+          currentPage: null,
+          totalPages: null,
+          rating: null,
+          notes: null,
+        },
+        {
+          asin: 'A2',
+          title: 'T2',
+          author: 'A',
+          series: null,
+          seriesNumber: null,
+          seriesTotal: null,
+          description: null,
+          publicationDate: null,
+          publishedYear: null,
+          isbn10: null,
+          isbn13: null,
+          pageCount: null,
+          mainImage: null,
+          mainImageThumb: null,
+          images: null,
+          averageRating: null,
+          category: null,
+          status: 'completed',
+          currentPage: null,
+          totalPages: null,
+          rating: null,
+          notes: null,
+        },
+        {
+          asin: 'A3',
+          title: 'T3',
+          author: 'A',
+          series: null,
+          seriesNumber: null,
+          seriesTotal: null,
+          description: null,
+          publicationDate: null,
+          publishedYear: null,
+          isbn10: null,
+          isbn13: null,
+          pageCount: null,
+          mainImage: null,
+          mainImageThumb: null,
+          images: null,
+          averageRating: null,
+          category: null,
+          status: 'upNext',
+          currentPage: null,
+          totalPages: null,
+          rating: null,
+          notes: null,
+        },
       ],
     };
     const result = adaptBooks(books);
@@ -628,7 +777,9 @@ describe('adaptBooks', () => {
   });
 
   it('builds bookMeta with series info', () => {
-    const books = makeBooks([{ asin: 'B0SERIES01', series: 'The Test Series', seriesNumber: 2, seriesTotal: 5 }]);
+    const books = makeBooks([
+      { asin: 'B0SERIES01', series: 'The Test Series', seriesNumber: 2, seriesTotal: 5 },
+    ]);
     const result = adaptBooks(books);
     expect(result.bookMeta['B0SERIES01'].seriesName).toBe('The Test Series');
     expect(result.bookMeta['B0SERIES01'].seriesNumber).toBe(2);
@@ -661,8 +812,44 @@ describe('adaptArticles', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T12:00:00Z'));
     const articles = makeArticles([
-      { articleUrl: 'https://a.com/1', articleTitle: 'Older', savedAt: '2026-01-10T00:00:00Z', notes: [], articleAuthor: null, articleContent: null, articleFirstImageUrl: null, articlePublishedAt: null, articleBoards: null, articleCategories: null, sourceTitle: 'Source A', sourceUrl: null, sourceFeedUrl: null, articleEngagement: null, articleEngagementRate: null, articleFirstHighlight: null, articleFirstComment: null },
-      { articleUrl: 'https://a.com/2', articleTitle: 'Newer', savedAt: '2026-01-14T00:00:00Z', notes: [], articleAuthor: null, articleContent: null, articleFirstImageUrl: null, articlePublishedAt: null, articleBoards: null, articleCategories: null, sourceTitle: 'Source B', sourceUrl: null, sourceFeedUrl: null, articleEngagement: null, articleEngagementRate: null, articleFirstHighlight: null, articleFirstComment: null },
+      {
+        articleUrl: 'https://a.com/1',
+        articleTitle: 'Older',
+        savedAt: '2026-01-10T00:00:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: 'Source A',
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+      {
+        articleUrl: 'https://a.com/2',
+        articleTitle: 'Newer',
+        savedAt: '2026-01-14T00:00:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: 'Source B',
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
     ]);
     const result = adaptArticles(articles);
     expect(result[0].title).toBe('Newer');
@@ -673,19 +860,28 @@ describe('adaptArticles', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-03-01T00:00:00Z'));
     const baseArticle = {
-      articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceTitle: 'S', sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null, notes: [] as any[],
+      articleAuthor: null,
+      articleContent: null,
+      articleFirstImageUrl: null,
+      articlePublishedAt: null,
+      articleBoards: null,
+      articleCategories: null,
+      sourceTitle: 'S',
+      sourceUrl: null,
+      sourceFeedUrl: null,
+      articleEngagement: null,
+      articleEngagementRate: null,
+      articleFirstHighlight: null,
+      articleFirstComment: null,
+      notes: [] as any[],
     };
     const articles = makeArticles(
       Array.from({ length: 40 }, (_, i) => ({
         ...baseArticle,
         articleUrl: `https://a.com/${i}`,
         articleTitle: `Article ${i}`,
-        savedAt: `2026-01-${String(i % 28 + 1).padStart(2, '0')}T00:00:00Z`,
-      }))
+        savedAt: `2026-01-${String((i % 28) + 1).padStart(2, '0')}T00:00:00Z`,
+      })),
     );
     const result = adaptArticles(articles);
     expect(result).toHaveLength(30);
@@ -694,14 +890,27 @@ describe('adaptArticles', () => {
   it('formats date as minutes ago for recent articles', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const articles = makeArticles([{
-      articleUrl: 'https://a.com', articleTitle: 'Test', savedAt: '2026-01-15T10:00:00Z',
-      notes: [], articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceTitle: null, sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null,
-    }]);
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2026-01-15T10:00:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
     const result = adaptArticles(articles);
     expect(result[0].date).toBe('30m ago');
   });
@@ -709,14 +918,27 @@ describe('adaptArticles', () => {
   it('formats date as hours ago', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const articles = makeArticles([{
-      articleUrl: 'https://a.com', articleTitle: 'Test', savedAt: '2026-01-15T07:30:00Z',
-      notes: [], articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceTitle: null, sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null,
-    }]);
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2026-01-15T07:30:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
     const result = adaptArticles(articles);
     expect(result[0].date).toBe('3h ago');
   });
@@ -724,14 +946,27 @@ describe('adaptArticles', () => {
   it('formats date as weeks ago', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const articles = makeArticles([{
-      articleUrl: 'https://a.com', articleTitle: 'Test', savedAt: '2025-12-25T10:30:00Z',
-      notes: [], articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceTitle: null, sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null,
-    }]);
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2025-12-25T10:30:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
     const result = adaptArticles(articles);
     expect(result[0].date).toBe('3w ago');
   });
@@ -739,18 +974,30 @@ describe('adaptArticles', () => {
   it('sets hasNotes true and joins noteText when notes present', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const articles = makeArticles([{
-      articleUrl: 'https://a.com', articleTitle: 'Test', savedAt: '2026-01-15T10:29:00Z',
-      notes: [
-        { comment: 'First note', savedBy: null, createdAt: '2026-01-15T10:29:00Z' },
-        { comment: 'Second note', savedBy: null, createdAt: '2026-01-15T10:29:00Z' },
-      ],
-      articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceTitle: null, sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null,
-    }]);
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2026-01-15T10:29:00Z',
+        notes: [
+          { comment: 'First note', savedBy: null, createdAt: '2026-01-15T10:29:00Z' },
+          { comment: 'Second note', savedBy: null, createdAt: '2026-01-15T10:29:00Z' },
+        ],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
     const result = adaptArticles(articles);
     expect(result[0].hasNotes).toBe(true);
     expect(result[0].noteText).toBe('First note\nSecond note');
@@ -759,15 +1006,27 @@ describe('adaptArticles', () => {
   it('sets hasNotes false and noteText null when notes is empty', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const articles = makeArticles([{
-      articleUrl: 'https://a.com', articleTitle: 'Test', savedAt: '2026-01-15T10:29:00Z',
-      notes: [],
-      articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceTitle: null, sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null,
-    }]);
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2026-01-15T10:29:00Z',
+        notes: [],
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceTitle: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
     const result = adaptArticles(articles);
     expect(result[0].hasNotes).toBe(false);
     expect(result[0].noteText).toBeNull();
@@ -776,15 +1035,27 @@ describe('adaptArticles', () => {
   it('uses empty string source when sourceTitle is null', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
-    const articles = makeArticles([{
-      articleUrl: 'https://a.com', articleTitle: 'Test', savedAt: '2026-01-15T10:29:00Z',
-      notes: [], sourceTitle: null,
-      articleAuthor: null, articleContent: null, articleFirstImageUrl: null,
-      articlePublishedAt: null, articleBoards: null, articleCategories: null,
-      sourceUrl: null, sourceFeedUrl: null,
-      articleEngagement: null, articleEngagementRate: null,
-      articleFirstHighlight: null, articleFirstComment: null,
-    }]);
+    const articles = makeArticles([
+      {
+        articleUrl: 'https://a.com',
+        articleTitle: 'Test',
+        savedAt: '2026-01-15T10:29:00Z',
+        notes: [],
+        sourceTitle: null,
+        articleAuthor: null,
+        articleContent: null,
+        articleFirstImageUrl: null,
+        articlePublishedAt: null,
+        articleBoards: null,
+        articleCategories: null,
+        sourceUrl: null,
+        sourceFeedUrl: null,
+        articleEngagement: null,
+        articleEngagementRate: null,
+        articleFirstHighlight: null,
+        articleFirstComment: null,
+      },
+    ]);
     const result = adaptArticles(articles);
     expect(result[0].source).toBe('');
   });
@@ -792,24 +1063,26 @@ describe('adaptArticles', () => {
 
 // ── adaptStarredRepos ─────────────────────────────────────────────
 
-function makeStarredRepo(overrides: Partial<{
-  name: string;
-  ownerLogin: string;
-  ownerHtmlUrl: string;
-  htmlUrl: string;
-  description: string | null;
-  forksCount: number;
-  stargazersCount: number;
-  watchersCount: number;
-  openIssuesCount: number;
-  topics: string[];
-  size: number;
-  licenseKey: string | null;
-  licenseName: string | null;
-  licenseSpdxId: string | null;
-  starredAt: string;
-  languages: { language: string; lines: number }[];
-}> = {}) {
+function makeStarredRepo(
+  overrides: Partial<{
+    name: string;
+    ownerLogin: string;
+    ownerHtmlUrl: string;
+    htmlUrl: string;
+    description: string | null;
+    forksCount: number;
+    stargazersCount: number;
+    watchersCount: number;
+    openIssuesCount: number;
+    topics: string[];
+    size: number;
+    licenseKey: string | null;
+    licenseName: string | null;
+    licenseSpdxId: string | null;
+    starredAt: string;
+    languages: { language: string; lines: number }[];
+  }> = {},
+) {
   return {
     name: 'test-repo',
     ownerLogin: 'test-owner',
@@ -837,7 +1110,7 @@ describe('adaptStarredRepos', () => {
 
   it('slices to at most 5 repos when given more', () => {
     const repos = Array.from({ length: 8 }, (_, i) =>
-      makeStarredRepo({ name: `repo-${i}`, starredAt: '2026-01-01T00:00:00Z' })
+      makeStarredRepo({ name: `repo-${i}`, starredAt: '2026-01-01T00:00:00Z' }),
     );
     const result = adaptStarredRepos({ generatedAt: '2026-01-15T12:00:00Z', repos }, NOW);
     expect(result).toHaveLength(5);
@@ -848,7 +1121,7 @@ describe('adaptStarredRepos', () => {
     const starredAt = new Date(NOW - 14 * 24 * 3600 * 1000).toISOString();
     const result = adaptStarredRepos(
       { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW
+      NOW,
     );
     expect(result[0].starredAt).toBe('2 weeks ago');
   });
@@ -858,7 +1131,7 @@ describe('adaptStarredRepos', () => {
     const starredAt = new Date(NOW - 7 * 24 * 3600 * 1000).toISOString();
     const result = adaptStarredRepos(
       { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW
+      NOW,
     );
     expect(result[0].starredAt).toBe('1 week ago');
   });
@@ -868,7 +1141,7 @@ describe('adaptStarredRepos', () => {
     const starredAt = new Date(NOW - 3 * 24 * 3600 * 1000).toISOString();
     const result = adaptStarredRepos(
       { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW
+      NOW,
     );
     expect(result[0].starredAt).toBe('3 days ago');
   });
@@ -878,7 +1151,7 @@ describe('adaptStarredRepos', () => {
     const starredAt = new Date(NOW - 1 * 24 * 3600 * 1000).toISOString();
     const result = adaptStarredRepos(
       { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW
+      NOW,
     );
     expect(result[0].starredAt).toBe('1 day ago');
   });
@@ -888,15 +1161,18 @@ describe('adaptStarredRepos', () => {
     const starredAt = new Date(NOW - 5 * 3600 * 1000).toISOString();
     const result = adaptStarredRepos(
       { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW
+      NOW,
     );
     expect(result[0].starredAt).toBe('5h ago');
   });
 
   it('resolves primary language from languages array', () => {
     const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ languages: [{ language: 'Go', lines: 1000 }] })] },
-      NOW
+      {
+        generatedAt: '2026-01-15T12:00:00Z',
+        repos: [makeStarredRepo({ languages: [{ language: 'Go', lines: 1000 }] })],
+      },
+      NOW,
     );
     expect(result[0].language).toBe('Go');
     expect(result[0].languageColor).toBe('#00ADD8');
@@ -905,7 +1181,7 @@ describe('adaptStarredRepos', () => {
   it('falls back to Unknown and default color when no languages', () => {
     const result = adaptStarredRepos(
       { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ languages: [] })] },
-      NOW
+      NOW,
     );
     expect(result[0].language).toBe('Unknown');
     expect(result[0].languageColor).toBe('#8b949e');
@@ -913,8 +1189,11 @@ describe('adaptStarredRepos', () => {
 
   it('uses default color for unknown language name', () => {
     const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ languages: [{ language: 'FakeLang', lines: 100 }] })] },
-      NOW
+      {
+        generatedAt: '2026-01-15T12:00:00Z',
+        repos: [makeStarredRepo({ languages: [{ language: 'FakeLang', lines: 100 }] })],
+      },
+      NOW,
     );
     expect(result[0].language).toBe('FakeLang');
     expect(result[0].languageColor).toBe('#8b949e');

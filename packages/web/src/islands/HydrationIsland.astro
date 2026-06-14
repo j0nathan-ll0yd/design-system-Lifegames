@@ -2,6 +2,7 @@
 import Hydration from '@widgets/health/Hydration.astro';
 const { fixture } = Astro.props;
 ---
+
 <div data-widget-preview data-fixture={JSON.stringify(fixture)}>
   <Hydration {...fixture} />
 </div>

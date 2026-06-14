@@ -7,11 +7,13 @@ This is a **pnpm workspace + Swift Package Manager** monorepo. Both ecosystems m
 ## Pre-flight Checks
 
 1. List all open Dependabot PRs (grouped per `.github/dependabot.yml`):
+
 ```bash
 unset GITHUB_TOKEN && gh pr list --author "app/dependabot" --state open --json number,title,headRefName
 ```
 
 2. Check outdated workspace packages:
+
 ```bash
 pnpm outdated --recursive
 ```
@@ -39,11 +41,13 @@ pnpm update --latest --recursive
 ```
 
 Then verify no workspace packages remain outdated:
+
 ```bash
 pnpm outdated --recursive
 ```
 
 **Respect the dependabot ignore rules.** These bumps must NOT be applied automatically:
+
 - `vite` major — blocked until Storybook 10 + Astro 6.x ship Vite 8 support (see PR #23)
 - `@astrojs/starlight` major — pre-1.0; minors are safe, majors require manual migration
 - `ajv` / `ajv-formats` / `ajv-cli` majors — require coordinated migration of `validate.ts` and consumer schemas
@@ -60,20 +64,21 @@ pnpm lint
 
 **Repo-specific breaking change hot spots:**
 
-| Package | Risk | Where it bites |
-|---------|------|----------------|
-| `vite` major | peerDep mismatch with Storybook / Astro | `packages/web`, `apps/storybook`, `apps/docs` |
-| `@storybook/*` mismatched | framework adapter ≠ addon version | Story load failures; bump as the `storybook` group |
-| `astro` / `@astrojs/*` mismatched | build break | Bump as the `astro-docs` group |
-| `style-dictionary` minor/major | transform/format API churn | `style-dictionary.config.mjs`, regenerated outputs |
-| `ajv` / `ajv-formats` pair | mismatched pair broke validation (May 2026 incident) | `schemas/validate.ts` |
-| Storybook major | addon API rewrite | `apps/storybook/.storybook/`, `.stories.*` files |
+| Package                           | Risk                                                 | Where it bites                                     |
+| --------------------------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| `vite` major                      | peerDep mismatch with Storybook / Astro              | `packages/web`, `apps/storybook`, `apps/docs`      |
+| `@storybook/*` mismatched         | framework adapter ≠ addon version                    | Story load failures; bump as the `storybook` group |
+| `astro` / `@astrojs/*` mismatched | build break                                          | Bump as the `astro-docs` group                     |
+| `style-dictionary` minor/major    | transform/format API churn                           | `style-dictionary.config.mjs`, regenerated outputs |
+| `ajv` / `ajv-formats` pair        | mismatched pair broke validation (May 2026 incident) | `schemas/validate.ts`                              |
+| Storybook major                   | addon API rewrite                                    | `apps/storybook/.storybook/`, `.stories.*` files   |
 
 ### Phase 4: Verify
 
 Run the full local verification across both ecosystems.
 
 **Node / pnpm side:**
+
 ```bash
 pnpm lint
 pnpm build:tokens
@@ -84,6 +89,7 @@ pnpm test
 ```
 
 **Swift side (token parity + widget rendering depends on these):**
+
 ```bash
 swift build
 swift test
@@ -162,6 +168,7 @@ pnpm outdated --recursive --format json \
 ```
 
 For each major version bump:
+
 1. Confirm it is not blocked by `.github/dependabot.yml` `ignore` rules
 2. Fetch the package changelog from npm/GitHub
 3. Identify the "Breaking changes" section
@@ -170,6 +177,7 @@ For each major version bump:
 ### Dependabot Group Awareness
 
 The repo declares three groups in `.github/dependabot.yml`:
+
 - `ajv` → `ajv`, `ajv-formats`, `ajv-cli`
 - `storybook` → `@storybook/*`, `storybook`
 - `astro-docs` → `astro`, `@astrojs/*`

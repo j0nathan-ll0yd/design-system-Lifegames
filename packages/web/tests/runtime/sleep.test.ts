@@ -123,15 +123,15 @@ describe('computeSleepPercentages', () => {
   it('typical night sleep proportions', () => {
     // REM ~25%, deep ~15%, core ~60%
     const phases: SleepPhases = {
-      rem: 1800,   // 30m
-      deep: 1200,  // 20m
-      core: 4800,  // 80m
+      rem: 1800, // 30m
+      deep: 1200, // 20m
+      core: 4800, // 80m
       awake: 600,
     };
     const total = 1800 + 1200 + 4800;
     const result = computeSleepPercentages(phases);
-    expect(result.remPct).toBe(Math.round(1800 / total * 100));
-    expect(result.deepPct).toBe(Math.round(1200 / total * 100));
-    expect(result.corePct).toBe(Math.round(4800 / total * 100));
+    expect(result.remPct).toBe(Math.round((1800 / total) * 100));
+    expect(result.deepPct).toBe(Math.round((1200 / total) * 100));
+    expect(result.corePct).toBe(Math.round((4800 / total) * 100));
   });
 });

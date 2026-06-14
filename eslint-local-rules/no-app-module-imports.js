@@ -85,11 +85,7 @@ module.exports = {
           });
         }
         // Module-scope fetch(...) — only flag when not nested inside a function.
-        if (
-          node.callee &&
-          node.callee.type === 'Identifier' &&
-          node.callee.name === 'fetch'
-        ) {
+        if (node.callee && node.callee.type === 'Identifier' && node.callee.name === 'fetch') {
           let ancestor = node.parent;
           let insideFunction = false;
           while (ancestor) {

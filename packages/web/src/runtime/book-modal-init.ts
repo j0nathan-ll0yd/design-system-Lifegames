@@ -43,10 +43,12 @@ function normalizeGenres(g: BookData['genres']): string[] {
   const items = Array.isArray(g) ? g : typeof g === 'string' ? [g] : [];
   const result: string[] = [];
   for (const s of items) {
-    String(s).split(',').forEach((part) => {
-      const t = part.trim();
-      if (t.length > 0) result.push(t);
-    });
+    String(s)
+      .split(',')
+      .forEach((part) => {
+        const t = part.trim();
+        if (t.length > 0) result.push(t);
+      });
   }
   return result;
 }
@@ -82,7 +84,10 @@ function renderModalHtml(b: BookData): string {
     html += '</div>';
   }
   html += '</div>';
-  html += '<button class="book-modal-close" id="bookModalClose" aria-label="' + a11y.modal.close + '">&times;</button>';
+  html +=
+    '<button class="book-modal-close" id="bookModalClose" aria-label="' +
+    a11y.modal.close +
+    '">&times;</button>';
   html += '</div>';
   html += '<div class="book-modal-body">';
   html += '<div class="book-modal-stats">';

@@ -41,319 +41,326 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
 ---
 
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lifegames Design System</title>
-  <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <style is:global>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg, #06060f);
-      color: var(--text, #e4e4e7);
-      font-family: var(--font-family, 'Space Grotesk', sans-serif);
-      min-height: 100vh;
-    }
-    .showcase-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 50;
-      background: rgba(6, 6, 15, 0.95);
-      backdrop-filter: blur(var(--blur-md));
-      border-bottom: 1px solid var(--card-border);
-      padding: var(--space-8) var(--space-20);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-12);
-      font-size: var(--font-size-xs);
-      color: var(--text-muted);
-      letter-spacing: 1px;
-    }
-    .showcase-banner a {
-      color: var(--neon-green);
-      text-decoration: none;
-    }
-    .showcase-banner a:hover {
-      text-decoration: underline;
-    }
-    .showcase-wrapper {
-      padding-top: 36px;
-    }
-    .dev-only-widgets {
-      display: none;
-      margin-top: var(--space-12);
-    }
-    .dev-only-widgets.visible {
-      display: block;
-    }
-    .dev-badge {
-      display: inline-block;
-      font-size: var(--font-size-xs);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--neon-amber);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      background: rgba(245, 158, 11, 0.08);
-      padding: var(--space-2) var(--space-8);
-      border-radius: var(--radius-sm);
-      margin-bottom: var(--space-8);
-    }
-    .poll-status {
-      display: flex;
-      align-items: center;
-      gap: var(--space-6);
-      font-size: var(--font-size-xs);
-      color: var(--text-muted);
-    }
-    .poll-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--neon-green);
-    }
-    /* Ensure left-panel [data-widget-preview] wrappers provide width
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lifegames Design System</title>
+    <link
+      rel="preload"
+      href="/fonts/space-grotesk-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg, #06060f);
+        color: var(--text, #e4e4e7);
+        font-family: var(--font-family, 'Space Grotesk', sans-serif);
+        min-height: 100vh;
+      }
+      .showcase-banner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        background: rgba(6, 6, 15, 0.95);
+        backdrop-filter: blur(var(--blur-md));
+        border-bottom: 1px solid var(--card-border);
+        padding: var(--space-8) var(--space-20);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-12);
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        letter-spacing: 1px;
+      }
+      .showcase-banner a {
+        color: var(--neon-green);
+        text-decoration: none;
+      }
+      .showcase-banner a:hover {
+        text-decoration: underline;
+      }
+      .showcase-wrapper {
+        padding-top: 36px;
+      }
+      .dev-only-widgets {
+        display: none;
+        margin-top: var(--space-12);
+      }
+      .dev-only-widgets.visible {
+        display: block;
+      }
+      .dev-badge {
+        display: inline-block;
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--neon-amber);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        background: rgba(245, 158, 11, 0.08);
+        padding: var(--space-2) var(--space-8);
+        border-radius: var(--radius-sm);
+        margin-bottom: var(--space-8);
+      }
+      .poll-status {
+        display: flex;
+        align-items: center;
+        gap: var(--space-6);
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+      }
+      .poll-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--neon-green);
+      }
+      /* Ensure left-panel [data-widget-preview] wrappers provide width
        context so children with container-type:inline-size (e.g. .tri-card)
        don't collapse to 0px. */
-    .left-panel > [data-widget-preview] {
-      width: 100%;
-      max-width: 380px;
-    }
-    #particle-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      will-change: transform;
-    }
-    .showcase-banner,
-    .showcase-wrapper {
-      position: relative;
-      z-index: 1;
-    }
-  </style>
-</head>
-<body>
-  <canvas id="particle-canvas" aria-hidden="true"></canvas>
-  <div class="showcase-banner">
-    <span>Production mirror of jonathanlloyd.me — 15 widgets (13 shipped + 2 dev-only) in their production layout</span>
-    <a href="/alternates/">View all widget variants →</a>
-  </div>
-
-  <div class="showcase-wrapper">
-    <div class="command-layout">
-
-      <aside class="left-panel" aria-label="Profile">
-        <div data-widget-preview>
-          <IdentityCard {...identityFixture} />
-        </div>
-        <BioTerminalIsland fixture={bioFixture} />
-        <div data-widget-preview>
-          <SystemStatus {...systemFixture} />
-        </div>
-      </aside>
-
-      <header class="top-bar">
-        <div class="top-bar-title">Human Datastream</div>
-        <span class="poll-status">
-          <span class="poll-dot"></span>
-          <span class="poll-label">Fixture data</span>
-        </span>
-        <div class="top-bar-clock" id="liveClock" aria-live="off" aria-label="Current time"></div>
-      </header>
-
-      <main id="main-content" class="right-panel">
-        <div class="triptych-grid" id="triptychGrid">
-
-          <section class="triptych-column triptych-column-body" aria-label="Body">
-            <h2 class="column-header column-header-pink">Body</h2>
-            <HeartRateIsland fixture={heartRateFixture} />
-            <div data-widget-preview>
-              <Workouts {...workoutsFixture} />
-            </div>
-            <HydrationIsland fixture={hydrationFixture} />
-            <div data-widget-preview>
-              <NightSummary {...nightSummaryFixture} />
-            </div>
-            <div class="dev-only-widgets" id="devOnlyWidgets">
-              <span class="dev-badge">Dev Only</span>
-              <div data-widget-preview>
-                <PlaceLeaderboardV3 {...placeLeaderboardFixture} />
-              </div>
-              <div data-widget-preview style="margin-top: var(--space-12);">
-                <ExplorationOdometerV3 {...explorationOdometerFixture} />
-              </div>
-            </div>
-          </section>
-
-          <section class="triptych-column triptych-column-mind" aria-label="Mind">
-            <h2 class="column-header column-header-green">Mind</h2>
-            <div data-widget-preview>
-              <DevActivityLog {...devActivityFixture} />
-            </div>
-            <div data-widget-preview>
-              <ReadingFeed {...readingFixture} />
-            </div>
-            <div data-widget-preview>
-              <StarredRepoList {...starredRepoFixture} />
-            </div>
-            <BookshelfIsland fixture={bookshelfFixture} />
-            <TheatreReviewsIsland fixture={theatreFixture} />
-          </section>
-
-        </div>
-      </main>
-
+      .left-panel > [data-widget-preview] {
+        width: 100%;
+        max-width: 380px;
+      }
+      #particle-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        will-change: transform;
+      }
+      .showcase-banner,
+      .showcase-wrapper {
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <div class="showcase-banner">
+      <span
+        >Production mirror of jonathanlloyd.me — 15 widgets (13 shipped + 2 dev-only) in their
+        production layout</span
+      >
+      <a href="/alternates/">View all widget variants →</a>
     </div>
-  </div>
 
-  <BookModal />
+    <div class="showcase-wrapper">
+      <div class="command-layout">
+        <aside class="left-panel" aria-label="Profile">
+          <div data-widget-preview>
+            <IdentityCard {...identityFixture} />
+          </div>
+          <BioTerminalIsland fixture={bioFixture} />
+          <div data-widget-preview>
+            <SystemStatus {...systemFixture} />
+          </div>
+        </aside>
 
-  <script is:inline>
-    /* Prevent BioTerminal double-typewriter: the widget's own is:inline script
+        <header class="top-bar">
+          <div class="top-bar-title">Human Datastream</div>
+          <span class="poll-status">
+            <span class="poll-dot"></span>
+            <span class="poll-label">Fixture data</span>
+          </span>
+          <div class="top-bar-clock" id="liveClock" aria-live="off" aria-label="Current time"></div>
+        </header>
+
+        <main id="main-content" class="right-panel">
+          <div class="triptych-grid" id="triptychGrid">
+            <section class="triptych-column triptych-column-body" aria-label="Body">
+              <h2 class="column-header column-header-pink">Body</h2>
+              <HeartRateIsland fixture={heartRateFixture} />
+              <div data-widget-preview>
+                <Workouts {...workoutsFixture} />
+              </div>
+              <HydrationIsland fixture={hydrationFixture} />
+              <div data-widget-preview>
+                <NightSummary {...nightSummaryFixture} />
+              </div>
+              <div class="dev-only-widgets" id="devOnlyWidgets">
+                <span class="dev-badge">Dev Only</span>
+                <div data-widget-preview>
+                  <PlaceLeaderboardV3 {...placeLeaderboardFixture} />
+                </div>
+                <div data-widget-preview style="margin-top: var(--space-12);">
+                  <ExplorationOdometerV3 {...explorationOdometerFixture} />
+                </div>
+              </div>
+            </section>
+
+            <section class="triptych-column triptych-column-mind" aria-label="Mind">
+              <h2 class="column-header column-header-green">Mind</h2>
+              <div data-widget-preview>
+                <DevActivityLog {...devActivityFixture} />
+              </div>
+              <div data-widget-preview>
+                <ReadingFeed {...readingFixture} />
+              </div>
+              <div data-widget-preview>
+                <StarredRepoList {...starredRepoFixture} />
+              </div>
+              <BookshelfIsland fixture={bookshelfFixture} />
+              <TheatreReviewsIsland fixture={theatreFixture} />
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <BookModal />
+
+    <script is:inline>
+      /* Prevent BioTerminal double-typewriter: the widget's own is:inline script
        handles the typewriter on initial render. The island wrapper's bundled
        script would also run initBioTerminal via IntersectionObserver, causing
        doubled characters. Strip the data-fixture attribute so the island
        script's querySelector('[data-widget-preview][data-fixture]') skips it. */
-    (function() {
-      var bioWrapper = document.getElementById('cardBio');
-      if (bioWrapper) {
-        var parent = bioWrapper.parentElement;
-        if (parent && parent.hasAttribute('data-fixture')) {
-          parent.removeAttribute('data-fixture');
+      (function () {
+        var bioWrapper = document.getElementById('cardBio');
+        if (bioWrapper) {
+          var parent = bioWrapper.parentElement;
+          if (parent && parent.hasAttribute('data-fixture')) {
+            parent.removeAttribute('data-fixture');
+          }
         }
-      }
-    })();
-  </script>
+      })();
+    </script>
 
-  <script is:inline>
-    /* Dev-only widgets toggle via ?dev=1 */
-    (function() {
-      var params = new URLSearchParams(window.location.search);
-      if (params.get('dev') === '1') {
-        var el = document.getElementById('devOnlyWidgets');
-        if (el) el.className = el.className + ' visible';
-      }
-    })();
-  </script>
+    <script is:inline>
+      /* Dev-only widgets toggle via ?dev=1 */
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('dev') === '1') {
+          var el = document.getElementById('devOnlyWidgets');
+          if (el) el.className = el.className + ' visible';
+        }
+      })();
+    </script>
 
-  <script is:inline>
-    /* Live clock */
-    (function() {
-      var clock = document.getElementById('liveClock');
-      if (!clock) return;
-      function tick() {
-        var now = new Date();
-        var h = now.getHours();
-        var m = now.getMinutes();
-        var s = now.getSeconds();
-        var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
-        clock.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
-      }
-      tick();
-      setInterval(tick, 1000);
-    })();
-  </script>
+    <script is:inline>
+      /* Live clock */
+      (function () {
+        var clock = document.getElementById('liveClock');
+        if (!clock) return;
+        function tick() {
+          var now = new Date();
+          var h = now.getHours();
+          var m = now.getMinutes();
+          var s = now.getSeconds();
+          var pad = function (n) {
+            return n < 10 ? '0' + n : '' + n;
+          };
+          clock.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+        }
+        tick();
+        setInterval(tick, 1000);
+      })();
+    </script>
 
-  <script>
-    /* Particle effect — matches production site */
-    window.addEventListener('load', function() {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      import('@runtime/particles').then(function(m) { m.startParticles(); });
-    });
-  </script>
+    <script>
+      /* Particle effect — matches production site */
+      window.addEventListener('load', function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        import('@runtime/particles').then(function (m) {
+          m.startParticles();
+        });
+      });
+    </script>
 
-  <script>
-    /* Reading Feed pagination — production-mirror behavior */
-    import { initReadingFeedPagination } from '@runtime/reading-feed-init';
-    initReadingFeedPagination('#cardReading');
-  </script>
+    <script>
+      /* Reading Feed pagination — production-mirror behavior */
+      import { initReadingFeedPagination } from '@runtime/reading-feed-init';
+      initReadingFeedPagination('#cardReading');
+    </script>
 
-  <script is:inline>
-    /* Staggered card reveal — also adds .visible to inner widget elements
+    <script is:inline>
+      /* Staggered card reveal — also adds .visible to inner widget elements
        whose production CSS defaults to opacity:0 until a client updater
        adds the class. In the showcase we SSR with fixture data so the
        populated state is already rendered; we just need to flip visibility. */
-    (function() {
-      var cards = document.querySelectorAll('[data-widget-preview]');
-      var leftCards = [];
-      var rightCards = [];
-      var leftPanel = document.querySelector('.left-panel');
-      for (var i = 0; i < cards.length; i++) {
-        var card = cards[i];
-        if (leftPanel && leftPanel.contains(card)) {
-          leftCards.push(card);
-        } else {
-          rightCards.push(card);
+      (function () {
+        var cards = document.querySelectorAll('[data-widget-preview]');
+        var leftCards = [];
+        var rightCards = [];
+        var leftPanel = document.querySelector('.left-panel');
+        for (var i = 0; i < cards.length; i++) {
+          var card = cards[i];
+          if (leftPanel && leftPanel.contains(card)) {
+            leftCards.push(card);
+          } else {
+            rightCards.push(card);
+          }
         }
-      }
-      var allCards = leftCards.concat(rightCards);
-      for (var j = 0; j < allCards.length; j++) {
-        allCards[j].style.opacity = '0';
-        allCards[j].style.transform = 'translateY(12px)';
-        allCards[j].style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      }
+        var allCards = leftCards.concat(rightCards);
+        for (var j = 0; j < allCards.length; j++) {
+          allCards[j].style.opacity = '0';
+          allCards[j].style.transform = 'translateY(12px)';
+          allCards[j].style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        }
 
-      /* Helper: when a wrapper reveals, also mark inner widget elements
+        /* Helper: when a wrapper reveals, also mark inner widget elements
          as .visible so their production CSS transitions activate. */
-      function revealInner(wrapper) {
-        var selectors = [
-          '.tri-card', '.identity-card',
-          '.left-panel-bio', '.left-panel-status'
-        ];
-        for (var s = 0; s < selectors.length; s++) {
-          var inner = wrapper.querySelectorAll(selectors[s]);
-          for (var n = 0; n < inner.length; n++) {
-            inner[n].classList.add('visible');
+        function revealInner(wrapper) {
+          var selectors = ['.tri-card', '.identity-card', '.left-panel-bio', '.left-panel-status'];
+          for (var s = 0; s < selectors.length; s++) {
+            var inner = wrapper.querySelectorAll(selectors[s]);
+            for (var n = 0; n < inner.length; n++) {
+              inner[n].classList.add('visible');
+            }
+          }
+          /* Issue 1: Workouts widget has hardcoded display:none — strip it */
+          var workouts = wrapper.querySelector('#cardWorkouts');
+          if (workouts) {
+            workouts.style.display = '';
+          }
+          /* Issue 2: Hydration skeleton — remove is-loading so active state shows */
+          var hydration = wrapper.querySelector('.tri-card.is-loading');
+          if (hydration) {
+            hydration.classList.remove('is-loading');
           }
         }
-        /* Issue 1: Workouts widget has hardcoded display:none — strip it */
-        var workouts = wrapper.querySelector('#cardWorkouts');
-        if (workouts) {
-          workouts.style.display = '';
-        }
-        /* Issue 2: Hydration skeleton — remove is-loading so active state shows */
-        var hydration = wrapper.querySelector('.tri-card.is-loading');
-        if (hydration) {
-          hydration.classList.remove('is-loading');
-        }
-      }
 
-      var leftDelays = [100, 250, 550];
-      for (var k = 0; k < leftCards.length; k++) {
-        (function(el, delay) {
-          setTimeout(function() {
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
-            revealInner(el);
-          }, delay);
-        })(leftCards[k], leftDelays[k] || 550);
-      }
-      for (var r = 0; r < rightCards.length; r++) {
-        (function(el, delay) {
-          setTimeout(function() {
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
-            revealInner(el);
-          }, delay);
-        })(rightCards[r], 400 + (r * 100));
-      }
+        var leftDelays = [100, 250, 550];
+        for (var k = 0; k < leftCards.length; k++) {
+          (function (el, delay) {
+            setTimeout(function () {
+              el.style.opacity = '1';
+              el.style.transform = 'translateY(0)';
+              revealInner(el);
+            }, delay);
+          })(leftCards[k], leftDelays[k] || 550);
+        }
+        for (var r = 0; r < rightCards.length; r++) {
+          (function (el, delay) {
+            setTimeout(function () {
+              el.style.opacity = '1';
+              el.style.transform = 'translateY(0)';
+              revealInner(el);
+            }, delay);
+          })(rightCards[r], 400 + r * 100);
+        }
 
-      /* Left-panel direct children also need .visible even if they are
+        /* Left-panel direct children also need .visible even if they are
          not wrapped in [data-widget-preview] (e.g. SystemStatus wrapper). */
-      if (leftPanel) {
-        setTimeout(function() {
-          var vis = leftPanel.querySelectorAll(
-            '.identity-card, .left-panel-bio, .left-panel-status'
-          );
-          for (var v = 0; v < vis.length; v++) {
-            vis[v].classList.add('visible');
-          }
-        }, 600);
-      }
-    })();
-  </script>
-</body>
+        if (leftPanel) {
+          setTimeout(function () {
+            var vis = leftPanel.querySelectorAll(
+              '.identity-card, .left-panel-bio, .left-panel-status',
+            );
+            for (var v = 0; v < vis.length; v++) {
+              vis[v].classList.add('visible');
+            }
+          }, 600);
+        }
+      })();
+    </script>
+  </body>
 </html>

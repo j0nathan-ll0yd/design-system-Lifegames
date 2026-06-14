@@ -14,7 +14,12 @@ function renderFeed(articles: typeof defaultArticles) {
     return html`
       <div id="cardReadingFeed" class="tri-card">
         <div class="widget-header"><span class="widget-label">Reading Feed</span></div>
-        <div class="widget-body" style="padding: 16px; color: var(--lg-color-text-muted); text-align: center;">No recent articles</div>
+        <div
+          class="widget-body"
+          style="padding: 16px; color: var(--lg-color-text-muted); text-align: center;"
+        >
+          No recent articles
+        </div>
       </div>
     `;
   }
@@ -22,12 +27,16 @@ function renderFeed(articles: typeof defaultArticles) {
     <div id="cardReadingFeed" class="tri-card">
       <div class="widget-header"><span class="widget-label">Reading Feed</span></div>
       <div class="widget-body" style="padding: 8px 16px; color: var(--lg-color-text-primary);">
-        ${articles.map((a) => html`
-          <div style="padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);">
-            <div style="font-size: 0.9em;">${a.title}</div>
-            <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">${a.source} · ${a.date}</div>
-          </div>
-        `)}
+        ${articles.map(
+          (a) => html`
+            <div style="padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);">
+              <div style="font-size: 0.9em;">${a.title}</div>
+              <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">
+                ${a.source} · ${a.date}
+              </div>
+            </div>
+          `,
+        )}
       </div>
     </div>
   `;
@@ -51,7 +60,7 @@ export const Dark: Story = {
   ...Default,
   globals: {
     backgrounds: {
-      value: "dark"
-    }
+      value: 'dark',
+    },
   },
 };

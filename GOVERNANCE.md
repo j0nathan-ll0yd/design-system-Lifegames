@@ -6,7 +6,7 @@
 
 ## 1. Purpose & Scope
 
-Constitution for `design-system-Lifegames`. Defines what belongs in the DS versus consuming applications across both platforms (read-only Astro web dashboard; interactive iOS/watchOS app). Establishes eight numbered principles (P1–P8), a 3-question intake triage, an enforcement map, versioning policy, and an ADR convention. Governance model: **BDFL** — maintainer is sole decision-maker, process is minimum viable overhead consistent with correctness. *(EightShapes "Solitary"; Open Source Guides BDFL.)*
+Constitution for `design-system-Lifegames`. Defines what belongs in the DS versus consuming applications across both platforms (read-only Astro web dashboard; interactive iOS/watchOS app). Establishes eight numbered principles (P1–P8), a 3-question intake triage, an enforcement map, versioning policy, and an ADR convention. Governance model: **BDFL** — maintainer is sole decision-maker, process is minimum viable overhead consistent with correctness. _(EightShapes "Solitary"; Open Source Guides BDFL.)_
 
 ---
 
@@ -14,11 +14,11 @@ Constitution for `design-system-Lifegames`. Defines what belongs in the DS versu
 
 **Apparent inconsistency:** iOS operated on a "primitives only" rule, yet the DS ships ~55 pre-composed Astro widgets for web — a seeming double standard.
 
-**Resolution:** Every major cross-platform DS (Polaris, Material 3, Spotify Encore, Airbnb DLS, Fluent 2) shares *design tokens* as the single source of truth and *reimplements component code natively per platform*. Shared code is never the contract; spec/token parity is. Astro + SwiftUI widgets coexisting is correct, not duplication.
+**Resolution:** Every major cross-platform DS (Polaris, Material 3, Spotify Encore, Airbnb DLS, Fluent 2) shares _design tokens_ as the single source of truth and _reimplements component code natively per platform_. Shared code is never the contract; spec/token parity is. Astro + SwiftUI widgets coexisting is correct, not duplication.
 
 **The two genuine inconsistencies to remediate:**
 
-1. **iOS consumption is non-uniform.** The iOS app *consumes* DS Health widgets in a real product surface (`HealthFeatureView.swift` imports `LifegamesWidgets`, renders `HeartRateView`, `MovementRingsView`, `NightSummaryView`) but *duplicates* DS Location widgets locally (`TopPlacesCard.swift`, `HeatMapCard.swift`). Needs resolution per-widget.
+1. **iOS consumption is non-uniform.** The iOS app _consumes_ DS Health widgets in a real product surface (`HealthFeatureView.swift` imports `LifegamesWidgets`, renders `HeartRateView`, `MovementRingsView`, `NightSummaryView`) but _duplicates_ DS Location widgets locally (`TopPlacesCard.swift`, `HeatMapCard.swift`). Needs resolution per-widget.
 
 2. **Speculative promotion confirmed by census.** An empirical census (2026-05-29) found 0 of ~110 widgets meet a strict "≥2 shipping product surfaces" bar: the web dashboard is single-page (every web widget has exactly 1 consumer route); on iOS only the 3 Health widgets have even 1 product-surface consumer. Only ~16 web + 3 Swift widgets have any product-surface consumer at all. The remaining bulk is in **demote-or-justify** status. The maintainer's response is the **relaxed P4 rule** (≥1 surface now + credible 2nd surface planned), detailed below.
 
@@ -32,17 +32,17 @@ Source of truth: `tokens/*.tokens.json` (W3C DTCG) → Style Dictionary → `pac
 
 **Three-tier token model:**
 
-| Tier | Name | Example | Rule |
-|---|---|---|---|
-| 1 | **Primitive** | `color.neon.pink = #ff006e` | Raw values. Not consumed directly by components. |
-| 2 | **Semantic** | `color.accent.primary`, `color.surface.card` | Role-named; references primitives. **This tier is the cross-platform contract.** |
-| 3 | **Component** | `tri-card.border.color` | Component-scoped; references semantic tokens. |
+| Tier | Name          | Example                                      | Rule                                                                             |
+| ---- | ------------- | -------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1    | **Primitive** | `color.neon.pink = #ff006e`                  | Raw values. Not consumed directly by components.                                 |
+| 2    | **Semantic**  | `color.accent.primary`, `color.surface.card` | Role-named; references primitives. **This tier is the cross-platform contract.** |
+| 3    | **Component** | `tri-card.border.color`                      | Component-scoped; references semantic tokens.                                    |
 
 Semantic token names and roles must be identical across web and iOS. Values may differ intentionally per platform, but any divergence requires a divergence ADR (§7, P2). Component code references semantic or component tokens only — never Tier-1 primitives or raw hex. Neon colors must resolve to identical hex values on both platforms.
 
 **Enforcement:** `eslint-local-rules/no-deprecated-tokens.js` (existing); W2 token-only CSS; Swift `LifegamesTokens` constants rule; extend `scripts/validate-dtcg.mjs` to flag Tier-1 direct references in component code; **NEW** `scripts/check-token-parity.mjs` (diffs web dist vs Swift values at the semantic tier) → `pnpm test` / CI.
 
-*(Cite: Polaris / Material 3 / Spotify Encore / Airbnb DLS / Fluent 2 universal token model; W3C DTCG primitive → semantic → component tiering.)*
+_(Cite: Polaris / Material 3 / Spotify Encore / Airbnb DLS / Fluent 2 universal token model; W3C DTCG primitive → semantic → component tiering.)_
 
 ---
 
@@ -54,7 +54,7 @@ Currently **agent-review** (not CI) because `production-widgets.json` is incompl
 
 **Enforcement:** Agent-review checklist (spec parity); mandatory divergence ADR in `docs/adr/`; upgrade to `scripts/widget-compliance.mjs` after R7.
 
-*(Cite: dbanks.design — divergence must be intentional, not drift; Spotify Encore cross-platform spec parity; Airbnb DLS native reimplementation.)*
+_(Cite: dbanks.design — divergence must be intentional, not drift; Spotify Encore cross-platform spec parity; Airbnb DLS native reimplementation.)_
 
 ---
 
@@ -64,7 +64,7 @@ A DS component must satisfy all of the following: no data fetching; no app/domai
 
 **Enforcement:** **NEW** `eslint-local-rules/no-app-module-imports.js` (web — bans data-fetch and app module imports); **NEW** `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for forbidden imports: `TCA`, `HealthKit`, `APIClient`, `SharedModels`, `CoreLocation`). Judgment residue (local vs domain state) → agent-review checklist.
 
-*(Cite: Abramov/Taivara presentational/container pattern; Martin Fowler headless component; TCA View/Reducer split; Ousterhout deep modules.)*
+_(Cite: Abramov/Taivara presentational/container pattern; Martin Fowler headless component; TCA View/Reducer split; Ousterhout deep modules.)_
 
 ---
 
@@ -97,7 +97,7 @@ the P3 presentational-purity boundary. Rules:
 flat round-trip); the `copy` CI job (build + test + lint); and the freshness git-diff over
 `packages/copy/dist` + `Sources/LifegamesCopy` in `packages/schemas/scripts/check-freshness.sh`.
 
-*(Cite: single-source-of-truth content modeling; ICU MessageFormat; Ousterhout deep modules — a simple `copy.person.shortBio` interface over a rich authoring/codegen implementation.)*
+_(Cite: single-source-of-truth content modeling; ICU MessageFormat; Ousterhout deep modules — a simple `copy.person.shortBio` interface over a rich authoring/codegen implementation.)_
 
 ---
 
@@ -109,6 +109,7 @@ A component earns DS placement when it is presentational (P3) **and**:
 2. **A credible second surface is planned or identified** — a watch target that will actually render the widget, a WidgetKit extension in development, or a second deployed web route/page.
 
 **"Product surface" definition:**
+
 - **Web:** a deployed Astro page, route, or layout slot in the consumer site.
 - **Swift:** the iOS app target, a real WidgetKit extension, or a watch target that actually depends on `LifegamesWidgets` and renders the widget in a shipping surface.
 
@@ -120,7 +121,7 @@ A component earns DS placement when it is presentational (P3) **and**:
 
 **Enforcement:** **NEW** `scripts/check-promotion.mjs --check` — reports incubating widgets as INFO (not violations); 1-surface + `plannedSurface` surfaces as advisory. Requires `consumers: []` and `plannedSurface` fields (R6) and complete registry (R7). Showcase/stub importers excluded by name-allowlist.
 
-*(Cite: Nathan Curtis EightShapes "I Made This. Does It Go in the System?" — 1=no, 2=discuss, 5+=probably belongs; Rule of Three; Sandi Metz — duplication cheaper than wrong abstraction; Kent Dodds AHA; Oz Nova "You Are Not Google" — scale abstraction to actual need.)*
+_(Cite: Nathan Curtis EightShapes "I Made This. Does It Go in the System?" — 1=no, 2=discuss, 5+=probably belongs; Rule of Three; Sandi Metz — duplication cheaper than wrong abstraction; Kent Dodds AHA; Oz Nova "You Are Not Google" — scale abstraction to actual need.)_
 
 ---
 
@@ -135,7 +136,7 @@ This asymmetry follows from the nature of each surface, not inconsistent rules. 
 
 **Enforcement:** Agent-review checklist + §7 ADR for intentional surface divergence. Partially covered mechanically by P3 + P4.
 
-*(Cite: dbanks.design — same intent, different implementation; Tremor/shadcn/Observable Plot for display surfaces; Atlassian/Radix primitives for control-plane surfaces.)*
+_(Cite: dbanks.design — same intent, different implementation; Tremor/shadcn/Observable Plot for display surfaces; Atlassian/Radix primitives for control-plane surfaces.)_
 
 ---
 
@@ -147,7 +148,7 @@ This asymmetry follows from the nature of each surface, not inconsistent rules. 
 
 **Enforcement:** Agent-review checklist; ADR required if an organism is promoted without the pattern-first stage.
 
-*(Cite: Brad Frost atomic design — organisms are contested; Polaris patterns-first; Kent Dodds AHA; last responsible moment.)*
+_(Cite: Brad Frost atomic design — organisms are contested; Polaris patterns-first; Kent Dodds AHA; last responsible moment.)_
 
 ---
 
@@ -155,12 +156,12 @@ This asymmetry follows from the nature of each surface, not inconsistent rules. 
 
 Every promoted component carries a `status` field in its registry entry:
 
-| Status | Meaning | Gate |
-|---|---|---|
-| `Experimental` | Interface may change; no stability promise. | P4 bar met (≥1 surface + credible 2nd planned). |
-| `Beta` | Stable enough for adoption; minor API changes possible. | Interface settling; still <2 real product surfaces. |
-| `Stable` | Breaking changes require semver major. | **≥2 real shipping product surfaces** on the same platform. |
-| `Deprecated` | Scheduled for removal; consumers must migrate. | Names replacement or "no replacement" explicitly. |
+| Status         | Meaning                                                 | Gate                                                        |
+| -------------- | ------------------------------------------------------- | ----------------------------------------------------------- |
+| `Experimental` | Interface may change; no stability promise.             | P4 bar met (≥1 surface + credible 2nd planned).             |
+| `Beta`         | Stable enough for adoption; minor API changes possible. | Interface settling; still <2 real product surfaces.         |
+| `Stable`       | Breaking changes require semver major.                  | **≥2 real shipping product surfaces** on the same platform. |
+| `Deprecated`   | Scheduled for removal; consumers must migrate.          | Names replacement or "no replacement" explicitly.           |
 
 Components may regress (Stable → Beta → Deprecated). The **Stable gate is ≥2 real product surfaces** — the original strict P4 bar, repurposed as the stability threshold.
 
@@ -168,7 +169,7 @@ Components may regress (Stable → Beta → Deprecated). The **Stable gate is �
 
 Formal deprecation annotation, survival period, migration alias requirements, tooling, and quarterly audit process are documented in [`DEPRECATION.md`](DEPRECATION.md).
 
-*(Cite: USWDS lifecycle labels; Primer design system status model; VA.gov Experimental → Beta → Stable → Deprecated — components may regress.)*
+_(Cite: USWDS lifecycle labels; Primer design system status model; VA.gov Experimental → Beta → Stable → Deprecated — components may regress.)_
 
 ---
 
@@ -180,7 +181,7 @@ Changesets are used for actual releases and published-package version bumps only
 
 **Enforcement:** Advisory. Changesets configured (`.changeset/config.json`). `changeset status` runs as non-blocking advisory in CI publish step only. `scripts/widget-inventory.mjs --check` surfaces per-platform count against the ~20–40 soft cap.
 
-*(Cite: EightShapes "Solitary" team model; Open Source Guides BDFL; Practical Design Systems — last responsible moment; "design system as a product" — semver as a promise to consumers.)*
+_(Cite: EightShapes "Solitary" team model; Open Source Guides BDFL; Practical Design Systems — last responsible moment; "design system as a product" — semver as a promise to consumers.)_
 
 ---
 
@@ -230,18 +231,19 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 
 ## 5. Enforcement Map
 
-| Principle | Tier | Mechanism | Hook |
-|---|---|---|---|
-| **P1** Tokens tiered / no raw hex | Lint (existing) + Script (NEW) | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); **NEW** `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff) | `check-token-parity` → CI; `validate-dtcg` → `pnpm test` |
-| **P2** Native reimpl / spec parity / divergence | Agent-review → script after R7 | Parity script deferred: registry 15/~55 — false greens if run now. Divergence traced via mandatory ADR in `docs/adr/`. Upgrade to `scripts/widget-compliance.mjs` after R7. | ADR presence → agent-review |
-| **P3** Presentational purity | Lint + Agent-review | **NEW** `eslint-local-rules/no-app-module-imports.js` (web); **NEW** `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation). Local-vs-domain-state judgment → agent-review. | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI |
-| **P4** 1-surface-now + credible-2nd test | Script (NEW) | **NEW** `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Requires `consumers: []` + `plannedSurface` fields (R6) + complete registry (R7). Showcase/stub excluded by name-allowlist. | CI (advisory; blocking only on structural errors after R6+R7) |
-| **P5** Surface-differentiated consumption | Agent-review + doc | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence. | Agent-review checklist |
-| **P6** Organism pattern-first | Agent-review + doc | Judgment. ADR required if organism promoted without pattern-first stage. | Agent-review checklist |
-| **P7** Lifecycle labels | Script (existing, extended) | Extend `scripts/widget-inventory.mjs --check`: fail on missing `status`; advisory when `Stable` but <2 consumers in registry. Depends on R7. | CI (blocking after R7) |
-| **P8** Governance stack | Advisory | Changesets configured (`.changeset/config.json`). `changeset status` → non-blocking CI advisory on publish only. `widget-inventory --check` surfaces per-platform count vs ~20–40 cap. | CI advisory only |
+| Principle                                       | Tier                           | Mechanism                                                                                                                                                                                                                                                                                                                                 | Hook                                                                   |
+| ----------------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **P1** Tokens tiered / no raw hex               | Lint (existing) + Script (NEW) | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); **NEW** `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff)                                                                                                               | `check-token-parity` → CI; `validate-dtcg` → `pnpm test`               |
+| **P2** Native reimpl / spec parity / divergence | Agent-review → script after R7 | Parity script deferred: registry 15/~55 — false greens if run now. Divergence traced via mandatory ADR in `docs/adr/`. Upgrade to `scripts/widget-compliance.mjs` after R7.                                                                                                                                                               | ADR presence → agent-review                                            |
+| **P3** Presentational purity                    | Lint + Agent-review            | **NEW** `eslint-local-rules/no-app-module-imports.js` (web); **NEW** `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation). Local-vs-domain-state judgment → agent-review.                                                                          | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI |
+| **P4** 1-surface-now + credible-2nd test        | Script (NEW)                   | **NEW** `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Requires `consumers: []` + `plannedSurface` fields (R6) + complete registry (R7). Showcase/stub excluded by name-allowlist. | CI (advisory; blocking only on structural errors after R6+R7)          |
+| **P5** Surface-differentiated consumption       | Agent-review + doc             | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence.                                                                                                                                                                                                                                                  | Agent-review checklist                                                 |
+| **P6** Organism pattern-first                   | Agent-review + doc             | Judgment. ADR required if organism promoted without pattern-first stage.                                                                                                                                                                                                                                                                  | Agent-review checklist                                                 |
+| **P7** Lifecycle labels                         | Script (existing, extended)    | Extend `scripts/widget-inventory.mjs --check`: fail on missing `status`; advisory when `Stable` but <2 consumers in registry. Depends on R7.                                                                                                                                                                                              | CI (blocking after R7)                                                 |
+| **P8** Governance stack                         | Advisory                       | Changesets configured (`.changeset/config.json`). `changeset status` → non-blocking CI advisory on publish only. `widget-inventory --check` surfaces per-platform count vs ~20–40 cap.                                                                                                                                                    | CI advisory only                                                       |
 
 **Existing checks — mapped:**
+
 - `eslint-local-rules/no-deprecated-tokens.js` → P1
 - `eslint-local-rules/widget-props-extends-schema.js` → P3
 - `eslint-local-rules/copy-src-no-dependencies.js` → P3.1 (D9 copy leaf boundary)
@@ -253,12 +255,12 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 
 **New checks (implementation backlog R5):**
 
-| File | Principle | npm script | Hook |
-|---|---|---|---|
-| `scripts/check-token-parity.mjs` | P1 | `pnpm token:parity` | CI |
-| `eslint-local-rules/no-app-module-imports.js` | P3 | `pnpm lint` | pre-commit |
-| `scripts/check-swift-widget-purity.mjs` | P3 | `pnpm swift:purity` | CI |
-| `scripts/check-promotion.mjs` | P4 | `pnpm promotion:check` | CI |
+| File                                          | Principle | npm script             | Hook       |
+| --------------------------------------------- | --------- | ---------------------- | ---------- |
+| `scripts/check-token-parity.mjs`              | P1        | `pnpm token:parity`    | CI         |
+| `eslint-local-rules/no-app-module-imports.js` | P3        | `pnpm lint`            | pre-commit |
+| `scripts/check-swift-widget-purity.mjs`       | P3        | `pnpm swift:purity`    | CI         |
+| `scripts/check-promotion.mjs`                 | P4        | `pnpm promotion:check` | CI         |
 
 ---
 
@@ -291,9 +293,9 @@ The earlier `REMOTE_ENABLED`-gated workflows (`publish.yml`, `release.yml`, `dep
 
 The design system has two consumer surfaces with two distribution mechanisms. To keep them coherent, they share a single source of truth: the Git tag on this repository.
 
-| Consumer | Pins to | Source of truth | Reproducibility |
-|----------|---------|-----------------|-----------------|
-| Swift (iOS / watchOS) | DS Git tag or branch via SPM | Git tag on `design-system-Lifegames` | Full — SPM resolves to a commit SHA |
+| Consumer                      | Pins to                                        | Source of truth                                                                   | Reproducibility                                                                                |
+| ----------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Swift (iOS / watchOS)         | DS Git tag or branch via SPM                   | Git tag on `design-system-Lifegames`                                              | Full — SPM resolves to a commit SHA                                                            |
 | JS (web today; future others) | yalc-published artifact in consumer's `.yalc/` | `packages/tokens/package.json` `version` field at the time of `pnpm yalc:publish` | Partial — yalc copies a build artifact; the matching DS commit is not recorded in the consumer |
 
 **The contract:**

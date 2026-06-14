@@ -6,12 +6,8 @@ const { RuleTester } = require('eslint');
 const rule = require('../no-raw-hex-in-widgets');
 
 // Synthetic filename inside the rule's FILE_PATTERN scope.
-const widgetTsFile = path.join(
-  '/Users/x/proj/packages/web/src/widgets/foo/Foo.ts'
-);
-const widgetTsxFile = path.join(
-  '/Users/x/proj/packages/web/src/widgets/foo/Foo.tsx'
-);
+const widgetTsFile = path.join('/Users/x/proj/packages/web/src/widgets/foo/Foo.ts');
+const widgetTsxFile = path.join('/Users/x/proj/packages/web/src/widgets/foo/Foo.tsx');
 const outsideFile = '/tmp/elsewhere/Foo.ts';
 
 const tester = new RuleTester({

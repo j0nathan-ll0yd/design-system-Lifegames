@@ -4,6 +4,7 @@ import { widgets } from '@lifegames/copy';
 const { reading } = Astro.props;
 const articles = reading.articles;
 ---
+
 <div class="tri-card tri-card-accent-amber" id="cardReading">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.readingFeed.title}</h3>
@@ -14,13 +15,15 @@ const articles = reading.articles;
   </div>
   <div class="widget-body">
     <ul class="article-list">
-      {articles.map((a: any, i: number) => (
-        <li class="article-list-item" style={`animation-delay: ${i * 0.07}s`}>
-          <span class="article-list-title">{a.title}</span>
-          <span class="article-list-source">({a.source})</span>
-          <span class="article-list-date">{a.date}</span>
-        </li>
-      ))}
+      {
+        articles.map((a: any, i: number) => (
+          <li class="article-list-item" style={`animation-delay: ${i * 0.07}s`}>
+            <span class="article-list-title">{a.title}</span>
+            <span class="article-list-source">({a.source})</span>
+            <span class="article-list-date">{a.date}</span>
+          </li>
+        ))
+      }
     </ul>
   </div>
 </div>

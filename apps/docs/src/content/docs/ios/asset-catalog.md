@@ -33,12 +33,12 @@ pnpm build:tokens
 
 Asset catalog names use full kebab-case token paths:
 
-| Token path | Asset name | `LGColor` property |
-|---|---|---|
-| `color.accent.pink` | `color-accent-pink` | `LGColor.accentPink` |
-| `color.surface.base` | `color-surface-base` | `LGColor.surfaceBase` |
+| Token path                 | Asset name                 | `LGColor` property          |
+| -------------------------- | -------------------------- | --------------------------- |
+| `color.accent.pink`        | `color-accent-pink`        | `LGColor.accentPink`        |
+| `color.surface.base`       | `color-surface-base`       | `LGColor.surfaceBase`       |
 | `color.border.interactive` | `color-border-interactive` | `LGColor.borderInteractive` |
-| `card.background` | `card-background` | `LGColor.cardBackground` |
+| `card.background`          | `card-background`          | `LGColor.cardBackground`    |
 
 The `LGColor` enum drops the leading `color` path segment for brevity:
 `color.accent.pink` → `LGColor.accentPink`.

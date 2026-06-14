@@ -65,20 +65,31 @@ const WIDGET_VARIATION_SCENARIOS: Record<string, FixtureSet> = {
   'books-all-completed': { ...BASELINE, '/books.json': fixture('books', 'all-completed') },
   'books-no-covers': { ...BASELINE, '/books.json': fixture('books', 'no-covers') },
 
-  'github-commits-only': { ...BASELINE, '/github-events.json': fixture('github-events', 'commits-only') },
+  'github-commits-only': {
+    ...BASELINE,
+    '/github-events.json': fixture('github-events', 'commits-only'),
+  },
   'github-prs-only': { ...BASELINE, '/github-events.json': fixture('github-events', 'prs-only') },
 
   'workouts-multi': { ...BASELINE, '/workouts.json': fixture('workouts', 'multi-workout') },
   'workouts-barrys': { ...BASELINE, '/workouts.json': fixture('workouts', 'barrys-bootcamp') },
 
-  'theatre-all-grades': { ...BASELINE, '/theatre-reviews.json': fixture('theatre-reviews', 'all-grades') },
-  'theatre-no-images': { ...BASELINE, '/theatre-reviews.json': fixture('theatre-reviews', 'no-images') },
+  'theatre-all-grades': {
+    ...BASELINE,
+    '/theatre-reviews.json': fixture('theatre-reviews', 'all-grades'),
+  },
+  'theatre-no-images': {
+    ...BASELINE,
+    '/theatre-reviews.json': fixture('theatre-reviews', 'no-images'),
+  },
 
   'focus-work': { ...BASELINE, '/focus.json': fixture('focus', 'baseline') },
   'focus-dnd': { ...BASELINE, '/focus.json': fixture('focus', 'dnd') },
 };
 
-export type ScenarioName = keyof typeof DASHBOARD_SCENARIOS | keyof typeof WIDGET_VARIATION_SCENARIOS;
+export type ScenarioName =
+  | keyof typeof DASHBOARD_SCENARIOS
+  | keyof typeof WIDGET_VARIATION_SCENARIOS;
 
 export function getScenarioFixtures(scenario: ScenarioName): FixtureSet {
   if (scenario in DASHBOARD_SCENARIOS) {

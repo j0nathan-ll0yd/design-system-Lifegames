@@ -28,11 +28,11 @@ function ecgBeat(bpm: number, numSamples: number): number[] {
   // [amplitude, center, width] — kept in sync with generateECGSamples and the iOS
   // ECGBackgroundView: R dominant, Q/S sharp flanks, P/T small broad bumps.
   const waves: [number, number, number][] = [
-    [0.1,   0.16,    0.022],
-    [-0.13, 0.30,    0.013],
-    [1.0,   0.335,   0.013],
-    [-0.30, 0.365,   0.016],
-    [0.22,  tCenter, 0.060],
+    [0.1, 0.16, 0.022],
+    [-0.13, 0.3, 0.013],
+    [1.0, 0.335, 0.013],
+    [-0.3, 0.365, 0.016],
+    [0.22, tCenter, 0.06],
   ];
   const samples: number[] = [];
   for (let i = 0; i < numSamples; i++) {
@@ -148,7 +148,12 @@ function drawGrid(gctx: CanvasRenderingContext2D, gw: number, gh: number): void 
   gctx.restore();
 }
 
-function redrawGridStrip(gctx: CanvasRenderingContext2D, sx: number, stripW: number, gh: number): void {
+function redrawGridStrip(
+  gctx: CanvasRenderingContext2D,
+  sx: number,
+  stripW: number,
+  gh: number,
+): void {
   const x2 = sx + stripW;
   gctx.save();
   gctx.lineWidth = 0.5;
@@ -240,7 +245,7 @@ function renderFrame(wgt: ECGWidgetState, ts: number): void {
     wgt.currentRR = nextRR(wgt.meanRR, wgt.hrv);
     wgt.nextBeatTime = ts + wgt.currentRR;
     wgt.beatStartTime = ts;
-    const activeFraction = 0.55 + 0.30 * (1 - Math.exp(-(wgt.bpm - 40) / 80));
+    const activeFraction = 0.55 + 0.3 * (1 - Math.exp(-(wgt.bpm - 40) / 80));
     wgt.beatDurationMs = wgt.currentRR * activeFraction;
   }
 
@@ -449,7 +454,10 @@ export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): 
  * inline includes a T-wave center clamp (center < 0.42) absent from
  * generateECGSamples.
  */
-export function initHeartRateInline(canvasId: string, opts?: Partial<HeartRateInlineOptions>): void {
+export function initHeartRateInline(
+  canvasId: string,
+  opts?: Partial<HeartRateInlineOptions>,
+): void {
   const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null;
   if (!canvas) return;
 
@@ -460,7 +468,7 @@ export function initHeartRateInline(canvasId: string, opts?: Partial<HeartRateIn
 
   // Read data-* attributes from canvas element, matching inline IIFE behaviour.
   const bpm = opts?.bpm ?? (parseInt(canvas.getAttribute('data-bpm') ?? '', 10) || 72);
-  const hrv  = opts?.sdnn ?? (parseInt(canvas.getAttribute('data-hrv') ?? '', 10) || 40);
+  const hrv = opts?.sdnn ?? (parseInt(canvas.getAttribute('data-hrv') ?? '', 10) || 40);
   const stroke = opts?.stroke ?? (canvas.getAttribute('data-stroke') || '#f59e0b');
 
   const now = clockNow();
@@ -489,7 +497,9 @@ export function initHeartRateInline(canvasId: string, opts?: Partial<HeartRateIn
   };
 
   // Live-data bridge — matches inline window.__ecgUpdate verbatim.
-  (window as Window & { __ecgUpdate?: (newBpm: number, newHrv: number, newStroke: string) => void }).__ecgUpdate = function(newBpm: number, newHrv: number, newStroke: string): void {
+  (
+    window as Window & { __ecgUpdate?: (newBpm: number, newHrv: number, newStroke: string) => void }
+  ).__ecgUpdate = function (newBpm: number, newHrv: number, newStroke: string): void {
     wgt.bpm = newBpm;
     wgt.hrv = newHrv;
     wgt.stroke = newStroke;
@@ -576,8 +586,7 @@ type WindowWithSeam = Window & { __hrEcg?: HeartRateTestSeam };
  * auto-loop and let step() drive frames). Returns false otherwise.
  */
 function maybeInstallTestSeam(canvas: HTMLCanvasElement, wgt: ECGWidgetState): boolean {
-  const modeIsTest =
-    typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test';
+  const modeIsTest = typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test';
   if (!modeIsTest) return false;
   if (canvas.closest('[data-test="1"]') == null) return false;
 
