@@ -1,0 +1,53 @@
+// Post-adapter display fixtures for the Profile widget (IdentityCard + BioTerminal).
+//
+// Profile is a DS-authored display shape with NO raw LP export equivalent — it is
+// not produced by any runtime adapter. These fixtures are authored directly against
+// `@lifegames/schemas` `Profile` (authored/profile.schema.json) and feed the SSR
+// shell via loadDashboardData. Runtime polling never overwrites profile (it is
+// static identity content), so `baseline` is the representative production state.
+import type { Profile } from '@lifegames/schemas';
+
+export const baseline: Profile = {
+  name: 'Jonathan Lloyd',
+  title: 'Engineering Director',
+  location: 'San Francisco, CA',
+  coordinates: [37.7749, -122.4194],
+  linkedin: 'https://www.linkedin.com/in/lifegames/',
+  github: 'https://github.com/j0nathan-ll0yd',
+  bio: '100% pure, old fashioned, home-grown human, born free right here in the real world.',
+  tagline: 'Welcome to my human datastream.',
+  avatar: '/assets/avatar.webp',
+  terminalLines: [
+    { type: 'prompt', text: '$ cat about.txt' },
+    { type: 'output', text: '→ Jonathan Lloyd' },
+    { type: 'output', text: '→ Software Engineer' },
+    { type: 'output', text: '→ "Creating things I\'m proud of"' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ ls skills/' },
+    { type: 'output', text: '→ aws  typescript  serverless  swift  go  perl' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ uptime' },
+    { type: 'output', text: '→ 24+ years professionally and counting' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ cat philosophy.txt' },
+    { type: 'output', text: '→ "Enjoying the passage of time"' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ wc -l interests/' },
+    { type: 'output', text: '→ programming, pc gaming, musical theatre, edm, conversation' },
+    { type: 'cursor', text: '' },
+  ],
+};
+
+// Minimal-but-valid profile: required fields only, single-line terminal, no
+// optional contact links. Exercises the empty/sparse identity rendering path.
+export const empty: Profile = {
+  name: 'Jonathan Lloyd',
+  title: 'Engineering Director',
+  location: 'San Francisco, CA',
+  bio: 'Human datastream initializing.',
+  tagline: 'Welcome to my human datastream.',
+  avatar: '/assets/avatar.webp',
+  terminalLines: [{ type: 'cursor', text: '' }],
+};
+
+export const profilePostAdapter = { baseline, empty } satisfies Record<string, Profile>;

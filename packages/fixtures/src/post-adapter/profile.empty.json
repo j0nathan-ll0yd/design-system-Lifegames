@@ -1,0 +1,9 @@
+{
+  "name": "Jonathan Lloyd",
+  "title": "Engineering Director",
+  "location": "San Francisco, CA",
+  "bio": "Human datastream initializing.",
+  "tagline": "Welcome to my human datastream.",
+  "avatar": "/assets/avatar.webp",
+  "terminalLines": [{ "type": "cursor", "text": "" }]
+}

@@ -43,7 +43,7 @@ fi
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Sub-packages that declare a file:.yalc dependency on @lifegames/portal-contract.
-CONSUMERS=(packages/web packages/schemas apps/portfolio)
+CONSUMERS=(packages/web packages/schemas packages/fixtures apps/portfolio)
 
 # Do NOT echo $LP_REPO — it may embed $LP_REPO_TOKEN after injection above.
 echo "[ci-setup-pc] LP_DIR=$LP_DIR"

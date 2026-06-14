@@ -152,6 +152,43 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@16.18.126)(@vitest/coverage-v8@4.1.8)(jsdom@29.1.1)(vite@8.0.16(@types/node@16.18.126)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
 
+  packages/fixtures:
+    dependencies:
+      '@lifegames/portal-contract':
+        specifier: file:.yalc/@lifegames/portal-contract
+        version: file:packages/fixtures/.yalc/@lifegames/portal-contract
+      '@lifegames/schemas':
+        specifier: workspace:*
+        version: link:../schemas
+      '@lifegames/web':
+        specifier: workspace:*
+        version: link:../web
+    devDependencies:
+      '@typescript-eslint/parser':
+        specifier: ^8.61.0
+        version: 8.61.0(eslint@10.4.1)(typescript@5.9.3)
+      ajv:
+        specifier: ~8.20.0
+        version: 8.20.0
+      ajv-formats:
+        specifier: ~3.0.1
+        version: 3.0.1(ajv@8.20.0)
+      eslint:
+        specifier: ^10.4.1
+        version: 10.4.1
+      prettier:
+        specifier: 3.6.0
+        version: 3.6.0
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+      vitest:
+        specifier: ^4.1.8
+        version: 4.1.8(@types/node@25.9.2)(@vitest/coverage-v8@4.1.8)(jsdom@29.1.1)(vite@8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
+    dependenciesMeta:
+      '@lifegames/portal-contract':
+        injected: true
+
   packages/schemas:
     dependencies:
       '@lifegames/portal-contract':
@@ -1867,6 +1904,9 @@ packages:
 
   '@lifegames/portal-contract@file:apps/portfolio/.yalc/@lifegames/portal-contract':
     resolution: {directory: apps/portfolio/.yalc/@lifegames/portal-contract, type: directory}
+
+  '@lifegames/portal-contract@file:packages/fixtures/.yalc/@lifegames/portal-contract':
+    resolution: {directory: packages/fixtures/.yalc/@lifegames/portal-contract, type: directory}
 
   '@lifegames/portal-contract@file:packages/schemas/.yalc/@lifegames/portal-contract':
     resolution: {directory: packages/schemas/.yalc/@lifegames/portal-contract, type: directory}
@@ -9373,6 +9413,8 @@ snapshots:
 
   '@lifegames/portal-contract@file:apps/portfolio/.yalc/@lifegames/portal-contract': {}
 
+  '@lifegames/portal-contract@file:packages/fixtures/.yalc/@lifegames/portal-contract': {}
+
   '@lifegames/portal-contract@file:packages/schemas/.yalc/@lifegames/portal-contract': {}
 
   '@lifegames/portal-contract@file:packages/web/.yalc/@lifegames/portal-contract': {}
@@ -15167,7 +15209,7 @@ snapshots:
       is-plain-obj: 4.1.0
       json5: 2.2.3
       path-unified: 0.2.0
-      prettier: 3.8.3
+      prettier: 3.6.0
       tinycolor2: 1.6.0
     transitivePeerDependencies:
       - tslib
