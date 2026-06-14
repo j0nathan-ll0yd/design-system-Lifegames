@@ -47,6 +47,13 @@ struct RootGalleryView: View {
                     color: LGColor.accentPurple,
                     destination: CategoryListView()
                 )
+                galleryRow(
+                    title: "Screens",
+                    subtitle: "OMD app screen mockups (Neon Console)",
+                    icon: "rectangle.on.rectangle.angled",
+                    color: LGColor.accentCyan,
+                    destination: ScreenBrowseView()
+                )
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
