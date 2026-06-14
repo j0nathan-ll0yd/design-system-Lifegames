@@ -228,7 +228,6 @@ for (const v of allViolations) {
 }
 
 // ── build report ──────────────────────────────────────────────────────────────
-const now = new Date().toISOString();
 const totalViolations = allViolations.length;
 const violationTypes = Object.keys(byRule).sort();
 
@@ -237,7 +236,6 @@ const distCount = distFiles.length;
 
 let report = `# DTCG 2025.10 Conformance Audit Report
 
-Generated: ${now}
 Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 
 ## Summary
