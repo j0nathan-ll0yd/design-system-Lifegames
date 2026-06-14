@@ -310,56 +310,68 @@ struct PolygonOrbitAnimation: View {
 
     var body: some View {
         TimelineView(.animation) { context in
-            let t = context.date.timeIntervalSinceReferenceDate
             Canvas { ctx, size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                let breathe = (sin(t * 0.9) + 1) / 2
-                let radius = min(size.width, size.height) * (0.30 + 0.04 * breathe)
-                let rotation = t * 0.35
-
-                // Build the polygon path.
-                var path = Path()
-                var vertices: [CGPoint] = []
-                for i in 0 ..< sides {
-                    let angle = rotation + (Double(i) / Double(sides)) * 2 * .pi
-                    let p = CGPoint(
-                        x: center.x + CGFloat(cos(angle)) * radius,
-                        y: center.y + CGFloat(sin(angle)) * radius
-                    )
-                    vertices.append(p)
-                    if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
-                }
-                path.closeSubpath()
-
-                // Outer halo (faint, larger).
-                ctx.stroke(path, with: .color(LGColor.accentBlue.opacity(0.18)), lineWidth: 6)
-                // Crisp neon edge.
-                ctx.stroke(path, with: .color(LGColor.accentCyan.opacity(0.6)), lineWidth: 1.5)
-
-                // Vertex motes.
-                for p in vertices {
-                    let dot: CGFloat = 3
-                    let rect = CGRect(x: p.x - dot, y: p.y - dot, width: dot * 2, height: dot * 2)
-                    ctx.fill(Path(ellipseIn: rect), with: .color(LGColor.accentPink.opacity(0.7)))
-                }
-
-                // Inner counter-rotating polygon for depth.
-                var inner = Path()
-                let innerRadius = radius * 0.5
-                for i in 0 ..< sides {
-                    let angle = -rotation + (Double(i) / Double(sides)) * 2 * .pi
-                    let p = CGPoint(
-                        x: center.x + CGFloat(cos(angle)) * innerRadius,
-                        y: center.y + CGFloat(sin(angle)) * innerRadius
-                    )
-                    if i == 0 { inner.move(to: p) } else { inner.addLine(to: p) }
-                }
-                inner.closeSubpath()
-                ctx.stroke(inner, with: .color(LGColor.accentBlue.opacity(0.35)), lineWidth: 1)
+                Self.draw(
+                    in: &ctx,
+                    size: size,
+                    t: context.date.timeIntervalSinceReferenceDate,
+                    sides: sides
+                )
             }
         }
         .blendMode(.screen)
         .allowsHitTesting(false)
+    }
+
+    /// Drawing is factored out of `body` into an explicitly-typed helper so the
+    /// SwiftUI type-checker doesn't have to solve the whole Canvas closure as one
+    /// expression — that expression timed out on CI's toolchain (error: "unable to
+    /// type-check this expression in reasonable time").
+    private static func draw(in ctx: inout GraphicsContext, size: CGSize, t: Double, sides: Int) {
+        let center = CGPoint(x: size.width / 2, y: size.height / 2)
+        let breathe = (sin(t * 0.9) + 1) / 2
+        let radius = min(size.width, size.height) * (0.30 + 0.04 * breathe)
+        let rotation = t * 0.35
+
+        // Build the polygon path.
+        var path = Path()
+        var vertices: [CGPoint] = []
+        for i in 0 ..< sides {
+            let angle = rotation + (Double(i) / Double(sides)) * 2 * .pi
+            let p = CGPoint(
+                x: center.x + CGFloat(cos(angle)) * radius,
+                y: center.y + CGFloat(sin(angle)) * radius
+            )
+            vertices.append(p)
+            if i == 0 { path.move(to: p) } else { path.addLine(to: p) }
+        }
+        path.closeSubpath()
+
+        // Outer halo (faint, larger).
+        ctx.stroke(path, with: .color(LGColor.accentBlue.opacity(0.18)), lineWidth: 6)
+        // Crisp neon edge.
+        ctx.stroke(path, with: .color(LGColor.accentCyan.opacity(0.6)), lineWidth: 1.5)
+
+        // Vertex motes.
+        for p in vertices {
+            let dot: CGFloat = 3
+            let rect = CGRect(x: p.x - dot, y: p.y - dot, width: dot * 2, height: dot * 2)
+            ctx.fill(Path(ellipseIn: rect), with: .color(LGColor.accentPink.opacity(0.7)))
+        }
+
+        // Inner counter-rotating polygon for depth.
+        var inner = Path()
+        let innerRadius = radius * 0.5
+        for i in 0 ..< sides {
+            let angle = -rotation + (Double(i) / Double(sides)) * 2 * .pi
+            let p = CGPoint(
+                x: center.x + CGFloat(cos(angle)) * innerRadius,
+                y: center.y + CGFloat(sin(angle)) * innerRadius
+            )
+            if i == 0 { inner.move(to: p) } else { inner.addLine(to: p) }
+        }
+        inner.closeSubpath()
+        ctx.stroke(inner, with: .color(LGColor.accentBlue.opacity(0.35)), lineWidth: 1)
     }
 }
 
