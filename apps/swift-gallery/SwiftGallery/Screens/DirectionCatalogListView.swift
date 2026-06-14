@@ -12,24 +12,10 @@ private struct DirectionMeta: Identifiable {
 private let directions: [DirectionMeta] = [
     DirectionMeta(
         id: "neon-console",
-        label: "A — Neon Console",
+        label: "Neon Console",
         subtitle: "Neon-dense, glow-centric, card grids",
         accentColor: LGColor.accentBlue,
         systemImage: "waveform.path.ecg"
-    ),
-    DirectionMeta(
-        id: "editorial-calm",
-        label: "B — Editorial Calm",
-        subtitle: "Minimal, whitespace-first, restrained accent",
-        accentColor: LGColor.accentBlue,
-        systemImage: "doc.text"
-    ),
-    DirectionMeta(
-        id: "utility-dense",
-        label: "C — Utility Dense",
-        subtitle: "Compact rows, monospaced data, toolbox aesthetic",
-        accentColor: LGColor.accentGreen,
-        systemImage: "list.bullet.rectangle"
     ),
 ]
 

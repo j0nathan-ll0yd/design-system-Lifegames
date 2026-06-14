@@ -6,9 +6,7 @@ struct DirectionDetailView: View {
 
     private var directionLabel: String {
         switch directionId {
-        case "neon-console": return "A — Neon Console"
-        case "editorial-calm": return "B — Editorial Calm"
-        case "utility-dense": return "C — Utility Dense"
+        case "neon-console": return "Neon Console"
         default: return directionId
         }
     }
@@ -59,20 +57,6 @@ struct DirectionDetailView: View {
 #Preview("Direction Detail — Neon Console") {
     NavigationStack {
         DirectionDetailView(directionId: "neon-console")
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Direction Detail — Editorial Calm") {
-    NavigationStack {
-        DirectionDetailView(directionId: "editorial-calm")
-    }
-    .preferredColorScheme(.dark)
-}
-
-#Preview("Direction Detail — Utility Dense") {
-    NavigationStack {
-        DirectionDetailView(directionId: "utility-dense")
     }
     .preferredColorScheme(.dark)
 }

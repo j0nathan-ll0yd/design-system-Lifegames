@@ -49,7 +49,7 @@ struct RootGalleryView: View {
                 )
                 galleryRow(
                     title: "Screens",
-                    subtitle: "OMD app screens — 3 design directions per screen",
+                    subtitle: "OMD app screen mockups (Neon Console)",
                     icon: "rectangle.on.rectangle.angled",
                     color: LGColor.accentCyan,
                     destination: ScreenBrowseView()

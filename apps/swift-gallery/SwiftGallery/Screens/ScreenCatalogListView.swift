@@ -43,7 +43,7 @@ struct ScreenCatalogListView: View {
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(LGColor.textTitle)
 
-                    Text("\(entry.directions.count) directions")
+                    Text(entry.directions.map(\.label).joined(separator: ", "))
                         .font(.system(size: 12))
                         .foregroundStyle(LGColor.textMuted)
                 }
