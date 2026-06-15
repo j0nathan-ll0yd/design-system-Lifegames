@@ -242,118 +242,11 @@ struct DownloadProgressView: View {
     }
 }
 
-// MARK: - StatCardView
-
-// Gallery-local fork of MetricCardView that omits the baked-in .portalCard() so each
-// direction can apply its own card styling.
-
-struct StatCardView: View {
-    let label: String
-    let value: String
-    let systemImage: String
-    let style: DirectionStyle
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.s100) {
-            HStack {
-                Image(systemName: systemImage)
-                    .font(.system(size: 14))
-                    .foregroundStyle(style.accent)
-                Spacer()
-            }
-
-            Text(value)
-                .font(OMDFont.bold(16))
-                .foregroundStyle(LGColor.textTitle)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-
-            Text(label)
-                .font(OMDFont.medium(11))
-                .foregroundStyle(LGColor.textMuted)
-                .textCase(.uppercase)
-                .lineLimit(1)
-        }
-    }
-}
-
-// MARK: - SettingRowView
-
-struct SettingRowView: View {
-    let systemImage: String
-    let label: String
-    let accessory: SettingAccessory
-
-    enum SettingAccessory {
-        case chevron
-        case toggle(isOn: Bool)
-        case value(String)
-    }
-
-    var body: some View {
-        HStack(spacing: Spacing.s300) {
-            Image(systemName: systemImage)
-                .font(.system(size: 16))
-                .foregroundStyle(LGColor.textMuted)
-                .frame(width: 24)
-
-            Text(label)
-                .font(OMDFont.regular(15))
-                .foregroundStyle(LGColor.textPrimary)
-
-            Spacer()
-
-            switch accessory {
-            case .chevron:
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(LGColor.textSubtle)
-
-            case let .toggle(isOn):
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(isOn ? LGColor.accentBlue : LGColor.surfaceRaised)
-                    .frame(width: 44, height: 26)
-                    .overlay(
-                        Circle()
-                            .fill(LGColor.textTitle)
-                            .frame(width: 20, height: 20)
-                            .offset(x: isOn ? 9 : -9)
-                    )
-
-            case let .value(text):
-                Text(text)
-                    .font(OMDFont.regular(14))
-                    .foregroundStyle(LGColor.textSubtle)
-            }
-        }
-        .padding(.vertical, Spacing.s300)
-        .padding(.horizontal, Spacing.s400)
-    }
-}
-
-// MARK: - InitialsAvatarView
-
-struct InitialsAvatarView: View {
-    let initials: String
-    let style: DirectionStyle
-    let size: CGFloat
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(LGColor.surfaceRaised)
-                .overlay(
-                    Circle()
-                        .stroke(style.accent, lineWidth: 2)
-                )
-
-            Text(initials)
-                .font(OMDFont.semibold(size * 0.35))
-                .foregroundStyle(LGColor.textTitle)
-        }
-        .frame(width: size, height: size)
-    }
-}
+// `StatCardView`, `SettingRowView`, and `InitialsAvatarView` were gallery-local
+// forks that now duplicate promoted DS molecules. They have been removed; the
+// screens consume `LifegamesComponents.SettingRowView`,
+// `LifegamesComponents.InitialsAvatarView`, and `MetricContentView`
+// (under `.neonCard(accent:)`) directly. See ADR-0004.
 
 // MARK: - ActiveDownloadBannerView
 
@@ -439,21 +332,22 @@ private func formattedViews(_ count: Int) -> String {
             FileRowNeon(file: OMDFixtures.sampleFiles[0])
             FileRowNeon(file: OMDFixtures.sampleFiles[1])
 
-            StatCardView(
+            MetricContentView(
                 label: "Downloads",
                 value: "47",
                 systemImage: "arrow.down.circle.fill",
-                style: .neonConsole
+                accent: LGColor.accentBlue
             )
             .neonCard(accent: LGColor.accentBlue)
 
             SettingRowView(
                 systemImage: "wifi",
                 label: "Cellular Downloads",
-                accessory: .toggle(isOn: false)
+                accessory: .toggle(isOn: false),
+                accent: LGColor.accentBlue
             )
 
-            InitialsAvatarView(initials: "JL", style: .neonConsole, size: 64)
+            InitialsAvatarView(initials: "JL", accent: LGColor.accentBlue, size: 64)
 
             ActiveDownloadBannerView(
                 file: OMDFixtures.sampleFiles[1],

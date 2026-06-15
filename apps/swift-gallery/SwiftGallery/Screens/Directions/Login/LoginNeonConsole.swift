@@ -1,39 +1,39 @@
 import LifegamesComponents
 import LifegamesComponentsCore
+import LifegamesTemplates
 import LifegamesTokens
 import SwiftUI
 
 struct LoginNeonConsole: View {
     var body: some View {
-        ZStack {
-            // Colorful base wash.
-            LinearGradient(
-                colors: [LGColor.surfaceDeep, LGColor.surfaceBase],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            OMDBrand.colorWashes
-                .ignoresSafeArea()
-
+        // Built on AuthTemplate. The welcome copy is a self-contained gradient
+        // wordmark + subtitle, so `title` is nil and the headline lives in the
+        // branding slot alongside the Buffer backdrop. The Apple sign-in control
+        // fills `primaryAction`; the security caption is the `footer`. The OMD
+        // color washes are supplied via the template's `background` slot.
+        AuthTemplate(accent: LGColor.accentBlue) {
             VStack(spacing: 0) {
-                Spacer()
-
                 welcome
 
-                // The Buffer backdrop sits BELOW the welcome copy in its own
-                // zone so the headline and CTA are never obstructed.
                 BufferRingAnimation()
                     .frame(height: 170)
                     .padding(.top, Spacing.s600)
-
-                Spacer()
-
-                signIn
             }
-            .padding(.horizontal, Spacing.s600)
-            .padding(.bottom, Spacing.s800)
+        } primaryAction: {
+            appleButton
+        } footer: {
+            Text("Secure authentication via Apple ID")
+                .font(OMDFont.regular(10))
+                .foregroundStyle(LGColor.textSubtle)
+        } background: {
+            ZStack {
+                LinearGradient(
+                    colors: [LGColor.surfaceDeep, LGColor.surfaceBase],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                OMDBrand.colorWashes
+            }
         }
     }
 
@@ -49,16 +49,6 @@ struct LoginNeonConsole: View {
                 .font(OMDFont.regular(14))
                 .foregroundStyle(LGColor.textMuted)
                 .multilineTextAlignment(.center)
-        }
-    }
-
-    private var signIn: some View {
-        VStack(spacing: Spacing.s300) {
-            appleButton
-
-            Text("Secure authentication via Apple ID")
-                .font(OMDFont.regular(10))
-                .foregroundStyle(LGColor.textSubtle)
         }
     }
 

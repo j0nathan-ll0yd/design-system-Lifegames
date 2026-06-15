@@ -84,28 +84,14 @@ struct SampleFilesNeonConsole: View {
                     .padding(.horizontal, Spacing.s400)
                 }
 
-                // CTA
+                // CTA — the generic primary upsell + its ghost alternate both
+                // adopt the DS `LGButton` (primary pill + ghost). The bespoke
+                // hero / benefits rows above stay app-local.
                 VStack(spacing: Spacing.s300) {
-                    Button {} label: {
-                        Text("Sign Up Free")
-                            .font(OMDFont.bold(16))
-                            .foregroundStyle(LGColor.surfaceBase)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 52)
-                            .background(LGColor.accentBlue)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                            .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 12, y: 4)
-                    }
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(.rect)
+                    LGButton("Sign Up Free", variant: .primary, shape: .pill, accent: LGColor.accentBlue) {}
+                        .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 12, y: 4)
 
-                    Button {} label: {
-                        Text("Sign In")
-                            .font(OMDFont.medium(14))
-                            .foregroundStyle(LGColor.accentBlue)
-                    }
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(.rect)
+                    LGButton("Sign In", variant: .ghost, accent: LGColor.accentBlue) {}
                 }
                 .padding(.horizontal, Spacing.s400)
                 .padding(.bottom, Spacing.s600)
