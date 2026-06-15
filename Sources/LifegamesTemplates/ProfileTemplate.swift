@@ -12,7 +12,7 @@ import SwiftUI
 /// is deliberately NOT typed name/email params — that presumed a person and
 /// broke slot purity. The `accent` (default `LGColor.accentDefault`) tints the
 /// ambient header glow only.
-public struct ProfileScaffold<Header: View, Content: View>: View {
+public struct ProfileTemplate<Header: View, Content: View>: View {
     public var accent: Color
     public let header: Header
     public let content: Content
@@ -51,11 +51,11 @@ public struct ProfileScaffold<Header: View, Content: View>: View {
 }
 
 // Preview fills the slots with neutral local mock content (no cross-module
-// molecules) so the scaffold's own preview stays self-contained; the
+// molecules) so the template's own preview stays self-contained; the
 // swift-gallery "Templates" section demonstrates the real molecule fills
 // (`InitialsAvatarView` / `MetricContentView`).
-#Preview("Profile Scaffold") {
-    ProfileScaffold(accent: LGColor.accentBlue) {
+#Preview("Profile Template") {
+    ProfileTemplate(accent: LGColor.accentBlue) {
         VStack(spacing: Spacing.s300) {
             Circle()
                 .fill(LGColor.surfaceRaised)

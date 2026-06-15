@@ -6,14 +6,14 @@ import SwiftUI
 
 struct FileListNeonConsole: View {
     var body: some View {
-        // Built on ListScaffold: the media rows ARE the `row` slot
+        // Built on ListTemplate: the media rows ARE the `row` slot
         // (`FileRowNeon` keeps its own neon card + swipe affordances). The
         // floating add button, the NavigationStack title, and the toolbar stay
-        // host-owned. An `emptyState` is supplied per the scaffold contract even
+        // host-owned. An `emptyState` is supplied per the template contract even
         // though the sample data is always populated. The neon cards own their
         // own surfaces, so the row background / separators / insets are cleared.
         ZStack(alignment: .bottomTrailing) {
-            ListScaffold(
+            ListTemplate(
                 items: OMDFixtures.sampleFiles,
                 accent: LGColor.accentBlue,
                 emptyState: LGEmptyState(

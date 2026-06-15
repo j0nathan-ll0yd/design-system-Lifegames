@@ -4,11 +4,11 @@ import LifegamesTemplates
 import LifegamesTokens
 import SwiftUI
 
-/// Catalog of the brand-agnostic `LifegamesTemplates` scaffolds. Mirrors the
+/// Catalog of the brand-agnostic `LifegamesTemplates` templates. Mirrors the
 /// `Screens/` pattern: a List of rows, each `NavigationLink`-ing to a detail
-/// view that renders ONE scaffold full-viewport (full-bleed, as it appears in
+/// view that renders ONE template full-viewport (full-bleed, as it appears in
 /// an app), filled with NEUTRAL mock content — no OMD types. This is distinct
-/// from the OMD `Screens/` exploration, which dogfoods the same scaffolds with
+/// from the OMD `Screens/` exploration, which dogfoods the same templates with
 /// real app data.
 struct TemplatesShowcase: View {
     var body: some View {
@@ -44,10 +44,11 @@ struct TemplateCatalogEntry: Identifiable {
     let subtitle: String
 
     static let all: [TemplateCatalogEntry] = [
-        TemplateCatalogEntry(id: "auth", title: "AuthScaffold", subtitle: "Launch / Login branded shell"),
-        TemplateCatalogEntry(id: "settings", title: "SettingsScaffold", subtitle: "Closed-taxonomy settings list"),
-        TemplateCatalogEntry(id: "profile", title: "ProfileScaffold", subtitle: "Identity header + content body"),
-        TemplateCatalogEntry(id: "list", title: "ListScaffold", subtitle: "Generic list + empty state"),
+        TemplateCatalogEntry(id: "auth", title: "AuthTemplate", subtitle: "Launch / Login branded shell"),
+        TemplateCatalogEntry(id: "settings", title: "SettingsTemplate", subtitle: "Closed-taxonomy settings list"),
+        TemplateCatalogEntry(id: "profile", title: "ProfileTemplate", subtitle: "Identity header + content body"),
+        TemplateCatalogEntry(id: "list", title: "ListTemplate", subtitle: "Generic list + empty state"),
+        TemplateCatalogEntry(id: "detail", title: "DetailTemplate", subtitle: "Hero / metadata / description / actions"),
     ]
 }
 
@@ -63,6 +64,7 @@ struct TemplateDetailView: View {
             case "settings": SettingsTemplateDetail()
             case "profile": ProfileTemplateDetail()
             case "list": ListTemplateDetail()
+            case "detail": DetailTemplateDetail()
             default: EmptyView()
             }
         }
@@ -78,7 +80,7 @@ struct TemplateDetailView: View {
 
 private struct AuthTemplateDetail: View {
     var body: some View {
-        AuthScaffold(
+        AuthTemplate(
             title: "Welcome",
             subtitle: "Your library, ready offline.",
             accent: LGColor.accentBlue
@@ -111,15 +113,15 @@ private struct SettingsTemplateDetail: View {
     @State private var autoplay = false
 
     var body: some View {
-        SettingsScaffold(
+        SettingsTemplate(
             sections: [
-                SettingsScaffold.Section(title: "General", rows: [
+                SettingsTemplate.Section(title: "General", rows: [
                     .navigation(label: "Account", systemImage: "person.fill", action: {}),
                     .toggle(label: "Cellular Downloads", systemImage: "wifi", isOn: $cellular),
                     .toggle(label: "Autoplay", systemImage: "play.fill", isOn: $autoplay),
                     .value(label: "Storage Used", systemImage: "externaldrive.fill", value: "2.4 GB"),
                 ]),
-                SettingsScaffold.Section(title: "Danger Zone", footer: "This cannot be undone.", rows: [
+                SettingsTemplate.Section(title: "Danger Zone", footer: "This cannot be undone.", rows: [
                     .destructive(label: "Delete Account", systemImage: "trash.fill", action: {}),
                 ]),
             ],
@@ -132,7 +134,7 @@ private struct SettingsTemplateDetail: View {
 
 private struct ProfileTemplateDetail: View {
     var body: some View {
-        ProfileScaffold(accent: LGColor.accentPink) {
+        ProfileTemplate(accent: LGColor.accentPink) {
             VStack(spacing: Spacing.s300) {
                 LifegamesComponents.InitialsAvatarView(initials: "JL", accent: LGColor.accentPink, size: 72)
                 VStack(spacing: Spacing.s50) {
@@ -159,7 +161,7 @@ private struct ProfileTemplateDetail: View {
 
 private struct ListTemplateDetail: View {
     var body: some View {
-        ListScaffold(
+        ListTemplate(
             items: [
                 TemplateMockRow(id: 1, title: "First Item", icon: "doc.fill"),
                 TemplateMockRow(id: 2, title: "Second Item", icon: "doc.fill"),
@@ -185,6 +187,56 @@ private struct TemplateMockRow: Identifiable {
     let id: Int
     let title: String
     let icon: String
+}
+
+// MARK: - Detail
+
+private struct DetailTemplateDetail: View {
+    var body: some View {
+        DetailTemplate(accent: LGColor.accentBlue) {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(LGColor.surfaceRaised)
+                .frame(height: 200)
+                .overlay(
+                    Image(systemName: "photo")
+                        .font(.system(size: 48))
+                        .foregroundStyle(LGColor.accentBlue.opacity(0.7))
+                )
+        } metadata: {
+            VStack(alignment: .leading, spacing: Spacing.s300) {
+                Text("Mock Detail")
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .foregroundStyle(LGColor.textTitle)
+
+                HStack(spacing: Spacing.s300) {
+                    MetricContentView(label: "Views", value: "12K", systemImage: "eye.fill", accent: LGColor.accentBlue)
+                        .neonCard(accent: LGColor.accentBlue)
+                    MetricContentView(label: "Length", value: "8:42", systemImage: "timer", accent: LGColor.accentCyan)
+                        .neonCard(accent: LGColor.accentCyan)
+                    MetricContentView(label: "Size", value: "248 MB", systemImage: "internaldrive.fill", accent: LGColor.accentAmber)
+                        .neonCard(accent: LGColor.accentAmber)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } description: {
+            VStack(alignment: .leading, spacing: Spacing.s200) {
+                Text("ABOUT")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(LGColor.textMuted)
+                    .textCase(.uppercase)
+                Text("A neutral mock description block standing in for host-supplied long copy in the detail template's description slot. No OMD types appear here — this showcase fills the brand-agnostic slots with generic mock content.")
+                    .font(.system(size: 14))
+                    .foregroundStyle(LGColor.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } actions: {
+            VStack(spacing: Spacing.s300) {
+                LGButton("Primary Action", variant: .primary, accent: LGColor.accentBlue) {}
+                LGButton("Secondary Action", variant: .secondary, accent: LGColor.accentBlue) {}
+            }
+        }
+    }
 }
 
 #Preview("Templates Showcase") {

@@ -6,13 +6,13 @@ import SwiftUI
 
 struct LaunchNeonConsole: View {
     var body: some View {
-        // Built on AuthScaffold: pure Launch = no primaryAction. The wordmark is
+        // Built on AuthTemplate: pure Launch = no primaryAction. The wordmark is
         // a self-contained gradient SpaceGrotesk display face, so `title` is nil
-        // (the scaffold renders no second system-font headline). The buffering
+        // (the template renders no second system-font headline). The buffering
         // backdrop sits in its own zone BELOW the wordmark, inside the branding
         // slot, so the branding is never obstructed. The OMD color washes are
-        // supplied via the scaffold's `background` slot.
-        AuthScaffold(accent: LGColor.accentBlue) {
+        // supplied via the template's `background` slot.
+        AuthTemplate(accent: LGColor.accentBlue) {
             VStack(spacing: 0) {
                 wordmark
 

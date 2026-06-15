@@ -9,10 +9,10 @@ import SwiftUI
 /// `row` builder and an optional `emptyState`. Pull-to-refresh is wired when
 /// `onRefresh` is supplied. Nav chrome (`NavigationStack`, title, toolbar,
 /// search) is HOST-owned; swipe / selection affordances live on the host's
-/// `row` view (`.swipeActions` there), not on the scaffold. The `accent`
+/// `row` view (`.swipeActions` there), not on the template. The `accent`
 /// (default `LGColor.accentDefault`) is reserved for host theming and is not
 /// consumed by the bare list rendering.
-public struct ListScaffold<Item: Identifiable, Row: View>: View {
+public struct ListTemplate<Item: Identifiable, Row: View>: View {
     public let items: [Item]
     public var accent: Color
     public let emptyState: LGEmptyState?
@@ -70,7 +70,7 @@ private struct ListPreviewItem: Identifiable {
 }
 
 #Preview("List — populated") {
-    ListScaffold(
+    ListTemplate(
         items: [
             ListPreviewItem(id: 1, title: "First Item"),
             ListPreviewItem(id: 2, title: "Second Item"),
@@ -92,7 +92,7 @@ private struct ListPreviewItem: Identifiable {
 }
 
 #Preview("List — empty") {
-    ListScaffold(
+    ListTemplate(
         items: [ListPreviewItem](),
         accent: LGColor.accentBlue,
         emptyState: LGEmptyState(

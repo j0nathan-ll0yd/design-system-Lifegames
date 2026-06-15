@@ -8,7 +8,7 @@ import SwiftUI
 /// value). The toggle's on-state tint is an injected semantic `accent`
 /// (default `LGColor.accentDefault`); all other colors resolve to semantic
 /// tokens. Guarantees a 44pt minimum touch target (S70) and combines its
-/// children for VoiceOver. Its contract is pinned by `SettingsScaffold`.
+/// children for VoiceOver. Its contract is pinned by `SettingsTemplate`.
 public struct SettingRowView: View {
     public let systemImage: String
     public let label: LocalizedStringKey

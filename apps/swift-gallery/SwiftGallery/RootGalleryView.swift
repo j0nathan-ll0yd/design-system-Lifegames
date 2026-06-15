@@ -49,7 +49,7 @@ struct RootGalleryView: View {
                 )
                 galleryRow(
                     title: "Templates",
-                    subtitle: "Brand-agnostic slot-based screen scaffolds (Experimental)",
+                    subtitle: "Brand-agnostic slot-based screen templates (Experimental)",
                     icon: "rectangle.split.2x2.fill",
                     color: LGColor.accentCyan,
                     destination: TemplatesShowcase()

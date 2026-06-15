@@ -5,18 +5,18 @@ import SwiftUI
 import Testing
 @testable import LifegamesTemplates
 
-@Suite("LifegamesTemplates Scaffolds Instantiate")
+@Suite("LifegamesTemplates Templates Instantiate")
 @MainActor
-struct ScaffoldInstantiationTests {
-    @Test func authScaffoldLaunchInstantiates() {
-        let view = AuthScaffold(title: "Welcome", subtitle: "Offline ready") {
+struct TemplateInstantiationTests {
+    @Test func authTemplateLaunchInstantiates() {
+        let view = AuthTemplate(title: "Welcome", subtitle: "Offline ready") {
             Image(systemName: "square.stack.3d.up.fill")
         }
         _ = view.body
     }
 
-    @Test func authScaffoldLoginInstantiates() {
-        let view = AuthScaffold(
+    @Test func authTemplateLoginInstantiates() {
+        let view = AuthTemplate(
             title: "Sign In",
             accent: LGColor.accentBlue
         ) {
@@ -29,19 +29,19 @@ struct ScaffoldInstantiationTests {
         _ = view.body
     }
 
-    @Test func authScaffoldTitlelessBrandingOnlyInstantiates() {
+    @Test func authTemplateTitlelessBrandingOnlyInstantiates() {
         // A host whose branding slot carries a self-contained wordmark passes
-        // `title: nil` so the scaffold renders no second system-font headline.
-        let view = AuthScaffold(accent: LGColor.accentBlue) {
+        // `title: nil` so the template renders no second system-font headline.
+        let view = AuthTemplate(accent: LGColor.accentBlue) {
             Text("OFFLINE")
         }
         #expect(view.title == nil)
         _ = view.body
     }
 
-    @Test func authScaffoldCustomBackgroundInstantiates() {
+    @Test func authTemplateCustomBackgroundInstantiates() {
         // A host with a richer backdrop supplies its own full-bleed background.
-        let view = AuthScaffold(accent: LGColor.accentBlue) {
+        let view = AuthTemplate(accent: LGColor.accentBlue) {
             Text("OFFLINE")
         } background: {
             LinearGradient(
@@ -53,11 +53,11 @@ struct ScaffoldInstantiationTests {
         _ = view.body
     }
 
-    @Test func settingsScaffoldInstantiates() {
+    @Test func settingsTemplateInstantiates() {
         let toggle = Binding<Bool>(get: { true }, set: { _ in })
-        let view = SettingsScaffold(
+        let view = SettingsTemplate(
             sections: [
-                SettingsScaffold.Section(title: "General", rows: [
+                SettingsTemplate.Section(title: "General", rows: [
                     .navigation(label: "Account", systemImage: "person.fill", action: {}),
                     .toggle(label: "Wi-Fi", systemImage: "wifi", isOn: toggle),
                     .value(label: "Storage", systemImage: "externaldrive.fill", value: "2.4 GB"),
@@ -71,8 +71,8 @@ struct ScaffoldInstantiationTests {
         _ = view.body
     }
 
-    @Test func profileScaffoldInstantiates() {
-        let view = ProfileScaffold(accent: LGColor.accentPink) {
+    @Test func profileTemplateInstantiates() {
+        let view = ProfileTemplate(accent: LGColor.accentPink) {
             InitialsAvatarView(initials: "AB")
         } content: {
             Text("Body")
@@ -80,8 +80,8 @@ struct ScaffoldInstantiationTests {
         _ = view.body
     }
 
-    @Test func listScaffoldPopulatedInstantiates() {
-        let view = ListScaffold(
+    @Test func listTemplatePopulatedInstantiates() {
+        let view = ListTemplate(
             items: [PreviewItem(id: 1), PreviewItem(id: 2)],
             accent: LGColor.accentBlue,
             onRefresh: {}
@@ -92,8 +92,8 @@ struct ScaffoldInstantiationTests {
         _ = view.body
     }
 
-    @Test func listScaffoldEmptyInstantiates() {
-        let view = ListScaffold(
+    @Test func listTemplateEmptyInstantiates() {
+        let view = ListTemplate(
             items: [PreviewItem](),
             emptyState: LGEmptyState(title: "Empty", systemImage: "tray")
         ) { item in
@@ -101,6 +101,27 @@ struct ScaffoldInstantiationTests {
         }
         #expect(view.items.isEmpty)
         #expect(view.emptyState != nil)
+        _ = view.body
+    }
+
+    @Test func detailTemplateInstantiates() {
+        let view = DetailTemplate(accent: LGColor.accentBlue) {
+            Rectangle()
+        } metadata: {
+            Text("Title")
+        } description: {
+            Text("About")
+        } actions: {
+            LGButton("Action") {}
+        }
+        _ = view.body
+    }
+
+    @Test func detailTemplateHeroOnlyInstantiates() {
+        // metadata / description / actions default to EmptyView → sparse detail.
+        let view = DetailTemplate {
+            Rectangle()
+        }
         _ = view.body
     }
 }

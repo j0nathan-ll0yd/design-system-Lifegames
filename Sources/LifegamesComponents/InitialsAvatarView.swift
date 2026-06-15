@@ -5,7 +5,7 @@ import SwiftUI
 ///
 /// Brand-agnostic initials avatar: monogram text inside a ring. The ring color
 /// is an injected semantic `accent` (default `LGColor.accentDefault`); the fill
-/// and text resolve to semantic tokens. Consumed by `ProfileScaffold`'s header
+/// and text resolve to semantic tokens. Consumed by `ProfileTemplate`'s header
 /// slot and any identity surface.
 public struct InitialsAvatarView: View {
     public let initials: String

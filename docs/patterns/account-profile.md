@@ -13,7 +13,7 @@ A profile surface chrome: a centered identity header over a scrolling content zo
 
 ## 3. Props / Slots
 
-Swift type: [`ProfileScaffold`](../../Sources/LifegamesTemplates/ProfileScaffold.swift)
+Swift type: [`ProfileTemplate`](../../Sources/LifegamesTemplates/ProfileTemplate.swift)
 
 | Field     | Type                         | Notes                                                        |
 | --------- | ---------------------------- | ------------------------------------------------------------ |
@@ -37,11 +37,11 @@ Supporting molecules:
 
 ## 5. Variants
 
-None at scaffold level — variety lives entirely in the two slots.
+None at template level — variety lives entirely in the two slots.
 
 ## 6. Host-owned boundaries (Part 2)
 
-- Identity strings (name, email, badges) are host-supplied in the header slot; the scaffold never types them.
+- Identity strings (name, email, badges) are host-supplied in the header slot; the template never types them.
 - HIG note: account **deletion must be reachable** from the profile/settings surface (App Store requirement for accounts that can be created in-app).
 
 ## 7. Accessibility
@@ -52,7 +52,7 @@ None at scaffold level — variety lives entirely in the two slots.
 
 ## 8. References
 
-- Scaffold: [`Sources/LifegamesTemplates/ProfileScaffold.swift`](../../Sources/LifegamesTemplates/ProfileScaffold.swift)
+- Template: [`Sources/LifegamesTemplates/ProfileTemplate.swift`](../../Sources/LifegamesTemplates/ProfileTemplate.swift)
 - Molecules: [`InitialsAvatarView.swift`](../../Sources/LifegamesComponents/InitialsAvatarView.swift), [`MetricContentView.swift`](../../Sources/LifegamesComponentsCore/MetricContentView.swift)
 - ADRs: [`0001`](../adr/0001-omd-screen-staging-strategy.md), [`0002`](../adr/0002-brand-agnostic-molecule-theming.md), [`0003`](../adr/0003-screen-scaffold-p6-override.md)
 

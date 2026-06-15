@@ -10,13 +10,13 @@ struct DownloadSettingsNeonConsole: View {
     @State private var cellularEnabled = OMDFixtures.sampleConfig.cellularEnabled
 
     var body: some View {
-        // Partially built on SettingsScaffold. The closed row taxonomy
+        // Partially built on SettingsTemplate. The closed row taxonomy
         // (toggle / navigation / value / destructive) cannot express the custom
         // radio-style quality picker (selection rings, glow, checkmarks), and
         // there is no `custom(AnyView)` escape hatch by design — so the quality
-        // picker is a HOST-rendered sibling section above the scaffold. The
-        // cellular toggle DOES fit, so it lives in the scaffold; the info copy
-        // is the scaffold section's footer.
+        // picker is a HOST-rendered sibling section above the template. The
+        // cellular toggle DOES fit, so it lives in the template; the info copy
+        // is the template section's footer.
         ScrollView {
             VStack(spacing: Spacing.s500) {
                 qualitySection
@@ -31,14 +31,14 @@ struct DownloadSettingsNeonConsole: View {
             .navigationTitle("Download Settings")
     }
 
-    /// The cellular toggle expressed through SettingsScaffold's closed taxonomy.
+    /// The cellular toggle expressed through SettingsTemplate's closed taxonomy.
     /// Rendered inside its own fixed-height container so the host ScrollView can
     /// stack it below the bespoke quality picker. The info copy is the section
     /// footer.
     private var cellularSettings: some View {
-        SettingsScaffold(
+        SettingsTemplate(
             sections: [
-                SettingsScaffold.Section(
+                SettingsTemplate.Section(
                     title: "Network",
                     footer: "Higher quality requires more storage space and longer download times. Files already downloaded will not be affected by quality changes.",
                     rows: [

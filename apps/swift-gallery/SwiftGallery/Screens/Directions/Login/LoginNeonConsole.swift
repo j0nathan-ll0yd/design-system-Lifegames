@@ -6,12 +6,12 @@ import SwiftUI
 
 struct LoginNeonConsole: View {
     var body: some View {
-        // Built on AuthScaffold. The welcome copy is a self-contained gradient
+        // Built on AuthTemplate. The welcome copy is a self-contained gradient
         // wordmark + subtitle, so `title` is nil and the headline lives in the
         // branding slot alongside the Buffer backdrop. The Apple sign-in control
         // fills `primaryAction`; the security caption is the `footer`. The OMD
-        // color washes are supplied via the scaffold's `background` slot.
-        AuthScaffold(accent: LGColor.accentBlue) {
+        // color washes are supplied via the template's `background` slot.
+        AuthTemplate(accent: LGColor.accentBlue) {
             VStack(spacing: 0) {
                 welcome
 

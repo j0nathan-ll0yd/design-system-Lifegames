@@ -16,7 +16,7 @@ import SwiftUI
 /// `Row` cannot be `Sendable` because `.toggle` carries a `Binding<Bool>`
 /// (SwiftUI bindings are not `Sendable`); the host-supplied action closures are
 /// `@Sendable`, which is the isolation boundary.
-public struct SettingsScaffold: View {
+public struct SettingsTemplate: View {
     public struct Section: Identifiable {
         public let id: UUID
         public let title: LocalizedStringKey?
@@ -125,7 +125,7 @@ public struct SettingsScaffold: View {
     }
 }
 
-#Preview("Settings Scaffold") {
+#Preview("Settings Template") {
     SettingsPreviewHost()
         .preferredColorScheme(.dark)
 }
@@ -135,15 +135,15 @@ private struct SettingsPreviewHost: View {
     @State private var autoplay = false
 
     var body: some View {
-        SettingsScaffold(
+        SettingsTemplate(
             sections: [
-                SettingsScaffold.Section(title: "General", rows: [
+                SettingsTemplate.Section(title: "General", rows: [
                     .navigation(label: "Account", systemImage: "person.fill", action: {}),
                     .toggle(label: "Cellular Downloads", systemImage: "wifi", isOn: $cellular),
                     .toggle(label: "Autoplay", systemImage: "play.fill", isOn: $autoplay),
                     .value(label: "Storage Used", systemImage: "externaldrive.fill", value: "2.4 GB"),
                 ]),
-                SettingsScaffold.Section(title: "Danger Zone", footer: "This cannot be undone.", rows: [
+                SettingsTemplate.Section(title: "Danger Zone", footer: "This cannot be undone.", rows: [
                     .destructive(label: "Delete Account", systemImage: "trash.fill", action: {}),
                 ]),
             ],

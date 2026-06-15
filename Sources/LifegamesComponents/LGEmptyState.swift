@@ -6,7 +6,7 @@ import SwiftUI
 /// Brand-agnostic empty-state wrapper over Apple's `ContentUnavailableView`.
 /// All text is host-owned (`LocalizedStringKey`); the optional call-to-action
 /// button is tinted with an injected semantic `accent` (default
-/// `LGColor.accentDefault`). Consumed by `ListScaffold` and any list/grid
+/// `LGColor.accentDefault`). Consumed by `ListTemplate` and any list/grid
 /// surface that needs a "nothing here yet" state.
 public struct LGEmptyState: View {
     public let title: LocalizedStringKey

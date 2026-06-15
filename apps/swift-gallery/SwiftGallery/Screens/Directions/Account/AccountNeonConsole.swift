@@ -9,11 +9,11 @@ struct AccountNeonConsole: View {
     private let style = DirectionStyle.neonConsole
 
     var body: some View {
-        // Built on ProfileScaffold: the scaffold owns the centered header zone
+        // Built on ProfileTemplate: the template owns the centered header zone
         // (with the accent glow) over a scrolling content zone + the surface
         // background. The OMD identity card fills `header`; stats, settings, and
         // sign-out fill `content`. Nav chrome stays host-owned.
-        ProfileScaffold(accent: LGColor.accentCyan) {
+        ProfileTemplate(accent: LGColor.accentCyan) {
             headerSection
         } content: {
             VStack(spacing: Spacing.s500) {
@@ -30,7 +30,7 @@ struct AccountNeonConsole: View {
 
     private var headerSection: some View {
         HStack(spacing: Spacing.s400) {
-            InitialsAvatarView(initials: user.initials, style: style, size: 72)
+            LifegamesComponents.InitialsAvatarView(initials: user.initials, accent: LGColor.accentCyan, size: 72)
                 .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 12)
 
             VStack(alignment: .leading, spacing: Spacing.s100) {
@@ -88,11 +88,11 @@ struct AccountNeonConsole: View {
         systemImage: String,
         accent: Color
     ) -> some View {
-        StatCardView(
+        MetricContentView(
             label: label,
             value: value,
             systemImage: systemImage,
-            style: style
+            accent: accent
         )
         .frame(maxWidth: .infinity, alignment: .leading)
         .neonCard(accent: accent)
@@ -105,7 +105,7 @@ struct AccountNeonConsole: View {
                 title: "Account",
                 accent: LGColor.accentBlue,
                 rows: [
-                    ("person.circle", "Edit Profile", SettingRowView.SettingAccessory.chevron),
+                    ("person.circle", "Edit Profile", LifegamesComponents.SettingRowView.SettingAccessory.chevron),
                     ("key.fill", "Change Password", .chevron),
                     ("bell.badge.fill", "Notifications", .chevron),
                 ]
@@ -136,7 +136,7 @@ struct AccountNeonConsole: View {
     private func neonSettingsGroup(
         title: String,
         accent: Color,
-        rows: [(String, String, SettingRowView.SettingAccessory)]
+        rows: [(String, String, LifegamesComponents.SettingRowView.SettingAccessory)]
     ) -> some View {
         VStack(alignment: .leading, spacing: Spacing.s200) {
             Text(title)
@@ -147,33 +147,24 @@ struct AccountNeonConsole: View {
 
             VStack(spacing: 0) {
                 ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                    SettingRowView(systemImage: row.0, label: row.1, accessory: row.2)
+                    SettingRowView(
+                        systemImage: row.0,
+                        label: LocalizedStringKey(row.1),
+                        accessory: row.2,
+                        accent: accent
+                    )
                 }
             }
             .neonCard(accent: accent)
         }
     }
 
+    /// Sign Out is the screen's one generic destructive CTA, so it adopts the
+    /// DS `LGButton` (`.destructive` variant → the canonical destructive token).
+    /// The custom neon settings rows / radio cards above stay bespoke; only this
+    /// standard CTA is promoted to the shared primitive.
     private var signOutButton: some View {
-        Button {} label: {
-            HStack {
-                Spacer()
-                Text("Sign Out")
-                    .font(OMDFont.semibold(16))
-                    .foregroundStyle(LGColor.accentPink)
-                Spacer()
-            }
-            .padding(.vertical, Spacing.s400)
-            .background(LGColor.accentPink.opacity(0.08))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(LGColor.accentPink.opacity(0.5), lineWidth: 1)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-            .shadow(color: LGColor.accentPink.opacity(0.2), radius: 8)
-        }
-        .frame(minWidth: 44, minHeight: 44)
-        .contentShape(.rect)
+        LGButton("Sign Out", variant: .destructive) {}
     }
 }
 

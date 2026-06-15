@@ -8,8 +8,8 @@ A data-model-driven settings surface: an inset-grouped list built from a closed 
 
 ## 2. Anatomy
 
-- **Sections** — `SettingsScaffold.Section` — optional `title` / `footer` `LocalizedStringKey` plus `rows: [Row]`.
-- **Rows** — `SettingsScaffold.Row`, a closed enum:
+- **Sections** — `SettingsTemplate.Section` — optional `title` / `footer` `LocalizedStringKey` plus `rows: [Row]`.
+- **Rows** — `SettingsTemplate.Row`, a closed enum:
   - `.navigation(label:systemImage:action:)` — chevron row, renders via [`SettingRowView`](../../Sources/LifegamesComponents/SettingRowView.swift) `.chevron`.
   - `.toggle(label:systemImage:isOn:)` — `Binding<Bool>`; tinted with the injected `accent`.
   - `.value(label:systemImage:value:)` — trailing read-only `LocalizedStringKey`, renders via `SettingRowView` `.value`.
@@ -17,11 +17,11 @@ A data-model-driven settings surface: an inset-grouped list built from a closed 
 
 ## 3. Props / Slots
 
-Swift type: [`SettingsScaffold`](../../Sources/LifegamesTemplates/SettingsScaffold.swift)
+Swift type: [`SettingsTemplate`](../../Sources/LifegamesTemplates/SettingsTemplate.swift)
 
 | Field      | Type                         | Notes                                                  |
 | ---------- | ---------------------------- | ------------------------------------------------------ |
-| `sections` | `[SettingsScaffold.Section]` | Required. Section = `title?`, `footer?`, `rows`.       |
+| `sections` | `[SettingsTemplate.Section]` | Required. Section = `title?`, `footer?`, `rows`.       |
 | `accent`   | `Color`                      | Default `LGColor.accentDefault`. Toggle on-state tint. |
 
 Row molecule: [`SettingRowView`](../../Sources/LifegamesComponents/SettingRowView.swift) — `init(systemImage:label:accessory:accent:)`, `SettingAccessory` ∈ `{ chevron, toggle(isOn:), value(LocalizedStringKey) }`, 44pt min target, `.accessibilityElement(children: .combine)`.
@@ -39,10 +39,10 @@ Row kind is the only variant axis; it is a **closed** taxonomy. There is intenti
 
 ## 6. Host-owned boundaries (Part 2)
 
-- A row that doesn't fit the closed taxonomy is rendered in a host-owned sibling section, not pushed into the scaffold. (Validated by dogfooding: OMD's custom radio-style quality picker lives in a host sibling section above the scaffold; the cellular toggle lives in the scaffold.)
+- A row that doesn't fit the closed taxonomy is rendered in a host-owned sibling section, not pushed into the template. (Validated by dogfooding: OMD's custom radio-style quality picker lives in a host sibling section above the template; the cellular toggle lives in the template.)
 - `.insetGrouped` presentation and system-appearance respect are honored; the host owns navigation chrome (title, toolbar).
 
-> **Composition note (Part 2 follow-up):** `SettingsScaffold` is itself a full-screen `List`, so embedding it _beside_ bespoke sibling sections in a host `ScrollView` requires a fixed-height frame + `.scrollDisabled`. For mixed settings screens (closed-taxonomy rows + bespoke controls), consider adding an **embeddable / non-scrolling variant** of `SettingsScaffold` rather than forcing the full-screen `List` into a sub-region.
+> **Composition note (Part 2 follow-up):** `SettingsTemplate` is itself a full-screen `List`, so embedding it _beside_ bespoke sibling sections in a host `ScrollView` requires a fixed-height frame + `.scrollDisabled`. For mixed settings screens (closed-taxonomy rows + bespoke controls), consider adding an **embeddable / non-scrolling variant** of `SettingsTemplate` rather than forcing the full-screen `List` into a sub-region.
 
 ## 7. Accessibility
 
@@ -52,7 +52,7 @@ Row kind is the only variant axis; it is a **closed** taxonomy. There is intenti
 
 ## 8. References
 
-- Scaffold: [`Sources/LifegamesTemplates/SettingsScaffold.swift`](../../Sources/LifegamesTemplates/SettingsScaffold.swift)
+- Template: [`Sources/LifegamesTemplates/SettingsTemplate.swift`](../../Sources/LifegamesTemplates/SettingsTemplate.swift)
 - Row molecule: [`SettingRowView.swift`](../../Sources/LifegamesComponents/SettingRowView.swift)
 - ADRs: [`0001`](../adr/0001-omd-screen-staging-strategy.md), [`0002`](../adr/0002-brand-agnostic-molecule-theming.md), [`0003`](../adr/0003-screen-scaffold-p6-override.md)
 

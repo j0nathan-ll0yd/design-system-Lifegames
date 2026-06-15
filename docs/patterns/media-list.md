@@ -6,7 +6,7 @@ iOS-platform pattern — no web parity obligation (web is read-only).
 
 A generic list shell that renders host-supplied rows over a tokenized surface, with pull-to-refresh and an optional empty state. Abstracted from OMD's `FileList`, it carries no media semantics — the host supplies row content (e.g. OMD's `FileRow`) and the empty-state copy.
 
-> **Scope note (from dogfooding):** `ListScaffold` is for **row-driven** lists. OMD's `SampleFiles` screen — a guest-preview/upsell with a hero, a benefits card, and a CTA (no rows) — does **not** fit and is kept bespoke. A marketing/hero or detail scaffold would be the right home for it, not this list shell. The scaffold is intentionally the whole `List` and does not compose header/footer sibling content; screens that need that keep their own layout.
+> **Scope note (from dogfooding):** `ListTemplate` is for **row-driven** lists. OMD's `SampleFiles` screen — a guest-preview/upsell with a hero, a benefits card, and a CTA (no rows) — does **not** fit and is kept bespoke. A marketing/hero or detail template would be the right home for it, not this list shell. The template is intentionally the whole `List` and does not compose header/footer sibling content; screens that need that keep their own layout.
 
 ## 2. Anatomy
 
@@ -16,7 +16,7 @@ A generic list shell that renders host-supplied rows over a tokenized surface, w
 
 ## 3. Props / Slots
 
-Swift type: [`ListScaffold`](../../Sources/LifegamesTemplates/ListScaffold.swift)
+Swift type: [`ListTemplate`](../../Sources/LifegamesTemplates/ListTemplate.swift)
 
 | Field        | Type                                | Notes                                                       |
 | ------------ | ----------------------------------- | ----------------------------------------------------------- |
@@ -37,12 +37,12 @@ Empty-state molecule: [`LGEmptyState`](../../Sources/LifegamesComponents/LGEmpty
 
 ## 5. Variants
 
-None at scaffold level — the row builder absorbs all per-app variety.
+None at template level — the row builder absorbs all per-app variety.
 
 ## 6. Host-owned boundaries (Part 2)
 
-- **Nav chrome is host-owned** — `NavigationStack`, navigation title, toolbar, and search wrap the scaffold; the scaffold renders rows + pull-to-refresh + empty state only.
-- **Swipe / selection affordances** live on the host's `row` view, not on the scaffold.
+- **Nav chrome is host-owned** — `NavigationStack`, navigation title, toolbar, and search wrap the template; the template renders rows + pull-to-refresh + empty state only.
+- **Swipe / selection affordances** live on the host's `row` view, not on the template.
 - OMD's `FileRow` is the app-supplied `row` slot content, not a design-system component.
 
 ## 7. Accessibility
@@ -53,7 +53,7 @@ None at scaffold level — the row builder absorbs all per-app variety.
 
 ## 8. References
 
-- Scaffold: [`Sources/LifegamesTemplates/ListScaffold.swift`](../../Sources/LifegamesTemplates/ListScaffold.swift)
+- Template: [`Sources/LifegamesTemplates/ListTemplate.swift`](../../Sources/LifegamesTemplates/ListTemplate.swift)
 - Empty-state molecule: [`LGEmptyState.swift`](../../Sources/LifegamesComponents/LGEmptyState.swift)
 - ADRs: [`0001`](../adr/0001-omd-screen-staging-strategy.md), [`0002`](../adr/0002-brand-agnostic-molecule-theming.md), [`0003`](../adr/0003-screen-scaffold-p6-override.md)
 
