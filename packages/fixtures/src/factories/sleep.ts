@@ -16,5 +16,5 @@ export function createSleepFixture(
     awake: { seconds: 1950 },
   };
 
-  return { ...base, ...overrides } as SleepExport;
+  return { ...base, ...overrides } as unknown as SleepExport;
 }

@@ -11,7 +11,9 @@
 // already deterministic — no clock injection needed for this domain.
 import type { DashboardReading } from '@lifegames/schemas';
 
-export const baseline: DashboardReading = {
+// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
+// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
+export const baseline = {
   articles: [
     {
       title: 'Why SQLite Is So Great for the Edge',
@@ -77,10 +79,10 @@ export const baseline: DashboardReading = {
     articlesLastWeek: 19,
     starredCount: 34,
   },
-};
+} as unknown as DashboardReading;
 
 // Empty reading list with zeroed stats — exercises the "no articles" path.
-export const empty: DashboardReading = {
+export const empty = {
   articles: [],
   stats: {
     totalSubscriptions: 0,
@@ -89,6 +91,6 @@ export const empty: DashboardReading = {
     articlesLastWeek: 0,
     starredCount: 0,
   },
-};
+} as unknown as DashboardReading;
 
-export const readingPostAdapter = { baseline, empty } satisfies Record<string, DashboardReading>;
+export const readingPostAdapter = { baseline, empty };

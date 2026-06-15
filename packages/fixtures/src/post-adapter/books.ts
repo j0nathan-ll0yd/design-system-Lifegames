@@ -7,7 +7,9 @@
 // (authored/dashboard-books.schema.json). All values absolute — deterministic.
 import type { DashboardBooks } from '@lifegames/schemas';
 
-export const baseline: DashboardBooks = {
+// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
+// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
+export const baseline = {
   books: [
     {
       title: 'The Pragmatic Programmer',
@@ -100,11 +102,11 @@ export const baseline: DashboardBooks = {
     avgRating: 4.5,
     booksThisYear: 3,
   },
-};
+} as unknown as DashboardBooks;
 
 // Empty bookshelf: no books, empty bookMeta, statusLabels retained (UI needs the
 // label map even when the shelf is empty), zeroed stats.
-export const empty: DashboardBooks = {
+export const empty = {
   books: [],
   bookMeta: {},
   statusLabels: {
@@ -119,6 +121,6 @@ export const empty: DashboardBooks = {
     avgRating: 0,
     booksThisYear: 0,
   },
-};
+} as unknown as DashboardBooks;
 
-export const booksPostAdapter = { baseline, empty } satisfies Record<string, DashboardBooks>;
+export const booksPostAdapter = { baseline, empty };

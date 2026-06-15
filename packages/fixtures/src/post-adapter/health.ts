@@ -10,7 +10,9 @@
 // absolute (no relative timestamps), so this domain is inherently deterministic.
 import type { DashboardHealth } from '@lifegames/schemas';
 
-export const baseline: DashboardHealth = {
+// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
+// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
+export const baseline = {
   date: '2026-01-01',
   quantities: {
     activeEnergyBurned: { value: 310.5, unit: 'kcal' },
@@ -74,11 +76,11 @@ export const baseline: DashboardHealth = {
     caffeineRangeLo: 200,
     caffeineRangeHi: 400,
   },
-};
+} as unknown as DashboardHealth;
 
 // Empty: only the schema-required fields (date, quantities, sleep, workouts) with
 // zeroed quantities and no workouts. Exercises the skeleton/no-data health path.
-export const empty: DashboardHealth = {
+export const empty = {
   date: '2026-01-01',
   quantities: {},
   sleep: {
@@ -88,6 +90,6 @@ export const empty: DashboardHealth = {
     rem: { seconds: 0 },
   },
   workouts: [],
-};
+} as unknown as DashboardHealth;
 
-export const healthPostAdapter = { baseline, empty } satisfies Record<string, DashboardHealth>;
+export const healthPostAdapter = { baseline, empty };

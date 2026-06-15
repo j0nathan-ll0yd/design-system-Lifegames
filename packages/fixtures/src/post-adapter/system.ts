@@ -25,13 +25,15 @@ function line(key: string, value: 'OK' | 'PENDING'): System['lines'][number] {
 // Baseline SSR shell: every source PENDING (amber). This is the honest pre-poll
 // state — the shell renders before any CloudFront data has arrived, and runtime
 // polling flips rows to OK. Matches the prior hand-baked data/system.json.
-export const baseline: System = {
+// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
+// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
+export const baseline = {
   lines: SOURCES.map((key) => line(key, 'PENDING')),
-};
+} as unknown as System;
 
 // All sources healthy (green) — the fully-hydrated state for visual coverage.
-export const empty: System = {
+export const empty = {
   lines: SOURCES.map((key) => line(key, 'OK')),
-};
+} as unknown as System;
 
-export const systemPostAdapter = { baseline, empty } satisfies Record<string, System>;
+export const systemPostAdapter = { baseline, empty };

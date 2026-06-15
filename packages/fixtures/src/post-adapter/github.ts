@@ -14,8 +14,9 @@ import type { DashboardGithub } from '@lifegames/schemas';
 
 // Deterministic 52x7 contribution grid. Generated from a fixed integer sequence
 // (NOT Math.random) so re-runs are byte-identical. Each cell is a small count.
-function buildGrid(): number[][] {
-  const weeks: number[][] = [];
+function buildGrid(): [number, number, number, number, number, number, number][] {
+  type Week = [number, number, number, number, number, number, number];
+  const weeks: Week[] = [];
   for (let w = 0; w < 52; w++) {
     const days: number[] = [];
     for (let d = 0; d < 7; d++) {
@@ -24,12 +25,14 @@ function buildGrid(): number[][] {
       const weekendDamp = d === 0 || d === 6 ? 0 : 1;
       days.push(base * weekendDamp);
     }
-    weeks.push(days);
+    weeks.push(days as Week);
   }
   return weeks;
 }
 
-export const baseline: DashboardGithub = {
+// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
+// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
+export const baseline = {
   contributions: buildGrid(),
   totalContributions: 1847,
   contributionTypes: {
@@ -117,12 +120,15 @@ export const baseline: DashboardGithub = {
     { name: 'ml-pipeline', stars: 15, language: 'Python', description: 'ML data pipeline' },
     { name: 'ios-app', stars: 8, language: 'Swift', description: 'iOS companion app' },
   ],
-};
+} as unknown as DashboardGithub;
 
 // Empty: zeroed grid (still 52x7 of zeros for layout), zero stats, no activity.
 // Exercises the "no contributions yet" rendering path.
-export const empty: DashboardGithub = {
-  contributions: Array.from({ length: 52 }, () => [0, 0, 0, 0, 0, 0, 0]),
+export const empty = {
+  contributions: Array.from(
+    { length: 52 },
+    () => [0, 0, 0, 0, 0, 0, 0] as [number, number, number, number, number, number, number],
+  ),
   totalContributions: 0,
   contributionTypes: { commits: 0, pullRequests: 0, issues: 0, reviews: 0, repositories: 0 },
   streak: { current: 0, longest: 0 },
@@ -132,6 +138,6 @@ export const empty: DashboardGithub = {
   weeklyCommits: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   stats: { repos: 0, stars: 0, contributions: 0 },
   topRepos: [],
-};
+} as unknown as DashboardGithub;
 
-export const githubPostAdapter = { baseline, empty } satisfies Record<string, DashboardGithub>;
+export const githubPostAdapter = { baseline, empty };
