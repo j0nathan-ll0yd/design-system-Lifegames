@@ -10,10 +10,9 @@
 // `date` is a pre-formatted relative string ("Today", "2 days ago"), so it is
 // already deterministic — no clock injection needed for this domain.
 import type { DashboardReading } from '@lifegames/schemas';
+import { authored } from './branded';
 
-// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
-// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
-export const baseline = {
+export const baseline = authored<DashboardReading>({
   articles: [
     {
       title: 'Why SQLite Is So Great for the Edge',
@@ -79,10 +78,10 @@ export const baseline = {
     articlesLastWeek: 19,
     starredCount: 34,
   },
-} as unknown as DashboardReading;
+});
 
 // Empty reading list with zeroed stats — exercises the "no articles" path.
-export const empty = {
+export const empty = authored<DashboardReading>({
   articles: [],
   stats: {
     totalSubscriptions: 0,
@@ -91,6 +90,6 @@ export const empty = {
     articlesLastWeek: 0,
     starredCount: 0,
   },
-} as unknown as DashboardReading;
+});
 
 export const readingPostAdapter = { baseline, empty };

@@ -6,10 +6,9 @@
 // authored display shape. Authored against `@lifegames/schemas` `DashboardBooks`
 // (authored/dashboard-books.schema.json). All values absolute — deterministic.
 import type { DashboardBooks } from '@lifegames/schemas';
+import { authored } from './branded';
 
-// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
-// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
-export const baseline = {
+export const baseline = authored<DashboardBooks>({
   books: [
     {
       title: 'The Pragmatic Programmer',
@@ -102,11 +101,11 @@ export const baseline = {
     avgRating: 4.5,
     booksThisYear: 3,
   },
-} as unknown as DashboardBooks;
+});
 
 // Empty bookshelf: no books, empty bookMeta, statusLabels retained (UI needs the
 // label map even when the shelf is empty), zeroed stats.
-export const empty = {
+export const empty = authored<DashboardBooks>({
   books: [],
   bookMeta: {},
   statusLabels: {
@@ -121,6 +120,6 @@ export const empty = {
     avgRating: 0,
     booksThisYear: 0,
   },
-} as unknown as DashboardBooks;
+});
 
 export const booksPostAdapter = { baseline, empty };

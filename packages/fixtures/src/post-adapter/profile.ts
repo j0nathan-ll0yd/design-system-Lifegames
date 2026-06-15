@@ -6,10 +6,9 @@
 // shell via loadDashboardData. Runtime polling never overwrites profile (it is
 // static identity content), so `baseline` is the representative production state.
 import type { Profile } from '@lifegames/schemas';
+import { authored } from './branded';
 
-// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
-// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
-export const baseline = {
+export const baseline = authored<Profile>({
   name: 'Jonathan Lloyd',
   title: 'Engineering Director',
   location: 'San Francisco, CA',
@@ -38,11 +37,11 @@ export const baseline = {
     { type: 'output', text: '→ programming, pc gaming, musical theatre, edm, conversation' },
     { type: 'cursor', text: '' },
   ],
-} as unknown as Profile;
+});
 
 // Minimal-but-valid profile: required fields only, single-line terminal, no
 // optional contact links. Exercises the empty/sparse identity rendering path.
-export const empty = {
+export const empty = authored<Profile>({
   name: 'Jonathan Lloyd',
   title: 'Engineering Director',
   location: 'San Francisco, CA',
@@ -50,6 +49,6 @@ export const empty = {
   tagline: 'Welcome to my human datastream.',
   avatar: '/assets/avatar.webp',
   terminalLines: [{ type: 'cursor', text: '' }],
-} as unknown as Profile;
+});
 
 export const profilePostAdapter = { baseline, empty };

@@ -11,6 +11,7 @@
 // `devActivity[].date` is a pre-formatted relative string ("2h ago"), so it is
 // already deterministic — no clock injection needed for this domain.
 import type { DashboardGithub } from '@lifegames/schemas';
+import { authored } from './branded';
 
 // Deterministic 52x7 contribution grid. Generated from a fixed integer sequence
 // (NOT Math.random) so re-runs are byte-identical. Each cell is a small count.
@@ -30,9 +31,7 @@ function buildGrid(): [number, number, number, number, number, number, number][]
   return weeks;
 }
 
-// SchemaDerived<T> adds a nominal brand symbol that object literals cannot
-// satisfy structurally. The fixtures ARE schema-valid; cast bypasses the brand.
-export const baseline = {
+export const baseline = authored<DashboardGithub>({
   contributions: buildGrid(),
   totalContributions: 1847,
   contributionTypes: {
@@ -120,11 +119,11 @@ export const baseline = {
     { name: 'ml-pipeline', stars: 15, language: 'Python', description: 'ML data pipeline' },
     { name: 'ios-app', stars: 8, language: 'Swift', description: 'iOS companion app' },
   ],
-} as unknown as DashboardGithub;
+});
 
 // Empty: zeroed grid (still 52x7 of zeros for layout), zero stats, no activity.
 // Exercises the "no contributions yet" rendering path.
-export const empty = {
+export const empty = authored<DashboardGithub>({
   contributions: Array.from(
     { length: 52 },
     () => [0, 0, 0, 0, 0, 0, 0] as [number, number, number, number, number, number, number],
@@ -138,6 +137,6 @@ export const empty = {
   weeklyCommits: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   stats: { repos: 0, stars: 0, contributions: 0 },
   topRepos: [],
-} as unknown as DashboardGithub;
+});
 
 export const githubPostAdapter = { baseline, empty };

@@ -9,7 +9,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "allowImportingTsExtensions": false,
     "lib": ["ES2022"],
     "types": ["node"]
   },
