@@ -5,6 +5,7 @@
 // `System` (authored/system.schema.json) and fed to the SSR shell via
 // loadDashboardData. Runtime polling flips PENDING rows to OK as live data arrives.
 import type { System } from '@lifegames/schemas';
+import { authored } from './branded';
 
 const SOURCES = [
   'Health',
@@ -25,13 +26,13 @@ function line(key: string, value: 'OK' | 'PENDING'): System['lines'][number] {
 // Baseline SSR shell: every source PENDING (amber). This is the honest pre-poll
 // state — the shell renders before any CloudFront data has arrived, and runtime
 // polling flips rows to OK. Matches the prior hand-baked data/system.json.
-export const baseline: System = {
+export const baseline = authored<System>({
   lines: SOURCES.map((key) => line(key, 'PENDING')),
-};
+});
 
 // All sources healthy (green) — the fully-hydrated state for visual coverage.
-export const empty: System = {
+export const empty = authored<System>({
   lines: SOURCES.map((key) => line(key, 'OK')),
-};
+});
 
-export const systemPostAdapter = { baseline, empty } satisfies Record<string, System>;
+export const systemPostAdapter = { baseline, empty };

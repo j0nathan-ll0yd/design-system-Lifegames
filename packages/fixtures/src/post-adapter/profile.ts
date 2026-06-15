@@ -6,8 +6,9 @@
 // shell via loadDashboardData. Runtime polling never overwrites profile (it is
 // static identity content), so `baseline` is the representative production state.
 import type { Profile } from '@lifegames/schemas';
+import { authored } from './branded';
 
-export const baseline: Profile = {
+export const baseline = authored<Profile>({
   name: 'Jonathan Lloyd',
   title: 'Engineering Director',
   location: 'San Francisco, CA',
@@ -36,11 +37,11 @@ export const baseline: Profile = {
     { type: 'output', text: '→ programming, pc gaming, musical theatre, edm, conversation' },
     { type: 'cursor', text: '' },
   ],
-};
+});
 
 // Minimal-but-valid profile: required fields only, single-line terminal, no
 // optional contact links. Exercises the empty/sparse identity rendering path.
-export const empty: Profile = {
+export const empty = authored<Profile>({
   name: 'Jonathan Lloyd',
   title: 'Engineering Director',
   location: 'San Francisco, CA',
@@ -48,6 +49,6 @@ export const empty: Profile = {
   tagline: 'Welcome to my human datastream.',
   avatar: '/assets/avatar.webp',
   terminalLines: [{ type: 'cursor', text: '' }],
-};
+});
 
-export const profilePostAdapter = { baseline, empty } satisfies Record<string, Profile>;
+export const profilePostAdapter = { baseline, empty };

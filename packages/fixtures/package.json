@@ -17,9 +17,10 @@
     "fixture-map.json"
   ],
   "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "generate": "tsx scripts/generate.ts",
     "validate": "tsx scripts/validate.ts",
-    "build": "pnpm generate && pnpm validate",
+    "build": "pnpm typecheck && pnpm generate && pnpm validate",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\" \"scripts/**/*.{ts,mjs}\""
@@ -41,6 +42,7 @@
     "eslint": "^10.4.1",
     "prettier": "3.6.0",
     "tsx": "^4.22.4",
+    "typescript": "^5.9.3",
     "vitest": "^4.1.8"
   }
 }

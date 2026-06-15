@@ -57,7 +57,6 @@ const fixtureMap = readJson(join(PKG_ROOT, 'fixture-map.json')) as FixtureMap;
 
 const ajv = new Ajv({ strict: false, allErrors: true, allowUnionTypes: true });
 // ajv-formats is CJS with a callable default under tsx's esModuleInterop.
-// @ts-expect-error ajv-formats CJS default-interop limitation under NodeNext
 addFormats(ajv);
 
 type ValidatorFn = ReturnType<Ajv['compile']>;

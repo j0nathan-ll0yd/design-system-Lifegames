@@ -9,8 +9,9 @@
 // `DashboardHealth` (generated/dashboard-health.schema.json). All values are
 // absolute (no relative timestamps), so this domain is inherently deterministic.
 import type { DashboardHealth } from '@lifegames/schemas';
+import { authored } from './branded';
 
-export const baseline: DashboardHealth = {
+export const baseline = authored<DashboardHealth>({
   date: '2026-01-01',
   quantities: {
     activeEnergyBurned: { value: 310.5, unit: 'kcal' },
@@ -74,11 +75,11 @@ export const baseline: DashboardHealth = {
     caffeineRangeLo: 200,
     caffeineRangeHi: 400,
   },
-};
+});
 
 // Empty: only the schema-required fields (date, quantities, sleep, workouts) with
 // zeroed quantities and no workouts. Exercises the skeleton/no-data health path.
-export const empty: DashboardHealth = {
+export const empty = authored<DashboardHealth>({
   date: '2026-01-01',
   quantities: {},
   sleep: {
@@ -88,6 +89,6 @@ export const empty: DashboardHealth = {
     rem: { seconds: 0 },
   },
   workouts: [],
-};
+});
 
-export const healthPostAdapter = { baseline, empty } satisfies Record<string, DashboardHealth>;
+export const healthPostAdapter = { baseline, empty };
