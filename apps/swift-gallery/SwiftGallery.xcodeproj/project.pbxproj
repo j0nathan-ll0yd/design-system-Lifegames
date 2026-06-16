@@ -741,18 +741,22 @@
 /* Begin XCSwiftPackageProductDependency section */
 		1EAF1E34EE5624814221178D /* LifegamesTemplates */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesTemplates;
 		};
 		44198BCCE30792EADF1687AA /* LifegamesTokens */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesTokens;
 		};
 		B1743235CA7DB15E6E5B3D59 /* LifegamesComponents */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesComponents;
 		};
 		C612F58B3BFF38D7B87AD62A /* LifegamesWidgets */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesWidgets;
 		};
 /* End XCSwiftPackageProductDependency section */
