@@ -18,7 +18,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -36,7 +36,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -59,7 +59,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -85,7 +85,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -103,7 +103,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -126,7 +126,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -149,7 +149,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -170,7 +170,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -259,7 +259,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -290,7 +290,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
@@ -324,7 +324,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: pnpm
       - run: bash scripts/ci-setup-portal-contract.sh
         env:
