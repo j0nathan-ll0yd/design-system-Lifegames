@@ -52,16 +52,11 @@ struct FileListNeonConsole: View {
             .padding(.bottom, Spacing.s600)
         }
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         #endif
+        .navigationTitle("Library")
         .toolbar {
             #if os(iOS)
-                ToolbarItem(placement: .principal) {
-                    Text("LIBRARY")
-                        .font(OMDFont.bold(13))
-                        .foregroundStyle(LGColor.accentBlue)
-                        .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 4)
-                }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {} label: {
                         Image(systemName: "arrow.clockwise")

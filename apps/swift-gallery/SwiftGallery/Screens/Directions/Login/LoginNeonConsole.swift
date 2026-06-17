@@ -20,7 +20,10 @@ struct LoginNeonConsole: View {
                     .padding(.top, Spacing.s600)
             }
         } primaryAction: {
-            appleButton
+            VStack(spacing: Spacing.s300) {
+                appleButton
+                emailButton
+            }
         } footer: {
             Text("Secure authentication via Apple ID")
                 .font(OMDFont.regular(10))
@@ -70,6 +73,28 @@ struct LoginNeonConsole: View {
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shadow(color: LGColor.accentBlue.opacity(0.5), radius: 10)
+        }
+        .frame(minWidth: 44, minHeight: 44)
+        .contentShape(.rect)
+    }
+
+    private var emailButton: some View {
+        Button {} label: {
+            HStack(spacing: Spacing.s300) {
+                Image(systemName: "envelope.fill")
+                    .font(.system(size: 16))
+                Text("Continue with Email")
+                    .font(OMDFont.semibold(16))
+            }
+            .foregroundStyle(LGColor.textPrimary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Spacing.s400)
+            .background(LGColor.surfaceRaised.opacity(0.6))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(LGColor.borderSubtle, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
         .frame(minWidth: 44, minHeight: 44)
         .contentShape(.rect)

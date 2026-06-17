@@ -108,6 +108,7 @@ struct FileRowNeon: View {
             Spacer(minLength: Spacing.s200)
 
             DownloadProgressView(state: file.downloadState, style: .neonConsole)
+                .frame(maxHeight: .infinity, alignment: .center)
         }
         .neonCard(accent: LGColor.accentBlue)
     }
