@@ -119,9 +119,23 @@ content that an SSR shell and visual tests need. Rules:
 - **`baseline` is the default SSR content.** The build-time SSR shell uses the `baseline`
   post-adapter variation by default. `baseline` represents the typical state — neither
   misleadingly empty nor unrealistically full.
-- **Visual tests select named variations explicitly.** State-specific screenshots (empty,
-  sparse, full, plus domain-specific edge cases like `single-language` or `old-timestamp`)
-  select a named variation by key — type-safe, never random, never default-only.
+- **Standard variation triad: `empty` / `baseline` / `full`.** Every fixture domain MUST
+  provide all three reserved keys. `empty` = data fetched but zero items / null-ish (the
+  widget's empty state); `baseline` = the typical SSR default; `full` = maximally populated
+  (all nullable-but-required fields non-null, all optional keys present, longest realistic
+  strings, max-count arrays) to stress layout for overflow/truncation. Raw fixtures may add
+  any number of domain-specific extras (e.g. `bradycardia`, `allCategories`); post-adapter
+  fixtures stay **uniform** — exactly the triad — because `getDashboardFixture()` indexes
+  every domain by the shared `FixtureVariation` type. A reserved domain that genuinely
+  cannot honor a key is recorded in `VARIATION_EXCEPTIONS` with a rationale (none today).
+- **`skeleton` is a render state, not a fixture.** Loading/skeleton is the UI shown while
+  data is absent, not a data payload — a `skeleton.json` would either duplicate `empty` or
+  violate `additionalProperties:false`. Visual tests exercise the loading state by
+  withholding/delaying the response at the interception layer (Playwright route control,
+  the analogue of MSW `delay('infinite')`), not via a fixture file.
+- **Visual tests select named variations explicitly.** State-specific screenshots (`empty`,
+  `baseline`, `full`, plus domain-specific edge cases like `old-timestamp`) select a named
+  variation by key — type-safe, never random, never default-only.
 - **Runtime polling is the live-data source — never read fixtures at runtime.** Fixtures
   are build-time only. After page load, runtime polling (PollEngine 30s fast / 120s slow)
   overwrites the SSR shell with live CloudFront data. The staleness window is the polling
@@ -134,8 +148,12 @@ content that an SSR shell and visual tests need. Rules:
 **Enforcement:** the consumer-side `audit:fixtures` gate (`scripts/audit-fixtures.mjs` in
 each consumer, run in `prebuild` + CI — fails the build if any `data/**`,
 `test/fixtures/**`, or `src/**/fixtures/**` JSON reappears, per Invariant I2); the DS
-`fixtures` CI job (`pnpm -F @lifegames/fixtures build`/`test`/`lint`); and the freshness
-git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in
+`fixtures` CI job (`pnpm -F @lifegames/fixtures build`/`test`/`lint`) — where `test`
+fail-closes if any domain is missing a reserved triad key (post-adapter exactly the triad,
+raw at least the triad) and `build` runs the `check:full-coverage` oracle that asserts every
+raw `full` fixture is maximally populated (optional keys present + nullable-but-required
+fields non-null; `focus` and `health.quantities` are documented `WALKER_EXCEPTIONS`); and
+the freshness git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in
 `packages/schemas/scripts/check-freshness.sh` (re-runs `pnpm -F @lifegames/fixtures
 generate` and fails on drift).
 

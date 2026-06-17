@@ -26,7 +26,7 @@ import { starredReposPostAdapter } from './post-adapter/starredRepos';
 /**
  * The post-adapter SSR shell, keyed by domain then variation name. Mirrors the
  * web's `DashboardData` per-domain shapes. Add named variations per domain as
- * needed (baseline + empty exist for every domain today).
+ * needed (baseline + empty + full exist for every domain today).
  */
 export const fixtures = {
   profile: profilePostAdapter,
@@ -38,7 +38,7 @@ export const fixtures = {
   starredRepos: starredReposPostAdapter,
 } as const;
 
-/** Variation keys available for every domain (baseline default; empty for no-data). */
+/** Variation keys available for every domain (empty, baseline, full — the normalized triad). */
 export type FixtureVariation = keyof typeof profilePostAdapter;
 
 /**

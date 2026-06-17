@@ -1,0 +1,111 @@
+{
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "source": "coasttocoastreviews.com",
+  "totalReviews": 8,
+  "reviews": [
+    {
+      "title": "A Midsummer Night's Dream",
+      "slug": "a-midsummer-nights-dream",
+      "url": "https://coasttocoastreviews.com/reviews/a-midsummer-nights-dream",
+      "author": "Eleanor Fairchild",
+      "publishedAt": "2026-03-18",
+      "rating": "A+",
+      "ratingNumeric": 4.3,
+      "excerpt": "A transcendent production that redefines the genre entirely — the fairy sequences deploy aerial silk work that transforms the stage into a living dreamscape, while the mechanicals bring genuine wit.",
+      "imageUrl": "https://coasttocoastreviews.com/images/a-midsummer-nights-dream.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "Hamlet",
+      "slug": "hamlet",
+      "url": "https://coasttocoastreviews.com/reviews/hamlet",
+      "author": "Marcus Chen-Ramirez",
+      "publishedAt": "2026-03-18",
+      "rating": "A",
+      "ratingNumeric": 4,
+      "excerpt": "A commanding central performance anchors this thoughtful modern staging — the soliloquies are delivered with a conversational intimacy that makes the language feel immediate and urgent.",
+      "imageUrl": "https://coasttocoastreviews.com/images/hamlet.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "Macbeth",
+      "slug": "macbeth",
+      "url": "https://coasttocoastreviews.com/reviews/macbeth",
+      "author": "Priya Vasquez-Okonkwo",
+      "publishedAt": "2026-03-18",
+      "rating": "A-",
+      "ratingNumeric": 3.7,
+      "excerpt": "Visually stunning with occasional pacing issues in Act III — the lighting design creates an atmosphere of perpetual twilight that perfectly mirrors the moral descent of the protagonists.",
+      "imageUrl": "https://coasttocoastreviews.com/images/macbeth.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "Romeo and Juliet",
+      "slug": "romeo-and-juliet",
+      "url": "https://coasttocoastreviews.com/reviews/romeo-and-juliet",
+      "author": "James Thornton-Park",
+      "publishedAt": "2026-03-18",
+      "rating": "B+",
+      "ratingNumeric": 3.3,
+      "excerpt": "Fresh choreography elevates familiar material — the fight scenes are brutal and kinetic while the balcony sequence is reimagined as a fire escape encounter that grounds the romance.",
+      "imageUrl": "https://coasttocoastreviews.com/images/romeo-and-juliet.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "Othello",
+      "slug": "othello",
+      "url": "https://coasttocoastreviews.com/reviews/othello",
+      "author": "Sophia Nakamura-Williams",
+      "publishedAt": "2026-03-18",
+      "rating": "B",
+      "ratingNumeric": 3,
+      "excerpt": "Solid ensemble work but the leads lack chemistry in the crucial early scenes — Iago steals every moment he occupies, making the manipulation feel almost too easy.",
+      "imageUrl": "https://coasttocoastreviews.com/images/othello.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "The Tempest",
+      "slug": "the-tempest",
+      "url": "https://coasttocoastreviews.com/reviews/the-tempest",
+      "author": "Rafael Johansson-Adeyemi",
+      "publishedAt": "2026-03-18",
+      "rating": "C",
+      "ratingNumeric": 2,
+      "excerpt": "Ambitious staging undermined by muddled direction — the projection mapping is technically impressive but distracts from the language rather than enhancing it.",
+      "imageUrl": "https://coasttocoastreviews.com/images/the-tempest.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "Titus Andronicus",
+      "slug": "titus-andronicus",
+      "url": "https://coasttocoastreviews.com/reviews/titus-andronicus",
+      "author": "Diane Kowalski-Huang",
+      "publishedAt": "2026-03-18",
+      "rating": "D",
+      "ratingNumeric": 1,
+      "excerpt": "Gratuitous staging adds nothing to the text — the decision to lean into graphic violence without satirical framing makes the production feel exploitative rather than provocative.",
+      "imageUrl": "https://coasttocoastreviews.com/images/titus-andronicus.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    },
+    {
+      "title": "The Comedy of Errors",
+      "slug": "the-comedy-of-errors",
+      "url": "https://coasttocoastreviews.com/reviews/the-comedy-of-errors",
+      "author": "Benjamin Osei-Mensah",
+      "publishedAt": "2026-03-18",
+      "rating": "F",
+      "ratingNumeric": 0,
+      "excerpt": "A complete misfire on every level — the slapstick timing is off, the doubling gimmick confuses rather than delights, and the musical interludes feel imported from a different production entirely.",
+      "imageUrl": "https://coasttocoastreviews.com/images/the-comedy-of-errors.jpg",
+      "imageWidth": 1200,
+      "imageHeight": 675
+    }
+  ]
+}

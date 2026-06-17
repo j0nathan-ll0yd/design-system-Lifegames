@@ -1,0 +1,47 @@
+[
+  {
+    "owner": "vercel",
+    "name": "next.js",
+    "url": "https://github.com/vercel/next.js",
+    "stars": 128500,
+    "language": "TypeScript",
+    "languageColor": "#3178c6",
+    "starredAt": "1 day ago"
+  },
+  {
+    "owner": "denoland",
+    "name": "deno",
+    "url": "https://github.com/denoland/deno",
+    "stars": 98200,
+    "language": "Rust",
+    "languageColor": "#dea584",
+    "starredAt": "3 days ago"
+  },
+  {
+    "owner": "biomejs",
+    "name": "biome",
+    "url": "https://github.com/biomejs/biome",
+    "stars": 16400,
+    "language": "Rust",
+    "languageColor": "#dea584",
+    "starredAt": "1 week ago"
+  },
+  {
+    "owner": "drizzle-team",
+    "name": "drizzle-orm",
+    "url": "https://github.com/drizzle-team/drizzle-orm",
+    "stars": 25800,
+    "language": "TypeScript",
+    "languageColor": "#3178c6",
+    "starredAt": "2 weeks ago"
+  },
+  {
+    "owner": "tauri-apps",
+    "name": "tauri",
+    "url": "https://github.com/tauri-apps/tauri",
+    "stars": 86500,
+    "language": "Rust",
+    "languageColor": "#dea584",
+    "starredAt": "3 weeks ago"
+  }
+]

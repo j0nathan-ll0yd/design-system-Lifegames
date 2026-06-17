@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "events": [
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/mantle",
+      "title": "Unify handler pattern across all Lambda functions for consistent error handling",
+      "date": "2026-03-18",
+      "hash": "a9421b5",
+      "additions": 245,
+      "deletions": 89,
+      "number": 142
+    },
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/j0nathan-ll0yd.github.io",
+      "title": "Implement skeleton loading states for all dashboard widgets with CSS animations",
+      "date": "2026-03-18",
+      "hash": "b3c4d5e",
+      "additions": 512,
+      "deletions": 134,
+      "number": 87
+    },
+    {
+      "type": "pr_merged",
+      "repo": "j0nathan-ll0yd/mantle",
+      "title": "feat(auth): implement token refresh interceptor with retry logic",
+      "date": "2026-03-18",
+      "hash": "c5d6e7f",
+      "additions": 189,
+      "deletions": 45,
+      "number": 256
+    },
+    {
+      "type": "pr_opened",
+      "repo": "j0nathan-ll0yd/design-system-Lifegames",
+      "title": "feat(fixtures): normalize variations with empty/baseline/full triad",
+      "date": "2026-03-18",
+      "hash": "d7e8f9g",
+      "additions": 1850,
+      "deletions": 120,
+      "number": 60
+    },
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/mantle",
+      "title": "Extract shared validation utilities into dedicated validation engine module",
+      "date": "2026-03-18",
+      "hash": "e8f9g0h",
+      "additions": 378,
+      "deletions": 156,
+      "number": 301
+    },
+    {
+      "type": "pr_merged",
+      "repo": "j0nathan-ll0yd/j0nathan-ll0yd.github.io",
+      "title": "feat(widgets): add theatre reviews widget with grade-based color coding",
+      "date": "2026-03-18",
+      "hash": "f9g0h1i",
+      "additions": 634,
+      "deletions": 28,
+      "number": 42
+    },
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/design-system-Lifegames",
+      "title": "Add DTCG token definitions for neon accent colors and fluid typography scales",
+      "date": "2026-03-18",
+      "hash": "g0h1i2j",
+      "additions": 420,
+      "deletions": 67,
+      "number": 55
+    },
+    {
+      "type": "pr_opened",
+      "repo": "j0nathan-ll0yd/mantle",
+      "title": "refactor(db): migrate DSQL schema to use branded column types for type safety",
+      "date": "2026-03-18",
+      "hash": "h1i2j3k",
+      "additions": 892,
+      "deletions": 445,
+      "number": 312
+    },
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/j0nathan-ll0yd.github.io",
+      "title": "Optimize Astro island hydration with visible intersection observer strategy",
+      "date": "2026-03-18",
+      "hash": "i2j3k4l",
+      "additions": 156,
+      "deletions": 72,
+      "number": 93
+    },
+    {
+      "type": "pr_merged",
+      "repo": "j0nathan-ll0yd/mantle",
+      "title": "fix(export): prevent silent session drops during long-running health exports",
+      "date": "2026-03-18",
+      "hash": "j3k4l5m",
+      "additions": 98,
+      "deletions": 31,
+      "number": 289
+    },
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/design-system-Lifegames",
+      "title": "Generate Swift Package targets for all widget schemas with codegen pipeline",
+      "date": "2026-03-18",
+      "hash": "k4l5m6n",
+      "additions": 1240,
+      "deletions": 340,
+      "number": 48
+    },
+    {
+      "type": "commit",
+      "repo": "j0nathan-ll0yd/mantle",
+      "title": "Add CloudFront cache invalidation after successful S3 export for all domains",
+      "date": "2026-03-18",
+      "hash": "l5m6n7o",
+      "additions": 267,
+      "deletions": 89,
+      "number": 315
+    }
+  ]
+}

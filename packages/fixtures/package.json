@@ -20,7 +20,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "generate": "tsx scripts/generate.ts",
     "validate": "tsx scripts/validate.ts",
-    "build": "pnpm typecheck && pnpm generate && pnpm validate",
+    "check:full-coverage": "tsx scripts/check-full-coverage.ts",
+    "build": "pnpm typecheck && pnpm generate && pnpm validate && pnpm check:full-coverage",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\" \"scripts/**/*.{ts,mjs}\""

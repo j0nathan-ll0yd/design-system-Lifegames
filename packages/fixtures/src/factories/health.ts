@@ -1,7 +1,7 @@
 import type { HealthExport } from '@lifegames/portal-contract/schemas';
 import { isoDate, isoTimestamp } from './helpers';
 
-const DEFAULT_QUANTITIES: HealthExport['quantities'] = {
+export const DEFAULT_QUANTITIES: HealthExport['quantities'] = {
   heartRate: { value: 63, unit: 'count/min' },
   heartRateVariabilitySDNN: { value: 45, unit: 'ms' },
   stepCount: { value: 6800, unit: 'count' },

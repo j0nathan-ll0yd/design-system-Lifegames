@@ -35,4 +35,11 @@ export const empty = authored<System>({
   lines: SOURCES.map((key) => line(key, 'OK')),
 });
 
-export const systemPostAdapter = { baseline, empty };
+// Maximally populated: all sources OK (green) — the same as `empty` for this
+// domain since System has only `lines` (required, no nullable/optional fields).
+// The maximally-populated state IS all-green (every source reporting successfully).
+export const full = authored<System>({
+  lines: SOURCES.map((key) => line(key, 'OK')),
+});
+
+export const systemPostAdapter = { baseline, empty, full };

@@ -42,6 +42,16 @@ export const longSleep: SleepExport = createSleepFixture({
   awake: { seconds: 900 },
 });
 
+// Maximally populated: ~10h total with all truly-optional stage keys present
+// (awake, core, deep, rem are NOT in the schema's required[] — only date and
+// generatedAt are required). All stages at realistic high durations.
+export const full: SleepExport = createSleepFixture({
+  awake: { seconds: 2400 },
+  core: { seconds: 18000 },
+  deep: { seconds: 9000 },
+  rem: { seconds: 7200 },
+});
+
 export const sleepVariations = {
   baseline,
   empty,
@@ -49,4 +59,5 @@ export const sleepVariations = {
   remDominant,
   shortSleep,
   longSleep,
+  full,
 };
