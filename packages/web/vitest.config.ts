@@ -9,7 +9,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/runtime/**/*.ts'],
-      exclude: ['src/runtime/constants.ts', 'src/runtime/poll-types.ts', 'src/runtime/*-init.ts'],
+      exclude: ['src/runtime/constants.ts', 'src/runtime/*-init.ts'],
     },
   },
 });
