@@ -399,7 +399,7 @@
       }
     },
     "copyright": {
-      "value": "Jonathan Lloyd. All rights reserved.",
+      "value": "© Jonathan Lloyd. Content licensed under CC BY-NC 4.0.",
       "_meta": {
         "description": "Feed copyright notice. Used in RSS <copyright> element.",
         "usage": ["backend:ComposeFeed/index.ts (feed copyright)"],
