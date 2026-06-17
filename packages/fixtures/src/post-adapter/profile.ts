@@ -51,4 +51,45 @@ export const empty = authored<Profile>({
   terminalLines: [{ type: 'cursor', text: '' }],
 });
 
-export const profilePostAdapter = { baseline, empty };
+// Maximally populated: all optional fields present (coordinates, linkedin, github),
+// longest realistic strings, max terminal lines with all line types represented.
+export const full = authored<Profile>({
+  name: 'Jonathan Lloyd',
+  title: 'Engineering Director, Platform Infrastructure & Developer Experience',
+  location: 'San Francisco, CA',
+  coordinates: [37.7749, -122.4194],
+  linkedin: 'https://www.linkedin.com/in/lifegames/',
+  github: 'https://github.com/j0nathan-ll0yd',
+  bio: '100% pure, old fashioned, home-grown human, born free right here in the real world. Building things that matter with code, creativity, and relentless curiosity.',
+  tagline: 'Welcome to my human datastream — where technology meets the quantified self.',
+  avatar: '/assets/avatar.webp',
+  terminalLines: [
+    { type: 'prompt', text: '$ cat about.txt' },
+    { type: 'output', text: '→ Jonathan Lloyd' },
+    { type: 'output', text: '→ Engineering Director' },
+    { type: 'output', text: '→ "Creating things I\'m proud of"' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ ls skills/' },
+    { type: 'output', text: '→ aws  typescript  serverless  swift  go  perl  python  rust' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ uptime' },
+    { type: 'output', text: '→ 24+ years professionally and counting' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ cat philosophy.txt' },
+    { type: 'output', text: '→ "Enjoying the passage of time"' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ wc -l interests/' },
+    { type: 'output', text: '→ programming, pc gaming, musical theatre, edm, conversation' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ cat projects.txt' },
+    { type: 'output', text: '→ mantle — serverless infrastructure framework' },
+    { type: 'output', text: '→ lifegames — personal data dashboard & design system' },
+    { type: 'output', text: '→ coast to coast reviews — theatre criticism platform' },
+    { type: 'blank', text: '' },
+    { type: 'prompt', text: '$ echo $CURRENT_FOCUS' },
+    { type: 'output', text: '→ building the human datastream with DTCG tokens and SwiftUI' },
+    { type: 'cursor', text: '' },
+  ],
+});
+
+export const profilePostAdapter = { baseline, empty, full };

@@ -92,4 +92,133 @@ export const empty = authored<DashboardReading>({
   },
 });
 
-export const readingPostAdapter = { baseline, empty };
+// Maximally populated: large article list covering all categories, max realistic
+// stats, mix of starred/unstarred, longest realistic strings.
+export const full = authored<DashboardReading>({
+  articles: [
+    {
+      title:
+        'Building Production-Grade AI Agents with Tool Use, Memory Systems, and Multi-Step Reasoning',
+      source: 'anthropic.com',
+      date: 'Today',
+      category: 'AI',
+      starred: true,
+    },
+    {
+      title:
+        'The Complete Guide to Edge Computing Architecture and Deployment Patterns for Modern Applications',
+      source: 'fly.io/blog',
+      date: 'Today',
+      category: 'Tech',
+      starred: true,
+    },
+    {
+      title: 'How Modern Type Systems Prevent Entire Categories of Runtime Errors at Scale',
+      source: 'jvns.ca',
+      date: 'Yesterday',
+      category: 'Languages',
+      starred: true,
+    },
+    {
+      title:
+        'Why Every Engineering Organization Needs a Design System Before Scaling Past Ten Engineers',
+      source: 'bradfrost.com',
+      date: 'Yesterday',
+      category: 'Design',
+      starred: false,
+    },
+    {
+      title: 'Distributed SQLite at the Edge with LiteFS and Turso for Read-Heavy Workloads',
+      source: 'chiselstrike.com',
+      date: '2 days ago',
+      category: 'Databases',
+      starred: true,
+    },
+    {
+      title: 'CSS Container Queries, Cascade Layers, and the Future of Responsive Component Design',
+      source: 'web.dev',
+      date: '2 days ago',
+      category: 'Web',
+      starred: false,
+    },
+    {
+      title:
+        'The Science Behind Apple Health Metrics and What They Actually Tell You About Wellness',
+      source: 'gizmodo.com',
+      date: '3 days ago',
+      category: 'Health',
+      starred: true,
+    },
+    {
+      title:
+        'Rust for JavaScript Developers: A Comprehensive Guide to Systems Programming Concepts',
+      source: 'rustforjs.dev',
+      date: '3 days ago',
+      category: 'Languages',
+      starred: false,
+    },
+    {
+      title: 'The Architecture of a Modern Startup: From Monolith to Microservices and Back Again',
+      source: 'danluu.com',
+      date: '4 days ago',
+      category: 'Tech',
+      starred: true,
+    },
+    {
+      title:
+        'Understanding V8 Internals: How JavaScript Engines Optimize Hot Code Paths at Runtime',
+      source: 'mrale.ph',
+      date: '4 days ago',
+      category: 'Web',
+      starred: false,
+    },
+    {
+      title:
+        'Serverless at Scale: Lessons Learned Running Thousands of Lambda Functions in Production',
+      source: 'theburningmonk.com',
+      date: '5 days ago',
+      category: 'Tech',
+      starred: true,
+    },
+    {
+      title:
+        'SwiftUI Performance Optimization: Reducing View Body Re-evaluations in Complex Layouts',
+      source: 'swiftwithmajid.com',
+      date: '5 days ago',
+      category: 'Mobile',
+      starred: false,
+    },
+    {
+      title:
+        'DTCG Token Format Deep Dive: Building Cross-Platform Design Token Pipelines That Scale',
+      source: 'designtokens.org',
+      date: '6 days ago',
+      category: 'Design',
+      starred: true,
+    },
+    {
+      title: 'Aurora DSQL: A Deep Dive into Serverless Distributed SQL for Real-Time Applications',
+      source: 'aws.amazon.com/blogs',
+      date: '1 week ago',
+      category: 'Databases',
+      starred: false,
+    },
+    {
+      title:
+        'The End of Localhost: Why Cloud Development Environments Are the Future of Software Engineering',
+      source: 'dx.tips',
+      date: '1 week ago',
+      category: 'Tech',
+      starred: false,
+    },
+  ],
+  stats: {
+    totalSubscriptions: 128,
+    unreadCount: 456,
+    articlesThisWeek: 67,
+    articlesLastWeek: 52,
+    starredCount: 189,
+  },
+});
+
+export const readingPostAdapter = { baseline, empty, full };

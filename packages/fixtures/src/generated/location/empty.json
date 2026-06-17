@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "totalVisits": 0,
+  "totalPlaces": 0,
+  "totalDurationHours": 0,
+  "citiesVisited": 0,
+  "currentCity": null,
+  "lastSeen": null,
+  "last90Days": [],
+  "topPlaces": [],
+  "cityBreakdown": [],
+  "categoryBreakdown": [],
+  "streaks": { "currentStreak": 0, "longestStreak": 0, "totalActiveDays": 0 },
+  "explorationStats": { "totalNeighborhoods": 0, "totalCities": 0, "totalStates": 0 }
+}

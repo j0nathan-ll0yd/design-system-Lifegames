@@ -1,5 +1,7 @@
 import { createHealthFixture } from '../factories/health';
+import { DEFAULT_QUANTITIES } from '../factories/health';
 import type { HealthExport } from '@lifegames/portal-contract/schemas';
+import { isoTimestamp } from '../factories/helpers';
 
 export const baseline: HealthExport = createHealthFixture();
 
@@ -55,6 +57,40 @@ export const maxHydration: HealthExport = createHealthFixture({
   },
 });
 
+// Truly empty: no quantities at all. The factory MERGES quantities by default, so
+// we must remove every default key via the removeKeys arg to get `quantities: {}`.
+export const empty: HealthExport = createHealthFixture({}, Object.keys(DEFAULT_QUANTITIES));
+
+// Maximally populated: all 10 default quantities at realistic highs, plus all
+// optional top-level keys (lastSync, goals, solar) with every nullable goals field
+// set to non-null values.
+export const full: HealthExport = createHealthFixture({
+  lastSync: isoTimestamp(),
+  quantities: {
+    heartRate: { value: 185, unit: 'count/min' },
+    heartRateVariabilitySDNN: { value: 92, unit: 'ms' },
+    stepCount: { value: 24500, unit: 'count' },
+    distanceWalkingRunning: { value: 18200, unit: 'm' },
+    appleExerciseTime: { value: 120, unit: 'min' },
+    activeEnergyBurned: { value: 1250, unit: 'kcal' },
+    basalEnergyBurned: { value: 2100, unit: 'kcal' },
+    dietaryWater: { value: 4800, unit: 'mL' },
+    dietaryCaffeine: { value: 0.6, unit: 'g' },
+    appleSleepingWristTemperature: { value: 0.8, unit: 'degC' },
+  },
+  goals: {
+    moveKcal: 750,
+    exerciseMin: 60,
+    standHr: 14,
+    daylightMin: 30,
+  },
+  solar: {
+    sunriseHHmm: '05:48',
+    sunsetHHmm: '20:42',
+    currentProgressPct: 85,
+  },
+});
+
 export const healthVariations = {
   baseline,
   bradycardia,
@@ -68,4 +104,6 @@ export const healthVariations = {
   missingOptional,
   zeroHydration,
   maxHydration,
+  empty,
+  full,
 };

@@ -31,6 +31,22 @@ function buildGrid(): [number, number, number, number, number, number, number][]
   return weeks;
 }
 
+// Higher-activity grid for `full`: weekday cells are larger, weekends have some.
+function buildFullGrid(): [number, number, number, number, number, number, number][] {
+  type Week = [number, number, number, number, number, number, number];
+  const weeks: Week[] = [];
+  for (let w = 0; w < 52; w++) {
+    const days: number[] = [];
+    for (let d = 0; d < 7; d++) {
+      const base = ((w * 7 + d) % 7) + 1;
+      const weekendDamp = d === 0 || d === 6 ? 1 : 3;
+      days.push(base * weekendDamp);
+    }
+    weeks.push(days as Week);
+  }
+  return weeks;
+}
+
 export const baseline = authored<DashboardGithub>({
   contributions: buildGrid(),
   totalContributions: 1847,
@@ -139,4 +155,191 @@ export const empty = authored<DashboardGithub>({
   topRepos: [],
 });
 
-export const githubPostAdapter = { baseline, empty };
+// Maximally populated: all optional fields present (languages, devActivity,
+// commitHours, weeklyCommits, stats, topRepos), higher contribution counts,
+// more languages, more activity events, more top repos, highest realistic values.
+export const full = authored<DashboardGithub>({
+  contributions: buildFullGrid(),
+  totalContributions: 4892,
+  contributionTypes: {
+    commits: 3245,
+    pullRequests: 812,
+    issues: 389,
+    reviews: 326,
+    repositories: 120,
+  },
+  streak: { current: 67, longest: 142 },
+  languages: {
+    TypeScript: 1285000,
+    JavaScript: 642300,
+    Python: 389000,
+    Swift: 245600,
+    Go: 178400,
+    Rust: 134200,
+    CSS: 98500,
+    HTML: 67800,
+    Shell: 42300,
+    SQL: 28100,
+    Kotlin: 18500,
+    Ruby: 12400,
+  },
+  devActivity: [
+    {
+      type: 'commit',
+      repo: 'mantle',
+      title: 'Unify handler pattern across all Lambda functions for consistent error handling',
+      date: '1h ago',
+      hash: 'a9421b5',
+      additions: 245,
+      deletions: 89,
+      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/a9421b5',
+    },
+    {
+      type: 'pr_merged',
+      repo: 'design-system',
+      title: 'feat(fixtures): normalize variations with empty/baseline/full triad',
+      date: '3h ago',
+      number: 60,
+      additions: 1850,
+      deletions: 120,
+      url: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames/pull/60',
+    },
+    {
+      type: 'commit',
+      repo: 'portfolio',
+      title: 'Implement skeleton loading states for all dashboard widgets with CSS animations',
+      date: '1d ago',
+      hash: 'b3c4d5e',
+      additions: 512,
+      deletions: 134,
+      url: 'https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/b3c4d5e',
+    },
+    {
+      type: 'pr_opened',
+      repo: 'mantle',
+      title: 'refactor(db): migrate DSQL schema to use branded column types for type safety',
+      date: '2d ago',
+      number: 312,
+      additions: 892,
+      deletions: 445,
+      url: 'https://github.com/j0nathan-ll0yd/mantle/pull/312',
+    },
+    {
+      type: 'commit',
+      repo: 'media-downloader',
+      title: 'Add CloudFront cache invalidation after successful S3 export for all domains',
+      date: '3d ago',
+      hash: 'c5d6e7f',
+      additions: 267,
+      deletions: 89,
+      url: 'https://github.com/j0nathan-ll0yd/aws-cloudformation-media-downloader/commit/c5d6e7f',
+    },
+    {
+      type: 'pr_merged',
+      repo: 'portfolio',
+      title: 'feat(widgets): add theatre reviews widget with grade-based color coding',
+      date: '4d ago',
+      number: 42,
+      additions: 634,
+      deletions: 28,
+      url: 'https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/pull/42',
+    },
+    {
+      type: 'commit',
+      repo: 'design-system',
+      title: 'Add DTCG token definitions for neon accent colors and fluid typography scales',
+      date: '5d ago',
+      hash: 'd7e8f9g',
+      additions: 420,
+      deletions: 67,
+      url: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/d7e8f9g',
+    },
+    {
+      type: 'commit',
+      repo: 'mantle',
+      title: 'Extract shared validation utilities into dedicated validation engine module',
+      date: '6d ago',
+      hash: 'e8f9g0h',
+      additions: 378,
+      deletions: 156,
+      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/e8f9g0h',
+    },
+    {
+      type: 'pr_opened',
+      repo: 'ios-app',
+      title: 'feat(gallery): add SwiftUI design gallery with neon console exploration',
+      date: '1w ago',
+      number: 15,
+      additions: 1240,
+      deletions: 340,
+      url: 'https://github.com/j0nathan-ll0yd/ios-LifegamesPortal/pull/15',
+    },
+    {
+      type: 'commit',
+      repo: 'mantle',
+      title: 'Optimize Lambda cold start by lazy-loading non-critical modules at invocation time',
+      date: '1w ago',
+      hash: 'f9g0h1i',
+      additions: 98,
+      deletions: 31,
+      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/f9g0h1i',
+    },
+  ],
+  commitHours: [
+    4, 1, 0, 0, 0, 2, 6, 12, 24, 38, 45, 32, 18, 28, 42, 39, 34, 22, 14, 8, 10, 16, 12, 6,
+  ],
+  weeklyCommits: [32, 45, 38, 62, 28, 52, 41, 58, 34, 48, 36, 44],
+  stats: { repos: 86, stars: 342, contributions: 4892 },
+  topRepos: [
+    {
+      name: 'mantle',
+      stars: 128,
+      language: 'TypeScript',
+      description: 'Serverless infrastructure framework with type-safe resource bindings',
+    },
+    {
+      name: 'design-system',
+      stars: 64,
+      language: 'TypeScript',
+      description: 'Cross-platform design system with DTCG tokens and SwiftUI components',
+    },
+    {
+      name: 'portfolio',
+      stars: 45,
+      language: 'TypeScript',
+      description: 'Personal data dashboard built with Astro and real-time health widgets',
+    },
+    {
+      name: 'media-downloader',
+      stars: 38,
+      language: 'TypeScript',
+      description: 'Automated media pipeline with CloudFront delivery and S3 storage',
+    },
+    {
+      name: 'ios-app',
+      stars: 22,
+      language: 'Swift',
+      description: 'iOS companion app with WidgetKit and SwiftUI design gallery',
+    },
+    {
+      name: 'api-gateway',
+      stars: 18,
+      language: 'Go',
+      description: 'High-performance API gateway with rate limiting and circuit breakers',
+    },
+    {
+      name: 'ml-pipeline',
+      stars: 15,
+      language: 'Python',
+      description: 'ML data pipeline for health metric anomaly detection and trend analysis',
+    },
+    {
+      name: 'realtime-service',
+      stars: 12,
+      language: 'TypeScript',
+      description: 'WebSocket service for live dashboard updates with pub/sub fanout',
+    },
+  ],
+});
+
+export const githubPostAdapter = { baseline, empty, full };

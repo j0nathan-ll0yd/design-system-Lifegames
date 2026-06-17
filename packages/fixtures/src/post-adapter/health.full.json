@@ -1,0 +1,83 @@
+{
+  "date": "2026-01-01",
+  "lastSync": "2026-01-01T23:45:00.000Z",
+  "quantities": {
+    "activeEnergyBurned": { "value": 1250, "unit": "kcal" },
+    "exerciseTime": { "value": 120, "unit": "min" },
+    "standTime": { "value": 180, "unit": "min" },
+    "basalEnergyBurned": { "value": 2100, "unit": "kcal" },
+    "distanceWalkingRunning": { "value": 18200, "unit": "m" },
+    "heartRate": { "value": 185, "unit": "count/min" },
+    "hrvSDNN": { "value": 92, "unit": "ms" },
+    "respiratoryRate": { "value": 18, "unit": "count/min" },
+    "restingHeartRate": { "value": 48, "unit": "count/min" },
+    "stepCount": { "value": 24500, "unit": "count" },
+    "wristTemperatureDelta": { "value": 0.8, "unit": "°C" },
+    "timeInDaylight": { "value": 180, "unit": "min" },
+    "flightsClimbed": { "value": 22, "unit": "count" }
+  },
+  "sleep": {
+    "awake": { "seconds": 1800 },
+    "core": { "seconds": 18000 },
+    "deep": { "seconds": 9000 },
+    "rem": { "seconds": 7200 }
+  },
+  "workouts": [
+    { "activity_type": "Running", "duration": 3600, "energy_burned": 680, "distance": 10500 },
+    { "activity_type": "Cycling", "duration": 5400, "energy_burned": 520, "distance": 25000 },
+    { "activity_type": "Swimming", "duration": 2400, "energy_burned": 420, "distance": 1800 },
+    { "activity_type": "Strength Training", "duration": 3000, "energy_burned": 350, "distance": 0 }
+  ],
+  "goals": { "moveKcal": 750, "exerciseMin": 60, "standHr": 14, "daylightMin": 30 },
+  "solar": { "sunriseHHmm": "05:48", "sunsetHHmm": "20:42", "currentProgressPct": 85 },
+  "ranges": {
+    "heartRate": { "low": 50, "normal": [60, 100], "high": 120, "unit": "bpm" },
+    "restingHeartRate": {
+      "excellent": [0, 60],
+      "good": [60, 70],
+      "fair": [70, 80],
+      "poor": [80, 200]
+    },
+    "hrvSDNN": { "poor": [0, 20], "fair": [20, 40], "good": [40, 60], "excellent": [60, 200] },
+    "respiratoryRate": { "low": [0, 12], "normal": [12, 20], "high": [20, 40] },
+    "stepCount": { "goal": 15000 },
+    "activeEnergy": { "goal": 500 },
+    "exerciseTime": { "goal": 60 },
+    "standTime": { "goal": 120 },
+    "sleep": {
+      "targetHours": 8,
+      "deepPctIdeal": [13, 23],
+      "remPctIdeal": [20, 25],
+      "efficiencyGood": 85
+    }
+  },
+  "derived": {
+    "totalSleepSeconds": 34200,
+    "timeInBedSeconds": 36000,
+    "sleepEfficiency": 95,
+    "totalCalories": 3350,
+    "distanceKm": 18.2,
+    "deepPct": 26.3,
+    "remPct": 21.1,
+    "corePct": 52.6
+  },
+  "sleepScore": 94,
+  "sleepDurationFormatted": "9h 30m",
+  "sleepPhaseFormatted": { "deep": "2h 30m", "rem": "2h 0m", "core": "5h 0m", "awake": "30m" },
+  "sampleWorkouts": [
+    { "activity_type": "Running", "duration": 3600, "energy_burned": 680, "distance": 10500 },
+    { "activity_type": "Cycling", "duration": 5400, "energy_burned": 520, "distance": 25000 },
+    { "activity_type": "Swimming", "duration": 2400, "energy_burned": 420, "distance": 1800 },
+    { "activity_type": "Strength Training", "duration": 3000, "energy_burned": 350, "distance": 0 }
+  ],
+  "hydration": {
+    "waterOz": 140,
+    "caffeineMg": 480,
+    "waterMax": 140,
+    "caffeineMax": 500,
+    "waterRangeLo": 74,
+    "waterRangeHi": 125,
+    "caffeineRangeLo": 200,
+    "caffeineRangeHi": 400
+  }
+}

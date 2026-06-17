@@ -1,0 +1,8 @@
+{
+  "date": "2026-03-17",
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "core": { "seconds": 18000 },
+  "deep": { "seconds": 9000 },
+  "rem": { "seconds": 7200 },
+  "awake": { "seconds": 2400 }
+}
