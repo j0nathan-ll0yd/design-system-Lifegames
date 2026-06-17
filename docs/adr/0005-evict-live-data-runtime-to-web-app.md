@@ -27,10 +27,12 @@ DOM patchers, `adapters` (pure transforms), the per-widget `*-init` island entry
 production widgets, `@lifegames/fixtures`, and the showcase apps. The app's relocated
 `live-data` imports those presentational primitives via `@lifegames/web/runtime/*` and
 drives them ("data in, events out"); the app-update→SW nudge becomes an app-internal
-call. **`ResourceKey` and `PollStatus` stay in the DS** in a new `poll-types.ts`: they
-are a _display contract_ co-owned by a staying presentational updater (`updaters-status`,
-which renders the status) and the leaving engine (which produces it) — a type contract,
-not transport. The DS adds a `./types/*` export so the moved files can keep importing the
+call. The shared contract types are **not** design-system concerns: `ResourceKey`
+(= `keyof typeof ENDPOINTS`) lives in `@lifegames/portal-contract` alongside `ENDPOINTS`,
+and `PollStatus` lives with the web app's poll engine that produces it. The
+connection-status updater (`updaters-status`) that renders `PollStatus` moved to the web
+app too — it reflects runtime connection health (an app-shell concern), not domain
+presentation. The DS adds a `./types/*` export so the moved files can keep importing the
 generated backend export types from their single source.
 
 ## Consequence
