@@ -53,4 +53,13 @@ export interface Identity {
     skipToMain: string;
     ogImageAlt: string;
   };
+  /**
+   * humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and THANKS sections.
+   */
+  humansTxt: {
+    stack: string[];
+    hosting: string;
+    standards: string;
+    thanks: string[];
+  };
 }

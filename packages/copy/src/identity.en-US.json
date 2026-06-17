@@ -325,6 +325,48 @@
       }
     }
   },
+  "humansTxt": {
+    "stack": {
+      "value": ["Astro", "TypeScript"],
+      "_meta": {
+        "description": "Web software/framework stack for the humans.txt SITE section Software line. Distinct from person.skills (professional skills) and humansTxt.hosting (infrastructure).",
+        "usage": ["web:humans.txt.ts (SITE section, Software line)"],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "hosting": {
+      "value": "Cloudflare Pages",
+      "_meta": {
+        "description": "Hosting provider for humans.txt SITE section.",
+        "usage": ["web:humans.txt.ts (SITE section, Hosting line)"],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "standards": {
+      "value": "HTML5, CSS3, RSS, JSON-LD, OpenAPI",
+      "_meta": {
+        "description": "Web standards used, for humans.txt SITE section.",
+        "usage": ["web:humans.txt.ts (SITE section, Standards line)"],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "thanks": {
+      "value": ["Astro", "Cloudflare", "Simple Analytics"],
+      "_meta": {
+        "description": "OSS and service credits for the humans.txt THANKS section.",
+        "usage": ["web:humans.txt.ts (THANKS section)"],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    }
+  },
   "a11y": {
     "skipToMain": {
       "value": "Skip to main content",

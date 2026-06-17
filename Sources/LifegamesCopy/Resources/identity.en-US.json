@@ -67,6 +67,19 @@
     ],
     "ogImageQuote": "Jack into his human datastream"
   },
+  "humansTxt": {
+    "stack": [
+      "Astro",
+      "TypeScript"
+    ],
+    "hosting": "Cloudflare Pages",
+    "standards": "HTML5, CSS3, RSS, JSON-LD, OpenAPI",
+    "thanks": [
+      "Astro",
+      "Cloudflare",
+      "Simple Analytics"
+    ]
+  },
   "a11y": {
     "skipToMain": "Skip to main content",
     "ogImageAlt": "Jonathan Lloyd — Human Datastream dashboard"

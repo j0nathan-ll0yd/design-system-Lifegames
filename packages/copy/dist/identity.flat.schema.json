@@ -149,8 +149,34 @@
       },
       "required": ["skipToMain", "ogImageAlt"],
       "additionalProperties": false
+    },
+    "humansTxt": {
+      "type": "object",
+      "description": "humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and THANKS sections.",
+      "properties": {
+        "stack": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hosting": {
+          "type": "string"
+        },
+        "standards": {
+          "type": "string"
+        },
+        "thanks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["stack", "hosting", "standards", "thanks"],
+      "additionalProperties": false
     }
   },
-  "required": ["person", "site", "seo", "a11y"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt"],
   "additionalProperties": false
 }
