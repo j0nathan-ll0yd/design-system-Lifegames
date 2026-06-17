@@ -74,7 +74,8 @@ export async function loadDashboardData() {
 ## Domains & variations
 
 **Post-adapter (7 domains, SSR shell):** `profile`, `health`, `github`, `reading`,
-`books`, `system`, `starredRepos`. Each has `baseline` + `empty` today.
+`books`, `system`, `starredRepos`. Each has exactly the standard triad: `baseline`,
+`empty`, `full` (see [Variation convention](#variation-convention)).
 
 - `profile`, `system`, `github`, `reading`, `health`, `books` are **authored display
   shapes** — they are NOT mechanically derivable from the raw factories because the
@@ -88,8 +89,50 @@ export async function loadDashboardData() {
   never drift. This depends on the `adaptStarredRepos(data, now?)` signature.
 
 **Raw (10 domains, Playwright):** `health`, `sleep`, `workouts`, `books`, `location`,
-`githubEvents`, `starredRepos`, `articles`, `focus`, `theatreReviews`. Variation sets
-match the web's prior `test/fixtures/variations/` (migrated verbatim).
+`githubEvents`, `starredRepos`, `articles`, `focus`, `theatreReviews`. Each provides at
+least the standard triad (`baseline`, `empty`, `full`) plus domain-specific extras
+(e.g. `bradycardia`, `allCategories`, `oldTimestamp`).
+
+## Variation convention
+
+Every domain provides a normalized **triad** of reserved variation keys:
+
+| key        | meaning                                                           |
+| ---------- | ----------------------------------------------------------------- |
+| `empty`    | data fetched but zero items / null-ish — the widget's empty state |
+| `baseline` | the typical, representative populated state (the SSR default)     |
+| `full`     | maximally populated — stress the layout (see semantics below)     |
+
+- **Post-adapter is uniform** (exactly the triad): `getDashboardFixture()` indexes every
+  domain by the shared `FixtureVariation` type, so all 7 domains must carry the same keys.
+- **Raw is open-ended**: each raw domain provides at least the triad, plus any number of
+  domain-specific extras (e.g. `health.bradycardia`, `location.allCategories`).
+- Reserved keys + any documented N/A exceptions live in `src/reserved-variations.ts`
+  (`RESERVED_VARIATIONS`, `VARIATION_EXCEPTIONS`); the module is package-internal.
+
+### `full` semantics (per shape-kind)
+
+`full` means _maximally populated within schema bounds_ — all optional keys present, all
+nullable-but-required fields (`anyOf:[T, null]`) set to non-null values, longest realistic
+strings, and max-count arrays — to surface overflow/truncation/layout bugs.
+
+- **List domains** (books, articles, repos, events, reviews, workouts, sleep): max array
+  length with every item-level nullable field non-null.
+- **Aggregate domains** (health, location): all metrics / optional sections populated.
+- **Scalar domains** (focus): the single field at its richest value (longest valid string).
+  `focus.full` intentionally equals `focus.dnd` (one field; nothing else to vary).
+
+The `check:full-coverage` oracle (wired into `build`) walks each raw export schema and
+fails if a `full` fixture misses an optional key or leaves a nullable-but-required field
+null. `focus` and `health.quantities` are documented `WALKER_EXCEPTIONS`.
+
+### Loading / skeleton is **not** a fixture
+
+Skeleton is a _render_ state (the UI shown while data is absent), not a data payload. There
+is no `skeleton.json` — a loading screenshot is produced by withholding/delaying the
+response at the interception layer (Playwright route control, the analogue of MSW
+`delay('infinite')`), never by a fixture. See `GOVERNANCE.md` P3.2 for the authoritative
+rule.
 
 ## Determinism
 
