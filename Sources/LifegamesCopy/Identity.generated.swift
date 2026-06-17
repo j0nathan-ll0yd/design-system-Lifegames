@@ -13,6 +13,9 @@ public struct Identity: Codable, Sendable {
     /// Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y
     /// is V2.
     public let a11Y: A11Y
+    /// humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and
+    /// THANKS sections.
+    public let humansTxt: HumansTxt
     /// Identity facts and biographical voices for Jonathan Lloyd.
     public let person: Person
     /// SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in
@@ -23,11 +26,12 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case person, seo, site
+        case humansTxt, person, seo, site
     }
 
-    public init(a11Y: A11Y, person: Person, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, humansTxt: HumansTxt, person: Person, seo: SEO, site: Site) {
         self.a11Y = a11Y
+        self.humansTxt = humansTxt
         self.person = person
         self.seo = seo
         self.site = site
@@ -54,12 +58,14 @@ public extension Identity {
 
     func with(
         a11Y: A11Y? = nil,
+        humansTxt: HumansTxt? = nil,
         person: Person? = nil,
         seo: SEO? = nil,
         site: Site? = nil
     ) -> Identity {
         return Identity(
             a11Y: a11Y ?? self.a11Y,
+            humansTxt: humansTxt ?? self.humansTxt,
             person: person ?? self.person,
             seo: seo ?? self.seo,
             site: site ?? self.site
@@ -112,6 +118,64 @@ public extension A11Y {
         return A11Y(
             ogImageAlt: ogImageAlt ?? self.ogImageAlt,
             skipToMain: skipToMain ?? self.skipToMain
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and
+/// THANKS sections.
+// MARK: - HumansTxt
+public struct HumansTxt: Codable, Sendable {
+    public let hosting: String
+    public let stack: [String]
+    public let standards: String
+    public let thanks: [String]
+
+    public init(hosting: String, stack: [String], standards: String, thanks: [String]) {
+        self.hosting = hosting
+        self.stack = stack
+        self.standards = standards
+        self.thanks = thanks
+    }
+}
+
+// MARK: HumansTxt convenience initializers and mutators
+
+public extension HumansTxt {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(HumansTxt.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        hosting: String? = nil,
+        stack: [String]? = nil,
+        standards: String? = nil,
+        thanks: [String]? = nil
+    ) -> HumansTxt {
+        return HumansTxt(
+            hosting: hosting ?? self.hosting,
+            stack: stack ?? self.stack,
+            standards: standards ?? self.standards,
+            thanks: thanks ?? self.thanks
         )
     }
 

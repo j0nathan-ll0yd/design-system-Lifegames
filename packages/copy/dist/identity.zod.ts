@@ -54,6 +54,17 @@ export const identitySchema = z
       .describe(
         'Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y is V2.',
       ),
+    humansTxt: z
+      .object({
+        stack: z.array(z.string()),
+        hosting: z.string(),
+        standards: z.string(),
+        thanks: z.array(z.string()),
+      })
+      .strict()
+      .describe(
+        'humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and THANKS sections.',
+      ),
   })
   .strict()
   .describe(
