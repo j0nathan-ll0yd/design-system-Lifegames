@@ -5,8 +5,7 @@
   "type": "module",
   "sideEffects": [
     "**/*.css",
-    "**/*.astro",
-    "**/runtime/live-data.ts"
+    "**/*.astro"
   ],
   "exports": {
     ".": "./src/index.ts",
@@ -21,6 +20,10 @@
     "./runtime/*": {
       "types": "./src/runtime/*.ts",
       "import": "./src/runtime/*.ts"
+    },
+    "./types/*": {
+      "types": "./src/types/*.ts",
+      "import": "./src/types/*.ts"
     },
     "./islands/*": "./src/islands/*",
     "./styles/*": "./src/styles/*",
