@@ -367,6 +367,100 @@
       }
     }
   },
+  "feed": {
+    "title": {
+      "value": "Jonathan Lloyd — Human Datastream",
+      "_meta": {
+        "description": "RSS/JSON Feed channel title. The brand name used as the feed <title> element.",
+        "usage": ["backend:ComposeFeed/index.ts (feed channel title)"],
+        "tone": "brand",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "description": {
+      "value": "A curated syndication of what Jonathan Lloyd produces and completes — theatre reviews, code shipped, books finished, and the articles he saves. The live dashboard is the firehose; the feed is the durable record.",
+      "_meta": {
+        "description": "RSS/JSON Feed channel description. Explains what the feed syndicates and the philosophy behind the content set.",
+        "usage": ["backend:ComposeFeed/index.ts (feed channel description)"],
+        "tone": "professional",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "author": {
+      "value": "Jonathan Lloyd",
+      "_meta": {
+        "description": "Feed author name. Used in RSS <managingEditor> / JSON Feed authors[].name.",
+        "usage": ["backend:ComposeFeed/index.ts (feed author)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "copyright": {
+      "value": "Jonathan Lloyd. All rights reserved.",
+      "_meta": {
+        "description": "Feed copyright notice. Used in RSS <copyright> element.",
+        "usage": ["backend:ComposeFeed/index.ts (feed copyright)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-17"
+      }
+    },
+    "sections": {
+      "theatre": {
+        "value": "Theatre Reviews",
+        "_meta": {
+          "description": "Label for the theatre-reviews domain in the feed. Used to annotate feed items sourced from coasttocoastreviews.com.",
+          "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
+          "tone": "terse",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-17"
+        }
+      },
+      "github": {
+        "value": "GitHub Activity",
+        "_meta": {
+          "description": "Label for the meaningful GitHub events domain (PRs merged, issues opened). Raw commits are excluded.",
+          "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
+          "tone": "terse",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-17"
+        }
+      },
+      "starred": {
+        "value": "Starred Repositories",
+        "_meta": {
+          "description": "Label for starred GitHub repositories in the feed. Represents curation signal — repos Jonathan has bookmarked.",
+          "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
+          "tone": "terse",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-17"
+        }
+      },
+      "books": {
+        "value": "Books Finished",
+        "_meta": {
+          "description": "Label for finished books in the feed. Note: pubDate is the record last-modified date, not a precise finish date.",
+          "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
+          "tone": "terse",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-17"
+        }
+      },
+      "articles": {
+        "value": "Saved Articles",
+        "_meta": {
+          "description": "Label for saved/bookmarked articles in the feed.",
+          "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
+          "tone": "terse",
+          "owner": "jonathan",
+          "lastReviewed": "2026-06-17"
+        }
+      }
+    }
+  },
   "a11y": {
     "skipToMain": {
       "value": "Skip to main content",

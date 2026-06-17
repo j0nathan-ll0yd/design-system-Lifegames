@@ -62,4 +62,23 @@ export interface Identity {
     standards: string;
     thanks: string[];
   };
+  /**
+   * RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain section labels.
+   */
+  feed: {
+    title: string;
+    description: string;
+    author: string;
+    copyright: string;
+    /**
+     * Per-domain section labels for feed items.
+     */
+    sections: {
+      theatre: string;
+      github: string;
+      starred: string;
+      books: string;
+      articles: string;
+    };
+  };
 }
