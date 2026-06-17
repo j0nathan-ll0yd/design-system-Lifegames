@@ -13,6 +13,9 @@ public struct Identity: Codable, Sendable {
     /// Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y
     /// is V2.
     public let a11Y: A11Y
+    /// RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain
+    /// section labels.
+    public let feed: Feed
     /// humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and
     /// THANKS sections.
     public let humansTxt: HumansTxt
@@ -26,11 +29,12 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case humansTxt, person, seo, site
+        case feed, humansTxt, person, seo, site
     }
 
-    public init(a11Y: A11Y, humansTxt: HumansTxt, person: Person, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, feed: Feed, humansTxt: HumansTxt, person: Person, seo: SEO, site: Site) {
         self.a11Y = a11Y
+        self.feed = feed
         self.humansTxt = humansTxt
         self.person = person
         self.seo = seo
@@ -58,6 +62,7 @@ public extension Identity {
 
     func with(
         a11Y: A11Y? = nil,
+        feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
         person: Person? = nil,
         seo: SEO? = nil,
@@ -65,6 +70,7 @@ public extension Identity {
     ) -> Identity {
         return Identity(
             a11Y: a11Y ?? self.a11Y,
+            feed: feed ?? self.feed,
             humansTxt: humansTxt ?? self.humansTxt,
             person: person ?? self.person,
             seo: seo ?? self.seo,
@@ -118,6 +124,125 @@ public extension A11Y {
         return A11Y(
             ogImageAlt: ogImageAlt ?? self.ogImageAlt,
             skipToMain: skipToMain ?? self.skipToMain
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain
+/// section labels.
+// MARK: - Feed
+public struct Feed: Codable, Sendable {
+    public let author, copyright, description: String
+    /// Per-domain section labels for feed items.
+    public let sections: Sections
+    public let title: String
+
+    public init(author: String, copyright: String, description: String, sections: Sections, title: String) {
+        self.author = author
+        self.copyright = copyright
+        self.description = description
+        self.sections = sections
+        self.title = title
+    }
+}
+
+// MARK: Feed convenience initializers and mutators
+
+public extension Feed {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Feed.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        author: String? = nil,
+        copyright: String? = nil,
+        description: String? = nil,
+        sections: Sections? = nil,
+        title: String? = nil
+    ) -> Feed {
+        return Feed(
+            author: author ?? self.author,
+            copyright: copyright ?? self.copyright,
+            description: description ?? self.description,
+            sections: sections ?? self.sections,
+            title: title ?? self.title
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Per-domain section labels for feed items.
+// MARK: - Sections
+public struct Sections: Codable, Sendable {
+    public let articles, books, github, starred: String
+    public let theatre: String
+
+    public init(articles: String, books: String, github: String, starred: String, theatre: String) {
+        self.articles = articles
+        self.books = books
+        self.github = github
+        self.starred = starred
+        self.theatre = theatre
+    }
+}
+
+// MARK: Sections convenience initializers and mutators
+
+public extension Sections {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Sections.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        articles: String? = nil,
+        books: String? = nil,
+        github: String? = nil,
+        starred: String? = nil,
+        theatre: String? = nil
+    ) -> Sections {
+        return Sections(
+            articles: articles ?? self.articles,
+            books: books ?? self.books,
+            github: github ?? self.github,
+            starred: starred ?? self.starred,
+            theatre: theatre ?? self.theatre
         )
     }
 

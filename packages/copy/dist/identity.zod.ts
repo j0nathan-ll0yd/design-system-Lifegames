@@ -65,6 +65,27 @@ export const identitySchema = z
       .describe(
         'humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and THANKS sections.',
       ),
+    feed: z
+      .object({
+        title: z.string(),
+        description: z.string(),
+        author: z.string(),
+        copyright: z.string(),
+        sections: z
+          .object({
+            theatre: z.string(),
+            github: z.string(),
+            starred: z.string(),
+            books: z.string(),
+            articles: z.string(),
+          })
+          .strict()
+          .describe('Per-domain section labels for feed items.'),
+      })
+      .strict()
+      .describe(
+        'RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain section labels.',
+      ),
   })
   .strict()
   .describe(

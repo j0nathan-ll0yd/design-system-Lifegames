@@ -175,8 +175,51 @@
       },
       "required": ["stack", "hosting", "standards", "thanks"],
       "additionalProperties": false
+    },
+    "feed": {
+      "type": "object",
+      "description": "RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain section labels.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "copyright": {
+          "type": "string"
+        },
+        "sections": {
+          "type": "object",
+          "description": "Per-domain section labels for feed items.",
+          "properties": {
+            "theatre": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            },
+            "starred": {
+              "type": "string"
+            },
+            "books": {
+              "type": "string"
+            },
+            "articles": {
+              "type": "string"
+            }
+          },
+          "required": ["theatre", "github", "starred", "books", "articles"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["title", "description", "author", "copyright", "sections"],
+      "additionalProperties": false
     }
   },
-  "required": ["person", "site", "seo", "a11y", "humansTxt"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed"],
   "additionalProperties": false
 }

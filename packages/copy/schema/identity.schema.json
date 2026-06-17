@@ -5,7 +5,7 @@
   "description": "Rich authoring schema for the identity slice of @lifegames/copy. Every customer-facing identity string is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["person", "site", "seo", "a11y", "humansTxt"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed"],
   "properties": {
     "person": {
       "type": "object",
@@ -93,6 +93,31 @@
         "hosting": { "$ref": "#/$defs/CopyString" },
         "standards": { "$ref": "#/$defs/CopyString" },
         "thanks": { "$ref": "#/$defs/CopyStringList" }
+      }
+    },
+    "feed": {
+      "type": "object",
+      "description": "RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain section labels.",
+      "additionalProperties": false,
+      "required": ["title", "description", "author", "copyright", "sections"],
+      "properties": {
+        "title": { "$ref": "#/$defs/CopyString" },
+        "description": { "$ref": "#/$defs/CopyString" },
+        "author": { "$ref": "#/$defs/CopyString" },
+        "copyright": { "$ref": "#/$defs/CopyString" },
+        "sections": {
+          "type": "object",
+          "description": "Per-domain section labels for feed items.",
+          "additionalProperties": false,
+          "required": ["theatre", "github", "starred", "books", "articles"],
+          "properties": {
+            "theatre": { "$ref": "#/$defs/CopyString" },
+            "github": { "$ref": "#/$defs/CopyString" },
+            "starred": { "$ref": "#/$defs/CopyString" },
+            "books": { "$ref": "#/$defs/CopyString" },
+            "articles": { "$ref": "#/$defs/CopyString" }
+          }
+        }
       }
     }
   },
