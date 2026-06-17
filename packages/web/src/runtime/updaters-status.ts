@@ -1,4 +1,4 @@
-import type { PollStatus } from './poll-engine';
+import type { PollStatus } from './poll-types';
 
 /** Update the connection status indicator in the top bar */
 export function updatePollStatus(status: PollStatus): void {

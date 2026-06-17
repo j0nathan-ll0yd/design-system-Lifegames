@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { updatePollStatus } from '../../src/runtime/updaters-status';
-import type { PollStatus } from '../../src/runtime/poll-engine';
+import type { PollStatus } from '../../src/runtime/poll-types';
 
 function setup() {
   document.body.innerHTML = `
