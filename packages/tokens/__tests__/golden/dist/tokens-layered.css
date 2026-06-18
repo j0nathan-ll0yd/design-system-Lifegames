@@ -8,6 +8,7 @@
   --lg-card-glassBorder: rgba(255,255,255,0.1);
   --lg-color-pink-400: #ff69b4;
   --lg-color-pink-500: #ff006e;
+  --lg-color-blue-300: #7eb4ff;
   --lg-color-blue-500: #3a86ff;
   --lg-color-blue-550: #0c69ff;
   --lg-color-blue-600: #3b82f6;
@@ -72,6 +73,7 @@
   --lg-color-text-disabled: #7c7c84;
   --lg-color-accent-pink: #ff006e;
   --lg-color-accent-blue: #3a86ff;
+  --lg-color-accent-blue-on-dark: #7eb4ff;
   --lg-color-accent-green: #06d6a0;
   --lg-color-accent-amber: #f59e0b;
   --lg-color-accent-purple: #a855f7;

@@ -6,6 +6,10 @@
       "400": { "$value": "#ff69b4", "$description": "High-contrast pink (WCAG AAA on dark)" }
     },
     "blue": {
+      "300": {
+        "$value": "#7eb4ff",
+        "$description": "Accessible blue for text on dark bg (#06060f) — ~9:1 contrast, meets WCAG AA and AAA"
+      },
       "500": { "$value": "#3a86ff", "$description": "Neon blue (web --neon-blue, iOS neonBlue)" },
       "550": {
         "$value": "#0c69ff",
