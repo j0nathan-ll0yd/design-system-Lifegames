@@ -246,6 +246,7 @@ struct Book: Codable {
     let status: String?
     let title: String
     let totalPages: Double?
+    let updatedAt: String?
 }
 
 // MARK: Book convenience initializers and mutators
@@ -292,7 +293,8 @@ extension Book {
         seriesTotal: Double?? = nil,
         status: String?? = nil,
         title: String? = nil,
-        totalPages: Double?? = nil
+        totalPages: Double?? = nil,
+        updatedAt: String?? = nil
     ) -> Book {
         return Book(
             asin: asin ?? self.asin,
@@ -320,7 +322,8 @@ extension Book {
             seriesTotal: seriesTotal ?? self.seriesTotal,
             status: status ?? self.status,
             title: title ?? self.title,
-            totalPages: totalPages ?? self.totalPages
+            totalPages: totalPages ?? self.totalPages,
+            updatedAt: updatedAt ?? self.updatedAt
         )
     }
 
