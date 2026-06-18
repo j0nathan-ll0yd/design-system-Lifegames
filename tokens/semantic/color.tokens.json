@@ -39,6 +39,10 @@
     "accent": {
       "pink": { "$value": "{color.pink.500}" },
       "blue": { "$value": "{color.blue.500}" },
+      "blue-on-dark": {
+        "$value": "{color.blue.300}",
+        "$description": "Accessible blue for readable text on the dashboard dark background (#06060f). ~9:1 contrast — meets WCAG AA (≥4.5:1) and AAA (≥7:1). Use wherever blue.500 (#3a86ff, ~1.78:1) would appear as readable text on dark surfaces."
+      },
       "green": { "$value": "{color.green.500}" },
       "amber": { "$value": "{color.amber.500}" },
       "purple": { "$value": "{color.purple.500}" },

@@ -27,7 +27,8 @@
       "currentPage": 432,
       "totalPages": 432,
       "rating": 5,
-      "notes": "Outstanding mystery-fantasy hybrid with inventive worldbuilding and sharp dialogue"
+      "notes": "Outstanding mystery-fantasy hybrid with inventive worldbuilding and sharp dialogue",
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "0593723848",
@@ -55,7 +56,8 @@
       "currentPage": 480,
       "totalPages": 480,
       "rating": 5,
-      "notes": "Even better than the first — the political intrigue deepens brilliantly"
+      "notes": "Even better than the first — the political intrigue deepens brilliantly",
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "0525573844",
@@ -83,7 +85,8 @@
       "currentPage": 512,
       "totalPages": 512,
       "rating": 5,
-      "notes": "Ingenious magic system based on industrial programming — scriving is brilliant"
+      "notes": "Ingenious magic system based on industrial programming — scriving is brilliant",
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "B07QVH2Q2K",
@@ -111,7 +114,8 @@
       "currentPage": 312,
       "totalPages": 496,
       "rating": 4,
-      "notes": "The stakes escalate dramatically — Valeria is a compelling antagonist"
+      "notes": "The stakes escalate dramatically — Valeria is a compelling antagonist",
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "B0FBRJY116",
@@ -139,7 +143,8 @@
       "currentPage": 0,
       "totalPages": 307,
       "rating": 4,
-      "notes": "Practical frameworks for engineering strategy at director+ level"
+      "notes": "Practical frameworks for engineering strategy at director+ level",
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "0596517742",
@@ -167,7 +172,8 @@
       "currentPage": 176,
       "totalPages": 176,
       "rating": 3,
-      "notes": "Foundational but dated — many \"bad parts\" are now handled by TypeScript"
+      "notes": "Foundational but dated — many \"bad parts\" are now handled by TypeScript",
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     }
   ]
 }

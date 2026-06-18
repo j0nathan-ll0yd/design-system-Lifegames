@@ -16,6 +16,7 @@ export default {
       "500": "#ff006e"
     },
     "blue": {
+      "300": "#7eb4ff",
       "500": "#3a86ff",
       "550": "#0c69ff",
       "600": "#3b82f6",
@@ -122,6 +123,7 @@ export default {
     "accent": {
       "pink": "#ff006e",
       "blue": "#3a86ff",
+      "blue-on-dark": "#7eb4ff",
       "green": "#06d6a0",
       "amber": "#f59e0b",
       "purple": "#a855f7",

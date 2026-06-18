@@ -27,7 +27,8 @@
       "currentPage": null,
       "totalPages": 432,
       "rating": 5,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "S002",
@@ -55,7 +56,8 @@
       "currentPage": null,
       "totalPages": 432,
       "rating": 4,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "S003",
@@ -83,7 +85,8 @@
       "currentPage": 100,
       "totalPages": 350,
       "rating": null,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "S004",
@@ -111,7 +114,8 @@
       "currentPage": null,
       "totalPages": 432,
       "rating": null,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "S005",
@@ -139,7 +143,8 @@
       "currentPage": null,
       "totalPages": 432,
       "rating": 3,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     }
   ]
 }

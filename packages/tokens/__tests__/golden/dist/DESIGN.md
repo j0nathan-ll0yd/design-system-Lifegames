@@ -26,6 +26,7 @@ Four tiers, applied in order of specificity:
 |---|---|
 | `color.pink.400` | `#ff69b4` |
 | `color.pink.500` | `#ff006e` |
+| `color.blue.300` | `#7eb4ff` |
 | `color.blue.500` | `#3a86ff` |
 | `color.blue.550` | `#0c69ff` |
 | `color.blue.600` | `#3b82f6` |
@@ -119,6 +120,7 @@ Four tiers, applied in order of specificity:
 |---|---|---|
 | `color.accent.pink` | `#ff006e` |  |
 | `color.accent.blue` | `#3a86ff` |  |
+| `color.accent.blue-on-dark` | `#7eb4ff` | Accessible blue for readable text on the dashboard dark background (#06060f). ~9:1 contrast — meets WCAG AA (≥4.5:1) and AAA (≥7:1). Use wherever blue.500 (#3a86ff, ~1.78:1) would appear as readable text on dark surfaces. |
 | `color.accent.green` | `#06d6a0` |  |
 | `color.accent.amber` | `#f59e0b` |  |
 | `color.accent.purple` | `#a855f7` |  |
