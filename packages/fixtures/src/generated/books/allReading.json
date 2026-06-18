@@ -27,7 +27,8 @@
       "currentPage": 50,
       "totalPages": 300,
       "rating": null,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "B002",
@@ -55,7 +56,8 @@
       "currentPage": 120,
       "totalPages": 400,
       "rating": null,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
       "asin": "B003",
@@ -83,7 +85,8 @@
       "currentPage": 200,
       "totalPages": 500,
       "rating": null,
-      "notes": null
+      "notes": null,
+      "updatedAt": "2026-03-18T12:00:00.000Z"
     }
   ]
 }

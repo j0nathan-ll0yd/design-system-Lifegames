@@ -31,6 +31,7 @@ export function createBook(overrides: Partial<BookEntry> = {}): BookEntry {
     totalPages: 432,
     rating: 5,
     notes: null,
+    updatedAt: isoTimestamp(),
     ...overrides,
   };
 }
