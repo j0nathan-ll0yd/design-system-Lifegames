@@ -128,6 +128,7 @@ struct TokenSanityTests {
             "colorAccentAmber", "colorAccentPurple", "colorAccentRed",
             "colorAccentCyan", "colorAccentOrange", "colorAccentIndigo",
             "colorAccentDefault",
+            "colorAccentBlueOnDark",
             "colorAccentHcPink", "colorAccentHcPurple", "colorAccentHcRed",
         ]
         return knownAccentStatics.contains(name)

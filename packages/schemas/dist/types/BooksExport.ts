@@ -30,5 +30,6 @@ export interface BooksExport {
     totalPages: number | null;
     rating: number | null;
     notes: string | null;
+    updatedAt?: string | null;
   }[];
 }
