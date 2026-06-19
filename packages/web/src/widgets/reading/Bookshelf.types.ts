@@ -14,6 +14,8 @@ export interface BookEntry {
   coverAvif?: string;
   coverCardAvif?: string;
   coverThumbAvif?: string;
+  finishedAt?: string | null;
+  startedAt?: string | null;
 }
 
 export interface BookMeta {

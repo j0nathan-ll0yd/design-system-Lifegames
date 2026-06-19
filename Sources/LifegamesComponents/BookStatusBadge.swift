@@ -28,13 +28,13 @@ public struct BookStatusBadge: View {
             }
         }
 
-        /// Maps DS/web raw strings to canonical Status cases.
-        /// Web uses "in_progress", "next", "completed" — do NOT assume name symmetry.
+        /// Maps backend enum strings to canonical Status cases.
+        /// Backend vocab: pending | reading | upNext | finished.
         public static func from(_ raw: String) -> Status {
             switch raw {
-            case "in_progress": return .reading
-            case "next": return .upNext
-            case "completed", "finished": return .finished
+            case "reading": return .reading
+            case "upNext": return .upNext
+            case "finished": return .finished
             case "pending": return .pending
             default: return .pending
             }
@@ -64,10 +64,10 @@ public struct BookStatusBadge: View {
         BookStatusBadge(.finished)
         BookStatusBadge(.upNext)
         BookStatusBadge(.pending)
-        BookStatusBadge(.reading, label: "IN PROGRESS", size: 10)
-        BookStatusBadge(BookStatusBadge.Status.from("in_progress"))
-        BookStatusBadge(BookStatusBadge.Status.from("next"))
-        BookStatusBadge(BookStatusBadge.Status.from("completed"))
+        BookStatusBadge(BookStatusBadge.Status.from("reading"))
+        BookStatusBadge(BookStatusBadge.Status.from("upNext"))
+        BookStatusBadge(BookStatusBadge.Status.from("finished"))
+        BookStatusBadge(BookStatusBadge.Status.from("pending"))
     }
     .padding()
     .background(LGColor.surfaceBase)

@@ -8,7 +8,12 @@ const bookList = books.books;
 const bookMeta = books.bookMeta;
 const statusLabels = books.statusLabels;
 
-const statusOrder: Record<string, number> = { in_progress: 0, next: 1, completed: 2 };
+const statusOrder: Record<string, number> = { reading: 0, upNext: 1, finished: 2 };
+function formatFinishedDate(iso: string): string {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(
+    new Date(iso),
+  );
+}
 const sortedBooks = bookList.slice().sort((a: any, b: any) => {
   return (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99);
 });
@@ -74,6 +79,8 @@ function hasLocalImage(asin: string): boolean {
             progress: b.progress,
             link: `https://www.amazon.com/dp/${asin}?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl`,
             notes: b.notes || null,
+            finishedAt: b.finishedAt || null,
+            startedAt: b.startedAt || null,
             series: meta.seriesName || null,
             seriesNumber: meta.seriesNumber || null,
             seriesTotal: meta.seriesTotal || null,
@@ -86,7 +93,7 @@ function hasLocalImage(asin: string): boolean {
           });
           return (
             <li
-              class={`shelf-book${b.status === 'in_progress' ? ' shelf-book-active' : ''}`}
+              class={`shelf-book${b.status === 'reading' ? ' shelf-book-active' : ''}`}
               style={`animation-delay: ${i * 0.08}s`}
               data-book={bookData}
               tabindex="0"
@@ -139,9 +146,9 @@ function hasLocalImage(asin: string): boolean {
                 <span>{b.title}</span>
               </div>
               <div class="shelf-book-author">{b.author}</div>
-              {b.status === 'in_progress' ? (
+              {b.status === 'reading' ? (
                 <Fragment>
-                  <div class="shelf-book-status shelf-status-in_progress">
+                  <div class="shelf-book-status shelf-status-reading">
                     {widgets.bookshelf.statusReading}
                   </div>
                   {b.progress != null && (
@@ -165,6 +172,14 @@ function hasLocalImage(asin: string): boolean {
                           {s <= b.rating ? '\u2605' : '\u2606'}
                         </span>
                       ))}
+                    </div>
+                  )}
+                  {b.status === 'finished' && b.finishedAt && (
+                    <div class="shelf-book-finished-date">
+                      {widgets.bookshelf.finishedDate.replace(
+                        '{date}',
+                        formatFinishedDate(b.finishedAt),
+                      )}
                     </div>
                   )}
                 </Fragment>

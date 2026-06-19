@@ -206,15 +206,29 @@
     },
     "bookshelf": {
       "type": "object",
-      "description": "Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.",
+      "description": "Bookshelf widget — title, empty-state heading/body, status labels (reading/upNext/finished/pending), finished-date line, timestamp.",
       "additionalProperties": false,
-      "required": ["title", "emptyTitle", "emptyBody", "statusReading", "timestampLibrary"],
+      "required": [
+        "title",
+        "emptyTitle",
+        "emptyBody",
+        "statusReading",
+        "statusUpNext",
+        "statusFinished",
+        "statusPending",
+        "timestampLibrary",
+        "finishedDate"
+      ],
       "properties": {
         "title": { "$ref": "#/$defs/CopyString" },
         "emptyTitle": { "$ref": "#/$defs/CopyString" },
         "emptyBody": { "$ref": "#/$defs/CopyString" },
         "statusReading": { "$ref": "#/$defs/CopyString" },
-        "timestampLibrary": { "$ref": "#/$defs/CopyString" }
+        "statusUpNext": { "$ref": "#/$defs/CopyString" },
+        "statusFinished": { "$ref": "#/$defs/CopyString" },
+        "statusPending": { "$ref": "#/$defs/CopyString" },
+        "timestampLibrary": { "$ref": "#/$defs/CopyString" },
+        "finishedDate": { "$ref": "#/$defs/CopyString" }
       }
     },
     "theatreReviews": {
@@ -229,9 +243,18 @@
     },
     "bookModal": {
       "type": "object",
-      "description": "Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template.",
+      "description": "Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template, finished-date prefix.",
       "additionalProperties": false,
-      "required": ["notes", "empty", "pages", "published", "status", "amazonCta", "progressSuffix"],
+      "required": [
+        "notes",
+        "empty",
+        "pages",
+        "published",
+        "status",
+        "amazonCta",
+        "progressSuffix",
+        "finishedDate"
+      ],
       "properties": {
         "notes": { "$ref": "#/$defs/CopyString" },
         "empty": { "$ref": "#/$defs/CopyString" },
@@ -239,7 +262,8 @@
         "published": { "$ref": "#/$defs/CopyString" },
         "status": { "$ref": "#/$defs/CopyString" },
         "amazonCta": { "$ref": "#/$defs/CopyString" },
-        "progressSuffix": { "$ref": "#/$defs/CopyString" }
+        "progressSuffix": { "$ref": "#/$defs/CopyString" },
+        "finishedDate": { "$ref": "#/$defs/CopyString" }
       }
     },
     "devLog": {

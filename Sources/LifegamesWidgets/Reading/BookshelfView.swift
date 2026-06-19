@@ -114,7 +114,7 @@ private struct BookCoverItem: View {
                 imageURL: book.coverUrl.flatMap { URL(string: $0) },
                 width: 80,
                 height: 120,
-                borderColor: book.status == "in_progress" ? Color.colorAccentAmber : nil
+                borderColor: book.status == "reading" ? Color.colorAccentAmber : nil
             )
 
             Text(book.title)
@@ -129,7 +129,7 @@ private struct BookCoverItem: View {
                 .lineLimit(1)
                 .frame(width: 80)
 
-            if book.status == "in_progress" {
+            if book.status == "reading" {
                 if let progress = book.progress {
                     ReadingProgressBar(progress: Double(progress) / 100, color: Color.colorAccentAmber)
                         .frame(width: 60)
@@ -139,6 +139,12 @@ private struct BookCoverItem: View {
                 } else {
                     BookStatusBadge(BookStatusBadge.Status.from(book.status), label: book.statusLabel, size: 8)
                 }
+            } else if book.status == "finished", let finishedAt = book.finishedAt {
+                Text(formatFinishedDate(finishedAt))
+                    .font(.system(size: 8, design: .monospaced))
+                    .foregroundStyle(Color.colorAccentGreen)
+                    .lineLimit(1)
+                    .frame(width: 80)
             } else if let rating = book.rating {
                 RatingStars(rating: rating, size: 7)
             } else {
@@ -146,6 +152,35 @@ private struct BookCoverItem: View {
             }
         }
     }
+}
+
+/// Static formatters — DateFormatter/ISO8601DateFormatter allocation is expensive; reuse (S59).
+/// nonisolated(unsafe): these are write-once at init and read-only thereafter (no data race).
+private nonisolated(unsafe) let _finishedDateISOFull: ISO8601DateFormatter = {
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    return f
+}()
+
+private nonisolated(unsafe) let _finishedDateISOBasic: ISO8601DateFormatter = {
+    let f = ISO8601DateFormatter()
+    f.formatOptions = [.withInternetDateTime]
+    return f
+}()
+
+private nonisolated(unsafe) let _finishedDateDisplay: DateFormatter = {
+    let f = DateFormatter()
+    f.dateFormat = "MMM yyyy"
+    return f
+}()
+
+/// Formats an ISO-8601 date string (e.g. "2024-03-15T00:00:00Z") to a short display form
+/// ("Mar 2024"). Falls back to the raw string if parsing fails. Module-internal.
+func formatFinishedDate(_ isoString: String) -> String {
+    let date = _finishedDateISOFull.date(from: isoString)
+        ?? _finishedDateISOBasic.date(from: isoString)
+    guard let date else { return isoString }
+    return _finishedDateDisplay.string(from: date)
 }
 
 /// Resolves a bundled preview cover image to a local file-URL string (no network).
@@ -163,19 +198,20 @@ func previewCoverURL(_ name: String) -> String? {
     BookshelfView(state: .populated(BookshelfProps(books: [
         .init(
             title: "Project Hail Mary", author: "Andy Weir", asin: "B08FHBV4ZX",
-            status: "in_progress", progress: 67, coverUrl: previewCoverURL("project-hail-mary")
+            status: "reading", progress: 67, coverUrl: previewCoverURL("project-hail-mary")
         ),
         .init(
             title: "Recursion", author: "Blake Crouch", asin: "B07HDSHP7N",
-            status: "completed", rating: 5, coverUrl: previewCoverURL("recursion")
+            status: "finished", rating: 5, finishedAt: "2024-03-15T00:00:00Z",
+            coverUrl: previewCoverURL("recursion")
         ),
         .init(
             title: "Dark Matter", author: "Blake Crouch", asin: "B0180T0IUY",
-            status: "completed", rating: 4, coverUrl: previewCoverURL("dark-matter")
+            status: "finished", rating: 4, coverUrl: previewCoverURL("dark-matter")
         ),
         .init(
             title: "The Martian", author: "Andy Weir", asin: "B00EMXBDMA",
-            status: "next", coverUrl: previewCoverURL("the-martian")
+            status: "upNext", coverUrl: previewCoverURL("the-martian")
         ),
     ])))
     .padding()
@@ -185,10 +221,10 @@ func previewCoverURL(_ name: String) -> String? {
 
 #Preview("Bookshelf — Placeholders") {
     BookshelfView(state: .populated(BookshelfProps(books: [
-        .init(title: "Project Hail Mary", author: "Andy Weir", asin: "B08FHBV4ZX", status: "in_progress", progress: 67),
-        .init(title: "Recursion", author: "Blake Crouch", asin: "B07HDSHP7N", status: "completed", rating: 5),
-        .init(title: "Dark Matter", author: "Blake Crouch", asin: "B0180T0IUY", status: "completed", rating: 4),
-        .init(title: "The Martian", author: "Andy Weir", asin: "B00EMXBDMA", status: "next"),
+        .init(title: "Project Hail Mary", author: "Andy Weir", asin: "B08FHBV4ZX", status: "reading", progress: 67),
+        .init(title: "Recursion", author: "Blake Crouch", asin: "B07HDSHP7N", status: "finished", rating: 5, finishedAt: "2024-03-15T00:00:00Z"),
+        .init(title: "Dark Matter", author: "Blake Crouch", asin: "B0180T0IUY", status: "finished", rating: 4),
+        .init(title: "The Martian", author: "Andy Weir", asin: "B00EMXBDMA", status: "upNext"),
     ])))
     .padding()
     .background(Color.colorSurfaceBase)

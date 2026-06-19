@@ -20,6 +20,7 @@ public extension Adapters {
                 status: b["status"] as? String ?? "",
                 rating: b["rating"] as? Int,
                 progress: b["progress"] as? Int,
+                finishedAt: b["finishedAt"] as? String,
                 coverUrl: b["coverUrl"] as? String
             )
         }
@@ -48,6 +49,7 @@ public extension Adapters {
             statusLabel: statusLabel,
             rating: b["rating"] as? Int,
             progress: b["progress"] as? Int,
+            finishedAt: b["finishedAt"] as? String,
             pages: b["pages"] as? Int,
             year: b["year"] as? Int,
             description: b["desc"] as? String,

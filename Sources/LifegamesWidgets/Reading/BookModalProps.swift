@@ -8,6 +8,7 @@ public struct BookModalProps: Hashable, Codable, Sendable {
     public let statusLabel: String
     public let rating: Int?
     public let progress: Int?
+    public let finishedAt: String?
     public let pages: Int?
     public let year: Int?
     public let description: String?
@@ -21,7 +22,8 @@ public struct BookModalProps: Hashable, Codable, Sendable {
     public init(
         title: String, author: String, asin: String,
         status: String, statusLabel: String, rating: Int? = nil,
-        progress: Int? = nil, pages: Int? = nil, year: Int? = nil,
+        progress: Int? = nil, finishedAt: String? = nil,
+        pages: Int? = nil, year: Int? = nil,
         description: String? = nil, genres: [String] = [],
         notes: String? = nil, series: String? = nil,
         seriesNumber: Int? = nil, seriesTotal: Int? = nil,
@@ -34,6 +36,7 @@ public struct BookModalProps: Hashable, Codable, Sendable {
         self.statusLabel = statusLabel
         self.rating = rating
         self.progress = progress
+        self.finishedAt = finishedAt
         self.pages = pages
         self.year = year
         self.description = description

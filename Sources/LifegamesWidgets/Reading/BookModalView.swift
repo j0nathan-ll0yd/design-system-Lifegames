@@ -121,13 +121,19 @@ private struct BookModalPopulatedView: View {
                 StatBlock(value: props.statusLabel, label: bookModalCopy.status)
             }
 
-            if props.status == "in_progress", let progress = props.progress {
+            if props.status == "reading", let progress = props.progress {
                 VStack(spacing: 4) {
                     ReadingProgressBar(progress: Double(progress) / 100)
                     Text(bookModalCopy.progressSuffix.replacingOccurrences(of: "{percent}", with: "\(progress)"))
                         .font(.system(size: 10))
                         .foregroundStyle(Color.colorTextMuted)
                 }
+            }
+
+            if props.status == "finished", let finishedAt = props.finishedAt {
+                Text("\(bookModalCopy.finishedDate) \(formatFinishedDate(finishedAt))")
+                    .font(.system(size: 10))
+                    .foregroundStyle(Color.colorAccentGreen)
             }
 
             if let desc = props.description {
@@ -141,7 +147,7 @@ private struct BookModalPopulatedView: View {
                 GenreChips(genres: props.genres, tint: Color.colorTextMuted, wraps: true)
             }
 
-            if let notes = props.notes, props.status == "completed" {
+            if let notes = props.notes, props.status == "finished" {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(bookModalCopy.notes)
                         .font(.system(size: 9, weight: .medium))
@@ -269,12 +275,12 @@ private struct StatBlock: View {
     }
 }
 
-#Preview("Book Modal — Populated") {
+#Preview("Book Modal — Reading") {
     BookModalView(props: BookModalProps(
         title: "Project Hail Mary",
         author: "Andy Weir",
         asin: "B08FHBV4ZX",
-        status: "in_progress",
+        status: "reading",
         statusLabel: "READING",
         progress: 67,
         pages: 496,
@@ -283,6 +289,27 @@ private struct StatBlock: View {
         genres: ["Sci-Fi", "Adventure", "Space"],
         series: "Standalone",
         coverUrl: previewCoverURL("project-hail-mary")
+    ), onDismiss: {})
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Book Modal — Finished") {
+    BookModalView(props: BookModalProps(
+        title: "Recursion",
+        author: "Blake Crouch",
+        asin: "B07HDSHP7N",
+        status: "finished",
+        statusLabel: "FINISHED",
+        rating: 5,
+        finishedAt: "2024-03-15T00:00:00Z",
+        pages: 329,
+        year: 2019,
+        description: "A neuroscientist and a detective uncover a terrifying secret about memory.",
+        genres: ["Sci-Fi", "Thriller"],
+        notes: "Brilliant high-concept thriller. The time-loop mechanics are airtight.",
+        coverUrl: previewCoverURL("recursion")
     ), onDismiss: {})
         .padding()
         .background(Color.colorSurfaceBase)

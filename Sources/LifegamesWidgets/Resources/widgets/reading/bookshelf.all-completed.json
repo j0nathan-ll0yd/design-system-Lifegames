@@ -5,7 +5,7 @@
         "asin": "0525573844",
         "title": "Range",
         "author": "David Epstein",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -14,7 +14,7 @@
         "asin": "0593128508",
         "title": "Project Hail Mary",
         "author": "Andy Weir",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": "Best sci-fi since The Martian"
@@ -23,7 +23,7 @@
         "asin": "1984820680",
         "title": "Atomic Habits",
         "author": "James Clear",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -50,9 +50,9 @@
       }
     },
     "statusLabels": {
-      "in_progress": "Reading",
-      "completed": "Completed",
-      "next": "Up Next"
+      "reading": "Reading",
+      "finished": "Completed",
+      "upNext": "Up Next"
     }
   }
 }

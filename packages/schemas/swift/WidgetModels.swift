@@ -235,18 +235,21 @@ struct Book: Codable {
     let asin, author: String
     let averageRating, category: String?
     let currentPage: Double?
-    let description, images, isbn10, isbn13: String?
-    let mainImage, mainImageAvif, mainImageCard, mainImageCardAvif: String?
-    let mainImageThumb, mainImageThumbAvif, notes: String?
+    let description: String?
+    let finishedAt: String?
+    let images, isbn10, isbn13, mainImage: String?
+    let mainImageAvif, mainImageCard, mainImageCardAvif, mainImageThumb: String?
+    let mainImageThumbAvif, notes: String?
     let pageCount: Double?
     let publicationDate: String?
     let publishedYear, rating: Double?
     let series: String?
     let seriesNumber, seriesTotal: Double?
+    let startedAt: String?
     let status: String?
     let title: String
     let totalPages: Double?
-    let updatedAt: String?
+    let updatedAt: String
 }
 
 // MARK: Book convenience initializers and mutators
@@ -274,6 +277,7 @@ extension Book {
         category: String?? = nil,
         currentPage: Double?? = nil,
         description: String?? = nil,
+        finishedAt: String?? = nil,
         images: String?? = nil,
         isbn10: String?? = nil,
         isbn13: String?? = nil,
@@ -291,10 +295,11 @@ extension Book {
         series: String?? = nil,
         seriesNumber: Double?? = nil,
         seriesTotal: Double?? = nil,
+        startedAt: String?? = nil,
         status: String?? = nil,
         title: String? = nil,
         totalPages: Double?? = nil,
-        updatedAt: String?? = nil
+        updatedAt: String? = nil
     ) -> Book {
         return Book(
             asin: asin ?? self.asin,
@@ -303,6 +308,7 @@ extension Book {
             category: category ?? self.category,
             currentPage: currentPage ?? self.currentPage,
             description: description ?? self.description,
+            finishedAt: finishedAt ?? self.finishedAt,
             images: images ?? self.images,
             isbn10: isbn10 ?? self.isbn10,
             isbn13: isbn13 ?? self.isbn13,
@@ -320,6 +326,7 @@ extension Book {
             series: series ?? self.series,
             seriesNumber: seriesNumber ?? self.seriesNumber,
             seriesTotal: seriesTotal ?? self.seriesTotal,
+            startedAt: startedAt ?? self.startedAt,
             status: status ?? self.status,
             title: title ?? self.title,
             totalPages: totalPages ?? self.totalPages,
@@ -3491,11 +3498,13 @@ struct DashboardBooksBook: Codable {
     let asin: String
     /// Author full name.
     let author: String
+    /// ISO-8601 timestamp when the book was finished, or null if not yet finished.
+    let finishedAt: Date?
     /// ISBN-13 (or Kindle ASIN when no ISBN exists) used as a stable key into bookMeta.
     let isbn: String?
     /// Affiliate or direct purchase URL.
     let link: String?
-    /// Reading progress as a percentage (0–100). 0 for unstarted, 100 for completed.
+    /// Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished.
     let progress: Int?
     /// User rating 1–5 stars, or null if unrated.
     let rating: Int?
@@ -3526,6 +3535,7 @@ extension DashboardBooksBook {
     func with(
         asin: String? = nil,
         author: String? = nil,
+        finishedAt: Date?? = nil,
         isbn: String?? = nil,
         link: String?? = nil,
         progress: Int?? = nil,
@@ -3536,6 +3546,7 @@ extension DashboardBooksBook {
         return DashboardBooksBook(
             asin: asin ?? self.asin,
             author: author ?? self.author,
+            finishedAt: finishedAt ?? self.finishedAt,
             isbn: isbn ?? self.isbn,
             link: link ?? self.link,
             progress: progress ?? self.progress,
@@ -3556,9 +3567,10 @@ extension DashboardBooksBook {
 
 /// Reading status key. Must match a key in statusLabels.
 enum Status: String, Codable {
-    case completed = "completed"
-    case inProgress = "in_progress"
-    case next = "next"
+    case finished = "finished"
+    case pending = "pending"
+    case reading = "reading"
+    case upNext = "upNext"
 }
 
 /// Aggregate reading statistics computed by the DS pipeline.
@@ -3623,18 +3635,14 @@ extension DashboardBooksStats {
 /// strings.
 // MARK: - StatusLabels
 struct StatusLabels: Codable {
-    /// Label for recently finished books.
-    let completed: String
+    /// Label for finished books.
+    let finished: String
+    /// Label for books not yet started.
+    let pending: String
     /// Label for the book currently being read.
-    let inProgress: String
+    let reading: String
     /// Label for books queued to read next.
-    let next: String
-
-    enum CodingKeys: String, CodingKey {
-        case completed
-        case inProgress = "in_progress"
-        case next
-    }
+    let upNext: String
 }
 
 // MARK: StatusLabels convenience initializers and mutators
@@ -3656,14 +3664,16 @@ extension StatusLabels {
     }
 
     func with(
-        completed: String? = nil,
-        inProgress: String? = nil,
-        next: String? = nil
+        finished: String? = nil,
+        pending: String? = nil,
+        reading: String? = nil,
+        upNext: String? = nil
     ) -> StatusLabels {
         return StatusLabels(
-            completed: completed ?? self.completed,
-            inProgress: inProgress ?? self.inProgress,
-            next: next ?? self.next
+            finished: finished ?? self.finished,
+            pending: pending ?? self.pending,
+            reading: reading ?? self.reading,
+            upNext: upNext ?? self.upNext
         )
     }
 

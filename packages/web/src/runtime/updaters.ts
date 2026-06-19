@@ -545,6 +545,12 @@ export function updatePlaceLeaderboard(data: LocationExport): void {
   card.classList.remove('is-loading');
 }
 
+export function formatFinishedDate(isoString: string): string {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(
+    new Date(isoString),
+  );
+}
+
 export function formatRelativeTime(isoString: string): string {
   const msAgo = Date.now() - new Date(isoString).getTime();
   const minutesAgo = Math.max(0, Math.floor(msAgo / 60000));
@@ -574,9 +580,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
   const statusLabels = data.statusLabels;
   const bookMeta = data.bookMeta;
   const statusOrder: Record<string, number> = {
-    in_progress: 0,
-    next: 1,
-    completed: 2,
+    reading: 0,
+    upNext: 1,
     finished: 2,
   };
   const sortedBooks = data.books.slice().sort((a, b) => {
@@ -617,6 +622,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
           desc: meta.desc || null,
           genres: meta.genres || [],
           notes: b.notes || null,
+          finishedAt: b.finishedAt || null,
+          startedAt: b.startedAt || null,
         }),
       );
 
@@ -659,8 +666,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
         author.textContent = b.author;
       }
 
-      // Active class for in_progress books
-      if (b.status === 'in_progress') {
+      // Active class for reading books
+      if (b.status === 'reading') {
         el.classList.add('shelf-book-active');
       } else {
         el.classList.remove('shelf-book-active');
@@ -670,12 +677,12 @@ export function updateBookshelf(data: AdaptedBooks): void {
       if (status) {
         status.className = 'shelf-book-status shelf-status-' + b.status;
         status.textContent =
-          b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status];
+          b.status === 'reading' ? widgets.bookshelf.statusReading : statusLabels[b.status];
       }
 
-      // Stars: only for non-in_progress books
+      // Stars: only for non-reading books
       const existingStars = el.querySelector('.shelf-book-stars');
-      if (b.status !== 'in_progress' && b.rating) {
+      if (b.status !== 'reading' && b.rating) {
         let starsHtml = '';
         for (let s = 1; s <= 5; s++) {
           starsHtml +=
@@ -697,10 +704,10 @@ export function updateBookshelf(data: AdaptedBooks): void {
         existingStars.remove();
       }
 
-      // Progress bar + label: create-or-update for in_progress books
+      // Progress bar + label: create-or-update for reading books
       const existingBar = el.querySelector('.shelf-book-progress-bar');
       const existingProgress = el.querySelector('.shelf-book-progress');
-      if (b.status === 'in_progress' && b.progress != null) {
+      if (b.status === 'reading' && b.progress != null) {
         // Update or create the bar
         if (existingBar) {
           const fill = existingBar.querySelector('.shelf-book-progress-fill') as HTMLElement;
@@ -726,6 +733,27 @@ export function updateBookshelf(data: AdaptedBooks): void {
       } else {
         if (existingBar) existingBar.remove();
         if (existingProgress) existingProgress.remove();
+      }
+
+      // Finished date: show below stars for finished books with finishedAt
+      const existingFinishedDate = el.querySelector('.shelf-book-finished-date');
+      if (b.status === 'finished' && b.finishedAt) {
+        const dateText = widgets.bookshelf.finishedDate.replace(
+          '{date}',
+          formatFinishedDate(b.finishedAt),
+        );
+        if (existingFinishedDate) {
+          existingFinishedDate.textContent = dateText;
+        } else {
+          const dateDiv = document.createElement('div');
+          dateDiv.className = 'shelf-book-finished-date';
+          dateDiv.textContent = dateText;
+          const starsEl = el.querySelector('.shelf-book-stars');
+          const afterEl = starsEl || status;
+          afterEl!.insertAdjacentElement('afterend', dateDiv);
+        }
+      } else if (existingFinishedDate) {
+        existingFinishedDate.remove();
       }
     });
   } else {
@@ -756,8 +784,10 @@ export function updateBookshelf(data: AdaptedBooks): void {
         desc: meta.desc || null,
         genres: meta.genres || [],
         notes: b.notes || null,
+        finishedAt: b.finishedAt || null,
+        startedAt: b.startedAt || null,
       });
-      var activeClass = b.status === 'in_progress' ? ' shelf-book-active' : '';
+      var activeClass = b.status === 'reading' ? ' shelf-book-active' : '';
       const shouldLocalize = ssrAsins.has(b.asin);
       const localCardSrc = shouldLocalize ? localizeImageUrl(cardSrc) : cardSrc;
       const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc;
@@ -809,9 +839,9 @@ export function updateBookshelf(data: AdaptedBooks): void {
         '<div class="shelf-book-status shelf-status-' +
         b.status +
         '">' +
-        (b.status === 'in_progress' ? widgets.bookshelf.statusReading : statusLabels[b.status]) +
+        (b.status === 'reading' ? widgets.bookshelf.statusReading : statusLabels[b.status]) +
         '</div>';
-      if (b.status === 'in_progress' && b.progress != null) {
+      if (b.status === 'reading' && b.progress != null) {
         html +=
           '<div class="shelf-book-progress-bar"><div class="shelf-book-progress-fill" style="width:' +
           b.progress +
@@ -828,6 +858,12 @@ export function updateBookshelf(data: AdaptedBooks): void {
             '</span>';
         }
         html += '</div>';
+      }
+      if (b.status === 'finished' && b.finishedAt) {
+        html +=
+          '<div class="shelf-book-finished-date">' +
+          esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt))) +
+          '</div>';
       }
       html += '</div>';
     });

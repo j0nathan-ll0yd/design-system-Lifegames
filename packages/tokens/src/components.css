@@ -1791,15 +1791,18 @@
       margin-top: 4px;
     }
 
-    .shelf-status-next {
+    .shelf-status-pending {
       color: var(--neon-blue);
       text-shadow: 0 0 8px rgba(58, 134, 255, 0.3);
     }
-    .shelf-status-in_progress {
+    .shelf-status-upNext {
+      color: var(--neon-blue);
+      text-shadow: 0 0 8px rgba(58, 134, 255, 0.3);
+    }
+    .shelf-status-reading {
       color: var(--neon-amber);
       text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
     }
-    .shelf-status-completed,
     .shelf-status-finished {
       color: var(--neon-green);
       text-shadow: 0 0 8px rgba(6, 214, 160, 0.3);
@@ -1816,6 +1819,14 @@
     }
     .shelf-book-stars .star-off {
       color: rgba(255, 255, 255, 0.1);
+    }
+
+    .shelf-book-finished-date {
+      font-size: 0.4rem;
+      color: var(--lg-color-text-muted);
+      text-align: center;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
     }
 
     .shelf-book-progress {

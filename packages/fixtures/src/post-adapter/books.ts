@@ -16,7 +16,7 @@ export const baseline = authored<DashboardBooks>({
       isbn: '9780135957059',
       asin: '0135957052',
       link: 'https://amzn.to/example1',
-      status: 'in_progress',
+      status: 'reading',
       rating: null,
       progress: 55,
     },
@@ -26,9 +26,10 @@ export const baseline = authored<DashboardBooks>({
       isbn: '9780132350884',
       asin: '0132350882',
       link: 'https://amzn.to/example2',
-      status: 'completed',
+      status: 'finished',
       rating: 4,
       progress: 100,
+      finishedAt: '2024-01-15T00:00:00Z',
     },
     {
       title: 'Designing Data-Intensive Applications',
@@ -36,9 +37,10 @@ export const baseline = authored<DashboardBooks>({
       isbn: '9781449373320',
       asin: '1449373321',
       link: 'https://amzn.to/example3',
-      status: 'completed',
+      status: 'finished',
       rating: 5,
       progress: 100,
+      finishedAt: '2023-11-20T00:00:00Z',
     },
     {
       title: 'A Philosophy of Software Design',
@@ -46,7 +48,7 @@ export const baseline = authored<DashboardBooks>({
       isbn: '9781732102200',
       asin: '173210220X',
       link: 'https://amzn.to/example4',
-      status: 'next',
+      status: 'upNext',
       rating: null,
       progress: 0,
     },
@@ -90,9 +92,10 @@ export const baseline = authored<DashboardBooks>({
     },
   },
   statusLabels: {
-    next: 'Up Next',
-    in_progress: 'Reading',
-    completed: 'Recently Finished',
+    pending: 'Pending',
+    reading: 'Reading',
+    upNext: 'Up Next',
+    finished: 'Finished',
   },
   stats: {
     totalRead: 2,
@@ -109,9 +112,10 @@ export const empty = authored<DashboardBooks>({
   books: [],
   bookMeta: {},
   statusLabels: {
-    next: 'Up Next',
-    in_progress: 'Reading',
-    completed: 'Recently Finished',
+    pending: 'Pending',
+    reading: 'Reading',
+    upNext: 'Up Next',
+    finished: 'Finished',
   },
   stats: {
     totalRead: 0,
@@ -124,7 +128,7 @@ export const empty = authored<DashboardBooks>({
 
 // Maximally populated: many books across all statuses, all bookMeta populated with
 // non-null series info, all stats at high realistic values, all nullable fields
-// (rating, seriesName, seriesNumber, seriesTotal) set to non-null values.
+// (rating, seriesName, seriesNumber, seriesTotal, finishedAt) set to non-null values.
 export const full = authored<DashboardBooks>({
   books: [
     {
@@ -133,9 +137,10 @@ export const full = authored<DashboardBooks>({
       isbn: '9781984820716',
       asin: '1984820710',
       link: 'https://amzn.to/tainted-cup',
-      status: 'completed',
+      status: 'finished',
       rating: 5,
       progress: 100,
+      finishedAt: '2024-03-10T00:00:00Z',
     },
     {
       title: 'A Drop of Corruption',
@@ -143,9 +148,10 @@ export const full = authored<DashboardBooks>({
       isbn: '9780593723845',
       asin: '0593723848',
       link: 'https://amzn.to/drop-of-corruption',
-      status: 'completed',
+      status: 'finished',
       rating: 5,
       progress: 100,
+      finishedAt: '2025-01-22T00:00:00Z',
     },
     {
       title: 'Foundryside',
@@ -153,9 +159,10 @@ export const full = authored<DashboardBooks>({
       isbn: '9780525573845',
       asin: '0525573844',
       link: 'https://amzn.to/foundryside',
-      status: 'completed',
+      status: 'finished',
       rating: 5,
       progress: 100,
+      finishedAt: '2023-08-15T00:00:00Z',
     },
     {
       title: 'Shorefall',
@@ -163,7 +170,7 @@ export const full = authored<DashboardBooks>({
       isbn: '9780593723814',
       asin: 'B07QVH2Q2K',
       link: 'https://amzn.to/shorefall',
-      status: 'in_progress',
+      status: 'reading',
       rating: 4,
       progress: 63,
     },
@@ -173,7 +180,7 @@ export const full = authored<DashboardBooks>({
       isbn: '9780593723857',
       asin: 'B0FBRJY116',
       link: 'https://amzn.to/crafting-eng-strategy',
-      status: 'next',
+      status: 'upNext',
       rating: 4,
       progress: 0,
     },
@@ -183,9 +190,10 @@ export const full = authored<DashboardBooks>({
       isbn: '9781449373320',
       asin: '1449373321',
       link: 'https://amzn.to/ddia',
-      status: 'completed',
+      status: 'finished',
       rating: 5,
       progress: 100,
+      finishedAt: '2022-05-30T00:00:00Z',
     },
   ],
   bookMeta: {
@@ -245,9 +253,10 @@ export const full = authored<DashboardBooks>({
     },
   },
   statusLabels: {
-    next: 'Up Next',
-    in_progress: 'Reading',
-    completed: 'Recently Finished',
+    pending: 'Pending',
+    reading: 'Reading',
+    upNext: 'Up Next',
+    finished: 'Finished',
   },
   stats: {
     totalRead: 42,

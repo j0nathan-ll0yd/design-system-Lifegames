@@ -23,12 +23,14 @@
       "images": "https://m.media-amazon.com/images/I/example-tainted-cup-extra.jpg",
       "averageRating": "4.5",
       "category": "Fantasy, Mystery, Thriller",
-      "status": "completed",
+      "status": "finished",
       "currentPage": 432,
       "totalPages": 432,
       "rating": 5,
       "notes": "Outstanding mystery-fantasy hybrid with inventive worldbuilding and sharp dialogue",
-      "updatedAt": "2026-03-18T12:00:00.000Z"
+      "updatedAt": "2026-03-18T12:00:00.000Z",
+      "startedAt": "2024-02-10T00:00:00Z",
+      "finishedAt": "2024-03-10T00:00:00Z"
     },
     {
       "asin": "0593723848",
@@ -52,12 +54,14 @@
       "images": "https://m.media-amazon.com/images/I/example-drop-of-corruption-extra.jpg",
       "averageRating": "4.6",
       "category": "Fantasy, Mystery, Thriller",
-      "status": "completed",
+      "status": "finished",
       "currentPage": 480,
       "totalPages": 480,
       "rating": 5,
       "notes": "Even better than the first — the political intrigue deepens brilliantly",
-      "updatedAt": "2026-03-18T12:00:00.000Z"
+      "updatedAt": "2026-03-18T12:00:00.000Z",
+      "startedAt": "2025-01-05T00:00:00Z",
+      "finishedAt": "2025-01-25T00:00:00Z"
     },
     {
       "asin": "0525573844",
@@ -81,12 +85,14 @@
       "images": "https://m.media-amazon.com/images/I/example-foundryside-extra.jpg",
       "averageRating": "4.3",
       "category": "Fantasy",
-      "status": "completed",
+      "status": "finished",
       "currentPage": 512,
       "totalPages": 512,
       "rating": 5,
       "notes": "Ingenious magic system based on industrial programming — scriving is brilliant",
-      "updatedAt": "2026-03-18T12:00:00.000Z"
+      "updatedAt": "2026-03-18T12:00:00.000Z",
+      "startedAt": "2023-07-01T00:00:00Z",
+      "finishedAt": "2023-08-15T00:00:00Z"
     },
     {
       "asin": "B07QVH2Q2K",
@@ -115,7 +121,9 @@
       "totalPages": 496,
       "rating": 4,
       "notes": "The stakes escalate dramatically — Valeria is a compelling antagonist",
-      "updatedAt": "2026-03-18T12:00:00.000Z"
+      "updatedAt": "2026-03-18T12:00:00.000Z",
+      "startedAt": "2026-06-01T00:00:00Z",
+      "finishedAt": null
     },
     {
       "asin": "B0FBRJY116",
@@ -144,7 +152,9 @@
       "totalPages": 307,
       "rating": 4,
       "notes": "Practical frameworks for engineering strategy at director+ level",
-      "updatedAt": "2026-03-18T12:00:00.000Z"
+      "updatedAt": "2026-03-18T12:00:00.000Z",
+      "startedAt": null,
+      "finishedAt": null
     },
     {
       "asin": "0596517742",
@@ -168,12 +178,14 @@
       "images": "https://m.media-amazon.com/images/I/example-js-good-parts-extra.jpg",
       "averageRating": "4.1",
       "category": "Technology, Programming, JavaScript",
-      "status": "completed",
+      "status": "finished",
       "currentPage": 176,
       "totalPages": 176,
       "rating": 3,
       "notes": "Foundational but dated — many \"bad parts\" are now handled by TypeScript",
-      "updatedAt": "2026-03-18T12:00:00.000Z"
+      "updatedAt": "2026-03-18T12:00:00.000Z",
+      "startedAt": "2022-03-01T00:00:00Z",
+      "finishedAt": "2022-03-20T00:00:00Z"
     }
   ]
 }

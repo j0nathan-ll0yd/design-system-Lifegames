@@ -10,6 +10,7 @@
 
 import { widgets, a11y } from '@lifegames/copy';
 import { esc } from './html-utils';
+import { formatFinishedDate } from './updaters';
 
 interface BookData {
   asin?: string;
@@ -30,6 +31,7 @@ interface BookData {
   genres?: string | string[];
   notes?: string;
   link?: string;
+  finishedAt?: string | null;
 }
 
 declare global {
@@ -95,9 +97,12 @@ function renderModalHtml(b: BookData): string {
   html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.year || '—'}</div><div class="book-modal-stat-label">${widgets.bookModal.published}</div></div>`;
   html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${b.status}" style="font-size:0.7rem;margin:0">${b.statusLabel || ''}</div><div class="book-modal-stat-label">${widgets.bookModal.status}</div></div>`;
   html += '</div>';
-  if (b.status === 'in_progress' && b.progress !== undefined) {
+  if (b.status === 'reading' && b.progress !== undefined) {
     html += `<div><div class="book-modal-progress"><div class="book-modal-progress-fill" style="width:${b.progress}%"></div></div>`;
     html += `<div class="book-modal-progress-label">${widgets.bookModal.progressSuffix.replace('{percent}', String(b.progress))}</div></div>`;
+  }
+  if (b.status === 'finished' && b.finishedAt) {
+    html += `<div class="book-modal-finished-date">${esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt)))}</div>`;
   }
   if (b.desc) html += `<div class="book-modal-desc">${esc(b.desc)}</div>`;
   const genreList = normalizeGenres(b.genres);
@@ -109,7 +114,7 @@ function renderModalHtml(b: BookData): string {
     });
     html += '</div>';
   }
-  if (b.status === 'completed' && b.notes) {
+  if (b.status === 'finished' && b.notes) {
     html += '<div class="book-modal-notes">';
     html += `<div class="book-modal-notes-label">${widgets.bookModal.notes}</div>`;
     html += `<div class="book-modal-notes-text">${esc(b.notes)}</div>`;

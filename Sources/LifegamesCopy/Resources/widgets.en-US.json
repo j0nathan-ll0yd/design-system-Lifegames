@@ -83,7 +83,11 @@
     "emptyTitle": "No Books Yet",
     "emptyBody": "Books you add will appear here",
     "statusReading": "Reading",
-    "timestampLibrary": "library"
+    "timestampLibrary": "library",
+    "finishedDate": "Finished {date}",
+    "statusUpNext": "Up Next",
+    "statusFinished": "Finished",
+    "statusPending": "Pending"
   },
   "theatreReviews": {
     "title": "Theatre Reviews",
@@ -96,7 +100,8 @@
     "published": "Published",
     "status": "Status",
     "amazonCta": "View on Amazon →",
-    "progressSuffix": "{percent}% complete"
+    "progressSuffix": "{percent}% complete",
+    "finishedDate": "Finished"
   },
   "devLog": {
     "title": "Dev Log",
