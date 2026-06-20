@@ -172,12 +172,26 @@ export function initBookModal(): void {
   }
 
   // Single unified close handler — covers button click, backdrop click, and
-  // native Escape (cancel→close). Focus is always restored to the trigger.
+  // native Escape (cancel→close). Focus is always restored to the trigger for
+  // accessibility, but we suppress the :focus-visible ring that an Escape/
+  // backdrop dismiss would otherwise leave lingering on the book tile. The ring
+  // is restored the instant the user keyboard-navigates or moves focus away, so
+  // genuine keyboard focus visibility (WCAG 2.4.7) is preserved for shelf nav.
   dialog.addEventListener('close', () => {
-    if (triggerElement) {
-      triggerElement.focus();
-      triggerElement = null;
-    }
+    const trigger = triggerElement;
+    triggerElement = null;
+    if (!trigger) return;
+    trigger.style.outline = 'none';
+    trigger.focus();
+    const restoreRing = () => {
+      trigger.style.outline = '';
+      trigger.removeEventListener('blur', restoreRing);
+      trigger.removeEventListener('keydown', restoreRing);
+      trigger.removeEventListener('pointerdown', restoreRing);
+    };
+    trigger.addEventListener('blur', restoreRing, { once: true });
+    trigger.addEventListener('keydown', restoreRing, { once: true });
+    trigger.addEventListener('pointerdown', restoreRing, { once: true });
   });
 
   // Backdrop-click-to-close. Using getBoundingClientRect() because
