@@ -603,6 +603,7 @@
         "statusReading",
         "statusUpNext",
         "statusFinished",
+        "finishedDate",
         "addBook",
         "editBook",
         "alerts"
@@ -624,6 +625,7 @@
         "statusReading": { "$ref": "#/$defs/CopyString" },
         "statusUpNext": { "$ref": "#/$defs/CopyString" },
         "statusFinished": { "$ref": "#/$defs/CopyString" },
+        "finishedDate": { "$ref": "#/$defs/CopyString" },
         "addBook": {
           "type": "object",
           "title": "AppBookshelfAddBook",

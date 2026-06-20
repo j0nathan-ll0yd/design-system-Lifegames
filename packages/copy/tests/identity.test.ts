@@ -71,9 +71,9 @@ const NAMESPACES: NamespaceFixture[] = [
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
   { name: 'a11y', expectedLeaves: 14 },
   // app: nav 10 + tab 5 + common 7 + home 12 + settings 35 + savedPlaces 4
-  //   + addPlace 9 + health 20 + sleep 8 + location 73 + bookshelf 49 + watch 12
+  //   + addPlace 9 + health 20 + sleep 8 + location 73 + bookshelf 50 + watch 12
   //   + sections 2 + page404 2.
-  { name: 'app', expectedLeaves: 248 },
+  { name: 'app', expectedLeaves: 249 },
   // permissions: health 2 + locationWhenInUse 2 + locationAlways 1 + motion 1.
   { name: 'permissions', expectedLeaves: 6 },
   // errors: validation 2 + client 2.

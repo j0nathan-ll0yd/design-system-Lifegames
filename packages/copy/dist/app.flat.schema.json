@@ -983,6 +983,9 @@
         "statusFinished": {
           "type": "string"
         },
+        "finishedDate": {
+          "type": "string"
+        },
         "addBook": {
           "type": "object",
           "title": "AppBookshelfAddBook",
@@ -1152,6 +1155,7 @@
         "statusReading",
         "statusUpNext",
         "statusFinished",
+        "finishedDate",
         "addBook",
         "editBook",
         "alerts"
