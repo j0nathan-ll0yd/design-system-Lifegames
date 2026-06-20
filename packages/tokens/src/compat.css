@@ -236,47 +236,19 @@
     }
 
     /* =================================================================
-   BOOKMODAL ANIMATION FIX
+   BOOKMODAL ANIMATION — native <dialog> (post-issue-#81 migration)
    =================================================================
 
-   `components.css:1680` declares `animation: bookOverlayIn 0.2s ease-out`
-   on the BASE `.book-overlay` selector (which has `display: none`). The
-   animation fires once during initial page render while the element is
-   hidden, completes (or aborts), and never replays when `.visible` is
-   added later. Result: opacity stays at 0 after display flips to flex.
+   The old `.book-overlay` div animation fix (display:none → display:flex
+   transition workaround) is no longer needed. The native <dialog> element
+   manages visibility via the UA `[open]` attribute; showModal() triggers
+   a fresh paint in the top layer so `[open]` animations always fire.
 
-   Fix: cancel the animation on the base selector, declare it on
-   `.book-overlay.visible` instead, with `forwards` fill-mode so the
-   final opacity:1 sticks.
-
-   Same pattern applied to .book-modal which has the parallel keyframes.
+   components.css now declares animations on `dialog.book-dialog[open]`
+   and `dialog.book-dialog[open]::backdrop` — no compat override needed.
    ================================================================= */
 
-    /* `!important` is required because components.css loads AFTER compat.css
-   and re-declares `animation: bookOverlayIn 0.2s` on the base selector.
-   The animation runs while `display: none` (never restarts on display
-   flip) and leaves opacity stuck at the 0% keyframe (opacity: 0). Per
-   CSS Cascade Level 4, `!important` on a declaration beats the animation
-   keyframe value at any time. */
-    .book-overlay {
-      animation: none !important;
-      opacity: 0 !important;
-      transition: opacity 0.2s ease-out !important;
-    }
-
-    .book-overlay.visible {
-      opacity: 1 !important;
-    }
-
-    .book-modal {
-      animation: none !important;
-      transform: scale(0.95) !important;
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-    }
-
-    .book-overlay.visible .book-modal {
-      transform: scale(1) !important;
-    }
+    /* No compat overrides required for the native <dialog> animation path. */
 
     /* =================================================================
    DEV ACTIVITY LOG — tighter line spacing on detail page

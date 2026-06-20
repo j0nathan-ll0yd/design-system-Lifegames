@@ -261,7 +261,7 @@
     @media print {
       #particle-canvas,
       .top-bar,
-      .book-overlay {
+      dialog.book-dialog {
         display: none !important;
       }
       .command-layout {

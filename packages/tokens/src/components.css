@@ -1869,20 +1869,41 @@
     }
 
     /* ===== BOOK MODAL ===== */
-    .book-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
+    /* UA reset: remove default dialog border/padding/background; UA margin:auto
+       centers the dialog in the viewport (no need for flex-centering overlay). */
+    dialog.book-dialog {
+      border: none;
+      padding: 0;
+      background: transparent;
+      margin: auto;
+      max-width: 90vw;
+      max-height: 90dvh;
+    }
+
+    /* ::backdrop replaces the old .book-overlay div overlay. Top-layer
+       rendering supersedes z-index; no position:fixed or display:none needed. */
+    dialog.book-dialog::backdrop {
       background: rgba(6, 6, 15, 0.8);
       backdrop-filter: blur(var(--blur-sm));
       -webkit-backdrop-filter: blur(var(--blur-sm));
-      align-items: center;
-      justify-content: center;
+    }
+
+    /* Entry animations scoped to the open state (D2 — entry only, no exit).
+       bookOverlayIn/@keyframes lives in effects.css (untouched). */
+    dialog.book-dialog[open]::backdrop {
       animation: bookOverlayIn 0.2s ease-out;
     }
-    .book-overlay.visible {
-      display: flex;
+
+    dialog.book-dialog[open] .book-modal {
+      animation: bookModalIn 0.3s ease-out;
+    }
+
+    /* Reduced-motion gate (WCAG 2.3.3). */
+    @media (prefers-reduced-motion: reduce) {
+      dialog.book-dialog[open]::backdrop,
+      dialog.book-dialog[open] .book-modal {
+        animation: none;
+      }
     }
 
     .book-modal {
@@ -1898,7 +1919,6 @@
       box-shadow:
         0 16px 60px rgba(0, 0, 0, 0.6),
         0 0 30px rgba(245, 158, 11, 0.1);
-      animation: bookModalIn 0.3s ease-out;
       padding-left: max(var(--space-24), env(safe-area-inset-left, 0px));
       padding-right: max(var(--space-24), env(safe-area-inset-right, 0px));
       padding-bottom: max(var(--space-24), env(safe-area-inset-bottom, 0px));

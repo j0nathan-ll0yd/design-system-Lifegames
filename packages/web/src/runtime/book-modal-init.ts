@@ -1,12 +1,11 @@
-// Runtime init for the BookModal widget. Ports the consumer-side inline script
-// to a typed module. Handles: click/keyboard event delegation on the Bookshelf
-// trigger (#cardBooks), HTML generation, overlay open/close with aria management,
-// focus trap, click-outside-to-close.
+// Runtime init for the BookModal widget. Handles: click/keyboard event
+// delegation on the Bookshelf trigger (#cardBooks), HTML generation, native
+// <dialog> open/close via showModal()/close(), backdrop-click-to-close,
+// focus store/restore, and image-cover fallback (external listener, CSP-safe).
 //
-// This is intentionally a near-verbatim port of the j0nathan-ll0yd.github.io
-// inline script (proven to ship). Refactor opportunities exist (template
-// strings, named functions) but the port-first approach minimizes regression
-// risk for the cross-repo migration.
+// The native <dialog> element provides: background inert (no manual focus
+// trap needed), automatic Escape-to-close (cancel→close events), top-layer
+// rendering (no z-index required), and UA margin:auto centering.
 
 import { widgets, a11y } from '@lifegames/copy';
 import { esc } from './html-utils';
@@ -59,10 +58,9 @@ function renderModalHtml(b: BookData): string {
   const asin = b.asin || '';
   const cover = b.cover || `https://m.media-amazon.com/images/P/${asin}.01._SCLZZZZZZZ_SX160_.jpg`;
   let html = '<div class="book-modal-header">';
-  const fallbackAttr =
-    b.cover && cover !== b.cover
-      ? ` data-fallback="${esc(b.cover)}" onerror="this.src=this.dataset.fallback;this.onerror=null"`
-      : '';
+  // data-fallback is a data attribute (CSP-safe); the error listener is wired
+  // externally in openModal() after innerHTML assignment (D3 — no inline onerror).
+  const fallbackAttr = b.cover && cover !== b.cover ? ` data-fallback="${esc(b.cover)}"` : '';
   const avifSrc = b.coverAvif ? `<source srcset="${esc(b.coverAvif)}" type="image/avif">` : '';
   const imgTag = `<img class="book-modal-cover" src="${esc(cover)}" width="140" height="210" alt="${esc(b.title || '')} cover" decoding="async"${fallbackAttr}>`;
   html += avifSrc ? `<picture>${avifSrc}${imgTag}</picture>` : imgTag;
@@ -127,81 +125,70 @@ function renderModalHtml(b: BookData): string {
   return html;
 }
 
-function trapFocus(container: HTMLElement, closeModal: () => void): void {
-  interface ContainerWithGuard extends HTMLElement {
-    _trapBound?: boolean;
-  }
-  const cwg = container as ContainerWithGuard;
-  if (cwg._trapBound) return;
-  cwg._trapBound = true;
-  container.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      closeModal();
-      return;
-    }
-    if (e.key !== 'Tab') return;
-    const focusable = container.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    );
-    if (!focusable.length) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      }
-    } else {
-      if (document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-  });
-}
-
 export function initBookModal(): void {
-  const overlay = document.getElementById('bookOverlay') as HTMLElement | null;
+  const dialog = document.getElementById('bookDialog') as HTMLDialogElement | null;
   const modal = document.getElementById('bookModal') as HTMLElement | null;
-  if (!overlay || !modal) return;
+  if (!dialog || !modal) return;
 
-  // Idempotency guard.
-  interface OverlayWithGuard extends HTMLElement {
+  // Idempotency guard — anchored to the dialog element.
+  interface DialogWithGuard extends HTMLDialogElement {
     _bookModalInit?: boolean;
   }
-  const ovg = overlay as OverlayWithGuard;
-  if (ovg._bookModalInit) return;
-  ovg._bookModalInit = true;
+  const dwg = dialog as DialogWithGuard;
+  if (dwg._bookModalInit) return;
+  dwg._bookModalInit = true;
 
   let triggerElement: HTMLElement | null = null;
 
   function openModal(b: BookData): void {
     modal!.innerHTML = renderModalHtml(b);
-    overlay!.classList.add('visible');
-    overlay!.setAttribute('aria-hidden', 'false');
-    const mainContent = document.getElementById('main-content');
-    if (mainContent) mainContent.setAttribute('aria-hidden', 'true');
-    if (typeof window.sa_event === 'function') {
-      window.sa_event('book_open', { title: b.title });
+
+    // Wire image-cover fallback via external listener (CSP-safe; replaces
+    // inline onerror — D3). The cover element carries data-fallback when the
+    // computed Amazon URL differs from the stored custom cover.
+    const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover');
+    if (cover && cover.dataset.fallback) {
+      cover.addEventListener('error', function onErr() {
+        cover.src = cover.dataset.fallback!;
+        cover.removeEventListener('error', onErr);
+      });
     }
+
+    // Open the dialog and fire analytics only on an ACTUAL open — never on a
+    // content-swap while already open (which would double-count book_open).
+    // The guard also prevents showModal() throwing InvalidStateError when open.
+    if (!dialog!.open) {
+      if (typeof window.sa_event === 'function') {
+        window.sa_event('book_open', { title: b.title });
+      }
+      dialog!.showModal();
+    }
+
     const closeBtn = document.getElementById('bookModalClose');
     if (closeBtn) {
-      closeBtn.addEventListener('click', () => closeModal());
+      closeBtn.addEventListener('click', () => dialog!.close());
       closeBtn.focus();
     }
-    trapFocus(overlay!, closeModal);
   }
 
-  function closeModal(): void {
-    overlay!.classList.remove('visible');
-    overlay!.setAttribute('aria-hidden', 'true');
-    const mainContent = document.getElementById('main-content');
-    if (mainContent) mainContent.removeAttribute('aria-hidden');
+  // Single unified close handler — covers button click, backdrop click, and
+  // native Escape (cancel→close). Focus is always restored to the trigger.
+  dialog.addEventListener('close', () => {
     if (triggerElement) {
       triggerElement.focus();
       triggerElement = null;
     }
-  }
+  });
+
+  // Backdrop-click-to-close. Using getBoundingClientRect() because
+  // e.target === dialog is unreliable (::backdrop clicks also target the
+  // dialog element). Any click outside the dialog box bounds closes it.
+  dialog.addEventListener('click', (e: MouseEvent) => {
+    const r = dialog.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
+      dialog.close();
+    }
+  });
 
   const cardBooks = document.getElementById('cardBooks');
   if (cardBooks) {
@@ -227,8 +214,4 @@ export function initBookModal(): void {
       }
     });
   }
-
-  overlay.addEventListener('click', (e: Event) => {
-    if (e.target === overlay) closeModal();
-  });
 }

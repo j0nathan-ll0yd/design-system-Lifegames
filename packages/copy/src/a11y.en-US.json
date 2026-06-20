@@ -75,9 +75,7 @@
       "value": "Book details",
       "_meta": {
         "description": "Accessibility label for the book-detail modal dialog (role=dialog overlay).",
-        "usage": [
-          "web:packages/web/src/widgets/reading/BookModal.astro:3 (.book-overlay aria-label)"
-        ],
+        "usage": ["web:packages/web/src/widgets/reading/BookModal.astro:3 (dialog aria-label)"],
         "tone": "functional",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
