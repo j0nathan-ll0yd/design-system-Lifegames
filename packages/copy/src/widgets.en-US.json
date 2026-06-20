@@ -954,7 +954,61 @@
         ],
         "tone": "terse",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11",
+        "lastReviewed": "2026-06-19",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "finishedDate": {
+      "value": "Finished {date}",
+      "_meta": {
+        "description": "Finished-date line shown below the star rating on a finished book. ICU MF1 template; consumers substitute the formatted date string (D2-A).",
+        "usage": [
+          "web:packages/web/src/widgets/reading/Bookshelf.astro (.shelf-book-finished-date)",
+          "web:packages/web/src/runtime/updaters.ts (.shelf-book-finished-date)",
+          "web:packages/web/src/runtime/book-modal-init.ts (.book-modal-finished-date)"
+        ],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-19",
+        "constraints": { "maxChars": 24 }
+      }
+    },
+    "statusUpNext": {
+      "value": "Up Next",
+      "_meta": {
+        "description": "Up-next book status badge. Stored natural-case 'Up Next'; consumers uppercase via display transform (D3).",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfProps.swift:40 (status 'upNext' badge)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-19",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "statusFinished": {
+      "value": "Finished",
+      "_meta": {
+        "description": "Finished book status badge. Stored natural-case 'Finished'; consumers uppercase via display transform (D3).",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfProps.swift:41 (status 'finished' badge)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-19",
+        "constraints": { "maxChars": 12 }
+      }
+    },
+    "statusPending": {
+      "value": "Pending",
+      "_meta": {
+        "description": "Pending book status badge. Stored natural-case 'Pending'; consumers uppercase via display transform (D3).",
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfProps.swift:42 (status 'pending' badge)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-19",
         "constraints": { "maxChars": 12 }
       }
     }
@@ -1078,6 +1132,20 @@
         "tone": "neutral",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
+      }
+    },
+    "finishedDate": {
+      "value": "Finished",
+      "_meta": {
+        "description": "Book detail modal — label prefix for the finished-date line (e.g. 'Finished Mar 15, 2024'). Consumers append a formatted date string.",
+        "usage": [
+          "web:packages/web/src/runtime/book-modal-init.ts (finished-date row prefix)",
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:134 (Text prefix before formatted date)"
+        ],
+        "tone": "terse",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-19",
+        "constraints": { "maxChars": 12 }
       }
     }
   },

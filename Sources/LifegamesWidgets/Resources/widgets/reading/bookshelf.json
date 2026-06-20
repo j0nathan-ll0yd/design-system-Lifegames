@@ -5,7 +5,7 @@
         "asin": "0525573844",
         "title": "The Pragmatic Programmer",
         "author": "David Thomas, Andrew Hunt",
-        "status": "in_progress",
+        "status": "reading",
         "rating": null,
         "progress": 68,
         "notes": null
@@ -14,7 +14,7 @@
         "asin": "0593128508",
         "title": "Designing Data-Intensive Applications",
         "author": "Martin Kleppmann",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": "Essential reading for distributed systems. The chapter on consensus algorithms is the clearest explanation I've found."
@@ -23,7 +23,7 @@
         "asin": "0593723848",
         "title": "A Philosophy of Software Design",
         "author": "John Ousterhout",
-        "status": "next",
+        "status": "upNext",
         "rating": null,
         "progress": null,
         "notes": null
@@ -32,7 +32,7 @@
         "asin": "1984820680",
         "title": "Staff Engineer",
         "author": "Will Larson",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": "Great frameworks for thinking about the staff-plus career path."
@@ -41,7 +41,7 @@
         "asin": "1984820710",
         "title": "The Manager's Path",
         "author": "Camille Fournier",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -88,9 +88,9 @@
       }
     },
     "statusLabels": {
-      "in_progress": "Reading",
-      "completed": "Completed",
-      "next": "Up Next"
+      "reading": "Reading",
+      "finished": "Completed",
+      "upNext": "Up Next"
     }
   }
 }

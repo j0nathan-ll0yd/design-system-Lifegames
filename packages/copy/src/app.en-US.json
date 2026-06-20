@@ -2259,6 +2259,17 @@
         "lastReviewed": "2026-06-11"
       }
     },
+    "finishedDate": {
+      "value": "Finished {date}",
+      "_meta": {
+        "description": "Finished-date line on the recently-finished row, below the star rating. ICU MF1 template; the consumer substitutes the formatted relative date string (e.g. \"2 days ago\").",
+        "usage": ["ios:BookshelfFeature/BookshelfView.swift (FinishedRow finished-date line)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-19",
+        "constraints": { "maxChars": 24 }
+      }
+    },
     "addBook": {
       "title": {
         "value": "Search Books",

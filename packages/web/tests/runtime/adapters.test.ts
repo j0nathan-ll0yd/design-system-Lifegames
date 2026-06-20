@@ -98,6 +98,10 @@ function makeBooks(bookOverrides: Partial<BooksExport['books'][0]>[] = []): Book
     pageCount: 300,
     mainImage: null,
     mainImageThumb: null,
+    mainImageCard: null,
+    mainImageAvif: null,
+    mainImageThumbAvif: null,
+    mainImageCardAvif: null,
     images: null,
     averageRating: null,
     category: 'Technology > Software',
@@ -594,22 +598,28 @@ describe('adaptGithubEvents', () => {
 // ── adaptBooks ────────────────────────────────────────────────────
 
 describe('adaptBooks', () => {
-  it('maps "reading" status to "in_progress"', () => {
+  it('passes "reading" status through unchanged', () => {
     const books = makeBooks([{ status: 'reading' }]);
     const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('in_progress');
+    expect(result.books[0].status).toBe('reading');
   });
 
-  it('maps "upNext" status to "next"', () => {
+  it('passes "upNext" status through unchanged', () => {
     const books = makeBooks([{ status: 'upNext' }]);
     const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('next');
+    expect(result.books[0].status).toBe('upNext');
   });
 
-  it('maps "completed" status to "completed"', () => {
-    const books = makeBooks([{ status: 'completed' }]);
+  it('passes "finished" status through unchanged', () => {
+    const books = makeBooks([{ status: 'finished' }]);
     const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('completed');
+    expect(result.books[0].status).toBe('finished');
+  });
+
+  it('passes "pending" status through unchanged', () => {
+    const books = makeBooks([{ status: 'pending' }]);
+    const result = adaptBooks(books);
+    expect(result.books[0].status).toBe('pending');
   });
 
   it('falls back to original status for unknown values', () => {
@@ -618,10 +628,10 @@ describe('adaptBooks', () => {
     expect(result.books[0].status).toBe('someUnknownStatus');
   });
 
-  it('defaults status to "next" when status is null', () => {
+  it('defaults status to "upNext" when status is null', () => {
     const books = makeBooks([{ status: null }]);
     const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('next');
+    expect(result.books[0].status).toBe('upNext');
   });
 
   it('computes progress as percentage of currentPage/totalPages', () => {
@@ -718,6 +728,10 @@ describe('adaptBooks', () => {
           pageCount: null,
           mainImage: null,
           mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           images: null,
           averageRating: null,
           category: null,
@@ -742,10 +756,14 @@ describe('adaptBooks', () => {
           pageCount: null,
           mainImage: null,
           mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           images: null,
           averageRating: null,
           category: null,
-          status: 'completed',
+          status: 'finished',
           currentPage: null,
           totalPages: null,
           rating: null,
@@ -766,6 +784,10 @@ describe('adaptBooks', () => {
           pageCount: null,
           mainImage: null,
           mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           images: null,
           averageRating: null,
           category: null,

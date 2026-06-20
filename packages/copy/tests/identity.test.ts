@@ -64,16 +64,16 @@ const NAMESPACES: NamespaceFixture[] = [
   // identity: person 16 + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5).
   { name: 'identity', expectedLeaves: 40 },
   // widgets: heartRate 16 + movement 14 + workouts 10 + hydration 4 + nightSummary 9
-  //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 5 + theatreReviews 2
-  //   + bookModal 7 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.
-  { name: 'widgets', expectedLeaves: 93 },
+  //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
+  //   + bookModal 8 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.
+  { name: 'widgets', expectedLeaves: 98 },
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
   { name: 'a11y', expectedLeaves: 14 },
   // app: nav 10 + tab 5 + common 7 + home 12 + settings 35 + savedPlaces 4
-  //   + addPlace 9 + health 20 + sleep 8 + location 73 + bookshelf 49 + watch 12
+  //   + addPlace 9 + health 20 + sleep 8 + location 73 + bookshelf 50 + watch 12
   //   + sections 2 + page404 2.
-  { name: 'app', expectedLeaves: 248 },
+  { name: 'app', expectedLeaves: 249 },
   // permissions: health 2 + locationWhenInUse 2 + locationAlways 1 + motion 1.
   { name: 'permissions', expectedLeaves: 6 },
   // errors: validation 2 + client 2.

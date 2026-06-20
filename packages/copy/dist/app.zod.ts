@@ -336,6 +336,7 @@ export const appSchema = z
         statusReading: z.string(),
         statusUpNext: z.string(),
         statusFinished: z.string(),
+        finishedDate: z.string(),
         addBook: z
           .object({
             title: z.string(),

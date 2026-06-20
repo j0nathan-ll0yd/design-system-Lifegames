@@ -110,14 +110,18 @@ export interface Widgets {
     timestampRecent: string;
   };
   /**
-   * Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.
+   * Bookshelf widget — title, empty-state heading/body, status labels (reading/upNext/finished/pending), finished-date line, timestamp.
    */
   bookshelf: {
     title: string;
     emptyTitle: string;
     emptyBody: string;
     statusReading: string;
+    statusUpNext: string;
+    statusFinished: string;
+    statusPending: string;
     timestampLibrary: string;
+    finishedDate: string;
   };
   /**
    * Theatre Reviews widget — title + empty-state.
@@ -127,7 +131,7 @@ export interface Widgets {
     empty: string;
   };
   /**
-   * Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template.
+   * Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template, finished-date prefix.
    */
   bookModal: {
     notes: string;
@@ -137,6 +141,7 @@ export interface Widgets {
     status: string;
     amazonCta: string;
     progressSuffix: string;
+    finishedDate: string;
   };
   /**
    * Dev Log (GitHub activity) production widget — title + live timestamp.

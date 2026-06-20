@@ -43,7 +43,7 @@
           "status": {
             "type": "string",
             "description": "Reading status key. Must match a key in statusLabels.",
-            "enum": ["next", "in_progress", "completed"]
+            "enum": ["pending", "reading", "upNext", "finished"]
           },
           "rating": {
             "anyOf": [{ "type": "integer", "minimum": 1, "maximum": 5 }, { "type": "null" }],
@@ -53,7 +53,12 @@
             "type": "integer",
             "minimum": 0,
             "maximum": 100,
-            "description": "Reading progress as a percentage (0–100). 0 for unstarted, 100 for completed."
+            "description": "Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished."
+          },
+          "finishedAt": {
+            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "description": "ISO-8601 timestamp when the book was finished, or null if not yet finished.",
+            "examples": ["2024-03-15T00:00:00Z"]
           }
         }
       }
@@ -106,22 +111,27 @@
       "type": "object",
       "description": "Human-readable display labels keyed by status value. Maps status enum values to UI strings.",
       "additionalProperties": false,
-      "required": ["next", "in_progress", "completed"],
+      "required": ["pending", "reading", "upNext", "finished"],
       "properties": {
-        "next": {
+        "pending": {
           "type": "string",
-          "description": "Label for books queued to read next.",
-          "examples": ["Up Next"]
+          "description": "Label for books not yet started.",
+          "examples": ["Pending"]
         },
-        "in_progress": {
+        "reading": {
           "type": "string",
           "description": "Label for the book currently being read.",
           "examples": ["Reading"]
         },
-        "completed": {
+        "upNext": {
           "type": "string",
-          "description": "Label for recently finished books.",
-          "examples": ["Recently Finished"]
+          "description": "Label for books queued to read next.",
+          "examples": ["Up Next"]
+        },
+        "finished": {
+          "type": "string",
+          "description": "Label for finished books.",
+          "examples": ["Finished"]
         }
       }
     },

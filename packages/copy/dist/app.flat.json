@@ -243,6 +243,7 @@
     "statusReading": "Reading",
     "statusUpNext": "Up Next",
     "statusFinished": "Finished",
+    "finishedDate": "Finished {date}",
     "addBook": {
       "title": "Search Books",
       "searchPlaceholder": "Search books by title or author...",

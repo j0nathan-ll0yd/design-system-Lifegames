@@ -18,9 +18,10 @@ public struct Widgets: Codable, Sendable {
     /// Bio terminal widget — widget title, terminal title-bar text, bash timestamp.
     public let bio: Bio
     /// Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress
-    /// caption template.
+    /// caption template, finished-date prefix.
     public let bookModal: BookModal
-    /// Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.
+    /// Bookshelf widget — title, empty-state heading/body, status labels
+    /// (reading/upNext/finished/pending), finished-date line, timestamp.
     public let bookshelf: Bookshelf
     /// Dev Log (GitHub activity) production widget — title + live timestamp.
     public let devLog: DevLog
@@ -189,15 +190,16 @@ public extension Bio {
 }
 
 /// Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress
-/// caption template.
+/// caption template, finished-date prefix.
 // MARK: - BookModal
 public struct BookModal: Codable, Sendable {
-    public let amazonCta, empty, notes, pages: String
-    public let progressSuffix, published, status: String
+    public let amazonCta, empty, finishedDate, notes: String
+    public let pages, progressSuffix, published, status: String
 
-    public init(amazonCta: String, empty: String, notes: String, pages: String, progressSuffix: String, published: String, status: String) {
+    public init(amazonCta: String, empty: String, finishedDate: String, notes: String, pages: String, progressSuffix: String, published: String, status: String) {
         self.amazonCta = amazonCta
         self.empty = empty
+        self.finishedDate = finishedDate
         self.notes = notes
         self.pages = pages
         self.progressSuffix = progressSuffix
@@ -227,6 +229,7 @@ public extension BookModal {
     func with(
         amazonCta: String? = nil,
         empty: String? = nil,
+        finishedDate: String? = nil,
         notes: String? = nil,
         pages: String? = nil,
         progressSuffix: String? = nil,
@@ -236,6 +239,7 @@ public extension BookModal {
         return BookModal(
             amazonCta: amazonCta ?? self.amazonCta,
             empty: empty ?? self.empty,
+            finishedDate: finishedDate ?? self.finishedDate,
             notes: notes ?? self.notes,
             pages: pages ?? self.pages,
             progressSuffix: progressSuffix ?? self.progressSuffix,
@@ -253,16 +257,22 @@ public extension BookModal {
     }
 }
 
-/// Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.
+/// Bookshelf widget — title, empty-state heading/body, status labels
+/// (reading/upNext/finished/pending), finished-date line, timestamp.
 // MARK: - Bookshelf
 public struct Bookshelf: Codable, Sendable {
-    public let emptyBody, emptyTitle, statusReading, timestampLibrary: String
+    public let emptyBody, emptyTitle, finishedDate, statusFinished: String
+    public let statusPending, statusReading, statusUpNext, timestampLibrary: String
     public let title: String
 
-    public init(emptyBody: String, emptyTitle: String, statusReading: String, timestampLibrary: String, title: String) {
+    public init(emptyBody: String, emptyTitle: String, finishedDate: String, statusFinished: String, statusPending: String, statusReading: String, statusUpNext: String, timestampLibrary: String, title: String) {
         self.emptyBody = emptyBody
         self.emptyTitle = emptyTitle
+        self.finishedDate = finishedDate
+        self.statusFinished = statusFinished
+        self.statusPending = statusPending
         self.statusReading = statusReading
+        self.statusUpNext = statusUpNext
         self.timestampLibrary = timestampLibrary
         self.title = title
     }
@@ -289,14 +299,22 @@ public extension Bookshelf {
     func with(
         emptyBody: String? = nil,
         emptyTitle: String? = nil,
+        finishedDate: String? = nil,
+        statusFinished: String? = nil,
+        statusPending: String? = nil,
         statusReading: String? = nil,
+        statusUpNext: String? = nil,
         timestampLibrary: String? = nil,
         title: String? = nil
     ) -> Bookshelf {
         return Bookshelf(
             emptyBody: emptyBody ?? self.emptyBody,
             emptyTitle: emptyTitle ?? self.emptyTitle,
+            finishedDate: finishedDate ?? self.finishedDate,
+            statusFinished: statusFinished ?? self.statusFinished,
+            statusPending: statusPending ?? self.statusPending,
             statusReading: statusReading ?? self.statusReading,
+            statusUpNext: statusUpNext ?? self.statusUpNext,
             timestampLibrary: timestampLibrary ?? self.timestampLibrary,
             title: title ?? self.title
         )

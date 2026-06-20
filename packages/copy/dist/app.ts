@@ -346,6 +346,7 @@ export interface AppBookshelf {
   statusReading: string;
   statusUpNext: string;
   statusFinished: string;
+  finishedDate: string;
   addBook: AppBookshelfAddBook;
   editBook: AppBookshelfEditBook;
   alerts: AppBookshelfAlerts;

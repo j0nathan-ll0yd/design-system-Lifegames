@@ -225,17 +225,18 @@ public struct AppBookshelf: Codable, Sendable {
     /// Edit Book screen — title, buttons, placeholders, section headers, and metadata field
     /// labels.
     public let editBook: AppBookshelfEditBook
-    public let enriching, navTitle, pageOf, pages: String
-    public let sectionPending, sectionRecentlyFinished, sectionUpNext, statusFinished: String
-    public let statusPending, statusReading, statusUpNext, tileBooks: String
-    public let tileComplete, tileHeader, tileReading: String
+    public let enriching, finishedDate, navTitle, pageOf: String
+    public let pages, sectionPending, sectionRecentlyFinished, sectionUpNext: String
+    public let statusFinished, statusPending, statusReading, statusUpNext: String
+    public let tileBooks, tileComplete, tileHeader, tileReading: String
 
-    public init(addBook: AppBookshelfAddBook, alerts: AppBookshelfAlerts, currentlyReading: String, editBook: AppBookshelfEditBook, enriching: String, navTitle: String, pageOf: String, pages: String, sectionPending: String, sectionRecentlyFinished: String, sectionUpNext: String, statusFinished: String, statusPending: String, statusReading: String, statusUpNext: String, tileBooks: String, tileComplete: String, tileHeader: String, tileReading: String) {
+    public init(addBook: AppBookshelfAddBook, alerts: AppBookshelfAlerts, currentlyReading: String, editBook: AppBookshelfEditBook, enriching: String, finishedDate: String, navTitle: String, pageOf: String, pages: String, sectionPending: String, sectionRecentlyFinished: String, sectionUpNext: String, statusFinished: String, statusPending: String, statusReading: String, statusUpNext: String, tileBooks: String, tileComplete: String, tileHeader: String, tileReading: String) {
         self.addBook = addBook
         self.alerts = alerts
         self.currentlyReading = currentlyReading
         self.editBook = editBook
         self.enriching = enriching
+        self.finishedDate = finishedDate
         self.navTitle = navTitle
         self.pageOf = pageOf
         self.pages = pages
@@ -277,6 +278,7 @@ public extension AppBookshelf {
         currentlyReading: String? = nil,
         editBook: AppBookshelfEditBook? = nil,
         enriching: String? = nil,
+        finishedDate: String? = nil,
         navTitle: String? = nil,
         pageOf: String? = nil,
         pages: String? = nil,
@@ -298,6 +300,7 @@ public extension AppBookshelf {
             currentlyReading: currentlyReading ?? self.currentlyReading,
             editBook: editBook ?? self.editBook,
             enriching: enriching ?? self.enriching,
+            finishedDate: finishedDate ?? self.finishedDate,
             navTitle: navTitle ?? self.navTitle,
             pageOf: pageOf ?? self.pageOf,
             pages: pages ?? self.pages,

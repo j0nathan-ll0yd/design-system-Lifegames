@@ -61,9 +61,9 @@ export const HYDRATION = {
 } as const;
 
 export const STATUS_LABELS: Record<string, string> = {
-  next: 'Up Next',
-  in_progress: 'Reading',
-  completed: 'Finished',
+  pending: 'Pending',
+  reading: 'Reading',
+  upNext: 'Up Next',
   finished: 'Finished',
 } as const;
 

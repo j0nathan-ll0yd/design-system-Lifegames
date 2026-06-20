@@ -105,6 +105,8 @@ export interface AdaptedBookEntry {
   coverThumbAvif: string | null;
   coverCardAvif: string | null;
   notes: string | null;
+  finishedAt: string | null;
+  startedAt: string | null;
 }
 
 export interface BookMeta {
@@ -320,16 +322,10 @@ export function adaptGithubEvents(
 }
 
 export function adaptBooks(booksData: BooksExport): AdaptedBooks {
-  const statusMap: Record<string, string> = {
-    reading: 'in_progress',
-    upNext: 'next',
-    completed: 'completed',
-  };
-
   const rawBooks = booksData.books ?? [];
 
   const books: AdaptedBookEntry[] = rawBooks.map((b) => {
-    const mappedStatus = statusMap[b.status ?? ''] ?? b.status ?? 'next';
+    const mappedStatus = b.status ?? 'upNext';
     let progress: number | undefined;
     if (b.currentPage != null && b.totalPages != null && b.totalPages > 0) {
       progress = Math.round((b.currentPage / b.totalPages) * 100);
@@ -359,6 +355,8 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       coverThumbAvif: b.mainImageThumbAvif ?? null,
       coverCardAvif: b.mainImageCardAvif ?? null,
       notes: b.notes ?? null,
+      finishedAt: b.finishedAt ?? null,
+      startedAt: b.startedAt ?? null,
     };
   });
 
@@ -377,9 +375,9 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
     }
   }
 
-  const inProgress = books.filter((b) => b.status === 'in_progress').length;
-  const completed = books.filter((b) => b.status === 'completed').length;
-  const next = books.filter((b) => b.status === 'next').length;
+  const inProgress = books.filter((b) => b.status === 'reading').length;
+  const completed = books.filter((b) => b.status === 'finished').length;
+  const next = books.filter((b) => b.status === 'upNext').length;
 
   return {
     books,

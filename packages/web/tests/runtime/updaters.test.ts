@@ -748,7 +748,7 @@ describe('updateBookshelf', () => {
           title: 'Test Book',
           author: 'Test Author',
           asin: 'B001TEST',
-          status: 'in_progress',
+          status: 'reading',
           rating: null,
           progress: 42,
           link: 'https://amazon.com/dp/B001TEST',
@@ -759,13 +759,15 @@ describe('updateBookshelf', () => {
           coverThumbAvif: null,
           coverCardAvif: null,
           notes: null,
+          finishedAt: null,
+          startedAt: null,
         },
       ],
       bookMeta: {},
       statusLabels: {
-        in_progress: 'Reading',
-        next: 'Up Next',
-        completed: 'Finished',
+        pending: 'Pending',
+        reading: 'Reading',
+        upNext: 'Up Next',
         finished: 'Finished',
       },
       stats: { total: 1, reading: 1, completed: 0, upcoming: 0 },
@@ -791,16 +793,16 @@ describe('updateBookshelf', () => {
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('Test Author');
   });
 
-  it('renders the in_progress status badge (natural-case source, CSS uppercases to READING)', () => {
+  it('renders the reading status badge (natural-case source, CSS uppercases to READING)', () => {
     updateBookshelf(makeBooks());
     // The badge text is sourced from @lifegames/copy (widgets.bookshelf.statusReading,
     // canonical natural-case 'Reading'); .shelf-book-status applies text-transform:uppercase
     // so the visible pixels remain 'READING' (D3 display transform).
     const html = document.getElementById('dashShelfRow')!.innerHTML;
-    expect(html).toContain('class="shelf-book-status shelf-status-in_progress">Reading<');
+    expect(html).toContain('class="shelf-book-status shelf-status-reading">Reading<');
   });
 
-  it('renders progress bar for in_progress book', () => {
+  it('renders progress bar for reading book', () => {
     updateBookshelf(makeBooks());
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('42%');
   });
@@ -815,21 +817,21 @@ describe('updateBookshelf', () => {
     expect(() => updateBookshelf(makeBooks())).not.toThrow();
   });
 
-  it('adds shelf-book-active class for in_progress book', () => {
+  it('adds shelf-book-active class for reading book', () => {
     updateBookshelf(makeBooks());
     expect(document.querySelector('.shelf-book')!.classList.contains('shelf-book-active')).toBe(
       true,
     );
   });
 
-  it('renders stars for completed books with rating', () => {
+  it('renders stars for finished books with rating', () => {
     const books = makeBooks({
       books: [
         {
           title: 'Done Book',
           author: 'Author',
           asin: 'B002TEST',
-          status: 'completed',
+          status: 'finished',
           rating: 4,
           progress: undefined,
           link: 'https://amazon.com/dp/B002TEST',
@@ -840,6 +842,8 @@ describe('updateBookshelf', () => {
           coverThumbAvif: null,
           coverCardAvif: null,
           notes: null,
+          finishedAt: null,
+          startedAt: null,
         },
       ],
     });
@@ -854,7 +858,7 @@ describe('updateBookshelf', () => {
         <img src="" alt="">
         <div class="shelf-book-title"><span>Old Title</span></div>
         <div class="shelf-book-author">Old Author</div>
-        <div class="shelf-book-status shelf-status-next">Up Next</div>
+        <div class="shelf-book-status shelf-status-upNext">Up Next</div>
       </div>
     `;
     updateBookshelf(makeBooks());

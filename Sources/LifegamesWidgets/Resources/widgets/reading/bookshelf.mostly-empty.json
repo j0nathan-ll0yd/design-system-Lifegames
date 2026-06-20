@@ -5,7 +5,7 @@
         "asin": "0525573844",
         "title": "The Pragmatic Programmer",
         "author": "David Thomas, Andrew Hunt",
-        "status": "in_progress",
+        "status": "reading",
         "rating": null,
         "progress": 12,
         "notes": null
@@ -21,9 +21,9 @@
       }
     },
     "statusLabels": {
-      "in_progress": "Reading",
-      "completed": "Completed",
-      "next": "Up Next"
+      "reading": "Reading",
+      "finished": "Completed",
+      "upNext": "Up Next"
     }
   }
 }

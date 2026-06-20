@@ -5,7 +5,7 @@
         "asin": "0525573844",
         "title": "Range",
         "author": "David Epstein",
-        "status": "in_progress",
+        "status": "reading",
         "rating": null,
         "progress": 68,
         "notes": null
@@ -14,7 +14,7 @@
         "asin": "0593128508",
         "title": "Project Hail Mary",
         "author": "Andy Weir",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": "Best sci-fi since The Martian"
@@ -23,7 +23,7 @@
         "asin": "B0FBRJY116",
         "title": "Intermezzo",
         "author": "Sally Rooney",
-        "status": "next",
+        "status": "upNext",
         "rating": null,
         "progress": null,
         "notes": null
@@ -44,9 +44,9 @@
       }
     },
     "statusLabels": {
-      "in_progress": "Reading",
-      "completed": "Completed",
-      "next": "Up Next"
+      "reading": "Reading",
+      "finished": "Completed",
+      "upNext": "Up Next"
     }
   }
 }

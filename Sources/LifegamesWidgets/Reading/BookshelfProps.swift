@@ -15,12 +15,13 @@ public struct BookshelfProps: Hashable, Codable, Sendable {
         public let status: String
         public let rating: Int?
         public let progress: Int?
+        public let finishedAt: String?
         public let coverUrl: String?
 
         public init(
             title: String, author: String, asin: String,
             status: String, rating: Int? = nil, progress: Int? = nil,
-            coverUrl: String? = nil
+            finishedAt: String? = nil, coverUrl: String? = nil
         ) {
             self.title = title
             self.author = author
@@ -28,14 +29,17 @@ public struct BookshelfProps: Hashable, Codable, Sendable {
             self.status = status
             self.rating = rating
             self.progress = progress
+            self.finishedAt = finishedAt
             self.coverUrl = coverUrl
         }
 
         public var statusLabel: String {
+            let copy = CopyLoader.widgets.bookshelf
             switch status {
-            case "in_progress": return CopyLoader.widgets.bookshelf.statusReading.uppercased()
-            case "next": return "UP NEXT"
-            case "completed": return "COMPLETED"
+            case "reading": return copy.statusReading.uppercased()
+            case "upNext": return copy.statusUpNext.uppercased()
+            case "finished": return copy.statusFinished.uppercased()
+            case "pending": return copy.statusPending.uppercased()
             default: return status.uppercased()
             }
         }

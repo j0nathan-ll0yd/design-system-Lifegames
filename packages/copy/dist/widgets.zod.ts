@@ -116,11 +116,15 @@ export const widgetsSchema = z
         emptyTitle: z.string(),
         emptyBody: z.string(),
         statusReading: z.string(),
+        statusUpNext: z.string(),
+        statusFinished: z.string(),
+        statusPending: z.string(),
         timestampLibrary: z.string(),
+        finishedDate: z.string(),
       })
       .strict()
       .describe(
-        'Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.',
+        'Bookshelf widget — title, empty-state heading/body, status labels (reading/upNext/finished/pending), finished-date line, timestamp.',
       ),
     theatreReviews: z
       .object({ title: z.string(), empty: z.string() })
@@ -135,10 +139,11 @@ export const widgetsSchema = z
         status: z.string(),
         amazonCta: z.string(),
         progressSuffix: z.string(),
+        finishedDate: z.string(),
       })
       .strict()
       .describe(
-        'Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template.',
+        'Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template, finished-date prefix.',
       ),
     devLog: z
       .object({ title: z.string(), timestampLive: z.string() })

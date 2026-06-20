@@ -5,7 +5,7 @@
         "asin": "0525573844",
         "title": "The Pragmatic Programmer",
         "author": "David Thomas, Andrew Hunt",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": null
@@ -14,7 +14,7 @@
         "asin": "0593128508",
         "title": "Designing Data-Intensive Applications",
         "author": "Martin Kleppmann",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": null
@@ -23,7 +23,7 @@
         "asin": "0593723848",
         "title": "A Philosophy of Software Design",
         "author": "John Ousterhout",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": null
@@ -32,7 +32,7 @@
         "asin": "1984820680",
         "title": "Staff Engineer",
         "author": "Will Larson",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -41,7 +41,7 @@
         "asin": "1984820710",
         "title": "The Manager's Path",
         "author": "Camille Fournier",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -50,7 +50,7 @@
         "asin": "0735224293",
         "title": "Accelerate",
         "author": "Nicole Forsgren, Jez Humble, Gene Kim",
-        "status": "completed",
+        "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": null
@@ -59,7 +59,7 @@
         "asin": "0062301357",
         "title": "The Hard Thing About Hard Things",
         "author": "Ben Horowitz",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -68,7 +68,7 @@
         "asin": "0307887898",
         "title": "Zero to One",
         "author": "Peter Thiel",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -77,7 +77,7 @@
         "asin": "0374275637",
         "title": "Thinking, Fast and Slow",
         "author": "Daniel Kahneman",
-        "status": "completed",
+        "status": "finished",
         "rating": 4,
         "progress": null,
         "notes": null
@@ -86,7 +86,7 @@
         "asin": "0385333498",
         "title": "The Double Helix",
         "author": "James D. Watson",
-        "status": "completed",
+        "status": "finished",
         "rating": 3,
         "progress": null,
         "notes": null
@@ -95,7 +95,7 @@
         "asin": "0062316117",
         "title": "Sapiens",
         "author": "Yuval Noah Harari",
-        "status": "in_progress",
+        "status": "reading",
         "rating": null,
         "progress": 61,
         "notes": null
@@ -104,7 +104,7 @@
         "asin": "0374529388",
         "title": "The Structure of Scientific Revolutions",
         "author": "Thomas S. Kuhn",
-        "status": "next",
+        "status": "upNext",
         "rating": null,
         "progress": null,
         "notes": null
@@ -125,9 +125,9 @@
       "0374529388": { "pages": 212, "year": 1962, "desc": "How scientific revolutions happen.", "genres": ["Science", "Philosophy"] }
     },
     "statusLabels": {
-      "in_progress": "Reading",
-      "completed": "Completed",
-      "next": "Up Next"
+      "reading": "Reading",
+      "finished": "Completed",
+      "upNext": "Up Next"
     }
   }
 }

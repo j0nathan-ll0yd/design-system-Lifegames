@@ -90,6 +90,12 @@
                     "type": "null"
                   }
                 ]
+              },
+              "finishedAt": {
+                "type": ["string", "null"]
+              },
+              "startedAt": {
+                "type": ["string", "null"]
               }
             },
             "required": ["asin", "title", "author", "status"]

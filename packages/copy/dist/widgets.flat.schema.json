@@ -313,7 +313,7 @@
     },
     "bookshelf": {
       "type": "object",
-      "description": "Bookshelf widget — title, empty-state heading/body, in-progress status label, timestamp.",
+      "description": "Bookshelf widget — title, empty-state heading/body, status labels (reading/upNext/finished/pending), finished-date line, timestamp.",
       "properties": {
         "title": {
           "type": "string"
@@ -327,11 +327,33 @@
         "statusReading": {
           "type": "string"
         },
+        "statusUpNext": {
+          "type": "string"
+        },
+        "statusFinished": {
+          "type": "string"
+        },
+        "statusPending": {
+          "type": "string"
+        },
         "timestampLibrary": {
+          "type": "string"
+        },
+        "finishedDate": {
           "type": "string"
         }
       },
-      "required": ["title", "emptyTitle", "emptyBody", "statusReading", "timestampLibrary"],
+      "required": [
+        "title",
+        "emptyTitle",
+        "emptyBody",
+        "statusReading",
+        "statusUpNext",
+        "statusFinished",
+        "statusPending",
+        "timestampLibrary",
+        "finishedDate"
+      ],
       "additionalProperties": false
     },
     "theatreReviews": {
@@ -350,7 +372,7 @@
     },
     "bookModal": {
       "type": "object",
-      "description": "Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template.",
+      "description": "Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template, finished-date prefix.",
       "properties": {
         "notes": {
           "type": "string"
@@ -372,9 +394,21 @@
         },
         "progressSuffix": {
           "type": "string"
+        },
+        "finishedDate": {
+          "type": "string"
         }
       },
-      "required": ["notes", "empty", "pages", "published", "status", "amazonCta", "progressSuffix"],
+      "required": [
+        "notes",
+        "empty",
+        "pages",
+        "published",
+        "status",
+        "amazonCta",
+        "progressSuffix",
+        "finishedDate"
+      ],
       "additionalProperties": false
     },
     "devLog": {

@@ -32,15 +32,19 @@ export interface DashboardBooks {
     /**
      * Reading status key. Must match a key in statusLabels.
      */
-    status: 'next' | 'in_progress' | 'completed';
+    status: 'pending' | 'reading' | 'upNext' | 'finished';
     /**
      * User rating 1–5 stars, or null if unrated.
      */
     rating?: number | null;
     /**
-     * Reading progress as a percentage (0–100). 0 for unstarted, 100 for completed.
+     * Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished.
      */
     progress?: number;
+    /**
+     * ISO-8601 timestamp when the book was finished, or null if not yet finished.
+     */
+    finishedAt?: string | null;
   }[];
   /**
    * Supplementary metadata keyed by isbn (or ASIN for Kindle-only titles). Provides series, genre, page count, year, and description for each book in the books array.
@@ -82,17 +86,21 @@ export interface DashboardBooks {
    */
   statusLabels: {
     /**
-     * Label for books queued to read next.
+     * Label for books not yet started.
      */
-    next: string;
+    pending: string;
     /**
      * Label for the book currently being read.
      */
-    in_progress: string;
+    reading: string;
     /**
-     * Label for recently finished books.
+     * Label for books queued to read next.
      */
-    completed: string;
+    upNext: string;
+    /**
+     * Label for finished books.
+     */
+    finished: string;
   };
   /**
    * Aggregate reading statistics computed by the DS pipeline.
