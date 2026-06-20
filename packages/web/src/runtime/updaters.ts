@@ -289,10 +289,14 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   const card = document.getElementById('cardDevLog');
   if (!card) return;
 
-  if (!events || events.length === 0) return;
-
   const body = card.querySelector('.widget-body');
   if (!body) return;
+
+  if (!events || events.length === 0) {
+    body.innerHTML = '<div class="widget-empty">' + esc(widgets.devLog.empty) + '</div>';
+    card.classList.remove('is-loading');
+    return;
+  }
 
   const iconMap: Record<string, { symbol: string; color: string }> = {
     commit: { symbol: '\u2192', color: 'var(--neon-green)' },
@@ -347,10 +351,14 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
   const card = document.getElementById('cardReading');
   if (!card) return;
 
-  if (!articles || articles.length === 0) return;
-
   const body = card.querySelector('.widget-body');
   if (!body) return;
+
+  if (!articles || articles.length === 0) {
+    body.innerHTML = '<div class="widget-empty">' + esc(widgets.readingFeed.empty) + '</div>';
+    card.classList.remove('is-loading');
+    return;
+  }
 
   const PAGE_SIZE = 10;
   const totalPages = Math.ceil(articles.length / PAGE_SIZE);
@@ -877,7 +885,14 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
   const card = document.getElementById('cardStarredRepos');
   if (!card) return;
 
-  if (!repos || repos.length === 0) return;
+  if (!repos || repos.length === 0) {
+    const body = card.querySelector('.widget-body');
+    if (body) {
+      body.innerHTML = '<div class="widget-empty">' + esc(widgets.starredRepos.empty) + '</div>';
+    }
+    card.classList.remove('is-loading');
+    return;
+  }
 
   const list = card.querySelector('.gh-starred-list');
   if (!list) return;

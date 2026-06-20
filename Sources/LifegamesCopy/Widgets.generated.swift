@@ -23,7 +23,7 @@ public struct Widgets: Codable, Sendable {
     /// Bookshelf widget — title, empty-state heading/body, status labels
     /// (reading/upNext/finished/pending), finished-date line, timestamp.
     public let bookshelf: Bookshelf
-    /// Dev Log (GitHub activity) production widget — title + live timestamp.
+    /// Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.
     public let devLog: DevLog
     /// Exploration odometer widget — title + the four odometer stat labels.
     public let exploration: Exploration
@@ -41,7 +41,7 @@ public struct Widgets: Codable, Sendable {
     public let nightSummary: NightSummary
     /// Reading Feed widget — title, empty-state, timestamp.
     public let readingFeed: ReadingFeed
-    /// Starred Repos production widget — title + recent timestamp.
+    /// Starred Repos production widget — title, empty-state, recent timestamp.
     public let starredRepos: StarredRepos
     /// System Status widget — title, per-source active/offline status values (canonical natural
     /// case; consumers may uppercase as display transform), realtime timestamp.
@@ -329,12 +329,13 @@ public extension Bookshelf {
     }
 }
 
-/// Dev Log (GitHub activity) production widget — title + live timestamp.
+/// Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.
 // MARK: - DevLog
 public struct DevLog: Codable, Sendable {
-    public let timestampLive, title: String
+    public let empty, timestampLive, title: String
 
-    public init(timestampLive: String, title: String) {
+    public init(empty: String, timestampLive: String, title: String) {
+        self.empty = empty
         self.timestampLive = timestampLive
         self.title = title
     }
@@ -359,10 +360,12 @@ public extension DevLog {
     }
 
     func with(
+        empty: String? = nil,
         timestampLive: String? = nil,
         title: String? = nil
     ) -> DevLog {
         return DevLog(
+            empty: empty ?? self.empty,
             timestampLive: timestampLive ?? self.timestampLive,
             title: title ?? self.title
         )
@@ -851,12 +854,13 @@ public extension ReadingFeed {
     }
 }
 
-/// Starred Repos production widget — title + recent timestamp.
+/// Starred Repos production widget — title, empty-state, recent timestamp.
 // MARK: - StarredRepos
 public struct StarredRepos: Codable, Sendable {
-    public let timestampRecent, title: String
+    public let empty, timestampRecent, title: String
 
-    public init(timestampRecent: String, title: String) {
+    public init(empty: String, timestampRecent: String, title: String) {
+        self.empty = empty
         self.timestampRecent = timestampRecent
         self.title = title
     }
@@ -881,10 +885,12 @@ public extension StarredRepos {
     }
 
     func with(
+        empty: String? = nil,
         timestampRecent: String? = nil,
         title: String? = nil
     ) -> StarredRepos {
         return StarredRepos(
+            empty: empty ?? self.empty,
             timestampRecent: timestampRecent ?? self.timestampRecent,
             title: title ?? self.title
         )

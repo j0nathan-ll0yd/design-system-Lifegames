@@ -268,21 +268,23 @@
     },
     "devLog": {
       "type": "object",
-      "description": "Dev Log (GitHub activity) production widget — title + live timestamp.",
+      "description": "Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.",
       "additionalProperties": false,
-      "required": ["title", "timestampLive"],
+      "required": ["title", "empty", "timestampLive"],
       "properties": {
         "title": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
         "timestampLive": { "$ref": "#/$defs/CopyString" }
       }
     },
     "starredRepos": {
       "type": "object",
-      "description": "Starred Repos production widget — title + recent timestamp.",
+      "description": "Starred Repos production widget — title, empty-state, recent timestamp.",
       "additionalProperties": false,
-      "required": ["title", "timestampRecent"],
+      "required": ["title", "empty", "timestampRecent"],
       "properties": {
         "title": { "$ref": "#/$defs/CopyString" },
+        "empty": { "$ref": "#/$defs/CopyString" },
         "timestampRecent": { "$ref": "#/$defs/CopyString" }
       }
     },
