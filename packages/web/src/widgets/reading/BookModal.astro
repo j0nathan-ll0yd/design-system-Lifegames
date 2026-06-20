@@ -2,20 +2,12 @@
 import { a11y } from '@lifegames/copy';
 ---
 
-<div
-  class="book-overlay"
-  id="bookOverlay"
-  role="dialog"
-  aria-modal="true"
-  aria-label={a11y.bookModal.dialog}
-  aria-hidden="true"
->
+<dialog class="book-dialog" id="bookDialog" aria-label={a11y.bookModal.dialog}>
   <div class="book-modal" id="bookModal"></div>
-</div>
+</dialog>
 
-<!-- BookModal ships scriptless. Consumer attaches activation via a delegated
-     handler on document.body that parses the `.shelf-book[data-book]` JSON.
-     See web-Lifegames-Portal/public/js/book-modal.js for the canonical
-     implementation. CSP `script-src 'self'` rejects inline `<script>` bodies;
-     the runtime must live in an external `public/js/*.js` file referenced via
-     `<script is:inline src="..." defer>`. -->
+<!-- BookModal ships scriptless. The consumer attaches the bundled runtime via
+     `production/BookModal.astro` → `initBookModal()`. CSP `script-src 'self'`
+     is satisfied because the runtime is a bundled (transpiled) module, not
+     inline. The native <dialog> element manages open/close state, background
+     inert, and Escape-to-close automatically via showModal()/close(). -->
