@@ -759,6 +759,8 @@ describe('updateBookshelf', () => {
           coverThumbAvif: null,
           coverCardAvif: null,
           notes: null,
+          finishedAt: null,
+          startedAt: null,
         },
       ],
       bookMeta: {},
@@ -840,6 +842,8 @@ describe('updateBookshelf', () => {
           coverThumbAvif: null,
           coverCardAvif: null,
           notes: null,
+          finishedAt: null,
+          startedAt: null,
         },
       ],
     });
