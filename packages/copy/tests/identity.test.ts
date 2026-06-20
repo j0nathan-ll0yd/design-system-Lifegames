@@ -64,9 +64,9 @@ const NAMESPACES: NamespaceFixture[] = [
   // identity: person 16 + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5).
   { name: 'identity', expectedLeaves: 40 },
   // widgets: heartRate 16 + movement 14 + workouts 10 + hydration 4 + nightSummary 9
-  //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 5 + theatreReviews 2
-  //   + bookModal 7 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.
-  { name: 'widgets', expectedLeaves: 93 },
+  //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
+  //   + bookModal 8 + devLog 2 + starredRepos 2 + bio 3 + systemStatus 4 + identityCard 5.
+  { name: 'widgets', expectedLeaves: 98 },
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
   { name: 'a11y', expectedLeaves: 14 },
