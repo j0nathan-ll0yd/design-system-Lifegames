@@ -413,30 +413,36 @@
     },
     "devLog": {
       "type": "object",
-      "description": "Dev Log (GitHub activity) production widget — title + live timestamp.",
+      "description": "Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.",
       "properties": {
         "title": {
+          "type": "string"
+        },
+        "empty": {
           "type": "string"
         },
         "timestampLive": {
           "type": "string"
         }
       },
-      "required": ["title", "timestampLive"],
+      "required": ["title", "empty", "timestampLive"],
       "additionalProperties": false
     },
     "starredRepos": {
       "type": "object",
-      "description": "Starred Repos production widget — title + recent timestamp.",
+      "description": "Starred Repos production widget — title, empty-state, recent timestamp.",
       "properties": {
         "title": {
+          "type": "string"
+        },
+        "empty": {
           "type": "string"
         },
         "timestampRecent": {
           "type": "string"
         }
       },
-      "required": ["title", "timestampRecent"],
+      "required": ["title", "empty", "timestampRecent"],
       "additionalProperties": false
     },
     "bio": {

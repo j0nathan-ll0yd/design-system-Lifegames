@@ -144,17 +144,19 @@ export interface Widgets {
     finishedDate: string;
   };
   /**
-   * Dev Log (GitHub activity) production widget — title + live timestamp.
+   * Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.
    */
   devLog: {
     title: string;
+    empty: string;
     timestampLive: string;
   };
   /**
-   * Starred Repos production widget — title + recent timestamp.
+   * Starred Repos production widget — title, empty-state, recent timestamp.
    */
   starredRepos: {
     title: string;
+    empty: string;
     timestampRecent: string;
   };
   /**

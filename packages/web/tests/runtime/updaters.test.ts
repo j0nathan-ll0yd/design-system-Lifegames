@@ -7,6 +7,7 @@ import {
   updateHydration,
   updateDevActivityLog,
   updateReadingFeed,
+  updateStarredRepos,
   updateSystemStatus,
   updateExplorationOdometer,
   updatePlaceLeaderboard,
@@ -21,6 +22,7 @@ import type {
   AdaptedGithubEvent,
   AdaptedArticle,
   AdaptedBooks,
+  AdaptedStarredRepo,
 } from '../../src/runtime/adapters';
 import type { LocationExport } from '../../src/types/exports';
 
@@ -496,9 +498,14 @@ describe('updateDevActivityLog', () => {
     expect(el('cardDevLog').classList.contains('is-loading')).toBe(false);
   });
 
-  it('does not modify DOM for empty events', () => {
+  it('renders empty state and clears stale content for empty events', () => {
+    // SSR ships baseline (populated) content; the updater must replace it.
+    el('cardDevLog').querySelector('.widget-body')!.innerHTML =
+      '<div class="gh-dal-terminal">stale baseline row</div>';
     updateDevActivityLog([]);
-    expect(el('cardDevLog').classList.contains('is-loading')).toBe(true);
+    expect(el('cardDevLog').innerHTML).not.toContain('stale baseline row');
+    expect(el('cardDevLog').querySelector('.widget-empty')).not.toBeNull();
+    expect(el('cardDevLog').classList.contains('is-loading')).toBe(false);
   });
 
   it('does not throw when card is missing', () => {
@@ -564,9 +571,14 @@ describe('updateReadingFeed', () => {
     expect(el('cardReading').classList.contains('is-loading')).toBe(false);
   });
 
-  it('does not modify DOM for empty articles', () => {
+  it('renders empty state and clears stale content for empty articles', () => {
+    // SSR ships baseline (populated) content; the updater must replace it.
+    el('cardReading').querySelector('.widget-body')!.innerHTML =
+      '<ul class="article-list"><li>stale baseline article</li></ul>';
     updateReadingFeed([]);
-    expect(el('cardReading').classList.contains('is-loading')).toBe(true);
+    expect(el('cardReading').innerHTML).not.toContain('stale baseline article');
+    expect(el('cardReading').querySelector('.widget-empty')).not.toBeNull();
+    expect(el('cardReading').classList.contains('is-loading')).toBe(false);
   });
 
   it('does not throw when card is missing', () => {
@@ -585,6 +597,57 @@ describe('updateReadingFeed', () => {
     }));
     updateReadingFeed(manyArticles);
     expect(el('cardReading').querySelectorAll('.article-page-btn').length).toBeGreaterThan(1);
+  });
+});
+
+// ── updateStarredRepos ────────────────────────────────────────────────────────
+
+describe('updateStarredRepos', () => {
+  const repos: AdaptedStarredRepo[] = [
+    {
+      owner: 'octocat',
+      name: 'hello-world',
+      url: 'https://github.com/octocat/hello-world',
+      stars: 1234,
+      language: 'TypeScript',
+      languageColor: '#3178c6',
+      starredAt: '2d ago',
+    },
+  ];
+
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="cardStarredRepos" class="is-loading">
+        <div class="widget-body"><div class="gh-starred-list"></div></div>
+      </div>
+    `;
+  });
+
+  it('renders repo owner, name and stars', () => {
+    updateStarredRepos(repos);
+    expect(el('cardStarredRepos').innerHTML).toContain('octocat');
+    expect(el('cardStarredRepos').innerHTML).toContain('hello-world');
+    expect(el('cardStarredRepos').innerHTML).toContain('1,234');
+  });
+
+  it('removes is-loading', () => {
+    updateStarredRepos(repos);
+    expect(el('cardStarredRepos').classList.contains('is-loading')).toBe(false);
+  });
+
+  it('renders empty state and clears stale content for empty repos', () => {
+    // SSR ships baseline (populated) content; the updater must replace it.
+    el('cardStarredRepos').querySelector('.gh-starred-list')!.innerHTML =
+      '<div class="gh-sl-row">stale baseline repo</div>';
+    updateStarredRepos([]);
+    expect(el('cardStarredRepos').innerHTML).not.toContain('stale baseline repo');
+    expect(el('cardStarredRepos').querySelector('.widget-empty')).not.toBeNull();
+    expect(el('cardStarredRepos').classList.contains('is-loading')).toBe(false);
+  });
+
+  it('does not throw when card is missing', () => {
+    document.body.innerHTML = '';
+    expect(() => updateStarredRepos(repos)).not.toThrow();
   });
 });
 

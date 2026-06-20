@@ -146,13 +146,15 @@ export const widgetsSchema = z
         'Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress caption template, finished-date prefix.',
       ),
     devLog: z
-      .object({ title: z.string(), timestampLive: z.string() })
+      .object({ title: z.string(), empty: z.string(), timestampLive: z.string() })
       .strict()
-      .describe('Dev Log (GitHub activity) production widget — title + live timestamp.'),
+      .describe(
+        'Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.',
+      ),
     starredRepos: z
-      .object({ title: z.string(), timestampRecent: z.string() })
+      .object({ title: z.string(), empty: z.string(), timestampRecent: z.string() })
       .strict()
-      .describe('Starred Repos production widget — title + recent timestamp.'),
+      .describe('Starred Repos production widget — title, empty-state, recent timestamp.'),
     bio: z
       .object({ title: z.string(), terminalTitle: z.string(), timestampBash: z.string() })
       .strict()

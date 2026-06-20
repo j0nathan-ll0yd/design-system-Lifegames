@@ -1165,6 +1165,18 @@
         "rationale": "Wording reconciliation: web 'Dev Log' vs iOS 'Activity Log'. Chose the web wording 'Dev Log' as canonical. FLAGGED for user confirmation; iOS would adopt 'Dev Log' (display-uppercased) once it reads the copy package."
       }
     },
+    "empty": {
+      "value": "No recent activity",
+      "_meta": {
+        "description": "Empty-state when no GitHub dev-log activity is available.",
+        "usage": ["web:packages/web/src/runtime/updaters.ts (updateDevActivityLog, .widget-empty)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-20",
+        "constraints": { "maxChars": 24 },
+        "rationale": "Web Dev Log had no rendered empty literal; the runtime updater early-returned on empty, leaving stale SSR baseline content. This is the canonical empty-state string the updater now renders."
+      }
+    },
     "timestampLive": {
       "value": "live",
       "_meta": {
@@ -1194,6 +1206,18 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "constraints": { "maxChars": 20 }
+      }
+    },
+    "empty": {
+      "value": "No starred repositories",
+      "_meta": {
+        "description": "Empty-state when no starred repositories are available.",
+        "usage": ["web:packages/web/src/runtime/updaters.ts (updateStarredRepos, .widget-empty)"],
+        "tone": "neutral",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-20",
+        "constraints": { "maxChars": 28 },
+        "rationale": "Web Starred Repos had no rendered empty literal; the runtime updater early-returned on empty, leaving stale SSR baseline content. This is the canonical empty-state string the updater now renders."
       }
     },
     "timestampRecent": {
