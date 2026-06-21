@@ -5,7 +5,19 @@
 
 ## Brand & Voice
 
-Lifegames is a dark-first, neon-accented, cross-platform design system spanning web (Astro) and iOS (SwiftUI). Visual language: deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), fluid typography that scales with viewport, and motion that favors decelerated easing.
+_Voice source of truth: `packages/copy/VOICE.md` — this section is generated from `packages/copy/voice.summary.json`._
+
+**Precise · Wry · Defiantly human.** The voice of a human broadcasting himself in machine-readable form — on his own terms. Legible to the machine, never surrendered to it. A wry engineer at a terminal: precise, dry, quietly confident; shows the work, skips the hype; renders a life as a datastream while insisting the human is the irreducible source, not an obsolete algorithm.
+
+Visual language: dark-first, neon-accented, cross-platform (web Astro + iOS SwiftUI) — deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), fluid typography that scales with viewport, and motion that favors decelerated easing.
+
+**Registers** (the `register` enum): `atom`, `label`, `factual`, `expressive`, `machine`, `brand`, `consent`.
+
+**Audiences** (the `audience` field): `human`, `machine`, `dual`.
+
+**Arbitration rule:** Literal-first in machine surfaces; allusive only in human-narrative ones. Never sacrifice parseability for flavor in any string whose usage[] touches a machine surface (llms-txt, llms-full, JSON-LD, .txt, feed, <SYSTEM>).
+
+**Principles:** One voice, many registers; Legible to machines, irreducibly human; Wit through precision, not volume; Show the work, skip the hype; Data is a mirror, not a coach; Earn the aesthetic through ethos; dose the flavor; Each string does one thing.
 
 ## Token Architecture
 

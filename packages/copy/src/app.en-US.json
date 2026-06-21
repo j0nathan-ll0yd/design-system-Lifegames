@@ -7,7 +7,8 @@
         "usage": [
           "ios:HomeFeature/HomeFeature.swift:190 (.navigationTitle); HomeFeature.swift:177 (screenshot-mode title)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -19,7 +20,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:39 (.navigationTitle); :26 (screenshot-mode title)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -31,7 +33,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:44 (.navigationTitle); :30 (screenshot-mode title)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -41,7 +44,8 @@
       "_meta": {
         "description": "Location dashboard navigation title.",
         "usage": ["ios:LocationFeature/Views/LocationDashboardView.swift:39 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -51,7 +55,8 @@
       "_meta": {
         "description": "Journey timeline navigation title.",
         "usage": ["ios:LocationFeature/Views/LocationDashboardView.swift:50 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -61,7 +66,8 @@
       "_meta": {
         "description": "Activity (heat) map navigation title.",
         "usage": ["ios:LocationFeature/Views/LocationDashboardView.swift:57 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -71,7 +77,8 @@
       "_meta": {
         "description": "Top Places full-screen navigation title.",
         "usage": ["ios:LocationFeature/Views/LocationDashboardView.swift:64 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -83,7 +90,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:132 (.navigationTitle); :119 (screenshot-mode title)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -93,7 +101,8 @@
       "_meta": {
         "description": "Watch diagnostics navigation title.",
         "usage": ["ios:WatchDiagnosticFeature/WatchDiagnosticFeature.swift:98 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -103,7 +112,8 @@
       "_meta": {
         "description": "Saved Places list navigation title.",
         "usage": ["ios:SettingsFeature/SavedPlacesView.swift:33 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -115,7 +125,8 @@
       "_meta": {
         "description": "Home tab-bar label.",
         "usage": ["ios:AppFeature/AppFeature.swift:214 (Tab Label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -125,7 +136,8 @@
       "_meta": {
         "description": "Health tab-bar label.",
         "usage": ["ios:AppFeature/AppFeature.swift:220 (Tab Label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -135,7 +147,8 @@
       "_meta": {
         "description": "Location tab-bar label.",
         "usage": ["ios:AppFeature/AppFeature.swift:226 (Tab Label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -145,7 +158,8 @@
       "_meta": {
         "description": "Bookshelf tab-bar label (short form 'Books').",
         "usage": ["ios:AppFeature/AppFeature.swift:232 (Tab Label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -155,7 +169,8 @@
       "_meta": {
         "description": "Settings tab-bar label.",
         "usage": ["ios:AppFeature/AppFeature.swift:238 (Tab Label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -169,7 +184,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:257 (alert button); many alert/toolbar sites"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -181,7 +197,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:258 (alert button); JourneyFeature delete action"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -191,7 +208,8 @@
       "_meta": {
         "description": "Generic Clear action (clear watch logs alert).",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:384 (alert button)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -201,7 +219,8 @@
       "_meta": {
         "description": "Generic OK confirmation (alert dismiss).",
         "usage": ["ios: shared alert button label (BookshelfFeature error alerts default OK)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -213,7 +232,8 @@
         "usage": [
           "ios:LocationFeature/Views/PlaceRenameView.swift:59 (DONE button, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -225,7 +245,8 @@
         "usage": [
           "ios:HealthFeature/SleepScoreEntrySheet.swift:79 (SAVE, uppercased at call site); EditBookScreen.swift:80"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -235,7 +256,8 @@
       "_meta": {
         "description": "Generic Add action.",
         "usage": ["ios:BookshelfFeature/AddBookScreen.swift:149 (ADD, uppercased at call site)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -243,13 +265,15 @@
   },
   "home": {
     "loading": {
-      "value": "Loading data...",
+      "value": "Loading data…",
       "_meta": {
         "description": "Home dashboard initial loading message.",
         "usage": ["ios:HomeFeature/HomeFeature.swift:228 (loadingView Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-06-21",
+        "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
       }
     },
     "stepsUnit": {
@@ -257,7 +281,8 @@
       "_meta": {
         "description": "Unit label next to the step count on the health card.",
         "usage": ["ios:HomeFeature/HomeFeature.swift:255 (Text)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -269,7 +294,8 @@
         "usage": [
           "ios:HomeFeature/HomeFeature.swift:279 (Text, composed \\(Int(stepProgress*100))% of daily goal)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -281,7 +307,8 @@
         "usage": [
           "ios:HomeFeature/HomeFeature.swift:349 (Text, composed \\(store.todayVisitCount) visits today)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -293,7 +320,8 @@
         "usage": [
           "ios:HomeFeature/HomeFeature.swift:359 (Text, composed \\(store.unsyncedCount) unsynced)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -303,7 +331,8 @@
       "_meta": {
         "description": "Health column label in the sync-status banner.",
         "usage": ["ios:HomeFeature/SyncStatusBanner.swift:26 (syncIndicator label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -313,7 +342,8 @@
       "_meta": {
         "description": "Location column label in the sync-status banner.",
         "usage": ["ios:HomeFeature/SyncStatusBanner.swift:27 (syncIndicator label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -323,7 +353,8 @@
       "_meta": {
         "description": "Placeholder when no current place name is available on the location card.",
         "usage": ["ios:HomeFeature/HomeFeature.swift:319 (Text fallback)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -333,7 +364,8 @@
       "_meta": {
         "description": "Location-tracking active status.",
         "usage": ["ios:HomeFeature/HomeFeature.swift:339 (Text, isTracking branch)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -343,7 +375,8 @@
       "_meta": {
         "description": "Location-tracking inactive status.",
         "usage": ["ios:HomeFeature/HomeFeature.swift:339 (Text, !isTracking branch)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -353,7 +386,8 @@
       "_meta": {
         "description": "Sync-status banner per-channel 'never synced' state.",
         "usage": ["ios:HomeFeature/SyncStatusBanner.swift:65 (Text fallback)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -363,7 +397,8 @@
       "_meta": {
         "description": "Sync-status banner header label.",
         "usage": ["ios:HomeFeature/SyncStatusBanner.swift:21 (Label)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -377,7 +412,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:76 (WidgetHeaderView label LOCATION, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -389,7 +425,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:121 (WidgetHeaderView label SERVER, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -401,7 +438,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:208 (WidgetHeaderView label DATA, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -413,7 +451,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:281 (WidgetHeaderView label DIAGNOSTICS, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -425,7 +464,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:396 (WidgetHeaderView label ABOUT, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -435,7 +475,8 @@
       "_meta": {
         "description": "Saved-places navigation row title in Settings.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:95 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -445,7 +486,8 @@
       "_meta": {
         "description": "Saved-places navigation row subtitle in Settings.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:98 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -457,7 +499,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:125 (Text label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -467,7 +510,8 @@
       "_meta": {
         "description": "Server API base-URL text-field placeholder (example URL).",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:130 (TextField placeholder)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -479,7 +523,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:152 (Text label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -489,7 +534,8 @@
       "_meta": {
         "description": "Server API-token secure-field placeholder.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:157 (SecureField placeholder)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -499,7 +545,8 @@
       "_meta": {
         "description": "Data section 'Total Visits' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:211 (dataRow label)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -509,7 +556,8 @@
       "_meta": {
         "description": "Data section 'Unsynced Visits' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:212 (dataRow label)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -519,7 +567,8 @@
       "_meta": {
         "description": "Data section 'Last Health Sync' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:215 (dataRow label)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -531,7 +580,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:231 (neonActionButton label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -543,7 +593,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:241 (neonActionButton label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -553,7 +604,8 @@
       "_meta": {
         "description": "Diagnostics 'Watch Log Entries' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:292 (dataRow label)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -563,7 +615,8 @@
       "_meta": {
         "description": "Diagnostics 'File Size' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:294 (dataRow label)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -573,7 +626,8 @@
       "_meta": {
         "description": "Diagnostics empty state. Two lines; second line quotes the 'Transfer' watch action verbatim.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:285 (Text)"],
-        "tone": "functional",
+        "register": "factual",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Quotes around \"Transfer\" preserved from source (prior inventory dropped them)."
@@ -586,7 +640,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:304 (Text, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -598,7 +653,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:338 (Text, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -610,7 +666,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:356 (neonActionButton label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -622,7 +679,8 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:367 (neonActionButton label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -632,7 +690,8 @@
       "_meta": {
         "description": "About section 'Name' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:404 (dataRow label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -642,7 +701,8 @@
       "_meta": {
         "description": "About section 'Title' (job title) row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:405 (dataRow label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -652,7 +712,8 @@
       "_meta": {
         "description": "About section 'Version' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:407 (dataRow label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -662,7 +723,8 @@
       "_meta": {
         "description": "About section 'Build' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:408 (dataRow label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -672,7 +734,8 @@
       "_meta": {
         "description": "About section 'Platform' row label.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:409 (dataRow label)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -683,7 +746,8 @@
         "_meta": {
           "description": "Delete-all-data confirmation alert title.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:253 (.alert title)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -693,7 +757,8 @@
         "_meta": {
           "description": "Delete-all-data confirmation alert message.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:262 (.alert message Text)"],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -703,7 +768,8 @@
         "_meta": {
           "description": "Full re-sync confirmation alert title.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:264 (.alert title)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -713,7 +779,8 @@
         "_meta": {
           "description": "Full re-sync confirmation alert message.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:273 (.alert message Text)"],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -723,7 +790,8 @@
         "_meta": {
           "description": "Full re-sync confirmation alert confirm-button label.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:269 (alert Button)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -733,7 +801,8 @@
         "_meta": {
           "description": "Clear-watch-logs confirmation alert title.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:379 (.alert title)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -743,7 +812,8 @@
         "_meta": {
           "description": "Clear-watch-logs confirmation alert message.",
           "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:388 (.alert message Text)"],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -756,7 +826,8 @@
       "_meta": {
         "description": "Saved-places empty-state title.",
         "usage": ["ios:SettingsFeature/SavedPlacesView.swift:67 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -766,7 +837,8 @@
       "_meta": {
         "description": "Saved-places empty-state body (two lines).",
         "usage": ["ios:SettingsFeature/SavedPlacesView.swift:70 (Text)"],
-        "tone": "functional",
+        "register": "factual",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -776,7 +848,8 @@
       "_meta": {
         "description": "Saved-places empty-state add-home button. Stored natural-case; rendered uppercase at call site.",
         "usage": ["ios:SettingsFeature/SavedPlacesView.swift:82 (Text, uppercased at call site)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -788,7 +861,8 @@
         "usage": [
           "ios:SettingsFeature/SavedPlacesView.swift:137 (Text, composed \\(Int(place.radiusMeters))m radius)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -800,7 +874,8 @@
       "_meta": {
         "description": "Add-saved-place sheet header. Stored natural-case; rendered uppercase ('ADD SAVED PLACE') at call site.",
         "usage": ["ios:SettingsFeature/AddPlaceView.swift:24 (Text, uppercased at call site)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -810,7 +885,8 @@
       "_meta": {
         "description": "Add-saved-place sheet sub-header.",
         "usage": ["ios:SettingsFeature/AddPlaceView.swift:28 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -822,7 +898,8 @@
         "usage": [
           "ios:SettingsFeature/AddPlaceView.swift:48 (fieldSection label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -832,7 +909,8 @@
       "_meta": {
         "description": "Name field placeholder.",
         "usage": ["ios:SettingsFeature/AddPlaceView.swift:49 (TextField placeholder)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -844,7 +922,8 @@
         "usage": [
           "ios:SettingsFeature/AddPlaceView.swift:58 (fieldSection label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -856,7 +935,8 @@
         "usage": [
           "ios:SettingsFeature/AddPlaceView.swift:90 (fieldSection label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -868,7 +948,8 @@
         "usage": [
           "ios:SettingsFeature/AddPlaceView.swift:102 (fieldSection label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -880,7 +961,8 @@
         "usage": [
           "ios:SettingsFeature/AddPlaceView.swift:116 (fieldSection label, composed RADIUS: \\(Int(store.radiusMeters))M)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -890,7 +972,8 @@
       "_meta": {
         "description": "Coordinate-entry tip; quotes the 'Correct' visit action verbatim.",
         "usage": ["ios:SettingsFeature/AddPlaceView.swift:133 (Text)"],
-        "tone": "functional",
+        "register": "factual",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Quotes around \"Correct\" preserved from source (prior inventory dropped them)."
@@ -905,7 +988,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:74 (sectionHeader, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -917,7 +1001,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:76 (sectionHeader, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -929,7 +1014,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:78 (sectionHeader, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -941,7 +1027,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:80 (sectionHeader, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -953,7 +1040,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:82 (sectionHeader, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -965,7 +1053,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:84 (sectionHeader, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -975,7 +1064,8 @@
       "_meta": {
         "description": "Workouts subsection header. Stored natural-case; rendered uppercase at call site.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:192 (Text, uppercased at call site)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Apostrophe in 'Today's' preserved from source (prior inventory dropped it)."
@@ -986,7 +1076,8 @@
       "_meta": {
         "description": "Workouts empty-state title (no workouts).",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:210 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -996,7 +1087,8 @@
       "_meta": {
         "description": "Workouts empty-state message.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:214 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1008,7 +1100,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:250 (workoutStat label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1020,7 +1113,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:251 (workoutStat label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1030,7 +1124,8 @@
       "_meta": {
         "description": "HealthKit subsection header. Stored natural-case; rendered uppercase ('HEALTHKIT') at call site.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:281 (Text, uppercased at call site)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1040,7 +1135,8 @@
       "_meta": {
         "description": "HealthKit authorization row label.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:298 (Text)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1050,7 +1146,8 @@
       "_meta": {
         "description": "HealthKit authorized status. Stored natural-case; rendered uppercase ('AUTHORIZED') at call site.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:304 (Text, uppercased at call site)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1060,21 +1157,24 @@
       "_meta": {
         "description": "HealthKit last-sync row label.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:313 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
     },
     "syncing": {
-      "value": "Syncing...",
+      "value": "Syncing…",
       "_meta": {
         "description": "HealthKit sync button in-progress label. Stored natural-case; rendered uppercase at call site.",
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:325 (neonActionButton label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-06-21",
+        "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
       }
     },
     "syncNow": {
@@ -1084,7 +1184,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:325 (neonActionButton label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1094,7 +1195,8 @@
       "_meta": {
         "description": "Data-mode toggle title.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:346 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1104,7 +1206,8 @@
       "_meta": {
         "description": "Data-mode subtitle when real-data mode is on.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:349 (Text, useRealData branch)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1114,7 +1217,8 @@
       "_meta": {
         "description": "Data-mode subtitle when simulated-data mode is on.",
         "usage": ["ios:HealthFeature/HealthFeatureView.swift:349 (Text, !useRealData branch)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1128,7 +1232,8 @@
         "usage": [
           "ios:HealthFeature/SleepScoreEntrySheet.swift:40 (Text, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1138,7 +1243,8 @@
       "_meta": {
         "description": "Sleep-score entry prompt.",
         "usage": ["ios:HealthFeature/SleepScoreEntrySheet.swift:67 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1150,7 +1256,8 @@
         "usage": [
           "ios:HealthFeature/SleepScoreEntrySheet.swift:45 (TextField placeholder, '0\\u{2013}100')"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Source uses a U+2013 en-dash ('0–100'), not a hyphen (prior inventory said '0-100')."
@@ -1163,7 +1270,8 @@
         "usage": [
           "ios:HealthFeature/SleepScoreEntrySheet.swift:79 (Text, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1175,7 +1283,8 @@
         "usage": [
           "ios:HealthFeature/SleepScoreEntrySheet.swift:111 (Text, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1187,7 +1296,8 @@
         "usage": [
           "ios:HealthFeature/SleepScoreEntrySheet.swift:139 (Text, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1199,7 +1309,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:183 (.accessibilityLabel, sleepScore == nil branch)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1211,7 +1322,8 @@
         "usage": [
           "ios:HealthFeature/HealthFeatureView.swift:183 (.accessibilityLabel, sleepScore != nil branch)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1224,7 +1336,8 @@
         "_meta": {
           "description": "Button to jump to yesterday's journey when today is empty.",
           "usage": ["ios:LocationFeature/Views/JourneyView.swift:43 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11",
           "rationale": "Apostrophe in 'Yesterday's' preserved from source (prior inventory dropped it)."
@@ -1235,7 +1348,8 @@
         "_meta": {
           "description": "Fallback shown when MapKit is unavailable (non-iOS/watchOS).",
           "usage": ["ios:LocationFeature/Views/JourneyView.swift:191 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1247,7 +1361,8 @@
           "usage": [
             "ios:LocationFeature/Views/JourneyView.swift:226 (Text, composed \\(store.displayedVisits.count) places visited)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1257,7 +1372,8 @@
         "_meta": {
           "description": "Journey empty-state title.",
           "usage": ["ios:LocationFeature/Views/JourneyView.swift:32 (LocationEmptyState title)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1267,7 +1383,8 @@
         "_meta": {
           "description": "Journey empty-state message.",
           "usage": ["ios:LocationFeature/Views/JourneyView.swift:33 (LocationEmptyState message)"],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1279,7 +1396,8 @@
           "usage": [
             "ios:LocationFeature/Views/JourneyView.swift:433 (actionButton title, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1291,7 +1409,8 @@
           "usage": [
             "ios:LocationFeature/Views/JourneyView.swift:434 (actionButton title, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1303,7 +1422,8 @@
           "usage": [
             "ios:LocationFeature/Views/JourneyView.swift:437 (actionButton title, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1315,7 +1435,8 @@
           "usage": [
             "ios:LocationFeature/Views/JourneyView.swift:440 (actionButton title, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1325,7 +1446,8 @@
         "_meta": {
           "description": "Fallback annotation title for an unnamed visit on the map.",
           "usage": ["ios:LocationFeature/Views/JourneyView.swift:153 (Annotation title fallback)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1335,7 +1457,8 @@
         "_meta": {
           "description": "Fallback name for a visit with no place name or address.",
           "usage": ["ios:LocationFeature/Views/JourneyView.swift:395 (Text fallback)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1345,7 +1468,8 @@
         "_meta": {
           "description": "Delete-visit confirmation alert title.",
           "usage": ["ios:LocationFeature/JourneyFeature.swift:182 (alert TextState)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1355,7 +1479,8 @@
         "_meta": {
           "description": "Delete-visit confirmation alert message.",
           "usage": ["ios:LocationFeature/JourneyFeature.swift:188 (alert TextState)"],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1369,7 +1494,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:62 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1379,7 +1505,8 @@
         "_meta": {
           "description": "Fallback header subtitle for an unnamed visit being corrected.",
           "usage": ["ios:LocationFeature/Views/VisitCorrectionView.swift:66 (Text fallback)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1389,21 +1516,24 @@
         "_meta": {
           "description": "Pin-tab hint.",
           "usage": ["ios:LocationFeature/Views/VisitCorrectionView.swift:187 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
       },
       "searchPlaceholder": {
-        "value": "Search nearby places...",
+        "value": "Search nearby places…",
         "_meta": {
           "description": "Search-tab text-field placeholder.",
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:125 (TextField placeholder)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
-          "lastReviewed": "2026-06-11"
+          "lastReviewed": "2026-06-21",
+          "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
         }
       },
       "adjustTimes": {
@@ -1411,7 +1541,8 @@
         "_meta": {
           "description": "Time-tab hint.",
           "usage": ["ios:LocationFeature/Views/VisitCorrectionView.swift:221 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1423,7 +1554,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:231 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1435,21 +1567,24 @@
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:258 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
       },
       "confirming": {
-        "value": "Correcting...",
+        "value": "Correcting…",
         "_meta": {
           "description": "Confirm button in-progress label. Stored natural-case; rendered uppercase at call site.",
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:351 (ConfirmButton title, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
-          "lastReviewed": "2026-06-11"
+          "lastReviewed": "2026-06-21",
+          "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
         }
       },
       "confirm": {
@@ -1459,7 +1594,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:351 (ConfirmButton title, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1471,7 +1607,8 @@
           "usage": [
             "ios:LocationFeature/VisitCorrectionFeature.swift:145 (correction.placeName fallback)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1485,7 +1622,8 @@
           "usage": [
             "ios:LocationFeature/Views/PlaceRenameView.swift:32 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1497,7 +1635,8 @@
           "usage": [
             "ios:LocationFeature/Views/PlaceRenameView.swift:37 (Text, composed Renaming all visits at \\(store.oldName))"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1507,7 +1646,8 @@
         "_meta": {
           "description": "Place-rename success message. ICU MF1 plural; source pluralizes inline (\\(count) visit\\(count==1 ? \"\" : \"s\")). Consumer keeps native plural logic in V2.",
           "usage": ["ios:LocationFeature/Views/PlaceRenameView.swift:52 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11",
           "rationale": "Authored as ICU plural form; iOS uses native string interpolation for the singular/plural switch."
@@ -1520,7 +1660,8 @@
           "usage": [
             "ios:LocationFeature/Views/PlaceRenameView.swift:59 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1532,7 +1673,8 @@
           "usage": [
             "ios:LocationFeature/Views/PlaceRenameView.swift:76 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1542,7 +1684,8 @@
         "_meta": {
           "description": "New-name text-field placeholder.",
           "usage": ["ios:LocationFeature/Views/PlaceRenameView.swift:81 (TextField placeholder)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1554,7 +1697,8 @@
           "usage": [
             "ios:LocationFeature/Views/PlaceRenameView.swift:101 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1568,7 +1712,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesCard.swift:16 (Text, uppercased); TopPlacesFullView.swift:26"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1578,7 +1723,8 @@
         "_meta": {
           "description": "Top-places card 'see all' link. Source renders with a trailing ' >' chevron glyph appended in the literal.",
           "usage": ["ios:LocationFeature/Views/TopPlacesCard.swift:21 (Text 'See All >')"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11",
           "rationale": "Source literal is 'See All >'; stored without the decorative chevron (the '>' is a presentational affordance, not copy)."
@@ -1589,7 +1735,8 @@
         "_meta": {
           "description": "Top-places card empty state.",
           "usage": ["ios:LocationFeature/Views/TopPlacesCard.swift:28 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1601,7 +1748,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesFullView.swift:29 (Text, composed \\(store.places.count) unique locations)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1613,7 +1761,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesFullView.swift:60 (LocationEmptyState title)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1625,7 +1774,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesFullView.swift:61 (LocationEmptyState message)"
           ],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1635,7 +1785,8 @@
         "_meta": {
           "description": "Sort picker accessibility/title label.",
           "usage": ["ios:LocationFeature/Views/TopPlacesFullView.swift:41 (Picker label)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1647,7 +1798,8 @@
           "usage": [
             "ios:LocationFeature/LocationAnalyticsClient.swift:191 (PlacesSortOrder.visits rawValue)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1659,7 +1811,8 @@
           "usage": [
             "ios:LocationFeature/LocationAnalyticsClient.swift:192 (PlacesSortOrder.recent rawValue)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1671,7 +1824,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesFullView.swift:229 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1683,7 +1837,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesFullView.swift:257 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1695,7 +1850,8 @@
           "usage": [
             "ios:LocationFeature/Views/TopPlacesFullView.swift:173 (Text, composed Last: \\(relativeFmt…))"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1705,7 +1861,8 @@
         "_meta": {
           "description": "Unit label under a place's visit count.",
           "usage": ["ios:LocationFeature/Views/TopPlacesFullView.swift:186 (Text)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1719,7 +1876,8 @@
           "usage": [
             "ios:LocationFeature/Views/HeatMapCard.swift:20 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1729,7 +1887,8 @@
         "_meta": {
           "description": "Activity-map card 'see month' link. Source renders with a trailing ' >' chevron glyph appended in the literal.",
           "usage": ["ios:LocationFeature/Views/HeatMapCard.swift:25 (Text 'See Month >')"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11",
           "rationale": "Source literal is 'See Month >'; stored without the decorative chevron (the '>' is a presentational affordance, not copy)."
@@ -1740,7 +1899,8 @@
         "_meta": {
           "description": "Heat-map legend low-end label.",
           "usage": ["ios:LocationFeature/Views/HeatMapCard.swift:59 (Text)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1750,7 +1910,8 @@
         "_meta": {
           "description": "Heat-map legend high-end label.",
           "usage": ["ios:LocationFeature/Views/HeatMapCard.swift:71 (Text)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1762,7 +1923,8 @@
           "usage": [
             "ios:LocationFeature/Views/HeatMapFullView.swift:64 (Text, composed \\(store.totalVisits) total visits)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1774,7 +1936,8 @@
           "usage": [
             "ios:LocationFeature/Views/HeatMapFullView.swift:82 (Text, composed 0 → \\(maxCount)+ visits)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11",
           "rationale": "Source uses a U+2192 arrow ('0 → …'), not the word 'to' (prior inventory said 'to')."
@@ -1789,7 +1952,8 @@
           "usage": [
             "ios:LocationFeature/Views/TodayStatsRow.swift:14 (StatCell label, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1801,7 +1965,8 @@
           "usage": [
             "ios:LocationFeature/Views/TodayStatsRow.swift:25 (StatCell label, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1813,7 +1978,8 @@
           "usage": [
             "ios:LocationFeature/Views/TodayStatsRow.swift:36 (StatCell label, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1827,7 +1993,8 @@
           "usage": [
             "ios:LocationFeature/Views/WeekBarChart.swift:23 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1839,7 +2006,8 @@
           "usage": [
             "ios:LocationFeature/Views/WeekBarChart.swift:29 (Text, composed \\(total) visits)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1853,7 +2021,8 @@
           "usage": [
             "ios:LocationFeature/Views/NowAtHeroCard.swift:121 (headerLabel, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1865,7 +2034,8 @@
           "usage": [
             "ios:LocationFeature/Views/NowAtHeroCard.swift:123 (headerLabel, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1877,7 +2047,8 @@
           "usage": [
             "ios:LocationFeature/Views/NowAtHeroCard.swift:123 (headerLabel, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1889,7 +2060,8 @@
           "usage": [
             "ios:LocationFeature/Views/NowAtHeroCard.swift:126 (headerLabel, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1901,7 +2073,8 @@
           "usage": [
             "ios:LocationFeature/Views/NowAtHeroCard.swift:127 (headerLabel, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1911,7 +2084,8 @@
         "_meta": {
           "description": "Now-at hero name fallback when at home with no place name.",
           "usage": ["ios:LocationFeature/Views/NowAtHeroCard.swift:134 (locationName fallback)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1923,7 +2097,8 @@
           "usage": [
             "ios:LocationFeature/Views/NowAtHeroCard.swift:140,147,150 (locationName fallback)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1933,7 +2108,8 @@
         "_meta": {
           "description": "Now-at hero name while awaiting first location fix. Uses a horizontal-ellipsis glyph (…).",
           "usage": ["ios:LocationFeature/Views/NowAtHeroCard.swift:152 (locationName fallback)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11",
           "rationale": "Source uses U+2026 ellipsis ('…'), not three periods (prior inventory said '...')."
@@ -1948,7 +2124,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitMergeView.swift:55 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1958,7 +2135,8 @@
         "_meta": {
           "description": "Merge-visits sheet subtitle.",
           "usage": ["ios:LocationFeature/Views/VisitMergeView.swift:59 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1970,7 +2148,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitMergeView.swift:79 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1982,7 +2161,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitMergeView.swift:85 (VisitSummaryCard label, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -1994,7 +2174,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitMergeView.swift:96 (VisitSummaryCard label, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2006,7 +2187,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitMergeView.swift:104 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2018,7 +2200,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitMergeView.swift:157 (Text, composed \\(keep+absorb mergeCount) GPS samples merged)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2032,7 +2215,8 @@
           "usage": [
             "ios:LocationFeature/Views/CurrentLocationRibbon.swift:115 (primaryLabel prefix)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2044,7 +2228,8 @@
           "usage": [
             "ios:LocationFeature/Views/CurrentLocationRibbon.swift:119,134 (primaryLabel, composed Near \\(place))"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2056,7 +2241,8 @@
           "usage": [
             "ios:LocationFeature/Views/CurrentLocationRibbon.swift:137 (primaryLabel fallback)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2070,7 +2256,8 @@
           "usage": [
             "ios:LocationFeature/Views/VisitCorrectionView.swift:317 (formattedDuration fallback)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2083,7 +2270,8 @@
       "_meta": {
         "description": "Bookshelf screen title (also used as nav title).",
         "usage": ["ios:BookshelfFeature/BookshelfView.swift:132 (.navigationTitle); :119"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2095,7 +2283,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:28,64 (Text, composed \\(total) pages)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2107,7 +2296,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:171 (SectionHeader title, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2119,7 +2309,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:183 (SectionHeader title, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2131,7 +2322,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:200 (SectionHeader title, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2143,7 +2335,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:240 (WidgetHeaderView label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2155,20 +2348,23 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfView.swift:271 (Text, composed Page \\(current) of \\(total) · \\(percent)%)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Source uses a U+00B7 middle dot ('· ') as the separator, not a hyphen (prior inventory said '-')."
       }
     },
     "enriching": {
-      "value": "Enriching...",
+      "value": "Enriching…",
       "_meta": {
         "description": "Pending-book enrichment overlay label.",
         "usage": ["ios:BookshelfFeature/BookshelfView.swift:298 (Text)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-06-21",
+        "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
       }
     },
     "tileHeader": {
@@ -2178,7 +2374,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfDashboardTile.swift:133 (WidgetHeaderView label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2190,7 +2387,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfDashboardTile.swift:165 (Text, composed \\(percent)% complete)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2202,7 +2400,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfDashboardTile.swift:172 (Text, composed \\(books.count) books)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2214,7 +2413,8 @@
         "usage": [
           "ios:BookshelfFeature/BookshelfDashboardTile.swift:178 (Text, composed \\(readingCount) reading)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2224,7 +2424,8 @@
       "_meta": {
         "description": "Book status label: pending.",
         "usage": ["ios:SharedModels/Book.swift:18 (BookStatus.pending.statusLabel)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2234,7 +2435,8 @@
       "_meta": {
         "description": "Book status label: reading.",
         "usage": ["ios:SharedModels/Book.swift:19 (BookStatus.reading.statusLabel)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2244,7 +2446,8 @@
       "_meta": {
         "description": "Book status label: up next.",
         "usage": ["ios:SharedModels/Book.swift:20 (BookStatus.upNext.statusLabel)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2254,7 +2457,8 @@
       "_meta": {
         "description": "Book status label: finished.",
         "usage": ["ios:SharedModels/Book.swift:21 (BookStatus.finished.statusLabel)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2264,10 +2468,13 @@
       "_meta": {
         "description": "Finished-date line on the recently-finished row, below the star rating. ICU MF1 template; the consumer substitutes the formatted relative date string (e.g. \"2 days ago\").",
         "usage": ["ios:BookshelfFeature/BookshelfView.swift (FinishedRow finished-date line)"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-19",
-        "constraints": { "maxChars": 24 }
+        "constraints": {
+          "maxChars": 24
+        }
       }
     },
     "addBook": {
@@ -2276,19 +2483,22 @@
         "_meta": {
           "description": "Add-book screen navigation title.",
           "usage": ["ios:BookshelfFeature/AddBookScreen.swift:102 (.navigationTitle)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
       },
       "searchPlaceholder": {
-        "value": "Search books by title or author...",
+        "value": "Search books by title or author…",
         "_meta": {
           "description": "Add-book search-field placeholder.",
           "usage": ["ios:BookshelfFeature/AddBookScreen.swift:42 (TextField placeholder)"],
-          "tone": "functional",
+          "register": "factual",
+          "audience": "human",
           "owner": "jonathan",
-          "lastReviewed": "2026-06-11"
+          "lastReviewed": "2026-06-21",
+          "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
         }
       },
       "emptyPrompt": {
@@ -2296,7 +2506,8 @@
         "_meta": {
           "description": "Add-book empty-state prompt before searching.",
           "usage": ["ios:BookshelfFeature/AddBookScreen.swift:88 (Text)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2306,7 +2517,8 @@
         "_meta": {
           "description": "Detected-ASIN caption in the detection bar. ICU MF1; consumer substitutes the ASIN.",
           "usage": ["ios:BookshelfFeature/AddBookScreen.swift:131 (Text, composed ASIN: \\(asin))"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2316,7 +2528,8 @@
         "_meta": {
           "description": "Add-book add button. Stored natural-case; rendered uppercase ('ADD') at call site.",
           "usage": ["ios:BookshelfFeature/AddBookScreen.swift:149 (Text, uppercased at call site)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2328,7 +2541,8 @@
         "_meta": {
           "description": "Edit-book screen navigation title.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:401 (.navigationTitle)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2338,7 +2552,8 @@
         "_meta": {
           "description": "Edit-book save button. Stored natural-case; rendered uppercase at call site.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:80 (Text, uppercased at call site)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2350,29 +2565,34 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:103 (Text, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
       },
       "notesPlaceholder": {
-        "value": "Add personal notes...",
+        "value": "Add personal notes…",
         "_meta": {
           "description": "Notes editor placeholder.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:128 (Text placeholder)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
-          "lastReviewed": "2026-06-11"
+          "lastReviewed": "2026-06-21",
+          "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
         }
       },
       "descriptionPlaceholder": {
-        "value": "Book description...",
+        "value": "Book description…",
         "_meta": {
           "description": "Description editor placeholder.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:284 (Text placeholder)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
-          "lastReviewed": "2026-06-11"
+          "lastReviewed": "2026-06-21",
+          "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
         }
       },
       "page": {
@@ -2380,7 +2600,8 @@
         "_meta": {
           "description": "Progress 'Page' label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:313 (Text)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2390,7 +2611,8 @@
         "_meta": {
           "description": "Progress 'of' separator (Page X of Y).",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:333 (Text)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2402,7 +2624,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:258 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2414,7 +2637,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:269 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2426,7 +2650,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:294 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2438,7 +2663,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:301 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2450,7 +2676,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:305 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2462,7 +2689,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:310 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2474,7 +2702,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:359 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2486,7 +2715,8 @@
           "usage": [
             "ios:BookshelfFeature/EditBookScreen.swift:363 (sectionHeader, uppercased at call site)"
           ],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2496,7 +2726,8 @@
         "_meta": {
           "description": "Series field label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:261 (metadataField label)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2506,7 +2737,8 @@
         "_meta": {
           "description": "Series field placeholder.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:261 (metadataField placeholder)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2516,7 +2748,8 @@
         "_meta": {
           "description": "Series-number field label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:263 (metadataField label)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2526,7 +2759,8 @@
         "_meta": {
           "description": "Series-total field label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:264 (metadataField label)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2536,7 +2770,8 @@
         "_meta": {
           "description": "Publication-date field label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:296 (metadataField label)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2546,7 +2781,8 @@
         "_meta": {
           "description": "Publication-date field placeholder (example date).",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:296 (metadataField placeholder)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2556,7 +2792,8 @@
         "_meta": {
           "description": "Published-year field label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:297 (metadataField label)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2566,7 +2803,8 @@
         "_meta": {
           "description": "Genres field label.",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:302 (metadataField label)"],
-          "tone": "functional",
+          "register": "atom",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2576,7 +2814,8 @@
         "_meta": {
           "description": "Genres field placeholder (example genres).",
           "usage": ["ios:BookshelfFeature/EditBookScreen.swift:302 (metadataField placeholder)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2588,7 +2827,8 @@
         "_meta": {
           "description": "Bookshelf load-failure alert title.",
           "usage": ["ios:BookshelfFeature/BookshelfFeature.swift:88 (alert TextState)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2598,7 +2838,8 @@
         "_meta": {
           "description": "Bookshelf add-book-failure alert title.",
           "usage": ["ios:BookshelfFeature/BookshelfFeature.swift:134 (alert TextState)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2608,7 +2849,8 @@
         "_meta": {
           "description": "Bookshelf update-failure alert title.",
           "usage": ["ios:BookshelfFeature/BookshelfFeature.swift:160 (alert TextState)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2618,7 +2860,8 @@
         "_meta": {
           "description": "Bookshelf delete-failure alert title.",
           "usage": ["ios:BookshelfFeature/BookshelfFeature.swift:186 (alert TextState)"],
-          "tone": "functional",
+          "register": "label",
+          "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
@@ -2631,7 +2874,8 @@
       "_meta": {
         "description": "Watch diagnostics screen navigation title.",
         "usage": ["ios:WatchDiagnosticFeature/WatchDiagnosticFeature.swift:98 (.navigationTitle)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2641,7 +2885,8 @@
       "_meta": {
         "description": "Accessibility label for the watch diagnostics wrench toolbar button.",
         "usage": ["ios:WatchAppFeature/WatchAppFeature.swift:96 (.accessibilityLabel)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2651,7 +2896,8 @@
       "_meta": {
         "description": "Accessibility hint for the watch diagnostics wrench toolbar button.",
         "usage": ["ios:WatchAppFeature/WatchAppFeature.swift:97 (.accessibilityHint)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2663,7 +2909,8 @@
         "usage": [
           "ios:WatchDiagnosticFeature/WatchDiagnosticFeature.swift:76 (transferStatus state)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2675,7 +2922,8 @@
         "usage": [
           "ios:WatchHealthFeature/WatchHealthFeature.swift:273 (label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2687,7 +2935,8 @@
         "usage": [
           "ios:WatchHealthFeature/WatchHealthFeature.swift:274 (label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2699,7 +2948,8 @@
         "usage": [
           "ios:WatchHealthFeature/WatchHealthFeature.swift:275 (label, uppercased at call site)"
         ],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2711,7 +2961,8 @@
         "usage": [
           "ios:WatchHealthFeature/WatchHealthFeature.swift:190 (syncFailed action payload)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2721,7 +2972,8 @@
       "_meta": {
         "description": "Sync-status complication never-synced state.",
         "usage": ["ios:LifePortalWatchWidgets/SyncStatusWidget.swift:185,207 (Text)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2733,7 +2985,8 @@
         "usage": [
           "ios:LifePortalWatchWidgets/SyncStatusWidget.swift:180,205 (Text, composed Sync \\(syncDate, style: .relative) ago)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2745,7 +2998,8 @@
         "usage": [
           "ios:LifePortalWatchWidgets/SyncStatusWidget.swift:225 (.configurationDisplayName)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2755,7 +3009,8 @@
       "_meta": {
         "description": "Sync-status complication configuration description.",
         "usage": ["ios:LifePortalWatchWidgets/SyncStatusWidget.swift:226 (.description)"],
-        "tone": "functional",
+        "register": "factual",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -2767,7 +3022,8 @@
       "_meta": {
         "description": "Dashboard triptych column header for the Body domain (biometrics, health, activity).",
         "usage": ["web:src/pages/index.astro:45 (column heading)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
       }
@@ -2777,7 +3033,8 @@
       "_meta": {
         "description": "Dashboard triptych column header for the Mind domain (GitHub, books, articles, theatre).",
         "usage": ["web:src/pages/index.astro:56 (column heading)"],
-        "tone": "functional",
+        "register": "atom",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
       }
@@ -2789,7 +3046,8 @@
       "_meta": {
         "description": "404 page <title> / document title (web shell). Em dash (U+2014) separator.",
         "usage": ["webshell:src/pages/404.astro (document title)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-13"
       }
@@ -2799,7 +3057,8 @@
       "_meta": {
         "description": "404 page meta description (web shell).",
         "usage": ["webshell:src/pages/404.astro (meta description)"],
-        "tone": "functional",
+        "register": "factual",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-13"
       }

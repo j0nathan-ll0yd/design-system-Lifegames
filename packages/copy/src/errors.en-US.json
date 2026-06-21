@@ -8,7 +8,8 @@
           "backend:src/schemas/books.ts:31 (z refine message)",
           "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift (presented on 400; D7-B rewire target)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -21,7 +22,8 @@
           "backend:src/schemas/health.ts:121 (z.string().regex message)",
           "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift (presented on 400; D7-B rewire target)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -36,7 +38,8 @@
           "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift:144 (return string)",
           "backend:canonical source under D7-B (no current backend render site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -49,7 +52,8 @@
           "ios:Packages/LifePortalFeatures/Sources/APIClient/APIClient+Live.swift:148 (composed \"Server returned \\(httpResponse.statusCode)\")",
           "backend:canonical source under D7-B (no current backend render site)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }

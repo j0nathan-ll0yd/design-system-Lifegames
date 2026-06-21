@@ -687,12 +687,23 @@ function emitDesignMd() {
   md += '> Generated from `tokens/*.tokens.json` — do not edit by hand.\n';
   md += '> Re-upload to claude.ai/design after every meaningful token change.\n\n';
   md += '## Brand & Voice\n\n';
+  // Voice content is sourced from the committed packages/copy/voice.summary.json
+  // (source of truth: packages/copy/VOICE.md). Hand-authored + committed, NOT a
+  // build output, so reading it here adds no build-order edge (build:tokens has
+  // no dependsOn). If it ever becomes generated, add a build:tokens ->
+  // @lifegames/copy#build edge in turbo.json.
+  const voice = JSON.parse(
+    readFileSync(resolve(__dirname, 'packages/copy/voice.summary.json'), 'utf-8'),
+  );
   md +=
-    'Lifegames is a dark-first, neon-accented, cross-platform design system spanning web (Astro) and iOS (SwiftUI). ';
+    '_Voice source of truth: `packages/copy/VOICE.md` — this section is generated from `packages/copy/voice.summary.json`._\n\n';
+  md += `**${voice.adjectives.join(' · ')}.** ${voice.spine}\n\n`;
   md +=
-    'Visual language: deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), ';
-  md +=
-    'fluid typography that scales with viewport, and motion that favors decelerated easing.\n\n';
+    'Visual language: dark-first, neon-accented, cross-platform (web Astro + iOS SwiftUI) — deep near-black surfaces, glassy translucent cards, vivid neon accents (pink, indigo, cyan), fluid typography that scales with viewport, and motion that favors decelerated easing.\n\n';
+  md += `**Registers** (the \`register\` enum): ${voice.registers.map((r) => `\`${r.name}\``).join(', ')}.\n\n`;
+  md += `**Audiences** (the \`audience\` field): ${voice.audiences.map((a) => `\`${a.name}\``).join(', ')}.\n\n`;
+  md += `**Arbitration rule:** ${voice.arbitrationRule}\n\n`;
+  md += `**Principles:** ${voice.principles.map((p) => p.replace(/\.$/, '')).join('; ')}.\n\n`;
   md += '## Token Architecture\n\n';
   md += 'Four tiers, applied in order of specificity:\n\n';
   md +=

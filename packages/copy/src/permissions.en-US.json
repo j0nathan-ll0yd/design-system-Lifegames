@@ -7,7 +7,8 @@
         "usage": [
           "ios:LifePortal/project.yml:98 (LifePortal app target Info.plist NSHealthShareUsageDescription)"
         ],
-        "tone": "professional",
+        "register": "consent",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -19,7 +20,8 @@
         "usage": [
           "ios:LifePortal/project.yml:157 (LifePortalWatch target Info.plist NSHealthShareUsageDescription)"
         ],
-        "tone": "professional",
+        "register": "consent",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Intentionally distinct from permissions.health.app (D6b): the watch has no local metric display, so it omits the 'to display metrics' clause."
@@ -34,7 +36,8 @@
         "usage": [
           "ios:LifePortal/project.yml:99 (LifePortal app target Info.plist NSLocationWhenInUseUsageDescription)"
         ],
-        "tone": "professional",
+        "register": "consent",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -46,7 +49,8 @@
         "usage": [
           "ios:LifePortal/project.yml:158 (LifePortalWatch target Info.plist NSLocationWhenInUseUsageDescription)"
         ],
-        "tone": "professional",
+        "register": "consent",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Intentionally distinct from permissions.locationWhenInUse.app (D6b): the watch only shows current position rather than tracking/displaying history."
@@ -61,7 +65,8 @@
         "usage": [
           "ios:LifePortal/project.yml:100 (LifePortal app target Info.plist NSLocationAlwaysAndWhenInUseUsageDescription)"
         ],
-        "tone": "professional",
+        "register": "consent",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -75,7 +80,8 @@
         "usage": [
           "ios:LifePortal/project.yml:101 (LifePortal app target Info.plist NSMotionUsageDescription)"
         ],
-        "tone": "professional",
+        "register": "consent",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Source uses 'LifePortal' (no space) where the other permission strings use 'Life Portal'; preserved verbatim from project.yml:101 to match the live Info.plist."

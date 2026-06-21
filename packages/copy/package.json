@@ -29,7 +29,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\"",
-    "grep-gate": "node scripts/check-no-hardcoded-copy.mjs"
+    "grep-gate": "node scripts/check-no-hardcoded-copy.mjs",
+    "voice": "node scripts/check-copy-voice.mjs",
+    "voice:report": "node scripts/check-copy-voice.mjs --report"
   },
   "dependencies": {},
   "devDependencies": {

@@ -48,39 +48,105 @@
         "wikiBrand"
       ],
       "properties": {
-        "titleHeading": { "$ref": "#/$defs/CopyString" },
-        "aboutHeading": { "$ref": "#/$defs/CopyString" },
-        "aboutBody": { "$ref": "#/$defs/CopyString" },
-        "linkSite": { "$ref": "#/$defs/CopyString" },
-        "linkGithub": { "$ref": "#/$defs/CopyString" },
-        "linkLinkedin": { "$ref": "#/$defs/CopyString" },
-        "liveHeading": { "$ref": "#/$defs/CopyString" },
-        "liveBody": { "$ref": "#/$defs/CopyString" },
-        "liveFullDump": { "$ref": "#/$defs/CopyString" },
-        "liveIndexAlias": { "$ref": "#/$defs/CopyString" },
-        "canonicalHeading": { "$ref": "#/$defs/CopyString" },
-        "canonicalBody": { "$ref": "#/$defs/CopyString" },
-        "endpointHealth": { "$ref": "#/$defs/CopyString" },
-        "endpointSleep": { "$ref": "#/$defs/CopyString" },
-        "endpointFocus": { "$ref": "#/$defs/CopyString" },
-        "endpointGithubEvents": { "$ref": "#/$defs/CopyString" },
-        "endpointStarred": { "$ref": "#/$defs/CopyString" },
-        "endpointBooks": { "$ref": "#/$defs/CopyString" },
-        "endpointArticles": { "$ref": "#/$defs/CopyString" },
-        "endpointTheatre": { "$ref": "#/$defs/CopyString" },
-        "endpointWorkouts": { "$ref": "#/$defs/CopyString" },
-        "endpointLocation": { "$ref": "#/$defs/CopyString" },
-        "technologyHeading": { "$ref": "#/$defs/CopyString" },
-        "technologyFramework": { "$ref": "#/$defs/CopyString" },
-        "technologyHosting": { "$ref": "#/$defs/CopyString" },
-        "technologyLiveData": { "$ref": "#/$defs/CopyString" },
-        "technologyDesign": { "$ref": "#/$defs/CopyString" },
-        "expertiseHeading": { "$ref": "#/$defs/CopyString" },
-        "optionalHeading": { "$ref": "#/$defs/CopyString" },
-        "optionalBody": { "$ref": "#/$defs/CopyString" },
-        "wikiSpec": { "$ref": "#/$defs/CopyString" },
-        "wikiArchitecture": { "$ref": "#/$defs/CopyString" },
-        "wikiBrand": { "$ref": "#/$defs/CopyString" }
+        "titleHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkSite": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkGithub": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkLinkedin": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "liveHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "liveBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "liveFullDump": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "liveIndexAlias": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "canonicalHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "canonicalBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointHealth": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointSleep": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointFocus": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointGithubEvents": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointStarred": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointBooks": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointArticles": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointTheatre": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointWorkouts": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "endpointLocation": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "technologyHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "technologyFramework": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "technologyHosting": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "technologyLiveData": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "technologyDesign": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "expertiseHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "optionalHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "optionalBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "wikiSpec": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "wikiArchitecture": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "wikiBrand": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "full": {
@@ -194,109 +260,315 @@
         "streamLocation"
       ],
       "properties": {
-        "systemFraming": { "$ref": "#/$defs/CopyString" },
-        "titleHeading": { "$ref": "#/$defs/CopyString" },
-        "intro": { "$ref": "#/$defs/CopyString" },
-        "metaLastUpdated": { "$ref": "#/$defs/CopyString" },
-        "metaGenerated": { "$ref": "#/$defs/CopyString" },
-        "metaSource": { "$ref": "#/$defs/CopyString" },
-        "contentsHeading": { "$ref": "#/$defs/CopyString" },
-        "contentsProfile": { "$ref": "#/$defs/CopyString" },
-        "contentsBody": { "$ref": "#/$defs/CopyString" },
-        "contentsMind": { "$ref": "#/$defs/CopyString" },
-        "contentsSystem": { "$ref": "#/$defs/CopyString" },
-        "contentsStreams": { "$ref": "#/$defs/CopyString" },
-        "profileHeading": { "$ref": "#/$defs/CopyString" },
-        "profileNameLine": { "$ref": "#/$defs/CopyString" },
-        "profileBio": { "$ref": "#/$defs/CopyString" },
-        "profileLocation": { "$ref": "#/$defs/CopyString" },
-        "profileExperience": { "$ref": "#/$defs/CopyString" },
-        "profilePhilosophy": { "$ref": "#/$defs/CopyString" },
-        "profileCurrentFocus": { "$ref": "#/$defs/CopyString" },
-        "profileSkills": { "$ref": "#/$defs/CopyString" },
-        "profileInterests": { "$ref": "#/$defs/CopyString" },
-        "expertiseHeading": { "$ref": "#/$defs/CopyString" },
-        "linksHeading": { "$ref": "#/$defs/CopyString" },
-        "linkSite": { "$ref": "#/$defs/CopyString" },
-        "linkGithub": { "$ref": "#/$defs/CopyString" },
-        "linkLinkedin": { "$ref": "#/$defs/CopyString" },
-        "bodyHeading": { "$ref": "#/$defs/CopyString" },
-        "bodyDataAsOf": { "$ref": "#/$defs/CopyString" },
-        "bodyAggregateNote": { "$ref": "#/$defs/CopyString" },
-        "cardioHeading": { "$ref": "#/$defs/CopyString" },
-        "cardioEmpty": { "$ref": "#/$defs/CopyString" },
-        "cardioColumns": { "$ref": "#/$defs/CopyString" },
-        "cardioRestingLabel": { "$ref": "#/$defs/CopyString" },
-        "cardioHrvLabel": { "$ref": "#/$defs/CopyString" },
-        "sleepHeading": { "$ref": "#/$defs/CopyString" },
-        "sleepEmpty": { "$ref": "#/$defs/CopyString" },
-        "sleepColumns": { "$ref": "#/$defs/CopyString" },
-        "sleepTotalLabel": { "$ref": "#/$defs/CopyString" },
-        "sleepEfficiencyLabel": { "$ref": "#/$defs/CopyString" },
-        "sleepDeepLabel": { "$ref": "#/$defs/CopyString" },
-        "sleepRemLabel": { "$ref": "#/$defs/CopyString" },
-        "activityHeading": { "$ref": "#/$defs/CopyString" },
-        "workoutsHeading": { "$ref": "#/$defs/CopyString" },
-        "workoutsEmpty": { "$ref": "#/$defs/CopyString" },
-        "workoutsActivityTypes": { "$ref": "#/$defs/CopyString" },
-        "workoutsAvgDuration": { "$ref": "#/$defs/CopyString" },
-        "workoutsAvgEnergy": { "$ref": "#/$defs/CopyString" },
-        "hydrationHeading": { "$ref": "#/$defs/CopyString" },
-        "hydrationWater": { "$ref": "#/$defs/CopyString" },
-        "hydrationCaffeine": { "$ref": "#/$defs/CopyString" },
-        "mindHeading": { "$ref": "#/$defs/CopyString" },
-        "githubHeading": { "$ref": "#/$defs/CopyString" },
-        "githubDataAsOf": { "$ref": "#/$defs/CopyString" },
-        "githubEmpty": { "$ref": "#/$defs/CopyString" },
-        "githubActiveRepos": { "$ref": "#/$defs/CopyString" },
-        "githubRecentEvents": { "$ref": "#/$defs/CopyString" },
-        "githubStarredCount": { "$ref": "#/$defs/CopyString" },
-        "githubRecentCommitsHeading": { "$ref": "#/$defs/CopyString" },
-        "githubRecentPrsHeading": { "$ref": "#/$defs/CopyString" },
-        "starredHeading": { "$ref": "#/$defs/CopyString" },
-        "starredDataAsOf": { "$ref": "#/$defs/CopyString" },
-        "starredEmpty": { "$ref": "#/$defs/CopyString" },
-        "starredSummary": { "$ref": "#/$defs/CopyString" },
-        "starredTopics": { "$ref": "#/$defs/CopyString" },
-        "bookshelfHeading": { "$ref": "#/$defs/CopyString" },
-        "bookshelfDataAsOf": { "$ref": "#/$defs/CopyString" },
-        "bookshelfEmpty": { "$ref": "#/$defs/CopyString" },
-        "bookshelfReadingHeading": { "$ref": "#/$defs/CopyString" },
-        "bookshelfByAuthor": { "$ref": "#/$defs/CopyString" },
-        "bookshelfNotesLabel": { "$ref": "#/$defs/CopyString" },
-        "bookshelfIsbnLabel": { "$ref": "#/$defs/CopyString" },
-        "bookshelfUpNextHeading": { "$ref": "#/$defs/CopyString" },
-        "bookshelfFinishedHeading": { "$ref": "#/$defs/CopyString" },
-        "bookshelfStatsHeading": { "$ref": "#/$defs/CopyString" },
-        "bookshelfStatBooksRead": { "$ref": "#/$defs/CopyString" },
-        "bookshelfStatReading": { "$ref": "#/$defs/CopyString" },
-        "bookshelfStatUpNext": { "$ref": "#/$defs/CopyString" },
-        "bookshelfStatAvgRating": { "$ref": "#/$defs/CopyString" },
-        "articlesHeading": { "$ref": "#/$defs/CopyString" },
-        "articlesDataAsOf": { "$ref": "#/$defs/CopyString" },
-        "articlesEmpty": { "$ref": "#/$defs/CopyString" },
-        "articlesColumns": { "$ref": "#/$defs/CopyString" },
-        "theatreHeading": { "$ref": "#/$defs/CopyString" },
-        "theatreDataAsOf": { "$ref": "#/$defs/CopyString" },
-        "theatreEmpty": { "$ref": "#/$defs/CopyString" },
-        "theatreByLine": { "$ref": "#/$defs/CopyString" },
-        "theatreSource": { "$ref": "#/$defs/CopyString" },
-        "systemHeading": { "$ref": "#/$defs/CopyString" },
-        "freshnessHeading": { "$ref": "#/$defs/CopyString" },
-        "freshnessColumns": { "$ref": "#/$defs/CopyString" },
-        "freshnessNote": { "$ref": "#/$defs/CopyString" },
-        "streamsHeading": { "$ref": "#/$defs/CopyString" },
-        "streamsBody": { "$ref": "#/$defs/CopyString" },
-        "streamHealth": { "$ref": "#/$defs/CopyString" },
-        "streamSleep": { "$ref": "#/$defs/CopyString" },
-        "streamFocus": { "$ref": "#/$defs/CopyString" },
-        "streamGithubEvents": { "$ref": "#/$defs/CopyString" },
-        "streamStarred": { "$ref": "#/$defs/CopyString" },
-        "streamBooks": { "$ref": "#/$defs/CopyString" },
-        "streamArticles": { "$ref": "#/$defs/CopyString" },
-        "streamTheatre": { "$ref": "#/$defs/CopyString" },
-        "streamWorkouts": { "$ref": "#/$defs/CopyString" },
-        "streamLocation": { "$ref": "#/$defs/CopyString" }
+        "systemFraming": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "titleHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "intro": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "metaLastUpdated": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "metaGenerated": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "metaSource": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contentsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contentsProfile": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contentsBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contentsMind": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contentsSystem": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contentsStreams": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileNameLine": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileBio": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileLocation": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileExperience": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profilePhilosophy": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileCurrentFocus": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileSkills": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "profileInterests": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "expertiseHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linksHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkSite": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkGithub": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkLinkedin": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bodyHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bodyDataAsOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bodyAggregateNote": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cardioHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cardioEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cardioColumns": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cardioRestingLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cardioHrvLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepColumns": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepTotalLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepEfficiencyLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepDeepLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sleepRemLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "activityHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutsEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutsActivityTypes": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutsAvgDuration": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutsAvgEnergy": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "hydrationHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "hydrationWater": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "hydrationCaffeine": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "mindHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubDataAsOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubActiveRepos": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubRecentEvents": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubStarredCount": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubRecentCommitsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubRecentPrsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "starredHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "starredDataAsOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "starredEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "starredSummary": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "starredTopics": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfDataAsOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfReadingHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfByAuthor": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfNotesLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfIsbnLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfUpNextHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfFinishedHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfStatsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfStatBooksRead": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfStatReading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfStatUpNext": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelfStatAvgRating": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "articlesHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "articlesDataAsOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "articlesEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "articlesColumns": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "theatreHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "theatreDataAsOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "theatreEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "theatreByLine": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "theatreSource": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "systemHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "freshnessHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "freshnessColumns": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "freshnessNote": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamsBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamHealth": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamSleep": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamFocus": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamGithubEvents": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamStarred": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamBooks": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamArticles": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamTheatre": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamWorkouts": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "streamLocation": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "dashboard": {
@@ -306,9 +578,15 @@
       "additionalProperties": false,
       "required": ["alternateLinkMarkdown", "alternateLinkPlain", "datasetDescription"],
       "properties": {
-        "alternateLinkMarkdown": { "$ref": "#/$defs/CopyString" },
-        "alternateLinkPlain": { "$ref": "#/$defs/CopyString" },
-        "datasetDescription": { "$ref": "#/$defs/CopyString" }
+        "alternateLinkMarkdown": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "alternateLinkPlain": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "datasetDescription": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     }
   },
@@ -317,7 +595,7 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
       "properties": {
         "description": {
           "type": "string",
@@ -326,12 +604,20 @@
         "usage": {
           "type": "array",
           "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "tone": {
+        "register": {
           "type": "string",
-          "description": "Intended voice/register (e.g. professional, playful, terse)."
+          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": ["human", "machine", "dual"],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
           "type": "string",
@@ -370,7 +656,9 @@
           "type": "string",
           "description": "The string, authored in ICU MessageFormat 1 syntax."
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     },
     "CopyStringList": {
@@ -382,9 +670,13 @@
         "value": {
           "type": "array",
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     }
   }

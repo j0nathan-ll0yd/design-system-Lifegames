@@ -5,7 +5,8 @@
       "_meta": {
         "description": "Top-level H1 of the /llms.txt discovery index. ICU MF1; consumer substitutes the profile name. Literal markdown '# ' marker and em-dash preserved.",
         "usage": ["llms-txt.eta:1"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -15,7 +16,8 @@
       "_meta": {
         "description": "About section heading.",
         "usage": ["llms-txt.eta:5"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -25,7 +27,8 @@
       "_meta": {
         "description": "About paragraph. ICU MF1; consumer substitutes name, lowercased title, location, and years. Literal quotes around 'Human Datastream' and em-dash preserved.",
         "usage": ["llms-txt.eta:7"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -35,7 +38,8 @@
       "_meta": {
         "description": "About-section Site link list item. ICU MF1; consumer substitutes the site URL.",
         "usage": ["llms-txt.eta:9"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -45,7 +49,8 @@
       "_meta": {
         "description": "About-section GitHub link list item. ICU MF1; consumer substitutes the GitHub URL.",
         "usage": ["llms-txt.eta:10"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -55,7 +60,8 @@
       "_meta": {
         "description": "About-section LinkedIn link list item. ICU MF1; consumer substitutes the LinkedIn URL.",
         "usage": ["llms-txt.eta:11"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -65,7 +71,8 @@
       "_meta": {
         "description": "Live LLM-optimized content section heading.",
         "usage": ["llms-txt.eta:13"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -75,7 +82,8 @@
       "_meta": {
         "description": "Live-content explanatory paragraph (static).",
         "usage": ["llms-txt.eta:15"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -85,7 +93,8 @@
       "_meta": {
         "description": "llms-full.txt link list item + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-txt.eta:17"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -95,7 +104,8 @@
       "_meta": {
         "description": "index.md alias link list item + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:18"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -105,7 +115,8 @@
       "_meta": {
         "description": "Canonical JSON section heading.",
         "usage": ["llms-txt.eta:20"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -115,7 +126,8 @@
       "_meta": {
         "description": "Canonical-JSON explanatory paragraph (static).",
         "usage": ["llms-txt.eta:22"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -125,7 +137,8 @@
       "_meta": {
         "description": "health.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:24"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -135,7 +148,8 @@
       "_meta": {
         "description": "sleep.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:25"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -145,7 +159,8 @@
       "_meta": {
         "description": "focus.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:26"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -155,7 +170,8 @@
       "_meta": {
         "description": "github-events.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:27"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -165,7 +181,8 @@
       "_meta": {
         "description": "github-starred-repos.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:28"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -175,7 +192,8 @@
       "_meta": {
         "description": "books.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:29"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -185,7 +203,8 @@
       "_meta": {
         "description": "articles.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:30"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -195,7 +214,8 @@
       "_meta": {
         "description": "theatre-reviews.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:31"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -205,7 +225,8 @@
       "_meta": {
         "description": "workouts.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:32"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -215,7 +236,8 @@
       "_meta": {
         "description": "location.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:33"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -225,7 +247,8 @@
       "_meta": {
         "description": "Technology section heading.",
         "usage": ["llms-txt.eta:35"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -235,7 +258,8 @@
       "_meta": {
         "description": "Technology block — Framework line (static).",
         "usage": ["llms-txt.eta:37"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -245,7 +269,8 @@
       "_meta": {
         "description": "Technology block — Hosting line (static).",
         "usage": ["llms-txt.eta:38"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -255,7 +280,8 @@
       "_meta": {
         "description": "Technology block — Live data line (static).",
         "usage": ["llms-txt.eta:39"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -265,7 +291,8 @@
       "_meta": {
         "description": "Technology block — Design line (static).",
         "usage": ["llms-txt.eta:40"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -275,7 +302,8 @@
       "_meta": {
         "description": "Expertise section heading.",
         "usage": ["llms-txt.eta:42"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -285,7 +313,8 @@
       "_meta": {
         "description": "Optional section heading.",
         "usage": ["llms-txt.eta:46"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -295,7 +324,8 @@
       "_meta": {
         "description": "Optional-section explanatory paragraph (static). Em-dash preserved.",
         "usage": ["llms-txt.eta:48"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -305,7 +335,8 @@
       "_meta": {
         "description": "Optional wiki link — LLM Content Spec + description. ICU MF1; consumer substitutes the GitHub URL.",
         "usage": ["llms-txt.eta:50"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -315,7 +346,8 @@
       "_meta": {
         "description": "Optional wiki link — Architecture + description. ICU MF1; consumer substitutes the GitHub URL.",
         "usage": ["llms-txt.eta:51"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -325,7 +357,8 @@
       "_meta": {
         "description": "Optional wiki link — Brand Guide + description. ICU MF1; consumer substitutes the GitHub URL.",
         "usage": ["llms-txt.eta:52"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -337,7 +370,8 @@
       "_meta": {
         "description": "<SYSTEM> framing line. ICU MF1; consumer substitutes the profile name. Literal <SYSTEM></SYSTEM> tags, quotes, and em-dash preserved.",
         "usage": ["llms-full.eta:1"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -347,7 +381,8 @@
       "_meta": {
         "description": "Top-level H1 of /llms-full.txt. ICU MF1; consumer substitutes the profile name. Em-dash preserved.",
         "usage": ["llms-full.eta:3"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -357,7 +392,8 @@
       "_meta": {
         "description": "Blockquote intro (static, 4 lines). Newlines and '> ' blockquote markers preserved verbatim.",
         "usage": ["llms-full.eta:5-8"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -367,7 +403,8 @@
       "_meta": {
         "description": "Last-updated meta label. ICU MF1; consumer substitutes the timestamp. Bold markers preserved.",
         "usage": ["llms-full.eta:10"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -377,7 +414,8 @@
       "_meta": {
         "description": "Generated meta label. ICU MF1; consumer substitutes the timestamp. Bold markers preserved.",
         "usage": ["llms-full.eta:11"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -387,7 +425,8 @@
       "_meta": {
         "description": "Source meta label. ICU MF1; consumer substitutes the source. Bold markers preserved.",
         "usage": ["llms-full.eta:12"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -397,7 +436,8 @@
       "_meta": {
         "description": "Contents section heading.",
         "usage": ["llms-full.eta:14"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -407,7 +447,8 @@
       "_meta": {
         "description": "Contents TOC entry — Profile.",
         "usage": ["llms-full.eta:16"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -417,7 +458,8 @@
       "_meta": {
         "description": "Contents TOC entry — Body.",
         "usage": ["llms-full.eta:17"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -427,7 +469,8 @@
       "_meta": {
         "description": "Contents TOC entry — Mind.",
         "usage": ["llms-full.eta:18"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -437,7 +480,8 @@
       "_meta": {
         "description": "Contents TOC entry — System.",
         "usage": ["llms-full.eta:19"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -447,7 +491,8 @@
       "_meta": {
         "description": "Contents TOC entry — Streams.",
         "usage": ["llms-full.eta:20"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -457,7 +502,8 @@
       "_meta": {
         "description": "Profile section heading with anchor.",
         "usage": ["llms-full.eta:24"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Literal markdown anchor '{#profile}' is ICU-MF1-escaped as '{#profile}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
@@ -468,7 +514,8 @@
       "_meta": {
         "description": "Profile name + title line. ICU MF1; consumer substitutes name and title. Bold markers, em-dash, trailing period preserved.",
         "usage": ["llms-full.eta:26"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -478,7 +525,8 @@
       "_meta": {
         "description": "Bio label line. ICU MF1; consumer substitutes the bio.",
         "usage": ["llms-full.eta:28"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -488,7 +536,8 @@
       "_meta": {
         "description": "Profile Location list item. ICU MF1; consumer substitutes the location.",
         "usage": ["llms-full.eta:30"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -498,7 +547,8 @@
       "_meta": {
         "description": "Profile Experience list item. ICU MF1; consumer substitutes the years.",
         "usage": ["llms-full.eta:31"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -508,7 +558,8 @@
       "_meta": {
         "description": "Profile Philosophy list item. ICU MF1; consumer substitutes the philosophy. Literal surrounding quotes preserved.",
         "usage": ["llms-full.eta:32"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -518,7 +569,8 @@
       "_meta": {
         "description": "Profile Current focus list item. ICU MF1; consumer substitutes the current focus. Literal surrounding quotes preserved.",
         "usage": ["llms-full.eta:33"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -528,7 +580,8 @@
       "_meta": {
         "description": "Profile Skills list item. ICU MF1; consumer substitutes the skills.",
         "usage": ["llms-full.eta:34"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -538,7 +591,8 @@
       "_meta": {
         "description": "Profile Interests list item. ICU MF1; consumer substitutes the interests.",
         "usage": ["llms-full.eta:35"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -548,7 +602,8 @@
       "_meta": {
         "description": "Profile Expertise subsection heading.",
         "usage": ["llms-full.eta:37"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -558,7 +613,8 @@
       "_meta": {
         "description": "Profile Links subsection heading.",
         "usage": ["llms-full.eta:41"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -568,7 +624,8 @@
       "_meta": {
         "description": "Profile Links — Site list item. ICU MF1; consumer substitutes the site URL.",
         "usage": ["llms-full.eta:43"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -578,7 +635,8 @@
       "_meta": {
         "description": "Profile Links — GitHub list item. ICU MF1; consumer substitutes the GitHub URL.",
         "usage": ["llms-full.eta:44"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -588,7 +646,8 @@
       "_meta": {
         "description": "Profile Links — LinkedIn list item. ICU MF1; consumer substitutes the LinkedIn URL.",
         "usage": ["llms-full.eta:45"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -598,7 +657,8 @@
       "_meta": {
         "description": "Body section heading with anchor.",
         "usage": ["llms-full.eta:49"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Literal markdown anchor '{#body}' is ICU-MF1-escaped as '{#body}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
@@ -609,7 +669,8 @@
       "_meta": {
         "description": "Body data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
         "usage": ["llms-full.eta:51"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -619,7 +680,8 @@
       "_meta": {
         "description": "Body 7-day-aggregate privacy note (3 lines). ICU MF1; consumer substitutes the ending date. Newlines and em-dash preserved.",
         "usage": ["llms-full.eta:53-55"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -629,7 +691,8 @@
       "_meta": {
         "description": "Cardiovascular subsection heading.",
         "usage": ["llms-full.eta:57"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -639,7 +702,8 @@
       "_meta": {
         "description": "Cardiovascular empty-state fallback (italic).",
         "usage": ["llms-full.eta:60"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -649,7 +713,8 @@
       "_meta": {
         "description": "Cardiovascular table column-header row.",
         "usage": ["llms-full.eta:62"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -659,7 +724,8 @@
       "_meta": {
         "description": "Cardiovascular table row label — resting heart rate (the literal metric name in the table cell).",
         "usage": ["llms-full.eta:65"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -669,7 +735,8 @@
       "_meta": {
         "description": "Cardiovascular table row label — HRV (the literal metric name in the table cell).",
         "usage": ["llms-full.eta:68"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -679,7 +746,8 @@
       "_meta": {
         "description": "Sleep subsection heading.",
         "usage": ["llms-full.eta:72"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -689,7 +757,8 @@
       "_meta": {
         "description": "Sleep empty-state fallback (italic).",
         "usage": ["llms-full.eta:75"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -699,7 +768,8 @@
       "_meta": {
         "description": "Sleep table column-header row.",
         "usage": ["llms-full.eta:77"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -709,7 +779,8 @@
       "_meta": {
         "description": "Sleep table row label — total sleep duration.",
         "usage": ["llms-full.eta:79"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -719,7 +790,8 @@
       "_meta": {
         "description": "Sleep table row label — sleep efficiency.",
         "usage": ["llms-full.eta:80"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -729,7 +801,8 @@
       "_meta": {
         "description": "Sleep table row label — deep sleep share.",
         "usage": ["llms-full.eta:81"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -739,7 +812,8 @@
       "_meta": {
         "description": "Sleep table row label — REM sleep share.",
         "usage": ["llms-full.eta:82"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -749,7 +823,8 @@
       "_meta": {
         "description": "Activity subsection heading.",
         "usage": ["llms-full.eta:85"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -759,7 +834,8 @@
       "_meta": {
         "description": "Workouts subsection heading.",
         "usage": ["llms-full.eta:91"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -769,7 +845,8 @@
       "_meta": {
         "description": "Workouts empty-state fallback (italic).",
         "usage": ["llms-full.eta:94"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -779,7 +856,8 @@
       "_meta": {
         "description": "Workouts — typical activity types list item. ICU MF1; consumer substitutes the types.",
         "usage": ["llms-full.eta:97"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -789,7 +867,8 @@
       "_meta": {
         "description": "Workouts — average duration list item. ICU MF1; consumer substitutes the duration.",
         "usage": ["llms-full.eta:98"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -799,7 +878,8 @@
       "_meta": {
         "description": "Workouts — average energy burn list item. ICU MF1; consumer substitutes the energy.",
         "usage": ["llms-full.eta:99"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -809,7 +889,8 @@
       "_meta": {
         "description": "Hydration subsection heading.",
         "usage": ["llms-full.eta:102"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -819,7 +900,8 @@
       "_meta": {
         "description": "Hydration — water intake list item. ICU MF1; consumer substitutes the water value.",
         "usage": ["llms-full.eta:104"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -829,7 +911,8 @@
       "_meta": {
         "description": "Hydration — caffeine intake list item. ICU MF1; consumer substitutes the caffeine value.",
         "usage": ["llms-full.eta:105"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -839,7 +922,8 @@
       "_meta": {
         "description": "Mind section heading with anchor.",
         "usage": ["llms-full.eta:109"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Literal markdown anchor '{#mind}' is ICU-MF1-escaped as '{#mind}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
@@ -850,7 +934,8 @@
       "_meta": {
         "description": "GitHub activity subsection heading.",
         "usage": ["llms-full.eta:111"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -860,7 +945,8 @@
       "_meta": {
         "description": "GitHub data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
         "usage": ["llms-full.eta:113"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -870,7 +956,8 @@
       "_meta": {
         "description": "GitHub activity empty-state fallback (italic).",
         "usage": ["llms-full.eta:116"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -880,7 +967,8 @@
       "_meta": {
         "description": "GitHub — active repositories list item. ICU MF1; consumer substitutes the count.",
         "usage": ["llms-full.eta:118"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -890,7 +978,8 @@
       "_meta": {
         "description": "GitHub — recent events list item. ICU MF1; consumer substitutes the count.",
         "usage": ["llms-full.eta:119"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -900,7 +989,8 @@
       "_meta": {
         "description": "GitHub — starred repositories count list item. ICU MF1; consumer substitutes the count.",
         "usage": ["llms-full.eta:121"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -910,7 +1000,8 @@
       "_meta": {
         "description": "GitHub recent-commits sub-subsection heading.",
         "usage": ["llms-full.eta:125"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -920,7 +1011,8 @@
       "_meta": {
         "description": "GitHub recent-PRs-and-issues sub-subsection heading.",
         "usage": ["llms-full.eta:133"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -930,7 +1022,8 @@
       "_meta": {
         "description": "Starred repositories subsection heading.",
         "usage": ["llms-full.eta:141"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -940,7 +1033,8 @@
       "_meta": {
         "description": "Starred data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
         "usage": ["llms-full.eta:143"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -950,7 +1044,8 @@
       "_meta": {
         "description": "Starred repositories empty-state fallback (italic).",
         "usage": ["llms-full.eta:146"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -960,7 +1055,8 @@
       "_meta": {
         "description": "Starred-repositories summary line. ICU MF1; consumer substitutes total and shown counts.",
         "usage": ["llms-full.eta:148"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -970,7 +1066,8 @@
       "_meta": {
         "description": "Inline label prefix preceding a starred repo's interpolated topics list (' · Topics: {topics}').",
         "usage": ["llms-full.eta:151"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -980,7 +1077,8 @@
       "_meta": {
         "description": "Bookshelf subsection heading.",
         "usage": ["llms-full.eta:155"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -990,7 +1088,8 @@
       "_meta": {
         "description": "Bookshelf data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
         "usage": ["llms-full.eta:157"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1000,7 +1099,8 @@
       "_meta": {
         "description": "Bookshelf empty-state fallback (italic).",
         "usage": ["llms-full.eta:160"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1010,7 +1110,8 @@
       "_meta": {
         "description": "Bookshelf currently-reading sub-subsection heading.",
         "usage": ["llms-full.eta:163"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1020,7 +1121,8 @@
       "_meta": {
         "description": "Inline connector between a book title and its interpolated author ('[**{title}**]({link}) by {author}'). Shared across the currently-reading, up-next, and recently-finished book lists.",
         "usage": ["llms-full.eta:166", "llms-full.eta:189", "llms-full.eta:212"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1030,7 +1132,8 @@
       "_meta": {
         "description": "Inline italic label prefix preceding a book's interpolated notes ('- *Notes*: {notes}'). Shared across the three book lists.",
         "usage": ["llms-full.eta:177", "llms-full.eta:200", "llms-full.eta:223"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1040,7 +1143,8 @@
       "_meta": {
         "description": "Inline label prefix preceding a book's interpolated ISBN ('- ISBN: {isbn}'). Shared across the three book lists.",
         "usage": ["llms-full.eta:180", "llms-full.eta:203", "llms-full.eta:226"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1050,7 +1154,8 @@
       "_meta": {
         "description": "Bookshelf up-next sub-subsection heading.",
         "usage": ["llms-full.eta:186"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1060,7 +1165,8 @@
       "_meta": {
         "description": "Bookshelf recently-finished sub-subsection heading.",
         "usage": ["llms-full.eta:209"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1070,7 +1176,8 @@
       "_meta": {
         "description": "Bookshelf reading-stats sub-subsection heading.",
         "usage": ["llms-full.eta:231"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1080,7 +1187,8 @@
       "_meta": {
         "description": "Reading stats — books read list item. ICU MF1; consumer substitutes the count.",
         "usage": ["llms-full.eta:233"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1090,7 +1198,8 @@
       "_meta": {
         "description": "Reading stats — currently reading list item. ICU MF1; consumer substitutes the count.",
         "usage": ["llms-full.eta:234"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1100,7 +1209,8 @@
       "_meta": {
         "description": "Reading stats — up next list item. ICU MF1; consumer substitutes the count.",
         "usage": ["llms-full.eta:235"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1110,7 +1220,8 @@
       "_meta": {
         "description": "Reading stats — average rating list item. ICU MF1; consumer substitutes the avg rating (rendered as avgRating.toFixed(1)).",
         "usage": ["llms-full.eta:237"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1120,7 +1231,8 @@
       "_meta": {
         "description": "Reading feed (articles) subsection heading.",
         "usage": ["llms-full.eta:241"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1130,7 +1242,8 @@
       "_meta": {
         "description": "Articles data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
         "usage": ["llms-full.eta:243"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1140,7 +1253,8 @@
       "_meta": {
         "description": "Articles empty-state fallback (italic).",
         "usage": ["llms-full.eta:246"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1150,7 +1264,8 @@
       "_meta": {
         "description": "Articles table column-header row.",
         "usage": ["llms-full.eta:248"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1160,7 +1275,8 @@
       "_meta": {
         "description": "Theatre reviews subsection heading.",
         "usage": ["llms-full.eta:255"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1170,7 +1286,8 @@
       "_meta": {
         "description": "Theatre data-as-of label. ICU MF1; consumer substitutes the date. Bold markers preserved.",
         "usage": ["llms-full.eta:257"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1180,7 +1297,8 @@
       "_meta": {
         "description": "Theatre reviews empty-state fallback (italic).",
         "usage": ["llms-full.eta:260"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1190,7 +1308,8 @@
       "_meta": {
         "description": "Theatre review by-line list item. ICU MF1; consumer substitutes author and date. Middot separator preserved.",
         "usage": ["llms-full.eta:265"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1200,7 +1319,8 @@
       "_meta": {
         "description": "Theatre review source link list item. ICU MF1; consumer substitutes the review URL. Literal source domain preserved.",
         "usage": ["llms-full.eta:267"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1210,7 +1330,8 @@
       "_meta": {
         "description": "System section heading with anchor.",
         "usage": ["llms-full.eta:273"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Literal markdown anchor '{#system}' is ICU-MF1-escaped as '{#system}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
@@ -1221,7 +1342,8 @@
       "_meta": {
         "description": "Data freshness subsection heading.",
         "usage": ["llms-full.eta:275"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1231,7 +1353,8 @@
       "_meta": {
         "description": "Data-freshness table column-header row.",
         "usage": ["llms-full.eta:277"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1241,7 +1364,8 @@
       "_meta": {
         "description": "Data-freshness explanatory paragraph (static, 3 lines). Newlines and inline-code backticks preserved.",
         "usage": ["llms-full.eta:283-285"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1251,7 +1375,8 @@
       "_meta": {
         "description": "Streams section heading with anchor.",
         "usage": ["llms-full.eta:289"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Literal markdown anchor '{#streams}' is ICU-MF1-escaped as '{#streams}' (single-quoted) so the static value is valid MessageFormat; an ICU formatter unescapes it back to the byte-identical template text when rendered."
@@ -1262,7 +1387,8 @@
       "_meta": {
         "description": "Streams-section explanatory paragraph (static).",
         "usage": ["llms-full.eta:291"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1272,7 +1398,8 @@
       "_meta": {
         "description": "Streams — health.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:293"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1282,7 +1409,8 @@
       "_meta": {
         "description": "Streams — sleep.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:294"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1292,7 +1420,8 @@
       "_meta": {
         "description": "Streams — focus.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:295"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1302,7 +1431,8 @@
       "_meta": {
         "description": "Streams — github-events.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:296"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1312,7 +1442,8 @@
       "_meta": {
         "description": "Streams — github-starred-repos.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:297"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1322,7 +1453,8 @@
       "_meta": {
         "description": "Streams — books.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:298"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1332,7 +1464,8 @@
       "_meta": {
         "description": "Streams — articles.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:299"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1342,7 +1475,8 @@
       "_meta": {
         "description": "Streams — theatre-reviews.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:300"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1352,7 +1486,8 @@
       "_meta": {
         "description": "Streams — workouts.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:301"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1362,7 +1497,8 @@
       "_meta": {
         "description": "Streams — location.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:302"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -1374,7 +1510,8 @@
       "_meta": {
         "description": "Title attribute for the <link rel=\"alternate\" type=\"text/markdown\"> tag pointing at llms-full.txt.",
         "usage": ["web:src/layouts/Dashboard.astro:30 (<link rel=\"alternate\" title=\"...\">)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
       }
@@ -1384,7 +1521,8 @@
       "_meta": {
         "description": "Title attribute for the <link rel=\"alternate\" type=\"text/plain\"> tag pointing at /llms.txt.",
         "usage": ["web:src/layouts/Dashboard.astro:31 (<link rel=\"alternate\" title=\"...\">)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
       }
@@ -1394,7 +1532,8 @@
       "_meta": {
         "description": "JSON-LD Dataset.description prose for the Human Datastream structured-data block.",
         "usage": ["web:src/layouts/Dashboard.astro:100 (JSON-LD Dataset.description)"],
-        "tone": "llm-prose",
+        "register": "machine",
+        "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
       }

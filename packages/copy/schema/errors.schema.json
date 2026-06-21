@@ -14,8 +14,12 @@
       "additionalProperties": false,
       "required": ["bookNoFields", "dateFormat"],
       "properties": {
-        "bookNoFields": { "$ref": "#/$defs/CopyString" },
-        "dateFormat": { "$ref": "#/$defs/CopyString" }
+        "bookNoFields": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dateFormat": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "client": {
@@ -25,8 +29,12 @@
       "additionalProperties": false,
       "required": ["connectionSuccess", "serverReturned"],
       "properties": {
-        "connectionSuccess": { "$ref": "#/$defs/CopyString" },
-        "serverReturned": { "$ref": "#/$defs/CopyString" }
+        "connectionSuccess": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "serverReturned": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     }
   },
@@ -35,7 +43,7 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
       "properties": {
         "description": {
           "type": "string",
@@ -44,12 +52,20 @@
         "usage": {
           "type": "array",
           "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "tone": {
+        "register": {
           "type": "string",
-          "description": "Intended voice/register (e.g. professional, playful, terse)."
+          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": ["human", "machine", "dual"],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
           "type": "string",
@@ -88,7 +104,9 @@
           "type": "string",
           "description": "The string, authored in ICU MessageFormat 1 syntax."
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     },
     "CopyStringList": {
@@ -100,9 +118,13 @@
         "value": {
           "type": "array",
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     }
   }

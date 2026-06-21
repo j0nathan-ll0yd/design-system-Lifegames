@@ -81,9 +81,17 @@ the P3 presentational-purity boundary. Rules:
   zero duplication across the four repos. (V1 covers the identity slice; V2 mass-migrates
   widget labels, error messages, a11y breadth, email, etc.)
 - **Rich authoring context.** Each string is authored as `{ value, _meta }`, where `_meta`
-  carries `description`, `usage` (render sites), `tone`, `owner`, `lastReviewed`, and
-  optional `constraints` (e.g. `maxChars`) + `rationale`. The build derives a flattened
-  view so consumers read plain values.
+  carries `description`, `usage` (render sites), `register`, `audience`, `owner`,
+  `lastReviewed`, and optional `constraints` (e.g. `maxChars`) + `rationale`. The build
+  derives a flattened view so consumers read plain values.
+- **Governed voice (register + audience).** `_meta.register` is a closed enum
+  (`atom | label | factual | expressive | machine | brand | consent`) and `_meta.audience`
+  is `human | machine | dual` — together they encode "one voice, flexed by register" plus the
+  human↔AI arbitration rule (machine/dual surfaces stay literal/parseable). The voice
+  constitution is **`packages/copy/VOICE.md`** (source of truth), surfaced into the generated
+  `DESIGN.md` (`## Brand & Voice`, from `voice.summary.json`) and the docs-site Voice & Tone
+  page. Enforced by Ajv (enum) at build + `packages/copy/scripts/check-copy-voice.mjs`
+  (mechanics + arbitration) + `packages/copy/VOICE-REVIEW-CHECKLIST.md` (review judgment).
 - **ICU MessageFormat 1.** Strings are authored in ICU MF1 syntax; static passthrough (no
   MF runtime in V1). CI parse-tests every string.
 - **Generated, never hand-written.** TS, Zod, and Swift (`Identity.generated.swift`) are
