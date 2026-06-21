@@ -10,7 +10,8 @@
           "backend:profile.ts PROFILE.name",
           "backend:llms-txt.eta:1 heading, llms-full profile"
         ],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -20,7 +21,8 @@
       "_meta": {
         "description": "Given name, used by OpenGraph profile metadata.",
         "usage": ["web:Dashboard.astro:45 (profile:first_name)"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -30,7 +32,8 @@
       "_meta": {
         "description": "Family name, used by OpenGraph profile metadata.",
         "usage": ["web:Dashboard.astro:46 (profile:last_name)"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -40,7 +43,8 @@
       "_meta": {
         "description": "Canonical online handle (the GitHub/leetspeak screen-name). Platform-neutral identity role; same value across locales. The web layer maps it into the Person JSON-LD alternateName.",
         "usage": ["web:Dashboard.astro (Person JSON-LD alternateName)"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-13"
       }
@@ -53,7 +57,8 @@
           "web:Dashboard.astro:80 (Person JSON-LD jobTitle)",
           "backend:profile.ts PROFILE.title (also lowercased into llms.txt About prose)"
         ],
-        "tone": "professional",
+        "register": "factual",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -63,7 +68,8 @@
       "_meta": {
         "description": "City and state of residence. Backend-only today; not yet shown on web.",
         "usage": ["backend:profile.ts PROFILE.location", "backend:llms-txt.eta:7 About prose"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -76,7 +82,8 @@
           "backend:profile.ts PROFILE.yearsExperience",
           "backend:llms-txt.eta:7 About prose"
         ],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -86,7 +93,8 @@
       "_meta": {
         "description": "Short personal-philosophy line. Backend-only today.",
         "usage": ["backend:profile.ts PROFILE.philosophy", "backend:llms-full profile block"],
-        "tone": "reflective",
+        "register": "expressive",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -99,7 +107,8 @@
           "backend:profile.ts PROFILE.skills",
           "backend:llms-full profile block (joined with ', ')"
         ],
-        "tone": "terse",
+        "register": "atom",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Casual lowercase token list; deliberately NOT the same voice as the title-case seo.expertise list."
@@ -113,7 +122,8 @@
           "backend:profile.ts PROFILE.interests",
           "backend:llms-full profile block (joined with ', ')"
         ],
-        "tone": "casual",
+        "register": "expressive",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -123,7 +133,8 @@
       "_meta": {
         "description": "Canonical profile URLs that identify the same person across the web. Locale-invariant; used as the Person JSON-LD sameAs array.",
         "usage": ["web:Dashboard.astro (Person JSON-LD sameAs)"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-12"
       }
@@ -133,10 +144,13 @@
       "_meta": {
         "description": "SEO meta description (<meta name=description>). The shortest bio voice; must stay within Google's ~160-char snippet.",
         "usage": ["web:Dashboard.astro:5 (description prop → meta description)"],
-        "tone": "marketing",
+        "register": "expressive",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "constraints": { "maxChars": 160 },
+        "constraints": {
+          "maxChars": 160
+        },
         "rationale": "Distinct from socialBio: this one names him 'engineer' and omits biometrics specifics to fit the meta-description length budget."
       }
     },
@@ -147,10 +161,13 @@
         "usage": [
           "web:Dashboard.astro:6 (ogDescription prop → og:description, twitter:description)"
         ],
-        "tone": "marketing",
+        "register": "expressive",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "constraints": { "maxChars": 200 },
+        "constraints": {
+          "maxChars": 200
+        },
         "rationale": "Distinct from shortBio: titles him 'engineering director' and lists concrete biometrics (heart rate, sleep, hydration) for richer social-share previews."
       }
     },
@@ -159,7 +176,8 @@
       "_meta": {
         "description": "Person JSON-LD description — the long, structured-data biography. Names experience ('24+ years') and the AI-centric framing.",
         "usage": ["web:Dashboard.astro:102 (Person JSON-LD description)"],
-        "tone": "professional",
+        "register": "factual",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Distinct from site.description: phrased about the person ('with 24+ years of experience') rather than about the portfolio ('Personal portfolio of …')."
@@ -170,7 +188,8 @@
       "_meta": {
         "description": "Playful first-person 'human' flavor line. Backend-only; a deliberately different voice from the professional bios.",
         "usage": ["backend:profile.ts PROFILE.bio", "backend:llms-full profile bio field"],
-        "tone": "playful",
+        "register": "expressive",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Intentionally distinct voice (whimsical, anti-AI flavor). NOT a candidate to merge with the professional bios."
@@ -183,7 +202,8 @@
         "usage": [
           "design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (experience default)"
         ],
-        "tone": "marketing",
+        "register": "expressive",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -198,7 +218,8 @@
           "web:Dashboard.astro:44 (og:site_name)",
           "web:Dashboard.astro:107 (Dataset name, machine metadata)"
         ],
-        "tone": "brand",
+        "register": "brand",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -208,7 +229,8 @@
       "_meta": {
         "description": "Composed brand name: person + site, stored whole (no consumer-side concatenation, per D7).",
         "usage": ["web:Dashboard.astro:60 (WebSite JSON-LD name)"],
-        "tone": "brand",
+        "register": "brand",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -218,7 +240,8 @@
       "_meta": {
         "description": "Brand tagline; the trailing segment of the SEO title.",
         "usage": ["web:Dashboard.astro:4 (tail of seo.title)"],
-        "tone": "brand",
+        "register": "brand",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -231,7 +254,8 @@
           "web:Dashboard.astro:61 (WebSite JSON-LD description)",
           "backend:llms-txt.eta:3 (inline blockquote — to be replaced by it.siteDescription in D1b)"
         ],
-        "tone": "professional",
+        "register": "factual",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Phrased about the portfolio ('Personal portfolio of …'); distinct from person.longBio which is phrased about the person."
@@ -242,10 +266,13 @@
       "_meta": {
         "description": "PWA web-app manifest description (shown in install prompts / app listings). A short variant distinct from site.description and person.shortBio.",
         "usage": ["web:astro.config.mjs (AstroPWA manifest.description)"],
-        "tone": "marketing",
+        "register": "expressive",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "constraints": { "maxChars": 120 },
+        "constraints": {
+          "maxChars": 120
+        },
         "rationale": "Shortest site-level description; the PWA manifest favors a terse install-prompt blurb."
       }
     }
@@ -261,10 +288,13 @@
           "web:Dashboard.astro:36 (og:title)",
           "web:Dashboard.astro:49 (twitter:title)"
         ],
-        "tone": "marketing",
+        "register": "expressive",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "constraints": { "maxChars": 70 }
+        "constraints": {
+          "maxChars": 70
+        }
       }
     },
     "keywords": {
@@ -283,7 +313,8 @@
       "_meta": {
         "description": "SEO keyword phrases for <meta name=keywords>. Consumers join with ', '.",
         "usage": ["web:Dashboard.astro:22 (meta keywords, comma-joined)"],
-        "tone": "marketing",
+        "register": "expressive",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -306,7 +337,8 @@
           "web:Dashboard.astro:90-100 (Person JSON-LD knowsAbout)",
           "backend:view.ts EXPERTISE (joined with ', ' into llms.txt + llms-full Expertise sections)"
         ],
-        "tone": "professional",
+        "register": "factual",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
         "rationale": "Distinct from person.skills (lowercase casual tokens). This is the polished, title-case marketing list."
@@ -319,7 +351,8 @@
         "usage": [
           "design-system:Sources/LifegamesWidgets/Other/OGImageProps.swift (quote default)"
         ],
-        "tone": "brand",
+        "register": "brand",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -331,7 +364,8 @@
       "_meta": {
         "description": "Web software/framework stack for the humans.txt SITE section Software line. Distinct from person.skills (professional skills) and humansTxt.hosting (infrastructure).",
         "usage": ["web:humans.txt.ts (SITE section, Software line)"],
-        "tone": "terse",
+        "register": "atom",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -341,7 +375,8 @@
       "_meta": {
         "description": "Hosting provider for humans.txt SITE section.",
         "usage": ["web:humans.txt.ts (SITE section, Hosting line)"],
-        "tone": "terse",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -351,7 +386,8 @@
       "_meta": {
         "description": "Web standards used, for humans.txt SITE section.",
         "usage": ["web:humans.txt.ts (SITE section, Standards line)"],
-        "tone": "terse",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -361,7 +397,8 @@
       "_meta": {
         "description": "OSS and service credits for the humans.txt THANKS section.",
         "usage": ["web:humans.txt.ts (THANKS section)"],
-        "tone": "terse",
+        "register": "atom",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -373,7 +410,8 @@
       "_meta": {
         "description": "RSS/JSON Feed channel title. The brand name used as the feed <title> element.",
         "usage": ["backend:ComposeFeed/index.ts (feed channel title)"],
-        "tone": "brand",
+        "register": "brand",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -383,7 +421,8 @@
       "_meta": {
         "description": "RSS/JSON Feed channel description. Explains what the feed syndicates and the philosophy behind the content set.",
         "usage": ["backend:ComposeFeed/index.ts (feed channel description)"],
-        "tone": "professional",
+        "register": "factual",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -393,7 +432,8 @@
       "_meta": {
         "description": "Feed author name. Used in RSS <managingEditor> / JSON Feed authors[].name.",
         "usage": ["backend:ComposeFeed/index.ts (feed author)"],
-        "tone": "neutral",
+        "register": "label",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -403,7 +443,8 @@
       "_meta": {
         "description": "Feed copyright notice. Used in RSS <copyright> element.",
         "usage": ["backend:ComposeFeed/index.ts (feed copyright)"],
-        "tone": "neutral",
+        "register": "factual",
+        "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-06-17"
       }
@@ -414,7 +455,8 @@
         "_meta": {
           "description": "Label for the theatre-reviews domain in the feed. Used to annotate feed items sourced from coasttocoastreviews.com.",
           "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
-          "tone": "terse",
+          "register": "label",
+          "audience": "dual",
           "owner": "jonathan",
           "lastReviewed": "2026-06-17"
         }
@@ -424,7 +466,8 @@
         "_meta": {
           "description": "Label for the meaningful GitHub events domain (PRs merged, issues opened). Raw commits are excluded.",
           "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
-          "tone": "terse",
+          "register": "label",
+          "audience": "dual",
           "owner": "jonathan",
           "lastReviewed": "2026-06-17"
         }
@@ -434,7 +477,8 @@
         "_meta": {
           "description": "Label for starred GitHub repositories in the feed. Represents curation signal — repos Jonathan has bookmarked.",
           "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
-          "tone": "terse",
+          "register": "label",
+          "audience": "dual",
           "owner": "jonathan",
           "lastReviewed": "2026-06-17"
         }
@@ -444,7 +488,8 @@
         "_meta": {
           "description": "Label for finished books in the feed. Note: pubDate is the record last-modified date, not a precise finish date.",
           "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
-          "tone": "terse",
+          "register": "label",
+          "audience": "dual",
           "owner": "jonathan",
           "lastReviewed": "2026-06-17"
         }
@@ -454,7 +499,8 @@
         "_meta": {
           "description": "Label for saved/bookmarked articles in the feed.",
           "usage": ["backend:ComposeFeed/index.ts (feed item domain label)"],
-          "tone": "terse",
+          "register": "label",
+          "audience": "dual",
           "owner": "jonathan",
           "lastReviewed": "2026-06-17"
         }
@@ -467,7 +513,8 @@
       "_meta": {
         "description": "Skip-link text for keyboard/screen-reader users.",
         "usage": ["web:Dashboard.astro:417 (.lg-skip-link)"],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
@@ -480,10 +527,13 @@
           "web:Dashboard.astro:43 (og:image:alt)",
           "web:Dashboard.astro:52 (twitter:image:alt)"
         ],
-        "tone": "functional",
+        "register": "label",
+        "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11",
-        "constraints": { "maxChars": 125 }
+        "constraints": {
+          "maxChars": 125
+        }
       }
     }
   }

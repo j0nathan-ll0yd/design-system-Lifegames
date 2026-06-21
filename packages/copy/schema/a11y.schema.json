@@ -25,8 +25,12 @@
       "additionalProperties": false,
       "required": ["rings", "daylight"],
       "properties": {
-        "rings": { "$ref": "#/$defs/CopyString" },
-        "daylight": { "$ref": "#/$defs/CopyString" }
+        "rings": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "daylight": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "identity": {
@@ -36,8 +40,12 @@
       "additionalProperties": false,
       "required": ["avatarAlt", "socialNav"],
       "properties": {
-        "avatarAlt": { "$ref": "#/$defs/CopyString" },
-        "socialNav": { "$ref": "#/$defs/CopyString" }
+        "avatarAlt": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "socialNav": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "bookshelf": {
@@ -47,7 +55,9 @@
       "additionalProperties": false,
       "required": ["bookItem"],
       "properties": {
-        "bookItem": { "$ref": "#/$defs/CopyString" }
+        "bookItem": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "bookModal": {
@@ -57,7 +67,9 @@
       "additionalProperties": false,
       "required": ["dialog"],
       "properties": {
-        "dialog": { "$ref": "#/$defs/CopyString" }
+        "dialog": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "modal": {
@@ -67,7 +79,9 @@
       "additionalProperties": false,
       "required": ["close"],
       "properties": {
-        "close": { "$ref": "#/$defs/CopyString" }
+        "close": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "readingFeed": {
@@ -77,7 +91,9 @@
       "additionalProperties": false,
       "required": ["pagination"],
       "properties": {
-        "pagination": { "$ref": "#/$defs/CopyString" }
+        "pagination": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "nav": {
@@ -87,8 +103,12 @@
       "additionalProperties": false,
       "required": ["profile", "dashboard"],
       "properties": {
-        "profile": { "$ref": "#/$defs/CopyString" },
-        "dashboard": { "$ref": "#/$defs/CopyString" }
+        "profile": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dashboard": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "region": {
@@ -98,8 +118,12 @@
       "additionalProperties": false,
       "required": ["body", "mind"],
       "properties": {
-        "body": { "$ref": "#/$defs/CopyString" },
-        "mind": { "$ref": "#/$defs/CopyString" }
+        "body": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "mind": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "clock": {
@@ -109,7 +133,9 @@
       "additionalProperties": false,
       "required": ["currentTime"],
       "properties": {
-        "currentTime": { "$ref": "#/$defs/CopyString" }
+        "currentTime": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "page404": {
@@ -119,7 +145,9 @@
       "additionalProperties": false,
       "required": ["region"],
       "properties": {
-        "region": { "$ref": "#/$defs/CopyString" }
+        "region": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     }
   },
@@ -128,7 +156,7 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
       "properties": {
         "description": {
           "type": "string",
@@ -137,12 +165,20 @@
         "usage": {
           "type": "array",
           "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "tone": {
+        "register": {
           "type": "string",
-          "description": "Intended voice/register (e.g. professional, playful, terse)."
+          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": ["human", "machine", "dual"],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
           "type": "string",
@@ -181,7 +217,9 @@
           "type": "string",
           "description": "The string, authored in ICU MessageFormat 1 syntax."
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     },
     "CopyStringList": {
@@ -193,9 +231,13 @@
         "value": {
           "type": "array",
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     }
   }

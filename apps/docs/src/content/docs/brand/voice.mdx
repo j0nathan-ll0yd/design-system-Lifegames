@@ -1,0 +1,67 @@
+---
+title: Voice & Tone
+description: How Lifegames sounds — one voice flexed by register, with the human↔AI tension as its spine. The human-readable companion to packages/copy/VOICE.md.
+---
+
+The source of truth is [`packages/copy/VOICE.md`](https://github.com/j0nathan-ll0yd/design-system-Lifegames/blob/main/packages/copy/VOICE.md); the enforced surfaces are the `register` enum (Ajv at build), the `check-copy-voice.mjs` lint, and the review checklist. This page is the readable summary.
+
+## The spine
+
+> **The voice of a human broadcasting himself in machine-readable form — on his own terms. Legible to the machine, never surrendered to it.**
+>
+> A wry engineer at a terminal: precise, dry, quietly confident. It shows the work and skips the hype. It renders a life as a datastream while insisting the human is the irreducible _source_ — not an obsolete algorithm.
+
+**Precise · Wry · Defiantly human.**
+
+## We are / we are not
+
+| We are                               | We are not                               |
+| ------------------------------------ | ---------------------------------------- |
+| Precise — every word earns its place | Vague, padded, or hedged                 |
+| Wry — wit through precision          | Zany, jokey, breathlessly gung-ho        |
+| Confident through restraint          | Boastful, hyped, self-announcing         |
+| Legible to machines                  | Surrendered to them ("you are your HRV") |
+| Earnest about the data               | Ironic or detached                       |
+| Human-first                          | Soft, wellness-coachy, congratulatory    |
+| A mirror that shows the data         | A coach that interprets your feelings    |
+| Genre-literate at the right dose     | Cyberpunk cosplay                        |
+
+## Two axes
+
+Tone is governed on two axes in `_meta`:
+
+- **`register`** (the voice dial): `atom` · `label` · `factual` · `expressive` · `machine` · `brand` · `consent`
+- **`audience`**: `human` · `machine` · `dual`
+
+### The arbitration rule
+
+> Literal-first in machine surfaces; allusive only in human-narrative ones. Never sacrifice parseability for flavor in any string whose `usage[]` touches a machine surface (`llms-txt`, `llms-full`, `JSON-LD`, `.txt`, `feed`, `<SYSTEM>`). The machine gets facts; the human gets the voice.
+
+## Principles
+
+1. One voice, many registers.
+2. Legible to machines, irreducibly human.
+3. Wit through precision, not volume.
+4. Show the work, skip the hype.
+5. Data is a mirror, not a coach.
+6. Earn the aesthetic through ethos; dose the flavor.
+7. Each string does one thing.
+
+## Do / Don't
+
+| Context         | Don't                                                     | Do                                            |
+| --------------- | --------------------------------------------------------- | --------------------------------------------- |
+| Empty state     | "No movement yet today 💪"                                | "No movement logged yet."                     |
+| Error           | "We're sorry, your session expired. Please log in again." | "Session expired. Log in to continue."        |
+| Biometric       | "Your HRV looks great today!"                             | "HRV 62 ms — above 7-day baseline"            |
+| Recovery        | "Your body recovers while you rest"                       | "Recovery happens at rest."                   |
+| Machine surface | allusive flavor in `llms.txt`                             | factual, statistic-dense                      |
+| Bio             | "Passionate, results-driven engineering leader…"          | "100% pure, old fashioned, home-grown human…" |
+
+## Voicing biometrics
+
+Data is a mirror, not a coach. Clinical HR-zone labels (`Bradycardia`, `Fat Burn`, `Peak Zone`) are fixed — precision is the dignity. Encouragement is implied by the data, never announced. If an honest scientist would push back on a claim as over-interpreted, don't make it.
+
+---
+
+_Grounded in ≈56 web searches across voice-methodology, writing-for-AI, cultural-authenticity, and microcopy research (see `packages/copy/VOICE.md` and `.omc/research/`)._

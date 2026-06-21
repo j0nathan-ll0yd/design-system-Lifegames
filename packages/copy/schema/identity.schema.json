@@ -30,22 +30,54 @@
         "experiencePhrase"
       ],
       "properties": {
-        "name": { "$ref": "#/$defs/CopyString" },
-        "firstName": { "$ref": "#/$defs/CopyString" },
-        "lastName": { "$ref": "#/$defs/CopyString" },
-        "handle": { "$ref": "#/$defs/CopyString" },
-        "jobTitle": { "$ref": "#/$defs/CopyString" },
-        "location": { "$ref": "#/$defs/CopyString" },
-        "yearsExperience": { "$ref": "#/$defs/CopyString" },
-        "philosophy": { "$ref": "#/$defs/CopyString" },
-        "skills": { "$ref": "#/$defs/CopyStringList" },
-        "interests": { "$ref": "#/$defs/CopyStringList" },
-        "sameAs": { "$ref": "#/$defs/CopyStringList" },
-        "shortBio": { "$ref": "#/$defs/CopyString" },
-        "socialBio": { "$ref": "#/$defs/CopyString" },
-        "longBio": { "$ref": "#/$defs/CopyString" },
-        "flavorBio": { "$ref": "#/$defs/CopyString" },
-        "experiencePhrase": { "$ref": "#/$defs/CopyString" }
+        "name": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "firstName": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastName": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "handle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "jobTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "location": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "yearsExperience": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "philosophy": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "skills": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "interests": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "sameAs": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "shortBio": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "socialBio": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "longBio": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "flavorBio": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "experiencePhrase": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "site": {
@@ -54,11 +86,21 @@
       "additionalProperties": false,
       "required": ["name", "fullName", "tagline", "description", "pwaDescription"],
       "properties": {
-        "name": { "$ref": "#/$defs/CopyString" },
-        "fullName": { "$ref": "#/$defs/CopyString" },
-        "tagline": { "$ref": "#/$defs/CopyString" },
-        "description": { "$ref": "#/$defs/CopyString" },
-        "pwaDescription": { "$ref": "#/$defs/CopyString" }
+        "name": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fullName": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tagline": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "description": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "pwaDescription": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "seo": {
@@ -67,10 +109,18 @@
       "additionalProperties": false,
       "required": ["title", "keywords", "expertise", "ogImageQuote"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "keywords": { "$ref": "#/$defs/CopyStringList" },
-        "expertise": { "$ref": "#/$defs/CopyStringList" },
-        "ogImageQuote": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "keywords": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "expertise": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "ogImageQuote": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "a11y": {
@@ -79,8 +129,12 @@
       "additionalProperties": false,
       "required": ["skipToMain", "ogImageAlt"],
       "properties": {
-        "skipToMain": { "$ref": "#/$defs/CopyString" },
-        "ogImageAlt": { "$ref": "#/$defs/CopyString" }
+        "skipToMain": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "ogImageAlt": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "humansTxt": {
@@ -89,10 +143,18 @@
       "additionalProperties": false,
       "required": ["stack", "hosting", "standards", "thanks"],
       "properties": {
-        "stack": { "$ref": "#/$defs/CopyStringList" },
-        "hosting": { "$ref": "#/$defs/CopyString" },
-        "standards": { "$ref": "#/$defs/CopyString" },
-        "thanks": { "$ref": "#/$defs/CopyStringList" }
+        "stack": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "hosting": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "standards": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "thanks": {
+          "$ref": "#/$defs/CopyStringList"
+        }
       }
     },
     "feed": {
@@ -101,21 +163,39 @@
       "additionalProperties": false,
       "required": ["title", "description", "author", "copyright", "sections"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "description": { "$ref": "#/$defs/CopyString" },
-        "author": { "$ref": "#/$defs/CopyString" },
-        "copyright": { "$ref": "#/$defs/CopyString" },
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "description": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "author": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "copyright": {
+          "$ref": "#/$defs/CopyString"
+        },
         "sections": {
           "type": "object",
           "description": "Per-domain section labels for feed items.",
           "additionalProperties": false,
           "required": ["theatre", "github", "starred", "books", "articles"],
           "properties": {
-            "theatre": { "$ref": "#/$defs/CopyString" },
-            "github": { "$ref": "#/$defs/CopyString" },
-            "starred": { "$ref": "#/$defs/CopyString" },
-            "books": { "$ref": "#/$defs/CopyString" },
-            "articles": { "$ref": "#/$defs/CopyString" }
+            "theatre": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "github": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "starred": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "books": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "articles": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         }
       }
@@ -126,7 +206,7 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
       "properties": {
         "description": {
           "type": "string",
@@ -135,12 +215,20 @@
         "usage": {
           "type": "array",
           "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "tone": {
+        "register": {
           "type": "string",
-          "description": "Intended voice/register (e.g. professional, playful, terse)."
+          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": ["human", "machine", "dual"],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
           "type": "string",
@@ -179,7 +267,9 @@
           "type": "string",
           "description": "The string, authored in ICU MessageFormat 1 syntax."
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     },
     "CopyStringList": {
@@ -191,9 +281,13 @@
         "value": {
           "type": "array",
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     }
   }

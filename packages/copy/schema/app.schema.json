@@ -40,16 +40,36 @@
         "savedPlaces"
       ],
       "properties": {
-        "home": { "$ref": "#/$defs/CopyString" },
-        "health": { "$ref": "#/$defs/CopyString" },
-        "settings": { "$ref": "#/$defs/CopyString" },
-        "location": { "$ref": "#/$defs/CopyString" },
-        "journey": { "$ref": "#/$defs/CopyString" },
-        "activityMap": { "$ref": "#/$defs/CopyString" },
-        "topPlaces": { "$ref": "#/$defs/CopyString" },
-        "bookshelf": { "$ref": "#/$defs/CopyString" },
-        "diagnostics": { "$ref": "#/$defs/CopyString" },
-        "savedPlaces": { "$ref": "#/$defs/CopyString" }
+        "home": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "health": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "settings": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "location": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "journey": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "activityMap": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "topPlaces": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bookshelf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "diagnostics": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "savedPlaces": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "tab": {
@@ -59,11 +79,21 @@
       "additionalProperties": false,
       "required": ["home", "health", "location", "books", "settings"],
       "properties": {
-        "home": { "$ref": "#/$defs/CopyString" },
-        "health": { "$ref": "#/$defs/CopyString" },
-        "location": { "$ref": "#/$defs/CopyString" },
-        "books": { "$ref": "#/$defs/CopyString" },
-        "settings": { "$ref": "#/$defs/CopyString" }
+        "home": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "health": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "location": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "books": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "settings": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "common": {
@@ -73,13 +103,27 @@
       "additionalProperties": false,
       "required": ["cancel", "delete", "clear", "ok", "done", "save", "add"],
       "properties": {
-        "cancel": { "$ref": "#/$defs/CopyString" },
-        "delete": { "$ref": "#/$defs/CopyString" },
-        "clear": { "$ref": "#/$defs/CopyString" },
-        "ok": { "$ref": "#/$defs/CopyString" },
-        "done": { "$ref": "#/$defs/CopyString" },
-        "save": { "$ref": "#/$defs/CopyString" },
-        "add": { "$ref": "#/$defs/CopyString" }
+        "cancel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "delete": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "clear": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "ok": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "done": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "save": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "add": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "home": {
@@ -102,18 +146,42 @@
         "syncStatus"
       ],
       "properties": {
-        "loading": { "$ref": "#/$defs/CopyString" },
-        "stepsUnit": { "$ref": "#/$defs/CopyString" },
-        "goalProgress": { "$ref": "#/$defs/CopyString" },
-        "visitsToday": { "$ref": "#/$defs/CopyString" },
-        "unsynced": { "$ref": "#/$defs/CopyString" },
-        "sectionHealth": { "$ref": "#/$defs/CopyString" },
-        "sectionLocation": { "$ref": "#/$defs/CopyString" },
-        "noLocation": { "$ref": "#/$defs/CopyString" },
-        "tracking": { "$ref": "#/$defs/CopyString" },
-        "notTracking": { "$ref": "#/$defs/CopyString" },
-        "notSynced": { "$ref": "#/$defs/CopyString" },
-        "syncStatus": { "$ref": "#/$defs/CopyString" }
+        "loading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "stepsUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "goalProgress": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "visitsToday": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "unsynced": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionHealth": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionLocation": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "noLocation": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tracking": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "notTracking": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "notSynced": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "syncStatus": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "settings": {
@@ -153,34 +221,90 @@
         "alerts"
       ],
       "properties": {
-        "sectionLocation": { "$ref": "#/$defs/CopyString" },
-        "sectionServer": { "$ref": "#/$defs/CopyString" },
-        "sectionData": { "$ref": "#/$defs/CopyString" },
-        "sectionDiagnostics": { "$ref": "#/$defs/CopyString" },
-        "sectionAbout": { "$ref": "#/$defs/CopyString" },
-        "savedPlacesTitle": { "$ref": "#/$defs/CopyString" },
-        "savedPlacesSubtitle": { "$ref": "#/$defs/CopyString" },
-        "apiBaseUrl": { "$ref": "#/$defs/CopyString" },
-        "apiBaseUrlPlaceholder": { "$ref": "#/$defs/CopyString" },
-        "apiToken": { "$ref": "#/$defs/CopyString" },
-        "apiTokenPlaceholder": { "$ref": "#/$defs/CopyString" },
-        "totalVisits": { "$ref": "#/$defs/CopyString" },
-        "unsyncedVisits": { "$ref": "#/$defs/CopyString" },
-        "lastHealthSync": { "$ref": "#/$defs/CopyString" },
-        "fullResync": { "$ref": "#/$defs/CopyString" },
-        "deleteAll": { "$ref": "#/$defs/CopyString" },
-        "watchLogEntries": { "$ref": "#/$defs/CopyString" },
-        "fileSize": { "$ref": "#/$defs/CopyString" },
-        "diagEmpty": { "$ref": "#/$defs/CopyString" },
-        "recentEntries": { "$ref": "#/$defs/CopyString" },
-        "shareLog": { "$ref": "#/$defs/CopyString" },
-        "clearLogs": { "$ref": "#/$defs/CopyString" },
-        "reload": { "$ref": "#/$defs/CopyString" },
-        "aboutName": { "$ref": "#/$defs/CopyString" },
-        "aboutTitle": { "$ref": "#/$defs/CopyString" },
-        "aboutVersion": { "$ref": "#/$defs/CopyString" },
-        "aboutBuild": { "$ref": "#/$defs/CopyString" },
-        "aboutPlatform": { "$ref": "#/$defs/CopyString" },
+        "sectionLocation": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionServer": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionData": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionDiagnostics": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionAbout": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "savedPlacesTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "savedPlacesSubtitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiBaseUrl": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiBaseUrlPlaceholder": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiToken": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiTokenPlaceholder": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "totalVisits": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "unsyncedVisits": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastHealthSync": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fullResync": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "deleteAll": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "watchLogEntries": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fileSize": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "diagEmpty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "recentEntries": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "shareLog": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "clearLogs": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "reload": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutName": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutVersion": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutBuild": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "aboutPlatform": {
+          "$ref": "#/$defs/CopyString"
+        },
         "alerts": {
           "type": "object",
           "title": "AppSettingsAlerts",
@@ -196,13 +320,27 @@
             "clearLogsMessage"
           ],
           "properties": {
-            "deleteAllTitle": { "$ref": "#/$defs/CopyString" },
-            "deleteAllMessage": { "$ref": "#/$defs/CopyString" },
-            "resyncTitle": { "$ref": "#/$defs/CopyString" },
-            "resyncMessage": { "$ref": "#/$defs/CopyString" },
-            "resyncConfirm": { "$ref": "#/$defs/CopyString" },
-            "clearLogsTitle": { "$ref": "#/$defs/CopyString" },
-            "clearLogsMessage": { "$ref": "#/$defs/CopyString" }
+            "deleteAllTitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "deleteAllMessage": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "resyncTitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "resyncMessage": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "resyncConfirm": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "clearLogsTitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "clearLogsMessage": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         }
       }
@@ -214,10 +352,18 @@
       "additionalProperties": false,
       "required": ["emptyTitle", "emptyBody", "addHome", "radius"],
       "properties": {
-        "emptyTitle": { "$ref": "#/$defs/CopyString" },
-        "emptyBody": { "$ref": "#/$defs/CopyString" },
-        "addHome": { "$ref": "#/$defs/CopyString" },
-        "radius": { "$ref": "#/$defs/CopyString" }
+        "emptyTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "emptyBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "addHome": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "radius": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "addPlace": {
@@ -237,15 +383,33 @@
         "tip"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "sectionNewLocation": { "$ref": "#/$defs/CopyString" },
-        "fieldName": { "$ref": "#/$defs/CopyString" },
-        "fieldNamePlaceholder": { "$ref": "#/$defs/CopyString" },
-        "fieldCategory": { "$ref": "#/$defs/CopyString" },
-        "fieldLatitude": { "$ref": "#/$defs/CopyString" },
-        "fieldLongitude": { "$ref": "#/$defs/CopyString" },
-        "fieldRadius": { "$ref": "#/$defs/CopyString" },
-        "tip": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionNewLocation": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fieldName": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fieldNamePlaceholder": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fieldCategory": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fieldLatitude": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fieldLongitude": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "fieldRadius": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tip": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "health": {
@@ -276,26 +440,66 @@
         "simActive"
       ],
       "properties": {
-        "sectionHeart": { "$ref": "#/$defs/CopyString" },
-        "sectionMovement": { "$ref": "#/$defs/CopyString" },
-        "sectionSleep": { "$ref": "#/$defs/CopyString" },
-        "sectionWorkouts": { "$ref": "#/$defs/CopyString" },
-        "sectionData": { "$ref": "#/$defs/CopyString" },
-        "sectionDataMode": { "$ref": "#/$defs/CopyString" },
-        "todaysWorkouts": { "$ref": "#/$defs/CopyString" },
-        "recoveryDay": { "$ref": "#/$defs/CopyString" },
-        "noWorkouts": { "$ref": "#/$defs/CopyString" },
-        "workoutDuration": { "$ref": "#/$defs/CopyString" },
-        "workoutCalories": { "$ref": "#/$defs/CopyString" },
-        "sectionHealthkit": { "$ref": "#/$defs/CopyString" },
-        "authorization": { "$ref": "#/$defs/CopyString" },
-        "authorized": { "$ref": "#/$defs/CopyString" },
-        "lastSync": { "$ref": "#/$defs/CopyString" },
-        "syncing": { "$ref": "#/$defs/CopyString" },
-        "syncNow": { "$ref": "#/$defs/CopyString" },
-        "useRealHR": { "$ref": "#/$defs/CopyString" },
-        "realActive": { "$ref": "#/$defs/CopyString" },
-        "simActive": { "$ref": "#/$defs/CopyString" }
+        "sectionHeart": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionMovement": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionSleep": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionWorkouts": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionData": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionDataMode": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "todaysWorkouts": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "recoveryDay": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "noWorkouts": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutDuration": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workoutCalories": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionHealthkit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "authorization": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "authorized": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastSync": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "syncing": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "syncNow": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "useRealHR": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "realActive": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "simActive": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "sleep": {
@@ -314,14 +518,30 @@
         "a11yEdit"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "prompt": { "$ref": "#/$defs/CopyString" },
-        "placeholder": { "$ref": "#/$defs/CopyString" },
-        "save": { "$ref": "#/$defs/CopyString" },
-        "deleteScore": { "$ref": "#/$defs/CopyString" },
-        "cancel": { "$ref": "#/$defs/CopyString" },
-        "a11yAdd": { "$ref": "#/$defs/CopyString" },
-        "a11yEdit": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "prompt": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "placeholder": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "save": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "deleteScore": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cancel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "a11yAdd": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "a11yEdit": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "location": {
@@ -364,19 +584,45 @@
             "deleteVisitMessage"
           ],
           "properties": {
-            "viewYesterday": { "$ref": "#/$defs/CopyString" },
-            "mapUnavailable": { "$ref": "#/$defs/CopyString" },
-            "placesVisited": { "$ref": "#/$defs/CopyString" },
-            "emptyTitle": { "$ref": "#/$defs/CopyString" },
-            "emptyMessage": { "$ref": "#/$defs/CopyString" },
-            "actionCorrect": { "$ref": "#/$defs/CopyString" },
-            "actionSavePlace": { "$ref": "#/$defs/CopyString" },
-            "actionMerge": { "$ref": "#/$defs/CopyString" },
-            "actionDelete": { "$ref": "#/$defs/CopyString" },
-            "visitFallback": { "$ref": "#/$defs/CopyString" },
-            "unknown": { "$ref": "#/$defs/CopyString" },
-            "deleteVisitTitle": { "$ref": "#/$defs/CopyString" },
-            "deleteVisitMessage": { "$ref": "#/$defs/CopyString" }
+            "viewYesterday": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "mapUnavailable": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "placesVisited": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "emptyTitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "emptyMessage": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "actionCorrect": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "actionSavePlace": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "actionMerge": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "actionDelete": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "visitFallback": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "unknown": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "deleteVisitTitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "deleteVisitMessage": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "visitCorrection": {
@@ -397,16 +643,36 @@
             "pinnedLocation"
           ],
           "properties": {
-            "title": { "$ref": "#/$defs/CopyString" },
-            "unknownVisit": { "$ref": "#/$defs/CopyString" },
-            "dragPin": { "$ref": "#/$defs/CopyString" },
-            "searchPlaceholder": { "$ref": "#/$defs/CopyString" },
-            "adjustTimes": { "$ref": "#/$defs/CopyString" },
-            "arrived": { "$ref": "#/$defs/CopyString" },
-            "departed": { "$ref": "#/$defs/CopyString" },
-            "confirming": { "$ref": "#/$defs/CopyString" },
-            "confirm": { "$ref": "#/$defs/CopyString" },
-            "pinnedLocation": { "$ref": "#/$defs/CopyString" }
+            "title": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "unknownVisit": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "dragPin": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "searchPlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "adjustTimes": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "arrived": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "departed": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "confirming": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "confirm": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "pinnedLocation": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "placeRename": {
@@ -424,13 +690,27 @@
             "category"
           ],
           "properties": {
-            "title": { "$ref": "#/$defs/CopyString" },
-            "subtitle": { "$ref": "#/$defs/CopyString" },
-            "result": { "$ref": "#/$defs/CopyString" },
-            "done": { "$ref": "#/$defs/CopyString" },
-            "newName": { "$ref": "#/$defs/CopyString" },
-            "newNamePlaceholder": { "$ref": "#/$defs/CopyString" },
-            "category": { "$ref": "#/$defs/CopyString" }
+            "title": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "subtitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "result": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "done": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "newName": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "newNamePlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "category": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "topPlaces": {
@@ -454,19 +734,45 @@
             "visitsUnit"
           ],
           "properties": {
-            "header": { "$ref": "#/$defs/CopyString" },
-            "seeAll": { "$ref": "#/$defs/CopyString" },
-            "empty": { "$ref": "#/$defs/CopyString" },
-            "uniqueLocations": { "$ref": "#/$defs/CopyString" },
-            "emptyTitle": { "$ref": "#/$defs/CopyString" },
-            "emptyMessage": { "$ref": "#/$defs/CopyString" },
-            "sort": { "$ref": "#/$defs/CopyString" },
-            "sortMostVisited": { "$ref": "#/$defs/CopyString" },
-            "sortMostRecent": { "$ref": "#/$defs/CopyString" },
-            "recentVisits": { "$ref": "#/$defs/CopyString" },
-            "rename": { "$ref": "#/$defs/CopyString" },
-            "lastVisit": { "$ref": "#/$defs/CopyString" },
-            "visitsUnit": { "$ref": "#/$defs/CopyString" }
+            "header": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "seeAll": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "empty": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "uniqueLocations": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "emptyTitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "emptyMessage": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sort": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sortMostVisited": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sortMostRecent": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "recentVisits": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "rename": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "lastVisit": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "visitsUnit": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "heatMap": {
@@ -476,12 +782,24 @@
           "additionalProperties": false,
           "required": ["header", "seeMonth", "legendLess", "legendMore", "totalVisits", "scale"],
           "properties": {
-            "header": { "$ref": "#/$defs/CopyString" },
-            "seeMonth": { "$ref": "#/$defs/CopyString" },
-            "legendLess": { "$ref": "#/$defs/CopyString" },
-            "legendMore": { "$ref": "#/$defs/CopyString" },
-            "totalVisits": { "$ref": "#/$defs/CopyString" },
-            "scale": { "$ref": "#/$defs/CopyString" }
+            "header": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "seeMonth": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "legendLess": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "legendMore": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "totalVisits": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "scale": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "todayStats": {
@@ -491,9 +809,15 @@
           "additionalProperties": false,
           "required": ["visits", "timeOut", "distance"],
           "properties": {
-            "visits": { "$ref": "#/$defs/CopyString" },
-            "timeOut": { "$ref": "#/$defs/CopyString" },
-            "distance": { "$ref": "#/$defs/CopyString" }
+            "visits": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "timeOut": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "distance": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "weekChart": {
@@ -503,8 +827,12 @@
           "additionalProperties": false,
           "required": ["header", "totalVisits"],
           "properties": {
-            "header": { "$ref": "#/$defs/CopyString" },
-            "totalVisits": { "$ref": "#/$defs/CopyString" }
+            "header": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "totalVisits": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "nowAt": {
@@ -523,14 +851,30 @@
             "waiting"
           ],
           "properties": {
-            "atHome": { "$ref": "#/$defs/CopyString" },
-            "currentlyHere": { "$ref": "#/$defs/CopyString" },
-            "lastVisited": { "$ref": "#/$defs/CopyString" },
-            "lastKnown": { "$ref": "#/$defs/CopyString" },
-            "location": { "$ref": "#/$defs/CopyString" },
-            "homeFallback": { "$ref": "#/$defs/CopyString" },
-            "unknownLocation": { "$ref": "#/$defs/CopyString" },
-            "waiting": { "$ref": "#/$defs/CopyString" }
+            "atHome": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "currentlyHere": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "lastVisited": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "lastKnown": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "location": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "homeFallback": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "unknownLocation": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "waiting": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "merge": {
@@ -548,13 +892,27 @@
             "samplesMerged"
           ],
           "properties": {
-            "title": { "$ref": "#/$defs/CopyString" },
-            "subtitle": { "$ref": "#/$defs/CopyString" },
-            "combining": { "$ref": "#/$defs/CopyString" },
-            "keep": { "$ref": "#/$defs/CopyString" },
-            "absorb": { "$ref": "#/$defs/CopyString" },
-            "result": { "$ref": "#/$defs/CopyString" },
-            "samplesMerged": { "$ref": "#/$defs/CopyString" }
+            "title": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "subtitle": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "combining": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "keep": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "absorb": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "result": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "samplesMerged": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "ribbon": {
@@ -564,9 +922,15 @@
           "additionalProperties": false,
           "required": ["lastSeenPrefix", "near", "exploring"],
           "properties": {
-            "lastSeenPrefix": { "$ref": "#/$defs/CopyString" },
-            "near": { "$ref": "#/$defs/CopyString" },
-            "exploring": { "$ref": "#/$defs/CopyString" }
+            "lastSeenPrefix": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "near": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "exploring": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "visitDuration": {
@@ -576,7 +940,9 @@
           "additionalProperties": false,
           "required": ["inProgress"],
           "properties": {
-            "inProgress": { "$ref": "#/$defs/CopyString" }
+            "inProgress": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         }
       }
@@ -609,23 +975,57 @@
         "alerts"
       ],
       "properties": {
-        "navTitle": { "$ref": "#/$defs/CopyString" },
-        "pages": { "$ref": "#/$defs/CopyString" },
-        "sectionUpNext": { "$ref": "#/$defs/CopyString" },
-        "sectionPending": { "$ref": "#/$defs/CopyString" },
-        "sectionRecentlyFinished": { "$ref": "#/$defs/CopyString" },
-        "currentlyReading": { "$ref": "#/$defs/CopyString" },
-        "pageOf": { "$ref": "#/$defs/CopyString" },
-        "enriching": { "$ref": "#/$defs/CopyString" },
-        "tileHeader": { "$ref": "#/$defs/CopyString" },
-        "tileComplete": { "$ref": "#/$defs/CopyString" },
-        "tileBooks": { "$ref": "#/$defs/CopyString" },
-        "tileReading": { "$ref": "#/$defs/CopyString" },
-        "statusPending": { "$ref": "#/$defs/CopyString" },
-        "statusReading": { "$ref": "#/$defs/CopyString" },
-        "statusUpNext": { "$ref": "#/$defs/CopyString" },
-        "statusFinished": { "$ref": "#/$defs/CopyString" },
-        "finishedDate": { "$ref": "#/$defs/CopyString" },
+        "navTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "pages": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionUpNext": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionPending": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionRecentlyFinished": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "currentlyReading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "pageOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "enriching": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tileHeader": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tileComplete": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tileBooks": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tileReading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusPending": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusReading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusUpNext": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusFinished": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "finishedDate": {
+          "$ref": "#/$defs/CopyString"
+        },
         "addBook": {
           "type": "object",
           "title": "AppBookshelfAddBook",
@@ -633,11 +1033,21 @@
           "additionalProperties": false,
           "required": ["title", "searchPlaceholder", "emptyPrompt", "asin", "add"],
           "properties": {
-            "title": { "$ref": "#/$defs/CopyString" },
-            "searchPlaceholder": { "$ref": "#/$defs/CopyString" },
-            "emptyPrompt": { "$ref": "#/$defs/CopyString" },
-            "asin": { "$ref": "#/$defs/CopyString" },
-            "add": { "$ref": "#/$defs/CopyString" }
+            "title": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "searchPlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "emptyPrompt": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "asin": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "add": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "editBook": {
@@ -672,30 +1082,78 @@
             "fieldGenresPlaceholder"
           ],
           "properties": {
-            "title": { "$ref": "#/$defs/CopyString" },
-            "save": { "$ref": "#/$defs/CopyString" },
-            "delete": { "$ref": "#/$defs/CopyString" },
-            "notesPlaceholder": { "$ref": "#/$defs/CopyString" },
-            "descriptionPlaceholder": { "$ref": "#/$defs/CopyString" },
-            "page": { "$ref": "#/$defs/CopyString" },
-            "of": { "$ref": "#/$defs/CopyString" },
-            "sectionDetails": { "$ref": "#/$defs/CopyString" },
-            "sectionDescription": { "$ref": "#/$defs/CopyString" },
-            "sectionPublication": { "$ref": "#/$defs/CopyString" },
-            "sectionCategories": { "$ref": "#/$defs/CopyString" },
-            "sectionStatus": { "$ref": "#/$defs/CopyString" },
-            "sectionProgress": { "$ref": "#/$defs/CopyString" },
-            "sectionRating": { "$ref": "#/$defs/CopyString" },
-            "sectionNotes": { "$ref": "#/$defs/CopyString" },
-            "fieldSeries": { "$ref": "#/$defs/CopyString" },
-            "fieldSeriesPlaceholder": { "$ref": "#/$defs/CopyString" },
-            "fieldSeriesNum": { "$ref": "#/$defs/CopyString" },
-            "fieldSeriesTotal": { "$ref": "#/$defs/CopyString" },
-            "fieldDate": { "$ref": "#/$defs/CopyString" },
-            "fieldDatePlaceholder": { "$ref": "#/$defs/CopyString" },
-            "fieldYear": { "$ref": "#/$defs/CopyString" },
-            "fieldGenres": { "$ref": "#/$defs/CopyString" },
-            "fieldGenresPlaceholder": { "$ref": "#/$defs/CopyString" }
+            "title": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "save": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "delete": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "notesPlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "descriptionPlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "page": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "of": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionDetails": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionDescription": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionPublication": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionCategories": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionStatus": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionProgress": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionRating": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "sectionNotes": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldSeries": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldSeriesPlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldSeriesNum": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldSeriesTotal": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldDate": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldDatePlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldYear": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldGenres": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "fieldGenresPlaceholder": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         },
         "alerts": {
@@ -705,10 +1163,18 @@
           "additionalProperties": false,
           "required": ["failedToLoad", "failedToAddBook", "failedToUpdate", "failedToDelete"],
           "properties": {
-            "failedToLoad": { "$ref": "#/$defs/CopyString" },
-            "failedToAddBook": { "$ref": "#/$defs/CopyString" },
-            "failedToUpdate": { "$ref": "#/$defs/CopyString" },
-            "failedToDelete": { "$ref": "#/$defs/CopyString" }
+            "failedToLoad": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "failedToAddBook": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "failedToUpdate": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "failedToDelete": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         }
       }
@@ -733,18 +1199,42 @@
         "complicationDescription"
       ],
       "properties": {
-        "diagTitle": { "$ref": "#/$defs/CopyString" },
-        "diagA11yLabel": { "$ref": "#/$defs/CopyString" },
-        "diagA11yHint": { "$ref": "#/$defs/CopyString" },
-        "transferSent": { "$ref": "#/$defs/CopyString" },
-        "openIphone": { "$ref": "#/$defs/CopyString" },
-        "authorize": { "$ref": "#/$defs/CopyString" },
-        "sync": { "$ref": "#/$defs/CopyString" },
-        "syncFailed": { "$ref": "#/$defs/CopyString" },
-        "complicationNotSynced": { "$ref": "#/$defs/CopyString" },
-        "complicationSyncAgo": { "$ref": "#/$defs/CopyString" },
-        "complicationDisplayName": { "$ref": "#/$defs/CopyString" },
-        "complicationDescription": { "$ref": "#/$defs/CopyString" }
+        "diagTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "diagA11yLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "diagA11yHint": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "transferSent": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "openIphone": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "authorize": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sync": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "syncFailed": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "complicationNotSynced": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "complicationSyncAgo": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "complicationDisplayName": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "complicationDescription": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "sections": {
@@ -754,8 +1244,12 @@
       "additionalProperties": false,
       "required": ["body", "mind"],
       "properties": {
-        "body": { "$ref": "#/$defs/CopyString" },
-        "mind": { "$ref": "#/$defs/CopyString" }
+        "body": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "mind": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "page404": {
@@ -765,8 +1259,12 @@
       "additionalProperties": false,
       "required": ["title", "description"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "description": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "description": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     }
   },
@@ -775,7 +1273,7 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
       "properties": {
         "description": {
           "type": "string",
@@ -784,12 +1282,20 @@
         "usage": {
           "type": "array",
           "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "tone": {
+        "register": {
           "type": "string",
-          "description": "Intended voice/register (e.g. professional, playful, terse)."
+          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": ["human", "machine", "dual"],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
           "type": "string",
@@ -828,7 +1334,9 @@
           "type": "string",
           "description": "The string, authored in ICU MessageFormat 1 syntax."
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     },
     "CopyStringList": {
@@ -840,9 +1348,13 @@
         "value": {
           "type": "array",
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     }
   }

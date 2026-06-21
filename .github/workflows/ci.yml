@@ -71,6 +71,10 @@ jobs:
       # Grep gate: fail if a migrated copy value reappears hardcoded
       # in consumer source (DS web widgets + runtime + Swift widgets).
       - run: pnpm -F @lifegames/copy grep-gate
+      # Voice & mechanics gate: the register/audience enum is enforced by the
+      # build (Ajv); check-copy-voice.mjs adds banned terms, punctuation, and the
+      # human↔AI arbitration rule (no allusion in machine surfaces). See VOICE.md.
+      - run: pnpm -F @lifegames/copy voice
 
   fixtures:
     # @lifegames/fixtures: generate (deterministic raw + post-adapter fixtures) +

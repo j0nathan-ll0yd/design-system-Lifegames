@@ -47,22 +47,54 @@
         "timestampLive"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "bpm": { "$ref": "#/$defs/CopyString" },
-        "hrv": { "$ref": "#/$defs/CopyString" },
-        "hrvUnit": { "$ref": "#/$defs/CopyString" },
-        "rhr": { "$ref": "#/$defs/CopyString" },
-        "rhrUnit": { "$ref": "#/$defs/CopyString" },
-        "rr": { "$ref": "#/$defs/CopyString" },
-        "rrUnit": { "$ref": "#/$defs/CopyString" },
-        "temp": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "zoneBradycardia": { "$ref": "#/$defs/CopyString" },
-        "zoneResting": { "$ref": "#/$defs/CopyString" },
-        "zoneNormal": { "$ref": "#/$defs/CopyString" },
-        "zoneFatBurn": { "$ref": "#/$defs/CopyString" },
-        "zonePeak": { "$ref": "#/$defs/CopyString" },
-        "timestampLive": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bpm": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "hrv": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "hrvUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rhr": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rhrUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rr": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rrUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "temp": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "zoneBradycardia": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "zoneResting": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "zoneNormal": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "zoneFatBurn": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "zonePeak": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampLive": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "movement": {
@@ -86,20 +118,48 @@
         "timestampToday"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "steps": { "$ref": "#/$defs/CopyString" },
-        "distance": { "$ref": "#/$defs/CopyString" },
-        "distanceUnit": { "$ref": "#/$defs/CopyString" },
-        "flights": { "$ref": "#/$defs/CopyString" },
-        "calories": { "$ref": "#/$defs/CopyString" },
-        "caloriesShort": { "$ref": "#/$defs/CopyString" },
-        "exercise": { "$ref": "#/$defs/CopyString" },
-        "exerciseShort": { "$ref": "#/$defs/CopyString" },
-        "stand": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "daylightCaption": { "$ref": "#/$defs/CopyString" },
-        "daylightGoal": { "$ref": "#/$defs/CopyString" },
-        "timestampToday": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "steps": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "distance": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "distanceUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "flights": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "calories": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "caloriesShort": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "exercise": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "exerciseShort": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "stand": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "daylightCaption": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "daylightGoal": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampToday": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "workouts": {
@@ -119,16 +179,36 @@
         "timestampToday"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "recoveryDay": { "$ref": "#/$defs/CopyString" },
-        "none": { "$ref": "#/$defs/CopyString" },
-        "recoveryBody": { "$ref": "#/$defs/CopyString" },
-        "duration": { "$ref": "#/$defs/CopyString" },
-        "calories": { "$ref": "#/$defs/CopyString" },
-        "caloriesUnit": { "$ref": "#/$defs/CopyString" },
-        "distance": { "$ref": "#/$defs/CopyString" },
-        "distanceUnit": { "$ref": "#/$defs/CopyString" },
-        "timestampToday": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "recoveryDay": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "none": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "recoveryBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "duration": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "calories": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "caloriesUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "distance": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "distanceUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampToday": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "hydration": {
@@ -137,10 +217,18 @@
       "additionalProperties": false,
       "required": ["title", "water", "caffeine", "timestampToday"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "water": { "$ref": "#/$defs/CopyString" },
-        "caffeine": { "$ref": "#/$defs/CopyString" },
-        "timestampToday": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "water": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "caffeine": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampToday": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "nightSummary": {
@@ -159,15 +247,33 @@
         "timestampLastNight"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "score": { "$ref": "#/$defs/CopyString" },
-        "phaseDeep": { "$ref": "#/$defs/CopyString" },
-        "phaseRem": { "$ref": "#/$defs/CopyString" },
-        "phaseCore": { "$ref": "#/$defs/CopyString" },
-        "phaseAwake": { "$ref": "#/$defs/CopyString" },
-        "restorative": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "timestampLastNight": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "score": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "phaseDeep": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "phaseRem": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "phaseCore": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "phaseAwake": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "restorative": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampLastNight": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "exploration": {
@@ -176,11 +282,21 @@
       "additionalProperties": false,
       "required": ["title", "visits", "places", "cities", "states"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "visits": { "$ref": "#/$defs/CopyString" },
-        "places": { "$ref": "#/$defs/CopyString" },
-        "cities": { "$ref": "#/$defs/CopyString" },
-        "states": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "visits": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "places": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cities": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "states": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "topPlaces": {
@@ -189,8 +305,12 @@
       "additionalProperties": false,
       "required": ["title", "empty"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "readingFeed": {
@@ -199,9 +319,15 @@
       "additionalProperties": false,
       "required": ["title", "empty", "timestampRecent"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "timestampRecent": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampRecent": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "bookshelf": {
@@ -220,15 +346,33 @@
         "finishedDate"
       ],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "emptyTitle": { "$ref": "#/$defs/CopyString" },
-        "emptyBody": { "$ref": "#/$defs/CopyString" },
-        "statusReading": { "$ref": "#/$defs/CopyString" },
-        "statusUpNext": { "$ref": "#/$defs/CopyString" },
-        "statusFinished": { "$ref": "#/$defs/CopyString" },
-        "statusPending": { "$ref": "#/$defs/CopyString" },
-        "timestampLibrary": { "$ref": "#/$defs/CopyString" },
-        "finishedDate": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "emptyTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "emptyBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusReading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusUpNext": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusFinished": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "statusPending": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampLibrary": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "finishedDate": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "theatreReviews": {
@@ -237,8 +381,12 @@
       "additionalProperties": false,
       "required": ["title", "empty"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "bookModal": {
@@ -256,14 +404,30 @@
         "finishedDate"
       ],
       "properties": {
-        "notes": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "pages": { "$ref": "#/$defs/CopyString" },
-        "published": { "$ref": "#/$defs/CopyString" },
-        "status": { "$ref": "#/$defs/CopyString" },
-        "amazonCta": { "$ref": "#/$defs/CopyString" },
-        "progressSuffix": { "$ref": "#/$defs/CopyString" },
-        "finishedDate": { "$ref": "#/$defs/CopyString" }
+        "notes": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "pages": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "published": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "status": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "amazonCta": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "progressSuffix": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "finishedDate": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "devLog": {
@@ -272,9 +436,15 @@
       "additionalProperties": false,
       "required": ["title", "empty", "timestampLive"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "timestampLive": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampLive": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "starredRepos": {
@@ -283,9 +453,15 @@
       "additionalProperties": false,
       "required": ["title", "empty", "timestampRecent"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "empty": { "$ref": "#/$defs/CopyString" },
-        "timestampRecent": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "empty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampRecent": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "bio": {
@@ -294,9 +470,15 @@
       "additionalProperties": false,
       "required": ["title", "terminalTitle", "timestampBash"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "terminalTitle": { "$ref": "#/$defs/CopyString" },
-        "timestampBash": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "terminalTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampBash": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "systemStatus": {
@@ -305,10 +487,18 @@
       "additionalProperties": false,
       "required": ["title", "valueActive", "valueOffline", "timestampRealtime"],
       "properties": {
-        "title": { "$ref": "#/$defs/CopyString" },
-        "valueActive": { "$ref": "#/$defs/CopyString" },
-        "valueOffline": { "$ref": "#/$defs/CopyString" },
-        "timestampRealtime": { "$ref": "#/$defs/CopyString" }
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "valueActive": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "valueOffline": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "timestampRealtime": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     },
     "identityCard": {
@@ -317,11 +507,21 @@
       "additionalProperties": false,
       "required": ["github", "linkedin", "site", "mastodon", "bluesky"],
       "properties": {
-        "github": { "$ref": "#/$defs/CopyString" },
-        "linkedin": { "$ref": "#/$defs/CopyString" },
-        "site": { "$ref": "#/$defs/CopyString" },
-        "mastodon": { "$ref": "#/$defs/CopyString" },
-        "bluesky": { "$ref": "#/$defs/CopyString" }
+        "github": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkedin": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "site": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "mastodon": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "bluesky": {
+          "$ref": "#/$defs/CopyString"
+        }
       }
     }
   },
@@ -330,7 +530,7 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "tone", "owner", "lastReviewed"],
+      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
       "properties": {
         "description": {
           "type": "string",
@@ -339,12 +539,20 @@
         "usage": {
           "type": "array",
           "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1
         },
-        "tone": {
+        "register": {
           "type": "string",
-          "description": "Intended voice/register (e.g. professional, playful, terse)."
+          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": ["human", "machine", "dual"],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
           "type": "string",
@@ -383,7 +591,9 @@
           "type": "string",
           "description": "The string, authored in ICU MessageFormat 1 syntax."
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     },
     "CopyStringList": {
@@ -395,9 +605,13 @@
         "value": {
           "type": "array",
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "_meta": { "$ref": "#/$defs/CopyMeta" }
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
       }
     }
   }

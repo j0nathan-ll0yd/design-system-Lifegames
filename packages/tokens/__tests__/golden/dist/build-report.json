@@ -19,7 +19,7 @@
     },
     {
       "path": "DESIGN.md",
-      "bytes": 17727
+      "bytes": 18876
     },
     {
       "path": "shadcn.css",
@@ -34,6 +34,6 @@
       "bytes": 32627
     }
   ],
-  "totalBytes": 107773,
+  "totalBytes": 108922,
   "engine": "style-dictionary@5"
 }

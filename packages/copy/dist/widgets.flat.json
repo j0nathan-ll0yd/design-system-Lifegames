@@ -28,7 +28,7 @@
     "exercise": "Exercise",
     "exerciseShort": "Ex",
     "stand": "Stand",
-    "empty": "No movement yet today",
+    "empty": "No movement logged yet.",
     "daylightCaption": "{minutes} min in daylight today",
     "daylightGoal": "goal {minutes} min",
     "timestampToday": "today"
@@ -37,7 +37,7 @@
     "title": "Workouts",
     "recoveryDay": "Recovery Day",
     "none": "No workouts recorded",
-    "recoveryBody": "Your body recovers while you rest",
+    "recoveryBody": "Recovery happens at rest.",
     "duration": "Duration",
     "calories": "Calories",
     "caloriesUnit": "kcal",

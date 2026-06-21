@@ -1,0 +1,39 @@
+{
+  "$comment": "Machine-readable summary of packages/copy/VOICE.md. Hand-authored + committed (NOT a build output). Consumed by the repo-root style-dictionary.config.mjs to render the DESIGN.md '## Brand & Voice' section, and optionally by the docs Voice & Tone page. If this ever becomes generated, add a build:tokens -> @lifegames/copy#build edge in turbo.json. Source of truth for the prose is VOICE.md.",
+  "spine": "The voice of a human broadcasting himself in machine-readable form — on his own terms. Legible to the machine, never surrendered to it. A wry engineer at a terminal: precise, dry, quietly confident; shows the work, skips the hype; renders a life as a datastream while insisting the human is the irreducible source, not an obsolete algorithm.",
+  "adjectives": ["Precise", "Wry", "Defiantly human"],
+  "registers": [
+    {
+      "name": "atom",
+      "summary": "Fixed atoms — UI verbs, acronyms, units, canonical IDs. No latitude."
+    },
+    { "name": "label", "summary": "Short labels with mild editorial room." },
+    { "name": "factual", "summary": "Sentence-length facts, no personality." },
+    { "name": "expressive", "summary": "The personality register. Where the voice plays." },
+    {
+      "name": "machine",
+      "summary": "Structured text for LLM/JSON-LD ingestion. Factual-neutral, not brand voice."
+    },
+    { "name": "brand", "summary": "Identity-asserting, personality-claim strings." },
+    { "name": "consent", "summary": "App Store permission strings. Regulatory, fixed template." }
+  ],
+  "audiences": [
+    { "name": "human", "summary": "Rendered for a human (UI or SEO). Full brand voice." },
+    {
+      "name": "machine",
+      "summary": "LLM/JSON-LD/feed/robots. Factual-neutral; statistics over flavor."
+    },
+    { "name": "dual", "summary": "Human-readable and machine-parsed. Voice allowed, entity-clean." }
+  ],
+  "arbitrationRule": "Literal-first in machine surfaces; allusive only in human-narrative ones. Never sacrifice parseability for flavor in any string whose usage[] touches a machine surface (llms-txt, llms-full, JSON-LD, .txt, feed, <SYSTEM>).",
+  "principles": [
+    "One voice, many registers.",
+    "Legible to machines, irreducibly human.",
+    "Wit through precision, not volume.",
+    "Show the work, skip the hype.",
+    "Data is a mirror, not a coach.",
+    "Earn the aesthetic through ethos; dose the flavor.",
+    "Each string does one thing."
+  ],
+  "source": "packages/copy/VOICE.md"
+}
