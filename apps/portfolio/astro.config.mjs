@@ -1,6 +1,4 @@
 import { defineConfig } from 'astro/config';
-import { readFileSync, existsSync } from 'node:fs';
-import { join, relative } from 'node:path';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import AstroPWA from '@vite-pwa/astro';
@@ -13,33 +11,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // escaped for safe interpolation into a RegExp.
 const CLOUDFRONT_HOST = CLOUDFRONT_BASE.replace(/^https?:\/\//, '');
 const CLOUDFRONT_HOST_RE = CLOUDFRONT_HOST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-const fixtureMiddleware = {
-  name: 'fixture-middleware',
-  hooks: {
-    'astro:server:setup'({ server }) {
-      const fixtureSet = process.env.FIXTURE_SET;
-      if (fixtureSet) {
-        server.middlewares.use('/api/live', (req, res, next) => {
-          const filename = req.url?.replace(/^\//, '').replace(/\?.*$/, '') ?? '';
-          const dataType = filename.replace('.json', '');
-          const candidates = [
-            join(process.cwd(), 'test/fixtures/generated', dataType, `${fixtureSet}.json`),
-            join(process.cwd(), 'test/fixtures/generated', dataType, 'baseline.json'),
-          ];
-          const match = candidates.find((p) => existsSync(p));
-          if (match) {
-            console.log(`[fixtures] ${filename} → ${relative(process.cwd(), match)}`);
-            res.setHeader('Content-Type', 'application/json');
-            res.end(readFileSync(match, 'utf-8'));
-          } else {
-            next();
-          }
-        });
-      }
-    },
-  },
-};
 
 export default defineConfig({
   site: 'https://jonathanlloyd.me',
@@ -59,18 +30,8 @@ export default defineConfig({
         '@runtime': path.resolve(__dirname, '../../packages/web/src/runtime'),
       },
     },
-    server: {
-      proxy: {
-        '/api/live': {
-          target: CLOUDFRONT_BASE,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/live/, ''),
-        },
-      },
-    },
   },
   integrations: [
-    fixtureMiddleware,
     sitemap({
       filter: (page) => !page.includes('/showcase/'),
       lastmod: new Date(),

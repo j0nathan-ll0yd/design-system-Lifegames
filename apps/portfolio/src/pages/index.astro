@@ -1,12 +1,12 @@
 ---
-// Default showcase entry (`/`) — renders the baseline (`populated`) scenario.
-// All per-scenario variants are served from `/scenarios/<name>/` via the
-// getStaticPaths route in `src/pages/scenarios/[scenario].astro`. Both share the
-// `DashboardShowcase` component and the canonical `@lifegames/fixtures` data.
+// Showcase entry (`/`) — renders the representative (baseline) dashboard from the
+// canonical `@lifegames/fixtures` source. This is a demo surface only: full-page
+// visual regression lives on the web consumer and widget coverage lives in
+// Storybook, so the showcase carries no visual-test suite of its own.
 import DashboardShowcase from '../components/DashboardShowcase.astro';
-import { getScenarioData } from '../lib/scenario-data';
+import { getShowcaseData } from '../lib/showcase-data';
 
-const data = getScenarioData('populated');
+const data = getShowcaseData();
 ---
 
 <DashboardShowcase data={data} />

@@ -6,10 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "test:visual": "./scripts/run-in-docker.sh playwright.config.ts",
-    "test:visual:update": "./scripts/run-in-docker.sh playwright.config.ts --update-snapshots",
-    "test:visual:local": "npx playwright test"
+    "preview": "astro preview"
   },
   "dependencies": {
     "@lifegames/fixtures": "workspace:*",
