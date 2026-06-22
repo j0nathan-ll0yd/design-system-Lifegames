@@ -161,20 +161,20 @@ function workoutsOverride(
 // Books — set every book's status (all-reading / all-completed).
 function booksStatusOverride(status: 'reading' | 'finished'): Composer {
   return (d) => {
-    d.books.books = d.books.books.map((b) => ({
-      ...b,
-      status,
-      ...(status === 'finished'
-        ? { progress: 100, finishedAt: b.finishedAt ?? '2024-06-01T00:00:00Z' }
-        : { progress: b.progress > 0 && b.progress < 100 ? b.progress : 42 }),
-    }));
+    d.books.books = d.books.books.map((b) => {
+      if (status === 'finished') {
+        return { ...b, status, progress: 100, finishedAt: b.finishedAt ?? '2024-06-01T00:00:00Z' };
+      }
+      const p = b.progress ?? 0;
+      return { ...b, status, progress: p > 0 && p < 100 ? p : 42 };
+    });
   };
 }
 
 // Dev Activity Log — filter the activity feed to a single event family.
 function githubActivityFilter(predicate: (type: string) => boolean): Composer {
   return (d) => {
-    d.github.devActivity = d.github.devActivity.filter((e) => predicate(e.type));
+    d.github.devActivity = (d.github.devActivity ?? []).filter((e) => predicate(e.type));
   };
 }
 
