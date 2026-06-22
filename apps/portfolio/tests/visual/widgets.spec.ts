@@ -35,10 +35,9 @@ test.describe('Widgets - populated', () => {
     await expect(widget).toHaveScreenshot('widget-heart-rate.png', { stylePath });
   });
 
-  test('movement rings', async () => {
-    const widget = page.locator(WIDGET_SELECTORS.movementRings);
-    await expect(widget).toHaveScreenshot('widget-movement-rings.png', { stylePath });
-  });
+  // MovementRings is intentionally absent from the portfolio bento (HeartRate +
+  // Workouts in the left column, Hydration + NightSummary in the right). It is a
+  // web-only widget, so the showcase has no movement-rings card to capture.
 
   test('workouts', async () => {
     const widget = page.locator(WIDGET_SELECTORS.workouts);
@@ -153,11 +152,10 @@ test.describe('Widget variations - Bookshelf', () => {
     await expect(widget).toHaveScreenshot('books-all-completed.png', { stylePath });
   });
 
-  test('no covers', async ({ page }) => {
-    await setupPage(page, 'books-no-covers');
-    const widget = page.locator('#cardBooks');
-    await expect(widget).toHaveScreenshot('books-no-covers.png', { stylePath });
-  });
+  // `books-no-covers` was DROPPED in the static re-architecture: it depended on
+  // external Amazon cover URLs (unreachable under Playwright) and produced no
+  // deterministic signal distinct from the other books scenarios. See the
+  // coverage audit in tests/visual/fixtures.ts.
 });
 
 test.describe('Widget variations - Dev Activity Log', () => {

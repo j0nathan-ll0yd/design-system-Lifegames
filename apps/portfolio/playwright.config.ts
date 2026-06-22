@@ -13,12 +13,15 @@ export default defineConfig({
     ? [['github'], ['blob'], ['html', { open: 'never', outputFolder: 'playwright-report' }]]
     : [['html', { open: 'on-failure' }]],
 
+  // Static-showcase model: `pnpm build` bakes every scenario into its own
+  // pre-rendered page (`/` + `/scenarios/<name>/`) from @lifegames/fixtures.
+  // There is no runtime fixture middleware to configure — the suite navigates
+  // to the pre-built pages, so no per-scenario env is needed.
   webServer: {
     command: 'pnpm build && pnpm preview',
     url: 'http://localhost:4321/',
     timeout: 120_000,
     reuseExistingServer: !isCI,
-    env: { USE_FIXTURES: 'true' },
   },
 
   use: {

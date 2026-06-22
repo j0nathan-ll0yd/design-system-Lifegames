@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { setupPage, stylePath } from './helpers';
 
+// Full-page dashboard scenarios. Each renders a distinct pre-built static page
+// (populated→`/`, empty→`/scenarios/empty/`, complex→`/scenarios/complex/`).
 test.describe('Dashboard - populated', () => {
   test.beforeEach(async ({ page }) => {
     await setupPage(page, 'populated', { waitForScrollHeight: true });

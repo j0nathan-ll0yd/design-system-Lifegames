@@ -1,108 +1,115 @@
-import path from 'path';
+// Scenario → static-page-path map for the static showcase visual harness.
+//
+// ARCHITECTURE (re-architected: static build-time scenarios)
+// ----------------------------------------------------------
+// The portfolio is a STATIC Astro build with no runtime live-data fetch. Each
+// scenario is a distinct pre-rendered page, built from the canonical
+// `@lifegames/fixtures` source via `src/lib/scenario-data.ts`. The harness
+// navigates to the page; there is NO CloudFront/WebSocket route interception
+// (the previous runtime-driven model that copied the web app's harness, which
+// hung 88/144 tests waiting for hydration that never happens on a static site).
+//
+// Page layout:
+//   - `populated` → `/`            (default baseline showcase)
+//   - all others  → `/scenarios/<name>/`
+//
+// Scenario data composition lives in `src/lib/scenario-data.ts`. The lists below
+// MUST stay in sync with the `SCENARIOS` exported there (the route's
+// getStaticPaths source of truth).
 
-const GENERATED = path.join(import.meta.dirname, '..', '..', 'test', 'fixtures', 'generated');
+// --- Dashboard triad (whole-page scenarios) ---
+// populated→baseline, empty→zeroed-baseline, complex→full. The showcase keeps
+// all three; only the WEB consumer dropped `complex`.
+const DASHBOARD_SCENARIOS = ['populated', 'empty', 'complex'] as const;
 
-export type FixtureSet = Record<string, string>;
+// --- Widget variations ---
+//
+// COVERAGE AUDIT (kept vs dropped) — REQUIRED by the re-architecture brief.
+//
+// Widget variations override a single domain. In the OLD runtime model these
+// came from raw per-domain fixtures (health/bradycardia.json etc.) injected via
+// CloudFront interception. On a STATIC build there is nothing to intercept, and
+// the rich SSR display shapes (DashboardHealth/DashboardBooks/DashboardGithub)
+// the widgets consume CANNOT be reconstructed from the raw LP-export fixtures —
+// they carry ranges/goals/solar/derived/sampleWorkouts/hydration that no runtime
+// adapter produces (see packages/fixtures/src/post-adapter/health.ts). The
+// `post-adapter` family only ships the {baseline,empty,full} triad per domain,
+// NOT per-widget variations, so the entangled "run a raw variation through its
+// post-adapter" path the brief floated does not exist as a function.
+//
+// RESOLUTION: each widget variation is composed in scenario-data.ts as a targeted
+// override of the post-adapter `baseline` DISPLAY shape (clone baseline, mutate
+// only the field the variation exercises). This is clean and deterministic.
+//
+// KEPT (composed via display-shape override):
+//   HeartRate:    hr-bradycardia, hr-peak, hr-resting        (override heartRate/restingHeartRate/hrvSDNN)
+//   Hydration:    hydration-zero, hydration-max              (override health.hydration.waterOz/caffeineMg)
+//   NightSummary: sleep-deep-dominant, sleep-rem-dominant, sleep-short
+//                                                            (override sleepScore/sleepPhaseFormatted/derived pcts)
+//   Bookshelf:    books-all-reading, books-all-completed     (override every book status)
+//   DevActivityLog: github-commits-only, github-prs-only     (filter devActivity by event type)
+//   Workouts:     workouts-multi, workouts-barrys            (override health.workouts list)
+//   TheatreReviews: theatre-all-grades, theatre-no-images    (native raw variation via runtime updater)
+//   Overlays:     focus-work, focus-dnd                      (native raw FocusExport via runtime updater)
+//
+// DROPPED (vs the OLD runtime fixture set) — with reasons:
+//   books-no-covers — DROPPED. The OLD variation relied on book asins whose
+//     covers fall back to external Amazon image URLs (unreachable under
+//     Playwright). On a static build with no network, this renders identically
+//     to any other books scenario except for broken-image placeholders that are
+//     not a meaningful, intentional widget state to baseline. The genuine
+//     no-cover rendering path is exercised indirectly by every books scenario
+//     (the baseline post-adapter book asins already lack local webp and fall
+//     back), so a dedicated `books-no-covers` adds no deterministic signal.
+//   hr-fatburn / hr-normal / hrv-{green,amber,red} — NOT PORTED. The OLD set
+//     only screenshotted bradycardia/peak/resting for HeartRate; the additional
+//     raw HR/HRV variations were never in the portfolio widgets.spec.ts, so
+//     there is no coverage regression.
+//   sleep variations beyond the three above, github beyond commits/prs, workouts
+//     beyond multi/barrys, theatre beyond all-grades/no-images — match the OLD
+//     portfolio widgets.spec.ts exactly; nothing dropped relative to it.
+const WIDGET_VARIATION_SCENARIOS = [
+  'hr-bradycardia',
+  'hr-peak',
+  'hr-resting',
+  'hydration-zero',
+  'hydration-max',
+  'sleep-deep-dominant',
+  'sleep-rem-dominant',
+  'sleep-short',
+  'books-all-reading',
+  'books-all-completed',
+  'github-commits-only',
+  'github-prs-only',
+  'workouts-multi',
+  'workouts-barrys',
+  'theatre-all-grades',
+  'theatre-no-images',
+] as const;
 
-function fixture(dir: string, file: string): string {
-  return path.join(GENERATED, dir, `${file}.json`);
-}
+// --- Overlay scenarios (focus / DnD) ---
+const OVERLAY_SCENARIOS = ['focus-work', 'focus-dnd'] as const;
 
-const BASELINE: FixtureSet = {
-  '/health.json': fixture('health', 'baseline'),
-  '/sleep.json': fixture('sleep', 'baseline'),
-  '/workouts.json': fixture('workouts', 'baseline'),
-  '/books.json': fixture('books', 'baseline'),
-  '/github-starred-repos.json': fixture('github-starred-repos', 'baseline'),
-  '/github-events.json': fixture('github-events', 'baseline'),
-  '/articles.json': fixture('articles', 'baseline'),
-  '/location.json': fixture('location', 'baseline'),
-  '/focus.json': fixture('focus', 'no-focus'),
-  '/theatre-reviews.json': fixture('theatre-reviews', 'baseline'),
-};
-
-const DASHBOARD_SCENARIOS: Record<string, FixtureSet> = {
-  populated: { ...BASELINE },
-
-  empty: {
-    ...BASELINE,
-    '/health.json': fixture('health', 'missing-optional'),
-    '/sleep.json': fixture('sleep', 'empty'),
-    '/workouts.json': fixture('workouts', 'empty'),
-    '/books.json': fixture('books', 'empty'),
-    '/github-events.json': fixture('github-events', 'empty'),
-    '/articles.json': fixture('articles', 'empty'),
-    '/location.json': fixture('location', 'empty-top-places'),
-    '/theatre-reviews.json': fixture('theatre-reviews', 'empty'),
-  },
-
-  complex: {
-    ...BASELINE,
-    '/health.json': fixture('health', 'max-hydration'),
-    '/sleep.json': fixture('sleep', 'long-sleep'),
-    '/workouts.json': fixture('workouts', 'multi-workout'),
-    '/books.json': fixture('books', 'six-books'),
-    '/github-events.json': fixture('github-events', 'over-ten'),
-    '/articles.json': fixture('articles', 'over-thirty'),
-    '/location.json': fixture('location', 'full90-days'),
-    '/theatre-reviews.json': fixture('theatre-reviews', 'max-reviews'),
-  },
-};
-
-const WIDGET_VARIATION_SCENARIOS: Record<string, FixtureSet> = {
-  'hr-bradycardia': { ...BASELINE, '/health.json': fixture('health', 'bradycardia') },
-  'hr-peak': { ...BASELINE, '/health.json': fixture('health', 'peak') },
-  'hr-resting': { ...BASELINE, '/health.json': fixture('health', 'resting') },
-
-  'hydration-zero': { ...BASELINE, '/health.json': fixture('health', 'zero-hydration') },
-  'hydration-max': { ...BASELINE, '/health.json': fixture('health', 'max-hydration') },
-
-  'sleep-deep-dominant': { ...BASELINE, '/sleep.json': fixture('sleep', 'deep-dominant') },
-  'sleep-rem-dominant': { ...BASELINE, '/sleep.json': fixture('sleep', 'rem-dominant') },
-  'sleep-short': { ...BASELINE, '/sleep.json': fixture('sleep', 'short-sleep') },
-
-  'books-all-reading': { ...BASELINE, '/books.json': fixture('books', 'all-reading') },
-  'books-all-completed': { ...BASELINE, '/books.json': fixture('books', 'all-completed') },
-  'books-no-covers': { ...BASELINE, '/books.json': fixture('books', 'no-covers') },
-
-  'github-commits-only': {
-    ...BASELINE,
-    '/github-events.json': fixture('github-events', 'commits-only'),
-  },
-  'github-prs-only': { ...BASELINE, '/github-events.json': fixture('github-events', 'prs-only') },
-
-  'workouts-multi': { ...BASELINE, '/workouts.json': fixture('workouts', 'multi-workout') },
-  'workouts-barrys': { ...BASELINE, '/workouts.json': fixture('workouts', 'barrys-bootcamp') },
-
-  'theatre-all-grades': {
-    ...BASELINE,
-    '/theatre-reviews.json': fixture('theatre-reviews', 'all-grades'),
-  },
-  'theatre-no-images': {
-    ...BASELINE,
-    '/theatre-reviews.json': fixture('theatre-reviews', 'no-images'),
-  },
-
-  'focus-work': { ...BASELINE, '/focus.json': fixture('focus', 'baseline') },
-  'focus-dnd': { ...BASELINE, '/focus.json': fixture('focus', 'dnd') },
-};
-
+export type DashboardScenario = (typeof DASHBOARD_SCENARIOS)[number];
 export type ScenarioName =
-  | keyof typeof DASHBOARD_SCENARIOS
-  | keyof typeof WIDGET_VARIATION_SCENARIOS;
+  | (typeof DASHBOARD_SCENARIOS)[number]
+  | (typeof WIDGET_VARIATION_SCENARIOS)[number]
+  | (typeof OVERLAY_SCENARIOS)[number];
 
-export function getScenarioFixtures(scenario: ScenarioName): FixtureSet {
-  if (scenario in DASHBOARD_SCENARIOS) {
-    return DASHBOARD_SCENARIOS[scenario];
-  }
-  if (scenario in WIDGET_VARIATION_SCENARIOS) {
-    return WIDGET_VARIATION_SCENARIOS[scenario];
-  }
-  throw new Error(`Unknown scenario: ${scenario}`);
-}
+/** Every scenario the harness can navigate to. */
+export const ALL_SCENARIOS: ScenarioName[] = [
+  ...DASHBOARD_SCENARIOS,
+  ...WIDGET_VARIATION_SCENARIOS,
+  ...OVERLAY_SCENARIOS,
+];
 
-export function scenarioHasWorkouts(scenario: ScenarioName): boolean {
-  const fixtures = getScenarioFixtures(scenario);
-  const workoutsPath = fixtures['/workouts.json'];
-  return !workoutsPath.includes('/empty.json');
+/**
+ * Resolve a scenario name to its static page path.
+ * `populated` is the default showcase at `/`; everything else is a
+ * getStaticPaths-generated page under `/scenarios/<name>`. NOTE: the Astro
+ * config sets `trailingSlash: 'never'`, so scenario URLs must NOT carry a
+ * trailing slash (a trailing slash 404s under `astro preview`).
+ */
+export function scenarioPath(scenario: ScenarioName): string {
+  return scenario === 'populated' ? '/' : `/scenarios/${scenario}`;
 }
