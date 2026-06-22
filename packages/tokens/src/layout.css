@@ -164,6 +164,36 @@
       box-shadow: 0 0 6px rgba(6, 214, 160, 0.3);
     }
 
+    /* ===== BODY BENTO WRAPPERS =====
+       The body cards are authored into two `.body-bento-col` wrappers (so the
+       tablet bento can lay them out as two independent masonry columns — see the
+       768–1100 breakpoint). Everywhere else the wrappers are transparent
+       (`display: contents`) so the cards stack directly in the single-column
+       body layout (desktop left column + mobile). `order` pins the canonical
+       single-column sequence (HeartRate → Movement → Workouts → Hydration →
+       NightSummary) independent of which bento column each card is authored in,
+       so the non-tablet layouts render identically to a flat card list. */
+    .body-bento,
+    .body-bento-col {
+      display: contents;
+    }
+
+    .triptych-column-body #cardHR {
+      order: 1;
+    }
+    .triptych-column-body #cardMovement {
+      order: 2;
+    }
+    .triptych-column-body #cardWorkouts {
+      order: 3;
+    }
+    .triptych-column-body #cardHydration {
+      order: 4;
+    }
+    .triptych-column-body #cardSleep {
+      order: 5;
+    }
+
     /* ===== COLUMN HEADER ===== */
     .column-header {
       font-size: var(--font-size-xs);
@@ -409,28 +439,28 @@
         gap: var(--space-12);
       }
 
-      /* --- Body column: 2-col Bento sub-grid --- */
-      .triptych-column-body {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+      /* --- Body column: 2-col bento (independent masonry columns) ---
+         Each bento column is its own vertical flex stack, so a tall card in one
+         column (e.g. Workouts at full data, 6 sub-workouts) does NOT stretch a
+         short card in the other column — the next card simply slides up beneath
+         it. This replaces a row-aligned grid, whose shared rows forced the
+         cross-column stretch (a short Hydration ballooned to match a tall
+         Workouts row, floating its fixed-size vessels in an oversized card).
+         The `.body-bento*` wrappers are `display: contents` everywhere else (see
+         the base rule), so only this breakpoint becomes two columns; `order`
+         keeps the single-column sequence intact at the other breakpoints. */
+      .body-bento {
+        display: flex;
         gap: var(--space-12);
+        align-items: flex-start;
       }
 
-      /* Column header spans full width */
-      .triptych-column-body .column-header {
-        grid-column: 1 / -1;
-      }
-
-      /* nth-child(3) = Workouts — positional; update if Body column order changes */
-      /* Workouts (child 3: h2=1, HeartRate=2, Workouts=3)
-     gets full width because sub-cards need horizontal room */
-      .triptych-column-body .tri-card:nth-child(3) {
-        grid-column: 1 / -1;
-      }
-
-      /* Orphan handling: last card spanning odd position gets full width */
-      .triptych-column-body .tri-card:last-child:nth-child(even) {
-        grid-column: 1 / -1;
+      .body-bento-col {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-12);
+        flex: 1 1 0;
+        min-width: 0;
       }
 
       /* Mind column: full-width stacked (flex column) */
