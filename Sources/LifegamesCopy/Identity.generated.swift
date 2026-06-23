@@ -21,6 +21,10 @@ public struct Identity: Codable, Sendable {
     public let humansTxt: HumansTxt
     /// Identity facts and biographical voices for Jonathan Lloyd.
     public let person: Person
+    /// Privacy policy page copy — plain-English sections covering who operates the site, what
+    /// data is displayed, what is collected from visitors, analytics, user rights, and change
+    /// notifications.
+    public let privacy: Privacy
     /// SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in
     /// consumers.
     public let seo: SEO
@@ -29,14 +33,15 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case feed, humansTxt, person, seo, site
+        case feed, humansTxt, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, feed: Feed, humansTxt: HumansTxt, person: Person, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
         self.feed = feed
         self.humansTxt = humansTxt
         self.person = person
+        self.privacy = privacy
         self.seo = seo
         self.site = site
     }
@@ -65,6 +70,7 @@ public extension Identity {
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
         person: Person? = nil,
+        privacy: Privacy? = nil,
         seo: SEO? = nil,
         site: Site? = nil
     ) -> Identity {
@@ -73,6 +79,7 @@ public extension Identity {
             feed: feed ?? self.feed,
             humansTxt: humansTxt ?? self.humansTxt,
             person: person ?? self.person,
+            privacy: privacy ?? self.privacy,
             seo: seo ?? self.seo,
             site: site ?? self.site
         )
@@ -398,6 +405,75 @@ public extension Person {
             skills: skills ?? self.skills,
             socialBio: socialBio ?? self.socialBio,
             yearsExperience: yearsExperience ?? self.yearsExperience
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Privacy policy page copy — plain-English sections covering who operates the site, what
+/// data is displayed, what is collected from visitors, analytics, user rights, and change
+/// notifications.
+// MARK: - Privacy
+public struct Privacy: Codable, Sendable {
+    public let analytics, changes, dataCollected, dataDisplayed: String
+    public let lastUpdated, rights, title, who: String
+
+    public init(analytics: String, changes: String, dataCollected: String, dataDisplayed: String, lastUpdated: String, rights: String, title: String, who: String) {
+        self.analytics = analytics
+        self.changes = changes
+        self.dataCollected = dataCollected
+        self.dataDisplayed = dataDisplayed
+        self.lastUpdated = lastUpdated
+        self.rights = rights
+        self.title = title
+        self.who = who
+    }
+}
+
+// MARK: Privacy convenience initializers and mutators
+
+public extension Privacy {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Privacy.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        analytics: String? = nil,
+        changes: String? = nil,
+        dataCollected: String? = nil,
+        dataDisplayed: String? = nil,
+        lastUpdated: String? = nil,
+        rights: String? = nil,
+        title: String? = nil,
+        who: String? = nil
+    ) -> Privacy {
+        return Privacy(
+            analytics: analytics ?? self.analytics,
+            changes: changes ?? self.changes,
+            dataCollected: dataCollected ?? self.dataCollected,
+            dataDisplayed: dataDisplayed ?? self.dataDisplayed,
+            lastUpdated: lastUpdated ?? self.lastUpdated,
+            rights: rights ?? self.rights,
+            title: title ?? self.title,
+            who: who ?? self.who
         )
     }
 

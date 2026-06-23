@@ -86,6 +86,21 @@ export const identitySchema = z
       .describe(
         'RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain section labels.',
       ),
+    privacy: z
+      .object({
+        title: z.string(),
+        lastUpdated: z.string(),
+        who: z.string(),
+        dataDisplayed: z.string(),
+        dataCollected: z.string(),
+        analytics: z.string(),
+        rights: z.string(),
+        changes: z.string(),
+      })
+      .strict()
+      .describe(
+        'Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications.',
+      ),
   })
   .strict()
   .describe(
