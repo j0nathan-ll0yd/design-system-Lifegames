@@ -49,21 +49,28 @@ import { esc } from './html-utils';
 export { esc };
 
 export function updateHeartRate(data: AdaptedHealth): void {
-  const hr = Math.round(data.quantities.heartRate.value);
-  const hrv = Math.round(data.quantities.hrvSDNN.value);
+  // Guard the quantity access: on an empty dashboard `quantities` is `{}`, so
+  // heartRate/hrvSDNN are absent. Unguarded `.value` here would throw and abort
+  // the whole health update chain (movement + hydration never run, leaving their
+  // SSR baseline). Absent data renders the no-data dash, matching the footer.
+  const hrRaw = data.quantities.heartRate?.value;
+  const hrvRaw = data.quantities.hrvSDNN?.value;
+  const hr = typeof hrRaw === 'number' ? Math.round(hrRaw) : 0;
+  const hrv = typeof hrvRaw === 'number' ? Math.round(hrvRaw) : 0;
+  const hasHr = hr > 0;
   const zone = classifyHeartRate(hr);
   const hrvStyle = classifyHRV(hrv);
 
   const bpm = document.getElementById('pulseBpm');
   if (bpm) {
-    bpm.textContent = String(hr);
+    bpm.textContent = hasHr ? String(hr) : '—';
     bpm.style.color = zone.bpmColor;
     bpm.style.textShadow = zone.bpmShadow;
   }
 
   const badge = document.getElementById('hrZoneBadge');
   if (badge) {
-    badge.textContent = zone.zone;
+    badge.textContent = hasHr ? zone.zone : '—';
     badge.style.color = zone.badgeColor;
     badge.style.background = zone.badgeBg;
     badge.style.border = '1px solid ' + zone.badgeBorder;
@@ -71,7 +78,7 @@ export function updateHeartRate(data: AdaptedHealth): void {
 
   const hrvEl = document.getElementById('hrHrvValue');
   if (hrvEl) {
-    hrvEl.textContent = String(hrv);
+    hrvEl.textContent = typeof hrvRaw === 'number' ? String(hrv) : '—';
     hrvEl.style.color = hrvStyle.color;
     hrvEl.style.textShadow = hrvStyle.shadow;
   }

@@ -6,11 +6,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "test:visual": "npx playwright test",
-    "test:visual:update": "npx playwright test --update-snapshots"
+    "preview": "astro preview"
   },
   "dependencies": {
+    "@lifegames/fixtures": "workspace:*",
     "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
     "@lifegames/tokens": "workspace:*",
     "@lifegames/web": "workspace:*",

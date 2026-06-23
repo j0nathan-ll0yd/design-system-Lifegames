@@ -1,4 +1,9 @@
 node_modules/
+# pnpm content-addressable store. The visual-regression Docker harness
+# (apps/portfolio/scripts/run-in-docker.sh) pins the store INSIDE the container,
+# but ignore it at the repo root as a safety net so a stray store is never
+# committed.
+.pnpm-store/
 dist/
 # Exception: golden-file test fixtures intentionally snapshot dist outputs and
 # must be committed so the byte-equality spec is reproducible from a fresh clone.
@@ -24,6 +29,7 @@ build/
 # Playwright artifacts
 playwright-report/
 test-results/
+blob-report/
 
 # Vitest coverage output
 coverage/
