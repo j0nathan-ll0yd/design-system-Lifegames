@@ -10,6 +10,7 @@
 import { widgets, a11y } from '@lifegames/copy';
 import { esc } from './html-utils';
 import { formatFinishedDate } from './updaters';
+import { withViewTransition } from './view-transition';
 
 interface BookData {
   asin?: string;
@@ -139,36 +140,67 @@ export function initBookModal(): void {
   dwg._bookModalInit = true;
 
   let triggerElement: HTMLElement | null = null;
+  // Tracks the view-transition-name set on #bookModal for the current open
+  // book so backdrop-click and Escape can drive the reverse (close) transition.
+  let currentVtName = '';
 
   function openModal(b: BookData): void {
-    modal!.innerHTML = renderModalHtml(b);
+    // Derive a stable transition name from the book's ASIN so that concurrent
+    // books do not share the same view-transition-name (duplicate names cause
+    // the browser to silently skip the transition). The name is scoped to the
+    // inner container (bookModal), not the <dialog> element itself — top-layer
+    // elements cannot carry view-transition-name reliably across browsers.
+    // We also ensure the name is unset before the update and set inside it,
+    // so the browser captures old/new states correctly.
+    const vtName = b.asin ? 'book-modal-' + b.asin : 'book-modal-content';
 
-    // Wire image-cover fallback via external listener (CSP-safe; replaces
-    // inline onerror — D3). The cover element carries data-fallback when the
-    // computed Amazon URL differs from the stored custom cover.
-    const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover');
-    if (cover && cover.dataset.fallback) {
-      cover.addEventListener('error', function onErr() {
-        cover.src = cover.dataset.fallback!;
-        cover.removeEventListener('error', onErr);
-      });
-    }
+    withViewTransition(() => {
+      modal!.style.viewTransitionName = '';
+      modal!.innerHTML = renderModalHtml(b);
 
-    // Open the dialog and fire analytics only on an ACTUAL open — never on a
-    // content-swap while already open (which would double-count book_open).
-    // The guard also prevents showModal() throwing InvalidStateError when open.
-    if (!dialog!.open) {
-      if (typeof window.sa_event === 'function') {
-        window.sa_event('book_open', { title: b.title });
+      // Wire image-cover fallback via external listener (CSP-safe; replaces
+      // inline onerror — D3). The cover element carries data-fallback when the
+      // computed Amazon URL differs from the stored custom cover.
+      const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover');
+      if (cover && cover.dataset.fallback) {
+        cover.addEventListener('error', function onErr() {
+          cover.src = cover.dataset.fallback!;
+          cover.removeEventListener('error', onErr);
+        });
       }
-      dialog!.showModal();
-    }
 
-    const closeBtn = document.getElementById('bookModalClose');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => dialog!.close());
-      closeBtn.focus();
-    }
+      // Open the dialog and fire analytics only on an ACTUAL open — never on a
+      // content-swap while already open (which would double-count book_open).
+      // The guard also prevents showModal() throwing InvalidStateError when open.
+      if (!dialog!.open) {
+        if (typeof window.sa_event === 'function') {
+          window.sa_event('book_open', { title: b.title });
+        }
+        modal!.style.viewTransitionName = vtName;
+        currentVtName = vtName;
+        dialog!.showModal();
+      }
+
+      const closeBtn = document.getElementById('bookModalClose');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          closeWithTransition();
+        });
+        closeBtn.focus();
+      }
+    });
+  }
+
+  function closeWithTransition(): void {
+    const vtName = currentVtName;
+    withViewTransition(() => {
+      if (vtName) modal!.style.viewTransitionName = vtName;
+      dialog!.close();
+      // Clear the name after close so the element does not retain a
+      // view-transition-name while hidden (would affect subsequent opens).
+      modal!.style.viewTransitionName = '';
+      currentVtName = '';
+    });
   }
 
   // Single unified close handler — covers button click, backdrop click, and
@@ -194,13 +226,22 @@ export function initBookModal(): void {
     trigger.addEventListener('pointerdown', restoreRing, { once: true });
   });
 
+  // Intercept Escape (cancel event) to drive the reverse close transition
+  // before the browser natively closes the dialog. preventDefault() suppresses
+  // the native close; closeWithTransition() calls dialog.close() inside the
+  // transition callback so the UA still processes the close correctly.
+  dialog.addEventListener('cancel', (e: Event) => {
+    e.preventDefault();
+    closeWithTransition();
+  });
+
   // Backdrop-click-to-close. Using getBoundingClientRect() because
   // e.target === dialog is unreliable (::backdrop clicks also target the
   // dialog element). Any click outside the dialog box bounds closes it.
   dialog.addEventListener('click', (e: MouseEvent) => {
     const r = dialog.getBoundingClientRect();
     if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
-      dialog.close();
+      closeWithTransition();
     }
   });
 
