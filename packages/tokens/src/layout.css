@@ -463,6 +463,25 @@
         min-width: 0;
       }
 
+      /* Empty dashboard rebalance. The Workouts card hides itself when there are
+         no workouts (rest day), which in the two-column bento would leave the
+         left column holding a single card and a large gap. When Workouts is
+         hidden, drop the fixed columns and flow the remaining body cards into an
+         even 2-up grid so both columns fill cleanly. Detected via the hidden
+         card's inline `display:none`; `order` (base rule) keeps the sequence, so
+         the four visible cards land HeartRate | Movement / Hydration | NightSummary.
+         Populated/full keep the flex columns above (Workouts is visible there). */
+      .triptych-column-body:has(#cardWorkouts[style*='none']) .body-bento {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-12);
+        align-items: start;
+      }
+
+      .triptych-column-body:has(#cardWorkouts[style*='none']) .body-bento-col {
+        display: contents;
+      }
+
       /* Mind column: full-width stacked (flex column) */
       .triptych-column-mind {
         display: flex;
