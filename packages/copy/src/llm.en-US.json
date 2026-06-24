@@ -1538,5 +1538,205 @@
         "lastReviewed": "2026-06-12"
       }
     }
+  },
+  "agentDiscovery": {
+    "agentCardDescription": {
+      "value": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, theatre reviews, and location data as structured JSON via CloudFront.",
+      "_meta": {
+        "description": "Top-level description field in the A2A agent-card (.well-known/agent-card.json). Summarises the agent interface in one sentence for agent-to-agent discovery.",
+        "usage": [
+          "web:public/.well-known/agent-card.json (description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "agentCardSkillName": {
+      "value": "Personal Profile",
+      "_meta": {
+        "description": "Display name for the personal-profile skill declared in the A2A agent-card.",
+        "usage": [
+          "web:public/.well-known/agent-card.json (skills[0].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "agentCardSkillDescription": {
+      "value": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, GitHub contributions, and location aggregates. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
+      "_meta": {
+        "description": "Description of the personal-profile skill in the A2A agent-card. Tells consuming agents what the skill provides and when to use it.",
+        "usage": [
+          "web:public/.well-known/agent-card.json (skills[0].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "agentCardSkillExamples": {
+      "value": [
+        "What is Jonathan working on right now?",
+        "What books is Jonathan currently reading?",
+        "What is Jonathan's recent GitHub activity?",
+        "What are Jonathan's current health metrics?"
+      ],
+      "_meta": {
+        "description": "Representative example queries for the personal-profile skill in the A2A agent-card. Four questions that illustrate the skill's scope.",
+        "usage": [
+          "web:public/.well-known/agent-card.json (skills[0].examples)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogMcpName": {
+      "value": "Human Datastream MCP Server",
+      "_meta": {
+        "description": "Display name for the MCP-server entry in the AI catalog (.well-known/ai-catalog.json).",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[0].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogMcpDescription": {
+      "value": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, theatre reviews, and location aggregates.",
+      "_meta": {
+        "description": "Description for the MCP-server catalog entry. Tells AI crawlers what data the MCP server exposes.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[0].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogMcpQueries": {
+      "value": [
+        "What is Jonathan Lloyd's current heart rate?",
+        "What has Jonathan been reading lately?",
+        "Show me Jonathan's GitHub contributions this week."
+      ],
+      "_meta": {
+        "description": "Representative queries for the MCP-server catalog entry. Three questions illustrating what the MCP server can answer.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[0].representativeQueries)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogSkillsName": {
+      "value": "Agent Skills Index",
+      "_meta": {
+        "description": "Display name for the agent-skills entry in the AI catalog.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[1].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogSkillsDescription": {
+      "value": "Agent skills discovery index. Includes a portfolio-expert skill with deep technical context about Jonathan Lloyd's engineering background, live data sources, and architectural decisions.",
+      "_meta": {
+        "description": "Description for the agent-skills catalog entry. Explains the skills index content to AI crawlers.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[1].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogSkillsQueries": {
+      "value": [
+        "Tell me about Jonathan Lloyd's technical background.",
+        "What technology stack does Jonathan use?",
+        "Summarise Jonathan Lloyd's professional experience."
+      ],
+      "_meta": {
+        "description": "Representative queries for the agent-skills catalog entry.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[1].representativeQueries)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogA2aName": {
+      "value": "Human Datastream Agent Card",
+      "_meta": {
+        "description": "Display name for the A2A agent-card entry in the AI catalog.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[2].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogA2aDescription": {
+      "value": "A2A agent card for the Human Datastream interface. Declares agent capabilities and the personal-profile skill for agent-to-agent discovery.",
+      "_meta": {
+        "description": "Description for the A2A agent-card catalog entry.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[2].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "aiCatalogA2aQueries": {
+      "value": [
+        "What can the Human Datastream agent do?",
+        "Is there an agent interface for jonathanlloyd.me?"
+      ],
+      "_meta": {
+        "description": "Representative queries for the A2A agent-card catalog entry.",
+        "usage": [
+          "web:public/.well-known/ai-catalog.json (entries[2].representativeQueries)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    }
   }
 }

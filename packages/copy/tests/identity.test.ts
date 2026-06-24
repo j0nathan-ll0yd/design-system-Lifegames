@@ -78,8 +78,8 @@ const NAMESPACES: NamespaceFixture[] = [
   { name: 'permissions', expectedLeaves: 6 },
   // errors: validation 2 + client 2.
   { name: 'errors', expectedLeaves: 4 },
-  // llm: txt 33 + full 103.
-  { name: 'llm', expectedLeaves: 139 },
+  // llm: txt 33 + full 103 + dashboard 3 + agentDiscovery 13.
+  { name: 'llm', expectedLeaves: 152 },
 ];
 
 for (const ns of NAMESPACES) {
