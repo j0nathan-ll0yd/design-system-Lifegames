@@ -1539,6 +1539,447 @@
       }
     }
   },
+  "mcp": {
+    "serverDescription": {
+      "value": "Read-only data interface for Jonathan Lloyd's Human Datastream portfolio. Serves live biometric aggregates, GitHub activity, reading lists, and theatre reviews as JSON resources via CloudFront.",
+      "_meta": {
+        "description": "Top-level description field in the MCP server-card (.well-known/mcp/server-card.json). One sentence summarising what the server exposes.",
+        "usage": [
+          "web:public/.well-known/mcp/server-card.json (description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "agentSkillDescription": {
+      "value": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live biometric data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
+      "_meta": {
+        "description": "Description of the portfolio-expert skill in the agent-skills index (.well-known/agent-skills/index.json). Tells consuming agents when and why to use this skill.",
+        "usage": [
+          "web:public/.well-known/agent-skills/index.json (skills[0].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "toolGetProfile": {
+      "value": "Returns professional profile: name, title, location, experience, expertise, and social links for Jonathan Lloyd.",
+      "_meta": {
+        "description": "Description of the get_profile WebMCP tool exposed via navigator.modelContext. Tells MCP-aware browsers what the tool returns.",
+        "usage": [
+          "web:public/js/webmcp.js (tools[0].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "toolGetDataSources": {
+      "value": "Returns a list of all live JSON data endpoints on CloudFront with descriptions. Fetch these URLs for real-time data.",
+      "_meta": {
+        "description": "Description of the get_data_sources WebMCP tool. Tells MCP-aware browsers what the tool returns.",
+        "usage": [
+          "web:public/js/webmcp.js (tools[1].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "toolGetCurrentReading": {
+      "value": "Fetches the current bookshelf from the live API and returns books being read, up next, and recently finished.",
+      "_meta": {
+        "description": "Description of the get_current_reading WebMCP tool. Tells MCP-aware browsers what the tool returns.",
+        "usage": [
+          "web:public/js/webmcp.js (tools[2].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "toolGetTechStack": {
+      "value": "Returns the technology stack and architecture details of this portfolio site.",
+      "_meta": {
+        "description": "Description of the get_tech_stack WebMCP tool. Tells MCP-aware browsers what the tool returns.",
+        "usage": [
+          "web:public/js/webmcp.js (tools[3].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "stackFramework": {
+      "value": "Astro 6.x (static site generation, 0 KB JS by default)",
+      "_meta": {
+        "description": "get_tech_stack tool response — framework field value.",
+        "usage": ["web:public/js/webmcp.js (stack.framework)", "web:scripts/generate-webmcp.mjs"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "stackHosting": {
+      "value": "Cloudflare Pages via GitHub Actions",
+      "_meta": {
+        "description": "get_tech_stack tool response — hosting field value.",
+        "usage": ["web:public/js/webmcp.js (stack.hosting)", "web:scripts/generate-webmcp.mjs"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "stackLiveData": {
+      "value": "CloudFront-backed JSON API polled at runtime",
+      "_meta": {
+        "description": "get_tech_stack tool response — liveData field value.",
+        "usage": ["web:public/js/webmcp.js (stack.liveData)", "web:scripts/generate-webmcp.mjs"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "stackDesign": {
+      "value": "Glass-morphism dark theme, fluid clamp() responsive tokens, CSS container queries",
+      "_meta": {
+        "description": "get_tech_stack tool response — design field value.",
+        "usage": ["web:public/js/webmcp.js (stack.design)", "web:scripts/generate-webmcp.mjs"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "stackFont": {
+      "value": "Space Grotesk (self-hosted, variable woff2)",
+      "_meta": {
+        "description": "get_tech_stack tool response — font field value.",
+        "usage": ["web:public/js/webmcp.js (stack.font)", "web:scripts/generate-webmcp.mjs"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsHealthName": {
+      "value": "Health biometrics",
+      "_meta": {
+        "description": "Display name for the health data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[0].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[0].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsHealthDesc": {
+      "value": "Heart rate, HRV, activity, and workout data (7-day aggregates)",
+      "_meta": {
+        "description": "Description for the health data source. Canonical (server-card) variant. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[0].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[0].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsSleepName": {
+      "value": "Sleep data",
+      "_meta": {
+        "description": "Display name for the sleep data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[1].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[1].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsSleepDesc": {
+      "value": "Sleep phases, duration, and efficiency metrics",
+      "_meta": {
+        "description": "Description for the sleep data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[1].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[1].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsFocusName": {
+      "value": "Focus state",
+      "_meta": {
+        "description": "Display name for the focus/DND data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[2].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[2].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsFocusDesc": {
+      "value": "Current Do Not Disturb and focus mode status",
+      "_meta": {
+        "description": "Description for the focus/DND data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[2].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[2].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsGithubEventsName": {
+      "value": "GitHub activity",
+      "_meta": {
+        "description": "Display name for the GitHub events data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[3].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[3].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsGithubEventsDesc": {
+      "value": "Dev activity, languages, contributions, and recent commits",
+      "_meta": {
+        "description": "Description for the GitHub events data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[3].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[3].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsStarredReposName": {
+      "value": "Starred repositories",
+      "_meta": {
+        "description": "Display name for the starred repos data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[4].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[4].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsStarredReposDesc": {
+      "value": "GitHub starred repositories with metadata",
+      "_meta": {
+        "description": "Description for the starred repos data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[4].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[4].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsBooksName": {
+      "value": "Bookshelf",
+      "_meta": {
+        "description": "Display name for the books data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[5].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[5].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsBooksDesc": {
+      "value": "Books with status, ratings, progress, and cover images",
+      "_meta": {
+        "description": "Description for the books data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[5].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[5].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsArticlesName": {
+      "value": "Reading feed",
+      "_meta": {
+        "description": "Display name for the articles/reading feed data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[6].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[6].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsArticlesDesc": {
+      "value": "Starred articles and RSS feed items",
+      "_meta": {
+        "description": "Description for the articles/reading feed data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[6].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[6].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsTheatreReviewsName": {
+      "value": "Theatre reviews",
+      "_meta": {
+        "description": "Display name for the theatre reviews data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[7].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[7].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsTheatreReviewsDesc": {
+      "value": "Theatre show reviews with ratings and venue info",
+      "_meta": {
+        "description": "Description for the theatre reviews data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[7].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[7].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsWorkoutsName": {
+      "value": "Workouts",
+      "_meta": {
+        "description": "Display name for the workouts data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[8].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[8].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsWorkoutsDesc": {
+      "value": "Workout sessions with type, duration, and calorie burn",
+      "_meta": {
+        "description": "Description for the workouts data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[8].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[8].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsLocationName": {
+      "value": "Location aggregates",
+      "_meta": {
+        "description": "Display name for the location data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[9].name)",
+          "web:public/.well-known/mcp/server-card.json (resources[9].name)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    },
+    "dsLocationDesc": {
+      "value": "Aggregated place summaries and location data",
+      "_meta": {
+        "description": "Description for the location data source. Canonical (server-card) variant.",
+        "usage": [
+          "web:public/js/webmcp.js (dataSources[9].description)",
+          "web:public/.well-known/mcp/server-card.json (resources[9].description)",
+          "web:scripts/generate-webmcp.mjs"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-24"
+      }
+    }
+  },
   "agentDiscovery": {
     "agentCardDescription": {
       "value": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, theatre reviews, and location data as structured JSON via CloudFront.",
