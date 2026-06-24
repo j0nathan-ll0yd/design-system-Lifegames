@@ -1,0 +1,81 @@
+/* Same-document View Transitions for @lifegames/web
+   Import alongside a11y.css in the consumer layout.
+
+   REDUCED MOTION
+   0.001s (not 0 / none) preserves the animationend event so downstream
+   JS that listens for it is not silently broken. The JS helper in
+   runtime/view-transition.ts already skips startViewTransition() entirely
+   when prefers-reduced-motion is active, so these rules are a CSS-layer
+   safety net for any future caller that bypasses the helper. */
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.001s !important;
+  }
+}
+
+/* BOOK MODAL TRANSITION
+   The inner container of the dialog (id="bookModal") receives
+   view-transition-name via JS (not here) because the name must be unique
+   per book. The rules below control the crossfade timing for that name.
+
+   We target the pseudo-elements with :only-child to distinguish the open
+   direction (new image entering, no old) from close (old leaving, no new).
+   This works across Chrome, Safari, and Firefox 144+ — Firefox lacks
+   transition *types* so we use :only-child as the discriminator. */
+
+::view-transition-old(book-modal-content),
+::view-transition-new(book-modal-content) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Opening: new content fades in; no old content exists. */
+::view-transition-new(book-modal-content):only-child {
+  animation-name: vt-fade-in;
+}
+
+/* Closing: old content fades out; no new content exists. */
+::view-transition-old(book-modal-content):only-child {
+  animation-name: vt-fade-out;
+}
+
+/* LIVE-DATA CONTENT SWAPS
+   Short crossfade for content-list innerHTML replacements (reading feed,
+   dev activity log). Distinct name so the easing can differ from modal. */
+
+::view-transition-old(live-content-swap),
+::view-transition-new(live-content-swap) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-new(live-content-swap):only-child {
+  animation-name: vt-fade-in;
+}
+
+::view-transition-old(live-content-swap):only-child {
+  animation-name: vt-fade-out;
+}
+
+/* KEYFRAMES */
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vt-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

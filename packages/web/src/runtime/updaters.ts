@@ -1,6 +1,7 @@
 import { widgets, a11y } from '@lifegames/copy';
 import { classifyHeartRate, classifyHRV } from './heart-rate';
 import { HYDRATION } from './constants';
+import { withViewTransition } from './view-transition';
 import type {
   AdaptedHealth,
   AdaptedSleep,
@@ -350,7 +351,15 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   });
   html += '</div>';
 
-  body.innerHTML = html;
+  // Crossfade the content list swap — visually signals "data arriving".
+  // The view-transition-name is set on the body element only during the
+  // transition so duplicate names cannot occur across concurrent swaps.
+  const bodyEl = body as HTMLElement;
+  withViewTransition(() => {
+    bodyEl.style.viewTransitionName = 'live-content-swap';
+    bodyEl.innerHTML = html;
+    bodyEl.style.viewTransitionName = '';
+  });
   card.classList.remove('is-loading');
 }
 
@@ -429,7 +438,14 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
       html += '</div>';
     }
 
-    body.innerHTML = html;
+    // Crossfade the article list swap on live-data refreshes and pagination
+    // clicks — visually signals "content arriving/changing".
+    const bodyEl = body as HTMLElement;
+    withViewTransition(() => {
+      bodyEl.style.viewTransitionName = 'live-content-swap';
+      body.innerHTML = html;
+      bodyEl.style.viewTransitionName = '';
+    });
 
     if (totalPages > 1) {
       const buttons = body.querySelectorAll('.article-page-btn');
