@@ -143,5 +143,69 @@
     "alternateLinkMarkdown": "LLM-friendly complete content",
     "alternateLinkPlain": "LLM discovery index",
     "datasetDescription": "Live biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON."
+  },
+  "mcp": {
+    "serverDescription": "Read-only data interface for Jonathan Lloyd's Human Datastream portfolio. Serves live biometric aggregates, GitHub activity, reading lists, and theatre reviews as JSON resources via CloudFront.",
+    "agentSkillDescription": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live biometric data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
+    "toolGetProfile": "Returns professional profile: name, title, location, experience, expertise, and social links for Jonathan Lloyd.",
+    "toolGetDataSources": "Returns a list of all live JSON data endpoints on CloudFront with descriptions. Fetch these URLs for real-time data.",
+    "toolGetCurrentReading": "Fetches the current bookshelf from the live API and returns books being read, up next, and recently finished.",
+    "toolGetTechStack": "Returns the technology stack and architecture details of this portfolio site.",
+    "stackFramework": "Astro 6.x (static site generation, 0 KB JS by default)",
+    "stackHosting": "Cloudflare Pages via GitHub Actions",
+    "stackLiveData": "CloudFront-backed JSON API polled at runtime",
+    "stackDesign": "Glass-morphism dark theme, fluid clamp() responsive tokens, CSS container queries",
+    "stackFont": "Space Grotesk (self-hosted, variable woff2)",
+    "dsHealthName": "Health biometrics",
+    "dsHealthDesc": "Heart rate, HRV, activity, and workout data (7-day aggregates)",
+    "dsSleepName": "Sleep data",
+    "dsSleepDesc": "Sleep phases, duration, and efficiency metrics",
+    "dsFocusName": "Focus state",
+    "dsFocusDesc": "Current Do Not Disturb and focus mode status",
+    "dsGithubEventsName": "GitHub activity",
+    "dsGithubEventsDesc": "Dev activity, languages, contributions, and recent commits",
+    "dsStarredReposName": "Starred repositories",
+    "dsStarredReposDesc": "GitHub starred repositories with metadata",
+    "dsBooksName": "Bookshelf",
+    "dsBooksDesc": "Books with status, ratings, progress, and cover images",
+    "dsArticlesName": "Reading feed",
+    "dsArticlesDesc": "Starred articles and RSS feed items",
+    "dsTheatreReviewsName": "Theatre reviews",
+    "dsTheatreReviewsDesc": "Theatre show reviews with ratings and venue info",
+    "dsWorkoutsName": "Workouts",
+    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn",
+    "dsLocationName": "Location aggregates",
+    "dsLocationDesc": "Aggregated place summaries and location data"
+  },
+  "agentDiscovery": {
+    "agentCardDescription": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, theatre reviews, and location data as structured JSON via CloudFront.",
+    "agentCardSkillName": "Personal Profile",
+    "agentCardSkillDescription": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, GitHub contributions, and location aggregates. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
+    "agentCardSkillExamples": [
+      "What is Jonathan working on right now?",
+      "What books is Jonathan currently reading?",
+      "What is Jonathan's recent GitHub activity?",
+      "What are Jonathan's current health metrics?"
+    ],
+    "aiCatalogMcpName": "Human Datastream MCP Server",
+    "aiCatalogMcpDescription": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, theatre reviews, and location aggregates.",
+    "aiCatalogMcpQueries": [
+      "What is Jonathan Lloyd's current heart rate?",
+      "What has Jonathan been reading lately?",
+      "Show me Jonathan's GitHub contributions this week."
+    ],
+    "aiCatalogSkillsName": "Agent Skills Index",
+    "aiCatalogSkillsDescription": "Agent skills discovery index. Includes a portfolio-expert skill with deep technical context about Jonathan Lloyd's engineering background, live data sources, and architectural decisions.",
+    "aiCatalogSkillsQueries": [
+      "Tell me about Jonathan Lloyd's technical background.",
+      "What technology stack does Jonathan use?",
+      "Summarise Jonathan Lloyd's professional experience."
+    ],
+    "aiCatalogA2aName": "Human Datastream Agent Card",
+    "aiCatalogA2aDescription": "A2A agent card for the Human Datastream interface. Declares agent capabilities and the personal-profile skill for agent-to-agent discovery.",
+    "aiCatalogA2aQueries": [
+      "What can the Human Datastream agent do?",
+      "Is there an agent interface for jonathanlloyd.me?"
+    ]
   }
 }
