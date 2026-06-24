@@ -5,7 +5,7 @@
   "description": "Rich authoring schema for the identity slice of @lifegames/copy. Every customer-facing identity string is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy"],
   "properties": {
     "person": {
       "type": "object",
@@ -197,6 +197,79 @@
               "$ref": "#/$defs/CopyString"
             }
           }
+        }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "lastUpdated",
+        "lastUpdatedLabel",
+        "backLink",
+        "whoHeading",
+        "dataDisplayedHeading",
+        "dataCollectedHeading",
+        "analyticsHeading",
+        "rightsHeading",
+        "changesHeading",
+        "who",
+        "dataDisplayed",
+        "dataCollected",
+        "analytics",
+        "rights",
+        "changes"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastUpdated": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastUpdatedLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "backLink": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "whoHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dataDisplayedHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dataCollectedHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "analyticsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rightsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "changesHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "who": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dataDisplayed": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dataCollected": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "analytics": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rights": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "changes": {
+          "$ref": "#/$defs/CopyString"
         }
       }
     }

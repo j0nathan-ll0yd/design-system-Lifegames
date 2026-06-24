@@ -536,5 +536,183 @@
         }
       }
     }
+  },
+  "privacy": {
+    "title": {
+      "value": "Privacy Policy",
+      "_meta": {
+        "description": "Page title for the /privacy route.",
+        "usage": ["web:src/pages/privacy.astro (<title> and h1)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "lastUpdated": {
+      "value": "June 2026",
+      "_meta": {
+        "description": "Month and year of the last material change to the privacy policy. Updated when the policy prose changes meaningfully.",
+        "usage": ["web:src/pages/privacy.astro (last-updated dateline)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "lastUpdatedLabel": {
+      "value": "Last updated:",
+      "_meta": {
+        "description": "Inline label rendered immediately before the last-updated date on the privacy page. Replaces the CSS content pseudo-element.",
+        "usage": ["web:src/pages/privacy.astro (privacy-updated label)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "backLink": {
+      "value": "Back to dashboard",
+      "_meta": {
+        "description": "Text for the back-navigation link at the bottom of the privacy page, returning visitors to the main dashboard.",
+        "usage": ["web:src/pages/privacy.astro (privacy-back-link)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "whoHeading": {
+      "value": "Who runs this site",
+      "_meta": {
+        "description": "Section heading for the operator-identity section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[0].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "dataDisplayedHeading": {
+      "value": "Data displayed",
+      "_meta": {
+        "description": "Section heading for the data-displayed section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[1].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "dataCollectedHeading": {
+      "value": "Data collected from visitors",
+      "_meta": {
+        "description": "Section heading for the visitor-data-collection section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[2].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "analyticsHeading": {
+      "value": "Analytics",
+      "_meta": {
+        "description": "Section heading for the analytics section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[3].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "rightsHeading": {
+      "value": "Your rights",
+      "_meta": {
+        "description": "Section heading for the data-subject rights section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[4].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "changesHeading": {
+      "value": "Changes to this policy",
+      "_meta": {
+        "description": "Section heading for the policy-changes section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[5].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "who": {
+      "value": "This site is a personal dashboard operated by Jonathan Lloyd. Questions or requests can be sent to webmaster@lifegames.org.",
+      "_meta": {
+        "description": "Identifies the site operator and provides a contact address. Plain-English opening statement for the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (who section)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "dataDisplayed": {
+      "value": "Everything shown on this dashboard is the owner's own self-published data — health metrics, activity, hydration, reading history, location check-ins, and GitHub activity. No visitor data is displayed.",
+      "_meta": {
+        "description": "Clarifies that the data rendered on the dashboard belongs to the site owner, not to visitors. Avoids confusion about whose data is being shown.",
+        "usage": ["web:src/pages/privacy.astro (data displayed section)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "dataCollected": {
+      "value": "This site sets no cookies, uses no fingerprinting, and runs no advertising or tracking pixels. No personal data is collected from visitors. Requests pass through Cloudflare's network (CDN and DDoS protection), which may briefly process IP addresses and request metadata as a technical necessity (legal basis: legitimate interest). Cloudflare's handling is governed by Cloudflare's Privacy Policy.",
+      "_meta": {
+        "description": "Discloses visitor data collection (none) and the infrastructure-level Cloudflare IP processing. The Cloudflare note satisfies the light transparency hook created by infrastructure-level IP handling.",
+        "usage": ["web:src/pages/privacy.astro (data collected section)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "analytics": {
+      "value": "This site uses Simple Analytics — a cookieless analytics service that collects no personal data and tracks no individuals. No consent banner is required.",
+      "_meta": {
+        "description": "Discloses the analytics provider (Simple Analytics) and its cookieless, no-personal-data nature. Explains why no consent banner is shown.",
+        "usage": ["web:src/pages/privacy.astro (analytics section)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "rights": {
+      "value": "Visitors in the EU and UK have rights under GDPR and UK GDPR. Because this site collects no visitor personal data, most of those rights have no practical application here. You are welcome to contact webmaster@lifegames.org with any questions.",
+      "_meta": {
+        "description": "Addresses GDPR/UK GDPR data-subject rights. Honest acknowledgment that the rights exist while explaining they are largely inapplicable given the no-collection stance.",
+        "usage": ["web:src/pages/privacy.astro (rights section)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "changes": {
+      "value": "Material changes to this policy will be noted at the top of this page with an updated date.",
+      "_meta": {
+        "description": "Standard notice that material policy changes will be flagged with an updated date on the page itself.",
+        "usage": ["web:src/pages/privacy.astro (changes section)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    }
   }
 }

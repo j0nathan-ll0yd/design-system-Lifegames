@@ -73,5 +73,23 @@
   "a11y": {
     "skipToMain": "Skip to main content",
     "ogImageAlt": "Jonathan Lloyd — Human Datastream dashboard"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "June 2026",
+    "lastUpdatedLabel": "Last updated:",
+    "backLink": "Back to dashboard",
+    "whoHeading": "Who runs this site",
+    "dataDisplayedHeading": "Data displayed",
+    "dataCollectedHeading": "Data collected from visitors",
+    "analyticsHeading": "Analytics",
+    "rightsHeading": "Your rights",
+    "changesHeading": "Changes to this policy",
+    "who": "This site is a personal dashboard operated by Jonathan Lloyd. Questions or requests can be sent to webmaster@lifegames.org.",
+    "dataDisplayed": "Everything shown on this dashboard is the owner's own self-published data — health metrics, activity, hydration, reading history, location check-ins, and GitHub activity. No visitor data is displayed.",
+    "dataCollected": "This site sets no cookies, uses no fingerprinting, and runs no advertising or tracking pixels. No personal data is collected from visitors. Requests pass through Cloudflare's network (CDN and DDoS protection), which may briefly process IP addresses and request metadata as a technical necessity (legal basis: legitimate interest). Cloudflare's handling is governed by Cloudflare's Privacy Policy.",
+    "analytics": "This site uses Simple Analytics — a cookieless analytics service that collects no personal data and tracks no individuals. No consent banner is required.",
+    "rights": "Visitors in the EU and UK have rights under GDPR and UK GDPR. Because this site collects no visitor personal data, most of those rights have no practical application here. You are welcome to contact webmaster@lifegames.org with any questions.",
+    "changes": "Material changes to this policy will be noted at the top of this page with an updated date."
   }
 }

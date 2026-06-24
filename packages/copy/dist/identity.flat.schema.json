@@ -218,8 +218,81 @@
       },
       "required": ["title", "description", "author", "copyright", "sections"],
       "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "lastUpdated": {
+          "type": "string"
+        },
+        "lastUpdatedLabel": {
+          "type": "string"
+        },
+        "backLink": {
+          "type": "string"
+        },
+        "whoHeading": {
+          "type": "string"
+        },
+        "dataDisplayedHeading": {
+          "type": "string"
+        },
+        "dataCollectedHeading": {
+          "type": "string"
+        },
+        "analyticsHeading": {
+          "type": "string"
+        },
+        "rightsHeading": {
+          "type": "string"
+        },
+        "changesHeading": {
+          "type": "string"
+        },
+        "who": {
+          "type": "string"
+        },
+        "dataDisplayed": {
+          "type": "string"
+        },
+        "dataCollected": {
+          "type": "string"
+        },
+        "analytics": {
+          "type": "string"
+        },
+        "rights": {
+          "type": "string"
+        },
+        "changes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "lastUpdated",
+        "lastUpdatedLabel",
+        "backLink",
+        "whoHeading",
+        "dataDisplayedHeading",
+        "dataCollectedHeading",
+        "analyticsHeading",
+        "rightsHeading",
+        "changesHeading",
+        "who",
+        "dataDisplayed",
+        "dataCollected",
+        "analytics",
+        "rights",
+        "changes"
+      ],
+      "additionalProperties": false
     }
   },
-  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy"],
   "additionalProperties": false
 }

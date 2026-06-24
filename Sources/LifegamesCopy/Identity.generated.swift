@@ -21,6 +21,10 @@ public struct Identity: Codable, Sendable {
     public let humansTxt: HumansTxt
     /// Identity facts and biographical voices for Jonathan Lloyd.
     public let person: Person
+    /// Privacy policy page copy — plain-English sections covering who operates the site, what
+    /// data is displayed, what is collected from visitors, analytics, user rights, and change
+    /// notifications. Includes section headings, the last-updated label, and the back-link.
+    public let privacy: Privacy
     /// SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in
     /// consumers.
     public let seo: SEO
@@ -29,14 +33,15 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case feed, humansTxt, person, seo, site
+        case feed, humansTxt, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, feed: Feed, humansTxt: HumansTxt, person: Person, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
         self.feed = feed
         self.humansTxt = humansTxt
         self.person = person
+        self.privacy = privacy
         self.seo = seo
         self.site = site
     }
@@ -65,6 +70,7 @@ public extension Identity {
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
         person: Person? = nil,
+        privacy: Privacy? = nil,
         seo: SEO? = nil,
         site: Site? = nil
     ) -> Identity {
@@ -73,6 +79,7 @@ public extension Identity {
             feed: feed ?? self.feed,
             humansTxt: humansTxt ?? self.humansTxt,
             person: person ?? self.person,
+            privacy: privacy ?? self.privacy,
             seo: seo ?? self.seo,
             site: site ?? self.site
         )
@@ -398,6 +405,101 @@ public extension Person {
             skills: skills ?? self.skills,
             socialBio: socialBio ?? self.socialBio,
             yearsExperience: yearsExperience ?? self.yearsExperience
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Privacy policy page copy — plain-English sections covering who operates the site, what
+/// data is displayed, what is collected from visitors, analytics, user rights, and change
+/// notifications. Includes section headings, the last-updated label, and the back-link.
+// MARK: - Privacy
+public struct Privacy: Codable, Sendable {
+    public let analytics, analyticsHeading, backLink, changes: String
+    public let changesHeading, dataCollected, dataCollectedHeading, dataDisplayed: String
+    public let dataDisplayedHeading, lastUpdated, lastUpdatedLabel, rights: String
+    public let rightsHeading, title, who, whoHeading: String
+
+    public init(analytics: String, analyticsHeading: String, backLink: String, changes: String, changesHeading: String, dataCollected: String, dataCollectedHeading: String, dataDisplayed: String, dataDisplayedHeading: String, lastUpdated: String, lastUpdatedLabel: String, rights: String, rightsHeading: String, title: String, who: String, whoHeading: String) {
+        self.analytics = analytics
+        self.analyticsHeading = analyticsHeading
+        self.backLink = backLink
+        self.changes = changes
+        self.changesHeading = changesHeading
+        self.dataCollected = dataCollected
+        self.dataCollectedHeading = dataCollectedHeading
+        self.dataDisplayed = dataDisplayed
+        self.dataDisplayedHeading = dataDisplayedHeading
+        self.lastUpdated = lastUpdated
+        self.lastUpdatedLabel = lastUpdatedLabel
+        self.rights = rights
+        self.rightsHeading = rightsHeading
+        self.title = title
+        self.who = who
+        self.whoHeading = whoHeading
+    }
+}
+
+// MARK: Privacy convenience initializers and mutators
+
+public extension Privacy {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Privacy.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        analytics: String? = nil,
+        analyticsHeading: String? = nil,
+        backLink: String? = nil,
+        changes: String? = nil,
+        changesHeading: String? = nil,
+        dataCollected: String? = nil,
+        dataCollectedHeading: String? = nil,
+        dataDisplayed: String? = nil,
+        dataDisplayedHeading: String? = nil,
+        lastUpdated: String? = nil,
+        lastUpdatedLabel: String? = nil,
+        rights: String? = nil,
+        rightsHeading: String? = nil,
+        title: String? = nil,
+        who: String? = nil,
+        whoHeading: String? = nil
+    ) -> Privacy {
+        return Privacy(
+            analytics: analytics ?? self.analytics,
+            analyticsHeading: analyticsHeading ?? self.analyticsHeading,
+            backLink: backLink ?? self.backLink,
+            changes: changes ?? self.changes,
+            changesHeading: changesHeading ?? self.changesHeading,
+            dataCollected: dataCollected ?? self.dataCollected,
+            dataCollectedHeading: dataCollectedHeading ?? self.dataCollectedHeading,
+            dataDisplayed: dataDisplayed ?? self.dataDisplayed,
+            dataDisplayedHeading: dataDisplayedHeading ?? self.dataDisplayedHeading,
+            lastUpdated: lastUpdated ?? self.lastUpdated,
+            lastUpdatedLabel: lastUpdatedLabel ?? self.lastUpdatedLabel,
+            rights: rights ?? self.rights,
+            rightsHeading: rightsHeading ?? self.rightsHeading,
+            title: title ?? self.title,
+            who: who ?? self.who,
+            whoHeading: whoHeading ?? self.whoHeading
         )
     }
 
