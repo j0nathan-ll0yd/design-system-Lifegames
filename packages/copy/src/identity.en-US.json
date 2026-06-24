@@ -560,6 +560,94 @@
         "lastReviewed": "2026-06-23"
       }
     },
+    "lastUpdatedLabel": {
+      "value": "Last updated:",
+      "_meta": {
+        "description": "Inline label rendered immediately before the last-updated date on the privacy page. Replaces the CSS content pseudo-element.",
+        "usage": ["web:src/pages/privacy.astro (privacy-updated label)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "backLink": {
+      "value": "Back to dashboard",
+      "_meta": {
+        "description": "Text for the back-navigation link at the bottom of the privacy page, returning visitors to the main dashboard.",
+        "usage": ["web:src/pages/privacy.astro (privacy-back-link)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "whoHeading": {
+      "value": "Who runs this site",
+      "_meta": {
+        "description": "Section heading for the operator-identity section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[0].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "dataDisplayedHeading": {
+      "value": "Data displayed",
+      "_meta": {
+        "description": "Section heading for the data-displayed section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[1].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "dataCollectedHeading": {
+      "value": "Data collected from visitors",
+      "_meta": {
+        "description": "Section heading for the visitor-data-collection section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[2].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "analyticsHeading": {
+      "value": "Analytics",
+      "_meta": {
+        "description": "Section heading for the analytics section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[3].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "rightsHeading": {
+      "value": "Your rights",
+      "_meta": {
+        "description": "Section heading for the data-subject rights section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[4].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
+    "changesHeading": {
+      "value": "Changes to this policy",
+      "_meta": {
+        "description": "Section heading for the policy-changes section of the privacy page.",
+        "usage": ["web:src/pages/privacy.astro (sections[5].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-06-23"
+      }
+    },
     "who": {
       "value": "This site is a personal dashboard operated by Jonathan Lloyd. Questions or requests can be sent to webmaster@lifegames.org.",
       "_meta": {

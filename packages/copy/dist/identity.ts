@@ -82,11 +82,19 @@ export interface Identity {
     };
   };
   /**
-   * Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications.
+   * Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.
    */
   privacy: {
     title: string;
     lastUpdated: string;
+    lastUpdatedLabel: string;
+    backLink: string;
+    whoHeading: string;
+    dataDisplayedHeading: string;
+    dataCollectedHeading: string;
+    analyticsHeading: string;
+    rightsHeading: string;
+    changesHeading: string;
     who: string;
     dataDisplayed: string;
     dataCollected: string;

@@ -202,11 +202,19 @@
     },
     "privacy": {
       "type": "object",
-      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications.",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
       "additionalProperties": false,
       "required": [
         "title",
         "lastUpdated",
+        "lastUpdatedLabel",
+        "backLink",
+        "whoHeading",
+        "dataDisplayedHeading",
+        "dataCollectedHeading",
+        "analyticsHeading",
+        "rightsHeading",
+        "changesHeading",
         "who",
         "dataDisplayed",
         "dataCollected",
@@ -219,6 +227,30 @@
           "$ref": "#/$defs/CopyString"
         },
         "lastUpdated": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastUpdatedLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "backLink": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "whoHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dataDisplayedHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dataCollectedHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "analyticsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rightsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "changesHeading": {
           "$ref": "#/$defs/CopyString"
         },
         "who": {

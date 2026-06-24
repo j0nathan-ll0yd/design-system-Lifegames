@@ -90,6 +90,14 @@ export const identitySchema = z
       .object({
         title: z.string(),
         lastUpdated: z.string(),
+        lastUpdatedLabel: z.string(),
+        backLink: z.string(),
+        whoHeading: z.string(),
+        dataDisplayedHeading: z.string(),
+        dataCollectedHeading: z.string(),
+        analyticsHeading: z.string(),
+        rightsHeading: z.string(),
+        changesHeading: z.string(),
         who: z.string(),
         dataDisplayed: z.string(),
         dataCollected: z.string(),
@@ -99,7 +107,7 @@ export const identitySchema = z
       })
       .strict()
       .describe(
-        'Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications.',
+        'Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.',
       ),
   })
   .strict()

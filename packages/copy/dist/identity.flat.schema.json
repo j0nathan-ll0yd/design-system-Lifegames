@@ -221,12 +221,36 @@
     },
     "privacy": {
       "type": "object",
-      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications.",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
       "properties": {
         "title": {
           "type": "string"
         },
         "lastUpdated": {
+          "type": "string"
+        },
+        "lastUpdatedLabel": {
+          "type": "string"
+        },
+        "backLink": {
+          "type": "string"
+        },
+        "whoHeading": {
+          "type": "string"
+        },
+        "dataDisplayedHeading": {
+          "type": "string"
+        },
+        "dataCollectedHeading": {
+          "type": "string"
+        },
+        "analyticsHeading": {
+          "type": "string"
+        },
+        "rightsHeading": {
+          "type": "string"
+        },
+        "changesHeading": {
           "type": "string"
         },
         "who": {
@@ -251,6 +275,14 @@
       "required": [
         "title",
         "lastUpdated",
+        "lastUpdatedLabel",
+        "backLink",
+        "whoHeading",
+        "dataDisplayedHeading",
+        "dataCollectedHeading",
+        "analyticsHeading",
+        "rightsHeading",
+        "changesHeading",
         "who",
         "dataDisplayed",
         "dataCollected",
