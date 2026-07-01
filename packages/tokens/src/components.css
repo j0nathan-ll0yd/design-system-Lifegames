@@ -654,15 +654,15 @@
       appearance: none;
       background: none;
       border: none;
-      padding: 0;
-      margin: 0;
-      /* Layout: inline-flex so the SVG centers within the hit target */
+      /* padding: 5px expands the interactive area to 24×24 CSS px (SVG 14px + 5×2 = 24px),
+         satisfying WCAG 2.2 SC 2.5.8. margin: -5px counteracts the padding so the button's
+         margin box stays SVG-sized (14px) — the subgrid row height is unaffected. */
+      padding: 5px;
+      margin: -5px;
+      /* Layout: inline-flex so the SVG centers within the padded area */
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      /* Hit target ≥ 24×24 CSS px (WCAG 2.2 SC 2.5.8) */
-      min-width: 24px;
-      min-height: 24px;
       /* Color and cursor */
       color: var(--text-muted);
       cursor: pointer;
