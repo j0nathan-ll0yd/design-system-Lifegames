@@ -1,0 +1,16 @@
+{
+  "connection": "searching",
+  "errorMessage": null,
+  "batteryPercent": null,
+  "isSessionActive": false,
+  "isCupOnScale": false,
+  "startWeightGrams": 0,
+  "lastStableWeightGrams": 0,
+  "currentWeightGrams": 0,
+  "flowRateGramsPerSec": 0,
+  "sessionElapsedSeconds": 0,
+  "dailyCaffeineMg": 95,
+  "dailyTargetMg": 400,
+  "cupsToday": 1,
+  "beverage": "drip"
+}
