@@ -1,6 +1,6 @@
 ---
 import { widgets } from '@lifegames/copy';
-import { renderProvenance } from '../../runtime/render-provenance';
+import { composeProvenance } from '../../runtime/compose-provenance';
 
 const { system, compact = false } = Astro.props;
 const lines = system.lines;
@@ -48,7 +48,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
           .filter((line: any) => import.meta.env.DEV || line.key !== 'Location')
           .map((line: any, idx: number) => {
             const source = sourceMap[line.key] || '';
-            const provenanceMd = isSourceKey(source)
+            const provenance = isSourceKey(source)
               ? widgets.systemStatus.sources[source]
               : undefined;
             return (
@@ -58,7 +58,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
                   {line.key}:
                 </span>
                 <span class={line.valClass || 'sys-val'} set:html={line.value} />
-                {provenanceMd !== undefined && (
+                {provenance !== undefined && (
                   <>
                     <button
                       type="button"
@@ -91,7 +91,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
                       role="group"
                       aria-label={`${line.key} data source`}
                       class="sys-tooltip"
-                      set:html={renderProvenance(provenanceMd)}
+                      set:html={composeProvenance(provenance.body, provenance.refs)}
                     />
                   </>
                 )}
@@ -116,7 +116,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
               .filter((line: any) => import.meta.env.DEV || line.key !== 'Location')
               .map((line: any, idx: number) => {
                 const source = sourceMap[line.key] || '';
-                const provenanceMd = isSourceKey(source)
+                const provenance = isSourceKey(source)
                   ? widgets.systemStatus.sources[source]
                   : undefined;
                 return (
@@ -135,7 +135,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
                       {line.key}:
                     </span>
                     <span class={line.valClass || 'sys-val'} set:html={line.value} />
-                    {provenanceMd !== undefined && (
+                    {provenance !== undefined && (
                       <>
                         <button
                           type="button"
@@ -168,7 +168,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
                           role="group"
                           aria-label={`${line.key} data source`}
                           class="sys-tooltip"
-                          set:html={renderProvenance(provenanceMd)}
+                          set:html={composeProvenance(provenance.body, provenance.refs)}
                         />
                       </>
                     )}

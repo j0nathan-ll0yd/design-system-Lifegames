@@ -124,13 +124,72 @@
     "valueOffline": "Offline",
     "timestampRealtime": "realtime",
     "sources": {
-      "health": "Activity by my [Apple Watch 11](https://www.apple.com/apple-watch-series-11/) every ~15 minutes. Water powered by [Larq](https://www.livelarq.com). Caffeine powered by [Acaia](https://acaia.co/products/pearl)",
-      "sleep": "Powered by my [Apple Watch 11](https://www.apple.com/apple-watch-series-11/). True Apple Sleep Score, updated manually daily.",
-      "books": "Powered by a custom iOS App, hosted on AWS.",
-      "articles": "Powered by [Feedly](https://feedly.com) as I mark articles to Read Later.",
-      "githubEvents": "Powered by [Github](https://github.com) as commits are made or pull requests are merged.",
-      "starredRepos": "Powered by [Github](https://github.com) as new repositories are starred.",
-      "theatreReviews": "Powered by [Squarespace](https://www.squarespace.com/) as new reviews are posted."
+      "health": {
+        "body": "Activity by my {watch} every ~15 minutes. Water powered by {water}. Caffeine powered by {coffee}.",
+        "refs": {
+          "watch": {
+            "label": "Apple Watch 11",
+            "href": "https://www.apple.com/apple-watch-series-11/"
+          },
+          "water": {
+            "label": "Larq",
+            "href": "https://www.livelarq.com"
+          },
+          "coffee": {
+            "label": "Acaia",
+            "href": "https://acaia.co/products/pearl"
+          }
+        }
+      },
+      "sleep": {
+        "body": "Powered by my {watch}. True Apple Sleep Score, updated manually daily.",
+        "refs": {
+          "watch": {
+            "label": "Apple Watch 11",
+            "href": "https://www.apple.com/apple-watch-series-11/"
+          }
+        }
+      },
+      "books": {
+        "body": "Powered by a custom iOS App, hosted on AWS.",
+        "refs": {}
+      },
+      "articles": {
+        "body": "Powered by {feedly} as I mark articles to Read Later.",
+        "refs": {
+          "feedly": {
+            "label": "Feedly",
+            "href": "https://feedly.com"
+          }
+        }
+      },
+      "githubEvents": {
+        "body": "Powered by {github} as commits are made or pull requests are merged.",
+        "refs": {
+          "github": {
+            "label": "Github",
+            "href": "https://github.com"
+          }
+        }
+      },
+      "starredRepos": {
+        "body": "Powered by {github} as new repositories are starred.",
+        "refs": {
+          "github": {
+            "label": "Github",
+            "href": "https://github.com"
+          }
+        }
+      },
+      "theatreReviews": {
+        "body": "Powered by {squarespace} as new reviews are posted.",
+        "refs": {
+          "squarespace": {
+            "label": "Squarespace",
+            "href": "https://www.squarespace.com/"
+          }
+        }
+      }
     }
   },
   "identityCard": {

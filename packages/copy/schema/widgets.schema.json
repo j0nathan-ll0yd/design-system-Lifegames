@@ -501,7 +501,7 @@
         },
         "sources": {
           "type": "object",
-          "description": "Provenance tooltip prose for each System Status data source. Values use [label](url) markdown links; web renders via renderProvenance(). Authored without maxChars — Health string is 208 chars.",
+          "description": "Structured provenance for each System Status data source. Translatable prose (body, with {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine href) so a TMS never sees a URL and platforms compose their own anchors. Web composes anchor HTML via composeProvenance(); iOS composes native links from the same shape.",
           "additionalProperties": false,
           "required": [
             "health",
@@ -513,13 +513,196 @@
             "theatreReviews"
           ],
           "properties": {
-            "health": { "$ref": "#/$defs/CopyString" },
-            "sleep": { "$ref": "#/$defs/CopyString" },
-            "books": { "$ref": "#/$defs/CopyString" },
-            "articles": { "$ref": "#/$defs/CopyString" },
-            "githubEvents": { "$ref": "#/$defs/CopyString" },
-            "starredRepos": { "$ref": "#/$defs/CopyString" },
-            "theatreReviews": { "$ref": "#/$defs/CopyString" }
+            "health": {
+              "type": "object",
+              "title": "SystemStatusSourceHealth",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsHealth",
+                  "additionalProperties": false,
+                  "required": ["watch", "water", "coffee"],
+                  "properties": {
+                    "watch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    },
+                    "water": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    },
+                    "coffee": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "sleep": {
+              "type": "object",
+              "title": "SystemStatusSourceSleep",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsSleep",
+                  "additionalProperties": false,
+                  "required": ["watch"],
+                  "properties": {
+                    "watch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "books": {
+              "type": "object",
+              "title": "SystemStatusSourceBooks",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsBooks",
+                  "additionalProperties": false,
+                  "required": [],
+                  "properties": {}
+                }
+              }
+            },
+            "articles": {
+              "type": "object",
+              "title": "SystemStatusSourceArticles",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsArticles",
+                  "additionalProperties": false,
+                  "required": ["feedly"],
+                  "properties": {
+                    "feedly": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "githubEvents": {
+              "type": "object",
+              "title": "SystemStatusSourceGithubEvents",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsGithubEvents",
+                  "additionalProperties": false,
+                  "required": ["github"],
+                  "properties": {
+                    "github": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "starredRepos": {
+              "type": "object",
+              "title": "SystemStatusSourceStarredRepos",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsStarredRepos",
+                  "additionalProperties": false,
+                  "required": ["github"],
+                  "properties": {
+                    "github": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "theatreReviews": {
+              "type": "object",
+              "title": "SystemStatusSourceTheatreReviews",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsTheatreReviews",
+                  "additionalProperties": false,
+                  "required": ["squarespace"],
+                  "properties": {
+                    "squarespace": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

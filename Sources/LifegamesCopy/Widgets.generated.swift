@@ -911,9 +911,10 @@ public extension StarredRepos {
 /// provenance prose.
 // MARK: - SystemStatus
 public struct SystemStatus: Codable, Sendable {
-    /// Provenance tooltip prose for each System Status data source. Values use [label](url)
-    /// markdown links; web renders via renderProvenance(). Authored without maxChars — Health
-    /// string is 208 chars.
+    /// Structured provenance for each System Status data source. Translatable prose (body, with
+    /// {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine
+    /// href) so a TMS never sees a URL and platforms compose their own anchors. Web composes
+    /// anchor HTML via composeProvenance(); iOS composes native links from the same shape.
     public let sources: Sources
     public let timestampRealtime, title, valueActive, valueOffline: String
 
@@ -969,15 +970,21 @@ public extension SystemStatus {
     }
 }
 
-/// Provenance tooltip prose for each System Status data source. Values use [label](url)
-/// markdown links; web renders via renderProvenance(). Authored without maxChars — Health
-/// string is 208 chars.
+/// Structured provenance for each System Status data source. Translatable prose (body, with
+/// {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine
+/// href) so a TMS never sees a URL and platforms compose their own anchors. Web composes
+/// anchor HTML via composeProvenance(); iOS composes native links from the same shape.
 // MARK: - Sources
 public struct Sources: Codable, Sendable {
-    public let articles, books, githubEvents, health: String
-    public let sleep, starredRepos, theatreReviews: String
+    public let articles: SystemStatusSourceArticles
+    public let books: SystemStatusSourceBooks
+    public let githubEvents: SystemStatusSourceGithubEvents
+    public let health: SystemStatusSourceHealth
+    public let sleep: SystemStatusSourceSleep
+    public let starredRepos: SystemStatusSourceStarredRepos
+    public let theatreReviews: SystemStatusSourceTheatreReviews
 
-    public init(articles: String, books: String, githubEvents: String, health: String, sleep: String, starredRepos: String, theatreReviews: String) {
+    public init(articles: SystemStatusSourceArticles, books: SystemStatusSourceBooks, githubEvents: SystemStatusSourceGithubEvents, health: SystemStatusSourceHealth, sleep: SystemStatusSourceSleep, starredRepos: SystemStatusSourceStarredRepos, theatreReviews: SystemStatusSourceTheatreReviews) {
         self.articles = articles
         self.books = books
         self.githubEvents = githubEvents
@@ -1007,13 +1014,13 @@ public extension Sources {
     }
 
     func with(
-        articles: String? = nil,
-        books: String? = nil,
-        githubEvents: String? = nil,
-        health: String? = nil,
-        sleep: String? = nil,
-        starredRepos: String? = nil,
-        theatreReviews: String? = nil
+        articles: SystemStatusSourceArticles? = nil,
+        books: SystemStatusSourceBooks? = nil,
+        githubEvents: SystemStatusSourceGithubEvents? = nil,
+        health: SystemStatusSourceHealth? = nil,
+        sleep: SystemStatusSourceSleep? = nil,
+        starredRepos: SystemStatusSourceStarredRepos? = nil,
+        theatreReviews: SystemStatusSourceTheatreReviews? = nil
     ) -> Sources {
         return Sources(
             articles: articles ?? self.articles,
@@ -1023,6 +1030,1030 @@ public extension Sources {
             sleep: sleep ?? self.sleep,
             starredRepos: starredRepos ?? self.starredRepos,
             theatreReviews: theatreReviews ?? self.theatreReviews
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceArticles
+public struct SystemStatusSourceArticles: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsArticles
+
+    public init(body: String, refs: SystemStatusRefsArticles) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceArticles convenience initializers and mutators
+
+public extension SystemStatusSourceArticles {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceArticles.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsArticles? = nil
+    ) -> SystemStatusSourceArticles {
+        return SystemStatusSourceArticles(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsArticles
+public struct SystemStatusRefsArticles: Codable, Sendable {
+    public let feedly: Feedly
+
+    public init(feedly: Feedly) {
+        self.feedly = feedly
+    }
+}
+
+// MARK: SystemStatusRefsArticles convenience initializers and mutators
+
+public extension SystemStatusRefsArticles {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsArticles.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        feedly: Feedly? = nil
+    ) -> SystemStatusRefsArticles {
+        return SystemStatusRefsArticles(
+            feedly: feedly ?? self.feedly
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Feedly
+public struct Feedly: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: Feedly convenience initializers and mutators
+
+public extension Feedly {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Feedly.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> Feedly {
+        return Feedly(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceBooks
+public struct SystemStatusSourceBooks: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsBooks
+
+    public init(body: String, refs: SystemStatusRefsBooks) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceBooks convenience initializers and mutators
+
+public extension SystemStatusSourceBooks {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceBooks.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsBooks? = nil
+    ) -> SystemStatusSourceBooks {
+        return SystemStatusSourceBooks(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsBooks
+public struct SystemStatusRefsBooks: Codable, Sendable {
+
+    public init() {
+    }
+}
+
+// MARK: SystemStatusRefsBooks convenience initializers and mutators
+
+public extension SystemStatusRefsBooks {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsBooks.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+    ) -> SystemStatusRefsBooks {
+        return SystemStatusRefsBooks(
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceGithubEvents
+public struct SystemStatusSourceGithubEvents: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsGithubEvents
+
+    public init(body: String, refs: SystemStatusRefsGithubEvents) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceGithubEvents convenience initializers and mutators
+
+public extension SystemStatusSourceGithubEvents {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceGithubEvents.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsGithubEvents? = nil
+    ) -> SystemStatusSourceGithubEvents {
+        return SystemStatusSourceGithubEvents(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsGithubEvents
+public struct SystemStatusRefsGithubEvents: Codable, Sendable {
+    public let github: PurpleGithub
+
+    public init(github: PurpleGithub) {
+        self.github = github
+    }
+}
+
+// MARK: SystemStatusRefsGithubEvents convenience initializers and mutators
+
+public extension SystemStatusRefsGithubEvents {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsGithubEvents.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        github: PurpleGithub? = nil
+    ) -> SystemStatusRefsGithubEvents {
+        return SystemStatusRefsGithubEvents(
+            github: github ?? self.github
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - PurpleGithub
+public struct PurpleGithub: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: PurpleGithub convenience initializers and mutators
+
+public extension PurpleGithub {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(PurpleGithub.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> PurpleGithub {
+        return PurpleGithub(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceHealth
+public struct SystemStatusSourceHealth: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsHealth
+
+    public init(body: String, refs: SystemStatusRefsHealth) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceHealth convenience initializers and mutators
+
+public extension SystemStatusSourceHealth {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceHealth.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsHealth? = nil
+    ) -> SystemStatusSourceHealth {
+        return SystemStatusSourceHealth(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsHealth
+public struct SystemStatusRefsHealth: Codable, Sendable {
+    public let coffee: Coffee
+    public let watch: PurpleWatch
+    public let water: Water
+
+    public init(coffee: Coffee, watch: PurpleWatch, water: Water) {
+        self.coffee = coffee
+        self.watch = watch
+        self.water = water
+    }
+}
+
+// MARK: SystemStatusRefsHealth convenience initializers and mutators
+
+public extension SystemStatusRefsHealth {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsHealth.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        coffee: Coffee? = nil,
+        watch: PurpleWatch? = nil,
+        water: Water? = nil
+    ) -> SystemStatusRefsHealth {
+        return SystemStatusRefsHealth(
+            coffee: coffee ?? self.coffee,
+            watch: watch ?? self.watch,
+            water: water ?? self.water
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Coffee
+public struct Coffee: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: Coffee convenience initializers and mutators
+
+public extension Coffee {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Coffee.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> Coffee {
+        return Coffee(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - PurpleWatch
+public struct PurpleWatch: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: PurpleWatch convenience initializers and mutators
+
+public extension PurpleWatch {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(PurpleWatch.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> PurpleWatch {
+        return PurpleWatch(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Water
+public struct Water: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: Water convenience initializers and mutators
+
+public extension Water {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Water.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> Water {
+        return Water(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceSleep
+public struct SystemStatusSourceSleep: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsSleep
+
+    public init(body: String, refs: SystemStatusRefsSleep) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceSleep convenience initializers and mutators
+
+public extension SystemStatusSourceSleep {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceSleep.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsSleep? = nil
+    ) -> SystemStatusSourceSleep {
+        return SystemStatusSourceSleep(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsSleep
+public struct SystemStatusRefsSleep: Codable, Sendable {
+    public let watch: FluffyWatch
+
+    public init(watch: FluffyWatch) {
+        self.watch = watch
+    }
+}
+
+// MARK: SystemStatusRefsSleep convenience initializers and mutators
+
+public extension SystemStatusRefsSleep {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsSleep.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        watch: FluffyWatch? = nil
+    ) -> SystemStatusRefsSleep {
+        return SystemStatusRefsSleep(
+            watch: watch ?? self.watch
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - FluffyWatch
+public struct FluffyWatch: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: FluffyWatch convenience initializers and mutators
+
+public extension FluffyWatch {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(FluffyWatch.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> FluffyWatch {
+        return FluffyWatch(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceStarredRepos
+public struct SystemStatusSourceStarredRepos: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsStarredRepos
+
+    public init(body: String, refs: SystemStatusRefsStarredRepos) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceStarredRepos convenience initializers and mutators
+
+public extension SystemStatusSourceStarredRepos {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceStarredRepos.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsStarredRepos? = nil
+    ) -> SystemStatusSourceStarredRepos {
+        return SystemStatusSourceStarredRepos(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsStarredRepos
+public struct SystemStatusRefsStarredRepos: Codable, Sendable {
+    public let github: FluffyGithub
+
+    public init(github: FluffyGithub) {
+        self.github = github
+    }
+}
+
+// MARK: SystemStatusRefsStarredRepos convenience initializers and mutators
+
+public extension SystemStatusRefsStarredRepos {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsStarredRepos.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        github: FluffyGithub? = nil
+    ) -> SystemStatusRefsStarredRepos {
+        return SystemStatusRefsStarredRepos(
+            github: github ?? self.github
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - FluffyGithub
+public struct FluffyGithub: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: FluffyGithub convenience initializers and mutators
+
+public extension FluffyGithub {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(FluffyGithub.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> FluffyGithub {
+        return FluffyGithub(
+            href: href ?? self.href,
+            label: label ?? self.label
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusSourceTheatreReviews
+public struct SystemStatusSourceTheatreReviews: Codable, Sendable {
+    public let body: String
+    public let refs: SystemStatusRefsTheatreReviews
+
+    public init(body: String, refs: SystemStatusRefsTheatreReviews) {
+        self.body = body
+        self.refs = refs
+    }
+}
+
+// MARK: SystemStatusSourceTheatreReviews convenience initializers and mutators
+
+public extension SystemStatusSourceTheatreReviews {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusSourceTheatreReviews.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        body: String? = nil,
+        refs: SystemStatusRefsTheatreReviews? = nil
+    ) -> SystemStatusSourceTheatreReviews {
+        return SystemStatusSourceTheatreReviews(
+            body: body ?? self.body,
+            refs: refs ?? self.refs
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SystemStatusRefsTheatreReviews
+public struct SystemStatusRefsTheatreReviews: Codable, Sendable {
+    public let squarespace: Squarespace
+
+    public init(squarespace: Squarespace) {
+        self.squarespace = squarespace
+    }
+}
+
+// MARK: SystemStatusRefsTheatreReviews convenience initializers and mutators
+
+public extension SystemStatusRefsTheatreReviews {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SystemStatusRefsTheatreReviews.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        squarespace: Squarespace? = nil
+    ) -> SystemStatusRefsTheatreReviews {
+        return SystemStatusRefsTheatreReviews(
+            squarespace: squarespace ?? self.squarespace
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Squarespace
+public struct Squarespace: Codable, Sendable {
+    public let href, label: String
+
+    public init(href: String, label: String) {
+        self.href = href
+        self.label = label
+    }
+}
+
+// MARK: Squarespace convenience initializers and mutators
+
+public extension Squarespace {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Squarespace.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        href: String? = nil,
+        label: String? = nil
+    ) -> Squarespace {
+        return Squarespace(
+            href: href ?? self.href,
+            label: label ?? self.label
         )
     }
 

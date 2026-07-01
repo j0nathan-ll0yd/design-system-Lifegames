@@ -480,28 +480,243 @@
         },
         "sources": {
           "type": "object",
-          "description": "Provenance tooltip prose for each System Status data source. Values use [label](url) markdown links; web renders via renderProvenance(). Authored without maxChars — Health string is 208 chars.",
+          "description": "Structured provenance for each System Status data source. Translatable prose (body, with {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine href) so a TMS never sees a URL and platforms compose their own anchors. Web composes anchor HTML via composeProvenance(); iOS composes native links from the same shape.",
           "properties": {
             "health": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceHealth",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsHealth",
+                  "properties": {
+                    "watch": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    },
+                    "water": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    },
+                    "coffee": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["watch", "water", "coffee"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             },
             "sleep": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceSleep",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsSleep",
+                  "properties": {
+                    "watch": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["watch"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             },
             "books": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceBooks",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsBooks",
+                  "properties": {},
+                  "required": [],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             },
             "articles": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceArticles",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsArticles",
+                  "properties": {
+                    "feedly": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["feedly"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             },
             "githubEvents": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceGithubEvents",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsGithubEvents",
+                  "properties": {
+                    "github": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["github"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             },
             "starredRepos": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceStarredRepos",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsStarredRepos",
+                  "properties": {
+                    "github": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["github"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             },
             "theatreReviews": {
-              "type": "string"
+              "type": "object",
+              "title": "SystemStatusSourceTheatreReviews",
+              "properties": {
+                "body": {
+                  "type": "string"
+                },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsTheatreReviews",
+                  "properties": {
+                    "squarespace": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string"
+                        },
+                        "href": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["label", "href"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["squarespace"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["body", "refs"],
+              "additionalProperties": false
             }
           },
           "required": [

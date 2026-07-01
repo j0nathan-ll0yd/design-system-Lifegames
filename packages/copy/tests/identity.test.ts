@@ -67,8 +67,13 @@ const NAMESPACES: NamespaceFixture[] = [
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
   //   + systemStatus 4 (title/valueActive/valueOffline/timestampRealtime)
-  //   + systemStatus.sources 7 (health/sleep/books/articles/githubEvents/starredRepos/theatreReviews).
-  { name: 'widgets', expectedLeaves: 107 },
+  //   + systemStatus.sources 23 — each source is a structured {body, refs} pair
+  //     (body CopyString + one label/href CopyString pair per link ref):
+  //     health 7 (body + watch/water/coffee ×2) + sleep 3 (body + watch ×2)
+  //     + books 1 (body, no refs) + articles 3 (body + feedly ×2)
+  //     + githubEvents 3 (body + github ×2) + starredRepos 3 (body + github ×2)
+  //     + theatreReviews 3 (body + squarespace ×2).
+  { name: 'widgets', expectedLeaves: 123 },
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
   { name: 'a11y', expectedLeaves: 14 },
