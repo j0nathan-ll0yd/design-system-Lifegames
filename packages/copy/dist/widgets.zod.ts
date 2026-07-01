@@ -165,10 +165,72 @@ export const widgetsSchema = z
         valueActive: z.string(),
         valueOffline: z.string(),
         timestampRealtime: z.string(),
+        sources: z
+          .object({
+            health: z
+              .object({
+                body: z.string(),
+                refs: z
+                  .object({
+                    watch: z.object({ label: z.string(), href: z.string() }).strict(),
+                    water: z.object({ label: z.string(), href: z.string() }).strict(),
+                    coffee: z.object({ label: z.string(), href: z.string() }).strict(),
+                  })
+                  .strict(),
+              })
+              .strict(),
+            sleep: z
+              .object({
+                body: z.string(),
+                refs: z
+                  .object({ watch: z.object({ label: z.string(), href: z.string() }).strict() })
+                  .strict(),
+              })
+              .strict(),
+            books: z.object({ body: z.string(), refs: z.object({}).strict() }).strict(),
+            articles: z
+              .object({
+                body: z.string(),
+                refs: z
+                  .object({ feedly: z.object({ label: z.string(), href: z.string() }).strict() })
+                  .strict(),
+              })
+              .strict(),
+            githubEvents: z
+              .object({
+                body: z.string(),
+                refs: z
+                  .object({ github: z.object({ label: z.string(), href: z.string() }).strict() })
+                  .strict(),
+              })
+              .strict(),
+            starredRepos: z
+              .object({
+                body: z.string(),
+                refs: z
+                  .object({ github: z.object({ label: z.string(), href: z.string() }).strict() })
+                  .strict(),
+              })
+              .strict(),
+            theatreReviews: z
+              .object({
+                body: z.string(),
+                refs: z
+                  .object({
+                    squarespace: z.object({ label: z.string(), href: z.string() }).strict(),
+                  })
+                  .strict(),
+              })
+              .strict(),
+          })
+          .strict()
+          .describe(
+            'Structured provenance for each System Status data source. Translatable prose (body, with {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine href) so a TMS never sees a URL and platforms compose their own anchors. Web composes anchor HTML via composeProvenance(); iOS composes native links from the same shape.',
+          ),
       })
       .strict()
       .describe(
-        'System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.',
+        'System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.',
       ),
     identityCard: z
       .object({

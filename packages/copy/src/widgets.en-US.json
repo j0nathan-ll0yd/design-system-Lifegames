@@ -1587,6 +1587,336 @@
           "maxChars": 12
         }
       }
+    },
+    "sources": {
+      "health": {
+        "body": {
+          "value": "Activity by my {watch} every ~15 minutes. Water powered by {water}. Caffeine powered by {coffee}.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Health row: Apple Watch activity cadence, Larq water tracking, Acaia caffeine tracking. {watch}/{water}/{coffee} are link placeholders composed from refs.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {
+          "watch": {
+            "label": {
+              "value": "Apple Watch 11",
+              "_meta": {
+                "description": "Provenance link label for Apple Watch 11 in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://www.apple.com/apple-watch-series-11/",
+              "_meta": {
+                "description": "Structural provenance URL for the Apple Watch 11 link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          },
+          "water": {
+            "label": {
+              "value": "Larq",
+              "_meta": {
+                "description": "Provenance link label for Larq in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://www.livelarq.com",
+              "_meta": {
+                "description": "Structural provenance URL for the Larq link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          },
+          "coffee": {
+            "label": {
+              "value": "Acaia",
+              "_meta": {
+                "description": "Provenance link label for Acaia in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://acaia.co/products/pearl",
+              "_meta": {
+                "description": "Structural provenance URL for the Acaia link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          }
+        }
+      },
+      "sleep": {
+        "body": {
+          "value": "Powered by my {watch}. True Apple Sleep Score, updated manually daily.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Sleep row: Apple Watch sleep tracking, manual daily update cadence. {watch} is a link placeholder composed from refs.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {
+          "watch": {
+            "label": {
+              "value": "Apple Watch 11",
+              "_meta": {
+                "description": "Provenance link label for Apple Watch 11 in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://www.apple.com/apple-watch-series-11/",
+              "_meta": {
+                "description": "Structural provenance URL for the Apple Watch 11 link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          }
+        }
+      },
+      "books": {
+        "body": {
+          "value": "Powered by a custom iOS App, hosted on AWS.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Books row: custom iOS app and AWS backend. No links.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {}
+      },
+      "articles": {
+        "body": {
+          "value": "Powered by {feedly} as I mark articles to Read Later.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Articles row: Feedly as the read-later source. {feedly} is a link placeholder composed from refs.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {
+          "feedly": {
+            "label": {
+              "value": "Feedly",
+              "_meta": {
+                "description": "Provenance link label for Feedly in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://feedly.com",
+              "_meta": {
+                "description": "Structural provenance URL for the Feedly link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          }
+        }
+      },
+      "githubEvents": {
+        "body": {
+          "value": "Powered by {github} as commits are made or pull requests are merged.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Github Events row: GitHub event source for commits and pull requests. {github} is a link placeholder composed from refs.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {
+          "github": {
+            "label": {
+              "value": "Github",
+              "_meta": {
+                "description": "Provenance link label for Github in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://github.com",
+              "_meta": {
+                "description": "Structural provenance URL for the Github link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          }
+        }
+      },
+      "starredRepos": {
+        "body": {
+          "value": "Powered by {github} as new repositories are starred.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Github Stars row: GitHub star event source. {github} is a link placeholder composed from refs.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {
+          "github": {
+            "label": {
+              "value": "Github",
+              "_meta": {
+                "description": "Provenance link label for Github in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://github.com",
+              "_meta": {
+                "description": "Structural provenance URL for the Github link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          }
+        }
+      },
+      "theatreReviews": {
+        "body": {
+          "value": "Powered by {squarespace} as new reviews are posted.",
+          "_meta": {
+            "description": "Provenance tooltip body for the Theatre Reviews row: Squarespace as the publication platform. {squarespace} is a link placeholder composed from refs.",
+            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "register": "factual",
+            "audience": "human",
+            "owner": "jonathan",
+            "lastReviewed": "2026-07-01"
+          }
+        },
+        "refs": {
+          "squarespace": {
+            "label": {
+              "value": "Squarespace",
+              "_meta": {
+                "description": "Provenance link label for Squarespace in the System Status popover.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "label",
+                "audience": "human",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            },
+            "href": {
+              "value": "https://www.squarespace.com/",
+              "_meta": {
+                "description": "Structural provenance URL for the Squarespace link in the System Status popover. Machine surface: not translatable prose.",
+                "usage": [
+                  "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+                ],
+                "register": "machine",
+                "audience": "machine",
+                "owner": "jonathan",
+                "lastReviewed": "2026-07-01"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "identityCard": {

@@ -515,7 +515,7 @@
 
     #systemStatus {
       display: grid;
-      grid-template-columns: auto max-content 1fr;
+      grid-template-columns: auto max-content 1fr auto;
       column-gap: var(--space-10);
     }
 
@@ -646,6 +646,103 @@
     }
     .sys-key-yellow {
       color: #ffd600;
+    }
+
+    /* --- System Status: provenance info button --- */
+    .sys-info {
+      /* Unstyled button reset */
+      appearance: none;
+      background: none;
+      border: none;
+      /* padding: 5px expands the interactive area to 24×24 CSS px (SVG 14px + 5×2 = 24px),
+         satisfying WCAG 2.2 SC 2.5.8. margin: -5px counteracts the padding so the button's
+         margin box stays SVG-sized (14px) — the subgrid row height is unaffected. */
+      padding: 5px;
+      margin: -5px;
+      /* Layout: inline-flex so the SVG centers within the padded area */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      /* Color and cursor */
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .sys-info:hover {
+      color: var(--neon-cyan);
+    }
+
+    .sys-info:focus-visible {
+      color: var(--neon-cyan);
+      outline: 2px solid var(--neon-cyan);
+      outline-offset: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* --- System Status: provenance popover --- */
+    /* The popover element lives in the top layer (position:fixed), never as a
+       grid item. Keep the closed state on the UA display:none rule — do NOT
+       set display here. Width / inset are overridden by anchor positioning
+       when supported. */
+    .sys-tooltip[popover] {
+      /* Positioning fallback: centered near the widget, top-layer so never clipped */
+      position: fixed;
+      inset: auto;
+      margin: 0;
+      /* Appearance */
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-12) var(--space-14);
+      color: var(--text);
+      font-size: var(--font-size-sm);
+      font-family: 'Space Grotesk', monospace;
+      max-inline-size: min(320px, 90vw);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Link accent inside the provenance popover */
+    .sys-tooltip a {
+      color: var(--neon-cyan);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .sys-tooltip a:hover {
+      color: var(--neon-blue);
+    }
+
+    /* Anchor positioning in supporting browsers: position near the invoking button */
+    @supports (anchor-name: --a) or (position-area: bottom) {
+      .sys-tooltip[popover] {
+        position-area: bottom span-inline-start;
+        position-try-fallbacks:
+          flip-block,
+          flip-inline,
+          flip-block flip-inline;
+        margin: var(--space-6) 0;
+      }
+    }
+
+    /* Entry/exit transition — disabled under reduced-motion */
+    @media (prefers-reduced-motion: no-preference) {
+      .sys-tooltip[popover] {
+        opacity: 1;
+        transform: translateY(0);
+        transition:
+          opacity 0.15s ease,
+          transform 0.15s ease,
+          display 0.15s ease;
+        transition-behavior: allow-discrete;
+      }
+
+      @starting-style {
+        .sys-tooltip[popover]:popover-open {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+      }
     }
 
     /* ===== 4. COMMAND BAR ===== */

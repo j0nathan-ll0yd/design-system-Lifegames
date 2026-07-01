@@ -483,9 +483,9 @@
     },
     "systemStatus": {
       "type": "object",
-      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.",
+      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.",
       "additionalProperties": false,
-      "required": ["title", "valueActive", "valueOffline", "timestampRealtime"],
+      "required": ["title", "valueActive", "valueOffline", "timestampRealtime", "sources"],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -498,6 +498,212 @@
         },
         "timestampRealtime": {
           "$ref": "#/$defs/CopyString"
+        },
+        "sources": {
+          "type": "object",
+          "description": "Structured provenance for each System Status data source. Translatable prose (body, with {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine href) so a TMS never sees a URL and platforms compose their own anchors. Web composes anchor HTML via composeProvenance(); iOS composes native links from the same shape.",
+          "additionalProperties": false,
+          "required": [
+            "health",
+            "sleep",
+            "books",
+            "articles",
+            "githubEvents",
+            "starredRepos",
+            "theatreReviews"
+          ],
+          "properties": {
+            "health": {
+              "type": "object",
+              "title": "SystemStatusSourceHealth",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsHealth",
+                  "additionalProperties": false,
+                  "required": ["watch", "water", "coffee"],
+                  "properties": {
+                    "watch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    },
+                    "water": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    },
+                    "coffee": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "sleep": {
+              "type": "object",
+              "title": "SystemStatusSourceSleep",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsSleep",
+                  "additionalProperties": false,
+                  "required": ["watch"],
+                  "properties": {
+                    "watch": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "books": {
+              "type": "object",
+              "title": "SystemStatusSourceBooks",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsBooks",
+                  "additionalProperties": false,
+                  "required": [],
+                  "properties": {}
+                }
+              }
+            },
+            "articles": {
+              "type": "object",
+              "title": "SystemStatusSourceArticles",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsArticles",
+                  "additionalProperties": false,
+                  "required": ["feedly"],
+                  "properties": {
+                    "feedly": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "githubEvents": {
+              "type": "object",
+              "title": "SystemStatusSourceGithubEvents",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsGithubEvents",
+                  "additionalProperties": false,
+                  "required": ["github"],
+                  "properties": {
+                    "github": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "starredRepos": {
+              "type": "object",
+              "title": "SystemStatusSourceStarredRepos",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsStarredRepos",
+                  "additionalProperties": false,
+                  "required": ["github"],
+                  "properties": {
+                    "github": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "theatreReviews": {
+              "type": "object",
+              "title": "SystemStatusSourceTheatreReviews",
+              "additionalProperties": false,
+              "required": ["body", "refs"],
+              "properties": {
+                "body": { "$ref": "#/$defs/CopyString" },
+                "refs": {
+                  "type": "object",
+                  "title": "SystemStatusRefsTheatreReviews",
+                  "additionalProperties": false,
+                  "required": ["squarespace"],
+                  "properties": {
+                    "squarespace": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["label", "href"],
+                      "properties": {
+                        "label": { "$ref": "#/$defs/CopyString" },
+                        "href": { "$ref": "#/$defs/CopyString" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

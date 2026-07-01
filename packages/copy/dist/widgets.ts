@@ -168,13 +168,25 @@ export interface Widgets {
     timestampBash: string;
   };
   /**
-   * System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.
+   * System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.
    */
   systemStatus: {
     title: string;
     valueActive: string;
     valueOffline: string;
     timestampRealtime: string;
+    /**
+     * Structured provenance for each System Status data source. Translatable prose (body, with {phKey} ICU MF1 placeholders) is separated from structural link refs (label + machine href) so a TMS never sees a URL and platforms compose their own anchors. Web composes anchor HTML via composeProvenance(); iOS composes native links from the same shape.
+     */
+    sources: {
+      health: SystemStatusSourceHealth;
+      sleep: SystemStatusSourceSleep;
+      books: SystemStatusSourceBooks;
+      articles: SystemStatusSourceArticles;
+      githubEvents: SystemStatusSourceGithubEvents;
+      starredRepos: SystemStatusSourceStarredRepos;
+      theatreReviews: SystemStatusSourceTheatreReviews;
+    };
   };
   /**
    * Identity card — the social/link pill labels.
@@ -185,5 +197,78 @@ export interface Widgets {
     site: string;
     mastodon: string;
     bluesky: string;
+  };
+}
+export interface SystemStatusSourceHealth {
+  body: string;
+  refs: SystemStatusRefsHealth;
+}
+export interface SystemStatusRefsHealth {
+  watch: {
+    label: string;
+    href: string;
+  };
+  water: {
+    label: string;
+    href: string;
+  };
+  coffee: {
+    label: string;
+    href: string;
+  };
+}
+export interface SystemStatusSourceSleep {
+  body: string;
+  refs: SystemStatusRefsSleep;
+}
+export interface SystemStatusRefsSleep {
+  watch: {
+    label: string;
+    href: string;
+  };
+}
+export interface SystemStatusSourceBooks {
+  body: string;
+  refs: SystemStatusRefsBooks;
+}
+export interface SystemStatusRefsBooks {}
+export interface SystemStatusSourceArticles {
+  body: string;
+  refs: SystemStatusRefsArticles;
+}
+export interface SystemStatusRefsArticles {
+  feedly: {
+    label: string;
+    href: string;
+  };
+}
+export interface SystemStatusSourceGithubEvents {
+  body: string;
+  refs: SystemStatusRefsGithubEvents;
+}
+export interface SystemStatusRefsGithubEvents {
+  github: {
+    label: string;
+    href: string;
+  };
+}
+export interface SystemStatusSourceStarredRepos {
+  body: string;
+  refs: SystemStatusRefsStarredRepos;
+}
+export interface SystemStatusRefsStarredRepos {
+  github: {
+    label: string;
+    href: string;
+  };
+}
+export interface SystemStatusSourceTheatreReviews {
+  body: string;
+  refs: SystemStatusRefsTheatreReviews;
+}
+export interface SystemStatusRefsTheatreReviews {
+  squarespace: {
+    label: string;
+    href: string;
   };
 }
