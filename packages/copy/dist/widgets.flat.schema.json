@@ -464,7 +464,7 @@
     },
     "systemStatus": {
       "type": "object",
-      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.",
+      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.",
       "properties": {
         "title": {
           "type": "string"
@@ -477,9 +477,46 @@
         },
         "timestampRealtime": {
           "type": "string"
+        },
+        "sources": {
+          "type": "object",
+          "description": "Provenance tooltip prose for each System Status data source. Values use [label](url) markdown links; web renders via renderProvenance(). Authored without maxChars — Health string is 208 chars.",
+          "properties": {
+            "health": {
+              "type": "string"
+            },
+            "sleep": {
+              "type": "string"
+            },
+            "books": {
+              "type": "string"
+            },
+            "articles": {
+              "type": "string"
+            },
+            "githubEvents": {
+              "type": "string"
+            },
+            "starredRepos": {
+              "type": "string"
+            },
+            "theatreReviews": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "health",
+            "sleep",
+            "books",
+            "articles",
+            "githubEvents",
+            "starredRepos",
+            "theatreReviews"
+          ],
+          "additionalProperties": false
         }
       },
-      "required": ["title", "valueActive", "valueOffline", "timestampRealtime"],
+      "required": ["title", "valueActive", "valueOffline", "timestampRealtime", "sources"],
       "additionalProperties": false
     },
     "identityCard": {

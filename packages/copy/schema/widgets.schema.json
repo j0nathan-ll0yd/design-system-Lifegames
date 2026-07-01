@@ -483,9 +483,9 @@
     },
     "systemStatus": {
       "type": "object",
-      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.",
+      "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.",
       "additionalProperties": false,
-      "required": ["title", "valueActive", "valueOffline", "timestampRealtime"],
+      "required": ["title", "valueActive", "valueOffline", "timestampRealtime", "sources"],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -498,6 +498,29 @@
         },
         "timestampRealtime": {
           "$ref": "#/$defs/CopyString"
+        },
+        "sources": {
+          "type": "object",
+          "description": "Provenance tooltip prose for each System Status data source. Values use [label](url) markdown links; web renders via renderProvenance(). Authored without maxChars — Health string is 208 chars.",
+          "additionalProperties": false,
+          "required": [
+            "health",
+            "sleep",
+            "books",
+            "articles",
+            "githubEvents",
+            "starredRepos",
+            "theatreReviews"
+          ],
+          "properties": {
+            "health": { "$ref": "#/$defs/CopyString" },
+            "sleep": { "$ref": "#/$defs/CopyString" },
+            "books": { "$ref": "#/$defs/CopyString" },
+            "articles": { "$ref": "#/$defs/CopyString" },
+            "githubEvents": { "$ref": "#/$defs/CopyString" },
+            "starredRepos": { "$ref": "#/$defs/CopyString" },
+            "theatreReviews": { "$ref": "#/$defs/CopyString" }
+          }
         }
       }
     },

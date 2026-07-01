@@ -44,7 +44,8 @@ public struct Widgets: Codable, Sendable {
     /// Starred Repos production widget — title, empty-state, recent timestamp.
     public let starredRepos: StarredRepos
     /// System Status widget — title, per-source active/offline status values (canonical natural
-    /// case; consumers may uppercase as display transform), realtime timestamp.
+    /// case; consumers may uppercase as display transform), realtime timestamp, and popover
+    /// provenance prose.
     public let systemStatus: SystemStatus
     /// Theatre Reviews widget — title + empty-state.
     public let theatreReviews: TheatreReviews
@@ -906,12 +907,18 @@ public extension StarredRepos {
 }
 
 /// System Status widget — title, per-source active/offline status values (canonical natural
-/// case; consumers may uppercase as display transform), realtime timestamp.
+/// case; consumers may uppercase as display transform), realtime timestamp, and popover
+/// provenance prose.
 // MARK: - SystemStatus
 public struct SystemStatus: Codable, Sendable {
+    /// Provenance tooltip prose for each System Status data source. Values use [label](url)
+    /// markdown links; web renders via renderProvenance(). Authored without maxChars — Health
+    /// string is 208 chars.
+    public let sources: Sources
     public let timestampRealtime, title, valueActive, valueOffline: String
 
-    public init(timestampRealtime: String, title: String, valueActive: String, valueOffline: String) {
+    public init(sources: Sources, timestampRealtime: String, title: String, valueActive: String, valueOffline: String) {
+        self.sources = sources
         self.timestampRealtime = timestampRealtime
         self.title = title
         self.valueActive = valueActive
@@ -938,16 +945,84 @@ public extension SystemStatus {
     }
 
     func with(
+        sources: Sources? = nil,
         timestampRealtime: String? = nil,
         title: String? = nil,
         valueActive: String? = nil,
         valueOffline: String? = nil
     ) -> SystemStatus {
         return SystemStatus(
+            sources: sources ?? self.sources,
             timestampRealtime: timestampRealtime ?? self.timestampRealtime,
             title: title ?? self.title,
             valueActive: valueActive ?? self.valueActive,
             valueOffline: valueOffline ?? self.valueOffline
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Provenance tooltip prose for each System Status data source. Values use [label](url)
+/// markdown links; web renders via renderProvenance(). Authored without maxChars — Health
+/// string is 208 chars.
+// MARK: - Sources
+public struct Sources: Codable, Sendable {
+    public let articles, books, githubEvents, health: String
+    public let sleep, starredRepos, theatreReviews: String
+
+    public init(articles: String, books: String, githubEvents: String, health: String, sleep: String, starredRepos: String, theatreReviews: String) {
+        self.articles = articles
+        self.books = books
+        self.githubEvents = githubEvents
+        self.health = health
+        self.sleep = sleep
+        self.starredRepos = starredRepos
+        self.theatreReviews = theatreReviews
+    }
+}
+
+// MARK: Sources convenience initializers and mutators
+
+public extension Sources {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Sources.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        articles: String? = nil,
+        books: String? = nil,
+        githubEvents: String? = nil,
+        health: String? = nil,
+        sleep: String? = nil,
+        starredRepos: String? = nil,
+        theatreReviews: String? = nil
+    ) -> Sources {
+        return Sources(
+            articles: articles ?? self.articles,
+            books: books ?? self.books,
+            githubEvents: githubEvents ?? self.githubEvents,
+            health: health ?? self.health,
+            sleep: sleep ?? self.sleep,
+            starredRepos: starredRepos ?? self.starredRepos,
+            theatreReviews: theatreReviews ?? self.theatreReviews
         )
     }
 

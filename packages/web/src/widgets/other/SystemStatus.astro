@@ -1,5 +1,6 @@
 ---
 import { widgets } from '@lifegames/copy';
+import { renderProvenance } from '../../runtime/render-provenance';
 
 const { system, compact = false } = Astro.props;
 const lines = system.lines;
@@ -25,6 +26,11 @@ const keyColorMap: Record<string, string> = {
   'Github Stars': 'sys-key-green',
   'Theatre Reviews': 'sys-key-yellow',
 };
+
+// Type guard: narrows a runtime string to a valid provenance source key.
+function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources {
+  return s in widgets.systemStatus.sources;
+}
 ---
 
 {
@@ -40,19 +46,58 @@ const keyColorMap: Record<string, string> = {
       <div id="systemStatus">
         {lines
           .filter((line: any) => import.meta.env.DEV || line.key !== 'Location')
-          .map((line: any, idx: number) => (
-            <div
-              class="sys-line"
-              data-source={sourceMap[line.key] || ''}
-              style={`animation-delay: ${idx * 0.1}s`}
-            >
-              <div class={`sys-dot ${line.dotClass}`} style={`animation-delay: ${idx * 0.3}s`} />
-              <span class={`sys-key${keyColorMap[line.key] ? ' ' + keyColorMap[line.key] : ''}`}>
-                {line.key}:
-              </span>
-              <span class={line.valClass || 'sys-val'} set:html={line.value} />
-            </div>
-          ))}
+          .map((line: any, idx: number) => {
+            const source = sourceMap[line.key] || '';
+            const provenanceMd = isSourceKey(source)
+              ? widgets.systemStatus.sources[source]
+              : undefined;
+            return (
+              <div class="sys-line" data-source={source} style={`animation-delay: ${idx * 0.1}s`}>
+                <div class={`sys-dot ${line.dotClass}`} style={`animation-delay: ${idx * 0.3}s`} />
+                <span class={`sys-key${keyColorMap[line.key] ? ' ' + keyColorMap[line.key] : ''}`}>
+                  {line.key}:
+                </span>
+                <span class={line.valClass || 'sys-val'} set:html={line.value} />
+                {provenanceMd !== undefined && (
+                  <>
+                    <button
+                      type="button"
+                      class="sys-info"
+                      popovertarget={`tip-${source}`}
+                      popovertargetaction="toggle"
+                      aria-label={`More information about the ${line.key} data source`}
+                      aria-details={`tip-${source}`}
+                    >
+                      <svg
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                      </svg>
+                    </button>
+                    <div
+                      id={`tip-${source}`}
+                      popover="auto"
+                      role="group"
+                      aria-label={`${line.key} data source`}
+                      class="sys-tooltip"
+                      set:html={renderProvenance(provenanceMd)}
+                    />
+                  </>
+                )}
+              </div>
+            );
+          })}
       </div>
     </div>
   ) : (
@@ -69,24 +114,67 @@ const keyColorMap: Record<string, string> = {
           <div id="systemStatus">
             {lines
               .filter((line: any) => import.meta.env.DEV || line.key !== 'Location')
-              .map((line: any, idx: number) => (
-                <div
-                  class="sys-line"
-                  data-source={sourceMap[line.key] || ''}
-                  style={`animation-delay: ${idx * 0.1}s`}
-                >
+              .map((line: any, idx: number) => {
+                const source = sourceMap[line.key] || '';
+                const provenanceMd = isSourceKey(source)
+                  ? widgets.systemStatus.sources[source]
+                  : undefined;
+                return (
                   <div
-                    class={`sys-dot ${line.dotClass}`}
-                    style={`animation-delay: ${idx * 0.3}s`}
-                  />
-                  <span
-                    class={`sys-key${keyColorMap[line.key] ? ' ' + keyColorMap[line.key] : ''}`}
+                    class="sys-line"
+                    data-source={source}
+                    style={`animation-delay: ${idx * 0.1}s`}
                   >
-                    {line.key}:
-                  </span>
-                  <span class={line.valClass || 'sys-val'} set:html={line.value} />
-                </div>
-              ))}
+                    <div
+                      class={`sys-dot ${line.dotClass}`}
+                      style={`animation-delay: ${idx * 0.3}s`}
+                    />
+                    <span
+                      class={`sys-key${keyColorMap[line.key] ? ' ' + keyColorMap[line.key] : ''}`}
+                    >
+                      {line.key}:
+                    </span>
+                    <span class={line.valClass || 'sys-val'} set:html={line.value} />
+                    {provenanceMd !== undefined && (
+                      <>
+                        <button
+                          type="button"
+                          class="sys-info"
+                          popovertarget={`tip-${source}`}
+                          popovertargetaction="toggle"
+                          aria-label={`More information about the ${line.key} data source`}
+                          aria-details={`tip-${source}`}
+                        >
+                          <svg
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="12" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                          </svg>
+                        </button>
+                        <div
+                          id={`tip-${source}`}
+                          popover="auto"
+                          role="group"
+                          aria-label={`${line.key} data source`}
+                          class="sys-tooltip"
+                          set:html={renderProvenance(provenanceMd)}
+                        />
+                      </>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>

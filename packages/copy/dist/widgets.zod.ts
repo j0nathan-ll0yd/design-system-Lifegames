@@ -165,10 +165,24 @@ export const widgetsSchema = z
         valueActive: z.string(),
         valueOffline: z.string(),
         timestampRealtime: z.string(),
+        sources: z
+          .object({
+            health: z.string(),
+            sleep: z.string(),
+            books: z.string(),
+            articles: z.string(),
+            githubEvents: z.string(),
+            starredRepos: z.string(),
+            theatreReviews: z.string(),
+          })
+          .strict()
+          .describe(
+            'Provenance tooltip prose for each System Status data source. Values use [label](url) markdown links; web renders via renderProvenance(). Authored without maxChars — Health string is 208 chars.',
+          ),
       })
       .strict()
       .describe(
-        'System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.',
+        'System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.',
       ),
     identityCard: z
       .object({

@@ -168,13 +168,25 @@ export interface Widgets {
     timestampBash: string;
   };
   /**
-   * System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp.
+   * System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.
    */
   systemStatus: {
     title: string;
     valueActive: string;
     valueOffline: string;
     timestampRealtime: string;
+    /**
+     * Provenance tooltip prose for each System Status data source. Values use [label](url) markdown links; web renders via renderProvenance(). Authored without maxChars — Health string is 208 chars.
+     */
+    sources: {
+      health: string;
+      sleep: string;
+      books: string;
+      articles: string;
+      githubEvents: string;
+      starredRepos: string;
+      theatreReviews: string;
+    };
   };
   /**
    * Identity card — the social/link pill labels.

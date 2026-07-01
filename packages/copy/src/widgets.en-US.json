@@ -1587,6 +1587,85 @@
           "maxChars": 12
         }
       }
+    },
+    "sources": {
+      "health": {
+        "value": "Activity by my [Apple Watch 11](https://www.apple.com/apple-watch-series-11/) every ~15 minutes. Water powered by [Larq](https://www.livelarq.com). Caffeine powered by [Acaia](https://acaia.co/products/pearl)",
+        "_meta": {
+          "description": "Provenance tooltip for the Health row: Apple Watch activity cadence, Larq water tracking, Acaia caffeine tracking.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "expressive",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      },
+      "sleep": {
+        "value": "Powered by my [Apple Watch 11](https://www.apple.com/apple-watch-series-11/). True Apple Sleep Score, updated manually daily.",
+        "_meta": {
+          "description": "Provenance tooltip for the Sleep row: Apple Watch sleep tracking, manual daily update cadence.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "expressive",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      },
+      "books": {
+        "value": "Powered by a custom iOS App, hosted on AWS.",
+        "_meta": {
+          "description": "Provenance tooltip for the Books row: custom iOS app and AWS backend.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      },
+      "articles": {
+        "value": "Powered by [Feedly](https://feedly.com) as I mark articles to Read Later.",
+        "_meta": {
+          "description": "Provenance tooltip for the Articles row: Feedly as the read-later source.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      },
+      "githubEvents": {
+        "value": "Powered by [Github](https://github.com) as commits are made or pull requests are merged.",
+        "_meta": {
+          "description": "Provenance tooltip for the Github Events row: GitHub event source for commits and pull requests.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      },
+      "starredRepos": {
+        "value": "Powered by [Github](https://github.com) as new repositories are starred.",
+        "_meta": {
+          "description": "Provenance tooltip for the Github Stars row: GitHub star event source.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      },
+      "theatreReviews": {
+        "value": "Powered by [Squarespace](https://www.squarespace.com/) as new reviews are posted.",
+        "_meta": {
+          "description": "Provenance tooltip for the Theatre Reviews row: Squarespace as the publication platform.",
+          "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-01"
+        }
+      }
     }
   },
   "identityCard": {

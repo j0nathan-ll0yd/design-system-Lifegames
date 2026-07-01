@@ -122,7 +122,16 @@
     "title": "System Status",
     "valueActive": "Active",
     "valueOffline": "Offline",
-    "timestampRealtime": "realtime"
+    "timestampRealtime": "realtime",
+    "sources": {
+      "health": "Activity by my [Apple Watch 11](https://www.apple.com/apple-watch-series-11/) every ~15 minutes. Water powered by [Larq](https://www.livelarq.com). Caffeine powered by [Acaia](https://acaia.co/products/pearl)",
+      "sleep": "Powered by my [Apple Watch 11](https://www.apple.com/apple-watch-series-11/). True Apple Sleep Score, updated manually daily.",
+      "books": "Powered by a custom iOS App, hosted on AWS.",
+      "articles": "Powered by [Feedly](https://feedly.com) as I mark articles to Read Later.",
+      "githubEvents": "Powered by [Github](https://github.com) as commits are made or pull requests are merged.",
+      "starredRepos": "Powered by [Github](https://github.com) as new repositories are starred.",
+      "theatreReviews": "Powered by [Squarespace](https://www.squarespace.com/) as new reviews are posted."
+    }
   },
   "identityCard": {
     "github": "GitHub",
