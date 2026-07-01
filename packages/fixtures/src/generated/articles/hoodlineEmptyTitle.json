@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "articles": [
+    {
+      "articleUrl": "https://hoodline.com/2026/03/sf-mission-district-development",
+      "articleTitle": "",
+      "articleAuthor": null,
+      "articleFirstImageUrl": null,
+      "articlePublishedAt": "2026-03-18",
+      "articleBoards": null,
+      "articleCategories": null,
+      "sourceTitle": "Hoodline — San Francisco Bay Area Neighborhood News and Community Updates",
+      "sourceUrl": "https://hoodline.com",
+      "sourceFeedUrl": null,
+      "sourceDomain": "hoodline.com",
+      "articleEngagement": null,
+      "articleEngagementRate": null,
+      "articleFirstHighlight": null,
+      "articleFirstComment": null,
+      "savedAt": "2026-03-18T12:00:00.000Z",
+      "notes": []
+    },
+    {
+      "articleUrl": "https://hoodline.com/2026/03/soma-construction-permit",
+      "articleTitle": "",
+      "articleAuthor": null,
+      "articleFirstImageUrl": null,
+      "articlePublishedAt": "2026-03-17",
+      "articleBoards": null,
+      "articleCategories": null,
+      "sourceTitle": "Hoodline — San Francisco Bay Area Neighborhood News and Community Updates",
+      "sourceUrl": "https://hoodline.com",
+      "sourceFeedUrl": null,
+      "sourceDomain": "hoodline.com",
+      "articleEngagement": null,
+      "articleEngagementRate": null,
+      "articleFirstHighlight": null,
+      "articleFirstComment": null,
+      "savedAt": "2026-03-17T12:00:00.000Z",
+      "notes": []
+    },
+    {
+      "articleUrl": "https://news.ycombinator.com/item?id=normalAfterEmpty",
+      "articleTitle": "Normal article following empty-title entries (mixed rendering)",
+      "articleAuthor": null,
+      "articleFirstImageUrl": null,
+      "articlePublishedAt": "2026-03-16",
+      "articleBoards": null,
+      "articleCategories": null,
+      "sourceTitle": "Hacker News",
+      "sourceUrl": "https://news.ycombinator.com",
+      "sourceFeedUrl": null,
+      "sourceDomain": null,
+      "articleEngagement": null,
+      "articleEngagementRate": null,
+      "articleFirstHighlight": null,
+      "articleFirstComment": null,
+      "savedAt": "2026-03-16T12:00:00.000Z",
+      "notes": []
+    }
+  ]
+}

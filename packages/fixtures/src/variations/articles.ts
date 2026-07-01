@@ -62,6 +62,42 @@ export const articlesVariations: Record<string, ArticlesExport> = {
     generatedAt: isoTimestamp(),
   }),
 
+  // Exercises the empty-title resilience path: articles where articleTitle is an
+  // empty string ("") and sourceTitle is unusually long. Named after the Hoodline
+  // local-news aggregator, which frequently produces articles with empty/missing
+  // titles and verbose publication names. Used by the `reading-empty-title`
+  // visual test scenario to assert bug-6 fix (widget must not crash or mis-render).
+  hoodlineEmptyTitle: createArticlesFixture({
+    articles: [
+      createArticle({
+        articleUrl: 'https://hoodline.com/2026/03/sf-mission-district-development',
+        articleTitle: '',
+        sourceTitle: 'Hoodline — San Francisco Bay Area Neighborhood News and Community Updates',
+        sourceUrl: 'https://hoodline.com',
+        sourceDomain: 'hoodline.com',
+        articlePublishedAt: isoDate(),
+        savedAt: isoTimestamp(),
+      }),
+      createArticle({
+        articleUrl: 'https://hoodline.com/2026/03/soma-construction-permit',
+        articleTitle: '',
+        sourceTitle: 'Hoodline — San Francisco Bay Area Neighborhood News and Community Updates',
+        sourceUrl: 'https://hoodline.com',
+        sourceDomain: 'hoodline.com',
+        articlePublishedAt: isoDate(1),
+        savedAt: isoTimestamp(1),
+      }),
+      createArticle({
+        articleUrl: 'https://news.ycombinator.com/item?id=normalAfterEmpty',
+        articleTitle: 'Normal article following empty-title entries (mixed rendering)',
+        sourceTitle: 'Hacker News',
+        sourceUrl: 'https://news.ycombinator.com',
+        articlePublishedAt: isoDate(2),
+        savedAt: isoTimestamp(2),
+      }),
+    ],
+  }),
+
   // Maximally populated: many articles, ALL nullable item fields set to non-null
   // values (articleAuthor, articleFirstImageUrl, articlePublishedAt, articleBoards,
   // articleCategories, sourceTitle, sourceUrl, sourceFeedUrl, sourceDomain,
