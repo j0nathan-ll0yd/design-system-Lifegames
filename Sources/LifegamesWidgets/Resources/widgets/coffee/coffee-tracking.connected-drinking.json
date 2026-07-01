@@ -1,0 +1,16 @@
+{
+  "connection": "connected",
+  "errorMessage": null,
+  "batteryPercent": 78,
+  "isSessionActive": true,
+  "isCupOnScale": true,
+  "startWeightGrams": 300,
+  "lastStableWeightGrams": 120,
+  "currentWeightGrams": 120,
+  "flowRateGramsPerSec": 3.2,
+  "sessionElapsedSeconds": 62,
+  "dailyCaffeineMg": 220,
+  "dailyTargetMg": 400,
+  "cupsToday": 3,
+  "beverage": "drip"
+}

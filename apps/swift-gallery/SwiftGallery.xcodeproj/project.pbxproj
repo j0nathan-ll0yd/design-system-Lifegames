@@ -78,6 +78,7 @@
 		DE143C86DB819E84CA0D138E /* ScreenEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 235F0079C672571F2751DD80 /* ScreenEntry.swift */; };
 		E212C891CE073009C9DBBEF6 /* SwiftGalleryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE07F20FF6E056CB0FFDBE34 /* SwiftGalleryApp.swift */; };
 		E723B46263F7B7725CADD993 /* FocusOverlayVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F37F2E015593652406DB56 /* FocusOverlayVariations.swift */; };
+		EE141CFA9210418E5AE8BC57 /* CoffeeStateSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C5F3F4E7778091D164B2DB /* CoffeeStateSwitcher.swift */; };
 		F42E086D3EF8078C3CF46E94 /* ReadingFeedVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F1AF23A88784896829CF9 /* ReadingFeedVariations.swift */; };
 		FB781C1734E05AF2D07CE0EA /* ScreenDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D74C55ABF3465DD3CFAD44 /* ScreenDetailView.swift */; };
 /* End PBXBuildFile section */
@@ -101,6 +102,7 @@
 		427F0E7056BBEDAE902C1EA4 /* WidgetCatalog+Reading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WidgetCatalog+Reading.swift"; sourceTree = "<group>"; };
 		42D0986290D7C414F7DE26E8 /* ComponentsShowcase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsShowcase.swift; sourceTree = "<group>"; };
 		43703C2E8BFFB67C876AE39D /* MovementRingsVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementRingsVariations.swift; sourceTree = "<group>"; };
+		47C5F3F4E7778091D164B2DB /* CoffeeStateSwitcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeStateSwitcher.swift; sourceTree = "<group>"; };
 		523D45B02B0129DD355788D5 /* LanguageBarsVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageBarsVariations.swift; sourceTree = "<group>"; };
 		59897B4F725553DF8A2B1BFB /* HydrationVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HydrationVariations.swift; sourceTree = "<group>"; };
 		5A594EDC1CA5C4F5DBC09051 /* WidgetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCatalog.swift; sourceTree = "<group>"; };
@@ -213,6 +215,14 @@
 			path = FileDetail;
 			sourceTree = "<group>";
 		};
+		56AAFEC51E7E2AA94AFF22B4 /* Coffee */ = {
+			isa = PBXGroup;
+			children = (
+				47C5F3F4E7778091D164B2DB /* CoffeeStateSwitcher.swift */,
+			);
+			path = Coffee;
+			sourceTree = "<group>";
+		};
 		5F651A450749C3FDFE1FF74B /* Showcases */ = {
 			isa = PBXGroup;
 			children = (
@@ -247,6 +257,7 @@
 			isa = PBXGroup;
 			children = (
 				B0EB8703FC0ED4349E7135B3 /* Account */,
+				56AAFEC51E7E2AA94AFF22B4 /* Coffee */,
 				823028D227973B3A8CDD71E9 /* DownloadSettings */,
 				4E92B02603ECDE51759093C9 /* FileDetail */,
 				C2729F1B77CE832EE03C18D6 /* FileList */,
@@ -474,6 +485,7 @@
 				474DDDA3E1A70215CA0093F6 /* CardsShowcase.swift in Sources */,
 				531F905112132A0486540488 /* Category.swift in Sources */,
 				B89D696068AC9EDEFB59546C /* CategoryListView.swift in Sources */,
+				EE141CFA9210418E5AE8BC57 /* CoffeeStateSwitcher.swift in Sources */,
 				9FAD130D33BBCD5F1848469A /* ColorsShowcase.swift in Sources */,
 				5CABD70040C68AE628111444 /* ComingSoonVariations.swift in Sources */,
 				61B6F24D919B87AB644A5DE4 /* CommitLogVariations.swift in Sources */,
