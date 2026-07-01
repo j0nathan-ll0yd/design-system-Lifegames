@@ -513,10 +513,17 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
 
+    #systemStatus {
+      display: grid;
+      grid-template-columns: auto max-content 1fr;
+      column-gap: var(--space-10);
+    }
+
     .sys-line {
-      display: flex;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1 / -1;
       align-items: center;
-      gap: var(--space-10);
       padding: 6px 0;
       font-size: var(--font-size-sm);
       font-family: 'Space Grotesk', monospace;
@@ -547,7 +554,6 @@
 
     .sys-key {
       color: var(--text-muted);
-      min-width: 110px;
     }
 
     .sys-key-amber {
@@ -1587,7 +1593,10 @@
     }
 
     .article-list-source {
-      flex-shrink: 0;
+      flex-shrink: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-size: var(--font-size-xs);
       font-family: var(--font-mono);
       color: rgba(245, 158, 11, 0.7);
