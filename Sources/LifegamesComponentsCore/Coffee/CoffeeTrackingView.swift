@@ -17,10 +17,19 @@ public struct CoffeeTrackingView: View {
     /// Animation seam — pass `false` for deterministic snapshot rendering. Production
     /// callers use the default (`true`).
     public let animated: Bool
+    /// Primary-action tap. The button's *meaning* is state-derived (New Cup / Finish Cup /
+    /// Connect / Reconnect — see `buttonTitle`); the caller owns the behavior. Presentational:
+    /// the view emits the event, it never mutates (GOVERNANCE P3 — data in, events out).
+    public let onPrimaryAction: () -> Void
 
-    public init(props: CoffeeTrackingProps, animated: Bool = true) {
+    public init(
+        props: CoffeeTrackingProps,
+        animated: Bool = true,
+        onPrimaryAction: @escaping () -> Void = {}
+    ) {
         self.props = props
         self.animated = animated
+        self.onPrimaryAction = onPrimaryAction
     }
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -234,7 +243,7 @@ public struct CoffeeTrackingView: View {
         let isConnectable = props.connection == .unpaired || props.connection == .error
 
         return Button {
-            // action owned by caller (props-driven, no mutation here)
+            onPrimaryAction() // caller owns behavior; view stays presentational (P3)
         } label: {
             HStack(spacing: Spacing.s200) {
                 if !isConnectable {
