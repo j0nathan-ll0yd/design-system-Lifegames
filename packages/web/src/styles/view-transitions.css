@@ -16,6 +16,33 @@
   }
 }
 
+/* SCOPE TRANSITIONS TO NAMED ELEMENTS ONLY (exclude :root)
+   By default the document root gets `view-transition-name: root`, so EVERY
+   transition captures the whole page: during the crossfade the live DOM is
+   replaced by a viewport-spanning snapshot and is NOT hit-testable. That
+   silently broke backdrop-click-to-close on the book modal — for the ~220ms
+   open crossfade a click on the backdrop resolved to <html> (the snapshot's
+   originating element) and never reached the <dialog>'s click listener.
+
+   Removing the root name means only the explicitly-named elements
+   (`book-modal-content`, `live-content-swap`) are snapshotted/animated; the
+   rest of the page — including the full-viewport <dialog> and its backdrop —
+   stays LIVE and interactive throughout the transition. This is also the
+   intended visual: only the card should crossfade, not the entire page. */
+:root {
+  view-transition-name: none;
+}
+
+/* POINTER-EVENTS PASS-THROUGH
+   The `::view-transition` overlay is still generated on :root and positioned
+   fixed over the viewport for the duration of every transition. With :root no
+   longer captured, the live <dialog> renders beneath it — so making the overlay
+   transparent to hit-testing lets a backdrop click during the crossfade fall
+   through to the live <dialog> instead of landing on the overlay (→ <html>). */
+::view-transition {
+  pointer-events: none;
+}
+
 /* BOOK MODAL TRANSITION
    The inner container of the dialog (id="bookModal") receives
    view-transition-name via JS (not here) because the name must be unique

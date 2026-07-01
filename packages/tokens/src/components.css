@@ -1869,15 +1869,34 @@
     }
 
     /* ===== BOOK MODAL ===== */
-    /* UA reset: remove default dialog border/padding/background; UA margin:auto
-       centers the dialog in the viewport (no need for flex-centering overlay). */
+    /* UA reset: remove default dialog border/padding/background. The <dialog>
+       element itself STRETCHES to fill the viewport (inset:0; width/height:auto
+       defeating the UA `width:fit-content`) and centers the visible card
+       (.book-modal) via grid place-items. This is deliberate: a full-viewport
+       dialog makes clicks on the empty area around the card land on the <dialog>
+       element itself (e.target === dialog), which is how backdrop-dismiss is
+       detected in book-modal-init.ts. A fit-content dialog (the pre-fix state)
+       could not detect backdrop clicks at all — ::backdrop clicks fall through
+       to <html> and never reach the dialog's click listener. The card's own
+       90vw/90dvh caps live on .book-modal below. */
     dialog.book-dialog {
       border: none;
       padding: 0;
       background: transparent;
-      margin: auto;
-      max-width: 90vw;
-      max-height: 90dvh;
+      margin: 0;
+      inset: 0;
+      width: auto;
+      height: auto;
+      max-width: none;
+      max-height: none;
+    }
+
+    /* Center the card only while open. Scoped to [open] so a closed dialog keeps
+       the UA `display:none` (an unscoped `display:grid` would render the empty
+       dialog permanently). */
+    dialog.book-dialog[open] {
+      display: grid;
+      place-items: center;
     }
 
     /* ::backdrop replaces the old .book-overlay div overlay. Top-layer

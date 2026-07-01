@@ -191,7 +191,30 @@ export function initBookModal(): void {
     });
   }
 
+  // Single unified close path — covers button click, backdrop click, and native
+  // Escape (cancel→close). Focus is always restored to the trigger for
+  // accessibility, but we suppress the :focus-visible ring that an Escape/
+  // backdrop dismiss would otherwise leave lingering on the book tile. The ring
+  // is restored the instant the user keyboard-navigates or moves focus away, so
+  // genuine keyboard focus visibility (WCAG 2.4.7) is preserved for shelf nav.
+  //
+  // The trigger is captured into a LOCAL here and the shared `triggerElement`
+  // is detached synchronously. This is deliberate: dialog.close() removes the
+  // `open` attribute synchronously but the DOM update (and historically the
+  // close-event bookkeeping) runs later, so relying on the shared module var at
+  // that later point races with a rapid reopen — a delayed close from a prior
+  // open could null a freshly-set triggerElement, skipping ring suppression on
+  // the next dismiss. Capturing locally makes each close self-contained.
   function closeWithTransition(): void {
+    const trigger = triggerElement;
+    triggerElement = null;
+
+    // Suppress the ring SYNCHRONOUSLY, before dialog.close() makes the close
+    // observable — an inline `outline:none` (higher specificity than the
+    // :focus-visible rule) guarantees the ring is already gone by the time any
+    // observer (or the next paint) can see `open` removed, so it never flickers.
+    if (trigger) trigger.style.outline = 'none';
+
     const vtName = currentVtName;
     withViewTransition(() => {
       if (vtName) modal!.style.viewTransitionName = vtName;
@@ -200,31 +223,27 @@ export function initBookModal(): void {
       // view-transition-name while hidden (would affect subsequent opens).
       modal!.style.viewTransitionName = '';
       currentVtName = '';
+
+      // Restore focus now that the dialog is closed (background no longer
+      // inert), then arm listeners that bring the ring back on the next genuine
+      // keyboard nav / pointer interaction. Runs inside the same synchronous
+      // block as dialog.close(), so focus + ring state are settled the instant
+      // `open` is observable — no queued-task gap for a test or paint to slip
+      // through.
+      if (trigger) {
+        trigger.focus();
+        const restoreRing = () => {
+          trigger.style.outline = '';
+          trigger.removeEventListener('blur', restoreRing);
+          trigger.removeEventListener('keydown', restoreRing);
+          trigger.removeEventListener('pointerdown', restoreRing);
+        };
+        trigger.addEventListener('blur', restoreRing, { once: true });
+        trigger.addEventListener('keydown', restoreRing, { once: true });
+        trigger.addEventListener('pointerdown', restoreRing, { once: true });
+      }
     });
   }
-
-  // Single unified close handler — covers button click, backdrop click, and
-  // native Escape (cancel→close). Focus is always restored to the trigger for
-  // accessibility, but we suppress the :focus-visible ring that an Escape/
-  // backdrop dismiss would otherwise leave lingering on the book tile. The ring
-  // is restored the instant the user keyboard-navigates or moves focus away, so
-  // genuine keyboard focus visibility (WCAG 2.4.7) is preserved for shelf nav.
-  dialog.addEventListener('close', () => {
-    const trigger = triggerElement;
-    triggerElement = null;
-    if (!trigger) return;
-    trigger.style.outline = 'none';
-    trigger.focus();
-    const restoreRing = () => {
-      trigger.style.outline = '';
-      trigger.removeEventListener('blur', restoreRing);
-      trigger.removeEventListener('keydown', restoreRing);
-      trigger.removeEventListener('pointerdown', restoreRing);
-    };
-    trigger.addEventListener('blur', restoreRing, { once: true });
-    trigger.addEventListener('keydown', restoreRing, { once: true });
-    trigger.addEventListener('pointerdown', restoreRing, { once: true });
-  });
 
   // Intercept Escape (cancel event) to drive the reverse close transition
   // before the browser natively closes the dialog. preventDefault() suppresses
@@ -235,12 +254,18 @@ export function initBookModal(): void {
     closeWithTransition();
   });
 
-  // Backdrop-click-to-close. Using getBoundingClientRect() because
-  // e.target === dialog is unreliable (::backdrop clicks also target the
-  // dialog element). Any click outside the dialog box bounds closes it.
+  // Backdrop-click-to-close. The <dialog> element fills the viewport and
+  // centers the visible card (.book-modal) via grid place-items (see
+  // components.css). A click on the empty area around the card therefore lands
+  // on the <dialog> element itself, while a click on the card lands on a
+  // descendant of #bookModal. So `e.target === dialog` cleanly distinguishes a
+  // backdrop click from a click inside the card.
+  //
+  // The previous getBoundingClientRect() approach could never fire: with a
+  // fit-content dialog the empty area was ::backdrop, and ::backdrop clicks
+  // fall through to <html> — they never reach this listener at all.
   dialog.addEventListener('click', (e: MouseEvent) => {
-    const r = dialog.getBoundingClientRect();
-    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) {
+    if (e.target === dialog) {
       closeWithTransition();
     }
   });
