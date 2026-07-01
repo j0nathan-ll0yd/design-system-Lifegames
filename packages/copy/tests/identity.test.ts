@@ -65,8 +65,10 @@ const NAMESPACES: NamespaceFixture[] = [
   { name: 'identity', expectedLeaves: 56 },
   // widgets: heartRate 16 + movement 14 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
-  //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + systemStatus 4 + identityCard 5.
-  { name: 'widgets', expectedLeaves: 100 },
+  //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
+  //   + systemStatus 4 (title/valueActive/valueOffline/timestampRealtime)
+  //   + systemStatus.sources 7 (health/sleep/books/articles/githubEvents/starredRepos/theatreReviews).
+  { name: 'widgets', expectedLeaves: 107 },
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
   { name: 'a11y', expectedLeaves: 14 },
