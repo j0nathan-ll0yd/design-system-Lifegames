@@ -685,62 +685,217 @@
        grid item. Keep the closed state on the UA display:none rule — do NOT
        set display here. Width / inset are overridden by anchor positioning
        when supported. */
+
+    /* Per-instance anchor wiring (Approach A1): each ⓘ button names an anchor;
+       each popover targets its matching anchor. Keyed off the EXISTING
+       popovertarget/id pairs in the markup — no markup change. This closes the
+       "position-area with no valid anchor → viewport top-left" Chromium bug
+       (the implicit popovertarget anchor is not reliably resolved on the
+       @starting-style re-layout pass). The 8th sourceMap key `Location` is
+       prod-filtered (SystemStatus.astro) and renders no `tip-location`, so it
+       is intentionally omitted. */
+    .sys-info[popovertarget='tip-health'] {
+      anchor-name: --sys-tip-health;
+    }
+    .sys-info[popovertarget='tip-sleep'] {
+      anchor-name: --sys-tip-sleep;
+    }
+    .sys-info[popovertarget='tip-books'] {
+      anchor-name: --sys-tip-books;
+    }
+    .sys-info[popovertarget='tip-articles'] {
+      anchor-name: --sys-tip-articles;
+    }
+    .sys-info[popovertarget='tip-githubEvents'] {
+      anchor-name: --sys-tip-githubEvents;
+    }
+    .sys-info[popovertarget='tip-starredRepos'] {
+      anchor-name: --sys-tip-starredRepos;
+    }
+    .sys-info[popovertarget='tip-theatreReviews'] {
+      anchor-name: --sys-tip-theatreReviews;
+    }
+
+    #tip-health {
+      position-anchor: --sys-tip-health;
+    }
+    #tip-sleep {
+      position-anchor: --sys-tip-sleep;
+    }
+    #tip-books {
+      position-anchor: --sys-tip-books;
+    }
+    #tip-articles {
+      position-anchor: --sys-tip-articles;
+    }
+    #tip-githubEvents {
+      position-anchor: --sys-tip-githubEvents;
+    }
+    #tip-starredRepos {
+      position-anchor: --sys-tip-starredRepos;
+    }
+    #tip-theatreReviews {
+      position-anchor: --sys-tip-theatreReviews;
+    }
+
     .sys-tooltip[popover] {
-      /* Positioning fallback: centered near the widget, top-layer so never clipped */
+      /* Caret size — also the anchor-facing margin gap (see caret block). */
+      --sys-caret-size: 8px;
+
+      /* Non-anchor fallback: centered in the viewport, top-layer so never
+         clipped and NEVER viewport-top-left. Centering uses the individual
+         `translate` property so it never collides with the `scale` entry
+         animation (independent properties that compose). */
       position: fixed;
       inset: auto;
       margin: 0;
-      /* Appearance */
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-md);
-      padding: var(--space-12) var(--space-14);
+      bottom: 1rem;
+      left: 50%;
+      translate: -50% 0;
+
+      /* Appearance (Vercel/Linear-class restraint): proportional font — the
+         monospace fallback was the primary "looks terrible" cause. */
+      width: max-content;
+      max-width: 280px;
+      padding: 10px 14px;
       color: var(--text);
       font-size: var(--font-size-sm);
-      font-family: 'Space Grotesk', monospace;
-      max-inline-size: min(320px, 90vw);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      line-height: 1.55;
+      border-radius: var(--radius-md);
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: blur(14px) saturate(130%);
+      backdrop-filter: blur(14px) saturate(130%);
+      /* Hairline border + a single neon-cyan top hairline (one restrained signal). */
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid color-mix(in srgb, var(--neon-cyan) 35%, transparent);
+      /* Shadow via drop-shadow (NOT box-shadow): the caret clip-path cuts
+         box-shadow, but drop-shadow wraps the clipped body+caret silhouette. */
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.45)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.28));
     }
 
-    /* Link accent inside the provenance popover */
+    /* Solid fallback where backdrop-filter is unsupported (the translucent
+       glass-bg would be near-invisible without the blur). */
+    @supports not (backdrop-filter: blur(1px)) {
+      .sys-tooltip[popover] {
+        background: rgba(0, 0, 0, 0.95);
+      }
+    }
+
+    /* Link accent inside the provenance popover. neon-cyan (#00d4ff) on the
+       frosted-dark glass resolves > 4.5:1 (WCAG AA) — verified manually. */
     .sys-tooltip a {
       color: var(--neon-cyan);
       text-decoration: underline;
-      text-underline-offset: 2px;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
     }
 
     .sys-tooltip a:hover {
       color: var(--neon-blue);
     }
 
-    /* Anchor positioning in supporting browsers: position near the invoking button */
-    @supports (anchor-name: --a) or (position-area: bottom) {
+    /* Anchor positioning in supporting browsers: sit next to the invoking
+       button. Positioned with the anchor() function — NOT position-area. The
+       per-#tip position-anchor above supplies the default anchor. anchor() is
+       the reliable primitive: position-area is recognized by @supports in some
+       engines yet produces no positioning (verified on the CI Chromium),
+       whereas anchor() works across Chrome 129+/FF 147+/Safari 26+ and the CI
+       Chromium. The AND-gate keeps the centered fallback for engines lacking
+       anchor positioning entirely. */
+    @supports (anchor-name: --a) and (position-anchor: --a) {
       .sys-tooltip[popover] {
-        position-area: bottom span-inline-start;
+        /* Reset the centered fallback. */
+        bottom: auto;
+        left: auto;
+        translate: none;
+        /* Default: below the trigger, right edge aligned to the trigger's
+           right edge so the box extends toward inline-start (leftward),
+           staying inside the left panel. */
+        top: anchor(bottom);
+        right: anchor(right);
         position-try-fallbacks:
           flip-block,
           flip-inline,
           flip-block flip-inline;
-        margin: var(--space-6) 0;
+        /* Asymmetric block margin: the anchor-facing gap (top, for the default
+           below-anchor placement) holds the caret. `flip-block` swaps the
+           block-axis insets AND margins on a vertical flip, moving the gap
+           (and the revealed caret) to the bottom — see the caret block. */
+        margin: var(--sys-caret-size) 0 0;
+        /* Clip to the margin box so ONLY the caret on the currently-margined
+           (anchor-facing) side is revealed; the opposite caret overflows the
+           zero-margin side and is clipped. This is the CSS-only auto-flip
+           mechanism (margin-box clip-path trick). */
+        clip-path: inset(0) margin-box;
+      }
+
+      /* Both carets are frosted diamonds matching the glass body; the clip-path
+         above reveals exactly one. ::before = up-caret (popover BELOW the
+         trigger, default); ::after = down-caret (popover flipped ABOVE).
+         Positioned near the inline-end (right) edge — with `span-inline-start`
+         the box extends leftward from the anchor, so the trigger aligns with
+         the popover's right edge. */
+      .sys-tooltip[popover]::before,
+      .sys-tooltip[popover]::after {
+        content: '';
+        position: absolute;
+        right: 14px;
+        width: var(--sys-caret-size);
+        height: var(--sys-caret-size);
+        background: var(--glass-bg);
+        -webkit-backdrop-filter: blur(14px) saturate(130%);
+        backdrop-filter: blur(14px) saturate(130%);
+        transform: rotate(45deg);
+      }
+
+      /* Up-caret: straddles the top edge; its two upper faces carry the 1px
+         edge (border-top + border-left after the 45° rotation). */
+      .sys-tooltip[popover]::before {
+        top: calc(var(--sys-caret-size) / -2);
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
+        border-left: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      /* Down-caret: straddles the bottom edge; its two lower faces carry the
+         edge (border-bottom + border-right after rotation). */
+      .sys-tooltip[popover]::after {
+        bottom: calc(var(--sys-caret-size) / -2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        border-right: 1px solid rgba(255, 255, 255, 0.14);
       }
     }
 
-    /* Entry/exit transition — disabled under reduced-motion */
+    /* Entry/exit transition — compositor-only opacity + scale (NEVER
+       transform/translate, which would clobber the fallback centering and add
+       layout churn on the same second-layout pass the root cause implicates).
+       Disabled under reduced-motion. */
     @media (prefers-reduced-motion: no-preference) {
       .sys-tooltip[popover] {
         opacity: 1;
-        transform: translateY(0);
+        scale: 1;
         transition:
-          opacity 0.15s ease,
-          transform 0.15s ease,
-          display 0.15s ease;
+          opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          scale 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          display 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          overlay 180ms cubic-bezier(0.16, 1, 0.3, 1);
+        transition-behavior: allow-discrete;
+      }
+
+      /* Faster exit. */
+      .sys-tooltip[popover]:not(:popover-open) {
+        transition:
+          opacity 130ms ease-in,
+          scale 130ms ease-in,
+          display 130ms ease-in,
+          overlay 130ms ease-in;
         transition-behavior: allow-discrete;
       }
 
       @starting-style {
         .sys-tooltip[popover]:popover-open {
           opacity: 0;
-          transform: translateY(-4px);
+          scale: 0.95;
         }
       }
     }
