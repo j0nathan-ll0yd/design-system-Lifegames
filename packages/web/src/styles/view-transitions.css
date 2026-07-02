@@ -43,31 +43,12 @@
   pointer-events: none;
 }
 
-/* BOOK MODAL TRANSITION
-   The inner container of the dialog (id="bookModal") receives
-   view-transition-name via JS (not here) because the name must be unique
-   per book. The rules below control the crossfade timing for that name.
-
-   We target the pseudo-elements with :only-child to distinguish the open
-   direction (new image entering, no old) from close (old leaving, no new).
-   This works across Chrome, Safari, and Firefox 144+ — Firefox lacks
-   transition *types* so we use :only-child as the discriminator. */
-
-::view-transition-old(book-modal-content),
-::view-transition-new(book-modal-content) {
-  animation-duration: 220ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Opening: new content fades in; no old content exists. */
-::view-transition-new(book-modal-content):only-child {
-  animation-name: vt-fade-in;
-}
-
-/* Closing: old content fades out; no new content exists. */
-::view-transition-old(book-modal-content):only-child {
-  animation-name: vt-fade-out;
-}
+/* BOOK MODAL: no view transition.
+   The book modal open/close is animated with pure CSS (bookModalIn /
+   bookModalOut in effects.css), NOT a same-document View Transition. A VT
+   snapshots the modal card, and the card has `backdrop-filter: blur`; the
+   snapshot flattened the live blur into a static image that glared as it faded
+   on dismiss. CSS enter/exit animations avoid that artifact. */
 
 /* LIVE-DATA CONTENT SWAPS
    Short crossfade for content-list innerHTML replacements (reading feed,
