@@ -753,6 +753,14 @@
       left: 50%;
       translate: -50% 0;
 
+      /* Override the UA `[popover] { overflow: auto }`: the edge-straddling
+         caret pseudos register as scrollable overflow (the hidden bottom caret
+         alone adds ~6px), producing a phantom scrollbar whose 15px gutter
+         squeezes the text — and the scroll container paint-clips the carets'
+         outer halves. Clipping is the margin-box clip-path's job; the short
+         provenance content never legitimately scrolls. */
+      overflow: visible;
+
       /* Appearance (Vercel/Linear-class restraint): proportional font — the
          monospace fallback was the primary "looks terrible" cause. */
       width: max-content;
