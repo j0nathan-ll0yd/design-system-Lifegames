@@ -207,7 +207,7 @@ done
 
 1. **Review breaking-change analysis** — Before applying any major bumps, especially against the dependabot ignore list
 2. **Verify local verification passes** — All `pnpm` + `swift` steps in Phase 4 must be green
-3. **Monitor GitHub CI** — After push, watch all workflows: `ci.yml`, `contrast-gate.yml`, `visual-regression.yml`
+3. **Monitor GitHub CI** — After push, watch all workflows: `ci.yml`, `visual-regression.yml`
 4. **Confirm merge** — Before squash-merging the PR
 5. **Verify Dependabot PRs closed** — After merge completes
 
