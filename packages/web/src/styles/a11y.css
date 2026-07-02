@@ -33,10 +33,31 @@
   top: 0;
 }
 
-/* ===== FOCUS INDICATORS (WCAG 2.4.7) ===== */
+/* ===== FOCUS INDICATORS (WCAG 2.4.7) =====
+   a11y.css is the loaded, unlayered focus source for the dashboard (tokens
+   base.css also declares focus rules, but they don't reach the consumer — which
+   is why every ring was pink). We define the visible keyboard ring here: a
+   global pink :focus-visible, with the design-system's intended per-element
+   colors — green for book tiles, blue for the modal close button. The ring is
+   suppressed for pointer/touch input via the input-modality tracker
+   (runtime/input-modality.ts); keyboard focus keeps it. */
 :focus-visible {
   outline: 2px solid var(--lg-color-accent-pink);
   outline-offset: 2px;
+}
+
+/* Per-element focus colors (each ring matches its widget accent). */
+.shelf-book:focus-visible {
+  outline-color: var(--lg-color-accent-green);
+}
+.book-modal-close:focus-visible {
+  outline-color: var(--lg-color-accent-blue);
+}
+
+/* Suppress the ring after pointer/touch input; kept for keyboard nav. Higher
+   specificity than the rules above so it wins under pointer modality. */
+:root[data-input-modality='pointer'] :focus-visible {
+  outline: none;
 }
 
 /* ===== HIGH CONTRAST (WCAG 1.4.11) ===== */

@@ -1679,6 +1679,7 @@
     }
 
     .article-list-title {
+      flex: 1 1 auto;
       font-size: var(--font-size-base);
       font-weight: 400;
       line-height: 1.35;
@@ -1692,6 +1693,7 @@
     .article-list-source {
       flex-shrink: 1;
       min-width: 0;
+      max-width: 40%;
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: var(--font-size-xs);

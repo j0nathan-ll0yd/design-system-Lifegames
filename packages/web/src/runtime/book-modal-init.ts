@@ -10,7 +10,6 @@
 import { widgets, a11y } from '@lifegames/copy';
 import { esc } from './html-utils';
 import { formatFinishedDate } from './updaters';
-import { withViewTransition } from './view-transition';
 
 interface BookData {
   asin?: string;
@@ -140,118 +139,97 @@ export function initBookModal(): void {
   dwg._bookModalInit = true;
 
   let triggerElement: HTMLElement | null = null;
-  // Tracks the view-transition-name set on #bookModal for the current open
-  // book so backdrop-click and Escape can drive the reverse (close) transition.
-  let currentVtName = '';
 
   function openModal(b: BookData): void {
-    // Derive a stable transition name from the book's ASIN so that concurrent
-    // books do not share the same view-transition-name (duplicate names cause
-    // the browser to silently skip the transition). The name is scoped to the
-    // inner container (bookModal), not the <dialog> element itself — top-layer
-    // elements cannot carry view-transition-name reliably across browsers.
-    // We also ensure the name is unset before the update and set inside it,
-    // so the browser captures old/new states correctly.
-    const vtName = b.asin ? 'book-modal-' + b.asin : 'book-modal-content';
+    modal!.innerHTML = renderModalHtml(b);
 
-    withViewTransition(() => {
-      modal!.style.viewTransitionName = '';
-      modal!.innerHTML = renderModalHtml(b);
+    // Wire image-cover fallback via external listener (CSP-safe; replaces
+    // inline onerror — D3). The cover element carries data-fallback when the
+    // computed Amazon URL differs from the stored custom cover.
+    const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover');
+    if (cover && cover.dataset.fallback) {
+      cover.addEventListener('error', function onErr() {
+        cover.src = cover.dataset.fallback!;
+        cover.removeEventListener('error', onErr);
+      });
+    }
 
-      // Wire image-cover fallback via external listener (CSP-safe; replaces
-      // inline onerror — D3). The cover element carries data-fallback when the
-      // computed Amazon URL differs from the stored custom cover.
-      const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover');
-      if (cover && cover.dataset.fallback) {
-        cover.addEventListener('error', function onErr() {
-          cover.src = cover.dataset.fallback!;
-          cover.removeEventListener('error', onErr);
-        });
+    // Open the dialog and fire analytics only on an ACTUAL open — never on a
+    // content-swap while already open (which would double-count book_open).
+    // The guard also prevents showModal() throwing InvalidStateError when open.
+    if (!dialog!.open) {
+      if (typeof window.sa_event === 'function') {
+        window.sa_event('book_open', { title: b.title });
       }
+      dialog!.showModal();
+    }
 
-      // Open the dialog and fire analytics only on an ACTUAL open — never on a
-      // content-swap while already open (which would double-count book_open).
-      // The guard also prevents showModal() throwing InvalidStateError when open.
-      if (!dialog!.open) {
-        if (typeof window.sa_event === 'function') {
-          window.sa_event('book_open', { title: b.title });
-        }
-        modal!.style.viewTransitionName = vtName;
-        currentVtName = vtName;
-        dialog!.showModal();
-      }
-
-      const closeBtn = document.getElementById('bookModalClose');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          closeWithTransition();
-        });
-        closeBtn.focus();
-      }
-    });
+    // The card entry animation is pure CSS (bookModalIn on
+    // dialog.book-dialog[open] .book-modal), and dismiss uses a CSS exit
+    // animation (closeBookModal). We deliberately do NOT wrap open/close in a
+    // same-document View Transition: snapshotting the backdrop-filtered
+    // .book-modal flattened the live blur into a static image that glared as it
+    // faded on dismiss. CSS enter/exit animations avoid that artifact entirely.
+    const closeBtn = document.getElementById('bookModalClose');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        closeBookModal();
+      });
+      closeBtn.focus();
+    }
   }
 
-  // Single unified close path — covers button click, backdrop click, and native
-  // Escape (cancel→close). Focus is always restored to the trigger for
-  // accessibility, but we suppress the :focus-visible ring that an Escape/
-  // backdrop dismiss would otherwise leave lingering on the book tile. The ring
-  // is restored the instant the user keyboard-navigates or moves focus away, so
-  // genuine keyboard focus visibility (WCAG 2.4.7) is preserved for shelf nav.
+  // Single unified close path — covers close-button click, backdrop click, and
+  // native Escape (cancel). The card animates out via a CSS exit animation
+  // (bookModalOut), applied inline so it overrides the [open] bookModalIn rule,
+  // then the dialog is closed. No view transition: snapshotting the
+  // backdrop-filtered card produced a glossy glare on dismiss.
   //
-  // The trigger is captured into a LOCAL here and the shared `triggerElement`
-  // is detached synchronously. This is deliberate: dialog.close() removes the
-  // `open` attribute synchronously but the DOM update (and historically the
-  // close-event bookkeeping) runs later, so relying on the shared module var at
-  // that later point races with a rapid reopen — a delayed close from a prior
-  // open could null a freshly-set triggerElement, skipping ring suppression on
-  // the next dismiss. Capturing locally makes each close self-contained.
-  function closeWithTransition(): void {
+  // Focus is restored to the trigger for accessibility; whether a :focus-visible
+  // ring shows is decided by the global input-modality tracker (a11y.css) —
+  // keyboard dismiss (Escape) keeps the ring, pointer dismiss suppresses it.
+  //
+  // The trigger is captured into a LOCAL and the shared `triggerElement` detached
+  // synchronously so a rapid reopen cannot null a freshly-set trigger mid-close.
+  function closeBookModal(): void {
+    if (!dialog!.open) return;
     const trigger = triggerElement;
     triggerElement = null;
 
-    // Suppress the ring SYNCHRONOUSLY, before dialog.close() makes the close
-    // observable — an inline `outline:none` (higher specificity than the
-    // :focus-visible rule) guarantees the ring is already gone by the time any
-    // observer (or the next paint) can see `open` removed, so it never flickers.
-    if (trigger) trigger.style.outline = 'none';
-
-    const vtName = currentVtName;
-    withViewTransition(() => {
-      if (vtName) modal!.style.viewTransitionName = vtName;
+    const finish = (): void => {
+      modal!.style.animation = '';
       dialog!.close();
-      // Clear the name after close so the element does not retain a
-      // view-transition-name while hidden (would affect subsequent opens).
-      modal!.style.viewTransitionName = '';
-      currentVtName = '';
+      if (trigger) trigger.focus();
+    };
 
-      // Restore focus now that the dialog is closed (background no longer
-      // inert), then arm listeners that bring the ring back on the next genuine
-      // keyboard nav / pointer interaction. Runs inside the same synchronous
-      // block as dialog.close(), so focus + ring state are settled the instant
-      // `open` is observable — no queued-task gap for a test or paint to slip
-      // through.
-      if (trigger) {
-        trigger.focus();
-        const restoreRing = () => {
-          trigger.style.outline = '';
-          trigger.removeEventListener('blur', restoreRing);
-          trigger.removeEventListener('keydown', restoreRing);
-          trigger.removeEventListener('pointerdown', restoreRing);
-        };
-        trigger.addEventListener('blur', restoreRing, { once: true });
-        trigger.addEventListener('keydown', restoreRing, { once: true });
-        trigger.addEventListener('pointerdown', restoreRing, { once: true });
-      }
-    });
+    // Reduced motion: close immediately, no exit animation.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      finish();
+      return;
+    }
+
+    let done = false;
+    const onEnd = (): void => {
+      if (done) return;
+      done = true;
+      modal!.removeEventListener('animationend', onEnd);
+      finish();
+    };
+    modal!.addEventListener('animationend', onEnd);
+    // Fallback in case animationend never fires (animation dropped/interrupted).
+    window.setTimeout(onEnd, 300);
+    // Inline animation overrides the [open] bookModalIn rule (inline beats any
+    // selector / cascade layer), so the card animates out without a view transition.
+    modal!.style.animation = 'bookModalOut 0.2s ease-in forwards';
   }
 
   // Intercept Escape (cancel event) to drive the reverse close transition
   // before the browser natively closes the dialog. preventDefault() suppresses
-  // the native close; closeWithTransition() calls dialog.close() inside the
+  // the native close; closeBookModal() calls dialog.close() inside the
   // transition callback so the UA still processes the close correctly.
   dialog.addEventListener('cancel', (e: Event) => {
     e.preventDefault();
-    closeWithTransition();
+    closeBookModal();
   });
 
   // Backdrop-click-to-close. The <dialog> element fills the viewport and
@@ -266,7 +244,7 @@ export function initBookModal(): void {
   // fall through to <html> — they never reach this listener at all.
   dialog.addEventListener('click', (e: MouseEvent) => {
     if (e.target === dialog) {
-      closeWithTransition();
+      closeBookModal();
     }
   });
 
