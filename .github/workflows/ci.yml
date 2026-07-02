@@ -191,35 +191,15 @@ jobs:
       #     projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
       #     storybookBuildDir: apps/storybook/storybook-static
 
-  # Swift jobs run on a self-hosted Mac (shared with ios-LifegamesPortal).
-  # Security: the `if` guard below skips these jobs for fork PRs so untrusted
-  # code from forks never executes on the host Mac. Internal-branch PRs and
+  # The Swift job runs on a self-hosted Mac (shared with ios-LifegamesPortal).
+  # Deliberately the ONLY macOS job — one cold compile + one queue acquisition
+  # per run (see .omc/plans/contract-tests-ci-perf.md).
+  # Security: the `if` guard below skips it for fork PRs so untrusted code
+  # from forks never executes on the host Mac. Internal-branch PRs and
   # pushes to main still run normally. External contributors: maintainer must
   # re-push the PR to a branch in this repo to get Swift coverage.
-  build-swift:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, macOS, arm64, xcode-26]
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v6
-      - name: Select Xcode 26
-        run: |
-          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
-          if [ -z "$XCODE" ]; then
-            echo "::error::Xcode 26 not found. Available versions:"
-            ls /Applications/Xcode*.app
-            exit 1
-          fi
-          echo "Using $XCODE"
-          sudo xcode-select -s "$XCODE/Contents/Developer"
-          xcodebuild -version
-          swift --version
-      - run: swift build
-      - name: S22 preview scheme audit
-        run: bash scripts/check-preview-scheme.sh
-
   test-swift:
-    needs: [build-swift, build-tokens]
+    needs: [build-tokens]
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
@@ -246,6 +226,8 @@ jobs:
           sudo xcode-select -s "$XCODE/Contents/Developer"
           xcodebuild -version
           swift --version
+      # Also enforces the cross-platform fixture contract (LifegamesWidgetsTests/ContractTests).
+      # Do not add --filter — that would silently drop contract coverage.
       - run: swift test
       - uses: actions/upload-artifact@v7
         if: failure()
@@ -253,11 +235,12 @@ jobs:
           name: snapshot-diffs
           path: Tests/**/__Snapshots__/**/*.png
 
-  contract-tests:
-    needs: [build-tokens, build-swift]
+  contract-ts:
+    # Web Props TypeScript contract check — moved off the macOS runner (no Xcode dep).
+    # The Swift side of the contract is covered by test-swift's unfiltered `swift test`
+    # (Tests/LifegamesWidgetsTests/ContractTests.swift).
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: [self-hosted, macOS, arm64, xcode-26]
-    timeout-minutes: 20
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6
@@ -269,20 +252,8 @@ jobs:
         env:
           LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      - name: Select Xcode 26
-        run: |
-          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
-          if [ -z "$XCODE" ]; then
-            echo "::error::Xcode 26 not found. Available versions:"
-            ls /Applications/Xcode*.app
-            exit 1
-          fi
-          echo "Using $XCODE"
-          sudo xcode-select -s "$XCODE/Contents/Developer"
       - name: TypeScript Props contract check
         run: pnpm --filter @lifegames/web tsc --noEmit
-      - name: Swift Props contract check
-        run: swift test --filter ContractTests
 
   governance-gates:
     name: governance-gates
@@ -318,6 +289,8 @@ jobs:
         run: node scripts/check-promotion.mjs --check
       - name: Style Dictionary golden-file characterization (F-005)
         run: pnpm --filter @lifegames/tokens test
+      - name: S22 preview scheme audit
+        run: bash scripts/check-preview-scheme.sh
 
   docs-build:
     needs: build-tokens
