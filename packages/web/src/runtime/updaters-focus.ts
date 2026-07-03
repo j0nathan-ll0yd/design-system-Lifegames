@@ -1,3 +1,4 @@
+import { FOCUS_MODES } from '@lifegames/portal-contract/constants';
 import type { FocusExport } from '../types/exports';
 
 let clockInterval: ReturnType<typeof setInterval> | null = null;
@@ -18,10 +19,10 @@ export function updateFocusOverlay(data: FocusExport | null): void {
   let activeOverlay: HTMLElement | null = null;
   let clockId: string | null = null;
 
-  if (focus === 'Work' && workOverlay) {
+  if (focus === FOCUS_MODES.work && workOverlay) {
     activeOverlay = workOverlay;
     clockId = 'focusClock';
-  } else if (focus === 'Do Not Disturb' && dndOverlay) {
+  } else if (focus === FOCUS_MODES.doNotDisturb && dndOverlay) {
     activeOverlay = dndOverlay;
     clockId = 'dndClock';
   }
