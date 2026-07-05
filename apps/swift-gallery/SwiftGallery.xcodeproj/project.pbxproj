@@ -35,6 +35,7 @@
 		60898D684728820BE9A0E9EA /* DownloadSettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB8A23073DD5CB57299D416 /* DownloadSettingsScreen.swift */; };
 		61422319CE1D4014B9AC6CA0 /* LifegamesTokens in Frameworks */ = {isa = PBXBuildFile; productRef = 44198BCCE30792EADF1687AA /* LifegamesTokens */; };
 		61B6F24D919B87AB644A5DE4 /* CommitLogVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F58CC119BADE9FA86500B9F /* CommitLogVariations.swift */; };
+		65519CB5139F16317229B1DC /* BentoTileVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEE0C2F3273ABEE0B30B090F /* BentoTileVariations.swift */; };
 		6843106E6A2DC8B587CACFDA /* DndOverlayVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF62691B0195C2F67CD1BF0 /* DndOverlayVariations.swift */; };
 		6B0283B722A2612C8D6FA071 /* ScreenCatalogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A1604E38A46E42ED97CEA3D /* ScreenCatalogListView.swift */; };
 		6CB55BE612DAD98083FB3049 /* WidgetCatalog+Health.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60F7DFB831949951FC8F8F1 /* WidgetCatalog+Health.swift */; };
@@ -60,6 +61,7 @@
 		B89D696068AC9EDEFB59546C /* CategoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA505A54F3782F7A92FF31DC /* CategoryListView.swift */; };
 		B9EB25B2BB2B7BFBFF2C8AD5 /* PlaceLeaderboardVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20AF50F385E6749D52D74BE7 /* PlaceLeaderboardVariations.swift */; };
 		BE41551F3DEF7CE641B50F26 /* NeonShowcase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16342C96EC0719082D6F8661 /* NeonShowcase.swift */; };
+		C2B45E8242CF530F0B46E060 /* HomeBentoConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC114E3C1CC0A5ECCBD6B92C /* HomeBentoConsole.swift */; };
 		C60126467C44B65396EAE8D6 /* BookshelfVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE824BB7FB64002A6A99AAD /* BookshelfVariations.swift */; };
 		C66939B564B25B0E2FE434CE /* DownloadSettingsNeonConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32041DD9590951AF0044C72 /* DownloadSettingsNeonConsole.swift */; };
 		C7975AA5D458B6A86770A9C2 /* OMDFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61B83EDD1FCAE53219D5CD86 /* OMDFixtures.swift */; };
@@ -77,6 +79,7 @@
 		D98740F0CF10770D58104143 /* LifegamesWidgets in Frameworks */ = {isa = PBXBuildFile; productRef = C612F58B3BFF38D7B87AD62A /* LifegamesWidgets */; };
 		DE143C86DB819E84CA0D138E /* ScreenEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 235F0079C672571F2751DD80 /* ScreenEntry.swift */; };
 		E212C891CE073009C9DBBEF6 /* SwiftGalleryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE07F20FF6E056CB0FFDBE34 /* SwiftGalleryApp.swift */; };
+		E4CEB43B451EB9992F6BB278 /* SettingsConsolidatedConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8900B7B249209825A5AD22F /* SettingsConsolidatedConsole.swift */; };
 		E723B46263F7B7725CADD993 /* FocusOverlayVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F37F2E015593652406DB56 /* FocusOverlayVariations.swift */; };
 		EE141CFA9210418E5AE8BC57 /* CoffeeStateSwitcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C5F3F4E7778091D164B2DB /* CoffeeStateSwitcher.swift */; };
 		F42E086D3EF8078C3CF46E94 /* ReadingFeedVariations.swift in Sources */ = {isa = PBXBuildFile; fileRef = C37F1AF23A88784896829CF9 /* ReadingFeedVariations.swift */; };
@@ -131,6 +134,7 @@
 		AC4AE7A235D094A8BA3702DB /* WidgetCatalog+Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WidgetCatalog+Location.swift"; sourceTree = "<group>"; };
 		AE4271E2CBCB376EA56E8F17 /* WidgetListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetListView.swift; sourceTree = "<group>"; };
 		AED7C75633D5347E05F2CD44 /* WidgetCatalog+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WidgetCatalog+Other.swift"; sourceTree = "<group>"; };
+		AEE0C2F3273ABEE0B30B090F /* BentoTileVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BentoTileVariations.swift; sourceTree = "<group>"; };
 		B0CCAB849BD9310FFD16C8FD /* WorkoutsVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutsVariations.swift; sourceTree = "<group>"; };
 		B1FCA6F6681A5F0EC2874899 /* RootGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootGalleryView.swift; sourceTree = "<group>"; };
 		B4FA8EDBF29A3CF7883F42E5 /* design-system-Lifegames */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "design-system-Lifegames"; path = ../..; sourceTree = SOURCE_ROOT; };
@@ -138,7 +142,9 @@
 		B5E34680A61C4607071A202F /* WidgetCatalog+Identity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WidgetCatalog+Identity.swift"; sourceTree = "<group>"; };
 		B60F7DFB831949951FC8F8F1 /* WidgetCatalog+Health.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WidgetCatalog+Health.swift"; sourceTree = "<group>"; };
 		B6C1381812DE0C9652EAC9B5 /* ExplorationOdometerVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorationOdometerVariations.swift; sourceTree = "<group>"; };
+		B8900B7B249209825A5AD22F /* SettingsConsolidatedConsole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsConsolidatedConsole.swift; sourceTree = "<group>"; };
 		BA505A54F3782F7A92FF31DC /* CategoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListView.swift; sourceTree = "<group>"; };
+		BC114E3C1CC0A5ECCBD6B92C /* HomeBentoConsole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBentoConsole.swift; sourceTree = "<group>"; };
 		C37F1AF23A88784896829CF9 /* ReadingFeedVariations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingFeedVariations.swift; sourceTree = "<group>"; };
 		C7D843FBE4BA23E10661B392 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D380A757BB6DD7DFA3DA806A /* FixtureLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixtureLoader.swift; sourceTree = "<group>"; };
@@ -253,6 +259,22 @@
 			path = DownloadSettings;
 			sourceTree = "<group>";
 		};
+		8B508758125CB8238737B1FF /* HomeBento */ = {
+			isa = PBXGroup;
+			children = (
+				BC114E3C1CC0A5ECCBD6B92C /* HomeBentoConsole.swift */,
+			);
+			path = HomeBento;
+			sourceTree = "<group>";
+		};
+		8F19B7D9FEFD68A27DB869CD /* SettingsConsolidated */ = {
+			isa = PBXGroup;
+			children = (
+				B8900B7B249209825A5AD22F /* SettingsConsolidatedConsole.swift */,
+			);
+			path = SettingsConsolidated;
+			sourceTree = "<group>";
+		};
 		93362202C948821A008E2EA8 /* Directions */ = {
 			isa = PBXGroup;
 			children = (
@@ -261,10 +283,12 @@
 				823028D227973B3A8CDD71E9 /* DownloadSettings */,
 				4E92B02603ECDE51759093C9 /* FileDetail */,
 				C2729F1B77CE832EE03C18D6 /* FileList */,
+				8B508758125CB8238737B1FF /* HomeBento */,
 				C19A9F3BCCEC4072EEA03A2D /* LaunchScreen */,
 				0D3A3D77071521B528B0D0DA /* Login */,
 				04ADF78AFC5F552115C6066F /* MainTabShell */,
 				09BB5E156CD22BE24E2B49A7 /* SampleFiles */,
+				8F19B7D9FEFD68A27DB869CD /* SettingsConsolidated */,
 			);
 			path = Directions;
 			sourceTree = "<group>";
@@ -335,6 +359,7 @@
 			isa = PBXGroup;
 			children = (
 				1FE4F4F787DB405F202DB968 /* ActivityFeedVariations.swift */,
+				AEE0C2F3273ABEE0B30B090F /* BentoTileVariations.swift */,
 				F717CBA3BE53E783D4EF40D4 /* BioTerminalVariations.swift */,
 				6B42FB5EAD9F65BA2CBDCBCF /* BookModalVariations.swift */,
 				9FE824BB7FB64002A6A99AAD /* BookshelfVariations.swift */,
@@ -479,6 +504,7 @@
 				8665A75191131E2C6E8F27DA /* AccountNeonConsole.swift in Sources */,
 				C95E65EE2D5A69E99586B735 /* AccountScreen.swift in Sources */,
 				D7ECDDF5A39D8281117058C4 /* ActivityFeedVariations.swift in Sources */,
+				65519CB5139F16317229B1DC /* BentoTileVariations.swift in Sources */,
 				3A831878DECDCC95F4DC6EB4 /* BioTerminalVariations.swift in Sources */,
 				58D6B7458084478A37604FC0 /* BookModalVariations.swift in Sources */,
 				C60126467C44B65396EAE8D6 /* BookshelfVariations.swift in Sources */,
@@ -504,6 +530,7 @@
 				E723B46263F7B7725CADD993 /* FocusOverlayVariations.swift in Sources */,
 				C9C8423CB3E64246D1ADF996 /* GitHubHeatmapVariations.swift in Sources */,
 				4A1A44ED30FF888FCEF1DD26 /* HeartRateVariations.swift in Sources */,
+				C2B45E8242CF530F0B46E060 /* HomeBentoConsole.swift in Sources */,
 				573BD91BDFC829DDED579767 /* HydrationVariations.swift in Sources */,
 				1F6DE716C1CC21E1E57BCED3 /* IdentityCardVariations.swift in Sources */,
 				9FAC9FD22D36CFF8AD492241 /* LanguageBarsVariations.swift in Sources */,
@@ -527,6 +554,7 @@
 				6B0283B722A2612C8D6FA071 /* ScreenCatalogListView.swift in Sources */,
 				FB781C1734E05AF2D07CE0EA /* ScreenDetailView.swift in Sources */,
 				DE143C86DB819E84CA0D138E /* ScreenEntry.swift in Sources */,
+				E4CEB43B451EB9992F6BB278 /* SettingsConsolidatedConsole.swift in Sources */,
 				832F2B5CD7B31A10EBEA309C /* StarredRepoListVariations.swift in Sources */,
 				E212C891CE073009C9DBBEF6 /* SwiftGalleryApp.swift in Sources */,
 				7B30D1197A155C64DF8EF0F8 /* SystemStatusVariations.swift in Sources */,
@@ -753,22 +781,18 @@
 /* Begin XCSwiftPackageProductDependency section */
 		1EAF1E34EE5624814221178D /* LifegamesTemplates */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesTemplates;
 		};
 		44198BCCE30792EADF1687AA /* LifegamesTokens */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesTokens;
 		};
 		B1743235CA7DB15E6E5B3D59 /* LifegamesComponents */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesComponents;
 		};
 		C612F58B3BFF38D7B87AD62A /* LifegamesWidgets */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 7758A10D900FDF85FE88A9FB /* XCLocalSwiftPackageReference "../.." */;
 			productName = LifegamesWidgets;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -14,6 +14,8 @@ enum ScreenCatalog {
         // Coffee — Acaia Pearl tracking UI (Hero direction promoted to CoffeeTrackingView)
         // directions.count == 1 → full-viewport render (ScreenDetailView §8)
         coffeeEntry,
+        HomeBentoScreen.entry,
+        SettingsConsolidatedScreen.entry,
     ]
 
     // MARK: - Coffee entry
