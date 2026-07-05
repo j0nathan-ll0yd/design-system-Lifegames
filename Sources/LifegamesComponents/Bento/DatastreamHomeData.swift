@@ -103,7 +103,7 @@ public struct DatastreamHomeData: Sendable {
 
 public extension DatastreamHomeData {
     /// Representative sample matching the approved Direction-1 mockup.
-    /// Used by SwiftGallery and `#Preview` blocks.
+    /// Used by SwiftGallery and Xcode previews.
     static let sample = DatastreamHomeData(
         steps: 8247,
         moveProgress: 0.974, moveValue: "487",
