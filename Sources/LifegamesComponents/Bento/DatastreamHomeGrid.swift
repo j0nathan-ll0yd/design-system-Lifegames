@@ -66,58 +66,44 @@ public struct DatastreamHomeGrid: View {
             badgeText: "\(Int((data.moveProgress * 100).rounded()))% MOVE",
             badgeColor: LGColor.accentGreen
         ) {
-            VStack(spacing: Spacing.s300) {
-                HStack(spacing: Spacing.s400) {
-                    ActivityRingsView(
-                        move: data.moveProgress,
-                        exercise: data.exerciseProgress,
-                        stand: data.standProgress,
-                        size: 104
-                    )
+            HStack(alignment: .center, spacing: Spacing.s500) {
+                ActivityRingsView(
+                    move: data.moveProgress,
+                    exercise: data.exerciseProgress,
+                    stand: data.standProgress,
+                    size: 128
+                )
 
-                    VStack(alignment: .leading) {
-                        // Steps — big number at top
-                        HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text(data.steps.formatted())
-                                .font(.system(size: 34, weight: .bold, design: .rounded))
-                                .foregroundStyle(LGColor.textTitle)
-                            Text("steps")
-                                .font(.system(size: 13))
-                                .foregroundStyle(LGColor.textMuted)
-                        }
+                // Right column: big steps → one-line subtitle → divider → metrics
+                VStack(alignment: .leading, spacing: Spacing.s300) {
+                    Text(data.steps.formatted())
+                        .font(.system(size: 46, weight: .bold, design: .rounded))
+                        .foregroundStyle(LGColor.textTitle)
 
-                        Spacer()
-
-                        // Resting HR — trailing-aligned at bottom
-                        HStack(alignment: .firstTextBaseline, spacing: 3) {
-                            Text("\(data.restingHR)")
-                                .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(LGColor.accentPink)
-                            Text("bpm")
-                                .font(.system(size: 13))
-                                .foregroundStyle(LGColor.accentPink)
-                            Text("resting")
-                                .font(.system(size: 13))
-                                .foregroundStyle(LGColor.textMuted)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    // "steps · 58 bpm resting" — one muted line
+                    HStack(spacing: 5) {
+                        Text("steps ·")
+                            .foregroundStyle(LGColor.textMuted)
+                        Text("\(data.restingHR) bpm")
+                            .foregroundStyle(LGColor.accentPink)
+                        Text("resting")
+                            .foregroundStyle(LGColor.textMuted)
                     }
-                    .frame(maxWidth: .infinity)
-                }
+                    .font(.system(size: 14))
 
-                // Divider before the movement metrics row
-                Rectangle()
-                    .fill(Color.white.opacity(0.06))
-                    .frame(height: 1)
+                    Rectangle()
+                        .fill(Color.white.opacity(0.07))
+                        .frame(height: 1)
 
-                // Three-column movement metrics
-                HStack(spacing: 0) {
-                    metricColumn(value: data.moveValue, unit: "KCAL", ring: "MOVE", color: LGColor.accentPink)
-                    metricDivider
-                    metricColumn(value: data.exerciseValue, unit: "MIN", ring: "EXERCISE", color: LGColor.accentGreen)
-                    metricDivider
-                    metricColumn(value: data.standValue, unit: "H", ring: "STAND", color: LGColor.accentBlue)
+                    HStack(spacing: 0) {
+                        metricColumn(value: data.moveValue, unit: "KCAL", ring: "MOVE", color: LGColor.accentPink)
+                        metricDivider
+                        metricColumn(value: data.exerciseValue, unit: "MIN", ring: "EXERCISE", color: LGColor.accentGreen)
+                        metricDivider
+                        metricColumn(value: data.standValue, unit: "H", ring: "STAND", color: LGColor.accentBlue)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .frame(maxWidth: .infinity)

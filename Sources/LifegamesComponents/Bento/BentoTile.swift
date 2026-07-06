@@ -102,8 +102,9 @@ public struct BentoTileView<Content: View>: View {
                     .padding(.vertical, Spacing.s100)
                     .background((badgeColor ?? accent).opacity(0.12), in: Capsule())
                     .overlay(Capsule().stroke((badgeColor ?? accent).opacity(0.4), lineWidth: 1))
+            } else {
+                LiveDotView(color: accent)
             }
-            LiveDotView(color: accent)
             Image(systemName: "chevron.right")
                 .font(.system(size: 9, weight: .medium))
                 .foregroundStyle(LGColor.textMuted.opacity(0.35))
