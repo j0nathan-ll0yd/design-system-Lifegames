@@ -181,6 +181,21 @@
         "sectionData": {
           "type": "string"
         },
+        "sectionDataMode": {
+          "type": "string"
+        },
+        "useRealHR": {
+          "type": "string"
+        },
+        "realActive": {
+          "type": "string"
+        },
+        "simActive": {
+          "type": "string"
+        },
+        "syncNow": {
+          "type": "string"
+        },
         "sectionDiagnostics": {
           "type": "string"
         },
@@ -299,6 +314,11 @@
         "sectionLocation",
         "sectionServer",
         "sectionData",
+        "sectionDataMode",
+        "useRealHR",
+        "realActive",
+        "simActive",
+        "syncNow",
         "sectionDiagnostics",
         "sectionAbout",
         "savedPlacesTitle",

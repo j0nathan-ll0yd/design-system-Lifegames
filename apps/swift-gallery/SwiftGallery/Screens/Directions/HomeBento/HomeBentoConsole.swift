@@ -10,7 +10,9 @@ enum HomeBentoScreen {
         title: "Home · Datastream",
         directions: [
             ScreenDirection(id: "bento", label: "Bento") {
-                AnyView(DatastreamHomeGrid(data: .sample))
+                // No-op onSelect mirrors the app embedding: every tile renders as a
+                // single button-trait element (audited by BentoTileAccessibilityUITests).
+                AnyView(DatastreamHomeGrid(data: .sample, onSelect: { _ in }))
             },
         ]
     )
