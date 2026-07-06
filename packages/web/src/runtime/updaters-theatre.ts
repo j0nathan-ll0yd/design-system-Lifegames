@@ -1,5 +1,7 @@
+import { widgets } from '@lifegames/copy';
 import { esc } from './html-utils';
 import { localizeImageUrl, imgFallbackAttrs } from './image-utils';
+import { renderWidgetEmpty } from './updater-empty';
 import type { TheatreReviewsExport } from '../types/exports';
 
 const GRADE_COLORS: Record<string, string> = {
@@ -25,8 +27,25 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
   const countEl = document.getElementById('theatreCount');
   if (countEl) countEl.textContent = `${data.totalReviews} reviews`;
 
-  const row = document.getElementById('theatreRow');
-  if (!row || data.reviews.length === 0) {
+  // Empty state: render the shared placeholder. This replaces `.widget-body`
+  // (destroying #theatreRow), so the populated path recreates it on an
+  // empty -> populated transition.
+  if (data.reviews.length === 0) {
+    renderWidgetEmpty('cardTheatreReviews', { message: widgets.theatreReviews.empty });
+    return;
+  }
+
+  let row = document.getElementById('theatreRow');
+  if (!row) {
+    const body = card.querySelector('.widget-body');
+    if (!body) {
+      card.classList.remove('is-loading');
+      return;
+    }
+    body.innerHTML = '<div id="theatreRow" class="theatre-row"></div>';
+    row = document.getElementById('theatreRow');
+  }
+  if (!row) {
     card.classList.remove('is-loading');
     return;
   }
