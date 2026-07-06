@@ -1840,19 +1840,20 @@ public struct AppSettings: Codable, Sendable {
     public let alerts: AppSettingsAlerts
     public let apiBaseURL, apiBaseURLPlaceholder, apiToken, apiTokenPlaceholder: String
     public let clearLogs, deleteAll, diagEmpty, fileSize: String
-    public let fullResync, lastHealthSync, recentEntries, reload: String
-    public let savedPlacesSubtitle, savedPlacesTitle, sectionAbout, sectionData: String
-    public let sectionDiagnostics, sectionLocation, sectionServer, shareLog: String
-    public let totalVisits, unsyncedVisits, watchLogEntries: String
+    public let fullResync, lastHealthSync, realActive, recentEntries: String
+    public let reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout: String
+    public let sectionData, sectionDataMode, sectionDiagnostics, sectionLocation: String
+    public let sectionServer, shareLog, simActive, syncNow: String
+    public let totalVisits, unsyncedVisits, useRealHR, watchLogEntries: String
 
     public enum CodingKeys: String, CodingKey {
         case aboutBuild, aboutName, aboutPlatform, aboutTitle, aboutVersion, alerts
         case apiBaseURL = "apiBaseUrl"
         case apiBaseURLPlaceholder = "apiBaseUrlPlaceholder"
-        case apiToken, apiTokenPlaceholder, clearLogs, deleteAll, diagEmpty, fileSize, fullResync, lastHealthSync, recentEntries, reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout, sectionData, sectionDiagnostics, sectionLocation, sectionServer, shareLog, totalVisits, unsyncedVisits, watchLogEntries
+        case apiToken, apiTokenPlaceholder, clearLogs, deleteAll, diagEmpty, fileSize, fullResync, lastHealthSync, realActive, recentEntries, reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout, sectionData, sectionDataMode, sectionDiagnostics, sectionLocation, sectionServer, shareLog, simActive, syncNow, totalVisits, unsyncedVisits, useRealHR, watchLogEntries
     }
 
-    public init(aboutBuild: String, aboutName: String, aboutPlatform: String, aboutTitle: String, aboutVersion: String, alerts: AppSettingsAlerts, apiBaseURL: String, apiBaseURLPlaceholder: String, apiToken: String, apiTokenPlaceholder: String, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionData: String, sectionDiagnostics: String, sectionLocation: String, sectionServer: String, shareLog: String, totalVisits: String, unsyncedVisits: String, watchLogEntries: String) {
+    public init(aboutBuild: String, aboutName: String, aboutPlatform: String, aboutTitle: String, aboutVersion: String, alerts: AppSettingsAlerts, apiBaseURL: String, apiBaseURLPlaceholder: String, apiToken: String, apiTokenPlaceholder: String, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, sectionServer: String, shareLog: String, simActive: String, syncNow: String, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
         self.aboutBuild = aboutBuild
         self.aboutName = aboutName
         self.aboutPlatform = aboutPlatform
@@ -1869,18 +1870,23 @@ public struct AppSettings: Codable, Sendable {
         self.fileSize = fileSize
         self.fullResync = fullResync
         self.lastHealthSync = lastHealthSync
+        self.realActive = realActive
         self.recentEntries = recentEntries
         self.reload = reload
         self.savedPlacesSubtitle = savedPlacesSubtitle
         self.savedPlacesTitle = savedPlacesTitle
         self.sectionAbout = sectionAbout
         self.sectionData = sectionData
+        self.sectionDataMode = sectionDataMode
         self.sectionDiagnostics = sectionDiagnostics
         self.sectionLocation = sectionLocation
         self.sectionServer = sectionServer
         self.shareLog = shareLog
+        self.simActive = simActive
+        self.syncNow = syncNow
         self.totalVisits = totalVisits
         self.unsyncedVisits = unsyncedVisits
+        self.useRealHR = useRealHR
         self.watchLogEntries = watchLogEntries
     }
 }
@@ -1920,18 +1926,23 @@ public extension AppSettings {
         fileSize: String? = nil,
         fullResync: String? = nil,
         lastHealthSync: String? = nil,
+        realActive: String? = nil,
         recentEntries: String? = nil,
         reload: String? = nil,
         savedPlacesSubtitle: String? = nil,
         savedPlacesTitle: String? = nil,
         sectionAbout: String? = nil,
         sectionData: String? = nil,
+        sectionDataMode: String? = nil,
         sectionDiagnostics: String? = nil,
         sectionLocation: String? = nil,
         sectionServer: String? = nil,
         shareLog: String? = nil,
+        simActive: String? = nil,
+        syncNow: String? = nil,
         totalVisits: String? = nil,
         unsyncedVisits: String? = nil,
+        useRealHR: String? = nil,
         watchLogEntries: String? = nil
     ) -> AppSettings {
         return AppSettings(
@@ -1951,18 +1962,23 @@ public extension AppSettings {
             fileSize: fileSize ?? self.fileSize,
             fullResync: fullResync ?? self.fullResync,
             lastHealthSync: lastHealthSync ?? self.lastHealthSync,
+            realActive: realActive ?? self.realActive,
             recentEntries: recentEntries ?? self.recentEntries,
             reload: reload ?? self.reload,
             savedPlacesSubtitle: savedPlacesSubtitle ?? self.savedPlacesSubtitle,
             savedPlacesTitle: savedPlacesTitle ?? self.savedPlacesTitle,
             sectionAbout: sectionAbout ?? self.sectionAbout,
             sectionData: sectionData ?? self.sectionData,
+            sectionDataMode: sectionDataMode ?? self.sectionDataMode,
             sectionDiagnostics: sectionDiagnostics ?? self.sectionDiagnostics,
             sectionLocation: sectionLocation ?? self.sectionLocation,
             sectionServer: sectionServer ?? self.sectionServer,
             shareLog: shareLog ?? self.shareLog,
+            simActive: simActive ?? self.simActive,
+            syncNow: syncNow ?? self.syncNow,
             totalVisits: totalVisits ?? self.totalVisits,
             unsyncedVisits: unsyncedVisits ?? self.unsyncedVisits,
+            useRealHR: useRealHR ?? self.useRealHR,
             watchLogEntries: watchLogEntries ?? self.watchLogEntries
         )
     }

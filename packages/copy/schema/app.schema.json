@@ -193,6 +193,11 @@
         "sectionLocation",
         "sectionServer",
         "sectionData",
+        "sectionDataMode",
+        "useRealHR",
+        "realActive",
+        "simActive",
+        "syncNow",
         "sectionDiagnostics",
         "sectionAbout",
         "savedPlacesTitle",
@@ -228,6 +233,21 @@
           "$ref": "#/$defs/CopyString"
         },
         "sectionData": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionDataMode": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "useRealHR": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "realActive": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "simActive": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "syncNow": {
           "$ref": "#/$defs/CopyString"
         },
         "sectionDiagnostics": {

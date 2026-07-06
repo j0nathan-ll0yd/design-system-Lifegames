@@ -82,6 +82,11 @@ export interface AppSettings {
   sectionLocation: string;
   sectionServer: string;
   sectionData: string;
+  sectionDataMode: string;
+  useRealHR: string;
+  realActive: string;
+  simActive: string;
+  syncNow: string;
   sectionDiagnostics: string;
   sectionAbout: string;
   savedPlacesTitle: string;

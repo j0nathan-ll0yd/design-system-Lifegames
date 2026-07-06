@@ -2,6 +2,17 @@ import LifegamesComponentsCore
 import LifegamesTokens
 import SwiftUI
 
+// MARK: - DatastreamTile
+
+/// Identifies which grid tile a `DatastreamHomeGrid` selection came from.
+public enum DatastreamTile: Hashable, Sendable {
+    case health
+    case location
+    case books
+    case coffee
+    case settings
+}
+
 // MARK: - DatastreamHomeGrid
 
 /// Direction-1 bento layout for the Datastream home screen.
@@ -14,11 +25,17 @@ import SwiftUI
 ///
 /// The grid fills its width and scrolls vertically. Callers typically embed it in a
 /// `NavigationView` or full-screen container; the grid itself adds no navigation chrome.
+///
+/// Pass `onSelect` to make each tile a tappable button (one VoiceOver element with the
+/// button trait per tile). With the default `nil`, tiles render display-only — gallery
+/// and preview embeddings are unaffected.
 public struct DatastreamHomeGrid: View {
     public let data: DatastreamHomeData
+    public let onSelect: ((DatastreamTile) -> Void)?
 
-    public init(data: DatastreamHomeData = .sample) {
+    public init(data: DatastreamHomeData = .sample, onSelect: ((DatastreamTile) -> Void)? = nil) {
         self.data = data
+        self.onSelect = onSelect
     }
 
     public var body: some View {
@@ -54,11 +71,35 @@ public struct DatastreamHomeGrid: View {
         .padding(.bottom, Spacing.s100)
     }
 
+    // MARK: - Selection wrapper
+
+    /// Wraps a tile in a plain-style `Button` when `onSelect` is set (the tile stays one
+    /// VoiceOver element, gaining the button trait); renders it unchanged when `nil`.
+    @ViewBuilder
+    private func selectable(_ tile: DatastreamTile, @ViewBuilder content: () -> some View) -> some View {
+        if let onSelect {
+            Button {
+                onSelect(tile)
+            } label: {
+                content()
+            }
+            .buttonStyle(.plain)
+        } else {
+            content()
+        }
+    }
+
     // MARK: - Tiles
 
     /// Full-width Health hero tile — rings + steps + resting HR, with a MOVE badge and a
     /// three-column movement metrics row (Move / Exercise / Stand), matching the web design.
     private var healthTile: some View {
+        selectable(.health) {
+            healthTileContent
+        }
+    }
+
+    private var healthTileContent: some View {
         BentoTileView(
             title: "Health",
             accent: LGColor.accentPink,
@@ -134,33 +175,43 @@ public struct DatastreamHomeGrid: View {
     /// Paired row: Location (wide) + Books (small).
     private var locationBookRow: some View {
         HStack(alignment: .top, spacing: Spacing.s300) {
-            BentoTileView(title: "Location", accent: LGColor.accentBlue, size: .wide) {
-                LocationMapTile(
-                    latitude: data.latitude,
-                    longitude: data.longitude,
-                    placeName: data.placeName,
-                    subtitle: data.placeSubtitle,
-                    statusText: data.locationStatus
-                )
+            selectable(.location) {
+                BentoTileView(title: "Location", accent: LGColor.accentBlue, size: .wide) {
+                    LocationMapTile(
+                        latitude: data.latitude,
+                        longitude: data.longitude,
+                        placeName: data.placeName,
+                        subtitle: data.placeSubtitle,
+                        statusText: data.locationStatus
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 160)
+                }
                 .frame(maxWidth: .infinity)
-                .frame(height: 160)
             }
-            .frame(maxWidth: .infinity)
 
-            BentoTileView(title: "Books", accent: LGColor.accentAmber, size: .small) {
-                BookCoverTile(
-                    coverURL: data.bookCoverURL,
-                    progress: data.bookProgress
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: 160)
+            selectable(.books) {
+                BentoTileView(title: "Books", accent: LGColor.accentAmber, size: .small) {
+                    BookCoverTile(
+                        coverURL: data.bookCoverURL,
+                        progress: data.bookProgress
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 160)
+                }
+                .frame(width: 130)
             }
-            .frame(width: 130)
         }
     }
 
     /// Full-width Coffee / Caffeine tile — mug + divider + stats, matching HTML layout.
     private var coffeeTile: some View {
+        selectable(.coffee) {
+            coffeeTileContent
+        }
+    }
+
+    private var coffeeTileContent: some View {
         BentoTileView(title: "Caffeine", accent: LGColor.accentOrange, size: .wide) {
             HStack(alignment: .center, spacing: Spacing.s350) {
                 // Left: mug scaled to 50×47 + mg label
@@ -206,17 +257,19 @@ public struct DatastreamHomeGrid: View {
 
     /// Full-width Settings nav tile — gear icon + title + subtitle in one compact row.
     private var settingsTile: some View {
-        BentoTileView(
-            title: "Settings",
-            systemImage: "gearshape.fill",
-            accent: LGColor.accentIndigo,
-            size: .full
-        ) {
-            Text("Account, data, diagnostics")
-                .font(.system(size: 12))
-                .foregroundStyle(LGColor.textMuted)
+        selectable(.settings) {
+            BentoTileView(
+                title: "Settings",
+                systemImage: "gearshape.fill",
+                accent: LGColor.accentIndigo,
+                size: .full
+            ) {
+                Text("Account, data, diagnostics")
+                    .font(.system(size: 12))
+                    .foregroundStyle(LGColor.textMuted)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -225,6 +278,11 @@ public struct DatastreamHomeGrid: View {
 #if os(iOS)
     #Preview("Datastream Home Grid") {
         DatastreamHomeGrid(data: .sample)
+            .preferredColorScheme(.dark)
+    }
+
+    #Preview("Datastream Home Grid — Selectable") {
+        DatastreamHomeGrid(data: .sample, onSelect: { _ in })
             .preferredColorScheme(.dark)
     }
 #endif

@@ -444,6 +444,71 @@
         "lastReviewed": "2026-06-11"
       }
     },
+    "sectionDataMode": {
+      "value": "Data Mode",
+      "_meta": {
+        "description": "Settings 'Data Mode' section header (moved from Health in the bento-tiles Settings consolidation). Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (WidgetHeaderView label DATA MODE, uppercased at call site — lands with the Settings consolidation PR)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-06"
+      }
+    },
+    "useRealHR": {
+      "value": "Use Real Heart Rate Data",
+      "_meta": {
+        "description": "Data-mode toggle title (moved from Health in the bento-tiles Settings consolidation).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (Data Mode toggle title — lands with the Settings consolidation PR)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-06"
+      }
+    },
+    "realActive": {
+      "value": "Sending real HealthKit data",
+      "_meta": {
+        "description": "Data-mode subtitle when real-data mode is on (moved from Health in the bento-tiles Settings consolidation).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (Data Mode subtitle, useRealData branch — lands with the Settings consolidation PR)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-06"
+      }
+    },
+    "simActive": {
+      "value": "Server generates simulated data",
+      "_meta": {
+        "description": "Data-mode subtitle when simulated-data mode is on (moved from Health in the bento-tiles Settings consolidation).",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (Data Mode subtitle, !useRealData branch — lands with the Settings consolidation PR)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-06"
+      }
+    },
+    "syncNow": {
+      "value": "Sync Now",
+      "_meta": {
+        "description": "Unified Data-Management sync button label (moved from Health in the bento-tiles Settings consolidation). Stored natural-case; rendered uppercase at call site.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (neonActionButton label, uppercased at call site — lands with the Settings consolidation PR)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-06"
+      }
+    },
     "sectionDiagnostics": {
       "value": "Diagnostics",
       "_meta": {

@@ -65,3 +65,31 @@ targets:
         product: LifegamesWidgets
       - package: LifegamesDesignSystem
         product: LifegamesTemplates
+
+  SwiftGalleryUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: '26.0'
+    sources:
+      - path: SwiftGalleryUITests
+    dependencies:
+      - target: SwiftGallery
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lifegames.swift-gallery-uitests
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: P328YB6M54
+        TEST_TARGET_NAME: SwiftGallery
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  SwiftGallery:
+    build:
+      targets:
+        SwiftGallery: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - SwiftGalleryUITests
