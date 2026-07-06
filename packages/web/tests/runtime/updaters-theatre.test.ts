@@ -2,6 +2,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { updateTheatreReviews } from '../../src/runtime/updaters-theatre';
 import { CLOUDFRONT_BASE } from '../../src/runtime/constants';
+import { widgets } from '@lifegames/copy';
 import type { TheatreReviewsExport } from '../../src/types/exports';
 
 function makeExport(reviews: TheatreReviewsExport['reviews'] = []): TheatreReviewsExport {
@@ -145,5 +146,59 @@ describe('updateTheatreReviews', () => {
     expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(
       false,
     );
+  });
+});
+
+describe('updateTheatreReviews with widget-body DOM', () => {
+  function setupWithBody() {
+    document.body.innerHTML = `
+      <div id="cardTheatreReviews" class="is-loading">
+        <div class="widget-header"><a id="theatreCount"></a></div>
+        <div class="widget-body"><div id="theatreRow" class="theatre-row"></div></div>
+      </div>
+    `;
+  }
+
+  beforeEach(setupWithBody);
+
+  it('renders widget-empty in widget-body and removes is-loading when reviews is empty', () => {
+    updateTheatreReviews(makeExport([]));
+    const empty = document.querySelector('#cardTheatreReviews .widget-body .widget-empty');
+    expect(empty).not.toBeNull();
+    expect(empty!.textContent).toBe(widgets.theatreReviews.empty);
+    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(
+      false,
+    );
+  });
+
+  it('sets header count to 0 reviews when reviews is empty', () => {
+    updateTheatreReviews(makeExport([]));
+    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews');
+  });
+
+  it('recreates theatreRow and renders review title after empty-to-populated transition', () => {
+    updateTheatreReviews(makeExport([]));
+    const oneReview = [
+      {
+        title: 'Hamilton',
+        slug: 'hamilton',
+        url: 'https://example.com/hamilton',
+        author: 'Jonathan',
+        publishedAt: '2026-01-01',
+        rating: 'A',
+        ratingNumeric: 4,
+        excerpt: 'Great show',
+        imageUrl: null,
+        imageUrlAvif: null,
+        imageUrlCard: null,
+        imageUrlCardAvif: null,
+        imageWidth: null,
+        imageHeight: null,
+      },
+    ];
+    expect(() => updateTheatreReviews(makeExport(oneReview))).not.toThrow();
+    const row = document.getElementById('theatreRow');
+    expect(row).not.toBeNull();
+    expect(row!.innerHTML).toContain('Hamilton');
   });
 });

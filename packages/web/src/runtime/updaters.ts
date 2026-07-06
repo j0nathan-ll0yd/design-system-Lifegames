@@ -15,6 +15,7 @@ import type {
 import { LANG_COLORS } from './constants';
 import type { LocationExport } from '../types/exports';
 import { imgFallbackAttrs, localizeImageUrl } from './image-utils';
+import { renderWidgetEmpty } from './updater-empty';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Dining: 'var(--neon-orange, #ff6b00)',
@@ -399,17 +400,23 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
         html += '</svg>';
         html += '</span>';
       }
+      // Empty-title rows (e.g. Hoodline) promote the source into the title slot
+      // so the row never renders blank-left; the parenthetical source is then
+      // suppressed to avoid duplicating it.
+      const titleText = a.title || a.source;
       if (a.url) {
         html +=
           '<a class="article-list-title" href="' +
           esc(a.url) +
           '" target="_blank" rel="noopener noreferrer">' +
-          esc(a.title) +
+          esc(titleText) +
           '</a>';
       } else {
-        html += '<span class="article-list-title">' + esc(a.title) + '</span>';
+        html += '<span class="article-list-title">' + esc(titleText) + '</span>';
       }
-      html += '<span class="article-list-source">(' + esc(a.source) + ')</span>';
+      if (a.title) {
+        html += '<span class="article-list-source">(' + esc(a.source) + ')</span>';
+      }
       html += '<span class="article-list-date">' + esc(a.date) + '</span>';
       html += '</li>';
     });
@@ -593,8 +600,34 @@ export function formatRelativeTime(isoString: string): string {
 }
 
 export function updateBookshelf(data: AdaptedBooks): void {
-  const shelfRow = document.getElementById('dashShelfRow');
-  if (!shelfRow) return;
+  const card = document.getElementById('cardBooks');
+  if (!card) return;
+
+  // Empty state: render the shared two-line placeholder. This replaces
+  // `.widget-body` (destroying #dashShelfRow), so the populated path below
+  // recreates the shelf row on an empty -> populated transition.
+  if (!data.books || data.books.length === 0) {
+    renderWidgetEmpty('cardBooks', {
+      title: widgets.bookshelf.emptyTitle,
+      body: widgets.bookshelf.emptyBody,
+    });
+    return;
+  }
+
+  let shelfRow = document.getElementById('dashShelfRow');
+  if (!shelfRow) {
+    const body = card.querySelector('.widget-body');
+    if (!body) {
+      card.classList.remove('is-loading');
+      return;
+    }
+    body.innerHTML = '<ul class="shelf-row" id="dashShelfRow" role="list"></ul>';
+    shelfRow = document.getElementById('dashShelfRow');
+  }
+  if (!shelfRow) {
+    card.classList.remove('is-loading');
+    return;
+  }
 
   // Collect ASINs that have local images (present at SSR build time)
   const ssrBookEls = document.querySelectorAll('#dashShelfRow .shelf-book');

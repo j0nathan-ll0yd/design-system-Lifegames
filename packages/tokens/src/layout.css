@@ -858,6 +858,38 @@
       }
     }
 
+    /* Compact-widget density: heart-rate/hydration stretched full-width when the
+       body column stacked single-file below 768px. Apply the same two-column
+       body bento as the 768-1100 tablet breakpoint down to 375px so the body
+       cards pair up. `.triptych-column-body` stays a flex column (header above
+       the bento); only `.body-bento`/`.body-bento-col` are re-declared, which
+       overrides the base `display: contents`. Below 375px the micro-mobile
+       single column (max-width: 374) takes over. */
+    @media (min-width: 375px) and (max-width: 767px) {
+      .body-bento {
+        display: flex;
+        gap: var(--space-12);
+        align-items: flex-start;
+      }
+      .body-bento-col {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-12);
+        flex: 1 1 0;
+        min-width: 0;
+      }
+      /* Empty dashboard (Workouts hidden): even 2-up grid of the flattened cards. */
+      .triptych-column-body:has(#cardWorkouts[style*='none']) .body-bento {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-12);
+        align-items: start;
+      }
+      .triptych-column-body:has(#cardWorkouts[style*='none']) .body-bento-col {
+        display: contents;
+      }
+    }
+
     /* Micro mobile: WCAG 1.4.10 reflow at 320px */
     @media (max-width: 374px) {
       .identity-card {

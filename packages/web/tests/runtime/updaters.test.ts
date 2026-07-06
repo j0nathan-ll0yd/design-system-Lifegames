@@ -25,6 +25,7 @@ import type {
   AdaptedStarredRepo,
 } from '../../src/runtime/adapters';
 import type { LocationExport } from '../../src/types/exports';
+import { widgets } from '@lifegames/copy';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -598,6 +599,36 @@ describe('updateReadingFeed', () => {
     updateReadingFeed(manyArticles);
     expect(el('cardReading').querySelectorAll('.article-page-btn').length).toBeGreaterThan(1);
   });
+
+  it('promotes source into title slot and suppresses parenthetical source when article title is empty', () => {
+    const emptyTitleArticle: AdaptedArticle = {
+      title: '',
+      url: 'https://example.com/hoodline',
+      source: 'Hoodline',
+      date: '1h ago',
+      hasNotes: false,
+      noteText: null,
+    };
+    updateReadingFeed([emptyTitleArticle]);
+    const titleEl = el('cardReading').querySelector('.article-list-title');
+    expect(titleEl!.textContent).toBe('Hoodline');
+    expect(el('cardReading').querySelector('.article-list-source')).toBeNull();
+  });
+
+  it('renders title in title slot and parenthetical source when article title is present', () => {
+    const titledArticle: AdaptedArticle = {
+      title: 'My Article',
+      url: 'https://example.com/article',
+      source: 'Source X',
+      date: '1h ago',
+      hasNotes: false,
+      noteText: null,
+    };
+    updateReadingFeed([titledArticle]);
+    const titleEl = el('cardReading').querySelector('.article-list-title');
+    expect(titleEl!.textContent).toBe('My Article');
+    expect(el('cardReading').querySelector('.article-list-source')!.textContent).toBe('(Source X)');
+  });
 });
 
 // ── updateStarredRepos ────────────────────────────────────────────────────────
@@ -926,5 +957,43 @@ describe('updateBookshelf', () => {
     `;
     updateBookshelf(makeBooks());
     expect(document.querySelector('.shelf-book-title span')!.textContent).toBe('Test Book');
+  });
+
+  describe('with widget-body DOM', () => {
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <div id="cardBooks" class="is-loading">
+          <div class="widget-body">
+            <ul class="shelf-row" id="dashShelfRow"></ul>
+          </div>
+        </div>
+      `;
+    });
+
+    it('renders widget-empty--stack in widget-body and removes is-loading when books is empty', () => {
+      updateBookshelf(makeBooks({ books: [] }));
+      const empty = document.querySelector('#cardBooks .widget-body .widget-empty');
+      expect(empty).not.toBeNull();
+      expect(empty!.classList.contains('widget-empty--stack')).toBe(true);
+      expect(document.getElementById('cardBooks')!.classList.contains('is-loading')).toBe(false);
+    });
+
+    it('empty state contains correct title and body copy strings', () => {
+      updateBookshelf(makeBooks({ books: [] }));
+      expect(document.querySelector('#cardBooks .widget-empty-title')!.textContent).toBe(
+        widgets.bookshelf.emptyTitle,
+      );
+      expect(document.querySelector('#cardBooks .widget-empty-body')!.textContent).toBe(
+        widgets.bookshelf.emptyBody,
+      );
+    });
+
+    it('recreates dashShelfRow and renders book title after empty-to-populated transition', () => {
+      updateBookshelf(makeBooks({ books: [] }));
+      expect(() => updateBookshelf(makeBooks())).not.toThrow();
+      const shelfRow = document.getElementById('dashShelfRow');
+      expect(shelfRow).not.toBeNull();
+      expect(shelfRow!.innerHTML).toContain('Test Book');
+    });
   });
 });

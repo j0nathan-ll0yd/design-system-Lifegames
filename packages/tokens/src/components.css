@@ -227,6 +227,20 @@
       opacity: 0.7;
     }
 
+    /* Two-line stacked empty state (title + body), e.g. bookshelf. The title
+       drops the base italic to read as a heading; the body stays smaller and
+       italic/muted. */
+    .widget-empty--stack {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .widget-empty--stack .widget-empty-title {
+      font-style: normal;
+    }
+    .widget-empty--stack .widget-empty-body {
+      font-size: var(--font-size-sm);
+    }
+
     /* ===== 1. IDENTITY CARD ===== */
     .identity-card {
       background: var(--glass-bg);

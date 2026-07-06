@@ -560,7 +560,20 @@ function offset(circ: number, pct: number): number {
     display: none;
   }
 
-  @container card-movement (max-width: 260px) {
+  /* Narrow container (mobile 2-up body column, ~280px): the 144px rings + chips
+     side-by-side no longer fit, so stack the rings above the full-width chips
+     and switch to the short legend labels. Fires only below the 2-up width;
+     desktop (~339px) and the tablet bento (~359px+) keep the side-by-side
+     layout, so their baselines are unchanged. */
+  @container card-movement (max-width: 300px) {
+    .mv-layout {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: var(--lg-space-250);
+    }
+    .mv-chips {
+      width: 100%;
+    }
     .mv-swatch-label-full {
       display: none;
     }
