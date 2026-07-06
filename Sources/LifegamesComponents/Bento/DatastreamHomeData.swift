@@ -64,6 +64,12 @@ public struct DatastreamHomeData: Sendable {
     /// Status pill text (e.g. "Currently here · 34m").
     public var locationStatus: String
 
+    // MARK: - Header
+
+    /// Human-readable date shown in the screen header (e.g. "Thursday, 3 July").
+    /// The app formats today's date; the gallery uses a fixed sample.
+    public var dateLabel: String
+
     // MARK: - Init
 
     public init(
@@ -75,8 +81,10 @@ public struct DatastreamHomeData: Sendable {
         caffeineMg: Int, caffeineTarget: Int, cups: Int, lastBeverage: String,
         bookCoverURL: URL?, bookProgress: Double,
         latitude: Double, longitude: Double,
-        placeName: String, placeSubtitle: String, locationStatus: String
+        placeName: String, placeSubtitle: String, locationStatus: String,
+        dateLabel: String = "Today"
     ) {
+        self.dateLabel = dateLabel
         self.steps = steps
         self.moveProgress = moveProgress
         self.moveValue = moveValue
@@ -107,8 +115,8 @@ public extension DatastreamHomeData {
     static let sample = DatastreamHomeData(
         steps: 8247,
         moveProgress: 0.974, moveValue: "487",
-        exerciseProgress: 1.0, exerciseValue: "45m",
-        standProgress: 0.917, standValue: "11h",
+        exerciseProgress: 1.0, exerciseValue: "45+",
+        standProgress: 0.917, standValue: "11/12",
         restingHR: 58,
         caffeineMg: 165, caffeineTarget: 400, cups: 2, lastBeverage: "Espresso",
         // Gallery/preview fixture URL — not an API endpoint (exception: S27)
@@ -117,6 +125,7 @@ public extension DatastreamHomeData {
         latitude: 37.7955, longitude: -122.3937,
         placeName: "Blue Bottle Coffee",
         placeSubtitle: "Ferry Building",
-        locationStatus: "Currently here · 34m"
+        locationStatus: "Currently here · 34m",
+        dateLabel: "Thursday, 3 July"
     )
 }

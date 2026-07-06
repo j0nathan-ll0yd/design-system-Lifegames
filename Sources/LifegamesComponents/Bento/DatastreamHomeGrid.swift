@@ -39,16 +39,15 @@ public struct DatastreamHomeGrid: View {
     // MARK: - Top header
 
     private var gridHeader: some View {
-        VStack(alignment: .leading, spacing: Spacing.s100) {
-            Text("DATASTREAM")
-                .font(.system(size: 22, weight: .bold, design: .default))
-                .tracking(3)
+        VStack(alignment: .leading, spacing: Spacing.s150) {
+            Text("Your datastream")
+                .font(.system(size: 26, weight: .bold, design: .default))
                 .foregroundStyle(LGColor.textTitle)
 
             HStack(spacing: Spacing.s150) {
                 LiveDotView(color: LGColor.accentGreen)
-                Text("Updated just now")
-                    .font(.system(size: 12))
+                Text("\(data.dateLabel) · Updated just now")
+                    .font(.system(size: 13))
                     .foregroundStyle(LGColor.textMuted)
             }
         }
@@ -57,48 +56,93 @@ public struct DatastreamHomeGrid: View {
 
     // MARK: - Tiles
 
-    /// Full-width Health hero tile — concentric activity rings + steps + resting HR.
+    /// Full-width Health hero tile — rings + steps + resting HR, with a MOVE badge and a
+    /// three-column movement metrics row (Move / Exercise / Stand), matching the web design.
     private var healthTile: some View {
-        BentoTileView(title: "Health", accent: LGColor.accentPink, size: .hero) {
-            HStack(spacing: Spacing.s400) {
-                ActivityRingsView(
-                    move: data.moveProgress,
-                    exercise: data.exerciseProgress,
-                    stand: data.standProgress,
-                    size: 104
-                )
+        BentoTileView(
+            title: "Health",
+            accent: LGColor.accentPink,
+            size: .hero,
+            badgeText: "\(Int((data.moveProgress * 100).rounded()))% MOVE",
+            badgeColor: LGColor.accentGreen
+        ) {
+            VStack(spacing: Spacing.s300) {
+                HStack(spacing: Spacing.s400) {
+                    ActivityRingsView(
+                        move: data.moveProgress,
+                        exercise: data.exerciseProgress,
+                        stand: data.standProgress,
+                        size: 104
+                    )
 
-                VStack(alignment: .leading) {
-                    // Steps — big number at top
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text(data.steps.formatted())
-                            .font(.system(size: 34, weight: .bold, design: .rounded))
-                            .foregroundStyle(LGColor.textTitle)
-                        Text("steps")
-                            .font(.system(size: 13))
-                            .foregroundStyle(LGColor.textMuted)
+                    VStack(alignment: .leading) {
+                        // Steps — big number at top
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text(data.steps.formatted())
+                                .font(.system(size: 34, weight: .bold, design: .rounded))
+                                .foregroundStyle(LGColor.textTitle)
+                            Text("steps")
+                                .font(.system(size: 13))
+                                .foregroundStyle(LGColor.textMuted)
+                        }
+
+                        Spacer()
+
+                        // Resting HR — trailing-aligned at bottom
+                        HStack(alignment: .firstTextBaseline, spacing: 3) {
+                            Text("\(data.restingHR)")
+                                .font(.system(size: 13, weight: .bold))
+                                .foregroundStyle(LGColor.accentPink)
+                            Text("bpm")
+                                .font(.system(size: 13))
+                                .foregroundStyle(LGColor.accentPink)
+                            Text("resting")
+                                .font(.system(size: 13))
+                                .foregroundStyle(LGColor.textMuted)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-
-                    Spacer()
-
-                    // Resting HR — trailing-aligned at bottom
-                    HStack(alignment: .firstTextBaseline, spacing: 3) {
-                        Text("\(data.restingHR)")
-                            .font(.system(size: 13, weight: .bold))
-                            .foregroundStyle(LGColor.accentPink)
-                        Text("bpm")
-                            .font(.system(size: 13))
-                            .foregroundStyle(LGColor.accentPink)
-                        Text("resting")
-                            .font(.system(size: 13))
-                            .foregroundStyle(LGColor.textMuted)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .frame(maxWidth: .infinity)
                 }
-                .frame(maxWidth: .infinity)
+
+                // Divider before the movement metrics row
+                Rectangle()
+                    .fill(Color.white.opacity(0.06))
+                    .frame(height: 1)
+
+                // Three-column movement metrics
+                HStack(spacing: 0) {
+                    metricColumn(value: data.moveValue, unit: "KCAL", ring: "MOVE", color: LGColor.accentPink)
+                    metricDivider
+                    metricColumn(value: data.exerciseValue, unit: "MIN", ring: "EXERCISE", color: LGColor.accentGreen)
+                    metricDivider
+                    metricColumn(value: data.standValue, unit: "H", ring: "STAND", color: LGColor.accentBlue)
+                }
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    /// A single movement metric column: colored value + two-line uppercase label.
+    private func metricColumn(value: String, unit: String, ring: String, color: Color) -> some View {
+        VStack(spacing: 3) {
+            Text(value)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(color)
+            Text("\(unit)\n\(ring)")
+                .font(.system(size: 8.5, weight: .semibold))
+                .kerning(0.5)
+                .multilineTextAlignment(.center)
+                .lineSpacing(1)
+                .foregroundStyle(LGColor.textMuted)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var metricDivider: some View {
+        Rectangle()
+            .fill(Color.white.opacity(0.07))
+            .frame(width: 1, height: 30)
     }
 
     /// Paired row: Location (wide) + Books (small).

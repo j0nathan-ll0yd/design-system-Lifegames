@@ -44,6 +44,8 @@ public struct BentoTileView<Content: View>: View {
     public let accent: Color
     public let size: BentoTileSize
     public let state: BentoTileState
+    public let badgeText: String?
+    public let badgeColor: Color?
     private let content: () -> Content
 
     public init(
@@ -52,6 +54,8 @@ public struct BentoTileView<Content: View>: View {
         accent: Color,
         size: BentoTileSize = .small,
         state: BentoTileState = .normal,
+        badgeText: String? = nil,
+        badgeColor: Color? = nil,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.title = title
@@ -59,6 +63,8 @@ public struct BentoTileView<Content: View>: View {
         self.accent = accent
         self.size = size
         self.state = state
+        self.badgeText = badgeText
+        self.badgeColor = badgeColor
         self.content = content
     }
 
@@ -87,6 +93,16 @@ public struct BentoTileView<Content: View>: View {
                 .kerning(2)
                 .foregroundStyle(accent)
             Spacer()
+            if let badgeText {
+                Text(badgeText)
+                    .font(.system(size: 10, weight: .bold))
+                    .kerning(0.5)
+                    .foregroundStyle(badgeColor ?? accent)
+                    .padding(.horizontal, Spacing.s250)
+                    .padding(.vertical, Spacing.s100)
+                    .background((badgeColor ?? accent).opacity(0.12), in: Capsule())
+                    .overlay(Capsule().stroke((badgeColor ?? accent).opacity(0.4), lineWidth: 1))
+            }
             LiveDotView(color: accent)
             Image(systemName: "chevron.right")
                 .font(.system(size: 9, weight: .medium))
