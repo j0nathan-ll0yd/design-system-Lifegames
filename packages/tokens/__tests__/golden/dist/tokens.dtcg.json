@@ -389,7 +389,7 @@
       "primary": {
         "$value": "#f0f0f0",
         "$type": "color",
-        "$description": "Body text. Web parity: zinc.300 = #f0f0f0 matches production --text. iOS textPrimary remains zinc.200 (#e4e4e7) via SwiftUI layer (MA2)."
+        "$description": "Body text. Resolves to zinc.300 = #f0f0f0 identically across web (--text), the Swift color-text-primary xcasset, and LGColor.textPrimary — cross-platform parity holds. See docs/adr/0006-text-primary-token-parity.md."
       },
       "muted": {
         "$value": "#9ca3af",

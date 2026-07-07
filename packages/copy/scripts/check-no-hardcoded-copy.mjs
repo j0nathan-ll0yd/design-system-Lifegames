@@ -38,6 +38,7 @@ const CONSUMER_ROOTS = [
   'packages/web/src/widgets',
   'packages/web/src/runtime',
   'Sources/LifegamesWidgets',
+  'Sources/LifegamesComponentsCore',
 ];
 
 const SCAN_EXTS = new Set(['.astro', '.ts', '.tsx', '.js', '.mjs', '.swift']);

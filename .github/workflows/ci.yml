@@ -289,6 +289,8 @@ jobs:
         run: node scripts/check-watch-exclusions.mjs --check
       - name: P4/P7 promotion gate
         run: node scripts/check-promotion.mjs --check
+      - name: P2 widget compliance (registry ↔ Astro/fixture/manifest)
+        run: node scripts/widget-compliance.mjs
       - name: Style Dictionary golden-file characterization (F-005)
         run: pnpm --filter @lifegames/tokens test
       - name: S22 preview scheme audit
