@@ -70,6 +70,11 @@ public struct DatastreamHomeData: Sendable {
     /// The app formats today's date; the gallery uses a fixed sample.
     public var dateLabel: String
 
+    /// When the underlying data was last synced. When set, the header renders a live
+    /// relative timestamp ("Updated 3 minutes ago"); when nil (gallery/previews), the
+    /// header keeps the static "Updated just now".
+    public var lastUpdated: Date?
+
     // MARK: - Init
 
     public init(
@@ -82,9 +87,11 @@ public struct DatastreamHomeData: Sendable {
         bookCoverURL: URL?, bookProgress: Double,
         latitude: Double, longitude: Double,
         placeName: String, placeSubtitle: String, locationStatus: String,
-        dateLabel: String = "Today"
+        dateLabel: String = "Today",
+        lastUpdated: Date? = nil
     ) {
         self.dateLabel = dateLabel
+        self.lastUpdated = lastUpdated
         self.steps = steps
         self.moveProgress = moveProgress
         self.moveValue = moveValue

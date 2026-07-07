@@ -63,9 +63,17 @@ public struct DatastreamHomeGrid: View {
 
             HStack(spacing: Spacing.s150) {
                 LiveDotView(color: LGColor.accentGreen)
-                Text("\(data.dateLabel) · Updated just now")
-                    .font(.system(size: 13))
-                    .foregroundStyle(LGColor.textMuted)
+                // With a real sync timestamp the label ticks live (Text .relative style
+                // self-updates); without one (gallery/previews) keep the static copy.
+                if let lastUpdated = data.lastUpdated {
+                    Text("\(data.dateLabel) · Updated \(Text(lastUpdated, style: .relative)) ago")
+                        .font(.system(size: 13))
+                        .foregroundStyle(LGColor.textMuted)
+                } else {
+                    Text("\(data.dateLabel) · Updated just now")
+                        .font(.system(size: 13))
+                        .foregroundStyle(LGColor.textMuted)
+                }
             }
         }
         .padding(.bottom, Spacing.s100)
