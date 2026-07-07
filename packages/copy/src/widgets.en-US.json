@@ -1996,5 +1996,203 @@
         }
       }
     }
+  },
+  "coffee": {
+    "sipping": {
+      "value": "Sipping…",
+      "_meta": {
+        "description": "Mid-sip affordance shown below the hero mug while the cup is lifted off the scale.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (isSipping affordance)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "caffeineUnit": {
+      "value": "mg",
+      "_meta": {
+        "description": "Milligram unit suffix on the per-cup caffeine readout.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (caffeineReadout unit)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "thisCup": {
+      "value": "this cup · {beverage}",
+      "_meta": {
+        "description": "Caffeine readout sub-label. ICU MF1 template; the consumer substitutes the beverage short name (widgets.coffee.beverage*) at the call site.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (caffeineReadout sub-label)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "dailyLabel": {
+      "value": "Today",
+      "_meta": {
+        "description": "Label for the daily caffeine progress bar.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (dailyBar label)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "searching": {
+      "value": "Searching…",
+      "_meta": {
+        "description": "Shared searching/connecting state text used by both the connection badge and the primary action button title.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .searching)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .searching)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionConnect": {
+      "value": "Connect your Acaia",
+      "_meta": {
+        "description": "Primary action button title when the scale is unpaired.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .unpaired)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionReconnect": {
+      "value": "Reconnect",
+      "_meta": {
+        "description": "Primary action button title when the scale connection errored.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .error)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionFinishCup": {
+      "value": "Finish Cup",
+      "_meta": {
+        "description": "Primary action button title when a tracking session is active.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .connected active)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionNewCup": {
+      "value": "+ New Cup",
+      "_meta": {
+        "description": "Primary action button title when connected and idle (start a new cup).",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .connected idle)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "badgeConnect": {
+      "value": "Connect scale",
+      "_meta": {
+        "description": "Connection badge label when the scale is unpaired.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .unpaired)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "badgeConnected": {
+      "value": "Connected",
+      "_meta": {
+        "description": "Connection badge label when the scale is connected.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .connected)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "badgeError": {
+      "value": "Connection error",
+      "_meta": {
+        "description": "Connection badge fallback label when the scale errored and no specific error message is supplied.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error fallback)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "beverageDrip": {
+      "value": "drip",
+      "_meta": {
+        "description": "Short beverage name for drip coffee, shown in the caffeine readout sub-label.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (Beverage.heroDisplayName .drip)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "beverageEspresso": {
+      "value": "espresso",
+      "_meta": {
+        "description": "Short beverage name for espresso, shown in the caffeine readout sub-label.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (Beverage.heroDisplayName .espresso)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "beverageColdBrew": {
+      "value": "cold brew",
+      "_meta": {
+        "description": "Short beverage name for cold brew, shown in the caffeine readout sub-label.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (Beverage.heroDisplayName .coldBrew)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    }
   }
 }

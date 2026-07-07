@@ -1,3 +1,4 @@
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
 
@@ -74,7 +75,7 @@ public struct CoffeeMugView: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Coffee mug") // TODO(copy): migrate to @lifegames/copy V2
+        .accessibilityLabel(CopyLoader.a11y.coffee.mug)
         .accessibilityValue("\(Int((f * 100).rounded()))% of this cup")
     }
 }

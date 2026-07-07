@@ -72,11 +72,16 @@ const NAMESPACES: NamespaceFixture[] = [
   //     health 7 (body + watch/water/coffee ×2) + sleep 3 (body + watch ×2)
   //     + books 1 (body, no refs) + articles 3 (body + feedly ×2)
   //     + githubEvents 3 (body + github ×2) + starredRepos 3 (body + github ×2)
-  //     + theatreReviews 3 (body + squarespace ×2).
-  { name: 'widgets', expectedLeaves: 123 },
+  //     + theatreReviews 3 (body + squarespace ×2)
+  //   + coffee 15 (sipping/caffeineUnit/thisCup/dailyLabel/searching + action ×4
+  //     [connect/reconnect/finishCup/newCup] + badge ×3 [connect/connected/error]
+  //     + beverage ×3 [drip/espresso/coldBrew]).
+  { name: 'widgets', expectedLeaves: 138 },
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
-  //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1.
-  { name: 'a11y', expectedLeaves: 14 },
+  //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1
+  //   + coffee 8 (mug/caffeineThisCup/dailyCaffeine + action ×5
+  //     [connect/searching/reconnect/finishCup/newCup]).
+  { name: 'a11y', expectedLeaves: 22 },
   // app: nav 10 + common 7 + home 12 + settings 33 + savedPlaces 4
   //   + addPlace 9 + health 9 + sleep 8 + location 73 + bookshelf 50 + watch 12
   //   + sections 2 + page404 2.

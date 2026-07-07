@@ -242,6 +242,28 @@ export const widgetsSchema = z
       })
       .strict()
       .describe('Identity card — the social/link pill labels.'),
+    coffee: z
+      .object({
+        sipping: z.string(),
+        caffeineUnit: z.string(),
+        thisCup: z.string(),
+        dailyLabel: z.string(),
+        searching: z.string(),
+        actionConnect: z.string(),
+        actionReconnect: z.string(),
+        actionFinishCup: z.string(),
+        actionNewCup: z.string(),
+        badgeConnect: z.string(),
+        badgeConnected: z.string(),
+        badgeError: z.string(),
+        beverageDrip: z.string(),
+        beverageEspresso: z.string(),
+        beverageColdBrew: z.string(),
+      })
+      .strict()
+      .describe(
+        'Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.',
+      ),
   })
   .strict()
   .describe(

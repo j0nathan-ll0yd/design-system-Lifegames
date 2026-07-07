@@ -121,7 +121,7 @@ Four tiers, applied in order of specificity:
 | Token | Resolves to | Description |
 |---|---|---|
 | `color.text.title` | `#fafafa` | Heading text |
-| `color.text.primary` | `#f0f0f0` | Body text. Web parity: zinc.300 = #f0f0f0 matches production --text. iOS textPrimary remains zinc.200 (#e4e4e7) via SwiftUI layer (MA2). |
+| `color.text.primary` | `#f0f0f0` | Body text. Resolves to zinc.300 = #f0f0f0 identically across web (--text), the Swift color-text-primary xcasset, and LGColor.textPrimary — cross-platform parity holds. See docs/adr/0006-text-primary-token-parity.md. |
 | `color.text.muted` | `#9ca3af` | Secondary text. Uses web value #9ca3af cross-platform. Converged upward for accessibility (MA2). |
 | `color.text.subtle` | `#85858e` | Tertiary text |
 | `color.text.disabled` | `#7c7c84` | Disabled/arrow text |

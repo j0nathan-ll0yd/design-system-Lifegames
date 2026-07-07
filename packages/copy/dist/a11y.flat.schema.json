@@ -136,6 +136,48 @@
       },
       "required": ["region"],
       "additionalProperties": false
+    },
+    "coffee": {
+      "type": "object",
+      "title": "A11yCoffee",
+      "description": "Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.",
+      "properties": {
+        "mug": {
+          "type": "string"
+        },
+        "caffeineThisCup": {
+          "type": "string"
+        },
+        "dailyCaffeine": {
+          "type": "string"
+        },
+        "actionConnect": {
+          "type": "string"
+        },
+        "actionSearching": {
+          "type": "string"
+        },
+        "actionReconnect": {
+          "type": "string"
+        },
+        "actionFinishCup": {
+          "type": "string"
+        },
+        "actionNewCup": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mug",
+        "caffeineThisCup",
+        "dailyCaffeine",
+        "actionConnect",
+        "actionSearching",
+        "actionReconnect",
+        "actionFinishCup",
+        "actionNewCup"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -148,7 +190,8 @@
     "nav",
     "region",
     "clock",
-    "page404"
+    "page404",
+    "coffee"
   ],
   "additionalProperties": false
 }

@@ -21,7 +21,8 @@
     "starredRepos",
     "bio",
     "systemStatus",
-    "identityCard"
+    "identityCard",
+    "coffee"
   ],
   "properties": {
     "heartRate": {
@@ -519,7 +520,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsHealth",
@@ -531,8 +534,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     },
                     "water": {
@@ -540,8 +547,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     },
                     "coffee": {
@@ -549,8 +560,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     }
                   }
@@ -563,7 +578,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsSleep",
@@ -575,8 +592,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     }
                   }
@@ -589,7 +610,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsBooks",
@@ -605,7 +628,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsArticles",
@@ -617,8 +642,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     }
                   }
@@ -631,7 +660,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsGithubEvents",
@@ -643,8 +674,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     }
                   }
@@ -657,7 +692,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsStarredRepos",
@@ -669,8 +706,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     }
                   }
@@ -683,7 +724,9 @@
               "additionalProperties": false,
               "required": ["body", "refs"],
               "properties": {
-                "body": { "$ref": "#/$defs/CopyString" },
+                "body": {
+                  "$ref": "#/$defs/CopyString"
+                },
                 "refs": {
                   "type": "object",
                   "title": "SystemStatusRefsTheatreReviews",
@@ -695,8 +738,12 @@
                       "additionalProperties": false,
                       "required": ["label", "href"],
                       "properties": {
-                        "label": { "$ref": "#/$defs/CopyString" },
-                        "href": { "$ref": "#/$defs/CopyString" }
+                        "label": {
+                          "$ref": "#/$defs/CopyString"
+                        },
+                        "href": {
+                          "$ref": "#/$defs/CopyString"
+                        }
                       }
                     }
                   }
@@ -726,6 +773,76 @@
           "$ref": "#/$defs/CopyString"
         },
         "bluesky": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
+    },
+    "coffee": {
+      "type": "object",
+      "title": "WidgetsCoffee",
+      "description": "Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.",
+      "additionalProperties": false,
+      "required": [
+        "sipping",
+        "caffeineUnit",
+        "thisCup",
+        "dailyLabel",
+        "searching",
+        "actionConnect",
+        "actionReconnect",
+        "actionFinishCup",
+        "actionNewCup",
+        "badgeConnect",
+        "badgeConnected",
+        "badgeError",
+        "beverageDrip",
+        "beverageEspresso",
+        "beverageColdBrew"
+      ],
+      "properties": {
+        "sipping": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "caffeineUnit": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "thisCup": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dailyLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "searching": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionConnect": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionReconnect": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionFinishCup": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionNewCup": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "badgeConnect": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "badgeConnected": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "badgeError": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "beverageDrip": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "beverageEspresso": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "beverageColdBrew": {
           "$ref": "#/$defs/CopyString"
         }
       }

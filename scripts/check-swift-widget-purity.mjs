@@ -4,8 +4,9 @@
  * Swift Widget Purity Check — P3 presentational-purity boundary (GOVERNANCE.md §5).
  *
  * Scans every Sources/LifegamesWidgets/**\/*.swift (and, for the F-015
- * color/UIKit detections, Sources/LifegamesComponents/**\/*.swift) for
- * presentational-purity violations.
+ * color/UIKit detections, Sources/LifegamesComponents/**\/*.swift and
+ * Sources/LifegamesComponentsCore/**\/*.swift) for presentational-purity
+ * violations.
  *
  * Detections
  * ──────────
@@ -40,6 +41,7 @@ const CHECK_MODE = process.argv.includes('--check');
 
 const SWIFT_WIDGETS = path.join(ROOT, 'Sources/LifegamesWidgets');
 const SWIFT_COMPONENTS = path.join(ROOT, 'Sources/LifegamesComponents');
+const SWIFT_COMPONENTS_CORE = path.join(ROOT, 'Sources/LifegamesComponentsCore');
 const EXCEPTIONS_PATH = path.join(ROOT, 'widget-purity-exceptions.json');
 
 // Forbidden imports. Each entry: { label, pattern } where pattern is matched
@@ -101,7 +103,10 @@ function loadColorHexExceptions() {
 const colorHexExceptions = loadColorHexExceptions();
 
 const swiftWidgetFiles = walk(SWIFT_WIDGETS, '.swift');
-const swiftComponentFiles = walk(SWIFT_COMPONENTS, '.swift');
+const swiftComponentFiles = [
+  ...walk(SWIFT_COMPONENTS, '.swift'),
+  ...walk(SWIFT_COMPONENTS_CORE, '.swift'),
+];
 
 /**
  * @type {{
@@ -192,7 +197,7 @@ console.log(
   `Scanned widgets:    ${swiftWidgetFiles.length} .swift files under Sources/LifegamesWidgets/`,
 );
 console.log(
-  `Scanned components: ${swiftComponentFiles.length} .swift files under Sources/LifegamesComponents/`,
+  `Scanned components: ${swiftComponentFiles.length} .swift files under Sources/LifegamesComponents{,Core}/`,
 );
 console.log(`Forbidden imports:  ${FORBIDDEN_IMPORTS.map((f) => f.label).join(', ')}`);
 console.log(

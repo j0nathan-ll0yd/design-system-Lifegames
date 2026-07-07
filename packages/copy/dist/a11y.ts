@@ -16,6 +16,7 @@ export interface Accessibility {
   region: A11YRegion;
   clock: A11YClock;
   page404: A11YPage404;
+  coffee: A11YCoffee;
 }
 /**
  * Movement Rings widget accessibility labels — the rings progress summary and the daylight sun-arc image label.
@@ -80,4 +81,17 @@ export interface A11YClock {
  */
 export interface A11YPage404 {
   region: string;
+}
+/**
+ * Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.
+ */
+export interface A11YCoffee {
+  mug: string;
+  caffeineThisCup: string;
+  dailyCaffeine: string;
+  actionConnect: string;
+  actionSearching: string;
+  actionReconnect: string;
+  actionFinishCup: string;
+  actionNewCup: string;
 }

@@ -45,14 +45,16 @@ const EXCEPTIONS_PATH = path.join(ROOT, 'tokens/parity-exceptions.json');
 const ROLE_FAMILIES = 'accent|neon|surface|text|border|health|sleep|podium|status';
 const ROLE_BODY = `(?:${ROLE_FAMILIES})-[a-z0-9-]+`;
 
-// In-script skip-list (F-006 hardcoded gating). text-primary maps to zinc.300
-// on one platform and zinc.200 on the other and the divergence is intentional
-// per the audit decision pending ADR-0001. Once ADR-0001 lands, record this
-// in parity-exceptions.json and remove the in-script skip.
-const HARDCODED_SKIPS = new Set([
-  // TODO(F-001): record in parity-exceptions.json once ADR-0001 lands
-  'text-primary',
-]);
+// In-script skip-list (F-006 hardcoded gating) — now empty. text-primary was the
+// sole entry, guarding a historical web(zinc.300)/Swift(zinc.200) divergence. That
+// divergence is resolved: the semantic token resolves to zinc.300 (#f0f0f0)
+// identically across the web CSS, the Swift `color-text-primary` xcasset, and
+// `LGColor.textPrimary`, so the gate passes on its own. The dead skip is removed
+// rather than moved to parity-exceptions.json — that file is for ACTIVE divergences,
+// and exempting a matching role would silently mask a future real regression. See
+// docs/adr/0006-text-primary-token-parity.md. New intentional divergences go in
+// tokens/parity-exceptions.json with an ADR reference.
+const HARDCODED_SKIPS = new Set([]);
 
 // ── web: parse --lg-color-{role} hex from tokens.css ────────────────────────────
 /** @returns {Map<string, string>} role (e.g. "accent-pink") → "#rrggbb" */

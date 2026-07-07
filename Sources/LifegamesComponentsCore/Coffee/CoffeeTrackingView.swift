@@ -1,3 +1,4 @@
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
 
@@ -107,7 +108,7 @@ public struct CoffeeTrackingView: View {
 
                         // "Sipping…" floats just below the mug while cup is lifted
                         if isSipping {
-                            Text("Sipping\u{2026}") // TODO(copy): migrate to @lifegames/copy V2
+                            Text(CopyLoader.widgets.coffee.sipping)
                                 .font(Font.Tokens.caption2())
                                 .fontWeight(.medium)
                                 .kerning(1.5)
@@ -166,22 +167,26 @@ public struct CoffeeTrackingView: View {
     private var caffeineReadout: some View {
         VStack(spacing: Spacing.s100) {
             HStack(alignment: .firstTextBaseline, spacing: Spacing.s150) {
-                Text("\(props.caffeineMgThisCup)") // TODO(copy)
+                Text("\(props.caffeineMgThisCup)") // runtime value, not copy
                     .font(Font.Tokens.monoNumeric(52, weight: .bold))
                     .foregroundStyle(LGColor.accentAmber)
                     .neonGlow(LGColor.accentAmber, radius: 8)
 
-                Text("mg") // TODO(copy)
+                Text(CopyLoader.widgets.coffee.caffeineUnit)
                     .font(Font.Tokens.monoNumeric(18, weight: .regular))
                     .foregroundStyle(LGColor.accentAmber.opacity(0.7))
             }
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Caffeine this cup") // TODO(copy)
+            .accessibilityLabel(CopyLoader.a11y.coffee.caffeineThisCup)
             .accessibilityValue("\(props.caffeineMgThisCup) milligrams")
 
-            Text("this cup \u{00B7} \(props.beverage.heroDisplayName)") // TODO(copy)
-                .font(Font.Tokens.caption())
-                .foregroundStyle(LGColor.textMuted)
+            Text(
+                CopyLoader.widgets.coffee.thisCup.replacingOccurrences(
+                    of: "{beverage}", with: props.beverage.heroDisplayName
+                )
+            )
+            .font(Font.Tokens.caption())
+            .foregroundStyle(LGColor.textMuted)
         }
     }
 
@@ -192,7 +197,7 @@ public struct CoffeeTrackingView: View {
         return VStack(alignment: .leading, spacing: Spacing.s200) {
             // Label + value row
             HStack {
-                Text("Today") // TODO(copy)
+                Text(CopyLoader.widgets.coffee.dailyLabel)
                     .font(Font.Tokens.caption2())
                     .fontWeight(.medium)
                     .textCase(.uppercase)
@@ -231,7 +236,7 @@ public struct CoffeeTrackingView: View {
                 }
             }
             .frame(height: 6)
-            .accessibilityLabel("Daily caffeine") // TODO(copy)
+            .accessibilityLabel(CopyLoader.a11y.coffee.dailyCaffeine)
             .accessibilityValue("\(props.dailyCaffeineMg) of \(props.dailyTargetMg) mg")
         }
     }
@@ -281,25 +286,25 @@ public struct CoffeeTrackingView: View {
 
     private var buttonTitle: String {
         switch props.connection {
-        case .unpaired: "Connect your Acaia" // TODO(copy)
-        case .searching: "Searching\u{2026}" // TODO(copy)
-        case .error: "Reconnect" // TODO(copy)
+        case .unpaired: CopyLoader.widgets.coffee.actionConnect
+        case .searching: CopyLoader.widgets.coffee.searching
+        case .error: CopyLoader.widgets.coffee.actionReconnect
         case .connected:
             props.isSessionActive
-                ? "Finish Cup" // TODO(copy)
-                : "+ New Cup" // TODO(copy)
+                ? CopyLoader.widgets.coffee.actionFinishCup
+                : CopyLoader.widgets.coffee.actionNewCup
         }
     }
 
     private var buttonA11yLabel: String {
         switch props.connection {
-        case .unpaired: "Connect your Acaia scale" // TODO(copy)
-        case .searching: "Searching for scale" // TODO(copy)
-        case .error: "Reconnect to scale" // TODO(copy)
+        case .unpaired: CopyLoader.a11y.coffee.actionConnect
+        case .searching: CopyLoader.a11y.coffee.actionSearching
+        case .error: CopyLoader.a11y.coffee.actionReconnect
         case .connected:
             props.isSessionActive
-                ? "Finish tracking this cup" // TODO(copy)
-                : "Start tracking a new cup" // TODO(copy)
+                ? CopyLoader.a11y.coffee.actionFinishCup
+                : CopyLoader.a11y.coffee.actionNewCup
         }
     }
 }
@@ -359,9 +364,9 @@ private extension CoffeeTrackingProps.Beverage {
     /// Short display name used in the "this cup · drip" sub-label.
     var heroDisplayName: String {
         switch self {
-        case .drip: "drip" // TODO(copy): migrate to @lifegames/copy V2
-        case .espresso: "espresso" // TODO(copy): migrate to @lifegames/copy V2
-        case .coldBrew: "cold brew" // TODO(copy): migrate to @lifegames/copy V2
+        case .drip: CopyLoader.widgets.coffee.beverageDrip
+        case .espresso: CopyLoader.widgets.coffee.beverageEspresso
+        case .coldBrew: CopyLoader.widgets.coffee.beverageColdBrew
         }
     }
 }

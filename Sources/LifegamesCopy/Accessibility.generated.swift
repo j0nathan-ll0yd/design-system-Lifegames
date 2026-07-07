@@ -23,6 +23,9 @@ public struct Accessibility: Codable, Sendable {
     public let bookshelf: A11YBookshelf
     /// Live clock accessibility label (web shell) — the top-bar current-time readout.
     public let clock: A11YClock
+    /// Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and
+    /// primary action button states.
+    public let coffee: A11YCoffee
     /// Identity card accessibility labels — the avatar image alt text and the social-links nav
     /// region label.
     public let identity: A11YIdentity
@@ -41,10 +44,11 @@ public struct Accessibility: Codable, Sendable {
     /// Triptych column region landmark labels (web shell) — the Body and Mind sections.
     public let region: A11YRegion
 
-    public init(bookModal: A11YBookModal, bookshelf: A11YBookshelf, clock: A11YClock, identity: A11YIdentity, modal: A11YModal, movement: A11YMovement, nav: A11YNav, page404: A11YPage404, readingFeed: A11YReadingFeed, region: A11YRegion) {
+    public init(bookModal: A11YBookModal, bookshelf: A11YBookshelf, clock: A11YClock, coffee: A11YCoffee, identity: A11YIdentity, modal: A11YModal, movement: A11YMovement, nav: A11YNav, page404: A11YPage404, readingFeed: A11YReadingFeed, region: A11YRegion) {
         self.bookModal = bookModal
         self.bookshelf = bookshelf
         self.clock = clock
+        self.coffee = coffee
         self.identity = identity
         self.modal = modal
         self.movement = movement
@@ -77,6 +81,7 @@ public extension Accessibility {
         bookModal: A11YBookModal? = nil,
         bookshelf: A11YBookshelf? = nil,
         clock: A11YClock? = nil,
+        coffee: A11YCoffee? = nil,
         identity: A11YIdentity? = nil,
         modal: A11YModal? = nil,
         movement: A11YMovement? = nil,
@@ -89,6 +94,7 @@ public extension Accessibility {
             bookModal: bookModal ?? self.bookModal,
             bookshelf: bookshelf ?? self.bookshelf,
             clock: clock ?? self.clock,
+            coffee: coffee ?? self.coffee,
             identity: identity ?? self.identity,
             modal: modal ?? self.modal,
             movement: movement ?? self.movement,
@@ -231,6 +237,74 @@ public extension A11YClock {
     ) -> A11YClock {
         return A11YClock(
             currentTime: currentTime ?? self.currentTime
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and
+/// primary action button states.
+// MARK: - A11YCoffee
+public struct A11YCoffee: Codable, Sendable {
+    public let actionConnect, actionFinishCup, actionNewCup, actionReconnect: String
+    public let actionSearching, caffeineThisCup, dailyCaffeine, mug: String
+
+    public init(actionConnect: String, actionFinishCup: String, actionNewCup: String, actionReconnect: String, actionSearching: String, caffeineThisCup: String, dailyCaffeine: String, mug: String) {
+        self.actionConnect = actionConnect
+        self.actionFinishCup = actionFinishCup
+        self.actionNewCup = actionNewCup
+        self.actionReconnect = actionReconnect
+        self.actionSearching = actionSearching
+        self.caffeineThisCup = caffeineThisCup
+        self.dailyCaffeine = dailyCaffeine
+        self.mug = mug
+    }
+}
+
+// MARK: A11YCoffee convenience initializers and mutators
+
+public extension A11YCoffee {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(A11YCoffee.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        actionConnect: String? = nil,
+        actionFinishCup: String? = nil,
+        actionNewCup: String? = nil,
+        actionReconnect: String? = nil,
+        actionSearching: String? = nil,
+        caffeineThisCup: String? = nil,
+        dailyCaffeine: String? = nil,
+        mug: String? = nil
+    ) -> A11YCoffee {
+        return A11YCoffee(
+            actionConnect: actionConnect ?? self.actionConnect,
+            actionFinishCup: actionFinishCup ?? self.actionFinishCup,
+            actionNewCup: actionNewCup ?? self.actionNewCup,
+            actionReconnect: actionReconnect ?? self.actionReconnect,
+            actionSearching: actionSearching ?? self.actionSearching,
+            caffeineThisCup: caffeineThisCup ?? self.caffeineThisCup,
+            dailyCaffeine: dailyCaffeine ?? self.dailyCaffeine,
+            mug: mug ?? self.mug
         )
     }
 

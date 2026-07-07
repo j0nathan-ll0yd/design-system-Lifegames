@@ -32,5 +32,15 @@
   },
   "page404": {
     "region": "404 error page"
+  },
+  "coffee": {
+    "mug": "Coffee mug",
+    "caffeineThisCup": "Caffeine this cup",
+    "dailyCaffeine": "Daily caffeine",
+    "actionConnect": "Connect your Acaia scale",
+    "actionSearching": "Searching for scale",
+    "actionReconnect": "Reconnect to scale",
+    "actionFinishCup": "Finish tracking this cup",
+    "actionNewCup": "Start tracking a new cup"
   }
 }

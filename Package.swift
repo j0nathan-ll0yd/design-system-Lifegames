@@ -24,7 +24,7 @@ let package = Package(
         .target(name: "LifegamesTokens", resources: [.process("Resources")]),
         .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
         .target(name: "LifegamesCopy", resources: [.process("Resources")]),
-        .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens"]),
+        .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens", "LifegamesCopy"]),
         .target(name: "LifegamesComponents", dependencies: ["LifegamesTokens", "LifegamesComponentsCore"]),
         .target(name: "LifegamesOnboarding", dependencies: ["LifegamesComponents"], exclude: ["README.md"]),
         .target(name: "LifegamesTemplates", dependencies: [
