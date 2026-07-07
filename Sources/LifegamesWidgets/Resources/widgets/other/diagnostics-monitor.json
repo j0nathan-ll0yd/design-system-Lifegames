@@ -10,12 +10,12 @@
   ],
   "fileSizeBytes": 24576,
   "entries": [
-    { "id": "00000000-0000-0000-0000-000000000001", "category": "syn", "timestamp": "2025-01-15T12:33:48Z", "message": "Sync cycle completed" },
-    { "id": "00000000-0000-0000-0000-000000000002", "category": "hlt", "timestamp": "2025-01-15T12:33:30Z", "message": "Heart sample batch posted" },
-    { "id": "00000000-0000-0000-0000-000000000003", "category": "bg",  "timestamp": "2025-01-15T12:32:11Z", "message": "Background refresh scheduled" },
-    { "id": "00000000-0000-0000-0000-000000000004", "category": "loc", "timestamp": "2025-01-15T12:30:02Z", "message": "Region monitoring resumed" },
-    { "id": "00000000-0000-0000-0000-000000000005", "category": "lif", "timestamp": "2025-01-15T12:28:55Z", "message": "App entered foreground" },
-    { "id": "00000000-0000-0000-0000-000000000006", "category": "con", "timestamp": "2025-01-15T12:27:00Z", "message": "Reachability changed" }
+    { "id": "00000000-0000-0000-0000-000000000001", "category": "syn", "timestamp": "2025-01-15T12:33:48Z", "message": "Sync cycle completed", "level": "info" },
+    { "id": "00000000-0000-0000-0000-000000000002", "category": "hlt", "timestamp": "2025-01-15T12:33:30Z", "message": "Heart sample batch posted", "level": "info" },
+    { "id": "00000000-0000-0000-0000-000000000003", "category": "bg",  "timestamp": "2025-01-15T12:32:11Z", "message": "Background refresh scheduled", "level": "debug" },
+    { "id": "00000000-0000-0000-0000-000000000004", "category": "loc", "timestamp": "2025-01-15T12:30:02Z", "message": "Region monitoring resumed", "level": "warning" },
+    { "id": "00000000-0000-0000-0000-000000000005", "category": "lif", "timestamp": "2025-01-15T12:28:55Z", "message": "App entered foreground", "level": "info" },
+    { "id": "00000000-0000-0000-0000-000000000006", "category": "con", "timestamp": "2025-01-15T12:27:00Z", "message": "Reachability changed", "level": "error" }
   ],
   "transferStatus": "idle",
   "referenceDate": "2025-01-15T12:34:00Z"

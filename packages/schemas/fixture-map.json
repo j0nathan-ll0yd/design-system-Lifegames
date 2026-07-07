@@ -794,6 +794,58 @@
       "schema": "PlaceLeaderboardV3Props",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-search-results.json": {
+      "schema": "PlaceSearchResults",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/saved-places.json": {
+      "schema": "SavedPlaces",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/visit-timeline.empty.json": {
+      "schema": "VisitTimeline",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/visit-timeline.today.json": {
+      "schema": "VisitTimeline",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/visit-timeline.week.json": {
+      "schema": "VisitTimeline",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-file.downloaded.json": {
+      "schema": "MediaFile",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-file.long-metadata.json": {
+      "schema": "MediaFile",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-file.pending.json": {
+      "schema": "MediaFile",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-library.empty.json": {
+      "schema": "MediaLibrary",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-library.populated-max.json": {
+      "schema": "MediaLibrary",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-library.populated-min.json": {
+      "schema": "MediaLibrary",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-profile.new-user.json": {
+      "schema": "MediaProfile",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/media/media-profile.standard.json": {
+      "schema": "MediaProfile",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/other/diagnostics-monitor.json": {
       "schema": "DiagnosticsMonitorProps",
       "strategy": "single"
@@ -890,7 +942,23 @@
       "schema": "OGImageProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/other/sync-status.aging.json": {
+      "schema": "SyncStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/sync-status.fresh.json": {
+      "schema": "SyncStatusProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/other/sync-status.json": {
+      "schema": "SyncStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/sync-status.never-synced.json": {
+      "schema": "SyncStatusProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/other/sync-status.stale.json": {
       "schema": "SyncStatusProps",
       "strategy": "single"
     },

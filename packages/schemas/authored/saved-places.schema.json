@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/saved-places.schema.json",
+  "title": "SavedPlaces",
+  "description": "User-saved geofenced places (home, work, gym) for Life Portal location previews (S98).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["places"],
+  "properties": {
+    "places": {
+      "type": "array",
+      "items": {
+        "title": "SavedPlaceEntry",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "latitude",
+          "longitude",
+          "geohash",
+          "radiusMeters",
+          "category",
+          "icon"
+        ],
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "latitude": { "type": "number" },
+          "longitude": { "type": "number" },
+          "geohash": { "type": "string" },
+          "radiusMeters": { "type": "number" },
+          "category": { "type": "string" },
+          "icon": { "type": "string", "description": "SF Symbol name." }
+        }
+      }
+    }
+  }
+}

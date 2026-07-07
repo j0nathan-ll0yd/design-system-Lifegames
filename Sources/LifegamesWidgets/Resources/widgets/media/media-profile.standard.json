@@ -1,0 +1,13 @@
+{
+  "user": {
+    "email": "sample.user@example.com",
+    "firstName": "Sample",
+    "lastName": "User",
+    "identifier": "usr-0001"
+  },
+  "metrics": {
+    "downloadCount": 12,
+    "totalStorageBytes": 2400000000,
+    "playCount": 47
+  }
+}

@@ -27,6 +27,14 @@ extension WidgetFixtureCatalogTests {
             placeLeaderboardRow("place-leaderboard-v3.tourist-week"),
             placeLeaderboardRow("place-leaderboard-v3.skeleton"),
             placeLeaderboardRow("place-leaderboard-v3.empty"),
+
+            // Data-only app-preview fixtures (S98) — direct Codable decode
+            // against LocationFixtureModels wire types; no widget view exists.
+            .row(VisitTimelineProps.self, category: "location", name: "visit-timeline.today"),
+            .row(VisitTimelineProps.self, category: "location", name: "visit-timeline.week"),
+            .row(VisitTimelineProps.self, category: "location", name: "visit-timeline.empty"),
+            .row(SavedPlacesProps.self, category: "location", name: "saved-places"),
+            .row(PlaceSearchResultsProps.self, category: "location", name: "place-search-results"),
         ]
     }
 

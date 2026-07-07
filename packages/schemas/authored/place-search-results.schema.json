@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/place-search-results.schema.json",
+  "title": "PlaceSearchResults",
+  "description": "Place search results (visit-correction sheet) for Life Portal location previews (S98).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["results"],
+  "properties": {
+    "results": {
+      "type": "array",
+      "items": {
+        "title": "PlaceSearchResultEntry",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "category",
+          "address",
+          "city",
+          "state",
+          "latitude",
+          "longitude",
+          "distance"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "category": { "type": "string", "description": "MapKit POI category identifier." },
+          "address": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "latitude": { "type": "number" },
+          "longitude": { "type": "number" },
+          "distance": { "type": "number", "description": "Distance from the visit, in meters." }
+        }
+      }
+    }
+  }
+}
