@@ -55,13 +55,11 @@ public struct App: Codable, Sendable {
     /// Sleep-score entry sheet — title, prompt, placeholder, buttons, and a11y labels for the
     /// add/edit affordance.
     public let sleep: AppSleep
-    /// Bottom tab-bar labels (TabView Label text).
-    public let tab: AppTab
     /// watchOS app + sync-status complication — diagnostics chrome, sync action labels, and
     /// complication strings.
     public let watch: AppWatch
 
-    public init(addPlace: AppAddPlace, bookshelf: AppBookshelf, common: AppCommon, health: AppHealth, home: AppHome, location: AppLocation, nav: AppNav, page404: AppPage404, savedPlaces: AppSavedPlaces, sections: AppSections, settings: AppSettings, sleep: AppSleep, tab: AppTab, watch: AppWatch) {
+    public init(addPlace: AppAddPlace, bookshelf: AppBookshelf, common: AppCommon, health: AppHealth, home: AppHome, location: AppLocation, nav: AppNav, page404: AppPage404, savedPlaces: AppSavedPlaces, sections: AppSections, settings: AppSettings, sleep: AppSleep, watch: AppWatch) {
         self.addPlace = addPlace
         self.bookshelf = bookshelf
         self.common = common
@@ -74,7 +72,6 @@ public struct App: Codable, Sendable {
         self.sections = sections
         self.settings = settings
         self.sleep = sleep
-        self.tab = tab
         self.watch = watch
     }
 }
@@ -110,7 +107,6 @@ public extension App {
         sections: AppSections? = nil,
         settings: AppSettings? = nil,
         sleep: AppSleep? = nil,
-        tab: AppTab? = nil,
         watch: AppWatch? = nil
     ) -> App {
         return App(
@@ -126,7 +122,6 @@ public extension App {
             sections: sections ?? self.sections,
             settings: settings ?? self.settings,
             sleep: sleep ?? self.sleep,
-            tab: tab ?? self.tab,
             watch: watch ?? self.watch
         )
     }
@@ -628,31 +623,18 @@ public extension AppCommon {
 /// data-mode toggle.
 // MARK: - AppHealth
 public struct AppHealth: Codable, Sendable {
-    public let authorization, authorized, lastSync, noWorkouts: String
-    public let realActive, recoveryDay, sectionData, sectionDataMode: String
-    public let sectionHealthkit, sectionHeart, sectionMovement, sectionSleep: String
-    public let sectionWorkouts, simActive, syncing, syncNow: String
-    public let todaysWorkouts, useRealHR, workoutCalories, workoutDuration: String
+    public let noWorkouts, recoveryDay, sectionHeart, sectionMovement: String
+    public let sectionSleep, sectionWorkouts, todaysWorkouts, workoutCalories: String
+    public let workoutDuration: String
 
-    public init(authorization: String, authorized: String, lastSync: String, noWorkouts: String, realActive: String, recoveryDay: String, sectionData: String, sectionDataMode: String, sectionHealthkit: String, sectionHeart: String, sectionMovement: String, sectionSleep: String, sectionWorkouts: String, simActive: String, syncing: String, syncNow: String, todaysWorkouts: String, useRealHR: String, workoutCalories: String, workoutDuration: String) {
-        self.authorization = authorization
-        self.authorized = authorized
-        self.lastSync = lastSync
+    public init(noWorkouts: String, recoveryDay: String, sectionHeart: String, sectionMovement: String, sectionSleep: String, sectionWorkouts: String, todaysWorkouts: String, workoutCalories: String, workoutDuration: String) {
         self.noWorkouts = noWorkouts
-        self.realActive = realActive
         self.recoveryDay = recoveryDay
-        self.sectionData = sectionData
-        self.sectionDataMode = sectionDataMode
-        self.sectionHealthkit = sectionHealthkit
         self.sectionHeart = sectionHeart
         self.sectionMovement = sectionMovement
         self.sectionSleep = sectionSleep
         self.sectionWorkouts = sectionWorkouts
-        self.simActive = simActive
-        self.syncing = syncing
-        self.syncNow = syncNow
         self.todaysWorkouts = todaysWorkouts
-        self.useRealHR = useRealHR
         self.workoutCalories = workoutCalories
         self.workoutDuration = workoutDuration
     }
@@ -677,46 +659,24 @@ public extension AppHealth {
     }
 
     func with(
-        authorization: String? = nil,
-        authorized: String? = nil,
-        lastSync: String? = nil,
         noWorkouts: String? = nil,
-        realActive: String? = nil,
         recoveryDay: String? = nil,
-        sectionData: String? = nil,
-        sectionDataMode: String? = nil,
-        sectionHealthkit: String? = nil,
         sectionHeart: String? = nil,
         sectionMovement: String? = nil,
         sectionSleep: String? = nil,
         sectionWorkouts: String? = nil,
-        simActive: String? = nil,
-        syncing: String? = nil,
-        syncNow: String? = nil,
         todaysWorkouts: String? = nil,
-        useRealHR: String? = nil,
         workoutCalories: String? = nil,
         workoutDuration: String? = nil
     ) -> AppHealth {
         return AppHealth(
-            authorization: authorization ?? self.authorization,
-            authorized: authorized ?? self.authorized,
-            lastSync: lastSync ?? self.lastSync,
             noWorkouts: noWorkouts ?? self.noWorkouts,
-            realActive: realActive ?? self.realActive,
             recoveryDay: recoveryDay ?? self.recoveryDay,
-            sectionData: sectionData ?? self.sectionData,
-            sectionDataMode: sectionDataMode ?? self.sectionDataMode,
-            sectionHealthkit: sectionHealthkit ?? self.sectionHealthkit,
             sectionHeart: sectionHeart ?? self.sectionHeart,
             sectionMovement: sectionMovement ?? self.sectionMovement,
             sectionSleep: sectionSleep ?? self.sectionSleep,
             sectionWorkouts: sectionWorkouts ?? self.sectionWorkouts,
-            simActive: simActive ?? self.simActive,
-            syncing: syncing ?? self.syncing,
-            syncNow: syncNow ?? self.syncNow,
             todaysWorkouts: todaysWorkouts ?? self.todaysWorkouts,
-            useRealHR: useRealHR ?? self.useRealHR,
             workoutCalories: workoutCalories ?? self.workoutCalories,
             workoutDuration: workoutDuration ?? self.workoutDuration
         )
@@ -1834,36 +1794,21 @@ public extension AppSections {
 /// destructive-action alerts.
 // MARK: - AppSettings
 public struct AppSettings: Codable, Sendable {
-    public let aboutBuild, aboutName, aboutPlatform, aboutTitle: String
-    public let aboutVersion: String
+    public let aboutBuild, aboutPlatform, aboutVersion: String
     /// Settings destructive-action confirmation alerts (delete-all, full re-sync, clear-logs).
     public let alerts: AppSettingsAlerts
-    public let apiBaseURL, apiBaseURLPlaceholder, apiToken, apiTokenPlaceholder: String
     public let clearLogs, deleteAll, diagEmpty, fileSize: String
     public let fullResync, lastHealthSync, realActive, recentEntries: String
     public let reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout: String
     public let sectionData, sectionDataMode, sectionDiagnostics, sectionLocation: String
-    public let sectionServer, shareLog, simActive, syncNow: String
-    public let totalVisits, unsyncedVisits, useRealHR, watchLogEntries: String
+    public let shareLog, simActive, syncNow, totalVisits: String
+    public let unsyncedVisits, useRealHR, watchLogEntries: String
 
-    public enum CodingKeys: String, CodingKey {
-        case aboutBuild, aboutName, aboutPlatform, aboutTitle, aboutVersion, alerts
-        case apiBaseURL = "apiBaseUrl"
-        case apiBaseURLPlaceholder = "apiBaseUrlPlaceholder"
-        case apiToken, apiTokenPlaceholder, clearLogs, deleteAll, diagEmpty, fileSize, fullResync, lastHealthSync, realActive, recentEntries, reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout, sectionData, sectionDataMode, sectionDiagnostics, sectionLocation, sectionServer, shareLog, simActive, syncNow, totalVisits, unsyncedVisits, useRealHR, watchLogEntries
-    }
-
-    public init(aboutBuild: String, aboutName: String, aboutPlatform: String, aboutTitle: String, aboutVersion: String, alerts: AppSettingsAlerts, apiBaseURL: String, apiBaseURLPlaceholder: String, apiToken: String, apiTokenPlaceholder: String, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, sectionServer: String, shareLog: String, simActive: String, syncNow: String, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
+    public init(aboutBuild: String, aboutPlatform: String, aboutVersion: String, alerts: AppSettingsAlerts, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, shareLog: String, simActive: String, syncNow: String, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
         self.aboutBuild = aboutBuild
-        self.aboutName = aboutName
         self.aboutPlatform = aboutPlatform
-        self.aboutTitle = aboutTitle
         self.aboutVersion = aboutVersion
         self.alerts = alerts
-        self.apiBaseURL = apiBaseURL
-        self.apiBaseURLPlaceholder = apiBaseURLPlaceholder
-        self.apiToken = apiToken
-        self.apiTokenPlaceholder = apiTokenPlaceholder
         self.clearLogs = clearLogs
         self.deleteAll = deleteAll
         self.diagEmpty = diagEmpty
@@ -1880,7 +1825,6 @@ public struct AppSettings: Codable, Sendable {
         self.sectionDataMode = sectionDataMode
         self.sectionDiagnostics = sectionDiagnostics
         self.sectionLocation = sectionLocation
-        self.sectionServer = sectionServer
         self.shareLog = shareLog
         self.simActive = simActive
         self.syncNow = syncNow
@@ -1911,15 +1855,9 @@ public extension AppSettings {
 
     func with(
         aboutBuild: String? = nil,
-        aboutName: String? = nil,
         aboutPlatform: String? = nil,
-        aboutTitle: String? = nil,
         aboutVersion: String? = nil,
         alerts: AppSettingsAlerts? = nil,
-        apiBaseURL: String? = nil,
-        apiBaseURLPlaceholder: String? = nil,
-        apiToken: String? = nil,
-        apiTokenPlaceholder: String? = nil,
         clearLogs: String? = nil,
         deleteAll: String? = nil,
         diagEmpty: String? = nil,
@@ -1936,7 +1874,6 @@ public extension AppSettings {
         sectionDataMode: String? = nil,
         sectionDiagnostics: String? = nil,
         sectionLocation: String? = nil,
-        sectionServer: String? = nil,
         shareLog: String? = nil,
         simActive: String? = nil,
         syncNow: String? = nil,
@@ -1947,15 +1884,9 @@ public extension AppSettings {
     ) -> AppSettings {
         return AppSettings(
             aboutBuild: aboutBuild ?? self.aboutBuild,
-            aboutName: aboutName ?? self.aboutName,
             aboutPlatform: aboutPlatform ?? self.aboutPlatform,
-            aboutTitle: aboutTitle ?? self.aboutTitle,
             aboutVersion: aboutVersion ?? self.aboutVersion,
             alerts: alerts ?? self.alerts,
-            apiBaseURL: apiBaseURL ?? self.apiBaseURL,
-            apiBaseURLPlaceholder: apiBaseURLPlaceholder ?? self.apiBaseURLPlaceholder,
-            apiToken: apiToken ?? self.apiToken,
-            apiTokenPlaceholder: apiTokenPlaceholder ?? self.apiTokenPlaceholder,
             clearLogs: clearLogs ?? self.clearLogs,
             deleteAll: deleteAll ?? self.deleteAll,
             diagEmpty: diagEmpty ?? self.diagEmpty,
@@ -1972,7 +1903,6 @@ public extension AppSettings {
             sectionDataMode: sectionDataMode ?? self.sectionDataMode,
             sectionDiagnostics: sectionDiagnostics ?? self.sectionDiagnostics,
             sectionLocation: sectionLocation ?? self.sectionLocation,
-            sectionServer: sectionServer ?? self.sectionServer,
             shareLog: shareLog ?? self.shareLog,
             simActive: simActive ?? self.simActive,
             syncNow: syncNow ?? self.syncNow,
@@ -2118,64 +2048,6 @@ public extension AppSleep {
             prompt: prompt ?? self.prompt,
             save: save ?? self.save,
             title: title ?? self.title
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-/// Bottom tab-bar labels (TabView Label text).
-// MARK: - AppTab
-public struct AppTab: Codable, Sendable {
-    public let books, health, home, location: String
-    public let settings: String
-
-    public init(books: String, health: String, home: String, location: String, settings: String) {
-        self.books = books
-        self.health = health
-        self.home = home
-        self.location = location
-        self.settings = settings
-    }
-}
-
-// MARK: AppTab convenience initializers and mutators
-
-public extension AppTab {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(AppTab.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        books: String? = nil,
-        health: String? = nil,
-        home: String? = nil,
-        location: String? = nil,
-        settings: String? = nil
-    ) -> AppTab {
-        return AppTab(
-            books: books ?? self.books,
-            health: health ?? self.health,
-            home: home ?? self.home,
-            location: location ?? self.location,
-            settings: settings ?? self.settings
         )
     }
 

@@ -11,13 +11,6 @@
     "diagnostics": "Diagnostics",
     "savedPlaces": "Saved Places"
   },
-  "tab": {
-    "home": "Home",
-    "health": "Health",
-    "location": "Location",
-    "books": "Books",
-    "settings": "Settings"
-  },
   "common": {
     "cancel": "Cancel",
     "delete": "Delete",
@@ -43,7 +36,6 @@
   },
   "settings": {
     "sectionLocation": "Location",
-    "sectionServer": "Server",
     "sectionData": "Data",
     "sectionDataMode": "Data Mode",
     "useRealHR": "Use Real Heart Rate Data",
@@ -54,10 +46,6 @@
     "sectionAbout": "About",
     "savedPlacesTitle": "Saved Places",
     "savedPlacesSubtitle": "Home, work, and frequent locations",
-    "apiBaseUrl": "API Base URL",
-    "apiBaseUrlPlaceholder": "https://api.example.com/prod",
-    "apiToken": "API Token",
-    "apiTokenPlaceholder": "Bearer token",
     "totalVisits": "Total Visits",
     "unsyncedVisits": "Unsynced Visits",
     "lastHealthSync": "Last Health Sync",
@@ -70,8 +58,6 @@
     "shareLog": "Share Log File",
     "clearLogs": "Clear Watch Logs",
     "reload": "Reload",
-    "aboutName": "Name",
-    "aboutTitle": "Title",
     "aboutVersion": "Version",
     "aboutBuild": "Build",
     "aboutPlatform": "Platform",
@@ -107,22 +93,11 @@
     "sectionMovement": "Movement",
     "sectionSleep": "Sleep",
     "sectionWorkouts": "Workouts",
-    "sectionData": "Data",
-    "sectionDataMode": "Data Mode",
     "todaysWorkouts": "Today's Workouts",
     "recoveryDay": "Recovery Day",
     "noWorkouts": "No workouts recorded",
     "workoutDuration": "Duration",
-    "workoutCalories": "Calories",
-    "sectionHealthkit": "HealthKit",
-    "authorization": "Authorization",
-    "authorized": "Authorized",
-    "lastSync": "Last Sync",
-    "syncing": "Syncing…",
-    "syncNow": "Sync Now",
-    "useRealHR": "Use Real Heart Rate Data",
-    "realActive": "Sending real HealthKit data",
-    "simActive": "Server generates simulated data"
+    "workoutCalories": "Calories"
   },
   "sleep": {
     "title": "Sleep Score",

@@ -7,7 +7,6 @@
  */
 export interface App {
   nav: AppNav;
-  tab: AppTab;
   common: AppCommon;
   home: AppHome;
   settings: AppSettings;
@@ -35,16 +34,6 @@ export interface AppNav {
   bookshelf: string;
   diagnostics: string;
   savedPlaces: string;
-}
-/**
- * Bottom tab-bar labels (TabView Label text).
- */
-export interface AppTab {
-  home: string;
-  health: string;
-  location: string;
-  books: string;
-  settings: string;
 }
 /**
  * Shared button/action labels reused across many screens (alert buttons, toolbar actions).
@@ -80,7 +69,6 @@ export interface AppHome {
  */
 export interface AppSettings {
   sectionLocation: string;
-  sectionServer: string;
   sectionData: string;
   sectionDataMode: string;
   useRealHR: string;
@@ -91,10 +79,6 @@ export interface AppSettings {
   sectionAbout: string;
   savedPlacesTitle: string;
   savedPlacesSubtitle: string;
-  apiBaseUrl: string;
-  apiBaseUrlPlaceholder: string;
-  apiToken: string;
-  apiTokenPlaceholder: string;
   totalVisits: string;
   unsyncedVisits: string;
   lastHealthSync: string;
@@ -107,8 +91,6 @@ export interface AppSettings {
   shareLog: string;
   clearLogs: string;
   reload: string;
-  aboutName: string;
-  aboutTitle: string;
   aboutVersion: string;
   aboutBuild: string;
   aboutPlatform: string;
@@ -157,22 +139,11 @@ export interface AppHealth {
   sectionMovement: string;
   sectionSleep: string;
   sectionWorkouts: string;
-  sectionData: string;
-  sectionDataMode: string;
   todaysWorkouts: string;
   recoveryDay: string;
   noWorkouts: string;
   workoutDuration: string;
   workoutCalories: string;
-  sectionHealthkit: string;
-  authorization: string;
-  authorized: string;
-  lastSync: string;
-  syncing: string;
-  syncNow: string;
-  useRealHR: string;
-  realActive: string;
-  simActive: string;
 }
 /**
  * Sleep-score entry sheet — title, prompt, placeholder, buttons, and a11y labels for the add/edit affordance.

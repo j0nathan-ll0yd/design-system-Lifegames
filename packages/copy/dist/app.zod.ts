@@ -21,16 +21,6 @@ export const appSchema = z
       })
       .strict()
       .describe("Navigation-bar titles for the app's primary screens (SwiftUI .navigationTitle)."),
-    tab: z
-      .object({
-        home: z.string(),
-        health: z.string(),
-        location: z.string(),
-        books: z.string(),
-        settings: z.string(),
-      })
-      .strict()
-      .describe('Bottom tab-bar labels (TabView Label text).'),
     common: z
       .object({
         cancel: z.string(),
@@ -67,7 +57,6 @@ export const appSchema = z
     settings: z
       .object({
         sectionLocation: z.string(),
-        sectionServer: z.string(),
         sectionData: z.string(),
         sectionDataMode: z.string(),
         useRealHR: z.string(),
@@ -78,10 +67,6 @@ export const appSchema = z
         sectionAbout: z.string(),
         savedPlacesTitle: z.string(),
         savedPlacesSubtitle: z.string(),
-        apiBaseUrl: z.string(),
-        apiBaseUrlPlaceholder: z.string(),
-        apiToken: z.string(),
-        apiTokenPlaceholder: z.string(),
         totalVisits: z.string(),
         unsyncedVisits: z.string(),
         lastHealthSync: z.string(),
@@ -94,8 +79,6 @@ export const appSchema = z
         shareLog: z.string(),
         clearLogs: z.string(),
         reload: z.string(),
-        aboutName: z.string(),
-        aboutTitle: z.string(),
         aboutVersion: z.string(),
         aboutBuild: z.string(),
         aboutPlatform: z.string(),
@@ -149,22 +132,11 @@ export const appSchema = z
         sectionMovement: z.string(),
         sectionSleep: z.string(),
         sectionWorkouts: z.string(),
-        sectionData: z.string(),
-        sectionDataMode: z.string(),
         todaysWorkouts: z.string(),
         recoveryDay: z.string(),
         noWorkouts: z.string(),
         workoutDuration: z.string(),
         workoutCalories: z.string(),
-        sectionHealthkit: z.string(),
-        authorization: z.string(),
-        authorized: z.string(),
-        lastSync: z.string(),
-        syncing: z.string(),
-        syncNow: z.string(),
-        useRealHR: z.string(),
-        realActive: z.string(),
-        simActive: z.string(),
       })
       .strict()
       .describe(

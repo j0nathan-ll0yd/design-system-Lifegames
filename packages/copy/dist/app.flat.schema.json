@@ -55,30 +55,6 @@
       ],
       "additionalProperties": false
     },
-    "tab": {
-      "type": "object",
-      "title": "AppTab",
-      "description": "Bottom tab-bar labels (TabView Label text).",
-      "properties": {
-        "home": {
-          "type": "string"
-        },
-        "health": {
-          "type": "string"
-        },
-        "location": {
-          "type": "string"
-        },
-        "books": {
-          "type": "string"
-        },
-        "settings": {
-          "type": "string"
-        }
-      },
-      "required": ["home", "health", "location", "books", "settings"],
-      "additionalProperties": false
-    },
     "common": {
       "type": "object",
       "title": "AppCommon",
@@ -175,9 +151,6 @@
         "sectionLocation": {
           "type": "string"
         },
-        "sectionServer": {
-          "type": "string"
-        },
         "sectionData": {
           "type": "string"
         },
@@ -206,18 +179,6 @@
           "type": "string"
         },
         "savedPlacesSubtitle": {
-          "type": "string"
-        },
-        "apiBaseUrl": {
-          "type": "string"
-        },
-        "apiBaseUrlPlaceholder": {
-          "type": "string"
-        },
-        "apiToken": {
-          "type": "string"
-        },
-        "apiTokenPlaceholder": {
           "type": "string"
         },
         "totalVisits": {
@@ -254,12 +215,6 @@
           "type": "string"
         },
         "reload": {
-          "type": "string"
-        },
-        "aboutName": {
-          "type": "string"
-        },
-        "aboutTitle": {
           "type": "string"
         },
         "aboutVersion": {
@@ -312,7 +267,6 @@
       },
       "required": [
         "sectionLocation",
-        "sectionServer",
         "sectionData",
         "sectionDataMode",
         "useRealHR",
@@ -323,10 +277,6 @@
         "sectionAbout",
         "savedPlacesTitle",
         "savedPlacesSubtitle",
-        "apiBaseUrl",
-        "apiBaseUrlPlaceholder",
-        "apiToken",
-        "apiTokenPlaceholder",
         "totalVisits",
         "unsyncedVisits",
         "lastHealthSync",
@@ -339,8 +289,6 @@
         "shareLog",
         "clearLogs",
         "reload",
-        "aboutName",
-        "aboutTitle",
         "aboutVersion",
         "aboutBuild",
         "aboutPlatform",
@@ -432,12 +380,6 @@
         "sectionWorkouts": {
           "type": "string"
         },
-        "sectionData": {
-          "type": "string"
-        },
-        "sectionDataMode": {
-          "type": "string"
-        },
         "todaysWorkouts": {
           "type": "string"
         },
@@ -452,33 +394,6 @@
         },
         "workoutCalories": {
           "type": "string"
-        },
-        "sectionHealthkit": {
-          "type": "string"
-        },
-        "authorization": {
-          "type": "string"
-        },
-        "authorized": {
-          "type": "string"
-        },
-        "lastSync": {
-          "type": "string"
-        },
-        "syncing": {
-          "type": "string"
-        },
-        "syncNow": {
-          "type": "string"
-        },
-        "useRealHR": {
-          "type": "string"
-        },
-        "realActive": {
-          "type": "string"
-        },
-        "simActive": {
-          "type": "string"
         }
       },
       "required": [
@@ -486,22 +401,11 @@
         "sectionMovement",
         "sectionSleep",
         "sectionWorkouts",
-        "sectionData",
-        "sectionDataMode",
         "todaysWorkouts",
         "recoveryDay",
         "noWorkouts",
         "workoutDuration",
-        "workoutCalories",
-        "sectionHealthkit",
-        "authorization",
-        "authorized",
-        "lastSync",
-        "syncing",
-        "syncNow",
-        "useRealHR",
-        "realActive",
-        "simActive"
+        "workoutCalories"
       ],
       "additionalProperties": false
     },
@@ -1273,7 +1177,6 @@
   },
   "required": [
     "nav",
-    "tab",
     "common",
     "home",
     "settings",
