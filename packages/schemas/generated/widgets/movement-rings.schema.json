@@ -31,6 +31,12 @@
             "daylightMin": {
               "type": "number"
             },
+            "basalKcal": {
+              "type": "number"
+            },
+            "restingHeartRate": {
+              "type": "number"
+            },
             "goals": {
               "type": "object",
               "properties": {

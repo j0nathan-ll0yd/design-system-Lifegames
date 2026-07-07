@@ -20,6 +20,9 @@ import type { DashboardHealth as _DashboardHealth } from './DashboardHealth';
 import type { DashboardGithub as _DashboardGithub } from './DashboardGithub';
 import type { DashboardReading as _DashboardReading } from './DashboardReading';
 import type { DashboardBooks as _DashboardBooks } from './DashboardBooks';
+import type { MediaFile as _MediaFile } from './MediaFile';
+import type { MediaLibrary as _MediaLibrary } from './MediaLibrary';
+import type { MediaProfile as _MediaProfile } from './MediaProfile';
 
 export type ArticlesExport = SchemaDerived<_ArticlesExport>;
 export type BooksExport = SchemaDerived<_BooksExport>;
@@ -37,3 +40,6 @@ export type DashboardHealth = SchemaDerived<_DashboardHealth>;
 export type DashboardGithub = SchemaDerived<_DashboardGithub>;
 export type DashboardReading = SchemaDerived<_DashboardReading>;
 export type DashboardBooks = SchemaDerived<_DashboardBooks>;
+export type MediaFile = SchemaDerived<_MediaFile>;
+export type MediaLibrary = SchemaDerived<_MediaLibrary>;
+export type MediaProfile = SchemaDerived<_MediaProfile>;

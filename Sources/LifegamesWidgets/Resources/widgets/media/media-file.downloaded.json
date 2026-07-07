@@ -1,0 +1,17 @@
+{
+  "fileId": "f-2b7c9e10",
+  "key": "swiftui-state-management.mp4",
+  "publishDate": "20250112",
+  "size": 1258291200,
+  "url": "https://media.example.com/swiftui-state-management.mp4",
+  "title": "SwiftUI State Management Deep Dive",
+  "description": "A deep dive into SwiftUI's state management system, exploring how data flows through your app and where observation boundaries actually sit.",
+  "authorName": "Swift Signal",
+  "authorUser": "swiftsignal",
+  "contentType": "video/mp4",
+  "status": "Downloaded",
+  "duration": 6138,
+  "uploadDate": "20250110",
+  "viewCount": 142300,
+  "thumbnailUrl": "https://media.example.com/thumbs/swiftui-state-management.jpg"
+}

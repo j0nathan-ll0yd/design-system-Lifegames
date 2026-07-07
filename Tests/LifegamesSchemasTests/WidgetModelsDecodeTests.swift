@@ -48,7 +48,8 @@ struct WidgetModelsDecodeTests {
                 {
                     "asin": "B08N5WRWNW",
                     "author": "Test Author",
-                    "title": "Test Book"
+                    "title": "Test Book",
+                    "updatedAt": "2026-06-06T12:00:00Z"
                 }
             ]
         }

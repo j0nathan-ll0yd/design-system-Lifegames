@@ -20,6 +20,21 @@ that don't naturally fit in a single package's history.
 
 ### Added
 
+- **`media/` data-only fixture domain** for OfflineMediaDownloader app previews
+  (S98): authored schemas `media-file` / `media-library` / `media-profile` in
+  `@lifegames/schemas`, 8 validated fixture JSON files under
+  `Sources/LifegamesWidgets/Resources/widgets/media/`, and public Codable wire
+  models (`MediaFileProps`, `MediaLibraryProps`, `MediaProfileProps`) in
+  `LifegamesWidgets/Runtime`. Data-only domains (fixtures without a web widget)
+  are wired into `fixture-map.json` via `EXTRA_CATEGORY_WIRING` in
+  `generate-widget-schemas.mjs`. SPM surface: minor (new public types + resources);
+  `@lifegames/schemas`: minor (new schemas).
+- `other/sync-status.{fresh,aging,stale,never-synced}.json` freshness variants
+  for Life Portal watch-widget previews.
+- Optional `basalKcal` / `restingHeartRate` fields on the `movement-rings`
+  schema and optional `level` on `diagnostics-monitor` log entries, so Life
+  Portal preview adapters can source `TodayHealthData` / `LogEntry` fields from
+  canonical fixtures (`@lifegames/schemas`: minor).
 - (placeholder — populated by the DS audit implementation rollout, F-001 → F-034)
 
 ### Changed

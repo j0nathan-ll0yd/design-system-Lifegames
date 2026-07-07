@@ -111,6 +111,8 @@ const MANUAL_SCHEMAS = {
               distanceMeters: { type: 'number' },
               flights: { type: 'number' },
               daylightMin: { type: 'number' },
+              basalKcal: { type: 'number' },
+              restingHeartRate: { type: 'number' },
               goals: {
                 type: 'object',
                 properties: {
@@ -272,6 +274,7 @@ const MANUAL_SCHEMAS = {
             category: { type: 'string' },
             timestamp: { type: 'string' },
             message: { type: 'string' },
+            level: { type: 'string' },
           },
           required: ['id', 'category', 'timestamp', 'message'],
         },
@@ -392,9 +395,26 @@ for (const w of manifest.widgets) {
 fixtureBaseToTitle['exploration-odometer-v3'] = 'ExplorationOdometerV3Props';
 fixtureBaseToTitle['place-leaderboard-v3'] = 'PlaceLeaderboardV3Props';
 
+// Data-only fixture domains: app-preview fixture pools (S98) that have no web
+// widget or manifest entry (a manifest entry implies a viewType). Their schemas
+// are authored in packages/schemas/authored/ and validated via urn:authored:.
+const EXTRA_CATEGORY_WIRING = {
+  'media-file': 'MediaFile',
+  'media-library': 'MediaLibrary',
+  'media-profile': 'MediaProfile',
+};
+Object.assign(fixtureBaseToTitle, EXTRA_CATEGORY_WIRING);
+
 const schemaTitles = new Set();
 for (const f of readdirSync(OUT_DIR).filter((f) => f.endsWith('.schema.json'))) {
   const s = JSON.parse(readFileSync(join(OUT_DIR, f), 'utf-8'));
+  if (s.title) schemaTitles.add(s.title);
+}
+// Authored schemas participate in ds-bucket wiring too (data-only domains above
+// resolve to authored titles; validate.ts checks urn:authored: first).
+const AUTHORED_DIR = join(PKG_ROOT, 'authored');
+for (const f of readdirSync(AUTHORED_DIR).filter((f) => f.endsWith('.schema.json'))) {
+  const s = JSON.parse(readFileSync(join(AUTHORED_DIR, f), 'utf-8'));
   if (s.title) schemaTitles.add(s.title);
 }
 

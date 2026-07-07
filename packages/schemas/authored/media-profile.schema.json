@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/media-profile.schema.json",
+  "title": "MediaProfile",
+  "description": "An OfflineMediaDownloader account profile: the signed-in user plus aggregate library metrics, as shown on the profile screen. Fixture pool for OMD profile previews (S98). All identity values are synthetic (see SCRUBBING.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["user", "metrics"],
+  "properties": {
+    "user": {
+      "title": "MediaUser",
+      "type": "object",
+      "description": "Signed-in user identity as delivered by Sign in with Apple registration.",
+      "additionalProperties": false,
+      "required": ["email", "firstName", "lastName", "identifier"],
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Account email address (synthetic).",
+          "examples": ["sample.user@example.com"]
+        },
+        "firstName": { "type": "string", "description": "Given name (synthetic)." },
+        "lastName": { "type": "string", "description": "Family name (synthetic)." },
+        "identifier": {
+          "type": "string",
+          "description": "Opaque account identifier.",
+          "examples": ["usr-0001"]
+        }
+      }
+    },
+    "metrics": {
+      "title": "MediaMetrics",
+      "type": "object",
+      "description": "Aggregate library metrics computed from local persistence.",
+      "additionalProperties": false,
+      "required": ["downloadCount", "totalStorageBytes", "playCount"],
+      "properties": {
+        "downloadCount": {
+          "type": "integer",
+          "description": "Number of files downloaded to the device."
+        },
+        "totalStorageBytes": {
+          "type": "integer",
+          "description": "Total on-device storage used by downloads, in bytes."
+        },
+        "playCount": {
+          "type": "integer",
+          "description": "Total playback sessions across the library."
+        }
+      }
+    }
+  }
+}

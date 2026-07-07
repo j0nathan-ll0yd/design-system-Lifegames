@@ -1,0 +1,17 @@
+{
+  "fileId": "f-77e3c2b8",
+  "key": "layout-protocol-retrospective-extended-directors-cut.mp4",
+  "publishDate": "20241228",
+  "size": 4831838208,
+  "url": "https://media.example.com/layout-protocol-retrospective-extended-directors-cut.mp4",
+  "title": "The Layout Protocol Retrospective: Everything We Learned Shipping Custom Containers in Production Over Three Years (Extended Director's Cut)",
+  "description": "An exhaustively long retrospective covering custom Layout conformances, cache invalidation strategies, alignment guide pitfalls, the interaction between layout priorities and ideal sizes, and why the team eventually rewrote the whole grid twice. Includes forty minutes of Q&A, a bonus segment on right-to-left layout mirroring, and an appendix on performance profiling with os_signpost across three device generations.",
+  "authorName": "The Layout Lab — Community Conference Recordings Archive",
+  "authorUser": "layoutlab-archive",
+  "contentType": "video/mp4",
+  "status": "Downloaded",
+  "duration": 13980,
+  "uploadDate": "20241220",
+  "viewCount": 8412,
+  "thumbnailUrl": "https://media.example.com/thumbs/layout-protocol-retrospective.jpg"
+}

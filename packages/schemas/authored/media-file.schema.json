@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/media-file.schema.json",
+  "title": "MediaFile",
+  "description": "A single downloadable media file as delivered by the OfflineMediaDownloader backend (API Gateway wire shape). Fixture pool for OMD previews (S98); numeric fields are raw wire values (bytes, seconds), never display-formatted strings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["fileId", "key"],
+  "properties": {
+    "fileId": {
+      "type": "string",
+      "description": "Stable backend identifier for the file.",
+      "examples": ["f-2b7c9e10"]
+    },
+    "key": {
+      "type": "string",
+      "description": "S3 object key / local filename.",
+      "examples": ["swiftui-state-management.mp4"]
+    },
+    "publishDate": {
+      "type": "string",
+      "description": "Publish date in YYYYMMDD format (API) or ISO-8601 (push notifications).",
+      "pattern": "^([0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2}.*)$",
+      "examples": ["20250115"]
+    },
+    "size": {
+      "type": "integer",
+      "description": "File size in bytes.",
+      "examples": [1258291200]
+    },
+    "url": {
+      "type": "string",
+      "description": "Download URL for the media asset.",
+      "examples": ["https://media.example.com/swiftui-state-management.mp4"]
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable media title."
+    },
+    "description": {
+      "type": "string",
+      "description": "Longer descriptive text shown on the detail screen."
+    },
+    "authorName": {
+      "type": "string",
+      "description": "Display name of the content author or channel."
+    },
+    "authorUser": {
+      "type": "string",
+      "description": "Author account handle."
+    },
+    "contentType": {
+      "type": "string",
+      "description": "MIME type of the media asset.",
+      "examples": ["video/mp4"]
+    },
+    "status": {
+      "title": "MediaFileStatus",
+      "type": "string",
+      "description": "Download lifecycle status. Wire values match the OMD FileStatus enum raw values ('pending' is lowercase because push notifications send it lowercase).",
+      "enum": ["pending", "Queued", "Downloading", "Downloaded", "Failed"]
+    },
+    "duration": {
+      "type": "integer",
+      "description": "Media duration in seconds.",
+      "examples": [6138]
+    },
+    "uploadDate": {
+      "type": "string",
+      "description": "Upload date in YYYYMMDD format.",
+      "pattern": "^[0-9]{8}$",
+      "examples": ["20250110"]
+    },
+    "viewCount": {
+      "type": "integer",
+      "description": "Number of views at the source platform.",
+      "examples": [142300]
+    },
+    "thumbnailUrl": {
+      "type": "string",
+      "description": "URL to the media thumbnail image."
+    }
+  }
+}

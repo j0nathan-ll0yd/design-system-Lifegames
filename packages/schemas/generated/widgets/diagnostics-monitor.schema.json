@@ -41,6 +41,9 @@
           },
           "message": {
             "type": "string"
+          },
+          "level": {
+            "type": "string"
           }
         },
         "required": ["id", "category", "timestamp", "message"]

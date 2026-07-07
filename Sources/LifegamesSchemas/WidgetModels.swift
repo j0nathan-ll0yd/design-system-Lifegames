@@ -2,7 +2,7 @@
 // Source: packages/schemas/{vendored,authored}/*.schema.json
 // Re-run: pnpm -F @lifegames/schemas codegen
 //
-// Contains Codable structs for all 16 widget data schemas.
+// Contains Codable structs for all 19 widget data schemas.
 // Shared decoder helpers appear once at the end of this file.
 
 import Foundation
@@ -235,17 +235,21 @@ struct Book: Codable {
     let asin, author: String
     let averageRating, category: String?
     let currentPage: Double?
-    let description, images, isbn10, isbn13: String?
-    let mainImage, mainImageAvif, mainImageCard, mainImageCardAvif: String?
-    let mainImageThumb, mainImageThumbAvif, notes: String?
+    let description: String?
+    let finishedAt: String?
+    let images, isbn10, isbn13, mainImage: String?
+    let mainImageAvif, mainImageCard, mainImageCardAvif, mainImageThumb: String?
+    let mainImageThumbAvif, notes: String?
     let pageCount: Double?
     let publicationDate: String?
     let publishedYear, rating: Double?
     let series: String?
     let seriesNumber, seriesTotal: Double?
+    let startedAt: String?
     let status: String?
     let title: String
     let totalPages: Double?
+    let updatedAt: String
 }
 
 // MARK: Book convenience initializers and mutators
@@ -273,6 +277,7 @@ extension Book {
         category: String?? = nil,
         currentPage: Double?? = nil,
         description: String?? = nil,
+        finishedAt: String?? = nil,
         images: String?? = nil,
         isbn10: String?? = nil,
         isbn13: String?? = nil,
@@ -290,9 +295,11 @@ extension Book {
         series: String?? = nil,
         seriesNumber: Double?? = nil,
         seriesTotal: Double?? = nil,
+        startedAt: String?? = nil,
         status: String?? = nil,
         title: String? = nil,
-        totalPages: Double?? = nil
+        totalPages: Double?? = nil,
+        updatedAt: String? = nil
     ) -> Book {
         return Book(
             asin: asin ?? self.asin,
@@ -301,6 +308,7 @@ extension Book {
             category: category ?? self.category,
             currentPage: currentPage ?? self.currentPage,
             description: description ?? self.description,
+            finishedAt: finishedAt ?? self.finishedAt,
             images: images ?? self.images,
             isbn10: isbn10 ?? self.isbn10,
             isbn13: isbn13 ?? self.isbn13,
@@ -318,9 +326,11 @@ extension Book {
             series: series ?? self.series,
             seriesNumber: seriesNumber ?? self.seriesNumber,
             seriesTotal: seriesTotal ?? self.seriesTotal,
+            startedAt: startedAt ?? self.startedAt,
             status: status ?? self.status,
             title: title ?? self.title,
-            totalPages: totalPages ?? self.totalPages
+            totalPages: totalPages ?? self.totalPages,
+            updatedAt: updatedAt ?? self.updatedAt
         )
     }
 
@@ -1216,44 +1226,71 @@ extension TopPlace {
 
 // MARK: - Schema: SleepExport
 
-enum SleepExportValue: Codable {
-    case sleepExportClass(SleepExportClass)
-    case string(String)
+// MARK: - SleepExport
+struct SleepExport: Codable {
+    let awake: Awake?
+    let core: Core?
+    let date: String
+    let deep: Deep?
+    let generatedAt: String
+    let rem: Rem?
+}
 
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        if let x = try? container.decode(String.self) {
-            self = .string(x)
-            return
-        }
-        if let x = try? container.decode(SleepExportClass.self) {
-            self = .sleepExportClass(x)
-            return
-        }
-        throw DecodingError.typeMismatch(SleepExportValue.self, DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Wrong type for SleepExportValue"))
+// MARK: SleepExport convenience initializers and mutators
+
+extension SleepExport {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SleepExport.self, from: data)
     }
 
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.singleValueContainer()
-        switch self {
-        case .sleepExportClass(let x):
-            try container.encode(x)
-        case .string(let x):
-            try container.encode(x)
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
         }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        awake: Awake?? = nil,
+        core: Core?? = nil,
+        date: String? = nil,
+        deep: Deep?? = nil,
+        generatedAt: String? = nil,
+        rem: Rem?? = nil
+    ) -> SleepExport {
+        return SleepExport(
+            awake: awake ?? self.awake,
+            core: core ?? self.core,
+            date: date ?? self.date,
+            deep: deep ?? self.deep,
+            generatedAt: generatedAt ?? self.generatedAt,
+            rem: rem ?? self.rem
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
     }
 }
 
-// MARK: - SleepExportClass
-struct SleepExportClass: Codable {
+// MARK: - Awake
+struct Awake: Codable {
     let seconds: Double
 }
 
-// MARK: SleepExportClass convenience initializers and mutators
+// MARK: Awake convenience initializers and mutators
 
-extension SleepExportClass {
+extension Awake {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(SleepExportClass.self, from: data)
+        self = try newJSONDecoder().decode(Awake.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -1269,8 +1306,8 @@ extension SleepExportClass {
 
     func with(
         seconds: Double? = nil
-    ) -> SleepExportClass {
-        return SleepExportClass(
+    ) -> Awake {
+        return Awake(
             seconds: seconds ?? self.seconds
         )
     }
@@ -1284,11 +1321,16 @@ extension SleepExportClass {
     }
 }
 
-typealias SleepExport = [String: SleepExportValue]
+// MARK: - Core
+struct Core: Codable {
+    let seconds: Double
+}
 
-extension Dictionary where Key == String, Value == SleepExportValue {
+// MARK: Core convenience initializers and mutators
+
+extension Core {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(SleepExport.self, from: data)
+        self = try newJSONDecoder().decode(Core.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -1300,6 +1342,94 @@ extension Dictionary where Key == String, Value == SleepExportValue {
 
     init(fromURL url: URL) throws {
         try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        seconds: Double? = nil
+    ) -> Core {
+        return Core(
+            seconds: seconds ?? self.seconds
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Deep
+struct Deep: Codable {
+    let seconds: Double
+}
+
+// MARK: Deep convenience initializers and mutators
+
+extension Deep {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Deep.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        seconds: Double? = nil
+    ) -> Deep {
+        return Deep(
+            seconds: seconds ?? self.seconds
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Rem
+struct Rem: Codable {
+    let seconds: Double
+}
+
+// MARK: Rem convenience initializers and mutators
+
+extension Rem {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Rem.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        seconds: Double? = nil
+    ) -> Rem {
+        return Rem(
+            seconds: seconds ?? self.seconds
+        )
     }
 
     func jsonData() throws -> Data {
@@ -2594,170 +2724,6 @@ extension DashboardHealthSleep {
     }
 }
 
-// MARK: - Awake
-struct Awake: Codable {
-    /// Duration in seconds spent awake.
-    let seconds: Double
-}
-
-// MARK: Awake convenience initializers and mutators
-
-extension Awake {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Awake.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Awake {
-        return Awake(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Core
-struct Core: Codable {
-    /// Duration in seconds in core sleep.
-    let seconds: Double
-}
-
-// MARK: Core convenience initializers and mutators
-
-extension Core {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Core.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Core {
-        return Core(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Deep
-struct Deep: Codable {
-    /// Duration in seconds in deep sleep.
-    let seconds: Double
-}
-
-// MARK: Deep convenience initializers and mutators
-
-extension Deep {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Deep.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Deep {
-        return Deep(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Rem
-struct Rem: Codable {
-    /// Duration in seconds in REM sleep.
-    let seconds: Double
-}
-
-// MARK: Rem convenience initializers and mutators
-
-extension Rem {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Rem.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        seconds: Double? = nil
-    ) -> Rem {
-        return Rem(
-            seconds: seconds ?? self.seconds
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
 /// Human-readable formatted duration strings for each sleep phase.
 // MARK: - SleepPhaseFormatted
 struct SleepPhaseFormatted: Codable {
@@ -3532,11 +3498,13 @@ struct DashboardBooksBook: Codable {
     let asin: String
     /// Author full name.
     let author: String
+    /// ISO-8601 timestamp when the book was finished, or null if not yet finished.
+    let finishedAt: Date?
     /// ISBN-13 (or Kindle ASIN when no ISBN exists) used as a stable key into bookMeta.
     let isbn: String?
     /// Affiliate or direct purchase URL.
     let link: String?
-    /// Reading progress as a percentage (0–100). 0 for unstarted, 100 for completed.
+    /// Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished.
     let progress: Int?
     /// User rating 1–5 stars, or null if unrated.
     let rating: Int?
@@ -3567,6 +3535,7 @@ extension DashboardBooksBook {
     func with(
         asin: String? = nil,
         author: String? = nil,
+        finishedAt: Date?? = nil,
         isbn: String?? = nil,
         link: String?? = nil,
         progress: Int?? = nil,
@@ -3577,6 +3546,7 @@ extension DashboardBooksBook {
         return DashboardBooksBook(
             asin: asin ?? self.asin,
             author: author ?? self.author,
+            finishedAt: finishedAt ?? self.finishedAt,
             isbn: isbn ?? self.isbn,
             link: link ?? self.link,
             progress: progress ?? self.progress,
@@ -3597,9 +3567,10 @@ extension DashboardBooksBook {
 
 /// Reading status key. Must match a key in statusLabels.
 enum Status: String, Codable {
-    case completed = "completed"
-    case inProgress = "in_progress"
-    case next = "next"
+    case finished = "finished"
+    case pending = "pending"
+    case reading = "reading"
+    case upNext = "upNext"
 }
 
 /// Aggregate reading statistics computed by the DS pipeline.
@@ -3664,18 +3635,14 @@ extension DashboardBooksStats {
 /// strings.
 // MARK: - StatusLabels
 struct StatusLabels: Codable {
-    /// Label for recently finished books.
-    let completed: String
+    /// Label for finished books.
+    let finished: String
+    /// Label for books not yet started.
+    let pending: String
     /// Label for the book currently being read.
-    let inProgress: String
+    let reading: String
     /// Label for books queued to read next.
-    let next: String
-
-    enum CodingKeys: String, CodingKey {
-        case completed
-        case inProgress = "in_progress"
-        case next
-    }
+    let upNext: String
 }
 
 // MARK: StatusLabels convenience initializers and mutators
@@ -3697,14 +3664,449 @@ extension StatusLabels {
     }
 
     func with(
-        completed: String? = nil,
-        inProgress: String? = nil,
-        next: String? = nil
+        finished: String? = nil,
+        pending: String? = nil,
+        reading: String? = nil,
+        upNext: String? = nil
     ) -> StatusLabels {
         return StatusLabels(
-            completed: completed ?? self.completed,
-            inProgress: inProgress ?? self.inProgress,
-            next: next ?? self.next
+            finished: finished ?? self.finished,
+            pending: pending ?? self.pending,
+            reading: reading ?? self.reading,
+            upNext: upNext ?? self.upNext
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: MediaFile
+
+/// A single downloadable media file as delivered by the OfflineMediaDownloader backend (API
+/// Gateway wire shape). Fixture pool for OMD previews (S98); numeric fields are raw wire
+/// values (bytes, seconds), never display-formatted strings.
+// MARK: - MediaFile
+struct MediaFile: Codable {
+    /// Display name of the content author or channel.
+    let authorName: String?
+    /// Author account handle.
+    let authorUser: String?
+    /// MIME type of the media asset.
+    let contentType: String?
+    /// Longer descriptive text shown on the detail screen.
+    let description: String?
+    /// Media duration in seconds.
+    let duration: Int?
+    /// Stable backend identifier for the file.
+    let fileID: String
+    /// S3 object key / local filename.
+    let key: String
+    /// Publish date in YYYYMMDD format (API) or ISO-8601 (push notifications).
+    let publishDate: String?
+    /// File size in bytes.
+    let size: Int?
+    /// Download lifecycle status. Wire values match the OMD FileStatus enum raw values
+    /// ('pending' is lowercase because push notifications send it lowercase).
+    let status: MediaFileStatus?
+    /// URL to the media thumbnail image.
+    let thumbnailURL: String?
+    /// Human-readable media title.
+    let title: String?
+    /// Upload date in YYYYMMDD format.
+    let uploadDate: String?
+    /// Download URL for the media asset.
+    let url: String?
+    /// Number of views at the source platform.
+    let viewCount: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case authorName, authorUser, contentType, description, duration
+        case fileID = "fileId"
+        case key, publishDate, size, status
+        case thumbnailURL = "thumbnailUrl"
+        case title, uploadDate, url, viewCount
+    }
+}
+
+// MARK: MediaFile convenience initializers and mutators
+
+extension MediaFile {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MediaFile.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        authorName: String?? = nil,
+        authorUser: String?? = nil,
+        contentType: String?? = nil,
+        description: String?? = nil,
+        duration: Int?? = nil,
+        fileID: String? = nil,
+        key: String? = nil,
+        publishDate: String?? = nil,
+        size: Int?? = nil,
+        status: MediaFileStatus?? = nil,
+        thumbnailURL: String?? = nil,
+        title: String?? = nil,
+        uploadDate: String?? = nil,
+        url: String?? = nil,
+        viewCount: Int?? = nil
+    ) -> MediaFile {
+        return MediaFile(
+            authorName: authorName ?? self.authorName,
+            authorUser: authorUser ?? self.authorUser,
+            contentType: contentType ?? self.contentType,
+            description: description ?? self.description,
+            duration: duration ?? self.duration,
+            fileID: fileID ?? self.fileID,
+            key: key ?? self.key,
+            publishDate: publishDate ?? self.publishDate,
+            size: size ?? self.size,
+            status: status ?? self.status,
+            thumbnailURL: thumbnailURL ?? self.thumbnailURL,
+            title: title ?? self.title,
+            uploadDate: uploadDate ?? self.uploadDate,
+            url: url ?? self.url,
+            viewCount: viewCount ?? self.viewCount
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Download lifecycle status. Wire values match the OMD FileStatus enum raw values
+/// ('pending' is lowercase because push notifications send it lowercase).
+enum MediaFileStatus: String, Codable {
+    case downloaded = "Downloaded"
+    case downloading = "Downloading"
+    case failed = "Failed"
+    case pending = "pending"
+    case queued = "Queued"
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: MediaLibrary
+
+/// A list of downloadable media files as returned by the OfflineMediaDownloader list
+/// endpoint. Fixture pool for OMD list previews (S98). Entry shape mirrors
+/// media-file.schema.json; cross-file $ref is intentionally avoided because the Ajv
+/// registration in validate.ts only rewrites ../vendored/ refs.
+// MARK: - MediaLibrary
+struct MediaLibrary: Codable {
+    /// Media files in backend list order.
+    let files: [MediaLibraryEntry]
+}
+
+// MARK: MediaLibrary convenience initializers and mutators
+
+extension MediaLibrary {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MediaLibrary.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        files: [MediaLibraryEntry]? = nil
+    ) -> MediaLibrary {
+        return MediaLibrary(
+            files: files ?? self.files
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - MediaLibraryEntry
+struct MediaLibraryEntry: Codable {
+    /// Display name of the content author or channel.
+    let authorName: String?
+    /// Author account handle.
+    let authorUser: String?
+    /// MIME type of the media asset.
+    let contentType: String?
+    /// Longer descriptive text shown on the detail screen.
+    let description: String?
+    /// Media duration in seconds.
+    let duration: Int?
+    /// Stable backend identifier for the file.
+    let fileID: String
+    /// S3 object key / local filename.
+    let key: String
+    /// Publish date in YYYYMMDD format (API) or ISO-8601 (push notifications).
+    let publishDate: String?
+    /// File size in bytes.
+    let size: Int?
+    /// Download lifecycle status. Wire values match the OMD FileStatus enum raw values.
+    let status: MediaFileStatus?
+    /// URL to the media thumbnail image.
+    let thumbnailURL: String?
+    /// Human-readable media title.
+    let title: String?
+    /// Upload date in YYYYMMDD format.
+    let uploadDate: String?
+    /// Download URL for the media asset.
+    let url: String?
+    /// Number of views at the source platform.
+    let viewCount: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case authorName, authorUser, contentType, description, duration
+        case fileID = "fileId"
+        case key, publishDate, size, status
+        case thumbnailURL = "thumbnailUrl"
+        case title, uploadDate, url, viewCount
+    }
+}
+
+// MARK: MediaLibraryEntry convenience initializers and mutators
+
+extension MediaLibraryEntry {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MediaLibraryEntry.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        authorName: String?? = nil,
+        authorUser: String?? = nil,
+        contentType: String?? = nil,
+        description: String?? = nil,
+        duration: Int?? = nil,
+        fileID: String? = nil,
+        key: String? = nil,
+        publishDate: String?? = nil,
+        size: Int?? = nil,
+        status: MediaFileStatus?? = nil,
+        thumbnailURL: String?? = nil,
+        title: String?? = nil,
+        uploadDate: String?? = nil,
+        url: String?? = nil,
+        viewCount: Int?? = nil
+    ) -> MediaLibraryEntry {
+        return MediaLibraryEntry(
+            authorName: authorName ?? self.authorName,
+            authorUser: authorUser ?? self.authorUser,
+            contentType: contentType ?? self.contentType,
+            description: description ?? self.description,
+            duration: duration ?? self.duration,
+            fileID: fileID ?? self.fileID,
+            key: key ?? self.key,
+            publishDate: publishDate ?? self.publishDate,
+            size: size ?? self.size,
+            status: status ?? self.status,
+            thumbnailURL: thumbnailURL ?? self.thumbnailURL,
+            title: title ?? self.title,
+            uploadDate: uploadDate ?? self.uploadDate,
+            url: url ?? self.url,
+            viewCount: viewCount ?? self.viewCount
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: MediaProfile
+
+/// An OfflineMediaDownloader account profile: the signed-in user plus aggregate library
+/// metrics, as shown on the profile screen. Fixture pool for OMD profile previews (S98). All
+/// identity values are synthetic (see SCRUBBING.md).
+// MARK: - MediaProfile
+struct MediaProfile: Codable {
+    /// Aggregate library metrics computed from local persistence.
+    let metrics: MediaMetrics
+    /// Signed-in user identity as delivered by Sign in with Apple registration.
+    let user: MediaUser
+}
+
+// MARK: MediaProfile convenience initializers and mutators
+
+extension MediaProfile {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MediaProfile.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        metrics: MediaMetrics? = nil,
+        user: MediaUser? = nil
+    ) -> MediaProfile {
+        return MediaProfile(
+            metrics: metrics ?? self.metrics,
+            user: user ?? self.user
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Aggregate library metrics computed from local persistence.
+// MARK: - MediaMetrics
+struct MediaMetrics: Codable {
+    /// Number of files downloaded to the device.
+    let downloadCount: Int
+    /// Total playback sessions across the library.
+    let playCount: Int
+    /// Total on-device storage used by downloads, in bytes.
+    let totalStorageBytes: Int
+}
+
+// MARK: MediaMetrics convenience initializers and mutators
+
+extension MediaMetrics {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MediaMetrics.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        downloadCount: Int? = nil,
+        playCount: Int? = nil,
+        totalStorageBytes: Int? = nil
+    ) -> MediaMetrics {
+        return MediaMetrics(
+            downloadCount: downloadCount ?? self.downloadCount,
+            playCount: playCount ?? self.playCount,
+            totalStorageBytes: totalStorageBytes ?? self.totalStorageBytes
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Signed-in user identity as delivered by Sign in with Apple registration.
+// MARK: - MediaUser
+struct MediaUser: Codable {
+    /// Account email address (synthetic).
+    let email: String
+    /// Given name (synthetic).
+    let firstName: String
+    /// Opaque account identifier.
+    let identifier: String
+    /// Family name (synthetic).
+    let lastName: String
+}
+
+// MARK: MediaUser convenience initializers and mutators
+
+extension MediaUser {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MediaUser.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        email: String? = nil,
+        firstName: String? = nil,
+        identifier: String? = nil,
+        lastName: String? = nil
+    ) -> MediaUser {
+        return MediaUser(
+            email: email ?? self.email,
+            firstName: firstName ?? self.firstName,
+            identifier: identifier ?? self.identifier,
+            lastName: lastName ?? self.lastName
         )
     }
 

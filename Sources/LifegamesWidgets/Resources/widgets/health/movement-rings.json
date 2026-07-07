@@ -8,6 +8,8 @@
       "distanceMeters": 6200,
       "flights": 14,
       "daylightMin": 48,
+      "basalKcal": 1620,
+      "restingHeartRate": 58,
       "goals": {
         "moveKcal": 500,
         "exerciseMin": 30,

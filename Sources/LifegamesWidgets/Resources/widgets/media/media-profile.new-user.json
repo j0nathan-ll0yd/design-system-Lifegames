@@ -1,0 +1,13 @@
+{
+  "user": {
+    "email": "new.member@example.com",
+    "firstName": "New",
+    "lastName": "Member",
+    "identifier": "usr-0002"
+  },
+  "metrics": {
+    "downloadCount": 0,
+    "totalStorageBytes": 0,
+    "playCount": 0
+  }
+}
