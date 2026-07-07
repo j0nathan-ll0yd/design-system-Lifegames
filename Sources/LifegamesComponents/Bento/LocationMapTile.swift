@@ -120,12 +120,13 @@ public struct LocationMapTile: View {
         let latitude: Double
         let longitude: Double
 
-        @State private var position: MapCameraPosition
-
-        init(latitude: Double, longitude: Double) {
-            self.latitude = latitude
-            self.longitude = longitude
-            _position = State(initialValue: .region(
+        /// The camera is derived from the props on every render — NOT seeded into @State,
+        /// which would freeze it at the first coordinates ever passed (consumers often
+        /// render once at a 0,0 placeholder before live coordinates load, which left the
+        /// camera parked over open ocean). The map is non-interactive (constant binding,
+        /// hit testing off), so there is no user camera state to preserve.
+        private var position: MapCameraPosition {
+            .region(
                 MKCoordinateRegion(
                     center: CLLocationCoordinate2D(
                         latitude: latitude,
@@ -136,7 +137,7 @@ public struct LocationMapTile: View {
                         longitudeDelta: 0.008
                     )
                 )
-            ))
+            )
         }
 
         var body: some View {
