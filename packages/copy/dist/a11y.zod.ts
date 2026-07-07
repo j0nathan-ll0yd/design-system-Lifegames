@@ -58,6 +58,21 @@ export const a11ySchema = z
       .object({ region: z.string() })
       .strict()
       .describe('404 page accessibility label (web shell) — the glitch error region.'),
+    coffee: z
+      .object({
+        mug: z.string(),
+        caffeineThisCup: z.string(),
+        dailyCaffeine: z.string(),
+        actionConnect: z.string(),
+        actionSearching: z.string(),
+        actionReconnect: z.string(),
+        actionFinishCup: z.string(),
+        actionNewCup: z.string(),
+      })
+      .strict()
+      .describe(
+        'Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.',
+      ),
   })
   .strict()
   .describe(

@@ -15,7 +15,8 @@
     "nav",
     "region",
     "clock",
-    "page404"
+    "page404",
+    "coffee"
   ],
   "properties": {
     "movement": {
@@ -146,6 +147,48 @@
       "required": ["region"],
       "properties": {
         "region": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
+    },
+    "coffee": {
+      "type": "object",
+      "title": "A11yCoffee",
+      "description": "Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.",
+      "additionalProperties": false,
+      "required": [
+        "mug",
+        "caffeineThisCup",
+        "dailyCaffeine",
+        "actionConnect",
+        "actionSearching",
+        "actionReconnect",
+        "actionFinishCup",
+        "actionNewCup"
+      ],
+      "properties": {
+        "mug": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "caffeineThisCup": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "dailyCaffeine": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionConnect": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionSearching": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionReconnect": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionFinishCup": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "actionNewCup": {
           "$ref": "#/$defs/CopyString"
         }
       }

@@ -219,5 +219,111 @@
         }
       }
     }
+  },
+  "coffee": {
+    "mug": {
+      "value": "Coffee mug",
+      "_meta": {
+        "description": "Accessibility label for the hero coffee mug element (fill level exposed as accessibilityValue).",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeMugView.swift (mug accessibilityLabel)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "caffeineThisCup": {
+      "value": "Caffeine this cup",
+      "_meta": {
+        "description": "Accessibility label for the per-cup caffeine readout (milligram value exposed as accessibilityValue).",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (caffeineReadout accessibilityLabel)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "dailyCaffeine": {
+      "value": "Daily caffeine",
+      "_meta": {
+        "description": "Accessibility label for the daily caffeine progress bar (of-target value exposed as accessibilityValue).",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (dailyBar accessibilityLabel)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionConnect": {
+      "value": "Connect your Acaia scale",
+      "_meta": {
+        "description": "Accessibility label for the primary action button when the scale is unpaired.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .unpaired)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionSearching": {
+      "value": "Searching for scale",
+      "_meta": {
+        "description": "Accessibility label for the primary action button while searching for the scale.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .searching)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionReconnect": {
+      "value": "Reconnect to scale",
+      "_meta": {
+        "description": "Accessibility label for the primary action button when the scale connection errored.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .error)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionFinishCup": {
+      "value": "Finish tracking this cup",
+      "_meta": {
+        "description": "Accessibility label for the primary action button when a tracking session is active.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .connected active)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "actionNewCup": {
+      "value": "Start tracking a new cup",
+      "_meta": {
+        "description": "Accessibility label for the primary action button when connected and idle.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .connected idle)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    }
   }
 }

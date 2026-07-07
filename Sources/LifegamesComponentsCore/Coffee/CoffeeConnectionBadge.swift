@@ -1,3 +1,4 @@
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
 
@@ -46,10 +47,10 @@ public struct CoffeeConnectionBadge: View {
 
     var statusLabel: String {
         switch connection {
-        case .unpaired: "Connect scale" // TODO(copy): migrate to @lifegames/copy V2
-        case .searching: "Searching\u{2026}" // TODO(copy): migrate to @lifegames/copy V2
-        case .connected: "Connected" // TODO(copy): migrate to @lifegames/copy V2
-        case .error: errorMessage ?? "Connection error" // TODO(copy): migrate to @lifegames/copy V2
+        case .unpaired: CopyLoader.widgets.coffee.badgeConnect
+        case .searching: CopyLoader.widgets.coffee.searching
+        case .connected: CopyLoader.widgets.coffee.badgeConnected
+        case .error: errorMessage ?? CopyLoader.widgets.coffee.badgeError
         }
     }
 

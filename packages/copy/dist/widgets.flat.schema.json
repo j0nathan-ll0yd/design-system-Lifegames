@@ -756,6 +756,76 @@
       },
       "required": ["github", "linkedin", "site", "mastodon", "bluesky"],
       "additionalProperties": false
+    },
+    "coffee": {
+      "type": "object",
+      "title": "WidgetsCoffee",
+      "description": "Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.",
+      "properties": {
+        "sipping": {
+          "type": "string"
+        },
+        "caffeineUnit": {
+          "type": "string"
+        },
+        "thisCup": {
+          "type": "string"
+        },
+        "dailyLabel": {
+          "type": "string"
+        },
+        "searching": {
+          "type": "string"
+        },
+        "actionConnect": {
+          "type": "string"
+        },
+        "actionReconnect": {
+          "type": "string"
+        },
+        "actionFinishCup": {
+          "type": "string"
+        },
+        "actionNewCup": {
+          "type": "string"
+        },
+        "badgeConnect": {
+          "type": "string"
+        },
+        "badgeConnected": {
+          "type": "string"
+        },
+        "badgeError": {
+          "type": "string"
+        },
+        "beverageDrip": {
+          "type": "string"
+        },
+        "beverageEspresso": {
+          "type": "string"
+        },
+        "beverageColdBrew": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sipping",
+        "caffeineUnit",
+        "thisCup",
+        "dailyLabel",
+        "searching",
+        "actionConnect",
+        "actionReconnect",
+        "actionFinishCup",
+        "actionNewCup",
+        "badgeConnect",
+        "badgeConnected",
+        "badgeError",
+        "beverageDrip",
+        "beverageEspresso",
+        "beverageColdBrew"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -774,7 +844,8 @@
     "starredRepos",
     "bio",
     "systemStatus",
-    "identityCard"
+    "identityCard",
+    "coffee"
   ],
   "additionalProperties": false
 }

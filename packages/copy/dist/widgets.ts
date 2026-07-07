@@ -198,6 +198,7 @@ export interface Widgets {
     mastodon: string;
     bluesky: string;
   };
+  coffee: WidgetsCoffee;
 }
 export interface SystemStatusSourceHealth {
   body: string;
@@ -271,4 +272,24 @@ export interface SystemStatusRefsTheatreReviews {
     label: string;
     href: string;
   };
+}
+/**
+ * Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.
+ */
+export interface WidgetsCoffee {
+  sipping: string;
+  caffeineUnit: string;
+  thisCup: string;
+  dailyLabel: string;
+  searching: string;
+  actionConnect: string;
+  actionReconnect: string;
+  actionFinishCup: string;
+  actionNewCup: string;
+  badgeConnect: string;
+  badgeConnected: string;
+  badgeError: string;
+  beverageDrip: string;
+  beverageEspresso: string;
+  beverageColdBrew: string;
 }

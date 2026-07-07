@@ -23,6 +23,9 @@ public struct Widgets: Codable, Sendable {
     /// Bookshelf widget — title, empty-state heading/body, status labels
     /// (reading/upNext/finished/pending), finished-date line, timestamp.
     public let bookshelf: Bookshelf
+    /// Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine
+    /// readout, daily bar, and beverage short names.
+    public let coffee: WidgetsCoffee
     /// Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.
     public let devLog: DevLog
     /// Exploration odometer widget — title + the four odometer stat labels.
@@ -54,10 +57,11 @@ public struct Widgets: Codable, Sendable {
     /// Workouts widget — title, recovery-day empty-state chrome, stat labels/units, timestamp.
     public let workouts: Workouts
 
-    public init(bio: Bio, bookModal: BookModal, bookshelf: Bookshelf, devLog: DevLog, exploration: Exploration, heartRate: HeartRate, hydration: Hydration, identityCard: IdentityCard, movement: Movement, nightSummary: NightSummary, readingFeed: ReadingFeed, starredRepos: StarredRepos, systemStatus: SystemStatus, theatreReviews: TheatreReviews, topPlaces: TopPlaces, workouts: Workouts) {
+    public init(bio: Bio, bookModal: BookModal, bookshelf: Bookshelf, coffee: WidgetsCoffee, devLog: DevLog, exploration: Exploration, heartRate: HeartRate, hydration: Hydration, identityCard: IdentityCard, movement: Movement, nightSummary: NightSummary, readingFeed: ReadingFeed, starredRepos: StarredRepos, systemStatus: SystemStatus, theatreReviews: TheatreReviews, topPlaces: TopPlaces, workouts: Workouts) {
         self.bio = bio
         self.bookModal = bookModal
         self.bookshelf = bookshelf
+        self.coffee = coffee
         self.devLog = devLog
         self.exploration = exploration
         self.heartRate = heartRate
@@ -96,6 +100,7 @@ public extension Widgets {
         bio: Bio? = nil,
         bookModal: BookModal? = nil,
         bookshelf: Bookshelf? = nil,
+        coffee: WidgetsCoffee? = nil,
         devLog: DevLog? = nil,
         exploration: Exploration? = nil,
         heartRate: HeartRate? = nil,
@@ -114,6 +119,7 @@ public extension Widgets {
             bio: bio ?? self.bio,
             bookModal: bookModal ?? self.bookModal,
             bookshelf: bookshelf ?? self.bookshelf,
+            coffee: coffee ?? self.coffee,
             devLog: devLog ?? self.devLog,
             exploration: exploration ?? self.exploration,
             heartRate: heartRate ?? self.heartRate,
@@ -318,6 +324,97 @@ public extension Bookshelf {
             statusUpNext: statusUpNext ?? self.statusUpNext,
             timestampLibrary: timestampLibrary ?? self.timestampLibrary,
             title: title ?? self.title
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine
+/// readout, daily bar, and beverage short names.
+// MARK: - WidgetsCoffee
+public struct WidgetsCoffee: Codable, Sendable {
+    public let actionConnect, actionFinishCup, actionNewCup, actionReconnect: String
+    public let badgeConnect, badgeConnected, badgeError, beverageColdBrew: String
+    public let beverageDrip, beverageEspresso, caffeineUnit, dailyLabel: String
+    public let searching, sipping, thisCup: String
+
+    public init(actionConnect: String, actionFinishCup: String, actionNewCup: String, actionReconnect: String, badgeConnect: String, badgeConnected: String, badgeError: String, beverageColdBrew: String, beverageDrip: String, beverageEspresso: String, caffeineUnit: String, dailyLabel: String, searching: String, sipping: String, thisCup: String) {
+        self.actionConnect = actionConnect
+        self.actionFinishCup = actionFinishCup
+        self.actionNewCup = actionNewCup
+        self.actionReconnect = actionReconnect
+        self.badgeConnect = badgeConnect
+        self.badgeConnected = badgeConnected
+        self.badgeError = badgeError
+        self.beverageColdBrew = beverageColdBrew
+        self.beverageDrip = beverageDrip
+        self.beverageEspresso = beverageEspresso
+        self.caffeineUnit = caffeineUnit
+        self.dailyLabel = dailyLabel
+        self.searching = searching
+        self.sipping = sipping
+        self.thisCup = thisCup
+    }
+}
+
+// MARK: WidgetsCoffee convenience initializers and mutators
+
+public extension WidgetsCoffee {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(WidgetsCoffee.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        actionConnect: String? = nil,
+        actionFinishCup: String? = nil,
+        actionNewCup: String? = nil,
+        actionReconnect: String? = nil,
+        badgeConnect: String? = nil,
+        badgeConnected: String? = nil,
+        badgeError: String? = nil,
+        beverageColdBrew: String? = nil,
+        beverageDrip: String? = nil,
+        beverageEspresso: String? = nil,
+        caffeineUnit: String? = nil,
+        dailyLabel: String? = nil,
+        searching: String? = nil,
+        sipping: String? = nil,
+        thisCup: String? = nil
+    ) -> WidgetsCoffee {
+        return WidgetsCoffee(
+            actionConnect: actionConnect ?? self.actionConnect,
+            actionFinishCup: actionFinishCup ?? self.actionFinishCup,
+            actionNewCup: actionNewCup ?? self.actionNewCup,
+            actionReconnect: actionReconnect ?? self.actionReconnect,
+            badgeConnect: badgeConnect ?? self.badgeConnect,
+            badgeConnected: badgeConnected ?? self.badgeConnected,
+            badgeError: badgeError ?? self.badgeError,
+            beverageColdBrew: beverageColdBrew ?? self.beverageColdBrew,
+            beverageDrip: beverageDrip ?? self.beverageDrip,
+            beverageEspresso: beverageEspresso ?? self.beverageEspresso,
+            caffeineUnit: caffeineUnit ?? self.caffeineUnit,
+            dailyLabel: dailyLabel ?? self.dailyLabel,
+            searching: searching ?? self.searching,
+            sipping: sipping ?? self.sipping,
+            thisCup: thisCup ?? self.thisCup
         )
     }
 

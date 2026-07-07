@@ -198,5 +198,22 @@
     "site": "Site",
     "mastodon": "Mastodon",
     "bluesky": "Bluesky"
+  },
+  "coffee": {
+    "sipping": "Sipping…",
+    "caffeineUnit": "mg",
+    "thisCup": "this cup · {beverage}",
+    "dailyLabel": "Today",
+    "searching": "Searching…",
+    "actionConnect": "Connect your Acaia",
+    "actionReconnect": "Reconnect",
+    "actionFinishCup": "Finish Cup",
+    "actionNewCup": "+ New Cup",
+    "badgeConnect": "Connect scale",
+    "badgeConnected": "Connected",
+    "badgeError": "Connection error",
+    "beverageDrip": "drip",
+    "beverageEspresso": "espresso",
+    "beverageColdBrew": "cold brew"
   }
 }
