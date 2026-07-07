@@ -119,63 +119,6 @@
       }
     }
   },
-  "tab": {
-    "home": {
-      "value": "Home",
-      "_meta": {
-        "description": "Home tab-bar label.",
-        "usage": ["ios:AppFeature/AppFeature.swift:214 (Tab Label)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "health": {
-      "value": "Health",
-      "_meta": {
-        "description": "Health tab-bar label.",
-        "usage": ["ios:AppFeature/AppFeature.swift:220 (Tab Label)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "location": {
-      "value": "Location",
-      "_meta": {
-        "description": "Location tab-bar label.",
-        "usage": ["ios:AppFeature/AppFeature.swift:226 (Tab Label)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "books": {
-      "value": "Books",
-      "_meta": {
-        "description": "Bookshelf tab-bar label (short form 'Books').",
-        "usage": ["ios:AppFeature/AppFeature.swift:232 (Tab Label)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "settings": {
-      "value": "Settings",
-      "_meta": {
-        "description": "Settings tab-bar label.",
-        "usage": ["ios:AppFeature/AppFeature.swift:238 (Tab Label)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    }
-  },
   "common": {
     "cancel": {
       "value": "Cancel",
@@ -418,19 +361,6 @@
         "lastReviewed": "2026-06-11"
       }
     },
-    "sectionServer": {
-      "value": "Server",
-      "_meta": {
-        "description": "Settings 'Server' section header.",
-        "usage": [
-          "ios:SettingsFeature/SettingsFeatureView.swift:121 (WidgetHeaderView label SERVER, uppercased at call site)"
-        ],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
     "sectionData": {
       "value": "Data",
       "_meta": {
@@ -551,54 +481,6 @@
       "_meta": {
         "description": "Saved-places navigation row subtitle in Settings.",
         "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:98 (Text)"],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "apiBaseUrl": {
-      "value": "API Base URL",
-      "_meta": {
-        "description": "Server API base-URL field label. Stored natural-case; rendered uppercase ('API BASE URL') at call site.",
-        "usage": [
-          "ios:SettingsFeature/SettingsFeatureView.swift:125 (Text label, uppercased at call site)"
-        ],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "apiBaseUrlPlaceholder": {
-      "value": "https://api.example.com/prod",
-      "_meta": {
-        "description": "Server API base-URL text-field placeholder (example URL).",
-        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:130 (TextField placeholder)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "apiToken": {
-      "value": "API Token",
-      "_meta": {
-        "description": "Server API-token field label. Stored natural-case; rendered uppercase ('API TOKEN') at call site.",
-        "usage": [
-          "ios:SettingsFeature/SettingsFeatureView.swift:152 (Text label, uppercased at call site)"
-        ],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "apiTokenPlaceholder": {
-      "value": "Bearer token",
-      "_meta": {
-        "description": "Server API-token secure-field placeholder.",
-        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:157 (SecureField placeholder)"],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -744,28 +626,6 @@
         "usage": [
           "ios:SettingsFeature/SettingsFeatureView.swift:367 (neonActionButton label, uppercased at call site)"
         ],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "aboutName": {
-      "value": "Name",
-      "_meta": {
-        "description": "About section 'Name' row label.",
-        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:404 (dataRow label)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "aboutTitle": {
-      "value": "Title",
-      "_meta": {
-        "description": "About section 'Title' (job title) row label.",
-        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift:405 (dataRow label)"],
         "register": "atom",
         "audience": "human",
         "owner": "jonathan",
@@ -1098,32 +958,6 @@
         "lastReviewed": "2026-06-11"
       }
     },
-    "sectionData": {
-      "value": "Data",
-      "_meta": {
-        "description": "Health 'Data' section header. Stored natural-case; rendered uppercase at call site.",
-        "usage": [
-          "ios:HealthFeature/HealthFeatureView.swift:82 (sectionHeader, uppercased at call site)"
-        ],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "sectionDataMode": {
-      "value": "Data Mode",
-      "_meta": {
-        "description": "Health 'Data Mode' section header. Stored natural-case; rendered uppercase at call site.",
-        "usage": [
-          "ios:HealthFeature/HealthFeatureView.swift:84 (sectionHeader, uppercased at call site)"
-        ],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
     "todaysWorkouts": {
       "value": "Today's Workouts",
       "_meta": {
@@ -1179,110 +1013,6 @@
           "ios:HealthFeature/HealthFeatureView.swift:251 (workoutStat label, uppercased at call site)"
         ],
         "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "sectionHealthkit": {
-      "value": "HealthKit",
-      "_meta": {
-        "description": "HealthKit subsection header. Stored natural-case; rendered uppercase ('HEALTHKIT') at call site.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:281 (Text, uppercased at call site)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "authorization": {
-      "value": "Authorization",
-      "_meta": {
-        "description": "HealthKit authorization row label.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:298 (Text)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "authorized": {
-      "value": "Authorized",
-      "_meta": {
-        "description": "HealthKit authorized status. Stored natural-case; rendered uppercase ('AUTHORIZED') at call site.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:304 (Text, uppercased at call site)"],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "lastSync": {
-      "value": "Last Sync",
-      "_meta": {
-        "description": "HealthKit last-sync row label.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:313 (Text)"],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "syncing": {
-      "value": "Syncing…",
-      "_meta": {
-        "description": "HealthKit sync button in-progress label. Stored natural-case; rendered uppercase at call site.",
-        "usage": [
-          "ios:HealthFeature/HealthFeatureView.swift:325 (neonActionButton label, uppercased at call site)"
-        ],
-        "register": "atom",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-21",
-        "rationale": "reword 2026-06-21: ellipsis … (U+2026) per VOICE.md mechanics"
-      }
-    },
-    "syncNow": {
-      "value": "Sync Now",
-      "_meta": {
-        "description": "HealthKit sync button label. Stored natural-case; rendered uppercase at call site.",
-        "usage": [
-          "ios:HealthFeature/HealthFeatureView.swift:325 (neonActionButton label, uppercased at call site)"
-        ],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "useRealHR": {
-      "value": "Use Real Heart Rate Data",
-      "_meta": {
-        "description": "Data-mode toggle title.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:346 (Text)"],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "realActive": {
-      "value": "Sending real HealthKit data",
-      "_meta": {
-        "description": "Data-mode subtitle when real-data mode is on.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:349 (Text, useRealData branch)"],
-        "register": "label",
-        "audience": "human",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "simActive": {
-      "value": "Server generates simulated data",
-      "_meta": {
-        "description": "Data-mode subtitle when simulated-data mode is on.",
-        "usage": ["ios:HealthFeature/HealthFeatureView.swift:349 (Text, !useRealData branch)"],
-        "register": "label",
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"

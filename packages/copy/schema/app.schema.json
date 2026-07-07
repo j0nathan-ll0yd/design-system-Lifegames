@@ -7,7 +7,6 @@
   "additionalProperties": false,
   "required": [
     "nav",
-    "tab",
     "common",
     "home",
     "settings",
@@ -68,30 +67,6 @@
           "$ref": "#/$defs/CopyString"
         },
         "savedPlaces": {
-          "$ref": "#/$defs/CopyString"
-        }
-      }
-    },
-    "tab": {
-      "type": "object",
-      "title": "AppTab",
-      "description": "Bottom tab-bar labels (TabView Label text).",
-      "additionalProperties": false,
-      "required": ["home", "health", "location", "books", "settings"],
-      "properties": {
-        "home": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "health": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "location": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "books": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "settings": {
           "$ref": "#/$defs/CopyString"
         }
       }
@@ -191,7 +166,6 @@
       "additionalProperties": false,
       "required": [
         "sectionLocation",
-        "sectionServer",
         "sectionData",
         "sectionDataMode",
         "useRealHR",
@@ -202,10 +176,6 @@
         "sectionAbout",
         "savedPlacesTitle",
         "savedPlacesSubtitle",
-        "apiBaseUrl",
-        "apiBaseUrlPlaceholder",
-        "apiToken",
-        "apiTokenPlaceholder",
         "totalVisits",
         "unsyncedVisits",
         "lastHealthSync",
@@ -218,8 +188,6 @@
         "shareLog",
         "clearLogs",
         "reload",
-        "aboutName",
-        "aboutTitle",
         "aboutVersion",
         "aboutBuild",
         "aboutPlatform",
@@ -227,9 +195,6 @@
       ],
       "properties": {
         "sectionLocation": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "sectionServer": {
           "$ref": "#/$defs/CopyString"
         },
         "sectionData": {
@@ -260,18 +225,6 @@
           "$ref": "#/$defs/CopyString"
         },
         "savedPlacesSubtitle": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "apiBaseUrl": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "apiBaseUrlPlaceholder": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "apiToken": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "apiTokenPlaceholder": {
           "$ref": "#/$defs/CopyString"
         },
         "totalVisits": {
@@ -308,12 +261,6 @@
           "$ref": "#/$defs/CopyString"
         },
         "reload": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "aboutName": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "aboutTitle": {
           "$ref": "#/$defs/CopyString"
         },
         "aboutVersion": {
@@ -442,22 +389,11 @@
         "sectionMovement",
         "sectionSleep",
         "sectionWorkouts",
-        "sectionData",
-        "sectionDataMode",
         "todaysWorkouts",
         "recoveryDay",
         "noWorkouts",
         "workoutDuration",
-        "workoutCalories",
-        "sectionHealthkit",
-        "authorization",
-        "authorized",
-        "lastSync",
-        "syncing",
-        "syncNow",
-        "useRealHR",
-        "realActive",
-        "simActive"
+        "workoutCalories"
       ],
       "properties": {
         "sectionHeart": {
@@ -470,12 +406,6 @@
           "$ref": "#/$defs/CopyString"
         },
         "sectionWorkouts": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "sectionData": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "sectionDataMode": {
           "$ref": "#/$defs/CopyString"
         },
         "todaysWorkouts": {
@@ -491,33 +421,6 @@
           "$ref": "#/$defs/CopyString"
         },
         "workoutCalories": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "sectionHealthkit": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "authorization": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "authorized": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "lastSync": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "syncing": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "syncNow": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "useRealHR": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "realActive": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "simActive": {
           "$ref": "#/$defs/CopyString"
         }
       }
