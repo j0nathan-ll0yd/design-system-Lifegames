@@ -46,6 +46,8 @@ jobs:
       - name: Verify schema contract
         if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"
         run: pnpm -F @lifegames/schemas contract:verify
+        env:
+          CONTRACT_CHECK_MODE: blocking
 
   copy:
     # @lifegames/copy: build (validate rich + derive flat + codegen TS/Zod/Swift),
