@@ -31,6 +31,12 @@ that don't naturally fit in a single package's history.
   `@lifegames/schemas`: minor (new schemas).
 - `other/sync-status.{fresh,aging,stale,never-synced}.json` freshness variants
   for Life Portal watch-widget previews.
+- **`location-visits` data-only fixture domain** for Life Portal location
+  previews (S98): authored schemas `visit-timeline` / `saved-places` /
+  `place-search-results`, 5 validated fixture JSON files under
+  `Sources/LifegamesWidgets/Resources/widgets/location/`, and public Codable
+  wire models (`VisitTimelineProps`, `SavedPlacesProps`,
+  `PlaceSearchResultsProps`) in `LifegamesWidgets/Runtime`.
 - Optional `basalKcal` / `restingHeartRate` fields on the `movement-rings`
   schema and optional `level` on `diagnostics-monitor` log entries, so Life
   Portal preview adapters can source `TodayHealthData` / `LogEntry` fields from

@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/visit-timeline.schema.json",
+  "title": "VisitTimeline",
+  "description": "A timeline of location visits as recorded by Life Portal's visit tracking. Fixture pool for LP location previews (S98). Timestamps are absolute ISO-8601; consumers re-anchor them relative to referenceDate so previews always render recent data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["referenceDate", "visits"],
+  "properties": {
+    "referenceDate": {
+      "type": "string",
+      "description": "The 'now' the visit timestamps were authored against.",
+      "examples": ["2025-01-15T14:30:00Z"]
+    },
+    "visits": {
+      "type": "array",
+      "description": "Visits in chronological order.",
+      "items": {
+        "title": "VisitTimelineEntry",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "clientUuid",
+          "latitude",
+          "longitude",
+          "geohash",
+          "arrivalTime",
+          "isSynced"
+        ],
+        "properties": {
+          "id": { "type": "integer", "description": "Server-assigned visit id." },
+          "clientUuid": { "type": "string", "description": "Client-generated identifier." },
+          "latitude": { "type": "number" },
+          "longitude": { "type": "number" },
+          "geohash": { "type": "string" },
+          "arrivalTime": { "type": "string", "description": "ISO-8601 arrival timestamp." },
+          "departureTime": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "description": "ISO-8601 departure timestamp; null while the visit is ongoing."
+          },
+          "placeName": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "description": "Resolved place name; null when geocoding is pending."
+          },
+          "placeCategory": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "description": "MapKit POI category identifier (MKPOICategory*)."
+          },
+          "address": { "type": "string" },
+          "city": { "type": "string" },
+          "state": { "type": "string" },
+          "country": { "type": "string" },
+          "needsGeocode": { "type": "boolean" },
+          "isSynced": { "type": "boolean" },
+          "createdAt": { "type": "string", "description": "ISO-8601 creation timestamp." }
+        }
+      }
+    }
+  }
+}

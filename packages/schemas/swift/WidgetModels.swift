@@ -2,7 +2,7 @@
 // Source: packages/schemas/{vendored,authored}/*.schema.json
 // Re-run: pnpm -F @lifegames/schemas codegen
 //
-// Contains Codable structs for all 19 widget data schemas.
+// Contains Codable structs for all 22 widget data schemas.
 // Shared decoder helpers appear once at the end of this file.
 
 import Foundation
@@ -4107,6 +4107,369 @@ extension MediaUser {
             firstName: firstName ?? self.firstName,
             identifier: identifier ?? self.identifier,
             lastName: lastName ?? self.lastName
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: VisitTimeline
+
+/// A timeline of location visits as recorded by Life Portal's visit tracking. Fixture pool
+/// for LP location previews (S98). Timestamps are absolute ISO-8601; consumers re-anchor
+/// them relative to referenceDate so previews always render recent data.
+// MARK: - VisitTimeline
+struct VisitTimeline: Codable {
+    /// The 'now' the visit timestamps were authored against.
+    let referenceDate: String
+    /// Visits in chronological order.
+    let visits: [VisitTimelineEntry]
+}
+
+// MARK: VisitTimeline convenience initializers and mutators
+
+extension VisitTimeline {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(VisitTimeline.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        referenceDate: String? = nil,
+        visits: [VisitTimelineEntry]? = nil
+    ) -> VisitTimeline {
+        return VisitTimeline(
+            referenceDate: referenceDate ?? self.referenceDate,
+            visits: visits ?? self.visits
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - VisitTimelineEntry
+struct VisitTimelineEntry: Codable {
+    let address: String?
+    /// ISO-8601 arrival timestamp.
+    let arrivalTime: String
+    let city: String?
+    /// Client-generated identifier.
+    let clientUUID: String
+    let country: String?
+    /// ISO-8601 creation timestamp.
+    let createdAt: String?
+    /// ISO-8601 departure timestamp; null while the visit is ongoing.
+    let departureTime: String?
+    let geohash: String
+    /// Server-assigned visit id.
+    let id: Int
+    let isSynced: Bool
+    let latitude, longitude: Double
+    let needsGeocode: Bool?
+    /// MapKit POI category identifier (MKPOICategory*).
+    let placeCategory: String?
+    /// Resolved place name; null when geocoding is pending.
+    let placeName: String?
+    let state: String?
+
+    enum CodingKeys: String, CodingKey {
+        case address, arrivalTime, city
+        case clientUUID = "clientUuid"
+        case country, createdAt, departureTime, geohash, id, isSynced, latitude, longitude, needsGeocode, placeCategory, placeName, state
+    }
+}
+
+// MARK: VisitTimelineEntry convenience initializers and mutators
+
+extension VisitTimelineEntry {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(VisitTimelineEntry.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        address: String?? = nil,
+        arrivalTime: String? = nil,
+        city: String?? = nil,
+        clientUUID: String? = nil,
+        country: String?? = nil,
+        createdAt: String?? = nil,
+        departureTime: String?? = nil,
+        geohash: String? = nil,
+        id: Int? = nil,
+        isSynced: Bool? = nil,
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        needsGeocode: Bool?? = nil,
+        placeCategory: String?? = nil,
+        placeName: String?? = nil,
+        state: String?? = nil
+    ) -> VisitTimelineEntry {
+        return VisitTimelineEntry(
+            address: address ?? self.address,
+            arrivalTime: arrivalTime ?? self.arrivalTime,
+            city: city ?? self.city,
+            clientUUID: clientUUID ?? self.clientUUID,
+            country: country ?? self.country,
+            createdAt: createdAt ?? self.createdAt,
+            departureTime: departureTime ?? self.departureTime,
+            geohash: geohash ?? self.geohash,
+            id: id ?? self.id,
+            isSynced: isSynced ?? self.isSynced,
+            latitude: latitude ?? self.latitude,
+            longitude: longitude ?? self.longitude,
+            needsGeocode: needsGeocode ?? self.needsGeocode,
+            placeCategory: placeCategory ?? self.placeCategory,
+            placeName: placeName ?? self.placeName,
+            state: state ?? self.state
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: SavedPlaces
+
+/// User-saved geofenced places (home, work, gym) for Life Portal location previews (S98).
+// MARK: - SavedPlaces
+struct SavedPlaces: Codable {
+    let places: [SavedPlaceEntry]
+}
+
+// MARK: SavedPlaces convenience initializers and mutators
+
+extension SavedPlaces {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SavedPlaces.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        places: [SavedPlaceEntry]? = nil
+    ) -> SavedPlaces {
+        return SavedPlaces(
+            places: places ?? self.places
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - SavedPlaceEntry
+struct SavedPlaceEntry: Codable {
+    let category, geohash: String
+    /// SF Symbol name.
+    let icon: String
+    let id: Int
+    let latitude, longitude: Double
+    let name: String
+    let radiusMeters: Double
+}
+
+// MARK: SavedPlaceEntry convenience initializers and mutators
+
+extension SavedPlaceEntry {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(SavedPlaceEntry.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        category: String? = nil,
+        geohash: String? = nil,
+        icon: String? = nil,
+        id: Int? = nil,
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        name: String? = nil,
+        radiusMeters: Double? = nil
+    ) -> SavedPlaceEntry {
+        return SavedPlaceEntry(
+            category: category ?? self.category,
+            geohash: geohash ?? self.geohash,
+            icon: icon ?? self.icon,
+            id: id ?? self.id,
+            latitude: latitude ?? self.latitude,
+            longitude: longitude ?? self.longitude,
+            name: name ?? self.name,
+            radiusMeters: radiusMeters ?? self.radiusMeters
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: PlaceSearchResults
+
+/// Place search results (visit-correction sheet) for Life Portal location previews (S98).
+// MARK: - PlaceSearchResults
+struct PlaceSearchResults: Codable {
+    let results: [PlaceSearchResultEntry]
+}
+
+// MARK: PlaceSearchResults convenience initializers and mutators
+
+extension PlaceSearchResults {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(PlaceSearchResults.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        results: [PlaceSearchResultEntry]? = nil
+    ) -> PlaceSearchResults {
+        return PlaceSearchResults(
+            results: results ?? self.results
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - PlaceSearchResultEntry
+struct PlaceSearchResultEntry: Codable {
+    let address: String
+    /// MapKit POI category identifier.
+    let category: String
+    let city: String
+    /// Distance from the visit, in meters.
+    let distance: Double
+    let id: String
+    let latitude, longitude: Double
+    let name, state: String
+}
+
+// MARK: PlaceSearchResultEntry convenience initializers and mutators
+
+extension PlaceSearchResultEntry {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(PlaceSearchResultEntry.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        address: String? = nil,
+        category: String? = nil,
+        city: String? = nil,
+        distance: Double? = nil,
+        id: String? = nil,
+        latitude: Double? = nil,
+        longitude: Double? = nil,
+        name: String? = nil,
+        state: String? = nil
+    ) -> PlaceSearchResultEntry {
+        return PlaceSearchResultEntry(
+            address: address ?? self.address,
+            category: category ?? self.category,
+            city: city ?? self.city,
+            distance: distance ?? self.distance,
+            id: id ?? self.id,
+            latitude: latitude ?? self.latitude,
+            longitude: longitude ?? self.longitude,
+            name: name ?? self.name,
+            state: state ?? self.state
         )
     }
 

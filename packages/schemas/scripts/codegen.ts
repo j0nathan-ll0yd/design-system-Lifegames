@@ -65,6 +65,9 @@ const SCHEMA_ENTRIES: Array<{ relPath: string; name: string }> = [
   { relPath: 'authored/media-file.schema.json', name: 'MediaFile' },
   { relPath: 'authored/media-library.schema.json', name: 'MediaLibrary' },
   { relPath: 'authored/media-profile.schema.json', name: 'MediaProfile' },
+  { relPath: 'authored/visit-timeline.schema.json', name: 'VisitTimeline' },
+  { relPath: 'authored/saved-places.schema.json', name: 'SavedPlaces' },
+  { relPath: 'authored/place-search-results.schema.json', name: 'PlaceSearchResults' },
 ];
 
 /**

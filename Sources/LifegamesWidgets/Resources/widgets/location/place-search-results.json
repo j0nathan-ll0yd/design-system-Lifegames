@@ -1,0 +1,92 @@
+{
+  "results": [
+    {
+      "id": "sr1",
+      "name": "Blue Bottle Coffee",
+      "category": "MKPOICategoryCafe",
+      "address": "315 Linden St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "distance": 12
+    },
+    {
+      "id": "sr2",
+      "name": "Sightglass Coffee",
+      "category": "MKPOICategoryCafe",
+      "address": "270 7th St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.777,
+      "longitude": -122.407,
+      "distance": 85
+    },
+    {
+      "id": "sr3",
+      "name": "Ritual Coffee Roasters",
+      "category": "MKPOICategoryCafe",
+      "address": "432 Octavia St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.776,
+      "longitude": -122.422,
+      "distance": 150
+    },
+    {
+      "id": "sr4",
+      "name": "Tartine Bakery",
+      "category": "MKPOICategoryBakery",
+      "address": "600 Guerrero St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.7613,
+      "longitude": -122.4244,
+      "distance": 220
+    },
+    {
+      "id": "sr5",
+      "name": "Bi-Rite Market",
+      "category": "MKPOICategoryFoodMarket",
+      "address": "3639 18th St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.7617,
+      "longitude": -122.4255,
+      "distance": 310
+    },
+    {
+      "id": "sr6",
+      "name": "Equinox Fitness",
+      "category": "MKPOICategoryFitnessCenter",
+      "address": "1 Post St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.789,
+      "longitude": -122.401,
+      "distance": 420
+    },
+    {
+      "id": "sr7",
+      "name": "The Monk's Kettle",
+      "category": "MKPOICategoryNightlife",
+      "address": "3141 16th St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.7649,
+      "longitude": -122.4215,
+      "distance": 580
+    },
+    {
+      "id": "sr8",
+      "name": "Chase Bank",
+      "category": "MKPOICategoryBank",
+      "address": "1 Sansome St",
+      "city": "San Francisco",
+      "state": "CA",
+      "latitude": 37.7903,
+      "longitude": -122.4008,
+      "distance": 750
+    }
+  ]
+}

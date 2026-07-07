@@ -14,6 +14,9 @@ and this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `EXTRA_CATEGORY_WIRING`.
 - Optional `basalKcal` and `restingHeartRate` fields on the `movement-rings`
   manual schema; optional `level` field on `diagnostics-monitor` log entries.
+- Authored schemas for the `location-visits` data-only fixture domain (LP
+  location previews, S98): `visit-timeline.schema.json`,
+  `saved-places.schema.json`, `place-search-results.schema.json`.
 
 ## [0.1.0]
 

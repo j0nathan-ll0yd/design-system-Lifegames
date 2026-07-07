@@ -1,0 +1,34 @@
+{
+  "places": [
+    {
+      "id": 1,
+      "name": "Home",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "geohash": "9q8yyk",
+      "radiusMeters": 50,
+      "category": "home",
+      "icon": "house.fill"
+    },
+    {
+      "id": 2,
+      "name": "Office",
+      "latitude": 37.7849,
+      "longitude": -122.4094,
+      "geohash": "9q8yym",
+      "radiusMeters": 80,
+      "category": "work",
+      "icon": "building.2.fill"
+    },
+    {
+      "id": 3,
+      "name": "Gym",
+      "latitude": 37.7649,
+      "longitude": -122.4294,
+      "geohash": "9q8yyn",
+      "radiusMeters": 40,
+      "category": "gym",
+      "icon": "dumbbell.fill"
+    }
+  ]
+}

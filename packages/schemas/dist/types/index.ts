@@ -23,6 +23,9 @@ import type { DashboardBooks as _DashboardBooks } from './DashboardBooks';
 import type { MediaFile as _MediaFile } from './MediaFile';
 import type { MediaLibrary as _MediaLibrary } from './MediaLibrary';
 import type { MediaProfile as _MediaProfile } from './MediaProfile';
+import type { VisitTimeline as _VisitTimeline } from './VisitTimeline';
+import type { SavedPlaces as _SavedPlaces } from './SavedPlaces';
+import type { PlaceSearchResults as _PlaceSearchResults } from './PlaceSearchResults';
 
 export type ArticlesExport = SchemaDerived<_ArticlesExport>;
 export type BooksExport = SchemaDerived<_BooksExport>;
@@ -43,3 +46,6 @@ export type DashboardBooks = SchemaDerived<_DashboardBooks>;
 export type MediaFile = SchemaDerived<_MediaFile>;
 export type MediaLibrary = SchemaDerived<_MediaLibrary>;
 export type MediaProfile = SchemaDerived<_MediaProfile>;
+export type VisitTimeline = SchemaDerived<_VisitTimeline>;
+export type SavedPlaces = SchemaDerived<_SavedPlaces>;
+export type PlaceSearchResults = SchemaDerived<_PlaceSearchResults>;

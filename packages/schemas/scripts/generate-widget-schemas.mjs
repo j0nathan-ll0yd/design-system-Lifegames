@@ -402,6 +402,9 @@ const EXTRA_CATEGORY_WIRING = {
   'media-file': 'MediaFile',
   'media-library': 'MediaLibrary',
   'media-profile': 'MediaProfile',
+  'visit-timeline': 'VisitTimeline',
+  'saved-places': 'SavedPlaces',
+  'place-search-results': 'PlaceSearchResults',
 };
 Object.assign(fixtureBaseToTitle, EXTRA_CATEGORY_WIRING);
 

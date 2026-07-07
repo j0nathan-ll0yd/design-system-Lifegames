@@ -794,6 +794,26 @@
       "schema": "PlaceLeaderboardV3Props",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/location/place-search-results.json": {
+      "schema": "PlaceSearchResults",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/saved-places.json": {
+      "schema": "SavedPlaces",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/visit-timeline.empty.json": {
+      "schema": "VisitTimeline",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/visit-timeline.today.json": {
+      "schema": "VisitTimeline",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/location/visit-timeline.week.json": {
+      "schema": "VisitTimeline",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/media/media-file.downloaded.json": {
       "schema": "MediaFile",
       "strategy": "single"
