@@ -439,6 +439,98 @@
         "lastReviewed": "2026-07-06"
       }
     },
+    "sectionApi": {
+      "value": "API",
+      "_meta": {
+        "description": "Settings 'API' section header — token status + re-provisioning card. The only recovery path after a fresh install, keychain reset, or token rotation.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (WidgetHeaderView label, uppercased at call site)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "serverLabel": {
+      "value": "Server",
+      "_meta": {
+        "description": "API section row label for the effective backend base URL (UserDefaults override or PortalContract fallback).",
+        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section server row)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "tokenConfigured": {
+      "value": "Token configured",
+      "_meta": {
+        "description": "API section status line when a bearer token is present in the keychain. Never shows the token value.",
+        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section status row)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "tokenMissing": {
+      "value": "Token missing",
+      "_meta": {
+        "description": "API section status line when no bearer token is in the keychain — sync requests will fail until one is saved.",
+        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section status row)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "tokenPlaceholder": {
+      "value": "Paste API token",
+      "_meta": {
+        "description": "Placeholder for the secure token entry field in the API section.",
+        "usage": [
+          "ios:SettingsFeature/SettingsFeatureView.swift (API section SecureField placeholder)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "tokenSave": {
+      "value": "Save Token",
+      "_meta": {
+        "description": "API section save button. Writes the pasted token to the keychain item APIConfiguration reads. Stored natural-case; rendered uppercase at call site.",
+        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section save button)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "tokenClear": {
+      "value": "Clear Token",
+      "_meta": {
+        "description": "API section clear button — removes the bearer token from the keychain.",
+        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section clear button)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
+    "tokenSavedConfirmation": {
+      "value": "Token saved",
+      "_meta": {
+        "description": "Transient confirmation shown after a token is saved from the API section.",
+        "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section confirmation row)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-07"
+      }
+    },
     "sectionDiagnostics": {
       "value": "Diagnostics",
       "_meta": {

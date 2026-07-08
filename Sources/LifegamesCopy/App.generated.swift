@@ -1800,11 +1800,19 @@ public struct AppSettings: Codable, Sendable {
     public let clearLogs, deleteAll, diagEmpty, fileSize: String
     public let fullResync, lastHealthSync, realActive, recentEntries: String
     public let reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout: String
-    public let sectionData, sectionDataMode, sectionDiagnostics, sectionLocation: String
-    public let shareLog, simActive, syncNow, totalVisits: String
+    public let sectionAPI, sectionData, sectionDataMode, sectionDiagnostics: String
+    public let sectionLocation, serverLabel, shareLog, simActive: String
+    public let syncNow, tokenClear, tokenConfigured, tokenMissing: String
+    public let tokenPlaceholder, tokenSave, tokenSavedConfirmation, totalVisits: String
     public let unsyncedVisits, useRealHR, watchLogEntries: String
 
-    public init(aboutBuild: String, aboutPlatform: String, aboutVersion: String, alerts: AppSettingsAlerts, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, shareLog: String, simActive: String, syncNow: String, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
+    public enum CodingKeys: String, CodingKey {
+        case aboutBuild, aboutPlatform, aboutVersion, alerts, clearLogs, deleteAll, diagEmpty, fileSize, fullResync, lastHealthSync, realActive, recentEntries, reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout
+        case sectionAPI = "sectionApi"
+        case sectionData, sectionDataMode, sectionDiagnostics, sectionLocation, serverLabel, shareLog, simActive, syncNow, tokenClear, tokenConfigured, tokenMissing, tokenPlaceholder, tokenSave, tokenSavedConfirmation, totalVisits, unsyncedVisits, useRealHR, watchLogEntries
+    }
+
+    public init(aboutBuild: String, aboutPlatform: String, aboutVersion: String, alerts: AppSettingsAlerts, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionAPI: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, serverLabel: String, shareLog: String, simActive: String, syncNow: String, tokenClear: String, tokenConfigured: String, tokenMissing: String, tokenPlaceholder: String, tokenSave: String, tokenSavedConfirmation: String, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
         self.aboutBuild = aboutBuild
         self.aboutPlatform = aboutPlatform
         self.aboutVersion = aboutVersion
@@ -1821,13 +1829,21 @@ public struct AppSettings: Codable, Sendable {
         self.savedPlacesSubtitle = savedPlacesSubtitle
         self.savedPlacesTitle = savedPlacesTitle
         self.sectionAbout = sectionAbout
+        self.sectionAPI = sectionAPI
         self.sectionData = sectionData
         self.sectionDataMode = sectionDataMode
         self.sectionDiagnostics = sectionDiagnostics
         self.sectionLocation = sectionLocation
+        self.serverLabel = serverLabel
         self.shareLog = shareLog
         self.simActive = simActive
         self.syncNow = syncNow
+        self.tokenClear = tokenClear
+        self.tokenConfigured = tokenConfigured
+        self.tokenMissing = tokenMissing
+        self.tokenPlaceholder = tokenPlaceholder
+        self.tokenSave = tokenSave
+        self.tokenSavedConfirmation = tokenSavedConfirmation
         self.totalVisits = totalVisits
         self.unsyncedVisits = unsyncedVisits
         self.useRealHR = useRealHR
@@ -1870,13 +1886,21 @@ public extension AppSettings {
         savedPlacesSubtitle: String? = nil,
         savedPlacesTitle: String? = nil,
         sectionAbout: String? = nil,
+        sectionAPI: String? = nil,
         sectionData: String? = nil,
         sectionDataMode: String? = nil,
         sectionDiagnostics: String? = nil,
         sectionLocation: String? = nil,
+        serverLabel: String? = nil,
         shareLog: String? = nil,
         simActive: String? = nil,
         syncNow: String? = nil,
+        tokenClear: String? = nil,
+        tokenConfigured: String? = nil,
+        tokenMissing: String? = nil,
+        tokenPlaceholder: String? = nil,
+        tokenSave: String? = nil,
+        tokenSavedConfirmation: String? = nil,
         totalVisits: String? = nil,
         unsyncedVisits: String? = nil,
         useRealHR: String? = nil,
@@ -1899,13 +1923,21 @@ public extension AppSettings {
             savedPlacesSubtitle: savedPlacesSubtitle ?? self.savedPlacesSubtitle,
             savedPlacesTitle: savedPlacesTitle ?? self.savedPlacesTitle,
             sectionAbout: sectionAbout ?? self.sectionAbout,
+            sectionAPI: sectionAPI ?? self.sectionAPI,
             sectionData: sectionData ?? self.sectionData,
             sectionDataMode: sectionDataMode ?? self.sectionDataMode,
             sectionDiagnostics: sectionDiagnostics ?? self.sectionDiagnostics,
             sectionLocation: sectionLocation ?? self.sectionLocation,
+            serverLabel: serverLabel ?? self.serverLabel,
             shareLog: shareLog ?? self.shareLog,
             simActive: simActive ?? self.simActive,
             syncNow: syncNow ?? self.syncNow,
+            tokenClear: tokenClear ?? self.tokenClear,
+            tokenConfigured: tokenConfigured ?? self.tokenConfigured,
+            tokenMissing: tokenMissing ?? self.tokenMissing,
+            tokenPlaceholder: tokenPlaceholder ?? self.tokenPlaceholder,
+            tokenSave: tokenSave ?? self.tokenSave,
+            tokenSavedConfirmation: tokenSavedConfirmation ?? self.tokenSavedConfirmation,
             totalVisits: totalVisits ?? self.totalVisits,
             unsyncedVisits: unsyncedVisits ?? self.unsyncedVisits,
             useRealHR: useRealHR ?? self.useRealHR,

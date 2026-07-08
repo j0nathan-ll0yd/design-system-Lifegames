@@ -26,6 +26,8 @@ public struct ProfileHeaderView: View {
     public let tagline: String
     public let githubLabel: String
     public let linkedinLabel: String
+    public let githubURL: URL?
+    public let linkedinURL: URL?
 
     public init(
         initials: String,
@@ -34,7 +36,9 @@ public struct ProfileHeaderView: View {
         bio: String,
         tagline: String,
         githubLabel: String = "GitHub",
-        linkedinLabel: String = "LinkedIn"
+        linkedinLabel: String = "LinkedIn",
+        githubURL: URL? = nil,
+        linkedinURL: URL? = nil
     ) {
         self.initials = initials
         self.name = name
@@ -43,6 +47,8 @@ public struct ProfileHeaderView: View {
         self.tagline = tagline
         self.githubLabel = githubLabel
         self.linkedinLabel = linkedinLabel
+        self.githubURL = githubURL
+        self.linkedinURL = linkedinURL
     }
 
     public var body: some View {
@@ -81,8 +87,8 @@ public struct ProfileHeaderView: View {
 
             // Social pills
             HStack(spacing: 7) {
-                socialPill(githubLabel)
-                socialPill(linkedinLabel)
+                socialPill(githubLabel, url: githubURL)
+                socialPill(linkedinLabel, url: linkedinURL)
             }
         }
         .padding(20)
@@ -135,7 +141,21 @@ public struct ProfileHeaderView: View {
 
     // MARK: - Social pill
 
-    private func socialPill(_ label: String) -> some View {
+    /// Renders as a tappable `Link` when a destination is provided; a plain
+    /// label otherwise, so existing call sites keep their non-interactive pills.
+    @ViewBuilder
+    private func socialPill(_ label: String, url: URL?) -> some View {
+        if let url {
+            Link(destination: url) {
+                pillLabel(label)
+            }
+            .accessibilityLabel(label)
+        } else {
+            pillLabel(label)
+        }
+    }
+
+    private func pillLabel(_ label: String) -> some View {
         Text(label)
             .font(.system(size: 11, weight: .medium))
             .foregroundStyle(LGColor.textMuted)
@@ -159,7 +179,9 @@ public struct ProfileHeaderView: View {
             name: "Jonathan Lloyd",
             role: "Engineering Director",
             bio: "A living data dashboard — tracking body and mind. Jack into his human datastream.",
-            tagline: "Live Engineering Dashboard"
+            tagline: "Live Engineering Dashboard",
+            githubURL: URL(string: "https://github.com/j0nathan-ll0yd"),
+            linkedinURL: URL(string: "https://www.linkedin.com/in/lifegames/")
         )
         .padding(Spacing.s400)
         .background(LGColor.surfaceBase)
