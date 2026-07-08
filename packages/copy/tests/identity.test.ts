@@ -82,10 +82,10 @@ const NAMESPACES: NamespaceFixture[] = [
   //   + coffee 8 (mug/caffeineThisCup/dailyCaffeine + action ×5
   //     [connect/searching/reconnect/finishCup/newCup]).
   { name: 'a11y', expectedLeaves: 22 },
-  // app: nav 10 + common 7 + home 12 + settings 33 + savedPlaces 4
+  // app: nav 10 + common 7 + home 12 + settings 41 + savedPlaces 4
   //   + addPlace 9 + health 9 + sleep 8 + location 73 + bookshelf 50 + watch 12
   //   + sections 2 + page404 2.
-  { name: 'app', expectedLeaves: 231 },
+  { name: 'app', expectedLeaves: 239 },
   // permissions: health 2 + locationWhenInUse 2 + locationAlways 1 + motion 1.
   { name: 'permissions', expectedLeaves: 6 },
   // errors: validation 2 + client 2.

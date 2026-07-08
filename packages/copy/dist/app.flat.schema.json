@@ -169,6 +169,30 @@
         "syncNow": {
           "type": "string"
         },
+        "sectionApi": {
+          "type": "string"
+        },
+        "serverLabel": {
+          "type": "string"
+        },
+        "tokenConfigured": {
+          "type": "string"
+        },
+        "tokenMissing": {
+          "type": "string"
+        },
+        "tokenPlaceholder": {
+          "type": "string"
+        },
+        "tokenSave": {
+          "type": "string"
+        },
+        "tokenClear": {
+          "type": "string"
+        },
+        "tokenSavedConfirmation": {
+          "type": "string"
+        },
         "sectionDiagnostics": {
           "type": "string"
         },
@@ -273,6 +297,14 @@
         "realActive",
         "simActive",
         "syncNow",
+        "sectionApi",
+        "serverLabel",
+        "tokenConfigured",
+        "tokenMissing",
+        "tokenPlaceholder",
+        "tokenSave",
+        "tokenClear",
+        "tokenSavedConfirmation",
         "sectionDiagnostics",
         "sectionAbout",
         "savedPlacesTitle",

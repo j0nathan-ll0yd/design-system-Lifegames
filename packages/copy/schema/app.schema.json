@@ -172,6 +172,14 @@
         "realActive",
         "simActive",
         "syncNow",
+        "sectionApi",
+        "serverLabel",
+        "tokenConfigured",
+        "tokenMissing",
+        "tokenPlaceholder",
+        "tokenSave",
+        "tokenClear",
+        "tokenSavedConfirmation",
         "sectionDiagnostics",
         "sectionAbout",
         "savedPlacesTitle",
@@ -213,6 +221,30 @@
           "$ref": "#/$defs/CopyString"
         },
         "syncNow": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "sectionApi": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "serverLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tokenConfigured": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tokenMissing": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tokenPlaceholder": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tokenSave": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tokenClear": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "tokenSavedConfirmation": {
           "$ref": "#/$defs/CopyString"
         },
         "sectionDiagnostics": {

@@ -75,6 +75,14 @@ export interface AppSettings {
   realActive: string;
   simActive: string;
   syncNow: string;
+  sectionApi: string;
+  serverLabel: string;
+  tokenConfigured: string;
+  tokenMissing: string;
+  tokenPlaceholder: string;
+  tokenSave: string;
+  tokenClear: string;
+  tokenSavedConfirmation: string;
   sectionDiagnostics: string;
   sectionAbout: string;
   savedPlacesTitle: string;
