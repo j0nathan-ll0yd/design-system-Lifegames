@@ -67,16 +67,8 @@ function stubAsyncViewTransition(): () => void {
     }) as MediaQueryList;
 
   return () => {
-    if (originalStart) {
-      doc.startViewTransition = originalStart;
-    } else {
-      delete doc.startViewTransition;
-    }
-    if (originalMatchMedia) {
-      win.matchMedia = originalMatchMedia;
-    } else {
-      delete win.matchMedia;
-    }
+    doc.startViewTransition = originalStart;
+    win.matchMedia = originalMatchMedia;
   };
 }
 
