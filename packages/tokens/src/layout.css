@@ -860,12 +860,13 @@
 
     /* Compact-widget density: heart-rate/hydration stretched full-width when the
        body column stacked single-file below 768px. Apply the same two-column
-       body bento as the 768-1100 tablet breakpoint down to 375px so the body
-       cards pair up. `.triptych-column-body` stays a flex column (header above
-       the bento); only `.body-bento`/`.body-bento-col` are re-declared, which
-       overrides the base `display: contents`. Below 375px the micro-mobile
-       single column (max-width: 374) takes over. */
-    @media (min-width: 375px) and (max-width: 767px) {
+       body bento as the 768-1100 tablet breakpoint down to 600px so the body
+       cards pair up on large/landscape phones. `.triptych-column-body` stays a
+       flex column (header above the bento); only `.body-bento`/`.body-bento-col`
+       are re-declared, which overrides the base `display: contents`. Below 600px
+       (incl. ~390px portrait phones) the base single-column `display: contents`
+       applies. */
+    @media (min-width: 600px) and (max-width: 767px) {
       .body-bento {
         display: flex;
         gap: var(--space-12);

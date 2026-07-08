@@ -379,10 +379,17 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
 
   const PAGE_SIZE = 10;
   const totalPages = Math.ceil(articles.length / PAGE_SIZE);
-  let currentPage = 1;
+  const bodyEl = body as HTMLElement;
+
+  // The reader's page is persisted on the widget-body element across poll-tick
+  // re-invocations (dataset.currentPage is the single source of truth). Restore
+  // it clamped so a tick that shrinks the feed never renders an empty slice.
+  const persisted = Math.min(Number(bodyEl.dataset.currentPage) || 1, totalPages);
+  let currentPage = persisted;
 
   function renderPage(page: number): void {
     if (!body) return;
+    bodyEl.dataset.currentPage = String(page);
     const start = (page - 1) * PAGE_SIZE;
     const pageArticles = articles.slice(start, start + PAGE_SIZE);
 
@@ -446,26 +453,35 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
     }
 
     // Crossfade the article list swap on live-data refreshes and pagination
-    // clicks — visually signals "content arriving/changing".
-    const bodyEl = body as HTMLElement;
+    // clicks — visually signals "content arriving/changing". The swap is async
+    // (document.startViewTransition), so the button nodes it produces are not
+    // available synchronously; a single delegated listener on the persistent
+    // widget-body (below) handles clicks instead of per-button listeners.
     withViewTransition(() => {
       bodyEl.style.viewTransitionName = 'live-content-swap';
       body.innerHTML = html;
       bodyEl.style.viewTransitionName = '';
     });
+  }
 
-    if (totalPages > 1) {
-      const buttons = body.querySelectorAll('.article-page-btn');
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const targetPage = parseInt((btn as HTMLElement).dataset.page || '1', 10);
-          if (targetPage !== currentPage) {
-            currentPage = targetPage;
-            renderPage(currentPage);
-          }
-        });
-      });
-    }
+  // Bind exactly one delegated click listener on the persistent .widget-body.
+  // renderPage only ever sets body.innerHTML — it never replaces this element —
+  // so the listener survives every async list swap and every poll-tick
+  // re-invocation. The idempotency flag mirrors the dataset.liveUpdated pattern
+  // used elsewhere in this module.
+  if (!bodyEl.dataset.paginationBound) {
+    bodyEl.addEventListener('click', (e: Event) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest('.article-page-btn');
+      if (!btn) return;
+      const targetPage = parseInt((btn as HTMLElement).dataset.page || '1', 10);
+      // dataset.currentPage is the single source of truth (not the active class).
+      if (String(targetPage) !== bodyEl.dataset.currentPage) {
+        renderPage(targetPage);
+      }
+    });
+    bodyEl.dataset.paginationBound = '1';
   }
 
   renderPage(currentPage);
