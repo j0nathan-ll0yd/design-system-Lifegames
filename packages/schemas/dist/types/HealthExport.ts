@@ -22,4 +22,9 @@ export interface HealthExport {
     sunsetHHmm: string;
     currentProgressPct: number;
   };
+  watch?: {
+    worn: boolean;
+    since?: string | null;
+    source: 'charging' | 'hrGap';
+  };
 }

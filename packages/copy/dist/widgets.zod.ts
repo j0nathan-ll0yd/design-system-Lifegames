@@ -24,6 +24,17 @@ export const widgetsSchema = z
         zoneFatBurn: z.string(),
         zonePeak: z.string(),
         timestampLive: z.string(),
+        paused: z
+          .object({
+            label: z.string(),
+            labelCharging: z.string(),
+            description: z.string(),
+            descriptionCharging: z.string(),
+          })
+          .strict()
+          .describe(
+            'Paused-state badge strings for the Heart Rate widget (watch off or charging).',
+          ),
       })
       .strict()
       .describe(
@@ -45,6 +56,17 @@ export const widgetsSchema = z
         daylightCaption: z.string(),
         daylightGoal: z.string(),
         timestampToday: z.string(),
+        paused: z
+          .object({
+            label: z.string(),
+            labelCharging: z.string(),
+            description: z.string(),
+            descriptionCharging: z.string(),
+          })
+          .strict()
+          .describe(
+            'Paused-state badge strings for the Movement Rings widget (watch off or charging).',
+          ),
       })
       .strict()
       .describe(

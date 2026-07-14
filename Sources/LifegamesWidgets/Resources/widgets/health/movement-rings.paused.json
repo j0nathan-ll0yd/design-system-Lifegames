@@ -1,0 +1,18 @@
+{
+  "health": {
+    "movement": {
+      "moveKcal": 210,
+      "exerciseMin": 18,
+      "standHr": 5,
+      "steps": 4200,
+      "distanceMeters": 3100,
+      "flights": 6,
+      "daylightMin": 22
+    },
+    "watch": {
+      "worn": false,
+      "since": null,
+      "source": "hrGap"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "health": {
+    "quantities": {
+      "heartRate": { "value": 62, "unit": "count/min" },
+      "hrvSDNN": { "value": 45, "unit": "ms" }
+    },
+    "watch": {
+      "worn": false,
+      "since": null,
+      "source": "charging"
+    }
+  }
+}

@@ -45,7 +45,8 @@
         "zoneNormal",
         "zoneFatBurn",
         "zonePeak",
-        "timestampLive"
+        "timestampLive",
+        "paused"
       ],
       "properties": {
         "title": {
@@ -95,6 +96,18 @@
         },
         "timestampLive": {
           "$ref": "#/$defs/CopyString"
+        },
+        "paused": {
+          "type": "object",
+          "description": "Paused-state badge strings for the Heart Rate widget (watch off or charging).",
+          "additionalProperties": false,
+          "required": ["label", "labelCharging", "description", "descriptionCharging"],
+          "properties": {
+            "label": { "$ref": "#/$defs/CopyString" },
+            "labelCharging": { "$ref": "#/$defs/CopyString" },
+            "description": { "$ref": "#/$defs/CopyString" },
+            "descriptionCharging": { "$ref": "#/$defs/CopyString" }
+          }
         }
       }
     },
@@ -116,7 +129,8 @@
         "empty",
         "daylightCaption",
         "daylightGoal",
-        "timestampToday"
+        "timestampToday",
+        "paused"
       ],
       "properties": {
         "title": {
@@ -160,6 +174,18 @@
         },
         "timestampToday": {
           "$ref": "#/$defs/CopyString"
+        },
+        "paused": {
+          "type": "object",
+          "description": "Paused-state badge strings for the Movement Rings widget (watch off or charging).",
+          "additionalProperties": false,
+          "required": ["label", "labelCharging", "description", "descriptionCharging"],
+          "properties": {
+            "label": { "$ref": "#/$defs/CopyString" },
+            "labelCharging": { "$ref": "#/$defs/CopyString" },
+            "description": { "$ref": "#/$defs/CopyString" },
+            "descriptionCharging": { "$ref": "#/$defs/CopyString" }
+          }
         }
       }
     },

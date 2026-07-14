@@ -540,15 +540,18 @@ public extension Exploration {
 // MARK: - HeartRate
 public struct HeartRate: Codable, Sendable {
     public let bpm, empty, hrv, hrvUnit: String
+    /// Paused-state badge strings for the Heart Rate widget (watch off or charging).
+    public let paused: HeartRatePaused
     public let rhr, rhrUnit, rr, rrUnit: String
     public let temp, timestampLive, title, zoneBradycardia: String
     public let zoneFatBurn, zoneNormal, zonePeak, zoneResting: String
 
-    public init(bpm: String, empty: String, hrv: String, hrvUnit: String, rhr: String, rhrUnit: String, rr: String, rrUnit: String, temp: String, timestampLive: String, title: String, zoneBradycardia: String, zoneFatBurn: String, zoneNormal: String, zonePeak: String, zoneResting: String) {
+    public init(bpm: String, empty: String, hrv: String, hrvUnit: String, paused: HeartRatePaused, rhr: String, rhrUnit: String, rr: String, rrUnit: String, temp: String, timestampLive: String, title: String, zoneBradycardia: String, zoneFatBurn: String, zoneNormal: String, zonePeak: String, zoneResting: String) {
         self.bpm = bpm
         self.empty = empty
         self.hrv = hrv
         self.hrvUnit = hrvUnit
+        self.paused = paused
         self.rhr = rhr
         self.rhrUnit = rhrUnit
         self.rr = rr
@@ -587,6 +590,7 @@ public extension HeartRate {
         empty: String? = nil,
         hrv: String? = nil,
         hrvUnit: String? = nil,
+        paused: HeartRatePaused? = nil,
         rhr: String? = nil,
         rhrUnit: String? = nil,
         rr: String? = nil,
@@ -605,6 +609,7 @@ public extension HeartRate {
             empty: empty ?? self.empty,
             hrv: hrv ?? self.hrv,
             hrvUnit: hrvUnit ?? self.hrvUnit,
+            paused: paused ?? self.paused,
             rhr: rhr ?? self.rhr,
             rhrUnit: rhrUnit ?? self.rhrUnit,
             rr: rr ?? self.rr,
@@ -617,6 +622,60 @@ public extension HeartRate {
             zoneNormal: zoneNormal ?? self.zoneNormal,
             zonePeak: zonePeak ?? self.zonePeak,
             zoneResting: zoneResting ?? self.zoneResting
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Paused-state badge strings for the Heart Rate widget (watch off or charging).
+// MARK: - HeartRatePaused
+public struct HeartRatePaused: Codable, Sendable {
+    public let description, descriptionCharging, label, labelCharging: String
+
+    public init(description: String, descriptionCharging: String, label: String, labelCharging: String) {
+        self.description = description
+        self.descriptionCharging = descriptionCharging
+        self.label = label
+        self.labelCharging = labelCharging
+    }
+}
+
+// MARK: HeartRatePaused convenience initializers and mutators
+
+public extension HeartRatePaused {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(HeartRatePaused.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        description: String? = nil,
+        descriptionCharging: String? = nil,
+        label: String? = nil,
+        labelCharging: String? = nil
+    ) -> HeartRatePaused {
+        return HeartRatePaused(
+            description: description ?? self.description,
+            descriptionCharging: descriptionCharging ?? self.descriptionCharging,
+            label: label ?? self.label,
+            labelCharging: labelCharging ?? self.labelCharging
         )
     }
 
@@ -747,10 +806,12 @@ public extension IdentityCard {
 public struct Movement: Codable, Sendable {
     public let calories, caloriesShort, daylightCaption, daylightGoal: String
     public let distance, distanceUnit, empty, exercise: String
-    public let exerciseShort, flights, stand, steps: String
-    public let timestampToday, title: String
+    public let exerciseShort, flights: String
+    /// Paused-state badge strings for the Movement Rings widget (watch off or charging).
+    public let paused: MovementPaused
+    public let stand, steps, timestampToday, title: String
 
-    public init(calories: String, caloriesShort: String, daylightCaption: String, daylightGoal: String, distance: String, distanceUnit: String, empty: String, exercise: String, exerciseShort: String, flights: String, stand: String, steps: String, timestampToday: String, title: String) {
+    public init(calories: String, caloriesShort: String, daylightCaption: String, daylightGoal: String, distance: String, distanceUnit: String, empty: String, exercise: String, exerciseShort: String, flights: String, paused: MovementPaused, stand: String, steps: String, timestampToday: String, title: String) {
         self.calories = calories
         self.caloriesShort = caloriesShort
         self.daylightCaption = daylightCaption
@@ -761,6 +822,7 @@ public struct Movement: Codable, Sendable {
         self.exercise = exercise
         self.exerciseShort = exerciseShort
         self.flights = flights
+        self.paused = paused
         self.stand = stand
         self.steps = steps
         self.timestampToday = timestampToday
@@ -797,6 +859,7 @@ public extension Movement {
         exercise: String? = nil,
         exerciseShort: String? = nil,
         flights: String? = nil,
+        paused: MovementPaused? = nil,
         stand: String? = nil,
         steps: String? = nil,
         timestampToday: String? = nil,
@@ -813,10 +876,65 @@ public extension Movement {
             exercise: exercise ?? self.exercise,
             exerciseShort: exerciseShort ?? self.exerciseShort,
             flights: flights ?? self.flights,
+            paused: paused ?? self.paused,
             stand: stand ?? self.stand,
             steps: steps ?? self.steps,
             timestampToday: timestampToday ?? self.timestampToday,
             title: title ?? self.title
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Paused-state badge strings for the Movement Rings widget (watch off or charging).
+// MARK: - MovementPaused
+public struct MovementPaused: Codable, Sendable {
+    public let description, descriptionCharging, label, labelCharging: String
+
+    public init(description: String, descriptionCharging: String, label: String, labelCharging: String) {
+        self.description = description
+        self.descriptionCharging = descriptionCharging
+        self.label = label
+        self.labelCharging = labelCharging
+    }
+}
+
+// MARK: MovementPaused convenience initializers and mutators
+
+public extension MovementPaused {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(MovementPaused.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        description: String? = nil,
+        descriptionCharging: String? = nil,
+        label: String? = nil,
+        labelCharging: String? = nil
+    ) -> MovementPaused {
+        return MovementPaused(
+            description: description ?? self.description,
+            descriptionCharging: descriptionCharging ?? self.descriptionCharging,
+            label: label ?? self.label,
+            labelCharging: labelCharging ?? self.labelCharging
         )
     }
 

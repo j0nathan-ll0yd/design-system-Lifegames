@@ -15,7 +15,13 @@
     "zoneNormal": "Normal Zone",
     "zoneFatBurn": "Fat Burn",
     "zonePeak": "Peak Zone",
-    "timestampLive": "live"
+    "timestampLive": "live",
+    "paused": {
+      "label": "Watch off",
+      "labelCharging": "Watch charging",
+      "description": "Heart-rate tracking paused while the watch is off the wrist.",
+      "descriptionCharging": "Heart-rate tracking paused while the watch is charging."
+    }
   },
   "movement": {
     "title": "Movement",
@@ -31,7 +37,13 @@
     "empty": "No movement logged yet.",
     "daylightCaption": "{minutes} min in daylight today",
     "daylightGoal": "goal {minutes} min",
-    "timestampToday": "today"
+    "timestampToday": "today",
+    "paused": {
+      "label": "Watch off",
+      "labelCharging": "Watch charging",
+      "description": "Movement tracking paused while the watch is off the wrist.",
+      "descriptionCharging": "Movement tracking paused while the watch is charging."
+    }
   },
   "workouts": {
     "title": "Workouts",

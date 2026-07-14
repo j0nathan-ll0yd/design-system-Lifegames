@@ -2,6 +2,9 @@
 // Fixture validation lives at @lifegames/schemas (consumer-aggregate shapes).
 // Per-widget DS schemas are a deferred follow-up plan.
 
+import type { WatchState } from '../../../runtime/adapters';
+export type { WatchState };
+
 export interface MovementRingsProps {
   health: {
     quantities: {
@@ -25,5 +28,6 @@ export interface MovementRingsProps {
       sunsetHHmm: string; // "20:15"
       currentProgressPct: number; // 0-100, position along sun arc
     };
+    watch?: WatchState;
   };
 }

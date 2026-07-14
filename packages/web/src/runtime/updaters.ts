@@ -63,6 +63,38 @@ export function updateHeartRate(data: AdaptedHealth): void {
   const zone = classifyHeartRate(hr);
   const hrvStyle = classifyHRV(hrv);
 
+  const card = document.getElementById('cardHR');
+
+  // Paused state: watch worn=false means the watch is off wrist or charging.
+  // We still remove is-loading (D-SMOKE: hydration must complete regardless).
+  // Update overlay copy in case source (charging vs hrGap) changes on re-poll.
+  const isCharging = data.watch?.source === 'charging';
+  const isPaused = data.watch?.worn === false;
+
+  const pausedEl = document.getElementById('hrPaused');
+  if (isPaused) {
+    const labelEl = document.getElementById('hrPausedLabel');
+    if (labelEl) {
+      labelEl.textContent = isCharging
+        ? widgets.heartRate.paused.labelCharging
+        : widgets.heartRate.paused.label;
+    }
+    const descEl = document.getElementById('hrPausedDesc');
+    if (descEl) {
+      descEl.textContent = isCharging
+        ? widgets.heartRate.paused.descriptionCharging
+        : widgets.heartRate.paused.description;
+    }
+    if (pausedEl) pausedEl.style.display = '';
+    card?.classList.add('is-paused');
+    card?.classList.remove('is-loading');
+    return;
+  }
+
+  // Not paused — ensure overlay is hidden and is-paused removed (recovery path).
+  if (pausedEl) pausedEl.style.display = 'none';
+  card?.classList.remove('is-paused');
+
   const bpm = document.getElementById('pulseBpm');
   if (bpm) {
     bpm.textContent = hasHr ? String(hr) : '—';
@@ -96,7 +128,6 @@ export function updateHeartRate(data: AdaptedHealth): void {
     ecgBg.style.opacity = String(zone.ecgOpacity);
   }
 
-  const card = document.getElementById('cardHR');
   if (card) {
     card.classList.remove(...ACCENT_CLASSES);
     card.classList.add(zone.accentClass);

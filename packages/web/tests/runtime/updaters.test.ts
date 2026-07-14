@@ -204,6 +204,80 @@ describe('updateHeartRate', () => {
     expect(ecgUpdate).toHaveBeenCalledWith(72, 45, expect.any(String));
     delete (window as any).__ecgUpdate;
   });
+
+  describe('paused state (watch.worn === false)', () => {
+    beforeEach(() => {
+      document.body.innerHTML = `
+        <div id="hrPaused" style="display:none">
+          <span id="hrPausedLabel"></span>
+          <span id="hrPausedDesc"></span>
+        </div>
+        <div id="pulseBpm"></div>
+        <div id="hrZoneBadge"></div>
+        <div id="hrHrvValue"></div>
+        <div id="hrEcgBg"></div>
+        <div id="cardHR" class="tri-card is-loading tri-card-accent-blue"></div>
+      `;
+    });
+
+    it('shows hrGap label when source is hrGap', () => {
+      const data: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'hrGap' },
+      };
+      updateHeartRate(data);
+      expect(el('hrPausedLabel').textContent).toBe(widgets.heartRate.paused.label);
+    });
+
+    it('shows charging label when source is charging', () => {
+      const data: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'charging' },
+      };
+      updateHeartRate(data);
+      expect(el('hrPausedLabel').textContent).toBe(widgets.heartRate.paused.labelCharging);
+    });
+
+    it('shows charging description when source is charging', () => {
+      const data: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'charging' },
+      };
+      updateHeartRate(data);
+      expect(el('hrPausedDesc').textContent).toBe(widgets.heartRate.paused.descriptionCharging);
+    });
+
+    it('adds is-paused class to cardHR', () => {
+      const data: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'hrGap' },
+      };
+      updateHeartRate(data);
+      expect(el('cardHR').classList.contains('is-paused')).toBe(true);
+    });
+
+    it('still removes is-loading when paused (D-SMOKE)', () => {
+      const data: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'hrGap' },
+      };
+      updateHeartRate(data);
+      expect(el('cardHR').classList.contains('is-loading')).toBe(false);
+    });
+
+    it('removes is-paused on recovery (worn becomes true)', () => {
+      // First call — paused
+      const paused: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'hrGap' },
+      };
+      updateHeartRate(paused);
+      expect(el('cardHR').classList.contains('is-paused')).toBe(true);
+      // Second call — recovered (no watch field = worn)
+      updateHeartRate(makeHealth());
+      expect(el('cardHR').classList.contains('is-paused')).toBe(false);
+    });
+  });
 });
 
 // ── updateWorkouts ─────────────────────────────────────────────────────────────

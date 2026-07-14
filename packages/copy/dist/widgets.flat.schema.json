@@ -56,6 +56,26 @@
         },
         "timestampLive": {
           "type": "string"
+        },
+        "paused": {
+          "type": "object",
+          "description": "Paused-state badge strings for the Heart Rate widget (watch off or charging).",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "labelCharging": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "descriptionCharging": {
+              "type": "string"
+            }
+          },
+          "required": ["label", "labelCharging", "description", "descriptionCharging"],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -74,7 +94,8 @@
         "zoneNormal",
         "zoneFatBurn",
         "zonePeak",
-        "timestampLive"
+        "timestampLive",
+        "paused"
       ],
       "additionalProperties": false
     },
@@ -123,6 +144,26 @@
         },
         "timestampToday": {
           "type": "string"
+        },
+        "paused": {
+          "type": "object",
+          "description": "Paused-state badge strings for the Movement Rings widget (watch off or charging).",
+          "properties": {
+            "label": {
+              "type": "string"
+            },
+            "labelCharging": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "descriptionCharging": {
+              "type": "string"
+            }
+          },
+          "required": ["label", "labelCharging", "description", "descriptionCharging"],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -139,7 +180,8 @@
         "empty",
         "daylightCaption",
         "daylightGoal",
-        "timestampToday"
+        "timestampToday",
+        "paused"
       ],
       "additionalProperties": false
     },

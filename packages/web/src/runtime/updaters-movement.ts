@@ -1,5 +1,6 @@
 // Movement Rings widget + Heart Rate footer-vitals strip updaters.
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
+import { widgets } from '@lifegames/copy';
 import type { AdaptedHealth } from './adapters';
 
 // Default goals — kept in sync with MovementRings.astro SSR defaults.
@@ -47,6 +48,35 @@ function setText(id: string, text: string): void {
 export function updateMovementRings(data: AdaptedHealth): void {
   const card = document.getElementById('cardMovement');
   if (!card) return;
+
+  // Paused state: watch worn=false means the watch is off wrist or charging.
+  // We still remove is-loading (D-SMOKE: hydration must complete regardless).
+  const isPaused = data.watch?.worn === false;
+  const isCharging = data.watch?.source === 'charging';
+
+  const pausedEl = document.getElementById('mvPaused');
+  if (isPaused) {
+    const labelEl = document.getElementById('mvPausedLabel');
+    if (labelEl) {
+      labelEl.textContent = isCharging
+        ? widgets.movement.paused.labelCharging
+        : widgets.movement.paused.label;
+    }
+    const descEl = document.getElementById('mvPausedDesc');
+    if (descEl) {
+      descEl.textContent = isCharging
+        ? widgets.movement.paused.descriptionCharging
+        : widgets.movement.paused.description;
+    }
+    if (pausedEl) pausedEl.style.display = '';
+    card.classList.add('is-paused');
+    card.classList.remove('is-loading');
+    return;
+  }
+
+  // Not paused — ensure overlay is hidden and is-paused removed (recovery path).
+  if (pausedEl) pausedEl.style.display = 'none';
+  card.classList.remove('is-paused');
 
   const q = data.quantities;
 

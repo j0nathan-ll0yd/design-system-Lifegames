@@ -106,6 +106,12 @@ export interface GithubStarredReposExport {
   }[];
 }
 
+export interface HealthExportWatch {
+  worn: boolean;
+  since?: string | null;
+  source: 'charging' | 'hrGap';
+}
+
 export interface HealthExport {
   date: string;
   generatedAt: string;
@@ -115,6 +121,9 @@ export interface HealthExport {
       unit: string;
     };
   };
+  // Server-computed worn verdict. Absent = unknown or worn (normal render).
+  // Present with worn=false = watch off/charging; render paused state.
+  watch?: HealthExportWatch;
 }
 
 export interface SleepExport {
