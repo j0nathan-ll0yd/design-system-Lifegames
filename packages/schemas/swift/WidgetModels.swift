@@ -687,6 +687,7 @@ struct HealthExport: Codable {
     let lastSync: String?
     let quantities: [String: Quantity]
     let solar: Solar?
+    let watch: Watch?
 }
 
 // MARK: HealthExport convenience initializers and mutators
@@ -713,7 +714,8 @@ extension HealthExport {
         goals: Goals?? = nil,
         lastSync: String?? = nil,
         quantities: [String: Quantity]? = nil,
-        solar: Solar?? = nil
+        solar: Solar?? = nil,
+        watch: Watch?? = nil
     ) -> HealthExport {
         return HealthExport(
             date: date ?? self.date,
@@ -721,7 +723,8 @@ extension HealthExport {
             goals: goals ?? self.goals,
             lastSync: lastSync ?? self.lastSync,
             quantities: quantities ?? self.quantities,
-            solar: solar ?? self.solar
+            solar: solar ?? self.solar,
+            watch: watch ?? self.watch
         )
     }
 
@@ -867,6 +870,57 @@ extension Solar {
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
         return String(data: try self.jsonData(), encoding: encoding)
     }
+}
+
+// MARK: - Watch
+struct Watch: Codable {
+    let since: String?
+    let source: Source
+    let worn: Bool
+}
+
+// MARK: Watch convenience initializers and mutators
+
+extension Watch {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(Watch.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        since: String?? = nil,
+        source: Source? = nil,
+        worn: Bool? = nil
+    ) -> Watch {
+        return Watch(
+            since: since ?? self.since,
+            source: source ?? self.source,
+            worn: worn ?? self.worn
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+enum Source: String, Codable {
+    case charging = "charging"
+    case hrGap = "hrGap"
 }
 
 // MARK: - Helper functions for creating encoders and decoders
@@ -1449,7 +1503,7 @@ extension Rem {
 struct TheatreReviewsExport: Codable {
     let generatedAt: String
     let reviews: [Review]
-    let source: Source
+    let source: TheatreReviewsExportSource
     let totalReviews: Double
 }
 
@@ -1474,7 +1528,7 @@ extension TheatreReviewsExport {
     func with(
         generatedAt: String? = nil,
         reviews: [Review]? = nil,
-        source: Source? = nil,
+        source: TheatreReviewsExportSource? = nil,
         totalReviews: Double? = nil
     ) -> TheatreReviewsExport {
         return TheatreReviewsExport(
@@ -1567,7 +1621,7 @@ extension Review {
     }
 }
 
-enum Source: String, Codable {
+enum TheatreReviewsExportSource: String, Codable {
     case coasttocoastreviewsCOM = "coasttocoastreviews.com"
 }
 
@@ -1938,6 +1992,7 @@ struct DashboardHealth: Codable {
     /// Composite sleep quality score (0-100).
     let sleepScore: Double?
     let solar: Solar?
+    let watch: Watch?
     /// List of workout records for the day. Empty array when no workouts were logged.
     let workouts: [DashboardHealthWorkout]
 }
@@ -1974,6 +2029,7 @@ extension DashboardHealth {
         sleepPhaseFormatted: SleepPhaseFormatted?? = nil,
         sleepScore: Double?? = nil,
         solar: Solar?? = nil,
+        watch: Watch?? = nil,
         workouts: [DashboardHealthWorkout]? = nil
     ) -> DashboardHealth {
         return DashboardHealth(
@@ -1990,6 +2046,7 @@ extension DashboardHealth {
             sleepPhaseFormatted: sleepPhaseFormatted ?? self.sleepPhaseFormatted,
             sleepScore: sleepScore ?? self.sleepScore,
             solar: solar ?? self.solar,
+            watch: watch ?? self.watch,
             workouts: workouts ?? self.workouts
         )
     }

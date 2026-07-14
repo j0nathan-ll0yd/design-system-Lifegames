@@ -24,6 +24,11 @@ export interface DashboardHealth {
     sunsetHHmm: string;
     currentProgressPct: number;
   };
+  watch?: {
+    worn: boolean;
+    since?: string | null;
+    source: 'charging' | 'hrGap';
+  };
   /**
    * Sleep phase breakdown keyed by phase name, each with a duration in seconds.
    */

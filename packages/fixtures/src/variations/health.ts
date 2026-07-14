@@ -89,6 +89,13 @@ export const full: HealthExport = createHealthFixture({
     sunsetHHmm: '20:42',
     currentProgressPct: 85,
   },
+  // watch: optional server-computed worn verdict. Present in `full` so
+  // check:full-coverage verifies both the `watch` key and `watch.since`.
+  watch: {
+    worn: false,
+    since: isoTimestamp(),
+    source: 'hrGap' as const,
+  },
 });
 
 export const healthVariations = {

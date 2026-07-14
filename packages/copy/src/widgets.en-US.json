@@ -276,6 +276,70 @@
         },
         "rationale": "Kept as a per-widget timestamp key (not shared) so each widget's badge can diverge independently later."
       }
+    },
+    "paused": {
+      "label": {
+        "value": "Watch off",
+        "_meta": {
+          "description": "Short badge label for the Heart Rate paused overlay when the watch has been off the wrist past the staleness cutoff (source: hrGap).",
+          "usage": [
+            "web:packages/web/src/widgets/health/HeartRate.astro (.hr-paused-label, hrGap path)",
+            "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift (paused overlay label, hrGap path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "constraints": { "maxChars": 20 },
+          "rationale": "Terse badge; full meaning carried by heartRate.paused.description. creative-license, tweakable."
+        }
+      },
+      "labelCharging": {
+        "value": "Watch charging",
+        "_meta": {
+          "description": "Short badge label for the Heart Rate paused overlay when the watch is on the charger (source: charging). Distinct wording sets a positive expectation: the watch will resume.",
+          "usage": [
+            "web:packages/web/src/widgets/health/HeartRate.astro (.hr-paused-label, charging path)",
+            "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift (paused overlay label, charging path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "constraints": { "maxChars": 20 },
+          "rationale": "Separate from heartRate.paused.label so each source variant can evolve independently. creative-license, tweakable."
+        }
+      },
+      "description": {
+        "value": "Heart-rate tracking paused while the watch is off the wrist.",
+        "_meta": {
+          "description": "Full accessible description for the Heart Rate paused overlay (hrGap source). Used as aria-label (web) and accessibilityLabel (iOS).",
+          "usage": [
+            "web:packages/web/src/widgets/health/HeartRate.astro (role=status aria-label, hrGap path)",
+            "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift (.accessibilityLabel, hrGap path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "rationale": "Screen-reader announcement for the paused live-region. creative-license, tweakable."
+        }
+      },
+      "descriptionCharging": {
+        "value": "Heart-rate tracking paused while the watch is charging.",
+        "_meta": {
+          "description": "Full accessible description for the Heart Rate paused overlay (charging source). Used as aria-label (web) and accessibilityLabel (iOS).",
+          "usage": [
+            "web:packages/web/src/widgets/health/HeartRate.astro (role=status aria-label, charging path)",
+            "ios:Sources/LifegamesWidgets/Health/HeartRateView.swift (.accessibilityLabel, charging path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "rationale": "Distinct from heartRate.paused.description to accurately name the cause. creative-license, tweakable."
+        }
+      }
     }
   },
   "movement": {
@@ -500,6 +564,70 @@
         "lastReviewed": "2026-06-11",
         "constraints": {
           "maxChars": 12
+        }
+      }
+    },
+    "paused": {
+      "label": {
+        "value": "Watch off",
+        "_meta": {
+          "description": "Short badge label for the Movement Rings paused overlay when the watch has been off the wrist past the staleness cutoff (source: hrGap).",
+          "usage": [
+            "web:packages/web/src/widgets/health/MovementRings.astro (.mv-paused-label, hrGap path)",
+            "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift (paused overlay label, hrGap path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "constraints": { "maxChars": 20 },
+          "rationale": "Terse badge; full meaning carried by movement.paused.description. creative-license, tweakable."
+        }
+      },
+      "labelCharging": {
+        "value": "Watch charging",
+        "_meta": {
+          "description": "Short badge label for the Movement Rings paused overlay when the watch is on the charger (source: charging).",
+          "usage": [
+            "web:packages/web/src/widgets/health/MovementRings.astro (.mv-paused-label, charging path)",
+            "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift (paused overlay label, charging path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "constraints": { "maxChars": 20 },
+          "rationale": "Separate from movement.paused.label so each source variant can evolve independently. creative-license, tweakable."
+        }
+      },
+      "description": {
+        "value": "Movement tracking paused while the watch is off the wrist.",
+        "_meta": {
+          "description": "Full accessible description for the Movement Rings paused overlay (hrGap source). Used as aria-label (web) and accessibilityLabel (iOS).",
+          "usage": [
+            "web:packages/web/src/widgets/health/MovementRings.astro (role=status aria-label, hrGap path)",
+            "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift (.accessibilityLabel, hrGap path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "rationale": "Screen-reader announcement for the Movement paused live-region. creative-license, tweakable."
+        }
+      },
+      "descriptionCharging": {
+        "value": "Movement tracking paused while the watch is charging.",
+        "_meta": {
+          "description": "Full accessible description for the Movement Rings paused overlay (charging source). Used as aria-label (web) and accessibilityLabel (iOS).",
+          "usage": [
+            "web:packages/web/src/widgets/health/MovementRings.astro (role=status aria-label, charging path)",
+            "ios:Sources/LifegamesWidgets/Health/MovementRingsView.swift (.accessibilityLabel, charging path)"
+          ],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-07-14",
+          "rationale": "Distinct from movement.paused.description to accurately name the cause. creative-license, tweakable."
         }
       }
     }

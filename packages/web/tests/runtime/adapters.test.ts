@@ -270,6 +270,29 @@ describe('adaptHealth', () => {
     const result = adaptHealth(makeHealth(), makeSleep());
     expect(result.sleepScore).toBe(82);
   });
+
+  it('passes watch field through when present (F8 adapter passthrough)', () => {
+    const health: HealthExport = {
+      ...makeHealth(),
+      watch: { worn: false, since: null, source: 'hrGap' },
+    };
+    const result = adaptHealth(health, makeSleep());
+    expect(result.watch).toEqual({ worn: false, since: null, source: 'hrGap' });
+  });
+
+  it('passes watch.source=charging through', () => {
+    const health: HealthExport = {
+      ...makeHealth(),
+      watch: { worn: false, since: null, source: 'charging' },
+    };
+    const result = adaptHealth(health, makeSleep());
+    expect(result.watch?.source).toBe('charging');
+  });
+
+  it('watch is undefined when absent in health export', () => {
+    const result = adaptHealth(makeHealth(), makeSleep());
+    expect(result.watch).toBeUndefined();
+  });
 });
 
 // ── adaptSleep ────────────────────────────────────────────────────

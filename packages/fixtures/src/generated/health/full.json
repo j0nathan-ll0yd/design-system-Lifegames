@@ -15,5 +15,6 @@
     "appleSleepingWristTemperature": { "value": 0.8, "unit": "degC" }
   },
   "goals": { "moveKcal": 750, "exerciseMin": 60, "standHr": 14, "daylightMin": 30 },
-  "solar": { "sunriseHHmm": "05:48", "sunsetHHmm": "20:42", "currentProgressPct": 85 }
+  "solar": { "sunriseHHmm": "05:48", "sunsetHHmm": "20:42", "currentProgressPct": 85 },
+  "watch": { "worn": false, "since": "2026-03-18T12:00:00.000Z", "source": "hrGap" }
 }

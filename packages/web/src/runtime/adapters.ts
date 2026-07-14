@@ -7,6 +7,7 @@ import {
 } from './sleep';
 import type {
   HealthExport,
+  HealthExportWatch,
   SleepExport,
   WorkoutsExport,
   BooksExport,
@@ -21,6 +22,10 @@ export interface HealthQuantity {
   value: number;
   unit: string;
 }
+
+// Re-export so widget types can import WatchState from adapters without
+// depending directly on the exports layer.
+export type { HealthExportWatch as WatchState };
 
 export interface AdaptedHealth {
   date: string;
@@ -44,6 +49,10 @@ export interface AdaptedHealth {
     caffeineRangeLo: number;
     caffeineRangeHi: number;
   };
+  // watch is the server-computed worn verdict from device_watch_state.
+  // Absent means unknown (no device has ever reported) or watch is worn.
+  // Present with worn=false means the widget should render the paused state.
+  watch?: HealthExportWatch;
 }
 
 export interface AdaptedSleep {
@@ -218,7 +227,10 @@ export function adaptHealth(
     corePct = pcts.corePct;
   }
 
-  // 8+9. Build result matching health.json shape
+  // 8+9. Build result matching health.json shape.
+  // IMPORTANT: adaptHealth builds an explicit field list — unknown fields are
+  // silently dropped (finding F8). `watch` must be listed here explicitly or it
+  // never reaches the updaters even when the health export carries it.
   return {
     date: healthData.date,
     quantities: q,
@@ -232,6 +244,7 @@ export function adaptHealth(
     sleepDurationFormatted,
     sleepPhaseFormatted,
     hydration,
+    watch: healthData.watch,
   };
 }
 

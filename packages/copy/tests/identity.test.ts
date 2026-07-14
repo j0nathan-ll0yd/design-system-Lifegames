@@ -63,7 +63,7 @@ interface NamespaceFixture {
 const NAMESPACES: NamespaceFixture[] = [
   // identity: person 16 + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5) + privacy 16 (title/lastUpdated/lastUpdatedLabel/backLink/whoHeading/dataDisplayedHeading/dataCollectedHeading/analyticsHeading/rightsHeading/changesHeading/who/dataDisplayed/dataCollected/analytics/rights/changes).
   { name: 'identity', expectedLeaves: 56 },
-  // widgets: heartRate 16 + movement 14 + workouts 10 + hydration 4 + nightSummary 9
+  // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
   //   + systemStatus 4 (title/valueActive/valueOffline/timestampRealtime)
@@ -76,7 +76,8 @@ const NAMESPACES: NamespaceFixture[] = [
   //   + coffee 15 (sipping/caffeineUnit/thisCup/dailyLabel/searching + action ×4
   //     [connect/reconnect/finishCup/newCup] + badge ×3 [connect/connected/error]
   //     + beverage ×3 [drip/espresso/coldBrew]).
-  { name: 'widgets', expectedLeaves: 138 },
+  //   heartRate and movement each gained +4 paused leaves (label/labelCharging/description/descriptionCharging).
+  { name: 'widgets', expectedLeaves: 146 },
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1
   //   + coffee 8 (mug/caffeineThisCup/dailyCaffeine + action ×5

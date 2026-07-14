@@ -90,6 +90,30 @@
       "required": ["sunriseHHmm", "sunsetHHmm", "currentProgressPct"],
       "additionalProperties": false
     },
+    "watch": {
+      "type": "object",
+      "properties": {
+        "worn": {
+          "type": "boolean"
+        },
+        "since": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": ["charging", "hrGap"]
+        }
+      },
+      "required": ["worn", "source"],
+      "additionalProperties": false
+    },
     "sleep": {
       "type": "object",
       "description": "Sleep phase breakdown keyed by phase name, each with a duration in seconds.",

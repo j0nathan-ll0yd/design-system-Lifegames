@@ -2,6 +2,9 @@
 // Fixture validation lives at @lifegames/schemas (consumer-aggregate shapes).
 // Per-widget DS schemas are a deferred follow-up plan.
 
+import type { WatchState } from '../../../runtime/adapters';
+export type { WatchState };
+
 export interface HeartRateProps {
   health: {
     quantities: {
@@ -12,5 +15,6 @@ export interface HeartRateProps {
       // °C delta from 30-day baseline (Apple wrist temperature)
       wristTemperatureDelta?: { value: number; unit: string };
     };
+    watch?: WatchState;
   };
 }

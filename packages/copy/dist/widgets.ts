@@ -26,6 +26,15 @@ export interface Widgets {
     zoneFatBurn: string;
     zonePeak: string;
     timestampLive: string;
+    /**
+     * Paused-state badge strings for the Heart Rate widget (watch off or charging).
+     */
+    paused: {
+      label: string;
+      labelCharging: string;
+      description: string;
+      descriptionCharging: string;
+    };
   };
   /**
    * Movement Rings widget — title, ring/metric labels + short variants, units, empty-state, daylight caption template, timestamp.
@@ -45,6 +54,15 @@ export interface Widgets {
     daylightCaption: string;
     daylightGoal: string;
     timestampToday: string;
+    /**
+     * Paused-state badge strings for the Movement Rings widget (watch off or charging).
+     */
+    paused: {
+      label: string;
+      labelCharging: string;
+      description: string;
+      descriptionCharging: string;
+    };
   };
   /**
    * Workouts widget — title, recovery-day empty-state chrome, stat labels/units, timestamp.

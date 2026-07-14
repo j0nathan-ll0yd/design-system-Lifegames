@@ -426,6 +426,14 @@
       "schema": "HeartRateProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.paused-charging.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.paused.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.peak.json": {
       "schema": "HeartRateProps",
       "strategy": "single"
@@ -503,6 +511,14 @@
       "strategy": "single"
     },
     "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.paused-charging.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.paused.json": {
       "schema": "MovementRingsProps",
       "strategy": "single"
     },

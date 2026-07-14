@@ -90,7 +90,8 @@
             }
           },
           "required": ["heartRate", "hrvSDNN"]
-        }
+        },
+        "watch": {}
       },
       "required": ["quantities"]
     }
