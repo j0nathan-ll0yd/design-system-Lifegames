@@ -24,6 +24,11 @@ public struct MovementRingsView: View {
             MovementRingsEmptyView()
         case let .populated(props):
             MovementRingsPopulatedView(props: props)
+                .overlay {
+                    if props.watchPaused {
+                        MovementRingsPausedOverlayView()
+                    }
+                }
         }
     }
 }
@@ -480,6 +485,37 @@ private struct MovementRingsEmptyView: View {
     }
 }
 
+// MARK: - Paused Overlay
+
+/// Full-card frosted overlay rendered when `MovementRingsProps.watchPaused` is true.
+/// Sits above the populated content without replacing it, so the stale ring data
+/// remains visible beneath a dimming scrim.
+private struct MovementRingsPausedOverlayView: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+
+            VStack(spacing: 8) {
+                Image(systemName: "applewatch.slash")
+                    .font(.system(size: 24))
+                    .foregroundStyle(LGColor.healthRed.opacity(0.7))
+
+                Text(movementCopy.paused.label.uppercased())
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .kerning(2)
+                    .foregroundStyle(LGColor.healthRed)
+
+                Text(movementCopy.paused.description)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(LGColor.textMuted)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+}
+
 // MARK: - Formatters
 
 private func formatThousands(_ value: Int) -> String {
@@ -580,4 +616,26 @@ private func formatDistanceValue(_ meters: Double) -> String {
         .padding()
         .background(LGColor.surfaceBase)
         .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — Paused") {
+    MovementRingsView(props: MovementRingsProps(
+        moveKcal: 380,
+        exerciseMin: 32,
+        standHr: 9,
+        steps: 8421,
+        distanceMeters: 6200,
+        flights: 14,
+        daylightMin: 48,
+        goals: MovementRingsProps.Goals(),
+        solar: MovementRingsProps.Solar(
+            sunriseHHmm: "06:30",
+            sunsetHHmm: "20:15",
+            currentProgressPct: 60
+        ),
+        watchPaused: true
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
 }

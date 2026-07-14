@@ -34,6 +34,11 @@ public struct HeartRateView: View {
             HeartRateEmptyView()
         case let .populated(props):
             HeartRatePopulatedView(props: props, animateECG: animateECG)
+                .overlay {
+                    if props.watchPaused {
+                        HeartRatePausedOverlayView()
+                    }
+                }
         }
     }
 }
@@ -261,6 +266,37 @@ private struct HeartRateEmptyView: View {
     }
 }
 
+// MARK: - Paused Overlay
+
+/// Full-card frosted overlay rendered when `HeartRateProps.watchPaused` is true.
+/// Sits above the populated content without replacing it, so the stale data
+/// remains visible beneath a dimming scrim.
+private struct HeartRatePausedOverlayView: View {
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.55)
+
+            VStack(spacing: 8) {
+                Image(systemName: "applewatch.slash")
+                    .font(.system(size: 24))
+                    .foregroundStyle(LGColor.accentPink.opacity(0.7))
+
+                Text(heartRateCopy.paused.label.uppercased())
+                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                    .kerning(2)
+                    .foregroundStyle(LGColor.accentPink)
+
+                Text(heartRateCopy.paused.description)
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(LGColor.textMuted)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+}
+
 #Preview("Heart Rate — Populated") {
     ScrollView {
         VStack(spacing: 16) {
@@ -333,4 +369,15 @@ private struct HeartRateEmptyView: View {
         .padding()
         .background(LGColor.surfaceBase)
         .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Paused") {
+    HeartRateView(props: HeartRateProps(
+        bpm: 72, hrv: 35, zone: "Normal Zone",
+        restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2,
+        watchPaused: true
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
 }
