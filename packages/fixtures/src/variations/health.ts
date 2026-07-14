@@ -61,6 +61,24 @@ export const maxHydration: HealthExport = createHealthFixture({
 // we must remove every default key via the removeKeys arg to get `quantities: {}`.
 export const empty: HealthExport = createHealthFixture({}, Object.keys(DEFAULT_QUANTITIES));
 
+// Paused — watch off wrist, HR gap detected. Typical quantities + watch.worn=false.
+export const pausedHrGap: HealthExport = createHealthFixture({
+  watch: {
+    worn: false,
+    since: isoTimestamp(),
+    source: 'hrGap' as const,
+  },
+});
+
+// Paused — watch on charger. Same quantities + watch.source='charging'.
+export const pausedCharging: HealthExport = createHealthFixture({
+  watch: {
+    worn: false,
+    since: isoTimestamp(),
+    source: 'charging' as const,
+  },
+});
+
 // Maximally populated: all 10 default quantities at realistic highs, plus all
 // optional top-level keys (lastSync, goals, solar) with every nullable goals field
 // set to non-null values.
@@ -112,5 +130,7 @@ export const healthVariations = {
   zeroHydration,
   maxHydration,
   empty,
+  pausedHrGap,
+  pausedCharging,
   full,
 };

@@ -8,6 +8,8 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
     public var respiratoryRate: Double?
     /// Wrist temperature delta in °C from the user's 30-day baseline.
     public var wristTemperatureDelta: Double?
+    /// When true, the widget renders a paused overlay indicating the watch is not worn.
+    public var watchPaused: Bool
 
     public init(
         bpm: Int,
@@ -15,7 +17,8 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
         zone: String,
         restingHeartRate: Double? = nil,
         respiratoryRate: Double? = nil,
-        wristTemperatureDelta: Double? = nil
+        wristTemperatureDelta: Double? = nil,
+        watchPaused: Bool = false
     ) {
         self.bpm = bpm
         self.hrv = hrv
@@ -23,6 +26,7 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
         self.restingHeartRate = restingHeartRate
         self.respiratoryRate = respiratoryRate
         self.wristTemperatureDelta = wristTemperatureDelta
+        self.watchPaused = watchPaused
     }
 
     public var heartRateZone: HeartRateZone {

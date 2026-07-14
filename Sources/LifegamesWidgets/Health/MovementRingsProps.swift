@@ -43,6 +43,8 @@ public struct MovementRingsProps: Equatable, Sendable {
     public var daylightMin: Double
     public var goals: Goals
     public var solar: Solar?
+    /// When true, the widget renders a paused overlay indicating the watch is not worn.
+    public var watchPaused: Bool
 
     public init(
         moveKcal: Double,
@@ -53,7 +55,8 @@ public struct MovementRingsProps: Equatable, Sendable {
         flights: Int,
         daylightMin: Double,
         goals: Goals = Goals(),
-        solar: Solar? = nil
+        solar: Solar? = nil,
+        watchPaused: Bool = false
     ) {
         self.moveKcal = moveKcal
         self.exerciseMin = exerciseMin
@@ -64,5 +67,6 @@ public struct MovementRingsProps: Equatable, Sendable {
         self.daylightMin = daylightMin
         self.goals = goals
         self.solar = solar
+        self.watchPaused = watchPaused
     }
 }
