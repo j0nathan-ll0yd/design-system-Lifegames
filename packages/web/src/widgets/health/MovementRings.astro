@@ -72,6 +72,10 @@ const flights = Math.round(q.flightsClimbed?.value ?? 0);
 
 const isEmpty = steps === 0 && distanceM === 0 && moveVal === 0 && exerciseVal === 0;
 
+// SSR paused: if build-data already has watch.worn===false, apply is-paused at SSR time
+// so the page is correct before the runtime updater fires.
+const ssrPaused = health.watch?.worn === false;
+
 // Solar / daylight footer values (mocked defaults if missing)
 const sunrise = health.solar?.sunriseHHmm ?? '06:30';
 const sunset = health.solar?.sunsetHHmm ?? '20:15';
@@ -95,7 +99,7 @@ function offset(circ: number, pct: number): number {
 }
 ---
 
-<div class="tri-card tri-card-accent-red" id="cardMovement">
+<div class={`tri-card tri-card-accent-red${ssrPaused ? ' is-paused' : ''}`} id="cardMovement">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.movement.title}</h3>
     <div class="widget-header-right">
@@ -129,57 +133,58 @@ function offset(circ: number, pct: number): number {
       </div>
     </div>
     {
-      isEmpty ? (
+      isEmpty && (
         <div class="mv-empty">
           <span class="mv-empty-label">{widgets.movement.empty}</span>
         </div>
-      ) : health.watch?.worn === false ? (
-        <div class="mv-paused" role="status" aria-live="polite" id="mvPaused">
-          <svg
-            class="mv-paused-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              d="M9 6.5A3 3 0 0 1 12 4a3 3 0 0 1 3 2.5"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-            <rect
-              x="3"
-              y="9"
-              width="18"
-              height="13"
-              rx="2"
-              stroke="currentColor"
-              stroke-width="1.5"
-            />
-            <line
-              x1="2"
-              y1="2"
-              x2="22"
-              y2="22"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-          </svg>
-          <span class="mv-paused-label" id="mvPausedLabel">
-            {health.watch.source === 'charging'
-              ? widgets.movement.paused.labelCharging
-              : widgets.movement.paused.label}
-          </span>
-          <span class="mv-paused-desc" id="mvPausedDesc">
-            {health.watch.source === 'charging'
-              ? widgets.movement.paused.descriptionCharging
-              : widgets.movement.paused.description}
-          </span>
-        </div>
-      ) : (
-        <>
+      )
+    }
+    <!-- Paused block: always in DOM (hidden by default); shown when .is-paused via CSS.
+         Replaces the data content entirely — no stale ring/step numbers are visible when the watch is off. -->
+    <div class="mv-paused" role="status" aria-live="polite" id="mvPaused">
+      <svg
+        class="mv-paused-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M9 6.5A3 3 0 0 1 12 4a3 3 0 0 1 3 2.5"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></path>
+        <rect x="3" y="9" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.5"
+        ></rect>
+        <line
+          x1="2"
+          y1="2"
+          x2="22"
+          y2="22"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></line>
+      </svg>
+      <span class="mv-paused-label" id="mvPausedLabel">
+        {
+          health.watch?.source === 'charging'
+            ? widgets.movement.paused.labelCharging
+            : widgets.movement.paused.label
+        }
+      </span>
+      <span class="mv-paused-desc" id="mvPausedDesc">
+        {
+          health.watch?.source === 'charging'
+            ? widgets.movement.paused.descriptionCharging
+            : widgets.movement.paused.description
+        }
+      </span>
+    </div>
+    <!-- Data content: always in DOM; hidden by .is-paused so stale ring/step numbers are never shown
+         when the watch is off. -->
+    {
+      !isEmpty && (
+        <div class="mv-data">
           <div class="mv-layout">
             <div
               class="mv-rings"
@@ -309,7 +314,7 @@ function offset(circ: number, pct: number): number {
               {daylightHit && <span class="mv-sun-caption-hit">&#10003;</span>}
             </p>
           </div>
-        </>
+        </div>
       )
     }
   </div>
@@ -336,15 +341,24 @@ function offset(circ: number, pct: number): number {
     text-transform: uppercase;
   }
 
-  /* Paused state — watch off wrist or charging */
+  /* Paused state — watch off wrist or charging.
+     The paused block is always in the DOM (hidden by default).
+     When .is-paused is on #cardMovement: show the paused block, hide the data. */
   .mv-paused {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: var(--lg-space-200);
     padding: var(--lg-space-600) var(--lg-space-300);
     text-align: center;
+  }
+  /* Data wrapper: hidden when paused so stale ring/step numbers are never shown. */
+  #cardMovement.is-paused .mv-data {
+    display: none;
+  }
+  #cardMovement.is-paused .mv-paused {
+    display: flex;
   }
   .mv-paused-icon {
     width: var(--lg-space-600);

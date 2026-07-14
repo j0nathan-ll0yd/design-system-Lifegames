@@ -23,12 +23,11 @@ public struct MovementRingsView: View {
         case .empty:
             MovementRingsEmptyView()
         case let .populated(props):
-            MovementRingsPopulatedView(props: props)
-                .overlay {
-                    if props.watchPaused {
-                        MovementRingsPausedOverlayView()
-                    }
-                }
+            if props.watchPaused {
+                MovementRingsPausedView()
+            } else {
+                MovementRingsPopulatedView(props: props)
+            }
         }
     }
 }
@@ -485,34 +484,53 @@ private struct MovementRingsEmptyView: View {
     }
 }
 
-// MARK: - Paused Overlay
+// MARK: - Paused
 
-/// Full-card frosted overlay rendered when `MovementRingsProps.watchPaused` is true.
-/// Sits above the populated content without replacing it, so the stale ring data
-/// remains visible beneath a dimming scrim.
-private struct MovementRingsPausedOverlayView: View {
+/// Shown when `MovementRingsProps.watchPaused` is true. Replaces the populated content
+/// entirely — no stale ring data is ever displayed. Mirrors `MovementRingsEmptyView`
+/// structure so the card footprint is identical: header strip, full-height placeholder,
+/// same neonCard chrome.
+private struct MovementRingsPausedView: View {
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.55)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(LGColor.healthRed)
+                        .frame(width: 6, height: 6)
+                        .shadow(color: LGColor.healthRed.opacity(0.6), radius: 4)
+                    Text(movementCopy.timestampToday)
+                        .font(.system(size: 9, design: .monospaced))
+                        .kerning(1.5)
+                        .foregroundStyle(LGColor.textMuted)
+                }
+            }
+            .padding(.top, 12)
+            .padding(.horizontal, 18)
 
-            VStack(spacing: 8) {
+            VStack {
                 Image(systemName: "applewatch.slash")
-                    .font(.system(size: 24))
-                    .foregroundStyle(LGColor.healthRed.opacity(0.7))
-
-                Text(movementCopy.paused.label.uppercased())
-                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                    .kerning(2)
-                    .foregroundStyle(LGColor.healthRed)
-
-                Text(movementCopy.paused.description)
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(.system(size: 28))
                     .foregroundStyle(LGColor.textMuted)
+                Text(movementCopy.paused.label)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(LGColor.textMuted)
+                Text(movementCopy.paused.description)
+                    .font(.system(size: 11))
+                    .foregroundStyle(LGColor.textMuted.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 144)
+            .padding(.top, 14)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .neonCard(accent: LGColor.healthRed)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(movementCopy.title). \(movementCopy.paused.label). \(movementCopy.paused.description)")
     }
 }
 

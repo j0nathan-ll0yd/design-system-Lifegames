@@ -206,18 +206,41 @@ describe('updateHeartRate', () => {
   });
 
   describe('paused state (watch.worn === false)', () => {
+    // The paused block is ALWAYS in the DOM — CSS (not style attr) controls visibility.
+    // DOM setup mirrors the SSR output: #hrPaused and .hr-data are siblings, always present.
     beforeEach(() => {
       document.body.innerHTML = `
-        <div id="hrPaused" style="display:none">
-          <span id="hrPausedLabel"></span>
-          <span id="hrPausedDesc"></span>
+        <div id="cardHR" class="tri-card is-loading tri-card-accent-blue">
+          <div id="hrPaused">
+            <span id="hrPausedLabel"></span>
+            <span id="hrPausedDesc"></span>
+          </div>
+          <div class="hr-data">
+            <div id="pulseBpm"></div>
+            <div id="hrZoneBadge"></div>
+            <div id="hrHrvValue"></div>
+            <div id="hrEcgBg"></div>
+          </div>
         </div>
-        <div id="pulseBpm"></div>
-        <div id="hrZoneBadge"></div>
-        <div id="hrHrvValue"></div>
-        <div id="hrEcgBg"></div>
-        <div id="cardHR" class="tri-card is-loading tri-card-accent-blue"></div>
       `;
+    });
+
+    // GUARD TEST: paused block must exist in the DOM unconditionally — if it doesn't,
+    // the class-toggle approach silently no-ops (this is the class of bug that shipped
+    // in the old ternary-branch design where hrPaused was never in normal-data DOM).
+    it('paused block #hrPaused is always present in the DOM regardless of watch state', () => {
+      // Call with normal data (no watch field) — the paused block must still exist.
+      updateHeartRate(makeHealth());
+      expect(document.getElementById('hrPaused')).not.toBeNull();
+    });
+
+    it('data container .hr-data is always present in the DOM regardless of watch state', () => {
+      const data: AdaptedHealth = {
+        ...makeHealth(),
+        watch: { worn: false, since: null, source: 'hrGap' },
+      };
+      updateHeartRate(data);
+      expect(document.querySelector('.hr-data')).not.toBeNull();
     });
 
     it('shows hrGap label when source is hrGap', () => {
@@ -254,6 +277,12 @@ describe('updateHeartRate', () => {
       };
       updateHeartRate(data);
       expect(el('cardHR').classList.contains('is-paused')).toBe(true);
+    });
+
+    it('does NOT add is-paused when watch is present but worn (worn !== false)', () => {
+      // Worn state — is-paused must not be added
+      updateHeartRate(makeHealth());
+      expect(el('cardHR').classList.contains('is-paused')).toBe(false);
     });
 
     it('still removes is-loading when paused (D-SMOKE)', () => {

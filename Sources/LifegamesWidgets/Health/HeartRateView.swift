@@ -33,12 +33,11 @@ public struct HeartRateView: View {
         case .empty:
             HeartRateEmptyView()
         case let .populated(props):
-            HeartRatePopulatedView(props: props, animateECG: animateECG)
-                .overlay {
-                    if props.watchPaused {
-                        HeartRatePausedOverlayView()
-                    }
-                }
+            if props.watchPaused {
+                HeartRatePausedView()
+            } else {
+                HeartRatePopulatedView(props: props, animateECG: animateECG)
+            }
         }
     }
 }
@@ -266,34 +265,38 @@ private struct HeartRateEmptyView: View {
     }
 }
 
-// MARK: - Paused Overlay
+// MARK: - Paused
 
-/// Full-card frosted overlay rendered when `HeartRateProps.watchPaused` is true.
-/// Sits above the populated content without replacing it, so the stale data
-/// remains visible beneath a dimming scrim.
-private struct HeartRatePausedOverlayView: View {
+/// Shown when `HeartRateProps.watchPaused` is true. Replaces the populated content
+/// entirely — no stale data is ever displayed. Mirrors `HeartRateEmptyView` structure
+/// so the card footprint is identical: full-height placeholder, same neonCard chrome.
+private struct HeartRatePausedView: View {
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.55)
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: LGColor.accentPink)
 
-            VStack(spacing: 8) {
+            VStack {
                 Image(systemName: "applewatch.slash")
-                    .font(.system(size: 24))
-                    .foregroundStyle(LGColor.accentPink.opacity(0.7))
-
-                Text(heartRateCopy.paused.label.uppercased())
-                    .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                    .kerning(2)
-                    .foregroundStyle(LGColor.accentPink)
-
-                Text(heartRateCopy.paused.description)
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(.system(size: 28))
                     .foregroundStyle(LGColor.textMuted)
+                Text(heartRateCopy.paused.label)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(LGColor.textMuted)
+                Text(heartRateCopy.paused.description)
+                    .font(.system(size: 11))
+                    .foregroundStyle(LGColor.textMuted.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 108)
+            .padding(.top, 14)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 16)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .neonCard(accent: LGColor.accentPink)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(heartRateCopy.title). \(heartRateCopy.paused.label). \(heartRateCopy.paused.description)")
     }
 }
 

@@ -66,12 +66,12 @@ export function updateHeartRate(data: AdaptedHealth): void {
   const card = document.getElementById('cardHR');
 
   // Paused state: watch worn=false means the watch is off wrist or charging.
+  // CSS controls visibility: is-paused on the card hides .hr-data and shows .hr-paused.
   // We still remove is-loading (D-SMOKE: hydration must complete regardless).
-  // Update overlay copy in case source (charging vs hrGap) changes on re-poll.
+  // Update copy in case source (charging vs hrGap) changes on re-poll.
   const isCharging = data.watch?.source === 'charging';
   const isPaused = data.watch?.worn === false;
 
-  const pausedEl = document.getElementById('hrPaused');
   if (isPaused) {
     const labelEl = document.getElementById('hrPausedLabel');
     if (labelEl) {
@@ -85,14 +85,12 @@ export function updateHeartRate(data: AdaptedHealth): void {
         ? widgets.heartRate.paused.descriptionCharging
         : widgets.heartRate.paused.description;
     }
-    if (pausedEl) pausedEl.style.display = '';
     card?.classList.add('is-paused');
     card?.classList.remove('is-loading');
     return;
   }
 
-  // Not paused — ensure overlay is hidden and is-paused removed (recovery path).
-  if (pausedEl) pausedEl.style.display = 'none';
+  // Not paused — remove is-paused so CSS reveals the data content (recovery path).
   card?.classList.remove('is-paused');
 
   const bpm = document.getElementById('pulseBpm');
