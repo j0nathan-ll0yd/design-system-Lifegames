@@ -50,11 +50,12 @@ export function updateMovementRings(data: AdaptedHealth): void {
   if (!card) return;
 
   // Paused state: watch worn=false means the watch is off wrist or charging.
+  // CSS controls visibility: is-paused on the card hides .mv-data and shows .mv-paused.
   // We still remove is-loading (D-SMOKE: hydration must complete regardless).
+  // Update copy in case source (charging vs hrGap) changes on re-poll.
   const isPaused = data.watch?.worn === false;
   const isCharging = data.watch?.source === 'charging';
 
-  const pausedEl = document.getElementById('mvPaused');
   if (isPaused) {
     const labelEl = document.getElementById('mvPausedLabel');
     if (labelEl) {
@@ -68,14 +69,12 @@ export function updateMovementRings(data: AdaptedHealth): void {
         ? widgets.movement.paused.descriptionCharging
         : widgets.movement.paused.description;
     }
-    if (pausedEl) pausedEl.style.display = '';
     card.classList.add('is-paused');
     card.classList.remove('is-loading');
     return;
   }
 
-  // Not paused — ensure overlay is hidden and is-paused removed (recovery path).
-  if (pausedEl) pausedEl.style.display = 'none';
+  // Not paused — remove is-paused so CSS reveals the data content (recovery path).
   card.classList.remove('is-paused');
 
   const q = data.quantities;

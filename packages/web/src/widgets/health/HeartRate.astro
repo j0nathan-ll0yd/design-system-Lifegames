@@ -8,6 +8,9 @@ const hrv = Math.round(health.quantities.hrvSDNN.value);
 const watch = health.watch;
 
 const isEmpty = hr === 0 && hrv === 0;
+// SSR paused: if build-data itself reports watch.worn===false, apply is-paused at
+// SSR time so the page is correct before the runtime updater fires.
+const ssrPaused = watch?.worn === false;
 const state = classifyHeartRate(hr);
 const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
 
@@ -29,7 +32,7 @@ const fmtTemp = (() => {
 })();
 ---
 
-<div class={`tri-card ${state.accentClass}`} id="cardHR">
+<div class={`tri-card ${state.accentClass}${ssrPaused ? ' is-paused' : ''}`} id="cardHR">
   <div class="widget-header">
     <h3 class="widget-label">{widgets.heartRate.title}</h3>
     <div class="widget-header-right">
@@ -62,57 +65,58 @@ const fmtTemp = (() => {
       </div>
     </div>
     {
-      isEmpty ? (
+      isEmpty && (
         <div class="hr-empty">
           <span class="hr-empty-label">{widgets.heartRate.empty}</span>
         </div>
-      ) : watch?.worn === false ? (
-        <div class="hr-paused" role="status" aria-live="polite" id="hrPaused">
-          <svg
-            class="hr-paused-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              d="M9 6.5A3 3 0 0 1 12 4a3 3 0 0 1 3 2.5"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-            <rect
-              x="3"
-              y="9"
-              width="18"
-              height="13"
-              rx="2"
-              stroke="currentColor"
-              stroke-width="1.5"
-            />
-            <line
-              x1="2"
-              y1="2"
-              x2="22"
-              y2="22"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-          </svg>
-          <span class="hr-paused-label" id="hrPausedLabel">
-            {watch.source === 'charging'
-              ? widgets.heartRate.paused.labelCharging
-              : widgets.heartRate.paused.label}
-          </span>
-          <span class="hr-paused-desc" id="hrPausedDesc">
-            {watch.source === 'charging'
-              ? widgets.heartRate.paused.descriptionCharging
-              : widgets.heartRate.paused.description}
-          </span>
-        </div>
-      ) : (
-        <>
+      )
+    }
+    <!-- Paused block: always in DOM (hidden by default); shown when .is-paused via CSS.
+         Replaces the data content entirely — no stale numbers are visible when the watch is off. -->
+    <div class="hr-paused" role="status" aria-live="polite" id="hrPaused">
+      <svg
+        class="hr-paused-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M9 6.5A3 3 0 0 1 12 4a3 3 0 0 1 3 2.5"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></path>
+        <rect x="3" y="9" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.5"
+        ></rect>
+        <line
+          x1="2"
+          y1="2"
+          x2="22"
+          y2="22"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"></line>
+      </svg>
+      <span class="hr-paused-label" id="hrPausedLabel">
+        {
+          watch?.source === 'charging'
+            ? widgets.heartRate.paused.labelCharging
+            : widgets.heartRate.paused.label
+        }
+      </span>
+      <span class="hr-paused-desc" id="hrPausedDesc">
+        {
+          watch?.source === 'charging'
+            ? widgets.heartRate.paused.descriptionCharging
+            : widgets.heartRate.paused.description
+        }
+      </span>
+    </div>
+    <!-- Data content: always in DOM; hidden by .is-paused so stale numbers are never shown
+         when the watch is off. -->
+    {
+      !isEmpty && (
+        <div class="hr-data">
           <div class="hr-layout">
             <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
               <canvas
@@ -186,7 +190,7 @@ const fmtTemp = (() => {
               </span>
             </div>
           </div>
-        </>
+        </div>
       )
     }
   </div>
@@ -206,15 +210,24 @@ const fmtTemp = (() => {
     text-transform: uppercase;
   }
 
-  /* Paused state — watch off wrist or charging */
+  /* Paused state — watch off wrist or charging.
+     The paused block is always in the DOM (hidden by default).
+     When .is-paused is on #cardHR: show the paused block, hide the data. */
   .hr-paused {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: var(--lg-space-200);
     padding: var(--lg-space-600) var(--lg-space-300);
     text-align: center;
+  }
+  /* Data wrapper: hidden when paused so stale numbers are never shown. */
+  #cardHR.is-paused .hr-data {
+    display: none;
+  }
+  #cardHR.is-paused .hr-paused {
+    display: flex;
   }
   .hr-paused-icon {
     width: var(--lg-space-600);

@@ -41,23 +41,27 @@ function makeHealth(overrides: Partial<AdaptedHealth> = {}): AdaptedHealth {
   };
 }
 
-// Minimal DOM required by updateMovementRings for the populated path.
+// Minimal DOM required by updateMovementRings — mirrors SSR output:
+// #mvPaused and .mv-data are siblings, always present in the DOM.
+// CSS (not a style attribute) controls visibility via is-paused on #cardMovement.
 const POPULATED_DOM = `
   <div id="cardMovement" class="tri-card is-loading">
-    <div id="mvPaused" style="display:none">
+    <div id="mvPaused">
       <span id="mvPausedLabel"></span>
       <span id="mvPausedDesc"></span>
     </div>
-    <circle id="ringMove"></circle>
-    <circle id="ringExercise"></circle>
-    <circle id="ringStand"></circle>
-    <span id="ringCenterPct"></span>
-    <span data-mv-metric="steps"></span>
-    <span data-mv-metric="distance"></span>
-    <span data-mv-metric="flights"></span>
-    <span id="legendMove"></span>
-    <span id="legendExercise"></span>
-    <span id="legendStand"></span>
+    <div class="mv-data">
+      <circle id="ringMove"></circle>
+      <circle id="ringExercise"></circle>
+      <circle id="ringStand"></circle>
+      <span id="ringCenterPct"></span>
+      <span data-mv-metric="steps"></span>
+      <span data-mv-metric="distance"></span>
+      <span data-mv-metric="flights"></span>
+      <span id="legendMove"></span>
+      <span id="legendExercise"></span>
+      <span id="legendStand"></span>
+    </div>
   </div>
 `;
 
@@ -86,6 +90,20 @@ describe('updateMovementRings', () => {
   // ── paused state ───────────────────────────────────────────────────────────
 
   describe('paused state (watch.worn === false)', () => {
+    // GUARD TESTS: both blocks must exist in the DOM unconditionally.
+    // If either is absent, the class-toggle silently no-ops — the exact bug that
+    // shipped in the old ternary-branch SSR design.
+    it('paused block #mvPaused is always present in the DOM regardless of watch state', () => {
+      updateMovementRings(makeHealth());
+      expect(document.getElementById('mvPaused')).not.toBeNull();
+    });
+
+    it('data container .mv-data is always present in the DOM regardless of watch state', () => {
+      const data = makeHealth({ watch: { worn: false, since: null, source: 'hrGap' } });
+      updateMovementRings(data);
+      expect(document.querySelector('.mv-data')).not.toBeNull();
+    });
+
     it('shows hrGap label when source is hrGap', () => {
       const data = makeHealth({ watch: { worn: false, since: null, source: 'hrGap' } });
       updateMovementRings(data);
@@ -108,6 +126,11 @@ describe('updateMovementRings', () => {
       const data = makeHealth({ watch: { worn: false, since: null, source: 'hrGap' } });
       updateMovementRings(data);
       expect(el('cardMovement').classList.contains('is-paused')).toBe(true);
+    });
+
+    it('does NOT add is-paused when watch is absent (worn)', () => {
+      updateMovementRings(makeHealth());
+      expect(el('cardMovement').classList.contains('is-paused')).toBe(false);
     });
 
     it('still removes is-loading when paused (D-SMOKE)', () => {
