@@ -23,8 +23,8 @@
     { "type": "prompt", "text": "$ cat philosophy.txt" },
     { "type": "output", "text": "→ \"Enjoying the passage of time\"" },
     { "type": "blank", "text": "" },
-    { "type": "prompt", "text": "$ wc -l interests/" },
-    { "type": "output", "text": "→ programming, pc gaming, musical theatre, edm, conversation" },
+    { "type": "prompt", "text": "$ ls -m interests/" },
+    { "type": "output", "text": "→ conversation, edm, musical theatre, pc gaming, programming" },
     { "type": "cursor", "text": "" }
   ]
 }

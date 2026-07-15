@@ -33,8 +33,11 @@ export const baseline = authored<Profile>({
     { type: 'prompt', text: '$ cat philosophy.txt' },
     { type: 'output', text: '→ "Enjoying the passage of time"' },
     { type: 'blank', text: '' },
-    { type: 'prompt', text: '$ wc -l interests/' },
-    { type: 'output', text: '→ programming, pc gaming, musical theatre, edm, conversation' },
+    // interests listed alphabetically — `ls` always sorts. Order intentionally
+    // differs from @lifegames/copy interests.value (curated; feeds llms-full.txt via
+    // llm-content/view.ts). Enforced by tests/interests-invariant.test.ts.
+    { type: 'prompt', text: '$ ls -m interests/' },
+    { type: 'output', text: '→ conversation, edm, musical theatre, pc gaming, programming' },
     { type: 'cursor', text: '' },
   ],
 });
@@ -78,8 +81,9 @@ export const full = authored<Profile>({
     { type: 'prompt', text: '$ cat philosophy.txt' },
     { type: 'output', text: '→ "Enjoying the passage of time"' },
     { type: 'blank', text: '' },
-    { type: 'prompt', text: '$ wc -l interests/' },
-    { type: 'output', text: '→ programming, pc gaming, musical theatre, edm, conversation' },
+    // interests listed alphabetically — `ls` sorts (see baseline note above).
+    { type: 'prompt', text: '$ ls -m interests/' },
+    { type: 'output', text: '→ conversation, edm, musical theatre, pc gaming, programming' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ cat projects.txt' },
     { type: 'output', text: '→ mantle — serverless infrastructure framework' },
