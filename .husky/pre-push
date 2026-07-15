@@ -36,8 +36,11 @@ step "lint"                    pnpm lint
 step "schemas freshness"       pnpm check:schemas-freshness
 
 # ── Tier 2: cheap CI-job mirrors (typecheck, unit tests, contract, audits) ──
-# pnpm 11 removed the implicit fallback from `pnpm <cmd>` to `pnpm exec` — be explicit.
-step "web typecheck"           pnpm --filter @lifegames/web exec tsc --noEmit
+# NOTE: the former "web typecheck" step (pnpm --filter @lifegames/web tsc) was a
+# silent no-op: packages/web has no tsconfig, so tsc printed help and exited 0 via
+# pnpm<=9's implicit exec fallback (removed in pnpm 11, which exposed it). Run the
+# real web unit suite instead; tsconfig-based typecheck is a tracked follow-up.
+step "web tests"               pnpm -F @lifegames/web test
 step "copy tests"              pnpm -F @lifegames/copy test
 step "copy grep-gate"          pnpm -F @lifegames/copy grep-gate
 step "web inline-script audit" pnpm -F @lifegames/web audit:inline-scripts
