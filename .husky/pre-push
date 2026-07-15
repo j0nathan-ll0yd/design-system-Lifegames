@@ -36,7 +36,8 @@ step "lint"                    pnpm lint
 step "schemas freshness"       pnpm check:schemas-freshness
 
 # ── Tier 2: cheap CI-job mirrors (typecheck, unit tests, contract, audits) ──
-step "web typecheck"           pnpm --filter @lifegames/web tsc --noEmit
+# pnpm 11 removed the implicit fallback from `pnpm <cmd>` to `pnpm exec` — be explicit.
+step "web typecheck"           pnpm --filter @lifegames/web exec tsc --noEmit
 step "copy tests"              pnpm -F @lifegames/copy test
 step "copy grep-gate"          pnpm -F @lifegames/copy grep-gate
 step "web inline-script audit" pnpm -F @lifegames/web audit:inline-scripts

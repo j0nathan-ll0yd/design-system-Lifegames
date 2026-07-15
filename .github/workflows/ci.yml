@@ -255,7 +255,7 @@ jobs:
           LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - name: TypeScript Props contract check
-        run: pnpm --filter @lifegames/web tsc --noEmit
+        run: pnpm --filter @lifegames/web exec tsc --noEmit
 
   governance-gates:
     name: governance-gates
