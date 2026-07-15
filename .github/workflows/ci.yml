@@ -165,7 +165,11 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
-      - run: pnpm --filter @lifegames/web build
+      # pnpm<=9 exited 0 with a warning when the filtered package had no "build"
+      # script — @lifegames/web has none (it ships source via yalc), so this job
+      # never built anything. pnpm 11 turned the missing script into a hard error,
+      # exposing it. Run the real workspace build (turbo) instead.
+      - run: pnpm build
 
   storybook-build:
     needs: build-tokens
