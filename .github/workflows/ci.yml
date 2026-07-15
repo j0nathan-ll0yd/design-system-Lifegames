@@ -165,7 +165,11 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
-      - run: pnpm --filter @lifegames/web build
+      # pnpm<=9 exited 0 with a warning when the filtered package had no "build"
+      # script — @lifegames/web has none (it ships source via yalc), so this job
+      # never built anything. pnpm 11 turned the missing script into a hard error,
+      # exposing it. Run the real workspace build (turbo) instead.
+      - run: pnpm build
 
   storybook-build:
     needs: build-tokens
@@ -254,8 +258,14 @@ jobs:
         env:
           LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      - name: TypeScript Props contract check
-        run: pnpm --filter @lifegames/web tsc --noEmit
+      # The former step here (pnpm --filter @lifegames/web tsc) was a silent no-op:
+      # packages/web has no tsconfig, so tsc printed help and exited 0 via pnpm<=9's
+      # implicit exec fallback (removed in pnpm 11, which exposed it). The web unit
+      # suite (updaters/adapters — the TS side of the Props contract) previously ran
+      # in NO CI job; it runs here now. A real tsconfig-based typecheck remains a
+      # follow-up.
+      - name: Web unit tests (updaters/adapters Props contract)
+        run: pnpm --filter @lifegames/web test
 
   governance-gates:
     name: governance-gates
