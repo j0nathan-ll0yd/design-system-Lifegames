@@ -1,3 +1,16 @@
 packages:
   - 'packages/*'
   - 'apps/*'
+
+# pnpm 11 no longer reads pnpm settings from .npmrc; carried over from there.
+# Root-level build drivers (style-dictionary.config.mjs) resolve workspace-package
+# deps via the public hoist.
+shamefullyHoist: true
+# pnpm 11 (upgraded from 9.15.4): strictDepBuilds blocks lifecycle scripts by
+# default. These all ran unrestricted under pnpm 9; approving preserves prior
+# behavior (native binaries: swc/esbuild/sharp/unrs-resolver).
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
