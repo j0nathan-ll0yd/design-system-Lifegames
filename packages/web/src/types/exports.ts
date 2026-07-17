@@ -112,6 +112,23 @@ export interface HealthExportWatch {
   source: 'charging' | 'hrGap';
 }
 
+// Activity ring goals synced from the device. Per-field null until the device's
+// first goals sync for the date (the export carries forward the most recent
+// goal rows); daylightMin is a server-side constant, never null.
+export interface HealthExportGoals {
+  moveKcal: number | null;
+  exerciseMin: number | null;
+  standHr: number | null;
+  daylightMin: number;
+}
+
+// Server-computed sunrise/sunset facts for the movement sun-arc footer.
+export interface HealthExportSolar {
+  sunriseHHmm: string;
+  sunsetHHmm: string;
+  currentProgressPct: number;
+}
+
 export interface HealthExport {
   date: string;
   generatedAt: string;
@@ -121,6 +138,9 @@ export interface HealthExport {
       unit: string;
     };
   };
+  // Optional in the schema for legacy payloads; fresh exports always emit both.
+  goals?: HealthExportGoals;
+  solar?: HealthExportSolar;
   // Server-computed worn verdict. Absent = unknown or worn (normal render).
   // Present with worn=false = watch off/charging; render paused state.
   watch?: HealthExportWatch;

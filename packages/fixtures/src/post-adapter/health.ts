@@ -2,10 +2,11 @@
 // Workouts, Hydration, NightSummary).
 //
 // DashboardHealth is a DS-owned display shape that is RICHER than the runtime
-// adapter output: it carries ranges, goals, solar, derived metrics, hydration, and
+// adapter output: it carries ranges, derived metrics, hydration ranges, and
 // sampleWorkouts that adaptHealth() does NOT produce (adaptHealth feeds the runtime
-// updater with a narrower AdaptedHealth shape). The SSR shell therefore reads this
-// authored display shape, not adapter output. Authored against `@lifegames/schemas`
+// updater with a narrower AdaptedHealth shape — though goals/solar DO pass through
+// it now that the live movement widget renders them). The SSR shell therefore reads
+// this authored display shape, not adapter output. Authored against `@lifegames/schemas`
 // `DashboardHealth` (generated/dashboard-health.schema.json). All values are
 // absolute (no relative timestamps), so this domain is inherently deterministic.
 import type { DashboardHealth } from '@lifegames/schemas';
