@@ -168,7 +168,7 @@ private nonisolated(unsafe) let _finishedDateISOBasic: ISO8601DateFormatter = {
     return f
 }()
 
-private nonisolated(unsafe) let _finishedDateDisplay: DateFormatter = {
+private let _finishedDateDisplay: DateFormatter = {
     let f = DateFormatter()
     f.dateFormat = "MMM yyyy"
     return f
