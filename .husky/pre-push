@@ -42,6 +42,7 @@ step "schemas freshness"       pnpm check:schemas-freshness
 # real web unit suite instead; tsconfig-based typecheck is a tracked follow-up.
 step "web tests"               pnpm -F @lifegames/web test
 step "copy tests"              pnpm -F @lifegames/copy test
+step "audit script tests"      pnpm test:scripts
 step "copy grep-gate"          pnpm -F @lifegames/copy grep-gate
 step "web inline-script audit" pnpm -F @lifegames/web audit:inline-scripts
 step "schema contract verify"  pnpm -F @lifegames/schemas contract:verify
