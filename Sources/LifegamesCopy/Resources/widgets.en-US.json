@@ -128,7 +128,7 @@
   "bio": {
     "title": "Bio",
     "terminalTitle": "zsh — about",
-    "timestampBash": "bash"
+    "timestampZsh": "zsh"
   },
   "systemStatus": {
     "title": "System Status",

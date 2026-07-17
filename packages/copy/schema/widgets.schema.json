@@ -493,9 +493,9 @@
     },
     "bio": {
       "type": "object",
-      "description": "Bio terminal widget — widget title, terminal title-bar text, bash timestamp.",
+      "description": "Bio terminal widget — widget title, terminal title-bar text, shell timestamp badge (zsh, matching terminalTitle).",
       "additionalProperties": false,
-      "required": ["title", "terminalTitle", "timestampBash"],
+      "required": ["title", "terminalTitle", "timestampZsh"],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -503,7 +503,7 @@
         "terminalTitle": {
           "$ref": "#/$defs/CopyString"
         },
-        "timestampBash": {
+        "timestampZsh": {
           "$ref": "#/$defs/CopyString"
         }
       }

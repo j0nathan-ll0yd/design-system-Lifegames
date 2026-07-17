@@ -15,7 +15,7 @@ public struct BioTerminalView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: bioCopy.title.uppercased(), dotColor: Color.colorAccentDefault, timestamp: bioCopy.timestampBash)
+            WidgetHeaderView(label: bioCopy.title.uppercased(), dotColor: Color.colorAccentDefault, timestamp: bioCopy.timestampZsh)
 
             VStack(spacing: 0) {
                 terminalTitleBar
@@ -120,13 +120,16 @@ private struct BlinkingCursor: View {
 
 #Preview("Bio Terminal") {
     BioTerminalView(props: BioTerminalProps(lines: [
-        .init(type: "prompt", text: "whoami"),
-        .init(type: "output", text: "Jonathan Lloyd"),
-        .init(type: "prompt", text: "cat role.txt"),
-        .init(type: "output", text: "\u{2192} Engineering Director"),
+        .init(type: "prompt", text: "gpg -k"),
+        .init(type: "output", text: "\u{2192} pub   rsa4096 2002-01-01 [SC]"),
+        .init(type: "output", text: "\u{2192} uid   Jonathan Lloyd (Engineering Director)"),
         .init(type: "blank"),
-        .init(type: "prompt", text: "cat experience.txt"),
-        .init(type: "output", text: "\u{2192} 24+ years professionally"),
+        .init(type: "prompt", text: "uptime"),
+        .init(type: "output", text: "\u{2192} up 24+ years professionally and counting"),
+        .init(type: "blank"),
+        .init(type: "prompt", text: "cat philosophy.txt"),
+        .init(type: "output", text: "\u{2192} \"Creating things I'm proud of\""),
+        .init(type: "output", text: "\u{2192} \"Enjoying the passage of time\""),
         .init(type: "cursor"),
     ]))
     .padding()

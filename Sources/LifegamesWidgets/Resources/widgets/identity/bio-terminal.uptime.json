@@ -2,9 +2,10 @@
   "profile": {
     "terminalLines": [
       { "type": "prompt", "text": "$ uptime" },
-      { "type": "output", "text": "→ 24+ years professionally and counting" },
+      { "type": "output", "text": "→ up 24+ years professionally and counting" },
       { "type": "blank" },
       { "type": "prompt", "text": "$ cat philosophy.txt" },
+      { "type": "output", "text": "→ \"Creating things I'm proud of\"" },
       { "type": "output", "text": "→ \"Enjoying the passage of time\"" },
       { "type": "blank" },
       { "type": "prompt", "text": "$ cat values.txt" },

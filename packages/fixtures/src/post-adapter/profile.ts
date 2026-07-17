@@ -19,18 +19,24 @@ export const baseline = authored<Profile>({
   tagline: 'Welcome to my human datastream.',
   avatar: '/assets/avatar.webp',
   terminalLines: [
-    { type: 'prompt', text: '$ cat about.txt' },
-    { type: 'output', text: '→ Jonathan Lloyd' },
-    { type: 'output', text: '→ Software Engineer' },
-    { type: 'output', text: '→ "Creating things I\'m proud of"' },
+    // gpg block: rsa4096 is period-accurate (RSA in GnuPG since 1999); an ed25519
+    // key dated 2002 would be an anachronism (ECC keygen landed in GnuPG 2.1.8,
+    // 2015). `-k` is the documented `--list-keys` shorthand and prints no
+    // fingerprint line by default; the uid validity tag is deliberately omitted
+    // (`--list-options no-show-uid-validity` output) so the line fits unwrapped.
+    // Key date = career epoch, rhyming with the uptime line's 24+ years.
+    { type: 'prompt', text: '$ gpg -k' },
+    { type: 'output', text: '→ pub   rsa4096 2002-01-01 [SC]' },
+    { type: 'output', text: '→ uid   Jonathan Lloyd (Engineering Director)' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ printenv STACK' },
     { type: 'output', text: '→ aws typescript serverless swift go perl' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ uptime' },
-    { type: 'output', text: '→ 24+ years professionally and counting' },
+    { type: 'output', text: '→ up 24+ years professionally and counting' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ cat philosophy.txt' },
+    { type: 'output', text: '→ "Creating things I\'m proud of"' },
     { type: 'output', text: '→ "Enjoying the passage of time"' },
     { type: 'blank', text: '' },
     // interests listed alphabetically — `ls` always sorts. Order intentionally
@@ -67,18 +73,23 @@ export const full = authored<Profile>({
   tagline: 'Welcome to my human datastream — where technology meets the quantified self.',
   avatar: '/assets/avatar.webp',
   terminalLines: [
-    { type: 'prompt', text: '$ cat about.txt' },
-    { type: 'output', text: '→ Jonathan Lloyd' },
-    { type: 'output', text: '→ Engineering Director' },
-    { type: 'output', text: '→ "Creating things I\'m proud of"' },
+    // Same gpg-block constraints as baseline (see comment there); the long uid
+    // comment is exactly the longest-realistic-string stress this variation is for.
+    { type: 'prompt', text: '$ gpg -k' },
+    { type: 'output', text: '→ pub   rsa4096 2002-01-01 [SC]' },
+    {
+      type: 'output',
+      text: '→ uid   Jonathan Lloyd (Engineering Director, Platform Infrastructure & Developer Experience)',
+    },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ printenv STACK' },
     { type: 'output', text: '→ aws typescript serverless swift go perl python rust' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ uptime' },
-    { type: 'output', text: '→ 24+ years professionally and counting' },
+    { type: 'output', text: '→ up 24+ years professionally and counting' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ cat philosophy.txt' },
+    { type: 'output', text: '→ "Creating things I\'m proud of"' },
     { type: 'output', text: '→ "Enjoying the passage of time"' },
     { type: 'blank', text: '' },
     // interests listed alphabetically — `ls` sorts (see baseline note above).
