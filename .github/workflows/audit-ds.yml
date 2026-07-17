@@ -4,9 +4,11 @@ name: Audit DS
 # baseline-age advisory (D2), and yalc publish-staleness (D5).
 #
 # Report-only (D4/D5): a failure here files/updates a GitHub issue labeled
-# audit + audit:report-only. It does not block any other workflow, merge, or
-# PR — ci.yml's existing push/PR-triggered gates (widget-compliance.mjs,
-# token-parity, etc.) are unaffected. This workflow adds (a) SCHEDULED
+# audit + audit:report-only — but ONLY once the repo variable
+# LP_AUDIT_ISSUE_FILING is set to 'on' (Phase-6 bake promotion, plan §8 Q4:
+# issue filing starts AFTER the 30-day bake). It does not block any other
+# workflow, merge, or PR — ci.yml's existing push/PR-triggered gates
+# (widget-compliance.mjs, token-parity, etc.) are unaffected. This workflow adds (a) SCHEDULED
 # execution of two checks that already existed but were never wired to run
 # anywhere (check-baseline-age.mjs, check-yalc-staleness.mjs) and (b) the D1
 # widget completeness matrix, which reconciles all 4 widget registries plus
@@ -65,6 +67,11 @@ jobs:
 
       - name: D5 yalc publish staleness
         id: yalc_check
+        # shell: bash turns on GitHub's `-o pipefail` default for explicit bash,
+        # so the tee pipe stops masking yalc:check's exit code. Without it this
+        # step's outcome could NEVER be 'failure' and the issue step below was a
+        # silent no-op gate (the A2 class; first-cycle finding, 2026-07-17).
+        shell: bash
         run: pnpm yalc:check | tee -a audit-ds-report.txt
 
       - name: Job summary
@@ -86,7 +93,7 @@ jobs:
           retention-days: 30
 
       - name: File issue on yalc staleness
-        if: steps.yalc_check.outcome == 'failure' && github.event_name != 'workflow_dispatch'
+        if: steps.yalc_check.outcome == 'failure' && github.event_name != 'workflow_dispatch' && vars.LP_AUDIT_ISSUE_FILING == 'on'
         uses: actions/github-script@v9
         with:
           script: |
@@ -142,20 +149,32 @@ jobs:
               ].join('\n'),
             });
 
+  # Separate hosted-runner job (first-cycle finding #14, 2026-07-17): the ping
+  # curl timed out (exit 28) from the self-hosted fleet containers while
+  # hc-ping.com is reachable from the host — and a ping that rides the audit
+  # job dies with a wedged fleet, which is exactly when the dead-man's-switch
+  # must still report. Mirrors audit-backend.yml's structure.
+  healthcheck-ping:
+    name: Healthchecks.io dead-man's-switch ping
+    needs: [audit]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
       - name: Ping Healthchecks.io
-        if: always()
         env:
           HC_PING_URL: ${{ secrets.HC_PING_AUDIT_DS }}
-          YALC_CHECK_RESULT: ${{ steps.yalc_check.outcome }}
+          AUDIT_RESULT: ${{ needs.audit.result }}
         run: |
           if [ -z "${HC_PING_URL:-}" ]; then
             echo "::warning::HC_PING_AUDIT_DS secret is not set — skipping Healthchecks.io ping. This check has not been provisioned in Healthchecks.io yet (plan Phase 0); the dead-man's-switch is not yet monitoring this workflow."
             exit 0
           fi
-          if [ "$YALC_CHECK_RESULT" = "success" ]; then
-            echo "yalc:check succeeded — pinging success."
-            curl -fsS -m 10 --retry 3 "$HC_PING_URL"
-          else
-            echo "yalc:check=$YALC_CHECK_RESULT — pinging /fail (Healthchecks.io still records the run so the dead-man's-switch itself stays healthy; the /fail signal is separate from the GitHub issue above)."
-            curl -fsS -m 10 --retry 3 "$HC_PING_URL/fail"
-          fi
+          # Plain ping regardless of check results (WS-A1, plan D-A): the dead-man's-
+          # switch answers exactly one question — did the scheduled run EXECUTE? A
+          # check that ran and found findings is the system WORKING (findings live in
+          # the job summary, report artifact, and post-bake issues). Pinging /fail on
+          # findings marks the tile DOWN — indistinguishable from a wedged/never-ran
+          # job. Same convention as audit-web.yml and the hub launchd run-*.sh.
+          echo "audit job result=$AUDIT_RESULT — pinging run-completion."
+          curl -fsS -m 10 --retry 3 "$HC_PING_URL"
