@@ -1,6 +1,8 @@
 #!/usr/bin/env tsx
+// mantle-cli-output: contract-lock generation report for stdout
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RAW_SCHEMAS_DIR } from './portal-contract-source.mjs';
@@ -11,6 +13,46 @@ const LOCK_FILE = join(PKG_ROOT, '.contract-lock.json');
 
 function sha256(content: string): string {
   return createHash('sha256').update(content, 'utf-8').digest('hex');
+}
+
+/**
+ * Resolves the mantle-LifegamesPortal HEAD sha this lock was generated
+ * against, so `generatedFrom.sha` is no longer permanently null (lp-audit
+ * A3/Phase 4). Precedence:
+ *   1. `--sha <sha>` CLI arg — explicit override, e.g. from a CI workflow
+ *      that already knows the sha it wants pinned.
+ *   2. `LP_DIR` env var (same variable scripts/ci-setup-portal-contract.sh
+ *      reads) pointing at a git checkout of the backend.
+ *   3. `/tmp/mantle-LifegamesPortal` — ci-setup-portal-contract.sh's default
+ *      clone target; present in the same CI job that runs this script.
+ *   4. The monorepo hub sibling checkout (local dev only): both
+ *      design-system-Lifegames and mantle-LifegamesPortal are symlinked
+ *      siblings under ~/Repositories.
+ * Returns null (never throws) if no candidate resolves — the lock file
+ * remains generatable without a sha, matching prior behavior.
+ */
+function resolveUpstreamSha(): string | null {
+  const shaArgIndex = process.argv.indexOf('--sha');
+  if (shaArgIndex !== -1 && process.argv[shaArgIndex + 1]) {
+    return process.argv[shaArgIndex + 1];
+  }
+
+  const candidates = [
+    process.env.LP_DIR,
+    '/tmp/mantle-LifegamesPortal',
+    resolve(PKG_ROOT, '../../../mantle-LifegamesPortal'),
+  ].filter((p): p is string => Boolean(p));
+
+  for (const dir of candidates) {
+    if (!existsSync(join(dir, '.git'))) continue;
+    try {
+      return execFileSync('git', ['-C', dir, 'rev-parse', 'HEAD'], { encoding: 'utf-8' }).trim();
+    } catch {
+      // Candidate exists but isn't a usable git checkout (e.g. mid-clone) — try the next one.
+      continue;
+    }
+  }
+  return null;
 }
 
 const schemaFiles = readdirSync(RAW_SCHEMAS_DIR)
@@ -31,7 +73,7 @@ const aggregateChecksum = `sha256:${sha256(combinedContent)}`;
 const lock = {
   generatedFrom: {
     repo: 'j0nathan-ll0yd/mantle-LifegamesPortal',
-    sha: null,
+    sha: resolveUpstreamSha(),
     checksum: aggregateChecksum,
   },
   generatedAt: new Date().toISOString(),

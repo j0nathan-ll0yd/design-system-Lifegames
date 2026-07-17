@@ -39,10 +39,20 @@ if (manifest) {
 }
 // Also index by the V3-suffixed names used in production-widgets.json
 // since manifest uses shorter names (e.g. "PlaceLeaderboard" vs "PlaceLeaderboardV3")
-const MANIFEST_ALIASES = {
+// Exported for reuse by scripts/audit-widget-matrix.mjs, which reconciles this
+// same V3 naming split across a wider set of registries.
+export const MANIFEST_ALIASES = {
   PlaceLeaderboardV3: 'PlaceLeaderboard',
   ExplorationOdometerV3: 'ExplorationOdometer',
 };
+
+// Exported for reuse by scripts/audit-widget-matrix.mjs.
+export function toKebabName(name) {
+  return name
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/V(\d)/g, '-v$1')
+    .toLowerCase();
+}
 
 console.log('Widget Compliance Matrix (Design System)');
 console.log('========================================\n');
@@ -73,10 +83,7 @@ webRegistry.forEach((widget) => {
     );
   } else {
     const category = widget.fileRelativeToWidgets.split('/')[0];
-    const kebabName = widget.name
-      .replace(/([a-z])([A-Z])/g, '$1-$2')
-      .replace(/V(\d)/g, '-v$1')
-      .toLowerCase();
+    const kebabName = toKebabName(widget.name);
     hasFixture = fileExists(
       `Sources/LifegamesWidgets/Resources/widgets/${category}/${kebabName}.json`,
     );

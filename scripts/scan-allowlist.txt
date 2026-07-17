@@ -1,0 +1,90 @@
+# Allowlist for scripts/scan-personal-data.sh.
+#
+# Format: one entry per line, `<repo-relative-path>:<check-label>`.
+#   <check-label> is one of: marker:j0nathan-ll0yd, marker:j0nathan_ll0yd,
+#   email, phone, coordinate — or `*` to suppress every check for that path.
+# Blank lines and `#`-prefixed comments are ignored.
+#
+# Entries below were seeded by running `scripts/scan-personal-data.sh --full-tree`
+# and triaging every hit (lp-audit D6, 2026-07-16). Re-triage this file whenever
+# a genuinely new hit shows up that isn't already covered here.
+#
+# All entries are the `marker:j0nathan-ll0yd` check. The other heuristics
+# (email/phone/coordinate) had zero remaining hits after the built-in
+# @example.{com,org,net} + noreply exclusions — see scan-personal-data.sh's
+# EMAIL_ALLOW_REGEX. The marker itself is the maintainer's own PUBLIC GitHub
+# handle / portfolio domain (not a secret), so it legitimately appears
+# throughout: the copy package's identity content (its entire purpose is to
+# be the public identity source of truth), docs/comments referencing the
+# consumer repo by name, `~/Repositories/<repo>`-style path-convention
+# defaults (mirrors the pattern already established in
+# scripts/ci-setup-portal-contract.sh's LP_DIR), schema/JSON `examples`
+# fields, and apps/portfolio/ (the user's real portfolio — expected to
+# contain real identity per this scanner's own scope note).
+
+# Copy package identity content (the public identity source of truth) + its
+# generated dist/ artifacts.
+Sources/LifegamesCopy/Resources/identity.en-US.json:marker:j0nathan-ll0yd
+Sources/LifegamesCopy/Resources/llm.en-US.json:marker:j0nathan-ll0yd
+packages/copy/src/identity.en-US.json:marker:j0nathan-ll0yd
+packages/copy/src/llm.en-US.json:marker:j0nathan-ll0yd
+packages/copy/dist/identity.flat.json:marker:j0nathan-ll0yd
+packages/copy/dist/llm.flat.json:marker:j0nathan-ll0yd
+
+# apps/portfolio/ is the user's real portfolio — expected to contain real
+# identity (see scan-personal-data.sh's header note).
+apps/portfolio/public/llms.txt:marker:j0nathan-ll0yd
+apps/portfolio/src/layouts/Dashboard.astro:marker:j0nathan-ll0yd
+
+# #Preview / demo display content (SwiftUI previews, "coming soon" sample
+# widgets) — CLAUDE.md scopes #Preview/mock data out of the copy-package
+# duplication concern; same rationale applies here.
+Sources/LifegamesComponents/Bento/ProfileHeaderView.swift:marker:j0nathan-ll0yd
+Sources/LifegamesWidgets/Identity/ComingSoonView.swift:marker:j0nathan-ll0yd
+Sources/LifegamesWidgets/Identity/IdentityCardView.swift:marker:j0nathan-ll0yd
+packages/web/src/widgets/identity/ComingSoon.astro:marker:j0nathan-ll0yd
+
+# Docs/comments/config referencing the consumer repo (j0nathan-ll0yd.github.io)
+# or this repo's own public GitHub URL by name.
+CLAUDE.md:marker:j0nathan-ll0yd
+apps/docs/astro.config.mjs:marker:j0nathan-ll0yd
+apps/docs/src/content/docs/brand/voice.mdx:marker:j0nathan-ll0yd
+apps/docs/src/content/docs/operations/phase-2-cutover.mdx:marker:j0nathan-ll0yd
+apps/docs/src/content/docs/reference/widget-inventory.md:marker:j0nathan-ll0yd
+apps/docs/src/styles/brand.css:marker:j0nathan-ll0yd
+docs/adr/0005-evict-live-data-runtime-to-web-app.md:marker:j0nathan-ll0yd
+fixtures/widgets/SCRUBBING.md:marker:j0nathan-ll0yd
+packages/tokens/src/compat.csv:marker:j0nathan-ll0yd
+packages/web/src/production/BioTerminal.astro:marker:j0nathan-ll0yd
+packages/web/src/production/index.ts:marker:j0nathan-ll0yd
+
+# `~/Repositories/<repo>`-style local path-convention defaults, and upstream
+# repo-path references (mantle-LifegamesPortal, design-system-Lifegames).
+scripts/check-baseline-age.mjs:marker:j0nathan-ll0yd
+scripts/ci-setup-portal-contract.sh:marker:j0nathan-ll0yd
+scripts/sync-assets.sh:marker:j0nathan-ll0yd
+scripts/widget-inventory.mjs:marker:j0nathan-ll0yd
+packages/schemas/.contract-lock.json:marker:j0nathan-ll0yd
+packages/schemas/scripts/baseline-validate.mjs:marker:j0nathan-ll0yd
+packages/schemas/scripts/generate-contract-lock.ts:marker:j0nathan-ll0yd
+
+# JSON Schema `examples` fields.
+packages/schemas/authored/profile.schema.json:marker:j0nathan-ll0yd
+
+# packages/fixtures: synthetic GitHub-activity fixture factories/generated
+# output using the maintainer's real (public) GitHub login/repo path as
+# realistic-looking synthetic test data.
+packages/fixtures/src/factories/github-events.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/starred-repos.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/generated/github-events/baseline.json:marker:j0nathan-ll0yd
+packages/fixtures/src/generated/github-events/commitsOnly.json:marker:j0nathan-ll0yd
+packages/fixtures/src/generated/github-events/full.json:marker:j0nathan-ll0yd
+packages/fixtures/src/generated/github-events/overTen.json:marker:j0nathan-ll0yd
+packages/fixtures/src/generated/github-events/prsOnly.json:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/github.baseline.json:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/github.full.json:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/github.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/profile.baseline.json:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/profile.full.json:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/profile.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/github-events.ts:marker:j0nathan-ll0yd
