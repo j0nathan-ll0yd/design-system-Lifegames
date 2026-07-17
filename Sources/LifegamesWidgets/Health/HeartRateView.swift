@@ -34,7 +34,7 @@ public struct HeartRateView: View {
             HeartRateEmptyView()
         case let .populated(props):
             if props.watchPaused {
-                HeartRatePausedView()
+                HeartRatePausedView(charging: props.watchCharging)
             } else {
                 HeartRatePopulatedView(props: props, animateECG: animateECG)
             }
@@ -51,8 +51,12 @@ private struct HeartRatePopulatedView: View {
     }
 
     private func hrvColor(_ hrv: Int) -> Color {
-        if hrv >= 40 { return LGColor.accentGreen }
-        if hrv >= 20 { return LGColor.accentAmber }
+        if hrv >= 40 {
+            return LGColor.accentGreen
+        }
+        if hrv >= 20 {
+            return LGColor.accentAmber
+        }
         return LGColor.accentRed
     }
 
@@ -270,7 +274,19 @@ private struct HeartRateEmptyView: View {
 /// Shown when `HeartRateProps.watchPaused` is true. Replaces the populated content
 /// entirely — no stale data is ever displayed. Mirrors `HeartRateEmptyView` structure
 /// so the card footprint is identical: full-height placeholder, same neonCard chrome.
+/// The `charging` variant swaps the copy only (label/description), matching the web
+/// widget's `watch.source === 'charging'` path — same icon, same chrome.
 private struct HeartRatePausedView: View {
+    var charging = false
+
+    private var label: String {
+        charging ? heartRateCopy.paused.labelCharging : heartRateCopy.paused.label
+    }
+
+    private var pausedDescription: String {
+        charging ? heartRateCopy.paused.descriptionCharging : heartRateCopy.paused.description
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: LGColor.accentPink)
@@ -279,10 +295,10 @@ private struct HeartRatePausedView: View {
                 Image(systemName: "applewatch.slash")
                     .font(.system(size: 28))
                     .foregroundStyle(LGColor.textMuted)
-                Text(heartRateCopy.paused.label)
+                Text(label)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(LGColor.textMuted)
-                Text(heartRateCopy.paused.description)
+                Text(pausedDescription)
                     .font(.system(size: 11))
                     .foregroundStyle(LGColor.textMuted.opacity(0.7))
                     .multilineTextAlignment(.center)
@@ -296,7 +312,7 @@ private struct HeartRatePausedView: View {
         }
         .neonCard(accent: LGColor.accentPink)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(heartRateCopy.title). \(heartRateCopy.paused.label). \(heartRateCopy.paused.description)")
+        .accessibilityLabel("\(heartRateCopy.title). \(label). \(pausedDescription)")
     }
 }
 
@@ -379,6 +395,17 @@ private struct HeartRatePausedView: View {
         bpm: 72, hrv: 35, zone: "Normal Zone",
         restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2,
         watchPaused: true
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Paused (charging)") {
+    HeartRateView(props: HeartRateProps(
+        bpm: 72, hrv: 35, zone: "Normal Zone",
+        restingHeartRate: 54, respiratoryRate: 14, wristTemperatureDelta: 0.2,
+        watchPaused: true, watchCharging: true
     ))
     .padding()
     .background(LGColor.surfaceBase)

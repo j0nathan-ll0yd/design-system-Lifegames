@@ -45,6 +45,11 @@ public struct MovementRingsProps: Equatable, Sendable {
     public var solar: Solar?
     /// When true, the widget renders a paused overlay indicating the watch is not worn.
     public var watchPaused: Bool
+    /// Refines the paused overlay: when true (with `watchPaused`), the overlay
+    /// renders the `paused.labelCharging`/`descriptionCharging` copy variants —
+    /// parity with the web widget's `watch.source === 'charging'` path. Ignored
+    /// when `watchPaused` is false.
+    public var watchCharging: Bool
 
     public init(
         moveKcal: Double,
@@ -56,7 +61,8 @@ public struct MovementRingsProps: Equatable, Sendable {
         daylightMin: Double,
         goals: Goals = Goals(),
         solar: Solar? = nil,
-        watchPaused: Bool = false
+        watchPaused: Bool = false,
+        watchCharging: Bool = false
     ) {
         self.moveKcal = moveKcal
         self.exerciseMin = exerciseMin
@@ -68,5 +74,6 @@ public struct MovementRingsProps: Equatable, Sendable {
         self.goals = goals
         self.solar = solar
         self.watchPaused = watchPaused
+        self.watchCharging = watchCharging
     }
 }
