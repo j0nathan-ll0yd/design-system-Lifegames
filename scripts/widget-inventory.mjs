@@ -63,10 +63,19 @@ const widgets = typeFiles.map((filePath) => {
   return { id, category, filePath, schemaExempt };
 });
 
-// ── step 2: detect hasStory (*.stories.tsx alongside the types file) ──────────
+// ── step 2: detect hasStory ───────────────────────────────────────────────────
+// A widget has a story if EITHER a *.stories.tsx sits co-located next to its
+// *.types.ts, OR a production story lives in the dedicated Storybook tree at
+// apps/storybook/src/production/<WidgetName>.stories.ts. The real production
+// stories live in the Storybook tree (e.g. MovementRings.stories.ts), so
+// checking only the co-located path produced a false hasStory:false for those
+// widgets (lp-audit D1 finding — MovementRings).
+const STORYBOOK_PRODUCTION = path.join(ROOT, 'apps/storybook/src/production');
 for (const w of widgets) {
   const dir = path.dirname(w.filePath);
-  w.hasStory = fileExists(path.join(dir, `${w.id}.stories.tsx`));
+  const colocated = fileExists(path.join(dir, `${w.id}.stories.tsx`));
+  const storybookProduction = fileExists(path.join(STORYBOOK_PRODUCTION, `${w.id}.stories.ts`));
+  w.hasStory = colocated || storybookProduction;
 }
 
 // ── step 3: detect hasSwiftMirror ────────────────────────────────────────────
@@ -86,6 +95,10 @@ for (const w of widgets) {
 // CI fail condition: portfolio unavailable AND fallback manifest missing.
 
 let consumedSet = new Set();
+// name -> Set<consuming .astro basename>, so a newly-consumed widget can be
+// reconciled into the governance widgets[] array with real consumer provenance
+// (step 7) instead of leaving it self-inconsistent (lp-audit D1 HIGH).
+const consumedByFile = new Map();
 let portfolioAvailable = false;
 
 const portfolioPages = path.join(PORTFOLIO_REPO, 'src/pages');
@@ -96,6 +109,7 @@ if (fs.existsSync(portfolioPages) || fs.existsSync(portfolioComponents)) {
   const astroFiles = [...walk(portfolioPages, '.astro'), ...walk(portfolioComponents, '.astro')];
   for (const f of astroFiles) {
     const src = fs.readFileSync(f, 'utf-8');
+    const base = path.basename(f);
     // Find `from '@lifegames/web/production'` import blocks (possibly multi-line)
     const importBlockRe = /import\s*\{([^}]+)\}\s*from\s*['"]@lifegames\/web\/production['"]/gs;
     let match;
@@ -111,6 +125,8 @@ if (fs.existsSync(portfolioPages) || fs.existsSync(portfolioComponents)) {
         .filter(Boolean);
       for (const name of names) {
         consumedSet.add(name);
+        if (!consumedByFile.has(name)) consumedByFile.set(name, new Set());
+        consumedByFile.get(name).add(base);
       }
     }
   }
@@ -211,13 +227,38 @@ fs.writeFileSync(
 console.log(`Wrote ${OUTPUT_JSON}`);
 
 // Write fallback manifest (consumed widget IDs only — no personal data).
-// Preserve the governance `widgets` array (R6: consumers/status/plannedSurface)
-// across regenerations — it is maintainer-curated and not derivable from import scans.
+// Preserve the governance `widgets` array (R6: status/plannedSurface are
+// maintainer-curated and not derivable from import scans) AND reconcile it so
+// every portfolio-consumed widget has a matching entry. A widget listed in
+// consumedWidgets[] but absent from widgets[] is the self-inconsistency
+// lp-audit D1 (audit-widget-matrix.mjs) flags as HIGH. Missing entries are
+// appended with the fields we CAN derive — category (from the widget inventory)
+// and consumers (from the import scan) — with status defaulting to
+// "Experimental" and plannedSurface to null for later maintainer curation.
+// Reconciliation only runs when the portfolio scan supplied per-widget consumer
+// provenance (skipped in fallback mode, which has no source files to attribute).
 const consumedWidgetIds = inventory.filter((w) => w.consumedByPortfolio).map((w) => w.id);
 const existingManifest = readJSON(FALLBACK_MANIFEST);
 const manifestOut = { consumedWidgets: consumedWidgetIds };
-if (existingManifest && Array.isArray(existingManifest.widgets)) {
-  manifestOut.widgets = existingManifest.widgets;
+const curatedWidgets =
+  existingManifest && Array.isArray(existingManifest.widgets) ? [...existingManifest.widgets] : [];
+if (portfolioAvailable) {
+  const curatedNames = new Set(curatedWidgets.map((w) => w.name));
+  const categoryById = new Map(inventory.map((w) => [w.id, w.category]));
+  for (const id of consumedWidgetIds) {
+    if (curatedNames.has(id)) continue;
+    curatedWidgets.push({
+      name: id,
+      category: categoryById.get(id) ?? null,
+      consumers: [...(consumedByFile.get(id) ?? [])].sort(),
+      status: 'Experimental',
+      plannedSurface: null,
+    });
+    curatedNames.add(id);
+  }
+}
+if (curatedWidgets.length > 0) {
+  manifestOut.widgets = curatedWidgets;
 }
 manifestOut.generatedAt = new Date().toISOString();
 fs.writeFileSync(FALLBACK_MANIFEST, JSON.stringify(manifestOut, null, 2) + '\n');

@@ -57,7 +57,7 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
     html += `<div class="theatre-poster-wrap">`;
     if (r.imageUrl) {
       const localSrc = localizeImageUrl(r.imageUrl);
-      const cardUrl = localizeImageUrl((r as any).imageUrlCard ?? null);
+      const cardUrl = localizeImageUrl(r.imageUrlCard ?? null);
       const fallback = imgFallbackAttrs(cardUrl || localSrc, r.imageUrl);
       if (cardUrl) {
         var avifSrc = r.imageUrlCardAvif

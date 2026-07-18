@@ -245,8 +245,8 @@
       "name": "SyncStatus",
       "viewType": "SyncStatusView",
       "fixturePath": "other/sync-status.json",
-      "production": true,
-      "productionCategory": "system",
+      "production": false,
+      "productionCategory": null,
       "status": "Experimental",
       "plannedSurface": "iOS Settings \u2192 Watch Companion preview tile",
       "platform": "watchOS"
@@ -256,8 +256,8 @@
       "name": "DiagnosticsMonitor",
       "viewType": "DiagnosticsMonitorView",
       "fixturePath": "other/diagnostics-monitor.json",
-      "production": true,
-      "productionCategory": "system",
+      "production": false,
+      "productionCategory": null,
       "status": "Experimental",
       "plannedSurface": "iOS Developer Menu \u2192 Watch Log Mirror",
       "platform": "watchOS"

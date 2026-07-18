@@ -70,6 +70,10 @@ All use Vite 7 (unified from prior Vite 6/7 split).
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts.
 
+## lp-audit (Audit System — D domain)
+
+This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), `scripts/check-yalc-staleness.mjs` (D5 — yalc link freshness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. The audit catalog and finding reports live in the monorepo hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+
 ## Commits
 
 Conventional commit format with trailers. No AI attribution.

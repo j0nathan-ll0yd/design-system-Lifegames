@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T23:54:38.857Z",
+  "generatedAt": "2026-07-18T06:24:25.929Z",
   "totalCount": 30,
   "portfolioConsumedCount": 19,
   "widgets": [
@@ -110,7 +110,7 @@
     {
       "id": "MovementRings",
       "category": "health",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
