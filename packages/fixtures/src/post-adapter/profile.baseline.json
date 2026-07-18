@@ -11,7 +11,7 @@
   "terminalLines": [
     { "type": "prompt", "text": "$ gpg -k" },
     { "type": "output", "text": "→ pub   rsa4096 2002-01-01 [SC]" },
-    { "type": "output", "text": "→ uid   Jonathan Lloyd (Engineering Director)" },
+    { "type": "output", "text": "→ uid   Jonathan Lloyd (Software Engineer)" },
     { "type": "blank", "text": "" },
     { "type": "prompt", "text": "$ printenv STACK" },
     { "type": "output", "text": "→ aws typescript serverless swift go perl" },

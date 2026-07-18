@@ -122,7 +122,7 @@ private struct BlinkingCursor: View {
     BioTerminalView(props: BioTerminalProps(lines: [
         .init(type: "prompt", text: "gpg -k"),
         .init(type: "output", text: "\u{2192} pub   rsa4096 2002-01-01 [SC]"),
-        .init(type: "output", text: "\u{2192} uid   Jonathan Lloyd (Engineering Director)"),
+        .init(type: "output", text: "\u{2192} uid   Jonathan Lloyd (Software Engineer)"),
         .init(type: "blank"),
         .init(type: "prompt", text: "uptime"),
         .init(type: "output", text: "\u{2192} up 24+ years professionally and counting"),

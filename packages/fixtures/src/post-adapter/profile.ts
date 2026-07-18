@@ -25,9 +25,12 @@ export const baseline = authored<Profile>({
     // fingerprint line by default; the uid validity tag is deliberately omitted
     // (`--list-options no-show-uid-validity` output) so the line fits unwrapped.
     // Key date = career epoch, rhyming with the uptime line's 24+ years.
+    // The uid comment is deliberately "Software Engineer" — self-identity, NOT
+    // person.jobTitle ("Engineering Director", which the identity card shows).
+    // Owner decision 2026-07-17; do not "align" this back to jobTitle.
     { type: 'prompt', text: '$ gpg -k' },
     { type: 'output', text: '→ pub   rsa4096 2002-01-01 [SC]' },
-    { type: 'output', text: '→ uid   Jonathan Lloyd (Engineering Director)' },
+    { type: 'output', text: '→ uid   Jonathan Lloyd (Software Engineer)' },
     { type: 'blank', text: '' },
     { type: 'prompt', text: '$ printenv STACK' },
     { type: 'output', text: '→ aws typescript serverless swift go perl' },
