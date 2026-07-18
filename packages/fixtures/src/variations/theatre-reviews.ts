@@ -260,6 +260,18 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         publishedAt: isoDate(),
       }),
     ];
-    return createTheatreReviewsFixture({ reviews, totalReviews: reviews.length });
+    // full promises ALL nullable item fields non-null (the full-coverage walker
+    // enforces it): derive the optimized-image variants (LP #145) from each
+    // entry's imageUrl instead of hand-maintaining 3 URLs x 8 entries.
+    const withImageVariants = (r: (typeof reviews)[number]): (typeof reviews)[number] => ({
+      ...r,
+      imageUrlAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '.avif') : null,
+      imageUrlCard: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.jpg') : null,
+      imageUrlCardAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.avif') : null,
+    });
+    return createTheatreReviewsFixture({
+      reviews: reviews.map(withImageVariants),
+      totalReviews: reviews.length,
+    });
   })(),
 };

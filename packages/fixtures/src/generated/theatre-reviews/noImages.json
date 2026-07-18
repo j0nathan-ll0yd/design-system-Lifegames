@@ -14,7 +14,10 @@
       "excerpt": "A luminous revival that honors the original while finding fresh emotional resonance.",
       "imageUrl": null,
       "imageWidth": null,
-      "imageHeight": null
+      "imageHeight": null,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Who's Afraid of Virginia Woolf?",
@@ -27,7 +30,10 @@
       "excerpt": "A luminous revival that honors the original while finding fresh emotional resonance.",
       "imageUrl": null,
       "imageWidth": null,
-      "imageHeight": null
+      "imageHeight": null,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "A Streetcar Named Desire",
@@ -40,7 +46,10 @@
       "excerpt": "A luminous revival that honors the original while finding fresh emotional resonance.",
       "imageUrl": null,
       "imageWidth": null,
-      "imageHeight": null
+      "imageHeight": null,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     }
   ]
 }

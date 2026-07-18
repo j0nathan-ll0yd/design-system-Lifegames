@@ -14,7 +14,10 @@
       "excerpt": "A luminous revival that honors the original while finding fresh emotional resonance.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Death of a Salesman",
@@ -27,7 +30,10 @@
       "excerpt": "A gripping production with a towering central performance, though the pacing lags in Act II.",
       "imageUrl": "https://coasttocoastreviews.com/images/death-of-a-salesman.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Waiting for Godot",
@@ -40,7 +46,10 @@
       "excerpt": "The existential dread is palpable, but this staging fails to unlock Beckett's dark humor.",
       "imageUrl": "https://coasttocoastreviews.com/images/waiting-for-godot.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     }
   ]
 }

@@ -17,5 +17,8 @@ export interface TheatreReviewsExport {
     imageUrl: string | null;
     imageWidth: number | null;
     imageHeight: number | null;
+    imageUrlAvif: string | null;
+    imageUrlCard: string | null;
+    imageUrlCardAvif: string | null;
   }[];
 }
