@@ -1,1 +1,13 @@
-{}
+{
+  "health": {
+    "movement": {
+      "moveKcal": 0,
+      "exerciseMin": 0,
+      "standHr": 0,
+      "steps": 0,
+      "distanceMeters": 0,
+      "flights": 0,
+      "daylightMin": 0
+    }
+  }
+}
