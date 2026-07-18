@@ -132,6 +132,21 @@ describe('updateMovementRings', () => {
       expect(el('legendStand').textContent).toBe('9/12');
     });
 
+    it('prefers the synced standHours ring count over the standTime derivation', () => {
+      // Regression: watch ring 4/12 stand HOURS while standTime was 4 MINUTES —
+      // the /60 derivation rendered 0/12.
+      updateMovementRings(
+        makeHealth({
+          quantities: {
+            ...makeHealth().quantities,
+            standTime: { value: 4, unit: 'min' },
+            standHours: { value: 4, unit: 'count' },
+          },
+        }),
+      );
+      expect(el('legendStand').textContent).toBe('4/12');
+    });
+
     it('floors stand minutes to hours against the synced stand goal', () => {
       updateMovementRings(
         makeHealth({

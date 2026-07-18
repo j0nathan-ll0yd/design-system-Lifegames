@@ -94,13 +94,18 @@ export function updateMovementRings(data: AdaptedHealth): void {
   const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
   const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
 
-  // Stand: HealthKit ships minutes; UI shows hours.
+  // Stand: prefer the achieved ring count (`standHours`, synced from
+  // HKActivitySummary — the watch ring's own metric). Legacy payloads without
+  // it fall back to standTime, where HealthKit ships minutes and the UI shows
+  // hours (an approximation: minutes stood ≠ hours credited).
   const standRaw = q.standTime;
-  const standHours = standRaw
-    ? standRaw.unit === 'min'
-      ? Math.floor(standRaw.value / 60)
-      : Math.floor(standRaw.value)
-    : 0;
+  const standHours = q.standHours
+    ? Math.floor(q.standHours.value)
+    : standRaw
+      ? standRaw.unit === 'min'
+        ? Math.floor(standRaw.value / 60)
+        : Math.floor(standRaw.value)
+      : 0;
 
   const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;
   const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0;

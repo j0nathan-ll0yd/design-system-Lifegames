@@ -31,6 +31,8 @@ const health: MovementRingsProps['health'] = (rawHealth as any).quantities
         activeEnergyBurned: { value: m?.moveKcal ?? 0, unit: 'kcal' },
         exerciseTime: { value: m?.exerciseMin ?? 0, unit: 'min' },
         standTime: { value: m?.standHr ?? 0, unit: 'hr' },
+        // Flat-shape standHr is achieved hours — exactly what standHours carries.
+        standHours: { value: m?.standHr ?? 0, unit: 'count' },
         timeInDaylight: { value: m?.daylightMin ?? 0, unit: 'min' },
       },
       goals: m?.goals,
@@ -48,10 +50,12 @@ const goals = {
   daylightMin: health.goals?.daylightMin ?? 20,
 };
 
-// Normalise Stand: HealthKit ships minutes — convert if unit === 'min'.
+// Stand: prefer the achieved ring count (`standHours`, HKActivitySummary — the
+// watch ring's own metric); legacy data falls back to standTime (min → hr).
 const standUnit = q.standTime?.unit ?? 'hr';
-const standHours =
-  standUnit === 'min'
+const standHours = q.standHours
+  ? Math.floor(q.standHours.value)
+  : standUnit === 'min'
     ? Math.floor((q.standTime?.value ?? 0) / 60)
     : Math.floor(q.standTime?.value ?? 0);
 

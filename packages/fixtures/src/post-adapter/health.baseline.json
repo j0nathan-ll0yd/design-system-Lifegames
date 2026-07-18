@@ -4,6 +4,7 @@
     "activeEnergyBurned": { "value": 310.5, "unit": "kcal" },
     "exerciseTime": { "value": 35, "unit": "min" },
     "standTime": { "value": 65, "unit": "min" },
+    "standHours": { "value": 9, "unit": "count" },
     "basalEnergyBurned": { "value": 1820, "unit": "kcal" },
     "distanceWalkingRunning": { "value": 6200, "unit": "m" },
     "heartRate": { "value": 72, "unit": "count/min" },
