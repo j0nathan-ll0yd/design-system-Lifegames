@@ -43,7 +43,9 @@ function setText(id: string, text: string): void {
  * Reads stepCount / distanceWalkingRunning / flightsClimbed,
  * activeEnergyBurned / exerciseTime / standTime; normalises Stand
  * min -> hr if HealthKit shipped minutes; computes ring progress
- * fractions and applies via stroke-dashoffset.
+ * fractions against the server-synced goals (fallback: SSR defaults)
+ * and applies via stroke-dashoffset. Also refreshes the daylight
+ * caption (+ goal-met badge) and the solar sun-arc footer.
  */
 export function updateMovementRings(data: AdaptedHealth): void {
   const card = document.getElementById('cardMovement');
@@ -79,25 +81,31 @@ export function updateMovementRings(data: AdaptedHealth): void {
 
   const q = data.quantities;
 
-  // Goals — read from optional goals override on AdaptedHealth (none today, so use defaults).
-  // Future-proof: a typed `goals` field can be added to AdaptedHealth without touching this file.
+  // Goals — server-synced values from health.json's `goals` object. The object is
+  // absent on legacy payloads and each field is null until the device's first
+  // goals sync, so fall back per-field to the SSR defaults.
   const goals = {
-    moveKcal: DEFAULT_MOVE_KCAL,
-    exerciseMin: DEFAULT_EXERCISE_MIN,
-    standHr: DEFAULT_STAND_HR,
-    daylightMin: DEFAULT_DAYLIGHT_MIN,
+    moveKcal: data.goals?.moveKcal ?? DEFAULT_MOVE_KCAL,
+    exerciseMin: data.goals?.exerciseMin ?? DEFAULT_EXERCISE_MIN,
+    standHr: data.goals?.standHr ?? DEFAULT_STAND_HR,
+    daylightMin: data.goals?.daylightMin ?? DEFAULT_DAYLIGHT_MIN,
   };
 
   const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
   const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
 
-  // Stand: HealthKit ships minutes; UI shows hours.
+  // Stand: prefer the achieved ring count (`standHours`, synced from
+  // HKActivitySummary — the watch ring's own metric). Legacy payloads without
+  // it fall back to standTime, where HealthKit ships minutes and the UI shows
+  // hours (an approximation: minutes stood ≠ hours credited).
   const standRaw = q.standTime;
-  const standHours = standRaw
-    ? standRaw.unit === 'min'
-      ? Math.floor(standRaw.value / 60)
-      : Math.floor(standRaw.value)
-    : 0;
+  const standHours = q.standHours
+    ? Math.floor(q.standHours.value)
+    : standRaw
+      ? standRaw.unit === 'min'
+        ? Math.floor(standRaw.value / 60)
+        : Math.floor(standRaw.value)
+      : 0;
 
   const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;
   const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0;
@@ -131,10 +139,23 @@ export function updateMovementRings(data: AdaptedHealth): void {
   setText('legendExercise', exerciseVal + '/' + goals.exerciseMin);
   setText('legendStand', standHours + '/' + goals.standHr);
 
-  // Daylight caption (timeInDaylight is optional and may not arrive)
-  const daylightMin = q.timeInDaylight ? Math.round(q.timeInDaylight.value) : null;
-  if (daylightMin !== null) {
-    setText('mvDaylightMin', String(daylightMin));
+  // Daylight caption — an absent timeInDaylight quantity means no daylight synced
+  // yet today, so render 0 rather than leaving the SSR fixture value on screen.
+  const daylightMin = q.timeInDaylight ? Math.round(q.timeInDaylight.value) : 0;
+  setText('mvDaylightMin', String(daylightMin));
+  const daylightHitEl = document.getElementById('mvDaylightHit');
+  if (daylightHitEl) daylightHitEl.hidden = daylightMin < goals.daylightMin;
+
+  // Sun-arc footer — solar facts are server-computed; when absent (legacy payload)
+  // keep the SSR values since the client has nothing better to show.
+  if (data.solar) {
+    setText('mvSunrise', data.solar.sunriseHHmm);
+    setText('mvSunset', data.solar.sunsetHHmm);
+    const sunDot = document.getElementById('mvSunDot');
+    if (sunDot) {
+      const pct = Math.min(100, Math.max(0, data.solar.currentProgressPct));
+      sunDot.style.left = pct + '%';
+    }
   }
 
   card.classList.remove('is-loading');

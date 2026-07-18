@@ -31,6 +31,8 @@ const health: MovementRingsProps['health'] = (rawHealth as any).quantities
         activeEnergyBurned: { value: m?.moveKcal ?? 0, unit: 'kcal' },
         exerciseTime: { value: m?.exerciseMin ?? 0, unit: 'min' },
         standTime: { value: m?.standHr ?? 0, unit: 'hr' },
+        // Flat-shape standHr is achieved hours — exactly what standHours carries.
+        standHours: { value: m?.standHr ?? 0, unit: 'count' },
         timeInDaylight: { value: m?.daylightMin ?? 0, unit: 'min' },
       },
       goals: m?.goals,
@@ -48,10 +50,12 @@ const goals = {
   daylightMin: health.goals?.daylightMin ?? 20,
 };
 
-// Normalise Stand: HealthKit ships minutes — convert if unit === 'min'.
+// Stand: prefer the achieved ring count (`standHours`, HKActivitySummary — the
+// watch ring's own metric); legacy data falls back to standTime (min → hr).
 const standUnit = q.standTime?.unit ?? 'hr';
-const standHours =
-  standUnit === 'min'
+const standHours = q.standHours
+  ? Math.floor(q.standHours.value)
+  : standUnit === 'min'
     ? Math.floor((q.standTime?.value ?? 0) / 60)
     : Math.floor(q.standTime?.value ?? 0);
 
@@ -76,11 +80,13 @@ const isEmpty = steps === 0 && distanceM === 0 && moveVal === 0 && exerciseVal =
 // so the page is correct before the runtime updater fires.
 const ssrPaused = health.watch?.worn === false;
 
-// Solar / daylight footer values (mocked defaults if missing)
+// Solar footer values (SSR placeholders if missing; updater overwrites from live data)
 const sunrise = health.solar?.sunriseHHmm ?? '06:30';
 const sunset = health.solar?.sunsetHHmm ?? '20:15';
-const sunPct = health.solar?.currentProgressPct ?? 60;
-const daylightMin = Math.round(q.timeInDaylight?.value ?? 48);
+// Clamp like the updater does — a contract-violating pct must not paint off-track.
+const sunPct = Math.min(100, Math.max(0, health.solar?.currentProgressPct ?? 60));
+// Absent daylight = none synced yet — render 0, never a mock value.
+const daylightMin = Math.round(q.timeInDaylight?.value ?? 0);
 const daylightHit = daylightMin >= goals.daylightMin;
 
 // SVG ring geometry (matches preview html)
@@ -311,7 +317,10 @@ function offset(circ: number, pct: number): number {
               <span id="mvDaylightMin">{daylightMin}</span>
               {widgets.movement.daylightCaption.replace('{minutes}', '')} &middot;{' '}
               {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}
-              {daylightHit && <span class="mv-sun-caption-hit">&#10003;</span>}
+              {/* Always in the DOM so the updater can toggle it as live daylight changes. */}
+              <span class="mv-sun-caption-hit" id="mvDaylightHit" hidden={!daylightHit}>
+                &#10003;
+              </span>
             </p>
           </div>
         </div>

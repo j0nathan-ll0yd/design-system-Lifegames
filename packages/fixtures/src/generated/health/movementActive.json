@@ -1,0 +1,23 @@
+{
+  "date": "2026-03-17",
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "quantities": {
+    "heartRate": { "value": 63, "unit": "count/min" },
+    "heartRateVariabilitySDNN": { "value": 45, "unit": "ms" },
+    "stepCount": { "value": 324, "unit": "count" },
+    "distanceWalkingRunning": { "value": 259.8, "unit": "m" },
+    "appleExerciseTime": { "value": 52, "unit": "min" },
+    "activeEnergyBurned": { "value": 103.4, "unit": "kcal" },
+    "basalEnergyBurned": { "value": 1148, "unit": "kcal" },
+    "dietaryWater": { "value": 2202, "unit": "mL" },
+    "dietaryCaffeine": { "value": 0.36, "unit": "g" },
+    "appleSleepingWristTemperature": { "value": 0, "unit": "degC" },
+    "exerciseTime": { "value": 0, "unit": "min" },
+    "standTime": { "value": 4, "unit": "min" },
+    "standHours": { "value": 4, "unit": "count" },
+    "timeInDaylight": { "value": 48, "unit": "min" },
+    "flightsClimbed": { "value": 0, "unit": "count" }
+  },
+  "goals": { "moveKcal": 650, "exerciseMin": 40, "standHr": 12, "daylightMin": 20 },
+  "solar": { "sunriseHHmm": "05:39", "sunsetHHmm": "20:24", "currentProgressPct": 81.6 }
+}

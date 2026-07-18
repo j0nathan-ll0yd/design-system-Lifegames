@@ -61,6 +61,11 @@ const POPULATED_DOM = `
       <span id="legendMove"></span>
       <span id="legendExercise"></span>
       <span id="legendStand"></span>
+      <span id="mvDaylightMin"></span>
+      <span id="mvDaylightHit"></span>
+      <span id="mvSunrise"></span>
+      <span id="mvSunset"></span>
+      <div id="mvSunDot"></div>
     </div>
   </div>
 `;
@@ -85,6 +90,145 @@ describe('updateMovementRings', () => {
   it('sets legend move text', () => {
     updateMovementRings(makeHealth());
     expect(el('legendMove').textContent).toBe('400/500');
+  });
+
+  // ── server-synced goals ────────────────────────────────────────────────────
+  // Regression: the live site rendered 103/500 · 0/30 while the device goals
+  // were 650/40 — the updater ignored health.json's `goals` object entirely.
+
+  describe('server-synced goals', () => {
+    it('renders legend denominators and center pct from data.goals', () => {
+      updateMovementRings(
+        makeHealth({
+          goals: { moveKcal: 650, exerciseMin: 40, standHr: 12, daylightMin: 20 },
+          quantities: {
+            ...makeHealth().quantities,
+            activeEnergyBurned: { value: 103, unit: 'kcal' },
+            exerciseTime: { value: 0, unit: 'min' },
+          },
+        }),
+      );
+      expect(el('legendMove').textContent).toBe('103/650');
+      expect(el('legendExercise').textContent).toBe('0/40');
+      expect(el('ringCenterPct').textContent).toBe('16%');
+    });
+
+    it('falls back to SSR defaults when the goals object is absent (legacy payload)', () => {
+      updateMovementRings(makeHealth());
+      expect(el('legendMove').textContent).toBe('400/500');
+      expect(el('legendExercise').textContent).toBe('30/30');
+      expect(el('legendStand').textContent).toBe('9/12');
+      expect(el('ringCenterPct').textContent).toBe('80%');
+    });
+
+    it('falls back per-field when goal fields are null (pre-first-goals-sync)', () => {
+      updateMovementRings(
+        makeHealth({
+          goals: { moveKcal: null, exerciseMin: null, standHr: null, daylightMin: 20 },
+        }),
+      );
+      expect(el('legendMove').textContent).toBe('400/500');
+      expect(el('legendExercise').textContent).toBe('30/30');
+      expect(el('legendStand').textContent).toBe('9/12');
+    });
+
+    it('prefers the synced standHours ring count over the standTime derivation', () => {
+      // Regression: watch ring 4/12 stand HOURS while standTime was 4 MINUTES —
+      // the /60 derivation rendered 0/12.
+      updateMovementRings(
+        makeHealth({
+          quantities: {
+            ...makeHealth().quantities,
+            standTime: { value: 4, unit: 'min' },
+            standHours: { value: 4, unit: 'count' },
+          },
+        }),
+      );
+      expect(el('legendStand').textContent).toBe('4/12');
+    });
+
+    it('floors stand minutes to hours against the synced stand goal', () => {
+      updateMovementRings(
+        makeHealth({
+          goals: { moveKcal: 650, exerciseMin: 40, standHr: 14, daylightMin: 20 },
+          quantities: {
+            ...makeHealth().quantities,
+            standTime: { value: 245, unit: 'min' },
+          },
+        }),
+      );
+      expect(el('legendStand').textContent).toBe('4/14');
+    });
+  });
+
+  // ── daylight caption ───────────────────────────────────────────────────────
+
+  describe('daylight caption', () => {
+    it('renders 0 when timeInDaylight is absent — never leaves SSR fixture text', () => {
+      // Simulate SSR fixture bleed-through: the shell shipped "48" + a visible badge.
+      el('mvDaylightMin').textContent = '48';
+      updateMovementRings(makeHealth());
+      expect(el('mvDaylightMin').textContent).toBe('0');
+      expect(el('mvDaylightHit').hidden).toBe(true);
+    });
+
+    it('shows the goal-met badge when daylight >= goal', () => {
+      updateMovementRings(
+        makeHealth({
+          quantities: {
+            ...makeHealth().quantities,
+            timeInDaylight: { value: 48, unit: 'min' },
+          },
+        }),
+      );
+      expect(el('mvDaylightMin').textContent).toBe('48');
+      expect(el('mvDaylightHit').hidden).toBe(false);
+    });
+
+    it('hides the goal-met badge when daylight < goal', () => {
+      updateMovementRings(
+        makeHealth({
+          quantities: {
+            ...makeHealth().quantities,
+            timeInDaylight: { value: 5, unit: 'min' },
+          },
+        }),
+      );
+      expect(el('mvDaylightMin').textContent).toBe('5');
+      expect(el('mvDaylightHit').hidden).toBe(true);
+    });
+  });
+
+  // ── solar sun-arc footer ───────────────────────────────────────────────────
+
+  describe('solar sun-arc footer', () => {
+    it('updates sunrise/sunset text and dot position from data.solar', () => {
+      updateMovementRings(
+        makeHealth({
+          solar: { sunriseHHmm: '05:39', sunsetHHmm: '20:24', currentProgressPct: 81.6 },
+        }),
+      );
+      expect(el('mvSunrise').textContent).toBe('05:39');
+      expect(el('mvSunset').textContent).toBe('20:24');
+      expect(el('mvSunDot').style.left).toBe('81.6%');
+    });
+
+    it('clamps the dot position to 0-100', () => {
+      updateMovementRings(
+        makeHealth({
+          solar: { sunriseHHmm: '05:39', sunsetHHmm: '20:24', currentProgressPct: 140 },
+        }),
+      );
+      expect(el('mvSunDot').style.left).toBe('100%');
+    });
+
+    it('leaves SSR solar values untouched when solar is absent', () => {
+      el('mvSunrise').textContent = '06:30';
+      el('mvSunset').textContent = '20:15';
+      updateMovementRings(makeHealth());
+      expect(el('mvSunrise').textContent).toBe('06:30');
+      expect(el('mvSunset').textContent).toBe('20:15');
+    });
   });
 
   // ── paused state ───────────────────────────────────────────────────────────

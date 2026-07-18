@@ -8,6 +8,8 @@ import {
 import type {
   HealthExport,
   HealthExportWatch,
+  HealthExportGoals,
+  HealthExportSolar,
   SleepExport,
   WorkoutsExport,
   BooksExport,
@@ -49,6 +51,11 @@ export interface AdaptedHealth {
     caffeineRangeLo: number;
     caffeineRangeHi: number;
   };
+  // Activity ring goals from the export's `goals` object. Absent on legacy
+  // payloads; per-field null until the device's first goals sync.
+  goals?: HealthExportGoals;
+  // Sunrise/sunset facts for the movement sun-arc footer (absent on legacy payloads).
+  solar?: HealthExportSolar;
   // watch is the server-computed worn verdict from device_watch_state.
   // Absent means unknown (no device has ever reported) or watch is worn.
   // Present with worn=false means the widget should render the paused state.
@@ -244,6 +251,8 @@ export function adaptHealth(
     sleepDurationFormatted,
     sleepPhaseFormatted,
     hydration,
+    goals: healthData.goals,
+    solar: healthData.solar,
     watch: healthData.watch,
   };
 }

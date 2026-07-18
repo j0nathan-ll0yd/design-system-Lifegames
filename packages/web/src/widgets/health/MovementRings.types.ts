@@ -15,6 +15,9 @@ export interface MovementRingsProps {
       exerciseTime: { value: number; unit: string };
       // Stand may arrive as min (HealthKit) or hr — see updater normalisation.
       standTime: { value: number; unit: string };
+      // Achieved stand-hours ring count (HKActivitySummary); preferred over
+      // standTime-derived hours when present.
+      standHours?: { value: number; unit: string };
       timeInDaylight?: { value: number; unit: string };
     };
     goals?: {

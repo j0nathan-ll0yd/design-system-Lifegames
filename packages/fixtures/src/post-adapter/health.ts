@@ -2,10 +2,11 @@
 // Workouts, Hydration, NightSummary).
 //
 // DashboardHealth is a DS-owned display shape that is RICHER than the runtime
-// adapter output: it carries ranges, goals, solar, derived metrics, hydration, and
+// adapter output: it carries ranges, derived metrics, hydration ranges, and
 // sampleWorkouts that adaptHealth() does NOT produce (adaptHealth feeds the runtime
-// updater with a narrower AdaptedHealth shape). The SSR shell therefore reads this
-// authored display shape, not adapter output. Authored against `@lifegames/schemas`
+// updater with a narrower AdaptedHealth shape — though goals/solar DO pass through
+// it now that the live movement widget renders them). The SSR shell therefore reads
+// this authored display shape, not adapter output. Authored against `@lifegames/schemas`
 // `DashboardHealth` (generated/dashboard-health.schema.json). All values are
 // absolute (no relative timestamps), so this domain is inherently deterministic.
 import type { DashboardHealth } from '@lifegames/schemas';
@@ -17,6 +18,7 @@ export const baseline = authored<DashboardHealth>({
     activeEnergyBurned: { value: 310.5, unit: 'kcal' },
     exerciseTime: { value: 35, unit: 'min' },
     standTime: { value: 65, unit: 'min' },
+    standHours: { value: 9, unit: 'count' },
     basalEnergyBurned: { value: 1820.0, unit: 'kcal' },
     distanceWalkingRunning: { value: 6200.0, unit: 'm' },
     heartRate: { value: 72, unit: 'count/min' },
@@ -102,6 +104,7 @@ export const full = authored<DashboardHealth>({
     activeEnergyBurned: { value: 1250, unit: 'kcal' },
     exerciseTime: { value: 120, unit: 'min' },
     standTime: { value: 180, unit: 'min' },
+    standHours: { value: 13, unit: 'count' },
     basalEnergyBurned: { value: 2100, unit: 'kcal' },
     distanceWalkingRunning: { value: 18200, unit: 'm' },
     heartRate: { value: 185, unit: 'count/min' },
