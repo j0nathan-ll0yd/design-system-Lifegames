@@ -89,25 +89,25 @@
       }
     },
     "liveFullDump": {
-      "value": "- [llms-full.txt]({siteUrl}/llms-full.txt): Complete data dump — all domains as structured markdown with tables and source citations",
+      "value": "- [llms-full.txt]({cloudfrontBase}/llms-full.txt): Complete data dump — all domains as structured markdown with tables and source citations",
       "_meta": {
-        "description": "llms-full.txt link list item + description. ICU MF1; consumer substitutes the site base URL — the prod domain proxies this artifact (web functions/llms-full.txt.ts), keeping agents on-domain. Em-dash preserved.",
+        "description": "llms-full.txt link list item + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-txt.eta:17"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-07-17"
+        "lastReviewed": "2026-06-11"
       }
     },
     "liveIndexAlias": {
-      "value": "- [index.md]({siteUrl}/index.md): Markdown alias of llms-full.txt for agents expecting .md extensions",
+      "value": "- [index.md]({cloudfrontBase}/index.md): Markdown alias of llms-full.txt for agents expecting .md extensions",
       "_meta": {
-        "description": "index.md alias link list item + description. ICU MF1; consumer substitutes the site base URL — the prod domain proxies this artifact (web functions/index.md.ts), keeping agents on-domain.",
+        "description": "index.md alias link list item + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:18"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-07-17"
+        "lastReviewed": "2026-06-11"
       }
     },
     "canonicalHeading": {
