@@ -1,18 +1,18 @@
 {
   "profile": {
     "terminalLines": [
-      { "type": "prompt", "text": "$ cat about.txt" },
-      { "type": "output", "text": "→ Sample User" },
-      { "type": "output", "text": "→ Software Engineer" },
-      { "type": "output", "text": "→ \"Creating things I'm proud of\"" },
+      { "type": "prompt", "text": "$ gpg -k" },
+      { "type": "output", "text": "→ pub   rsa4096 2002-01-01 [SC]" },
+      { "type": "output", "text": "→ uid   Sample User (Software Engineer)" },
       { "type": "blank", "text": "" },
       { "type": "prompt", "text": "$ printenv STACK" },
       { "type": "output", "text": "→ aws typescript serverless swift go perl" },
       { "type": "blank", "text": "" },
       { "type": "prompt", "text": "$ uptime" },
-      { "type": "output", "text": "→ 24+ years professionally and counting" },
+      { "type": "output", "text": "→ up 24+ years professionally and counting" },
       { "type": "blank", "text": "" },
       { "type": "prompt", "text": "$ cat philosophy.txt" },
+      { "type": "output", "text": "→ \"Creating things I'm proud of\"" },
       { "type": "output", "text": "→ \"Enjoying the passage of time\"" },
       { "type": "blank", "text": "" },
       { "type": "prompt", "text": "$ ls -m interests/" },

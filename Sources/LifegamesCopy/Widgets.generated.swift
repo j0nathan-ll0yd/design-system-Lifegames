@@ -15,7 +15,8 @@ import Foundation
 /// derivation requires.
 // MARK: - Widgets
 public struct Widgets: Codable, Sendable {
-    /// Bio terminal widget — widget title, terminal title-bar text, bash timestamp.
+    /// Bio terminal widget — widget title, terminal title-bar text, shell timestamp badge (zsh,
+    /// matching terminalTitle).
     public let bio: Bio
     /// Book detail modal — section/stat labels, Amazon CTA, no-selection empty-state, progress
     /// caption template, finished-date prefix.
@@ -145,14 +146,15 @@ public extension Widgets {
     }
 }
 
-/// Bio terminal widget — widget title, terminal title-bar text, bash timestamp.
+/// Bio terminal widget — widget title, terminal title-bar text, shell timestamp badge (zsh,
+/// matching terminalTitle).
 // MARK: - Bio
 public struct Bio: Codable, Sendable {
-    public let terminalTitle, timestampBash, title: String
+    public let terminalTitle, timestampZsh, title: String
 
-    public init(terminalTitle: String, timestampBash: String, title: String) {
+    public init(terminalTitle: String, timestampZsh: String, title: String) {
         self.terminalTitle = terminalTitle
-        self.timestampBash = timestampBash
+        self.timestampZsh = timestampZsh
         self.title = title
     }
 }
@@ -177,12 +179,12 @@ public extension Bio {
 
     func with(
         terminalTitle: String? = nil,
-        timestampBash: String? = nil,
+        timestampZsh: String? = nil,
         title: String? = nil
     ) -> Bio {
         return Bio(
             terminalTitle: terminalTitle ?? self.terminalTitle,
-            timestampBash: timestampBash ?? self.timestampBash,
+            timestampZsh: timestampZsh ?? self.timestampZsh,
             title: title ?? self.title
         )
     }

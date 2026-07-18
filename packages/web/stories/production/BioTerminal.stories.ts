@@ -1,16 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
+import fixture from '../../../../Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal.json';
 
-// DS-internal fixture: identity/bio-terminal.json
-const defaultLines = [
-  { type: 'prompt', text: '$ cat about.txt' },
-  { type: 'output', text: '→ Sample User' },
-  { type: 'output', text: '→ Software Engineer' },
-  { type: 'blank', text: '' },
-  { type: 'prompt', text: '$ ls skills/' },
-  { type: 'output', text: '→ typescript  serverless  swift  go' },
-  { type: 'cursor', text: '' },
-];
+// Canonical DS fixture, imported rather than copied so the story cannot drift
+// from what the widget consumers actually render (the previous inline copy had
+// already drifted to a retired `ls skills/` command set).
+const defaultLines = fixture.profile.terminalLines;
 
 function renderTerminal(lines: typeof defaultLines) {
   return html`

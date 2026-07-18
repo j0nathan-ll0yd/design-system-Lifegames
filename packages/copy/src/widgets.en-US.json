@@ -1633,18 +1633,18 @@
         }
       }
     },
-    "timestampBash": {
-      "value": "bash",
+    "timestampZsh": {
+      "value": "zsh",
       "_meta": {
-        "description": "Timestamp badge for the Bio widget (shell flavor). Per-widget.",
+        "description": "Timestamp badge for the Bio widget (shell flavor). Must name the same shell as terminalTitle ('zsh — about'); the badge previously said 'bash' against a zsh title-bar. Per-widget.",
         "usage": [
-          "web:packages/web/src/widgets/identity/BioTerminal.astro:10 (.widget-timestamp)",
-          "ios:Sources/LifegamesWidgets/Identity/BioTerminalView.swift:15 (WidgetHeaderView timestamp)"
+          "web:packages/web/src/widgets/identity/BioTerminal.astro:13 (.widget-timestamp)",
+          "ios:Sources/LifegamesWidgets/Identity/BioTerminalView.swift:18 (WidgetHeaderView timestamp)"
         ],
         "register": "atom",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11",
+        "lastReviewed": "2026-07-17",
         "constraints": {
           "maxChars": 12
         }

@@ -178,9 +178,11 @@ export const widgetsSchema = z
       .strict()
       .describe('Starred Repos production widget — title, empty-state, recent timestamp.'),
     bio: z
-      .object({ title: z.string(), terminalTitle: z.string(), timestampBash: z.string() })
+      .object({ title: z.string(), terminalTitle: z.string(), timestampZsh: z.string() })
       .strict()
-      .describe('Bio terminal widget — widget title, terminal title-bar text, bash timestamp.'),
+      .describe(
+        'Bio terminal widget — widget title, terminal title-bar text, shell timestamp badge (zsh, matching terminalTitle).',
+      ),
     systemStatus: z
       .object({
         title: z.string(),

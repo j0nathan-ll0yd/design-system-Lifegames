@@ -13,11 +13,16 @@ public extension Adapters {
             let profile = json["profile"] as? [String: Any]
         else { return nil }
         let rawLines = profile["terminalLines"] as? [[String: Any]] ?? []
-        let lines = rawLines.map { raw in
-            BioTerminalProps.TerminalLine(
-                type: raw["type"] as? String ?? "output",
-                text: raw["text"] as? String
-            )
+        let lines = rawLines.map { raw -> BioTerminalProps.TerminalLine in
+            let type = raw["type"] as? String ?? "output"
+            var text = raw["text"] as? String
+            // Wire prompt lines carry a literal "$ " (the web widget splits it back
+            // out); BioTerminalView renders its own "$ " prefix, so strip it here or
+            // fixture-driven renders show a doubled prompt ("$ $ uptime").
+            if type == "prompt", let stripped = text, stripped.hasPrefix("$ ") {
+                text = String(stripped.dropFirst(2))
+            }
+            return BioTerminalProps.TerminalLine(type: type, text: text)
         }
         return BioTerminalProps(lines: lines)
     }

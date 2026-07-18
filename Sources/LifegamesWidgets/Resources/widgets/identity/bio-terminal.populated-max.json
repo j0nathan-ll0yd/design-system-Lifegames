@@ -13,7 +13,7 @@
       { "type": "output", "text": "→ Developer experience and internal tooling platforms" },
       { "type": "blank" },
       { "type": "prompt", "text": "$ uptime" },
-      { "type": "output", "text": "24+ years professionally & counting" },
+      { "type": "output", "text": "up 24+ years professionally & counting" },
       { "type": "blank" },
       { "type": "prompt", "text": "$ cat awards.txt" },
       { "type": "output", "text": "→ Patent holder: distributed event sourcing (US-2024-0001)" },

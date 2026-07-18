@@ -178,12 +178,12 @@ export interface Widgets {
     timestampRecent: string;
   };
   /**
-   * Bio terminal widget — widget title, terminal title-bar text, bash timestamp.
+   * Bio terminal widget — widget title, terminal title-bar text, shell timestamp badge (zsh, matching terminalTitle).
    */
   bio: {
     title: string;
     terminalTitle: string;
-    timestampBash: string;
+    timestampZsh: string;
   };
   /**
    * System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.
