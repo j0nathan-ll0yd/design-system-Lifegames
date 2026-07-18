@@ -14,7 +14,10 @@
       "excerpt": "A transcendent production that redefines the genre entirely.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Hamlet",
@@ -27,7 +30,10 @@
       "excerpt": "A commanding performance anchors this thoughtful modern staging.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Macbeth",
@@ -40,7 +46,10 @@
       "excerpt": "Visually stunning with occasional pacing issues in Act III.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Romeo and Juliet",
@@ -53,7 +62,10 @@
       "excerpt": "Fresh choreography elevates familiar material.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Othello",
@@ -66,7 +78,10 @@
       "excerpt": "Solid ensemble work, but the leads lack chemistry.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "The Tempest",
@@ -79,7 +94,10 @@
       "excerpt": "Ambitious staging undermined by muddled direction.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "Titus Andronicus",
@@ -92,7 +110,10 @@
       "excerpt": "Gratuitous staging adds nothing to the text.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     },
     {
       "title": "The Comedy of Errors",
@@ -105,7 +126,10 @@
       "excerpt": "A complete misfire on every level.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-glass-menagerie.jpg",
       "imageWidth": 800,
-      "imageHeight": 450
+      "imageHeight": 450,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
     }
   ]
 }

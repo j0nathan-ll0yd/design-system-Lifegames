@@ -14,7 +14,10 @@
       "excerpt": "A transcendent production that redefines the genre entirely — the fairy sequences deploy aerial silk work that transforms the stage into a living dreamscape, while the mechanicals bring genuine wit.",
       "imageUrl": "https://coasttocoastreviews.com/images/a-midsummer-nights-dream.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/a-midsummer-nights-dream.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/a-midsummer-nights-dream-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/a-midsummer-nights-dream-card.avif"
     },
     {
       "title": "Hamlet",
@@ -27,7 +30,10 @@
       "excerpt": "A commanding central performance anchors this thoughtful modern staging — the soliloquies are delivered with a conversational intimacy that makes the language feel immediate and urgent.",
       "imageUrl": "https://coasttocoastreviews.com/images/hamlet.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/hamlet.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/hamlet-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/hamlet-card.avif"
     },
     {
       "title": "Macbeth",
@@ -40,7 +46,10 @@
       "excerpt": "Visually stunning with occasional pacing issues in Act III — the lighting design creates an atmosphere of perpetual twilight that perfectly mirrors the moral descent of the protagonists.",
       "imageUrl": "https://coasttocoastreviews.com/images/macbeth.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/macbeth.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/macbeth-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/macbeth-card.avif"
     },
     {
       "title": "Romeo and Juliet",
@@ -53,7 +62,10 @@
       "excerpt": "Fresh choreography elevates familiar material — the fight scenes are brutal and kinetic while the balcony sequence is reimagined as a fire escape encounter that grounds the romance.",
       "imageUrl": "https://coasttocoastreviews.com/images/romeo-and-juliet.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/romeo-and-juliet.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/romeo-and-juliet-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/romeo-and-juliet-card.avif"
     },
     {
       "title": "Othello",
@@ -66,7 +78,10 @@
       "excerpt": "Solid ensemble work but the leads lack chemistry in the crucial early scenes — Iago steals every moment he occupies, making the manipulation feel almost too easy.",
       "imageUrl": "https://coasttocoastreviews.com/images/othello.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/othello.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/othello-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/othello-card.avif"
     },
     {
       "title": "The Tempest",
@@ -79,7 +94,10 @@
       "excerpt": "Ambitious staging undermined by muddled direction — the projection mapping is technically impressive but distracts from the language rather than enhancing it.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-tempest.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/the-tempest.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/the-tempest-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/the-tempest-card.avif"
     },
     {
       "title": "Titus Andronicus",
@@ -92,7 +110,10 @@
       "excerpt": "Gratuitous staging adds nothing to the text — the decision to lean into graphic violence without satirical framing makes the production feel exploitative rather than provocative.",
       "imageUrl": "https://coasttocoastreviews.com/images/titus-andronicus.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/titus-andronicus.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/titus-andronicus-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/titus-andronicus-card.avif"
     },
     {
       "title": "The Comedy of Errors",
@@ -105,7 +126,10 @@
       "excerpt": "A complete misfire on every level — the slapstick timing is off, the doubling gimmick confuses rather than delights, and the musical interludes feel imported from a different production entirely.",
       "imageUrl": "https://coasttocoastreviews.com/images/the-comedy-of-errors.jpg",
       "imageWidth": 1200,
-      "imageHeight": 675
+      "imageHeight": 675,
+      "imageUrlAvif": "https://coasttocoastreviews.com/images/the-comedy-of-errors.avif",
+      "imageUrlCard": "https://coasttocoastreviews.com/images/the-comedy-of-errors-card.jpg",
+      "imageUrlCardAvif": "https://coasttocoastreviews.com/images/the-comedy-of-errors-card.avif"
     }
   ]
 }

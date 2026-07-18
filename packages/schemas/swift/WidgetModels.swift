@@ -1552,7 +1552,7 @@ extension TheatreReviewsExport {
 struct Review: Codable {
     let author, excerpt: String
     let imageHeight: Double?
-    let imageURL: String?
+    let imageURL, imageURLAvif, imageURLCard, imageURLCardAvif: String?
     let imageWidth: Double?
     let publishedAt: String
     let rating: String?
@@ -1562,6 +1562,9 @@ struct Review: Codable {
     enum CodingKeys: String, CodingKey {
         case author, excerpt, imageHeight
         case imageURL = "imageUrl"
+        case imageURLAvif = "imageUrlAvif"
+        case imageURLCard = "imageUrlCard"
+        case imageURLCardAvif = "imageUrlCardAvif"
         case imageWidth, publishedAt, rating, ratingNumeric, slug, title, url
     }
 }
@@ -1589,6 +1592,9 @@ extension Review {
         excerpt: String? = nil,
         imageHeight: Double?? = nil,
         imageURL: String?? = nil,
+        imageURLAvif: String?? = nil,
+        imageURLCard: String?? = nil,
+        imageURLCardAvif: String?? = nil,
         imageWidth: Double?? = nil,
         publishedAt: String? = nil,
         rating: String?? = nil,
@@ -1602,6 +1608,9 @@ extension Review {
             excerpt: excerpt ?? self.excerpt,
             imageHeight: imageHeight ?? self.imageHeight,
             imageURL: imageURL ?? self.imageURL,
+            imageURLAvif: imageURLAvif ?? self.imageURLAvif,
+            imageURLCard: imageURLCard ?? self.imageURLCard,
+            imageURLCardAvif: imageURLCardAvif ?? self.imageURLCardAvif,
             imageWidth: imageWidth ?? self.imageWidth,
             publishedAt: publishedAt ?? self.publishedAt,
             rating: rating ?? self.rating,

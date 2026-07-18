@@ -16,6 +16,12 @@ export function createReview(overrides?: Partial<TheatreReviewEntry>): TheatreRe
     imageUrl: 'https://coasttocoastreviews.com/images/the-glass-menagerie.jpg',
     imageWidth: 800,
     imageHeight: 450,
+    // Optimized-image variants (LP #145 made these required-nullable in the
+    // contract). Null by default: production behavior predates the fields, and
+    // the no-images variation stays coherent (all image fields null together).
+    imageUrlAvif: null,
+    imageUrlCard: null,
+    imageUrlCardAvif: null,
     ...overrides,
   };
 }
