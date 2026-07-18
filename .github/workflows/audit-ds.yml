@@ -60,9 +60,14 @@ jobs:
       - run: pnpm build:tokens
 
       - name: D1 widget completeness matrix
+        # shell: bash enables pipefail so the tee pipe cannot swallow a non-zero
+        # exit (B14 / the silent-gate class). D1 runs report-only today, but this
+        # keeps the gate honest if it is ever promoted to --check (blocking).
+        shell: bash
         run: pnpm check:widget-matrix | tee audit-ds-report.txt
 
       - name: D2 baseline age (advisory)
+        shell: bash
         run: pnpm baseline:age | tee -a audit-ds-report.txt
 
       - name: D5 yalc publish staleness
