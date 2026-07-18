@@ -116,6 +116,36 @@ export const full: HealthExport = createHealthFixture({
   },
 });
 
+// The movement widget's active-state regression fixture — the exact data from
+// the 2026-07-17 goals/stand/daylight incident: server goals 650/40/12 (web
+// hardcoded 500/30/12), standHours 4 vs floor(4 standTime-min / 60) = 0, and
+// live solar 05:39/20:24 vs frozen SSR 06:30/20:15. Uses the live export's
+// short quantity keys (exerciseTime, not appleExerciseTime).
+export const movementActive: HealthExport = createHealthFixture({
+  quantities: {
+    stepCount: { value: 324, unit: 'count' },
+    distanceWalkingRunning: { value: 259.8, unit: 'm' },
+    activeEnergyBurned: { value: 103.4, unit: 'kcal' },
+    basalEnergyBurned: { value: 1148, unit: 'kcal' },
+    exerciseTime: { value: 0, unit: 'min' },
+    standTime: { value: 4, unit: 'min' },
+    standHours: { value: 4, unit: 'count' },
+    timeInDaylight: { value: 48, unit: 'min' },
+    flightsClimbed: { value: 0, unit: 'count' },
+  },
+  goals: {
+    moveKcal: 650,
+    exerciseMin: 40,
+    standHr: 12,
+    daylightMin: 20,
+  },
+  solar: {
+    sunriseHHmm: '05:39',
+    sunsetHHmm: '20:24',
+    currentProgressPct: 81.6,
+  },
+});
+
 export const healthVariations = {
   baseline,
   bradycardia,
@@ -133,4 +163,5 @@ export const healthVariations = {
   pausedHrGap,
   pausedCharging,
   full,
+  movementActive,
 };
