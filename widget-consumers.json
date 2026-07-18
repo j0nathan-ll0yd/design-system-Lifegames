@@ -246,7 +246,25 @@
       ],
       "status": "Experimental",
       "plannedSurface": null
+    },
+    {
+      "name": "MovementRings",
+      "category": "health",
+      "consumers": [
+        "index.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
+    },
+    {
+      "name": "NotFound",
+      "category": "identity",
+      "consumers": [
+        "404.astro"
+      ],
+      "status": "Experimental",
+      "plannedSurface": null
     }
   ],
-  "generatedAt": "2026-06-13T23:54:38.858Z"
+  "generatedAt": "2026-07-18T06:24:25.930Z"
 }

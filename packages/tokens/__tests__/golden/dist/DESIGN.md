@@ -348,12 +348,12 @@ Single-purpose UI surfaces sharing a common dark/neon aesthetic. 32 widgets acro
 
 | Widget | View Type | Fixture | Production |
 |---|---|---|---|
-| `DiagnosticsMonitor` | `DiagnosticsMonitorView` | `other/diagnostics-monitor.json` | yes (system) |
+| `DiagnosticsMonitor` | `DiagnosticsMonitorView` | `other/diagnostics-monitor.json` | no |
 | `DndOverlay` | `DndOverlayView` | `other/dnd-overlay.json` | no |
 | `FocusOverlay` | `FocusOverlayView` | `other/focus-overlay.json` | no |
 | `GitHubHeatmap` | `GitHubHeatmapView` | `other/github-heatmap.json` | no |
 | `OGImage` | `OGImageView` | `other/og-image.json` | no |
-| `SyncStatus` | `SyncStatusView` | `other/sync-status.json` | yes (system) |
+| `SyncStatus` | `SyncStatusView` | `other/sync-status.json` | no |
 | `SystemStatus` | `SystemStatusView` | `other/system-status.json` | yes (left-panel) |
 
 ### reading

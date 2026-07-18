@@ -76,6 +76,25 @@
     "plannedSurface": null
   },
   {
+    "name": "MovementRings",
+    "fileRelativeToWidgets": "health/MovementRings.astro",
+    "id": "cardMovement",
+    "platform": "web",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "body",
+    "liveSiteLayoutSlot": {
+      "column": 1,
+      "order": 1
+    },
+    "hydration": "hydrated",
+    "swiftView": "MovementRingsView",
+    "consumers": [
+      "index.astro"
+    ],
+    "plannedSurface": null
+  },
+  {
     "name": "Workouts",
     "fileRelativeToWidgets": "health/Workouts.astro",
     "id": "cardWorkouts",
@@ -442,6 +461,18 @@
     "buildStatus": "shipped",
     "category": "health",
     "swiftFileRelative": "Health/WorkoutsView.swift",
+    "consumers": [],
+    "plannedSurface": null
+  },
+  {
+    "name": "MovementRingsView",
+    "fileRelativeToWidgets": null,
+    "id": "swiftMovementRings",
+    "platform": "swift",
+    "status": "Experimental",
+    "buildStatus": "shipped",
+    "category": "health",
+    "swiftFileRelative": "Health/MovementRingsView.swift",
     "consumers": [],
     "plannedSurface": null
   },
