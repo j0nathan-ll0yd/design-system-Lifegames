@@ -10,6 +10,11 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
     public var wristTemperatureDelta: Double?
     /// When true, the widget renders a paused overlay indicating the watch is not worn.
     public var watchPaused: Bool
+    /// Refines the paused overlay: when true (with `watchPaused`), the overlay
+    /// renders the `paused.labelCharging`/`descriptionCharging` copy variants —
+    /// parity with the web widget's `watch.source === 'charging'` path. Ignored
+    /// when `watchPaused` is false.
+    public var watchCharging: Bool
 
     public init(
         bpm: Int,
@@ -18,7 +23,8 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
         restingHeartRate: Double? = nil,
         respiratoryRate: Double? = nil,
         wristTemperatureDelta: Double? = nil,
-        watchPaused: Bool = false
+        watchPaused: Bool = false,
+        watchCharging: Bool = false
     ) {
         self.bpm = bpm
         self.hrv = hrv
@@ -27,6 +33,7 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
         self.respiratoryRate = respiratoryRate
         self.wristTemperatureDelta = wristTemperatureDelta
         self.watchPaused = watchPaused
+        self.watchCharging = watchCharging
     }
 
     public var heartRateZone: HeartRateZone {

@@ -24,7 +24,7 @@ public struct MovementRingsView: View {
             MovementRingsEmptyView()
         case let .populated(props):
             if props.watchPaused {
-                MovementRingsPausedView()
+                MovementRingsPausedView(charging: props.watchCharging)
             } else {
                 MovementRingsPopulatedView(props: props)
             }
@@ -135,7 +135,9 @@ private struct MovementRingsPopulatedView: View {
     }
 
     private func resolvedSolar(from solar: MovementRingsProps.Solar?) -> MovementRingsProps.Solar {
-        if let s = solar { return s }
+        if let s = solar {
+            return s
+        }
         let now = Date()
         let calendar = Calendar.current
         let comps = calendar.dateComponents([.hour, .minute], from: now)
@@ -491,6 +493,16 @@ private struct MovementRingsEmptyView: View {
 /// structure so the card footprint is identical: header strip, full-height placeholder,
 /// same neonCard chrome.
 private struct MovementRingsPausedView: View {
+    var charging = false
+
+    private var label: String {
+        charging ? movementCopy.paused.labelCharging : movementCopy.paused.label
+    }
+
+    private var pausedDescription: String {
+        charging ? movementCopy.paused.descriptionCharging : movementCopy.paused.description
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
@@ -513,10 +525,10 @@ private struct MovementRingsPausedView: View {
                 Image(systemName: "applewatch.slash")
                     .font(.system(size: 28))
                     .foregroundStyle(LGColor.textMuted)
-                Text(movementCopy.paused.label)
+                Text(label)
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(LGColor.textMuted)
-                Text(movementCopy.paused.description)
+                Text(pausedDescription)
                     .font(.system(size: 11))
                     .foregroundStyle(LGColor.textMuted.opacity(0.7))
                     .multilineTextAlignment(.center)
@@ -530,7 +542,7 @@ private struct MovementRingsPausedView: View {
         }
         .neonCard(accent: LGColor.healthRed)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(movementCopy.title). \(movementCopy.paused.label). \(movementCopy.paused.description)")
+        .accessibilityLabel("\(movementCopy.title). \(label). \(pausedDescription)")
     }
 }
 
@@ -652,6 +664,25 @@ private func formatDistanceValue(_ meters: Double) -> String {
             currentProgressPct: 60
         ),
         watchPaused: true
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — Paused (charging)") {
+    MovementRingsView(props: MovementRingsProps(
+        moveKcal: 380,
+        exerciseMin: 32,
+        standHr: 9,
+        steps: 8421,
+        distanceMeters: 6200,
+        flights: 14,
+        daylightMin: 48,
+        goals: MovementRingsProps.Goals(),
+        solar: nil,
+        watchPaused: true,
+        watchCharging: true
     ))
     .padding()
     .background(LGColor.surfaceBase)
