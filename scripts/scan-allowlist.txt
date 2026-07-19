@@ -71,6 +71,10 @@ packages/schemas/scripts/generate-contract-lock.ts:marker:j0nathan-ll0yd
 # JSON Schema `examples` fields.
 packages/schemas/authored/profile.schema.json:marker:j0nathan-ll0yd
 
+# pnpm lockfile embeds a package deprecation notice string containing the
+# glob maintainer's email (i@izs.me) — upstream metadata, not project data.
+packages/copy/pnpm-lock.yaml:email
+
 # packages/fixtures: synthetic GitHub-activity fixture factories/generated
 # output using the maintainer's real (public) GitHub login/repo path as
 # realistic-looking synthetic test data.
