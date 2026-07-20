@@ -60,15 +60,19 @@ Phase 2 flips to npm `^X.Y.Z` from GitHub Packages without source changes.
 
 All use Vite 7 (unified from prior Vite 6/7 split).
 
-## Formatting
+## Formatting & Type Safety
 
-- **Formatter:** Prettier 3.x (exact-pinned). Config: `.prettierrc.mjs` at repo root.
-- **Run locally:** `pnpm format` (write) / `pnpm format:check` (CI-equivalent check).
-- **CI gate:** `format` job in `ci.yml` runs `pnpm format:check` and is **required for merge**.
-- **Generated artifacts** (`packages/copy/dist`, `packages/schemas/dist`, `packages/schemas/fixture-map.json`) are formatted **in-generator** using `prettier.resolveConfig()` + the root `.prettierrc.mjs`. Do not add them to `.prettierignore`.
-- **Pre-commit:** `lint-staged` runs `prettier --write` on staged files (via `.husky/pre-commit`). Personal-data scan also runs.
+- **Formatters (split by language):**
+  - **dprint** owns TS/JS/JSON (`.ts/.tsx/.mts/.cts/.js/.mjs/.cjs/.jsx/.json`). Config: root `dprint.json`, which `extends` the estate standard `@j0nathan-ll0yd/config/dprint.json` (consumed via `workspace:*`, resolved through the pnpm symlink — no GitHub-Packages auth needed for DS's own build). Pinned exact: `dprint` in root devDeps + `allowBuilds` (its postinstall downloads the binary).
+  - **Prettier 3.x** (exact-pinned) owns everything dprint can't: `.astro` (dprint has no Astro plugin), `.md/.mdx/.css`. Config: `.prettierrc.mjs` at repo root.
+- **Run locally:** `pnpm format` (write) / `pnpm format:check` (CI-equivalent). Both run **dprint then prettier** for the respective file sets.
+- **CI gate:** `format` job in `ci.yml` runs `pnpm format:check` (dprint check + prettier check) and is **required for merge**.
+- **dprint excludes** (root `dprint.json`) mirror `.prettierignore` so generated/golden files are never reformatted: `**/dist`, tokens golden snapshots, generated schema/fixture artifacts (`packages/schemas/generated`, `fixture-map.json`, `packages/fixtures/src/generated`), `widget-consumers.json`, `Tests/golden-mdx`, `docs/maintenance`, `.yalc`, and **all `*.astro`**. The schemas-freshness gate is the proof that no generated artifact was reformatted.
+- **Generated artifacts** (`packages/copy/dist`, `packages/schemas/dist`, `packages/schemas/fixture-map.json`) are formatted **in-generator** using `prettier.resolveConfig()` + the root `.prettierrc.mjs` (still Prettier). They are dprint-excluded and are proven consistent by the freshness git-diff, not a top-level format pass. Do not add them to `.prettierignore`.
+- **Pre-commit:** `lint-staged` runs `dprint fmt` on staged TS/JS/JSON and `prettier --write` on staged astro/md/mdx/css (via `.husky/pre-commit`). Personal-data scan also runs.
+- **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
-- **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts.
+- **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
 
 ## lp-audit (Audit System — D domain)
 

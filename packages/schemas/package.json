@@ -17,6 +17,7 @@
     "fixture-map.json"
   ],
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "codegen": "tsx scripts/codegen.ts",
     "validate": "tsx scripts/validate.ts",
     "generate:widgets": "node scripts/generate-widget-schemas.mjs",

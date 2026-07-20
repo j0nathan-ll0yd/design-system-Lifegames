@@ -104,3 +104,18 @@ packages/config/README.md:marker:j0nathan-ll0yd
 packages/config/eslint.js:marker:j0nathan-ll0yd
 packages/config/package.json:marker:j0nathan-ll0yd
 packages/config/tsconfig-base.json:marker:j0nathan-ll0yd
+
+# @j0nathan-ll0yd/config CONSUMERS (dprint + tsconfig migration). Same rationale
+# as the packages/config block above: the mandated distribution scope literally
+# IS the marker string, and it must appear at every consumption site — the root
+# dprint.json `extends`, the root devDependency, each tsconfig `extends`, and the
+# CI/hook comments that name the shared base. Not personal data.
+dprint.json:marker:j0nathan-ll0yd
+package.json:marker:j0nathan-ll0yd
+apps/portfolio/tsconfig.json:marker:j0nathan-ll0yd
+apps/storybook/tsconfig.json:marker:j0nathan-ll0yd
+packages/fixtures/tsconfig.json:marker:j0nathan-ll0yd
+packages/schemas/tsconfig.json:marker:j0nathan-ll0yd
+packages/web/tsconfig.json:marker:j0nathan-ll0yd
+.github/workflows/ci.yml:marker:j0nathan-ll0yd
+.husky/pre-push:marker:j0nathan-ll0yd

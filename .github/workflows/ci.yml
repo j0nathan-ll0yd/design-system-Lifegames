@@ -24,7 +24,27 @@ jobs:
         env:
           LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
+      # format:check runs dprint (TS/JS/JSON) + prettier (astro/md/mdx/css).
       - run: pnpm format:check
+
+  typecheck:
+    # tsc --noEmit across the packages that extend @j0nathan-ll0yd/config's
+    # tsconfig-base (schemas, fixtures, web, storybook). `turbo run typecheck`
+    # builds workspace deps first (^build) so cross-package types resolve.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - run: bash scripts/ci-setup-portal-contract.sh
+        env:
+          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
 
   schemas-freshness:
     # Verifies vendored LP schemas + generated TS/Swift artifacts are not stale.

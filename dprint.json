@@ -1,0 +1,30 @@
+{
+  "extends": "./node_modules/@j0nathan-ll0yd/config/dprint.json",
+  "includes": [
+    "**/*.{ts,tsx,mts,cts,js,mjs,cjs,jsx,json}"
+  ],
+  "excludes": [
+    "**/node_modules",
+    "**/dist",
+    "**/.yalc/**",
+    "**/.astro/**",
+    "**/coverage/**",
+    "**/storybook-static/**",
+    "**/.turbo/**",
+    "packages/tokens/dist/**",
+    "packages/tokens/__tests__/golden/**",
+    "packages/schemas/generated/**",
+    "packages/schemas/fixture-map.json",
+    "packages/fixtures/fixture-map.json",
+    "packages/fixtures/src/generated/**",
+    "packages/fixtures/src/post-adapter/*.json",
+    "widget-consumers.json",
+    "Tests/golden-mdx/**",
+    "docs/maintenance/**",
+    "pnpm-lock.yaml",
+    "**/*.astro",
+    "**/*.swift",
+    "Sources/**",
+    "packages/schemas/.contract-lock.json"
+  ]
+}
