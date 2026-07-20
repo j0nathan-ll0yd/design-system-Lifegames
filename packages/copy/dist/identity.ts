@@ -15,6 +15,10 @@ export interface Identity {
     lastName: string;
     handle: string;
     jobTitle: string;
+    employer: string;
+    employerUrl: string;
+    alumniOf: string;
+    alumniOfUrl: string;
     location: string;
     yearsExperience: string;
     philosophy: string;

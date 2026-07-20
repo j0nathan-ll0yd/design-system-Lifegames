@@ -63,6 +63,50 @@
         "lastReviewed": "2026-06-11"
       }
     },
+    "employer": {
+      "value": "Squarespace",
+      "_meta": {
+        "description": "Current employer / organization name. Locale-invariant; the web layer maps it into the Person JSON-LD worksFor Organization name.",
+        "usage": ["web:Dashboard.astro (Person JSON-LD worksFor.name)"],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-20"
+      }
+    },
+    "employerUrl": {
+      "value": "https://www.squarespace.com",
+      "_meta": {
+        "description": "Canonical URL of the current employer, used as the Person JSON-LD worksFor Organization url.",
+        "usage": ["web:Dashboard.astro (Person JSON-LD worksFor.url)"],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-20"
+      }
+    },
+    "alumniOf": {
+      "value": "California State University, Fullerton",
+      "_meta": {
+        "description": "Educational institution the person attended. Locale-invariant; the web layer maps it into the Person JSON-LD alumniOf EducationalOrganization name.",
+        "usage": ["web:Dashboard.astro (Person JSON-LD alumniOf.name)"],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-20"
+      }
+    },
+    "alumniOfUrl": {
+      "value": "https://www.fullerton.edu",
+      "_meta": {
+        "description": "Canonical URL of the educational institution, used as the Person JSON-LD alumniOf EducationalOrganization url.",
+        "usage": ["web:Dashboard.astro (Person JSON-LD alumniOf.url)"],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-07-20"
+      }
+    },
     "location": {
       "value": "San Francisco, CA",
       "_meta": {
