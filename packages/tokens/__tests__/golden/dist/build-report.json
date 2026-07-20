@@ -1,25 +1,25 @@
 {
-  "tokens": 183,
+  "tokens": 201,
   "files": [
     {
       "path": "tokens.css",
-      "bytes": 14093
+      "bytes": 14606
     },
     {
       "path": "tokens-layered.css",
-      "bytes": 14132
+      "bytes": 14645
     },
     {
       "path": "tokens.js",
-      "bytes": 13548
+      "bytes": 13918
     },
     {
       "path": "tokens.json",
-      "bytes": 13483
+      "bytes": 13853
     },
     {
       "path": "DESIGN.md",
-      "bytes": 18937
+      "bytes": 19505
     },
     {
       "path": "shadcn.css",
@@ -31,9 +31,9 @@
     },
     {
       "path": "tokens.dtcg.json",
-      "bytes": 32708
+      "bytes": 34763
     }
   ],
-  "totalBytes": 109064,
+  "totalBytes": 113453,
   "engine": "style-dictionary@5"
 }
