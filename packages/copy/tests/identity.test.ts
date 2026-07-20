@@ -61,8 +61,8 @@ interface NamespaceFixture {
 }
 
 const NAMESPACES: NamespaceFixture[] = [
-  // identity: person 16 + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5) + privacy 16 (title/lastUpdated/lastUpdatedLabel/backLink/whoHeading/dataDisplayedHeading/dataCollectedHeading/analyticsHeading/rightsHeading/changesHeading/who/dataDisplayed/dataCollected/analytics/rights/changes).
-  { name: 'identity', expectedLeaves: 56 },
+  // identity: person 20 (name/firstName/lastName/handle/jobTitle/employer/employerUrl/alumniOf/alumniOfUrl/location/yearsExperience/philosophy/skills/interests/sameAs/shortBio/socialBio/longBio/flavorBio/experiencePhrase) + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5) + privacy 16 (title/lastUpdated/lastUpdatedLabel/backLink/whoHeading/dataDisplayedHeading/dataCollectedHeading/analyticsHeading/rightsHeading/changesHeading/who/dataDisplayed/dataCollected/analytics/rights/changes).
+  { name: 'identity', expectedLeaves: 60 },
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5

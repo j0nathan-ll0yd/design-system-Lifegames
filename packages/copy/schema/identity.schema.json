@@ -17,6 +17,10 @@
         "lastName",
         "handle",
         "jobTitle",
+        "employer",
+        "employerUrl",
+        "alumniOf",
+        "alumniOfUrl",
         "location",
         "yearsExperience",
         "philosophy",
@@ -43,6 +47,18 @@
           "$ref": "#/$defs/CopyString"
         },
         "jobTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "employer": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "employerUrl": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "alumniOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "alumniOfUrl": {
           "$ref": "#/$defs/CopyString"
         },
         "location": {

@@ -323,6 +323,7 @@ public extension HumansTxt {
 /// Identity facts and biographical voices for Jonathan Lloyd.
 // MARK: - Person
 public struct Person: Codable, Sendable {
+    public let alumniOf, alumniOfURL, employer, employerURL: String
     public let experiencePhrase, firstName, flavorBio, handle: String
     public let interests: [String]
     public let jobTitle, lastName, location, longBio: String
@@ -332,7 +333,19 @@ public struct Person: Codable, Sendable {
     public let skills: [String]
     public let socialBio, yearsExperience: String
 
-    public init(experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+    public enum CodingKeys: String, CodingKey {
+        case alumniOf
+        case alumniOfURL = "alumniOfUrl"
+        case employer
+        case employerURL = "employerUrl"
+        case experiencePhrase, firstName, flavorBio, handle, interests, jobTitle, lastName, location, longBio, name, philosophy, sameAs, shortBio, skills, socialBio, yearsExperience
+    }
+
+    public init(alumniOf: String, alumniOfURL: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+        self.alumniOf = alumniOf
+        self.alumniOfURL = alumniOfURL
+        self.employer = employer
+        self.employerURL = employerURL
         self.experiencePhrase = experiencePhrase
         self.firstName = firstName
         self.flavorBio = flavorBio
@@ -371,6 +384,10 @@ public extension Person {
     }
 
     func with(
+        alumniOf: String? = nil,
+        alumniOfURL: String? = nil,
+        employer: String? = nil,
+        employerURL: String? = nil,
         experiencePhrase: String? = nil,
         firstName: String? = nil,
         flavorBio: String? = nil,
@@ -389,6 +406,10 @@ public extension Person {
         yearsExperience: String? = nil
     ) -> Person {
         return Person(
+            alumniOf: alumniOf ?? self.alumniOf,
+            alumniOfURL: alumniOfURL ?? self.alumniOfURL,
+            employer: employer ?? self.employer,
+            employerURL: employerURL ?? self.employerURL,
             experiencePhrase: experiencePhrase ?? self.experiencePhrase,
             firstName: firstName ?? self.firstName,
             flavorBio: flavorBio ?? self.flavorBio,

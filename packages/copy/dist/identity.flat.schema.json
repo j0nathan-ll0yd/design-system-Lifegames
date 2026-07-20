@@ -24,6 +24,18 @@
         "jobTitle": {
           "type": "string"
         },
+        "employer": {
+          "type": "string"
+        },
+        "employerUrl": {
+          "type": "string"
+        },
+        "alumniOf": {
+          "type": "string"
+        },
+        "alumniOfUrl": {
+          "type": "string"
+        },
         "location": {
           "type": "string"
         },
@@ -73,6 +85,10 @@
         "lastName",
         "handle",
         "jobTitle",
+        "employer",
+        "employerUrl",
+        "alumniOf",
+        "alumniOfUrl",
         "location",
         "yearsExperience",
         "philosophy",
