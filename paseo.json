@@ -11,5 +11,13 @@
       "pnpm install",
       "pnpm build:tokens"
     ]
+  },
+  "scripts": {
+    "test": { "command": "pnpm test" },
+    "build-tokens": { "command": "pnpm build:tokens" },
+    "docs": {
+      "type": "service",
+      "command": "pnpm docs:dev -- --port $PASEO_PORT"
+    }
   }
 }
