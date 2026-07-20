@@ -3,5 +3,5 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface NotFoundProps {
-  regionLabel?: string
+  regionLabel?: string;
 }

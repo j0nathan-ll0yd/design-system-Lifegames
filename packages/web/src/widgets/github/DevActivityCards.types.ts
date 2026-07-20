@@ -3,5 +3,13 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface DevActivityCardsProps {
-  events: {type: string; repo: string; title: string; date: string; hash: string; additions: number; deletions: number}[]
+  events: {
+    type: string;
+    repo: string;
+    title: string;
+    date: string;
+    hash: string;
+    additions: number;
+    deletions: number;
+  }[];
 }

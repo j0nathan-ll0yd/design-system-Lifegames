@@ -3,5 +3,9 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface LanguageStackProps {
-  languages: {name: string; pct: number; color: string}[]
+  languages: {
+    name: string;
+    pct: number;
+    color: string;
+  }[];
 }

@@ -3,10 +3,12 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface TerminalLine {
-  type: 'cursor' | 'blank' | 'prompt' | 'output'
-  text?: string
+  type: 'cursor' | 'blank' | 'prompt' | 'output';
+  text?: string;
 }
 
 export interface BioTerminalProps {
-  profile: {terminalLines: TerminalLine[]}
+  profile: {
+    terminalLines: TerminalLine[];
+  };
 }

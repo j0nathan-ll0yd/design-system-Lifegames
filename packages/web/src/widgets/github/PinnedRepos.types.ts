@@ -3,5 +3,13 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface PinnedReposProps {
-  repos: {name: string; description: string; stars: number; forks: number; language: string; languageColor: string; url: string}[]
+  repos: {
+    name: string;
+    description: string;
+    stars: number;
+    forks: number;
+    language: string;
+    languageColor: string;
+    url: string;
+  }[];
 }

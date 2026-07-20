@@ -3,5 +3,11 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface PlaceLeaderboardV3Props {
-  topPlaces: {name: string; category: string | null; visitCount: number; totalDurationMinutes: number; lastVisitAt: string | null}[]
+  topPlaces: {
+    name: string;
+    category: string | null;
+    visitCount: number;
+    totalDurationMinutes: number;
+    lastVisitAt: string | null;
+  }[];
 }

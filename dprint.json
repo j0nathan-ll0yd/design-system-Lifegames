@@ -18,6 +18,7 @@
     "packages/fixtures/fixture-map.json",
     "packages/fixtures/src/generated/**",
     "packages/fixtures/src/post-adapter/*.json",
+    "packages/web/src/**/*.types.ts",
     "widget-consumers.json",
     "Tests/golden-mdx/**",
     "docs/maintenance/**",

@@ -3,5 +3,11 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface CommitTimelineProps {
-  commits: {hash: string; message: string; repo: string; date: string; repoColor: string}[]
+  commits: {
+    hash: string;
+    message: string;
+    repo: string;
+    date: string;
+    repoColor: string;
+  }[];
 }

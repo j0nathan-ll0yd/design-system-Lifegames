@@ -3,6 +3,9 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface WeeklyPulseProps {
-  weeks: {total: number; label: string}[]
-  maxWeek: number
+  weeks: {
+    total: number;
+    label: string;
+  }[];
+  maxWeek: number;
 }
