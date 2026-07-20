@@ -385,6 +385,22 @@ function emitTokensCss() {
   css += '  --lg-blur-md: 16px;\n';
   css += '  --lg-blur-lg: 24px;\n';
   css += '  --lg-blur-xl: 32px;\n';
+
+  // Z-index scale — named stacking levels (path[0] === 'z'). Filtered by path,
+  // not $type, so the numeric literals emit verbatim (e.g. `--lg-z-raised: 1`).
+  css += '\n  /* Z-index scale */\n';
+  for (const t of tokens) {
+    if (t.path[0] !== 'z') continue;
+    css += `  ${toCssVar(t.path)}: ${t.resolvedValue};\n`;
+  }
+
+  // Line-height scale — unitless multipliers (path[0] === 'line-height').
+  css += '\n  /* Line heights */\n';
+  for (const t of tokens) {
+    if (t.path[0] !== 'line-height') continue;
+    css += `  ${toCssVar(t.path)}: ${t.resolvedValue};\n`;
+  }
+
   css += '}\n';
 
   css += '\n@media (prefers-reduced-motion: reduce) {\n  :root {\n';

@@ -6,7 +6,7 @@
     /* ===== SPLIT LAYOUT ===== */
     .command-layout {
       position: relative;
-      z-index: 1;
+      z-index: var(--lg-z-raised);
       display: flex;
       height: 100vh;
       height: 100dvh;
@@ -29,7 +29,7 @@
       gap: 0;
       overflow-y: auto;
       scrollbar-width: none;
-      z-index: 10;
+      z-index: var(--lg-z-panel);
     }
 
     .left-panel::-webkit-scrollbar {
@@ -71,7 +71,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      z-index: 20;
+      z-index: var(--lg-z-header);
     }
 
     .top-bar-title {
@@ -245,7 +245,7 @@
         content: '';
         position: fixed;
         inset: 0;
-        z-index: -1;
+        z-index: var(--lg-z-behind);
         pointer-events: none;
         background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         background-size: 40px 40px;
@@ -254,7 +254,7 @@
       .hud-frame {
         position: fixed;
         inset: 0;
-        z-index: -1;
+        z-index: var(--lg-z-behind);
         pointer-events: none;
       }
 
@@ -318,13 +318,16 @@
       }
 
       /* --- Width/centering for promoted left-panel children --- */
-      /* !important needed: layout.css loads before components.css, which sets
-     max-width: 380px on .identity-card and .left-panel-bio at equal specificity */
+      /* No !important needed: @layer layout is registered AFTER @layer components
+     (see Dashboard.astro import order), so these layered rules win over
+     components.css's max-width:380px at equal specificity — cascade layers sort
+     before specificity, so a later layer beats an earlier one regardless of
+     source order. (matklad "CSS Unavoidable Bad Parts" !important audit.) */
       .identity-card,
       .left-panel-bio,
       .left-panel-status {
-        width: calc(100% - var(--space-16) * 2) !important;
-        max-width: 100% !important;
+        width: calc(100% - var(--space-16) * 2);
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
         padding-left: var(--space-16);
@@ -349,15 +352,17 @@
       }
 
       /* --- Variation A: Compact Row identity card ---
-     !important needed: components.css loads AFTER layout.css and sets
-     text-align:center, justify-content:center, large padding/margins
-     at equal specificity. These overrides must win the cascade. */
+     No !important needed on most declarations: @layer layout beats @layer
+     components via layer order, so these win over components.css
+     (text-align:center, justify-content:center, large padding/margins) at
+     equal specificity. The ONE exception is .id-name's margin-bottom — see
+     the load-bearing note on that rule. */
       .identity-card {
         display: flex;
         align-items: center;
         gap: var(--space-16);
-        text-align: left !important;
-        padding: var(--space-16) var(--space-24) !important;
+        text-align: left;
+        padding: var(--space-16) var(--space-24);
         max-width: 100%;
         flex-wrap: wrap;
       }
@@ -366,7 +371,7 @@
         order: 1;
         width: 56px;
         height: 56px;
-        margin: 0 !important;
+        margin: 0;
         flex-shrink: 0;
       }
 
@@ -377,25 +382,30 @@
       }
 
       .id-name {
-        font-size: var(--font-size-lg) !important;
+        font-size: var(--font-size-lg);
+        /* !important IS load-bearing here: .id-name is an <h1>, and the
+       un-layered reset (reset.css `h1 { margin: 0 }`) beats ANY layered rule
+       regardless of layer order or specificity — a cascade layer cannot win
+       against an un-layered normal declaration. Only author-important can, so
+       this flag is required to apply the 2px bottom margin. */
         margin-bottom: 2px !important;
       }
 
       .id-title {
-        margin-bottom: 0 !important;
+        margin-bottom: 0;
       }
 
       .id-links {
         order: 3;
         margin-left: auto;
         flex-shrink: 0;
-        justify-content: flex-end !important;
+        justify-content: flex-end;
       }
 
       .id-bio {
         order: 4;
-        font-size: var(--font-size-sm) !important;
-        margin-bottom: 4px !important;
+        font-size: var(--font-size-sm);
+        margin-bottom: 4px;
         width: 100%;
         padding-top: 14px;
         border-top: 1px solid var(--glass-border);
@@ -404,7 +414,7 @@
       .id-tagline {
         order: 5;
         width: 100%;
-        margin-bottom: 0 !important;
+        margin-bottom: 0;
       }
 
       .neon-pill {
@@ -419,7 +429,7 @@
         left: 0;
         width: 100%;
         order: 0;
-        z-index: 20;
+        z-index: var(--lg-z-header);
       }
 
       /* --- Right panel: full width, scrollable --- */
@@ -550,11 +560,13 @@
         display: none;
       }
 
+      /* No !important needed: @layer layout wins over @layer components
+     (components.css max-width:380px) via layer order at equal specificity. */
       .identity-card,
       .left-panel-bio,
       .left-panel-status {
-        width: calc(100% - var(--space-16) * 2) !important;
-        max-width: 100% !important;
+        width: calc(100% - var(--space-16) * 2);
+        max-width: 100%;
         margin-left: auto;
         margin-right: auto;
         padding-left: var(--space-16);
@@ -587,31 +599,39 @@
         flex-wrap: wrap;
       }
 
+      /* The reveal-state resets below force the cards visible immediately on
+     mobile (they default to opacity:0 + translate in @layer components).
+     No !important needed: these live in @layer layout, which beats @layer
+     components via layer order — that holds even against the higher-specificity
+     `.identity-card.visible` reveal rule, because layers are sorted before
+     specificity. There is no inline opacity/transform style on these cards to
+     override (the reveal is class-based, not inline). */
+
       /* Identity card visible immediately on mobile — prevents pollStatus from being LCP */
       .identity-card {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
+        opacity: 1;
+        transform: none;
+        transition: none;
       }
 
       /* Bio card visible immediately on mobile — prevents CLS from card reveal */
       .left-panel-bio {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
+        opacity: 1;
+        transform: none;
+        transition: none;
       }
 
       /* Tri-cards visible immediately on mobile — stagger animation invisible in single-column layout */
       .tri-card {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
+        opacity: 1;
+        transform: none;
+        transition: none;
       }
 
       /* System status visible immediately on mobile */
       .left-panel-status {
-        opacity: 1 !important;
-        transition: none !important;
+        opacity: 1;
+        transition: none;
       }
 
       .id-avatar {
@@ -648,7 +668,7 @@
         margin-top: 16px;
         margin-bottom: 12px;
         width: 100%;
-        line-height: 1.6;
+        line-height: var(--lg-line-height-relaxed);
       }
 
       .id-tagline {
@@ -678,7 +698,7 @@
         left: 0;
         width: 100%;
         order: 0;
-        z-index: 20;
+        z-index: var(--lg-z-header);
       }
 
       .right-panel {

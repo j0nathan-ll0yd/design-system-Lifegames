@@ -1,0 +1,36 @@
+{
+  "z": {
+    "$type": "number",
+    "behind": {
+      "$value": -1,
+      "$description": "Decorative layers rendered behind base content (background grid, HUD frame)"
+    },
+    "base": { "$value": 0, "$description": "Base stacking plane (particle canvas)" },
+    "raised": {
+      "$value": 1,
+      "$description": "Content lifted above an in-card background or decoration"
+    },
+    "raised-2": {
+      "$value": 2,
+      "$description": "Second in-card layer above raised content (range markers / media overlay border)"
+    },
+    "raised-3": {
+      "$value": 3,
+      "$description": "Third in-card layer (floating particles)"
+    },
+    "raised-4": {
+      "$value": 4,
+      "$description": "Top in-card layer (gloss / highlight)"
+    },
+    "panel": { "$value": 10, "$description": "Fixed side panel" },
+    "header": { "$value": 20, "$description": "Fixed / sticky top navigation bar" },
+    "overlay": {
+      "$value": 500,
+      "$description": "Full-cover scrim over embedded media (map vignette)"
+    },
+    "skip-link": {
+      "$value": 10000,
+      "$description": "Accessibility skip link — above all UI chrome"
+    }
+  }
+}

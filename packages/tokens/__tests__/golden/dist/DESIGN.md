@@ -289,6 +289,19 @@ Fluid spacing scale. Web uses `clamp()`; iOS uses the max pixel value as `CGFloa
 | `card.neonCornerRadius` | `20px` |
 | `card.glassBorder` | `rgba(255,255,255,0.1)` |
 
+### line-height
+
+| Token | Value |
+|---|---|
+| `line-height.none` | `1` |
+| `line-height.tight` | `1.25` |
+| `line-height.snug` | `1.3` |
+| `line-height.compact` | `1.35` |
+| `line-height.base` | `1.55` |
+| `line-height.relaxed` | `1.6` |
+| `line-height.loose` | `1.65` |
+| `line-height.looser` | `1.7` |
+
 ### transition
 
 | Token | Value |
@@ -298,6 +311,21 @@ Fluid spacing scale. Web uses `clamp()`; iOS uses the max pixel value as `CGFloa
 | `transition.enter` | `{"duration":"300ms","timingFunction":[0,0,0.2,1],"delay":"50ms"}` |
 | `transition.exit` | `{"duration":"150ms","timingFunction":[0.4,0,1,1],"delay":"0ms"}` |
 | `transition.spring` | `{"duration":"500ms","timingFunction":[0.34,1.56,0.64,1],"delay":"0ms"}` |
+
+### z
+
+| Token | Value |
+|---|---|
+| `z.behind` | `-1` |
+| `z.base` | `0` |
+| `z.raised` | `1` |
+| `z.raised-2` | `2` |
+| `z.raised-3` | `3` |
+| `z.raised-4` | `4` |
+| `z.panel` | `10` |
+| `z.header` | `20` |
+| `z.overlay` | `500` |
+| `z.skip-link` | `10000` |
 
 ## Widget Catalog
 

@@ -286,6 +286,28 @@
   --lg-blur-md: 16px;
   --lg-blur-lg: 24px;
   --lg-blur-xl: 32px;
+
+  /* Z-index scale */
+  --lg-z-behind: -1;
+  --lg-z-base: 0;
+  --lg-z-raised: 1;
+  --lg-z-raised-2: 2;
+  --lg-z-raised-3: 3;
+  --lg-z-raised-4: 4;
+  --lg-z-panel: 10;
+  --lg-z-header: 20;
+  --lg-z-overlay: 500;
+  --lg-z-skip-link: 10000;
+
+  /* Line heights */
+  --lg-line-height-none: 1;
+  --lg-line-height-tight: 1.25;
+  --lg-line-height-snug: 1.3;
+  --lg-line-height-compact: 1.35;
+  --lg-line-height-base: 1.55;
+  --lg-line-height-relaxed: 1.6;
+  --lg-line-height-loose: 1.65;
+  --lg-line-height-looser: 1.7;
 }
 
 @media (prefers-reduced-motion: reduce) {
