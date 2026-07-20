@@ -92,3 +92,15 @@ packages/fixtures/src/post-adapter/profile.baseline.json:marker:j0nathan-ll0yd
 packages/fixtures/src/post-adapter/profile.full.json:marker:j0nathan-ll0yd
 packages/fixtures/src/post-adapter/profile.ts:marker:j0nathan-ll0yd
 packages/fixtures/src/variations/github-events.ts:marker:j0nathan-ll0yd
+
+# packages/config: the @j0nathan-ll0yd/config package scope. GitHub Packages
+# requires the npm scope to match the repo owner's public GitHub handle, so the
+# scope literally IS the marker string — it appears in the package name, its
+# README consumer snippets (.npmrc scope + extends/import paths), the publish
+# workflow's setup-node `scope`, and header comments. Not personal data; it is
+# the mandated distribution namespace. (atlas#1 pilot.)
+.github/workflows/publish-config.yml:marker:j0nathan-ll0yd
+packages/config/README.md:marker:j0nathan-ll0yd
+packages/config/eslint.js:marker:j0nathan-ll0yd
+packages/config/package.json:marker:j0nathan-ll0yd
+packages/config/tsconfig-base.json:marker:j0nathan-ll0yd
