@@ -1,10 +1,10 @@
-import { esc } from './html-utils';
+import {esc} from './html-utils'
 
 /**
  * Options for {@link renderWidgetEmpty}: either a single centered line, or a
  * stacked title + body (two-line, GitHub-style empty state).
  */
-export type WidgetEmptyOptions = { message: string } | { title: string; body: string };
+export type WidgetEmptyOptions = {message: string} | {title: string; body: string}
 
 /**
  * Render a widget's empty state.
@@ -20,21 +20,22 @@ export type WidgetEmptyOptions = { message: string } | { title: string; body: st
  * recreate it when absent so an empty -> populated transition still renders.
  */
 export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): void {
-  const card = document.getElementById(cardId);
-  if (!card) return;
-  const body = card.querySelector('.widget-body');
-  if (body) {
-    body.innerHTML =
-      'message' in opts
-        ? '<div class="widget-empty">' + esc(opts.message) + '</div>'
-        : '<div class="widget-empty widget-empty--stack">' +
-          '<span class="widget-empty-title">' +
-          esc(opts.title) +
-          '</span>' +
-          '<span class="widget-empty-body">' +
-          esc(opts.body) +
-          '</span>' +
-          '</div>';
+  const card = document.getElementById(cardId)
+  if (!card) {
+    return
   }
-  card.classList.remove('is-loading');
+  const body = card.querySelector('.widget-body')
+  if (body) {
+    body.innerHTML = 'message' in opts
+      ? '<div class="widget-empty">' + esc(opts.message) + '</div>'
+      : '<div class="widget-empty widget-empty--stack">' +
+        '<span class="widget-empty-title">' +
+        esc(opts.title) +
+        '</span>' +
+        '<span class="widget-empty-body">' +
+        esc(opts.body) +
+        '</span>' +
+        '</div>'
+  }
+  card.classList.remove('is-loading')
 }

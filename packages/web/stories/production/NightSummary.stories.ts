@@ -1,17 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 // DS-internal fixture: health/night-summary.json
 const meta: Meta = {
   title: 'Production/Health/NightSummary',
   tags: ['stable', 'autodocs'],
-  argTypes: {
-    sleepScore: { control: 'number' },
-    sleepDuration: { control: 'text' },
-    deepPct: { control: 'number' },
-    remPct: { control: 'number' },
-  },
-  render: (args) => html`
+  argTypes: {sleepScore: {control: 'number'}, sleepDuration: {control: 'text'}, deepPct: {control: 'number'}, remPct: {control: 'number'}},
+  render: (args) =>
+    html`
     <div id="cardSleep" class="tri-card">
       <div class="widget-header">
         <span class="widget-label">Night Summary</span>
@@ -33,29 +29,16 @@ const meta: Meta = {
         </div>
       </div>
     </div>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = {
-  args: { sleepScore: 82, sleepDuration: '7h 18m', deepPct: 19, remPct: 25 },
-};
+export const Default: Story = {args: {sleepScore: 82, sleepDuration: '7h 18m', deepPct: 19, remPct: 25}}
 
-export const Empty: Story = {
-  args: { sleepScore: null, sleepDuration: '—', deepPct: 0, remPct: 0 },
-};
+export const Empty: Story = {args: {sleepScore: null, sleepDuration: '—', deepPct: 0, remPct: 0}}
 
-export const Loading: Story = {
-  args: { sleepScore: null, sleepDuration: '—', deepPct: 0, remPct: 0 },
-};
+export const Loading: Story = {args: {sleepScore: null, sleepDuration: '—', deepPct: 0, remPct: 0}}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: {
-      value: 'dark',
-    },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

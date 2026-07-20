@@ -5,22 +5,18 @@
 // package (the same source the web consumes) so it never drifts from the real
 // widget contracts. Full-page visual regression lives on the web consumer; DS
 // widget coverage lives in Storybook — the showcase does not carry its own suite.
-import { getDashboardFixture, type DashboardFixture } from '@lifegames/fixtures';
-import { rawFixtures } from '@lifegames/fixtures/raw';
-import type { TheatreReviewsExport, FocusExport } from '@lifegames/portal-contract/schemas';
+import {type DashboardFixture, getDashboardFixture} from '@lifegames/fixtures'
+import {rawFixtures} from '@lifegames/fixtures/raw'
+import type {FocusExport, TheatreReviewsExport} from '@lifegames/portal-contract/schemas'
 
 export interface ShowcaseData {
-  dashboard: DashboardFixture;
-  theatre: TheatreReviewsExport;
+  dashboard: DashboardFixture
+  theatre: TheatreReviewsExport
   /** Raw focus export; `null` for the baseline showcase (no overlay active). */
-  focus: FocusExport | null;
+  focus: FocusExport | null
 }
 
 /** The representative (`baseline`) dashboard payload for the showcase. */
 export function getShowcaseData(): ShowcaseData {
-  return {
-    dashboard: getDashboardFixture('baseline'),
-    theatre: rawFixtures.theatreReviews.baseline,
-    focus: null,
-  };
+  return {dashboard: getDashboardFixture('baseline'), theatre: rawFixtures.theatreReviews.baseline, focus: null}
 }

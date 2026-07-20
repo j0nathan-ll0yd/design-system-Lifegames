@@ -1,196 +1,64 @@
-import type { BooksExport } from '@lifegames/portal-contract/schemas';
-import { createBooksFixture, createBook } from '../factories/books';
-import { placeholderText } from '../factories/helpers';
+import type {BooksExport} from '@lifegames/portal-contract/schemas'
+import {createBook, createBooksFixture} from '../factories/books'
+import {placeholderText} from '../factories/helpers'
 
 /** Baseline: default 5-book fixture */
-export const baseline: BooksExport = createBooksFixture();
+export const baseline: BooksExport = createBooksFixture()
 
 /** Empty: no books */
-export const empty: BooksExport = createBooksFixture({ books: [] });
+export const empty: BooksExport = createBooksFixture({books: []})
 
 /** allReading: 3 books all in reading status */
 export const allReading: BooksExport = createBooksFixture({
   books: [
-    createBook({
-      asin: 'B001',
-      title: 'Reading Book One',
-      status: 'reading',
-      currentPage: 50,
-      totalPages: 300,
-      rating: null,
-    }),
-    createBook({
-      asin: 'B002',
-      title: 'Reading Book Two',
-      status: 'reading',
-      currentPage: 120,
-      totalPages: 400,
-      rating: null,
-    }),
-    createBook({
-      asin: 'B003',
-      title: 'Reading Book Three',
-      status: 'reading',
-      currentPage: 200,
-      totalPages: 500,
-      rating: null,
-    }),
-  ],
-});
+    createBook({asin: 'B001', title: 'Reading Book One', status: 'reading', currentPage: 50, totalPages: 300, rating: null}),
+    createBook({asin: 'B002', title: 'Reading Book Two', status: 'reading', currentPage: 120, totalPages: 400, rating: null}),
+    createBook({asin: 'B003', title: 'Reading Book Three', status: 'reading', currentPage: 200, totalPages: 500, rating: null})
+  ]
+})
 
 /** allCompleted: 5 books all completed with ratings 1–5 */
 export const allCompleted: BooksExport = createBooksFixture({
   books: [
-    createBook({
-      asin: 'C001',
-      title: 'Completed Book One',
-      status: 'finished',
-      rating: 1,
-      currentPage: null,
-    }),
-    createBook({
-      asin: 'C002',
-      title: 'Completed Book Two',
-      status: 'finished',
-      rating: 2,
-      currentPage: null,
-    }),
-    createBook({
-      asin: 'C003',
-      title: 'Completed Book Three',
-      status: 'finished',
-      rating: 3,
-      currentPage: null,
-    }),
-    createBook({
-      asin: 'C004',
-      title: 'Completed Book Four',
-      status: 'finished',
-      rating: 4,
-      currentPage: null,
-    }),
-    createBook({
-      asin: 'C005',
-      title: 'Completed Book Five',
-      status: 'finished',
-      rating: 5,
-      currentPage: null,
-    }),
-  ],
-});
+    createBook({asin: 'C001', title: 'Completed Book One', status: 'finished', rating: 1, currentPage: null}),
+    createBook({asin: 'C002', title: 'Completed Book Two', status: 'finished', rating: 2, currentPage: null}),
+    createBook({asin: 'C003', title: 'Completed Book Three', status: 'finished', rating: 3, currentPage: null}),
+    createBook({asin: 'C004', title: 'Completed Book Four', status: 'finished', rating: 4, currentPage: null}),
+    createBook({asin: 'C005', title: 'Completed Book Five', status: 'finished', rating: 5, currentPage: null})
+  ]
+})
 
 /** mixedStatus: completed, reading, upNext, and null status */
 export const mixedStatus: BooksExport = createBooksFixture({
   books: [
-    createBook({
-      asin: 'M001',
-      title: 'Mixed Completed',
-      status: 'finished',
-      rating: 4,
-      currentPage: null,
-    }),
-    createBook({
-      asin: 'M002',
-      title: 'Mixed Reading',
-      status: 'reading',
-      currentPage: 80,
-      totalPages: 320,
-      rating: null,
-    }),
-    createBook({
-      asin: 'M003',
-      title: 'Mixed Up Next',
-      status: 'upNext',
-      currentPage: null,
-      rating: null,
-    }),
-    createBook({
-      asin: 'M004',
-      title: 'Mixed No Status',
-      status: null,
-      currentPage: null,
-      rating: null,
-    }),
-  ],
-});
+    createBook({asin: 'M001', title: 'Mixed Completed', status: 'finished', rating: 4, currentPage: null}),
+    createBook({asin: 'M002', title: 'Mixed Reading', status: 'reading', currentPage: 80, totalPages: 320, rating: null}),
+    createBook({asin: 'M003', title: 'Mixed Up Next', status: 'upNext', currentPage: null, rating: null}),
+    createBook({asin: 'M004', title: 'Mixed No Status', status: null, currentPage: null, rating: null})
+  ]
+})
 
 /** withProgress: books at various reading progress percentages */
 export const withProgress: BooksExport = createBooksFixture({
   books: [
-    createBook({
-      asin: 'P001',
-      title: 'Just Started',
-      status: 'reading',
-      currentPage: 10,
-      totalPages: 400,
-      rating: null,
-    }),
-    createBook({
-      asin: 'P002',
-      title: 'Quarter Done',
-      status: 'reading',
-      currentPage: 100,
-      totalPages: 400,
-      rating: null,
-    }),
-    createBook({
-      asin: 'P003',
-      title: 'Halfway',
-      status: 'reading',
-      currentPage: 200,
-      totalPages: 400,
-      rating: null,
-    }),
-    createBook({
-      asin: 'P004',
-      title: 'Three Quarters',
-      status: 'reading',
-      currentPage: 300,
-      totalPages: 400,
-      rating: null,
-    }),
-    createBook({
-      asin: 'P005',
-      title: 'Almost Done',
-      status: 'reading',
-      currentPage: 390,
-      totalPages: 400,
-      rating: null,
-    }),
-  ],
-});
+    createBook({asin: 'P001', title: 'Just Started', status: 'reading', currentPage: 10, totalPages: 400, rating: null}),
+    createBook({asin: 'P002', title: 'Quarter Done', status: 'reading', currentPage: 100, totalPages: 400, rating: null}),
+    createBook({asin: 'P003', title: 'Halfway', status: 'reading', currentPage: 200, totalPages: 400, rating: null}),
+    createBook({asin: 'P004', title: 'Three Quarters', status: 'reading', currentPage: 300, totalPages: 400, rating: null}),
+    createBook({asin: 'P005', title: 'Almost Done', status: 'reading', currentPage: 390, totalPages: 400, rating: null})
+  ]
+})
 
 /** noCovers: all books with null image fields */
 export const noCovers: BooksExport = createBooksFixture({
-  books: createBooksFixture().books.map((b) => ({
-    ...b,
-    mainImage: null,
-    mainImageThumb: null,
-    images: null,
-  })),
-});
+  books: createBooksFixture().books.map((b) => ({...b, mainImage: null, mainImageThumb: null, images: null}))
+})
 
 /** seriesBooks: all books with series info populated */
 export const seriesBooks: BooksExport = createBooksFixture({
   books: [
-    createBook({
-      asin: 'S001',
-      title: 'Series Alpha 1',
-      series: 'Alpha Chronicles',
-      seriesNumber: 1,
-      seriesTotal: 4,
-      status: 'finished',
-      rating: 5,
-    }),
-    createBook({
-      asin: 'S002',
-      title: 'Series Alpha 2',
-      series: 'Alpha Chronicles',
-      seriesNumber: 2,
-      seriesTotal: 4,
-      status: 'finished',
-      rating: 4,
-    }),
+    createBook({asin: 'S001', title: 'Series Alpha 1', series: 'Alpha Chronicles', seriesNumber: 1, seriesTotal: 4, status: 'finished', rating: 5}),
+    createBook({asin: 'S002', title: 'Series Alpha 2', series: 'Alpha Chronicles', seriesNumber: 2, seriesTotal: 4, status: 'finished', rating: 4}),
     createBook({
       asin: 'S003',
       title: 'Series Alpha 3',
@@ -200,28 +68,12 @@ export const seriesBooks: BooksExport = createBooksFixture({
       status: 'reading',
       currentPage: 100,
       totalPages: 350,
-      rating: null,
+      rating: null
     }),
-    createBook({
-      asin: 'S004',
-      title: 'Series Alpha 4',
-      series: 'Alpha Chronicles',
-      seriesNumber: 4,
-      seriesTotal: 4,
-      status: 'upNext',
-      rating: null,
-    }),
-    createBook({
-      asin: 'S005',
-      title: 'Series Beta 1',
-      series: 'Beta Saga',
-      seriesNumber: 1,
-      seriesTotal: 2,
-      status: 'finished',
-      rating: 3,
-    }),
-  ],
-});
+    createBook({asin: 'S004', title: 'Series Alpha 4', series: 'Alpha Chronicles', seriesNumber: 4, seriesTotal: 4, status: 'upNext', rating: null}),
+    createBook({asin: 'S005', title: 'Series Beta 1', series: 'Beta Saga', seriesNumber: 1, seriesTotal: 2, status: 'finished', rating: 3})
+  ]
+})
 
 /** sixBooks: 6 books — tests the 5-book display cap */
 export const sixBooks: BooksExport = createBooksFixture({
@@ -236,10 +88,10 @@ export const sixBooks: BooksExport = createBooksFixture({
       seriesTotal: null,
       status: 'finished',
       rating: 3,
-      currentPage: null,
-    }),
-  ],
-});
+      currentPage: null
+    })
+  ]
+})
 
 /** allFields: single book with every optional field populated */
 export const allFields: BooksExport = createBooksFixture({
@@ -266,10 +118,10 @@ export const allFields: BooksExport = createBooksFixture({
       currentPage: null,
       totalPages: 350,
       rating: 5,
-      notes: 'Highly recommended to a friend',
-    }),
-  ],
-});
+      notes: 'Highly recommended to a friend'
+    })
+  ]
+})
 
 // Maximally populated: 6 books with ALL nullable fields set to non-null values
 // (series, seriesNumber, seriesTotal, description, publicationDate, publishedYear,
@@ -306,7 +158,7 @@ export const full: BooksExport = createBooksFixture({
       rating: 5,
       notes: 'Outstanding mystery-fantasy hybrid with inventive worldbuilding and sharp dialogue',
       startedAt: '2024-02-10T00:00:00Z',
-      finishedAt: '2024-03-10T00:00:00Z',
+      finishedAt: '2024-03-10T00:00:00Z'
     }),
     createBook({
       asin: '0593723848',
@@ -325,8 +177,7 @@ export const full: BooksExport = createBooksFixture({
       mainImageThumb: 'https://m.media-amazon.com/images/I/example-drop-of-corruption-thumb.jpg',
       mainImageCard: 'https://m.media-amazon.com/images/I/example-drop-of-corruption-card.jpg',
       mainImageAvif: 'https://m.media-amazon.com/images/I/example-drop-of-corruption.avif',
-      mainImageThumbAvif:
-        'https://m.media-amazon.com/images/I/example-drop-of-corruption-thumb.avif',
+      mainImageThumbAvif: 'https://m.media-amazon.com/images/I/example-drop-of-corruption-thumb.avif',
       mainImageCardAvif: 'https://m.media-amazon.com/images/I/example-drop-of-corruption-card.avif',
       images: 'https://m.media-amazon.com/images/I/example-drop-of-corruption-extra.jpg',
       averageRating: '4.6',
@@ -337,7 +188,7 @@ export const full: BooksExport = createBooksFixture({
       rating: 5,
       notes: 'Even better than the first — the political intrigue deepens brilliantly',
       startedAt: '2025-01-05T00:00:00Z',
-      finishedAt: '2025-01-25T00:00:00Z',
+      finishedAt: '2025-01-25T00:00:00Z'
     }),
     createBook({
       asin: '0525573844',
@@ -367,7 +218,7 @@ export const full: BooksExport = createBooksFixture({
       rating: 5,
       notes: 'Ingenious magic system based on industrial programming — scriving is brilliant',
       startedAt: '2023-07-01T00:00:00Z',
-      finishedAt: '2023-08-15T00:00:00Z',
+      finishedAt: '2023-08-15T00:00:00Z'
     }),
     createBook({
       asin: 'B07QVH2Q2K',
@@ -397,7 +248,7 @@ export const full: BooksExport = createBooksFixture({
       rating: 4,
       notes: 'The stakes escalate dramatically — Valeria is a compelling antagonist',
       startedAt: '2026-06-01T00:00:00Z',
-      finishedAt: null,
+      finishedAt: null
     }),
     createBook({
       asin: 'B0FBRJY116',
@@ -416,10 +267,8 @@ export const full: BooksExport = createBooksFixture({
       mainImageThumb: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-thumb.jpg',
       mainImageCard: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-card.jpg',
       mainImageAvif: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy.avif',
-      mainImageThumbAvif:
-        'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-thumb.avif',
-      mainImageCardAvif:
-        'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-card.avif',
+      mainImageThumbAvif: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-thumb.avif',
+      mainImageCardAvif: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-card.avif',
       images: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-extra.jpg',
       averageRating: '4.7',
       category: 'Technology, Business, Leadership',
@@ -429,7 +278,7 @@ export const full: BooksExport = createBooksFixture({
       rating: 4,
       notes: 'Practical frameworks for engineering strategy at director+ level',
       startedAt: null,
-      finishedAt: null,
+      finishedAt: null
     }),
     createBook({
       asin: '0596517742',
@@ -459,21 +308,9 @@ export const full: BooksExport = createBooksFixture({
       rating: 3,
       notes: 'Foundational but dated — many "bad parts" are now handled by TypeScript',
       startedAt: '2022-03-01T00:00:00Z',
-      finishedAt: '2022-03-20T00:00:00Z',
-    }),
-  ],
-});
+      finishedAt: '2022-03-20T00:00:00Z'
+    })
+  ]
+})
 
-export const booksVariations = {
-  baseline,
-  empty,
-  allReading,
-  allCompleted,
-  mixedStatus,
-  withProgress,
-  noCovers,
-  seriesBooks,
-  sixBooks,
-  allFields,
-  full,
-};
+export const booksVariations = {baseline, empty, allReading, allCompleted, mixedStatus, withProgress, noCovers, seriesBooks, sixBooks, allFields, full}

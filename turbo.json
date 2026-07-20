@@ -9,6 +9,9 @@
       "outputs": ["dist/**", "../../Sources/LifegamesTokens/**/*.swift"]
     },
     "lint": {},
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
     "test": {
       "dependsOn": ["build"]
     },

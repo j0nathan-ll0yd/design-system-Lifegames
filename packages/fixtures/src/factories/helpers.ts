@@ -13,12 +13,12 @@
  */
 
 /** Stable anchor shared with post-adapter/starredRepos.ts for cross-domain consistency. */
-const DEFAULT_REFERENCE_NOW = '2026-03-18T12:00:00.000Z';
+const DEFAULT_REFERENCE_NOW = '2026-03-18T12:00:00.000Z'
 
 function referenceNow(): Date {
-  const override = process.env.FIXTURES_NOW;
-  const iso = override && override.length > 0 ? override : DEFAULT_REFERENCE_NOW;
-  return new Date(iso);
+  const override = process.env.FIXTURES_NOW
+  const iso = override && override.length > 0 ? override : DEFAULT_REFERENCE_NOW
+  return new Date(iso)
 }
 
 /**
@@ -26,9 +26,9 @@ function referenceNow(): Date {
  * stable reference instant.
  */
 export function isoDate(daysAgo = 0): string {
-  const d = referenceNow();
-  d.setUTCDate(d.getUTCDate() - daysAgo);
-  return d.toISOString().slice(0, 10);
+  const d = referenceNow()
+  d.setUTCDate(d.getUTCDate() - daysAgo)
+  return d.toISOString().slice(0, 10)
 }
 
 /**
@@ -36,9 +36,9 @@ export function isoDate(daysAgo = 0): string {
  * reference instant.
  */
 export function isoTimestamp(daysAgo = 0): string {
-  const d = referenceNow();
-  d.setUTCDate(d.getUTCDate() - daysAgo);
-  return d.toISOString();
+  const d = referenceNow()
+  d.setUTCDate(d.getUTCDate() - daysAgo)
+  return d.toISOString()
 }
 
 const LOREM_WORDS = [
@@ -71,25 +71,26 @@ const LOREM_WORDS = [
   'ullamco',
   'laboris',
   'nisi',
-  'aliquip',
-];
+  'aliquip'
+]
 
 /**
  * Returns a lorem-style placeholder string with the requested number of words.
  */
 export function placeholderText(words: number): string {
-  const result: string[] = [];
+  const result: string[] = []
   for (let i = 0; i < words; i++) {
-    result.push(LOREM_WORDS[i % LOREM_WORDS.length]);
+    // Modulo of a non-empty const array — the index is always in bounds.
+    result.push(LOREM_WORDS[i % LOREM_WORDS.length]!)
   }
-  return result.join(' ');
+  return result.join(' ')
 }
 
 export interface Last90DaysEntry {
-  date: string;
-  count: number;
-  uniquePlaces: number;
-  totalDurationMinutes: number;
+  date: string
+  count: number
+  uniquePlaces: number
+  totalDurationMinutes: number
 }
 
 /**
@@ -99,17 +100,16 @@ export interface Last90DaysEntry {
  * - 'normal': roughly 2 in 3 days has activity
  */
 export function last90DaysEntries(density: 'sparse' | 'full' | 'normal'): Last90DaysEntry[] {
-  const entries: Last90DaysEntry[] = [];
+  const entries: Last90DaysEntry[] = []
   for (let i = 89; i >= 0; i--) {
-    const hasActivity =
-      density === 'full' ? true : density === 'normal' ? i % 3 !== 0 : i % 3 === 0;
+    const hasActivity = density === 'full' ? true : density === 'normal' ? i % 3 !== 0 : i % 3 === 0
 
     entries.push({
       date: isoDate(i),
       count: hasActivity ? 2 + (i % 4) : 0,
       uniquePlaces: hasActivity ? 1 + (i % 3) : 0,
-      totalDurationMinutes: hasActivity ? 60 + (i % 5) * 30 : 0,
-    });
+      totalDurationMinutes: hasActivity ? 60 + (i % 5) * 30 : 0
+    })
   }
-  return entries;
+  return entries
 }

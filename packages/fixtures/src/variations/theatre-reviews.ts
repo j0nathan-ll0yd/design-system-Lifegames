@@ -1,14 +1,11 @@
-import type { TheatreReviewsExport } from '@lifegames/portal-contract/schemas';
-import { createTheatreReviewsFixture, createReview } from '../factories/theatre-reviews';
-import { isoDate } from '../factories/helpers';
+import type {TheatreReviewsExport} from '@lifegames/portal-contract/schemas'
+import {createReview, createTheatreReviewsFixture} from '../factories/theatre-reviews'
+import {isoDate} from '../factories/helpers'
 
 export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
   baseline: createTheatreReviewsFixture(),
 
-  empty: createTheatreReviewsFixture({
-    reviews: [],
-    totalReviews: 0,
-  }),
+  empty: createTheatreReviewsFixture({reviews: [], totalReviews: 0}),
 
   allGrades: (() => {
     const reviews = [
@@ -18,7 +15,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'A+',
         ratingNumeric: 4.3,
         excerpt: 'A transcendent production that redefines the genre entirely.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Hamlet',
@@ -26,7 +23,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'A',
         ratingNumeric: 4.0,
         excerpt: 'A commanding performance anchors this thoughtful modern staging.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Macbeth',
@@ -34,7 +31,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'A-',
         ratingNumeric: 3.7,
         excerpt: 'Visually stunning with occasional pacing issues in Act III.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Romeo and Juliet',
@@ -42,7 +39,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'B+',
         ratingNumeric: 3.3,
         excerpt: 'Fresh choreography elevates familiar material.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Othello',
@@ -50,7 +47,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'B',
         ratingNumeric: 3.0,
         excerpt: 'Solid ensemble work, but the leads lack chemistry.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'The Tempest',
@@ -58,7 +55,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'C',
         ratingNumeric: 2.0,
         excerpt: 'Ambitious staging undermined by muddled direction.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Titus Andronicus',
@@ -66,7 +63,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'D',
         ratingNumeric: 1.0,
         excerpt: 'Gratuitous staging adds nothing to the text.',
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'The Comedy of Errors',
@@ -74,10 +71,10 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: 'F',
         ratingNumeric: 0.0,
         excerpt: 'A complete misfire on every level.',
-        publishedAt: isoDate(),
-      }),
-    ];
-    return createTheatreReviewsFixture({ reviews, totalReviews: reviews.length });
+        publishedAt: isoDate()
+      })
+    ]
+    return createTheatreReviewsFixture({reviews, totalReviews: reviews.length})
   })(),
 
   noImages: (() => {
@@ -90,7 +87,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: null,
         imageWidth: null,
         imageHeight: null,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: "Who's Afraid of Virginia Woolf?",
@@ -100,7 +97,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: null,
         imageWidth: null,
         imageHeight: null,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'A Streetcar Named Desire',
@@ -110,10 +107,10 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: null,
         imageWidth: null,
         imageHeight: null,
-        publishedAt: isoDate(),
-      }),
-    ];
-    return createTheatreReviewsFixture({ reviews, totalReviews: reviews.length });
+        publishedAt: isoDate()
+      })
+    ]
+    return createTheatreReviewsFixture({reviews, totalReviews: reviews.length})
   })(),
 
   maxReviews: (() => {
@@ -125,10 +122,10 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
       'Pygmalion',
       'Arms and the Man',
       'Heartbreak House',
-      'Major Barbara',
-    ];
-    const ratings = ['A+', 'A', 'A-', 'B+', 'B+', 'B', 'B-', 'C+'];
-    const numerics = [4.3, 4.0, 3.7, 3.3, 3.3, 3.0, 2.7, 2.3];
+      'Major Barbara'
+    ]
+    const ratings = ['A+', 'A', 'A-', 'B+', 'B+', 'B', 'B-', 'C+']
+    const numerics = [4.3, 4.0, 3.7, 3.3, 3.3, 3.0, 2.7, 2.3]
     const reviews = titles.map((title, i) =>
       createReview({
         title,
@@ -136,10 +133,10 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         rating: ratings[i],
         ratingNumeric: numerics[i],
         excerpt: `A compelling production of ${title} that rewards patient audiences.`,
-        publishedAt: isoDate(),
-      }),
-    );
-    return createTheatreReviewsFixture({ reviews, totalReviews: reviews.length });
+        publishedAt: isoDate()
+      })
+    )
+    return createTheatreReviewsFixture({reviews, totalReviews: reviews.length})
   })(),
 
   // Maximally populated: max reviews, ALL nullable item fields set to non-null
@@ -159,7 +156,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/a-midsummer-nights-dream.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Hamlet',
@@ -173,7 +170,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/hamlet.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Macbeth',
@@ -187,7 +184,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/macbeth.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Romeo and Juliet',
@@ -201,7 +198,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/romeo-and-juliet.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Othello',
@@ -215,7 +212,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/othello.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'The Tempest',
@@ -229,7 +226,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/the-tempest.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'Titus Andronicus',
@@ -243,7 +240,7 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/titus-andronicus.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
+        publishedAt: isoDate()
       }),
       createReview({
         title: 'The Comedy of Errors',
@@ -257,9 +254,9 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
         imageUrl: 'https://coasttocoastreviews.com/images/the-comedy-of-errors.jpg',
         imageWidth: 1200,
         imageHeight: 675,
-        publishedAt: isoDate(),
-      }),
-    ];
+        publishedAt: isoDate()
+      })
+    ]
     // full promises ALL nullable item fields non-null (the full-coverage walker
     // enforces it): derive the optimized-image variants (LP #145) from each
     // entry's imageUrl instead of hand-maintaining 3 URLs x 8 entries.
@@ -267,11 +264,8 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
       ...r,
       imageUrlAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '.avif') : null,
       imageUrlCard: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.jpg') : null,
-      imageUrlCardAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.avif') : null,
-    });
-    return createTheatreReviewsFixture({
-      reviews: reviews.map(withImageVariants),
-      totalReviews: reviews.length,
-    });
-  })(),
-};
+      imageUrlCardAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.avif') : null
+    })
+    return createTheatreReviewsFixture({reviews: reviews.map(withImageVariants), totalReviews: reviews.length})
+  })()
+}

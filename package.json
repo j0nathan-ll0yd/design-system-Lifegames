@@ -35,24 +35,29 @@
     "changeset:version": "changeset version",
     "changeset:publish": "changeset publish",
     "prepare": "husky",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "typecheck": "turbo run typecheck",
+    "format": "dprint fmt && prettier --write \"**/*.{astro,md,mdx,css}\"",
+    "format:check": "dprint check && prettier --check \"**/*.{astro,md,mdx,css}\""
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
+    "@j0nathan-ll0yd/config": "workspace:*",
     "@playwright/test": "^1.60.0",
+    "dprint": "0.55.2",
     "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.1",
     "prettier": "3.6.0",
     "prettier-plugin-astro": "0.14.1",
     "turbo": "^2.9.16",
+    "typescript": "^5.9.3",
     "yalc": "1.0.0-pre.53"
   },
   "dependencies": {
     "culori": "^4.0.2"
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,mjs,cjs,json,css,astro,md,mdx}": "prettier --write"
+    "**/*.{ts,tsx,js,mjs,cjs,json}": "dprint fmt",
+    "**/*.{astro,md,mdx,css}": "prettier --write"
   }
 }

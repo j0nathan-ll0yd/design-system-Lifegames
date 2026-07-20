@@ -5,23 +5,16 @@
 // (plus AdaptedStarredRepo[] from @lifegames/web for starredRepos, the one
 // adapter-derived domain). The `baseline` variation is the default SSR shell;
 // `empty` exercises the no-data path. Visual tests select variations explicitly.
-import type {
-  Profile,
-  System,
-  DashboardHealth,
-  DashboardGithub,
-  DashboardReading,
-  DashboardBooks,
-} from '@lifegames/schemas';
-import type { AdaptedStarredRepo } from '@lifegames/web/runtime/adapters';
+import type {DashboardBooks, DashboardGithub, DashboardHealth, DashboardReading, Profile, System} from '@lifegames/schemas'
+import type {AdaptedStarredRepo} from '@lifegames/web/runtime/adapters'
 
-import { profilePostAdapter } from './post-adapter/profile';
-import { healthPostAdapter } from './post-adapter/health';
-import { githubPostAdapter } from './post-adapter/github';
-import { readingPostAdapter } from './post-adapter/reading';
-import { booksPostAdapter } from './post-adapter/books';
-import { systemPostAdapter } from './post-adapter/system';
-import { starredReposPostAdapter } from './post-adapter/starredRepos';
+import {profilePostAdapter} from './post-adapter/profile'
+import {healthPostAdapter} from './post-adapter/health'
+import {githubPostAdapter} from './post-adapter/github'
+import {readingPostAdapter} from './post-adapter/reading'
+import {booksPostAdapter} from './post-adapter/books'
+import {systemPostAdapter} from './post-adapter/system'
+import {starredReposPostAdapter} from './post-adapter/starredRepos'
 
 /**
  * The post-adapter SSR shell, keyed by domain then variation name. Mirrors the
@@ -35,24 +28,24 @@ export const fixtures = {
   reading: readingPostAdapter,
   books: booksPostAdapter,
   system: systemPostAdapter,
-  starredRepos: starredReposPostAdapter,
-} as const;
+  starredRepos: starredReposPostAdapter
+} as const
 
 /** Variation keys available for every domain (empty, baseline, full — the normalized triad). */
-export type FixtureVariation = keyof typeof profilePostAdapter;
+export type FixtureVariation = keyof typeof profilePostAdapter
 
 /**
  * The post-adapter dashboard payload for a single variation — the exact shape the
  * web's `loadDashboardData()` returns. Phase B's shim composes this from `fixtures`.
  */
 export interface DashboardFixture {
-  profile: Profile;
-  health: DashboardHealth;
-  github: DashboardGithub;
-  reading: DashboardReading;
-  books: DashboardBooks;
-  system: System;
-  starredRepos: AdaptedStarredRepo[];
+  profile: Profile
+  health: DashboardHealth
+  github: DashboardGithub
+  reading: DashboardReading
+  books: DashboardBooks
+  system: System
+  starredRepos: AdaptedStarredRepo[]
 }
 
 /**
@@ -68,16 +61,8 @@ export function getDashboardFixture(variation: FixtureVariation = 'baseline'): D
     reading: fixtures.reading[variation],
     books: fixtures.books[variation],
     system: fixtures.system[variation],
-    starredRepos: fixtures.starredRepos[variation],
-  };
+    starredRepos: fixtures.starredRepos[variation]
+  }
 }
 
-export {
-  profilePostAdapter,
-  healthPostAdapter,
-  githubPostAdapter,
-  readingPostAdapter,
-  booksPostAdapter,
-  systemPostAdapter,
-  starredReposPostAdapter,
-};
+export { booksPostAdapter, githubPostAdapter, healthPostAdapter, profilePostAdapter, readingPostAdapter, starredReposPostAdapter, systemPostAdapter }

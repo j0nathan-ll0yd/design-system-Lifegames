@@ -14,8 +14,8 @@
 // (no eslint-plugin-drizzle, no powertools/migrations/env local rules). It is
 // safe for a portfolio site, a governance repo, or an orchestration scaffold.
 
-import eslintJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import eslintJs from '@eslint/js'
+import tseslint from 'typescript-eslint'
 
 /**
  * Build the estate-standard flat-config array.
@@ -27,7 +27,7 @@ import tseslint from 'typescript-eslint';
  * @returns {import('eslint').Linter.Config[]} flat-config array
  */
 export function createBaseConfig(options = {}) {
-  const { tsconfigRootDir } = options;
+  const {tsconfigRootDir} = options
 
   /** @type {import('eslint').Linter.Config[]} */
   const config = [
@@ -36,31 +36,18 @@ export function createBaseConfig(options = {}) {
     {
       // Defensive: assert formatting ownership. dprint owns all whitespace,
       // quotes, semicolons, and trailing commas — these must never be ESLint rules.
-      rules: {
-        quotes: 'off',
-        semi: 'off',
-        indent: 'off',
-        'comma-dangle': 'off',
-      },
-    },
-  ];
+      rules: {quotes: 'off', semi: 'off', indent: 'off', 'comma-dangle': 'off'}
+    }
+  ]
 
   if (tsconfigRootDir) {
     config.push({
-      languageOptions: {
-        parserOptions: {
-          projectService: true,
-          tsconfigRootDir,
-        },
-      },
-      rules: {
-        '@typescript-eslint/no-floating-promises': 'error',
-        '@typescript-eslint/no-misused-promises': 'error',
-      },
-    });
+      languageOptions: {parserOptions: {projectService: true, tsconfigRootDir}},
+      rules: {'@typescript-eslint/no-floating-promises': 'error', '@typescript-eslint/no-misused-promises': 'error'}
+    })
   }
 
-  return config;
+  return config
 }
 
-export default createBaseConfig;
+export default createBaseConfig

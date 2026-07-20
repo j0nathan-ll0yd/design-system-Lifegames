@@ -1,21 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 const meta: Meta = {
   title: 'Integration/shadcn',
   tags: ['stable'],
   parameters: {
-    backgrounds: { default: 'dark' },
-    docs: {
-      description: {
-        component: 'Smoke fixture verifying shadcn OKLCH CSS vars from `@lifegames/tokens/shadcn`.',
-      },
-    },
-  },
-};
+    backgrounds: {default: 'dark'},
+    docs: {description: {component: 'Smoke fixture verifying shadcn OKLCH CSS vars from `@lifegames/tokens/shadcn`.'}}
+  }
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
 const shadcnStyles = html`
   <style>
@@ -71,10 +67,11 @@ const shadcnStyles = html`
       box-shadow: 0 0 0 2px var(--ring);
     }
   </style>
-`;
+`
 
 export const Default: Story = {
-  render: () => html`
+  render: () =>
+    html`
     ${shadcnStyles}
     <div class="shadcn-demo dark">
       <div class="shadcn-card">
@@ -89,11 +86,12 @@ export const Default: Story = {
         <button class="shadcn-btn shadcn-btn--destructive">Destructive</button>
       </div>
     </div>
-  `,
-};
+  `
+}
 
 export const DestructiveVariant: Story = {
-  render: () => html`
+  render: () =>
+    html`
     ${shadcnStyles}
     <div class="shadcn-demo dark">
       <div class="shadcn-card">
@@ -104,5 +102,5 @@ export const DestructiveVariant: Story = {
         <button class="shadcn-btn shadcn-btn--destructive">Delete account</button>
       </div>
     </div>
-  `,
-};
+  `
+}

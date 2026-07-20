@@ -8,9 +8,11 @@ packages:
 shamefullyHoist: true
 # pnpm 11 (upgraded from 9.15.4): strictDepBuilds blocks lifecycle scripts by
 # default. These all ran unrestricted under pnpm 9; approving preserves prior
-# behavior (native binaries: swc/esbuild/sharp/unrs-resolver).
+# behavior (native binaries: swc/esbuild/sharp/unrs-resolver). dprint's postinstall
+# downloads its platform binary — required for `dprint fmt`/`check` to run.
 allowBuilds:
   '@swc/core': true
+  dprint: true
   esbuild: true
   sharp: true
   unrs-resolver: true

@@ -30,16 +30,19 @@ step() {
 
 echo "[pre-push] Running local CI-parity gate (format, lint, freshness, tests, governance)..."
 
-# ── Formatting, lint, generated-artifact freshness ──────────────────────────
+# ── Formatting, lint, typecheck, generated-artifact freshness ───────────────
+# format:check runs dprint (TS/JS/JSON) + prettier (astro/md/mdx/css); see
+# package.json. typecheck runs `turbo run typecheck` across the packages that
+# extend @j0nathan-ll0yd/config/tsconfig-base.json (schemas, fixtures, web,
+# storybook) — mirrors the CI `typecheck` job.
 step "format:check"            pnpm format:check
 step "lint"                    pnpm lint
+step "typecheck"               pnpm typecheck
 step "schemas freshness"       pnpm check:schemas-freshness
 
-# ── Tier 2: cheap CI-job mirrors (typecheck, unit tests, contract, audits) ──
-# NOTE: the former "web typecheck" step (pnpm --filter @lifegames/web tsc) was a
-# silent no-op: packages/web has no tsconfig, so tsc printed help and exited 0 via
-# pnpm<=9's implicit exec fallback (removed in pnpm 11, which exposed it). Run the
-# real web unit suite instead; tsconfig-based typecheck is a tracked follow-up.
+# ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
+# The web unit suite (vitest) is distinct from `typecheck` above: it exercises
+# runtime behaviour of the updaters/adapters Props contract.
 step "web tests"               pnpm -F @lifegames/web test
 step "copy tests"              pnpm -F @lifegames/copy test
 step "audit script tests"      pnpm test:scripts

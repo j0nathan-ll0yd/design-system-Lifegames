@@ -20,34 +20,31 @@
  * Output is byte-identical to the prior renderProvenance() markdown output for
  * the same content, so the web visual baselines and behavioral test stay green.
  */
-export function composeProvenance(
-  body: string,
-  refs: Record<string, { label: string; href: string }>,
-): string {
-  const escape = (s: string) =>
-    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+export function composeProvenance(body: string, refs: Record<string, {label: string; href: string}>): string {
+  const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
-  const placeholderRe = /\{([a-zA-Z0-9_]+)\}/g;
-  let result = '';
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
+  const placeholderRe = /\{([a-zA-Z0-9_]+)\}/g
+  let result = ''
+  let lastIndex = 0
+  let match: RegExpExecArray | null
 
   while ((match = placeholderRe.exec(body)) !== null) {
-    result += escape(body.slice(lastIndex, match.index));
-    const key = match[1];
-    const ref = refs[key];
+    result += escape(body.slice(lastIndex, match.index))
+    // Capture group 1 is always present when this regex matches (it is not optional).
+    const key = match[1] ?? ''
+    const ref = refs[key]
     if (ref === undefined) {
       // Unknown/absent placeholder → escaped literal text (e.g. "{foo}").
-      result += escape(match[0]);
+      result += escape(match[0])
     } else if (ref.href.startsWith('https://')) {
-      result += `<a href="${escape(ref.href)}" target="_blank" rel="noopener noreferrer">${escape(ref.label)}</a>`;
+      result += `<a href="${escape(ref.href)}" target="_blank" rel="noopener noreferrer">${escape(ref.label)}</a>`
     } else {
       // Scheme guard: non-https href → escaped label as plain text, no anchor.
-      result += escape(ref.label);
+      result += escape(ref.label)
     }
-    lastIndex = placeholderRe.lastIndex;
+    lastIndex = placeholderRe.lastIndex
   }
 
-  result += escape(body.slice(lastIndex));
-  return result;
+  result += escape(body.slice(lastIndex))
+  return result
 }

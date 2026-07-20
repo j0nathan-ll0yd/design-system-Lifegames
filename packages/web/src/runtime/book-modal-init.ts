@@ -7,151 +7,168 @@
 // trap needed), automatic Escape-to-close (cancel→close events), top-layer
 // rendering (no z-index required), and UA margin:auto centering.
 
-import { widgets, a11y } from '@lifegames/copy';
-import { esc } from './html-utils';
-import { formatFinishedDate } from './updaters';
+import {a11y, widgets} from '@lifegames/copy'
+import {esc} from './html-utils'
+import {formatFinishedDate} from './updaters'
 
 interface BookData {
-  asin?: string;
-  cover?: string;
-  coverAvif?: string;
-  title?: string;
-  series?: string;
-  seriesNumber?: number;
-  seriesTotal?: number;
-  author?: string;
-  rating?: number;
-  pages?: number;
-  year?: number;
-  status?: string;
-  statusLabel?: string;
-  progress?: number;
-  desc?: string;
-  genres?: string | string[];
-  notes?: string;
-  link?: string;
-  finishedAt?: string | null;
+  asin?: string
+  cover?: string
+  coverAvif?: string
+  title?: string
+  series?: string
+  seriesNumber?: number
+  seriesTotal?: number
+  author?: string
+  rating?: number
+  pages?: number
+  year?: number
+  status?: string
+  statusLabel?: string
+  progress?: number
+  desc?: string
+  genres?: string | string[]
+  notes?: string
+  link?: string
+  finishedAt?: string | null
 }
 
 declare global {
   interface Window {
-    sa_event?: (name: string, props?: Record<string, unknown>) => void;
+    sa_event?: (name: string, props?: Record<string, unknown>) => void
   }
 }
 
 function normalizeGenres(g: BookData['genres']): string[] {
-  if (!g) return [];
-  const items = Array.isArray(g) ? g : typeof g === 'string' ? [g] : [];
-  const result: string[] = [];
-  for (const s of items) {
-    String(s)
-      .split(',')
-      .forEach((part) => {
-        const t = part.trim();
-        if (t.length > 0) result.push(t);
-      });
+  if (!g) {
+    return []
   }
-  return result;
+  const items = Array.isArray(g) ? g : typeof g === 'string' ? [g] : []
+  const result: string[] = []
+  for (const s of items) {
+    String(s).split(',').forEach((part) => {
+      const t = part.trim()
+      if (t.length > 0) {
+        result.push(t)
+      }
+    })
+  }
+  return result
 }
 
 function renderModalHtml(b: BookData): string {
-  const asin = b.asin || '';
-  const cover = b.cover || `https://m.media-amazon.com/images/P/${asin}.01._SCLZZZZZZZ_SX160_.jpg`;
-  let html = '<div class="book-modal-header">';
+  const asin = b.asin || ''
+  const cover = b.cover || `https://m.media-amazon.com/images/P/${asin}.01._SCLZZZZZZZ_SX160_.jpg`
+  let html = '<div class="book-modal-header">'
   // data-fallback is a data attribute (CSP-safe); the error listener is wired
   // externally in openModal() after innerHTML assignment (D3 — no inline onerror).
-  const fallbackAttr = b.cover && cover !== b.cover ? ` data-fallback="${esc(b.cover)}"` : '';
-  const avifSrc = b.coverAvif ? `<source srcset="${esc(b.coverAvif)}" type="image/avif">` : '';
-  const imgTag = `<img class="book-modal-cover" src="${esc(cover)}" width="140" height="210" alt="${esc(b.title || '')} cover" decoding="async"${fallbackAttr}>`;
-  html += avifSrc ? `<picture>${avifSrc}${imgTag}</picture>` : imgTag;
-  html += '<div class="book-modal-info">';
-  html += `<div class="book-modal-title">${esc(b.title || '')}</div>`;
+  const fallbackAttr = b.cover && cover !== b.cover ? ` data-fallback="${esc(b.cover)}"` : ''
+  const avifSrc = b.coverAvif ? `<source srcset="${esc(b.coverAvif)}" type="image/avif">` : ''
+  const imgTag = `<img class="book-modal-cover" src="${esc(cover)}" width="140" height="210" alt="${
+    esc(b.title || '')
+  } cover" decoding="async"${fallbackAttr}>`
+  html += avifSrc ? `<picture>${avifSrc}${imgTag}</picture>` : imgTag
+  html += '<div class="book-modal-info">'
+  html += `<div class="book-modal-title">${esc(b.title || '')}</div>`
   if (b.series) {
-    let seriesHtml = esc(b.series);
+    let seriesHtml = esc(b.series)
     if (b.seriesNumber) {
-      seriesHtml += ` <span style="color:var(--neon-green)">&middot; Book ${b.seriesNumber}`;
-      if (b.seriesTotal) seriesHtml += ` of ${b.seriesTotal}`;
-      seriesHtml += '</span>';
+      seriesHtml += ` <span style="color:var(--neon-green)">&middot; Book ${b.seriesNumber}`
+      if (b.seriesTotal) {
+        seriesHtml += ` of ${b.seriesTotal}`
+      }
+      seriesHtml += '</span>'
     }
-    html += `<div class="book-modal-series">${seriesHtml}</div>`;
+    html += `<div class="book-modal-series">${seriesHtml}</div>`
   }
-  html += `<div class="book-modal-author">${esc(b.author || '')}</div>`;
+  html += `<div class="book-modal-author">${esc(b.author || '')}</div>`
   if (b.rating) {
-    html += '<div class="book-modal-stars">';
+    html += '<div class="book-modal-stars">'
     for (let s = 1; s <= 5; s++) {
-      html += `<span class="${s <= b.rating ? 'star-on' : 'star-off'}">${s <= b.rating ? '★' : '☆'}</span>`;
+      html += `<span class="${s <= b.rating ? 'star-on' : 'star-off'}">${s <= b.rating ? '★' : '☆'}</span>`
     }
-    html += '</div>';
+    html += '</div>'
   }
-  html += '</div>';
-  html +=
-    '<button class="book-modal-close" id="bookModalClose" aria-label="' +
-    a11y.modal.close +
-    '">&times;</button>';
-  html += '</div>';
-  html += '<div class="book-modal-body">';
-  html += '<div class="book-modal-stats">';
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.pages || '—'}</div><div class="book-modal-stat-label">${widgets.bookModal.pages}</div></div>`;
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${b.year || '—'}</div><div class="book-modal-stat-label">${widgets.bookModal.published}</div></div>`;
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${b.status}" style="font-size:0.7rem;margin:0">${b.statusLabel || ''}</div><div class="book-modal-stat-label">${widgets.bookModal.status}</div></div>`;
-  html += '</div>';
+  html += '</div>'
+  html += '<button class="book-modal-close" id="bookModalClose" aria-label="' + a11y.modal.close + '">&times;</button>'
+  html += '</div>'
+  html += '<div class="book-modal-body">'
+  html += '<div class="book-modal-stats">'
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${
+    b.pages || '—'
+  }</div><div class="book-modal-stat-label">${widgets.bookModal.pages}</div></div>`
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${
+    b.year || '—'
+  }</div><div class="book-modal-stat-label">${widgets.bookModal.published}</div></div>`
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${b.status}" style="font-size:0.7rem;margin:0">${
+    b.statusLabel || ''
+  }</div><div class="book-modal-stat-label">${widgets.bookModal.status}</div></div>`
+  html += '</div>'
   if (b.status === 'reading' && b.progress !== undefined) {
-    html += `<div><div class="book-modal-progress"><div class="book-modal-progress-fill" style="width:${b.progress}%"></div></div>`;
-    html += `<div class="book-modal-progress-label">${widgets.bookModal.progressSuffix.replace('{percent}', String(b.progress))}</div></div>`;
+    html += `<div><div class="book-modal-progress"><div class="book-modal-progress-fill" style="width:${b.progress}%"></div></div>`
+    html += `<div class="book-modal-progress-label">${widgets.bookModal.progressSuffix.replace('{percent}', String(b.progress))}</div></div>`
   }
   if (b.status === 'finished' && b.finishedAt) {
-    html += `<div class="book-modal-finished-date">${esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt)))}</div>`;
+    html += `<div class="book-modal-finished-date">${esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt)))}</div>`
   }
-  if (b.desc) html += `<div class="book-modal-desc">${esc(b.desc)}</div>`;
-  const genreList = normalizeGenres(b.genres);
+  if (b.desc) {
+    html += `<div class="book-modal-desc">${esc(b.desc)}</div>`
+  }
+  const genreList = normalizeGenres(b.genres)
   if (genreList.length) {
-    html += '<div class="book-modal-tags">';
+    html += '<div class="book-modal-tags">'
     genreList.forEach((g, i) => {
-      if (i > 0) html += '<span class="book-modal-tag-sep">,</span>';
-      html += `<span class="book-modal-tag">${esc(g)}</span>`;
-    });
-    html += '</div>';
+      if (i > 0) {
+        html += '<span class="book-modal-tag-sep">,</span>'
+      }
+      html += `<span class="book-modal-tag">${esc(g)}</span>`
+    })
+    html += '</div>'
   }
   if (b.status === 'finished' && b.notes) {
-    html += '<div class="book-modal-notes">';
-    html += `<div class="book-modal-notes-label">${widgets.bookModal.notes}</div>`;
-    html += `<div class="book-modal-notes-text">${esc(b.notes)}</div>`;
-    html += '</div>';
+    html += '<div class="book-modal-notes">'
+    html += `<div class="book-modal-notes-label">${widgets.bookModal.notes}</div>`
+    html += `<div class="book-modal-notes-text">${esc(b.notes)}</div>`
+    html += '</div>'
   }
   if (b.link) {
-    html += `<div><a href="${esc(b.link)}" target="_blank" rel="noopener" class="book-modal-amazon">${widgets.bookModal.amazonCta}</a></div>`;
+    html += `<div><a href="${esc(b.link)}" target="_blank" rel="noopener" class="book-modal-amazon">${widgets.bookModal.amazonCta}</a></div>`
   }
-  html += '</div>';
-  return html;
+  html += '</div>'
+  return html
 }
 
 export function initBookModal(): void {
-  const dialog = document.getElementById('bookDialog') as HTMLDialogElement | null;
-  const modal = document.getElementById('bookModal') as HTMLElement | null;
-  if (!dialog || !modal) return;
+  const dialog = document.getElementById('bookDialog') as HTMLDialogElement | null
+  const modal = document.getElementById('bookModal') as HTMLElement | null
+  if (!dialog || !modal) {
+    return
+  }
 
   // Idempotency guard — anchored to the dialog element.
   interface DialogWithGuard extends HTMLDialogElement {
-    _bookModalInit?: boolean;
+    _bookModalInit?: boolean
   }
-  const dwg = dialog as DialogWithGuard;
-  if (dwg._bookModalInit) return;
-  dwg._bookModalInit = true;
+  const dwg = dialog as DialogWithGuard
+  if (dwg._bookModalInit) {
+    return
+  }
+  dwg._bookModalInit = true
 
-  let triggerElement: HTMLElement | null = null;
+  let triggerElement: HTMLElement | null = null
 
   function openModal(b: BookData): void {
-    modal!.innerHTML = renderModalHtml(b);
+    modal!.innerHTML = renderModalHtml(b)
 
     // Wire image-cover fallback via external listener (CSP-safe; replaces
     // inline onerror — D3). The cover element carries data-fallback when the
     // computed Amazon URL differs from the stored custom cover.
-    const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover');
+    const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover')
     if (cover && cover.dataset.fallback) {
       cover.addEventListener('error', function onErr() {
-        cover.src = cover.dataset.fallback!;
-        cover.removeEventListener('error', onErr);
-      });
+        cover.src = cover.dataset.fallback!
+        cover.removeEventListener('error', onErr)
+      })
     }
 
     // Open the dialog and fire analytics only on an ACTUAL open — never on a
@@ -159,9 +176,9 @@ export function initBookModal(): void {
     // The guard also prevents showModal() throwing InvalidStateError when open.
     if (!dialog!.open) {
       if (typeof window.sa_event === 'function') {
-        window.sa_event('book_open', { title: b.title });
+        window.sa_event('book_open', {title: b.title})
       }
-      dialog!.showModal();
+      dialog!.showModal()
     }
 
     // The card entry animation is pure CSS (bookModalIn on
@@ -170,12 +187,12 @@ export function initBookModal(): void {
     // same-document View Transition: snapshotting the backdrop-filtered
     // .book-modal flattened the live blur into a static image that glared as it
     // faded on dismiss. CSS enter/exit animations avoid that artifact entirely.
-    const closeBtn = document.getElementById('bookModalClose');
+    const closeBtn = document.getElementById('bookModalClose')
     if (closeBtn) {
       closeBtn.addEventListener('click', () => {
-        closeBookModal();
-      });
-      closeBtn.focus();
+        closeBookModal()
+      })
+      closeBtn.focus()
     }
   }
 
@@ -192,35 +209,41 @@ export function initBookModal(): void {
   // The trigger is captured into a LOCAL and the shared `triggerElement` detached
   // synchronously so a rapid reopen cannot null a freshly-set trigger mid-close.
   function closeBookModal(): void {
-    if (!dialog!.open) return;
-    const trigger = triggerElement;
-    triggerElement = null;
+    if (!dialog!.open) {
+      return
+    }
+    const trigger = triggerElement
+    triggerElement = null
 
     const finish = (): void => {
-      modal!.style.animation = '';
-      dialog!.close();
-      if (trigger) trigger.focus();
-    };
+      modal!.style.animation = ''
+      dialog!.close()
+      if (trigger) {
+        trigger.focus()
+      }
+    }
 
     // Reduced motion: close immediately, no exit animation.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      finish();
-      return;
+      finish()
+      return
     }
 
-    let done = false;
+    let done = false
     const onEnd = (): void => {
-      if (done) return;
-      done = true;
-      modal!.removeEventListener('animationend', onEnd);
-      finish();
-    };
-    modal!.addEventListener('animationend', onEnd);
+      if (done) {
+        return
+      }
+      done = true
+      modal!.removeEventListener('animationend', onEnd)
+      finish()
+    }
+    modal!.addEventListener('animationend', onEnd)
     // Fallback in case animationend never fires (animation dropped/interrupted).
-    window.setTimeout(onEnd, 300);
+    window.setTimeout(onEnd, 300)
     // Inline animation overrides the [open] bookModalIn rule (inline beats any
     // selector / cascade layer), so the card animates out without a view transition.
-    modal!.style.animation = 'bookModalOut 0.2s ease-in forwards';
+    modal!.style.animation = 'bookModalOut 0.2s ease-in forwards'
   }
 
   // Intercept Escape (cancel event) to drive the reverse close transition
@@ -228,9 +251,9 @@ export function initBookModal(): void {
   // the native close; closeBookModal() calls dialog.close() inside the
   // transition callback so the UA still processes the close correctly.
   dialog.addEventListener('cancel', (e: Event) => {
-    e.preventDefault();
-    closeBookModal();
-  });
+    e.preventDefault()
+    closeBookModal()
+  })
 
   // Backdrop-click-to-close. The <dialog> element fills the viewport and
   // centers the visible card (.book-modal) via grid place-items (see
@@ -244,32 +267,32 @@ export function initBookModal(): void {
   // fall through to <html> — they never reach this listener at all.
   dialog.addEventListener('click', (e: MouseEvent) => {
     if (e.target === dialog) {
-      closeBookModal();
+      closeBookModal()
     }
-  });
+  })
 
-  const cardBooks = document.getElementById('cardBooks');
+  const cardBooks = document.getElementById('cardBooks')
   if (cardBooks) {
     cardBooks.addEventListener('click', (e: Event) => {
-      const target = e.target as HTMLElement;
-      const book = target.closest<HTMLElement>('.shelf-book[data-book]');
+      const target = e.target as HTMLElement
+      const book = target.closest<HTMLElement>('.shelf-book[data-book]')
       if (book) {
-        triggerElement = book;
-        const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData;
-        openModal(data);
+        triggerElement = book
+        const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
+        openModal(data)
       }
-    });
+    })
     cardBooks.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
-        const target = e.target as HTMLElement;
-        const book = target.closest<HTMLElement>('.shelf-book[data-book]');
+        const target = e.target as HTMLElement
+        const book = target.closest<HTMLElement>('.shelf-book[data-book]')
         if (book) {
-          e.preventDefault();
-          triggerElement = book;
-          const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData;
-          openModal(data);
+          e.preventDefault()
+          triggerElement = book
+          const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
+          openModal(data)
         }
       }
-    });
+    })
   }
 }

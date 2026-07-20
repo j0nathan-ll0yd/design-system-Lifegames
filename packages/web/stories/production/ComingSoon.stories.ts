@@ -1,15 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 // DS-internal fixture: identity/coming-soon.json (empty object — synthetic below)
 const meta: Meta = {
   title: 'Production/Identity/ComingSoon',
   tags: ['stable', 'autodocs'],
-  argTypes: {
-    label: { control: 'text' },
-    dossierYear: { control: 'number' },
-  },
-  render: (args) => html`
+  argTypes: {label: {control: 'text'}, dossierYear: {control: 'number'}},
+  render: (args) =>
+    html`
     <div id="cardComingSoon" class="tri-card">
       <div class="widget-header">
         <span class="widget-label">Coming Soon</span>
@@ -26,25 +24,14 @@ const meta: Meta = {
         </p>
       </div>
     </div>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = {
-  args: { label: 'Something new is brewing...', dossierYear: 2026 },
-};
+export const Default: Story = {args: {label: 'Something new is brewing...', dossierYear: 2026}}
 
-export const Empty: Story = {
-  args: { label: '', dossierYear: 2026 },
-};
+export const Empty: Story = {args: {label: '', dossierYear: 2026}}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: {
-      value: 'dark',
-    },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

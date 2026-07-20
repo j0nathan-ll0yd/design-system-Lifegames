@@ -1,17 +1,16 @@
 {
+  "extends": "@j0nathan-ll0yd/config/tsconfig-base.json",
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "strict": true,
     "noEmit": true,
     "isolatedModules": true,
     "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
     "types": ["vitest/globals"]
   },
-  "include": ["vitest.config.ts", ".storybook/**/*.ts", "src/**/*.ts", "src/**/*.tsx"],
+  "//": "vitest.config.ts is intentionally excluded: vitest 4.1.x types `browser.provider` as an object (BrowserProviderOption) while the runtime accepts the builtin string 'playwright' — an upstream type regression. That config is runtime-validated by the storybook:test CI job; this typecheck covers authored source (stories + .storybook).",
+  "include": [".storybook/**/*.ts", "src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
 }

@@ -1,12 +1,10 @@
 {
+  "extends": "@j0nathan-ll0yd/config/tsconfig-base.json",
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
     "outDir": "./dist",
     "rootDir": "./scripts"
   },

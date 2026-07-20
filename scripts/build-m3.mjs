@@ -12,143 +12,142 @@
  * (called from pnpm build:tokens via turbo or directly)
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { emitPlatform } from './emit-platform.mjs';
+import {mkdirSync, readFileSync, writeFileSync} from 'node:fs'
+import {dirname, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {emitPlatform} from './emit-platform.mjs'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const ROOT = resolve(__dirname, '..')
 
 // Re-use the same token loading pipeline from style-dictionary.config.mjs
 // by importing the resolved token array built during the main build.
 // Since this script runs standalone, we replicate the minimal load+resolve here.
 
-import { statSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import {readdirSync, statSync} from 'node:fs'
+import {join} from 'node:path'
 
 function findTokenFiles(dir) {
-  const results = [];
+  const results = []
   for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry);
+    const full = join(dir, entry)
     if (statSync(full).isDirectory()) {
-      results.push(...findTokenFiles(full));
+      results.push(...findTokenFiles(full))
     } else if (entry.endsWith('.tokens.json')) {
-      results.push(full);
+      results.push(full)
     }
   }
-  return results;
+  return results
 }
 
 function flattenTokens(obj, path = [], type = null) {
-  const tokens = [];
-  const currentType = obj.$type || type;
+  const tokens = []
+  const currentType = obj.$type || type
   for (const [key, val] of Object.entries(obj)) {
-    if (key.startsWith('$')) continue;
+    if (key.startsWith('$')) {
+      continue
+    }
     if (val && typeof val === 'object' && '$value' in val) {
-      tokens.push({
-        path: [...path, key],
-        $type: val.$type || currentType,
-        $value: val.$value,
-        resolvedValue: val.$value,
-      });
+      tokens.push({path: [...path, key], $type: val.$type || currentType, $value: val.$value, resolvedValue: val.$value})
     } else if (val && typeof val === 'object' && !Array.isArray(val)) {
-      tokens.push(...flattenTokens(val, [...path, key], currentType));
+      tokens.push(...flattenTokens(val, [...path, key], currentType))
     }
   }
-  return tokens;
+  return tokens
 }
 
 function resolveReference(ref, tokenMap) {
-  if (typeof ref !== 'string' || !ref.startsWith('{') || !ref.endsWith('}')) return ref;
-  const path = ref.slice(1, -1);
-  const resolved = tokenMap.get(path);
-  if (!resolved) return ref;
-  if (typeof resolved.$value === 'string' && resolved.$value.startsWith('{')) {
-    return resolveReference(resolved.$value, tokenMap);
+  if (typeof ref !== 'string' || !ref.startsWith('{') || !ref.endsWith('}')) {
+    return ref
   }
-  return resolved.$value;
+  const path = ref.slice(1, -1)
+  const resolved = tokenMap.get(path)
+  if (!resolved) {
+    return ref
+  }
+  if (typeof resolved.$value === 'string' && resolved.$value.startsWith('{')) {
+    return resolveReference(resolved.$value, tokenMap)
+  }
+  return resolved.$value
 }
 
 // Load and resolve all tokens (excluding projections)
-const tokenDir = join(ROOT, 'tokens');
-const rawTokens = [];
+const tokenDir = join(ROOT, 'tokens')
+const rawTokens = []
 for (const f of findTokenFiles(tokenDir)) {
-  if (f.includes(`projections`)) continue;
-  rawTokens.push(...flattenTokens(JSON.parse(readFileSync(f, 'utf-8'))));
-}
-const tokenMap = new Map(rawTokens.map((t) => [t.path.join('.'), t]));
-const tokens = rawTokens.map((t) => {
-  let val = t.$value;
-  if (typeof val === 'string' && val.startsWith('{')) {
-    val = resolveReference(val, tokenMap);
+  if (f.includes(`projections`)) {
+    continue
   }
-  return { ...t, resolvedValue: val };
-});
+  rawTokens.push(...flattenTokens(JSON.parse(readFileSync(f, 'utf-8'))))
+}
+const tokenMap = new Map(rawTokens.map((t) => [t.path.join('.'), t]))
+const tokens = rawTokens.map((t) => {
+  let val = t.$value
+  if (typeof val === 'string' && val.startsWith('{')) {
+    val = resolveReference(val, tokenMap)
+  }
+  return {...t, resolvedValue: val}
+})
 
 // Load alias.json
-const aliasFile = JSON.parse(
-  readFileSync(join(ROOT, 'tokens/projections/material3/alias.json'), 'utf-8'),
-);
+const aliasFile = JSON.parse(readFileSync(join(ROOT, 'tokens/projections/material3/alias.json'), 'utf-8'))
 
 // Build flat alias map: --md-sys-color-<role> → resolved value
-const colorRoles = aliasFile['color-roles'];
-const stateLayers = aliasFile['state-layers'];
-const fixedTones = aliasFile['fixed-tones'];
+const colorRoles = aliasFile['color-roles']
+const stateLayers = aliasFile['state-layers']
+const fixedTones = aliasFile['fixed-tones']
 
 // Build alias maps for emitPlatform (uses { 'var-name': ref } format)
-const colorAliasMap = {};
+const colorAliasMap = {}
 for (const [role, ref] of Object.entries(colorRoles)) {
-  colorAliasMap[`md-sys-color-${role}`] = ref;
+  colorAliasMap[`md-sys-color-${role}`] = ref
 }
 
-const fixedAliasMap = {};
+const fixedAliasMap = {}
 for (const [role, ref] of Object.entries(fixedTones)) {
-  fixedAliasMap[`md-sys-color-${role}`] = ref;
+  fixedAliasMap[`md-sys-color-${role}`] = ref
 }
 
-const stateAliasMap = {};
+const stateAliasMap = {}
 for (const [key, val] of Object.entries(stateLayers)) {
-  stateAliasMap[`md-sys-state-${key}`] = val;
+  stateAliasMap[`md-sys-state-${key}`] = val
 }
 
 // Emit using emitPlatform helper
-const header =
-  '/* Generated by Style Dictionary — material3 platform — do not edit */\n' +
+const header = '/* Generated by Style Dictionary — material3 platform — do not edit */\n' +
   '/* Authority: tokens/projections/material3/alias.json (Lifegames → M3, unidirectional) */\n' +
-  '/* Spec: https://m3.material.io/styles/color/roles */\n';
+  '/* Spec: https://m3.material.io/styles/color/roles */\n'
 
 const colorSection = emitPlatform({
   name: 'material3-colors',
   aliasMap: colorAliasMap,
   tokens,
-  header: header + '\n/* ── Color roles (29) ──────────────────────────────────────────────── */\n',
-});
+  header: header + '\n/* ── Color roles (29) ──────────────────────────────────────────────── */\n'
+})
 
 const fixedSection = emitPlatform({
   name: 'material3-fixed',
   aliasMap: fixedAliasMap,
   tokens,
-  header: '\n/* ── Fixed-tone variants ───────────────────────────────────────────── */\n',
-});
+  header: '\n/* ── Fixed-tone variants ───────────────────────────────────────────── */\n'
+})
 
 // State layers are plain numeric values — no token resolution needed
-let stateSection =
-  '\n/* ── State-layer opacity tokens ────────────────────────────────────── */\n:root {\n';
+let stateSection = '\n/* ── State-layer opacity tokens ────────────────────────────────────── */\n:root {\n'
 for (const [key, val] of Object.entries(stateLayers)) {
-  stateSection += `  --md-sys-state-${key}: ${val};\n`;
+  stateSection += `  --md-sys-state-${key}: ${val};\n`
 }
-stateSection += '}\n';
+stateSection += '}\n'
 
-const m3Css = colorSection + fixedSection + stateSection;
+const m3Css = colorSection + fixedSection + stateSection
 
 // Write output
-const distDir = join(ROOT, 'packages/tokens/dist');
-mkdirSync(distDir, { recursive: true });
-writeFileSync(join(distDir, 'm3.css'), m3Css);
+const distDir = join(ROOT, 'packages/tokens/dist')
+mkdirSync(distDir, {recursive: true})
+writeFileSync(join(distDir, 'm3.css'), m3Css)
 
-console.log('M3 platform build complete.');
-console.log(`  Color roles:     ${Object.keys(colorRoles).length}`);
-console.log(`  Fixed-tone vars: ${Object.keys(fixedTones).length}`);
-console.log(`  State-layer vars: ${Object.keys(stateLayers).length}`);
-console.log('  Output: packages/tokens/dist/m3.css');
+console.log('M3 platform build complete.')
+console.log(`  Color roles:     ${Object.keys(colorRoles).length}`)
+console.log(`  Fixed-tone vars: ${Object.keys(fixedTones).length}`)
+console.log(`  State-layer vars: ${Object.keys(stateLayers).length}`)
+console.log('  Output: packages/tokens/dist/m3.css')

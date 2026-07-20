@@ -1,17 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 // DS-internal fixture: location/exploration-odometer-v3.json
 const meta: Meta = {
   title: 'Production/Location/ExplorationOdometerV3',
   tags: ['stable', 'autodocs'],
-  argTypes: {
-    totalVisits: { control: 'number' },
-    totalPlaces: { control: 'number' },
-    citiesVisited: { control: 'number' },
-    currentCity: { control: 'text' },
-  },
-  render: (args) => html`
+  argTypes: {totalVisits: {control: 'number'}, totalPlaces: {control: 'number'}, citiesVisited: {control: 'number'}, currentCity: {control: 'text'}},
+  render: (args) =>
+    html`
     <div id="cardOdometer" class="tri-card">
       <div class="widget-header">
         <span class="widget-label">Exploration Odometer</span>
@@ -45,29 +41,16 @@ const meta: Meta = {
         </div>
       </div>
     </div>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = {
-  args: { totalVisits: 2847, totalPlaces: 312, citiesVisited: 24, currentCity: 'Portland' },
-};
+export const Default: Story = {args: {totalVisits: 2847, totalPlaces: 312, citiesVisited: 24, currentCity: 'Portland'}}
 
-export const Empty: Story = {
-  args: { totalVisits: 0, totalPlaces: 0, citiesVisited: 0, currentCity: '—' },
-};
+export const Empty: Story = {args: {totalVisits: 0, totalPlaces: 0, citiesVisited: 0, currentCity: '—'}}
 
-export const Loading: Story = {
-  args: { totalVisits: null, totalPlaces: null, citiesVisited: null, currentCity: null },
-};
+export const Loading: Story = {args: {totalVisits: null, totalPlaces: null, citiesVisited: null, currentCity: null}}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: {
-      value: 'dark',
-    },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

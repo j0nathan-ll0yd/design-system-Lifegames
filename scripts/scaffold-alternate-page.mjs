@@ -7,112 +7,86 @@
  *   node scripts/scaffold-alternate-page.mjs --name ActivityFeed --category github --force
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs'
+import {dirname, resolve} from 'path'
+import {fileURLToPath} from 'url'
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const ROOT = resolve(__dirname, '..')
 
 // --- CLI args ---
-const args = process.argv.slice(2);
+const args = process.argv.slice(2)
 function getArg(flag) {
-  const i = args.indexOf(flag);
-  return i !== -1 ? args[i + 1] : null;
+  const i = args.indexOf(flag)
+  return i !== -1 ? args[i + 1] : null
 }
-const name = getArg('--name');
-const category = getArg('--category');
-const force = args.includes('--force');
+const name = getArg('--name')
+const category = getArg('--category')
+const force = args.includes('--force')
 
 if (!name || !category) {
-  console.error(
-    'Usage: node scripts/scaffold-alternate-page.mjs --name <WidgetName> --category <category> [--force]',
-  );
-  process.exit(1);
+  console.error('Usage: node scripts/scaffold-alternate-page.mjs --name <WidgetName> --category <category> [--force]')
+  process.exit(1)
 }
 
 // --- Kebab conversion with acronym handling ---
 // Special-case known acronyms so "GitHubHeatmap" → "github-heatmap" not "git-hub-heatmap"
-const ACRONYM_MAP = {
-  GitHub: 'Github',
-  OG: 'Og',
-};
+const ACRONYM_MAP = {GitHub: 'Github', OG: 'Og'}
 
 function toKebab(str) {
-  let s = str;
+  let s = str
   for (const [acronym, replacement] of Object.entries(ACRONYM_MAP)) {
-    s = s.replaceAll(acronym, replacement);
+    s = s.replaceAll(acronym, replacement)
   }
-  return s
-    .replace(/([A-Z])/g, (m, c, offset) => (offset === 0 ? c.toLowerCase() : '-' + c.toLowerCase()))
-    .replace(/^-/, '');
+  return s.replace(/([A-Z])/g, (m, c, offset) => (offset === 0 ? c.toLowerCase() : '-' + c.toLowerCase())).replace(/^-/, '')
 }
 
-const kebab = toKebab(name);
-const catCapitalized = category.charAt(0).toUpperCase() + category.slice(1);
+const kebab = toKebab(name)
+const catCapitalized = category.charAt(0).toUpperCase() + category.slice(1)
 
 // --- Load manifest ---
-const manifestPath = resolve(
-  ROOT,
-  'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json',
-);
-const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-const widgetEntry = manifest.widgets.find((w) => w.name === name && w.category === category);
+const manifestPath = resolve(ROOT, 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json')
+const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'))
+const widgetEntry = manifest.widgets.find((w) => w.name === name && w.category === category)
 
 if (!widgetEntry) {
-  console.error(`Widget "${name}" with category "${category}" not found in widget-manifest.json`);
-  process.exit(1);
+  console.error(`Widget "${name}" with category "${category}" not found in widget-manifest.json`)
+  process.exit(1)
 }
 
 // --- iOS detection ---
 // Category dir uses Title-case (e.g. "GitHub" → "GitHub", "identity" → "Identity")
 // Actual dirs found: GitHub, Health, Identity, Location, Other, Reading, Runtime, Resources
-const SWIFT_CATEGORY_MAP = {
-  github: 'GitHub',
-  health: 'Health',
-  identity: 'Identity',
-  location: 'Location',
-  other: 'Other',
-  reading: 'Reading',
-};
-const swiftCategoryDir = SWIFT_CATEGORY_MAP[category] ?? catCapitalized;
-const swiftViewFile = `${name}View.swift`;
-const swiftViewPath = resolve(ROOT, 'Sources/LifegamesWidgets', swiftCategoryDir, swiftViewFile);
-const swiftExists = existsSync(swiftViewPath);
-const swiftRelPath = `Sources/LifegamesWidgets/${swiftCategoryDir}/${swiftViewFile}`;
+const SWIFT_CATEGORY_MAP = {github: 'GitHub', health: 'Health', identity: 'Identity', location: 'Location', other: 'Other', reading: 'Reading'}
+const swiftCategoryDir = SWIFT_CATEGORY_MAP[category] ?? catCapitalized
+const swiftViewFile = `${name}View.swift`
+const swiftViewPath = resolve(ROOT, 'Sources/LifegamesWidgets', swiftCategoryDir, swiftViewFile)
+const swiftExists = existsSync(swiftViewPath)
+const swiftRelPath = `Sources/LifegamesWidgets/${swiftCategoryDir}/${swiftViewFile}`
 
 // --- Check for .astro component ---
-const astroComponentPath = resolve(ROOT, 'packages/web/src/widgets', category, `${name}.astro`);
+const astroComponentPath = resolve(ROOT, 'packages/web/src/widgets', category, `${name}.astro`)
 if (!existsSync(astroComponentPath)) {
-  console.warn(
-    `Warning: No .astro component found at packages/web/src/widgets/${category}/${name}.astro`,
-  );
-  console.warn('Skipping page generation (OGImage case or component not yet created).');
-  process.exit(0);
+  console.warn(`Warning: No .astro component found at packages/web/src/widgets/${category}/${name}.astro`)
+  console.warn('Skipping page generation (OGImage case or component not yet created).')
+  process.exit(0)
 }
 
 // --- Output paths ---
-const pageDir = resolve(ROOT, 'apps/docs/src/pages/alternates', category);
-const pagePath = resolve(pageDir, `${kebab}.astro`);
-const fixtureDir = resolve(ROOT, 'Sources/LifegamesWidgets/Resources/widgets', category);
+const pageDir = resolve(ROOT, 'apps/docs/src/pages/alternates', category)
+const pagePath = resolve(pageDir, `${kebab}.astro`)
+const fixtureDir = resolve(ROOT, 'Sources/LifegamesWidgets/Resources/widgets', category)
 
 // --- Guard: skip if exists and not forced ---
 if (existsSync(pagePath) && !force) {
-  console.log(`Page already exists: apps/docs/src/pages/alternates/${category}/${kebab}.astro`);
-  console.log('Use --force to overwrite.');
+  console.log(`Page already exists: apps/docs/src/pages/alternates/${category}/${kebab}.astro`)
+  console.log('Use --force to overwrite.')
 } else {
-  mkdirSync(pageDir, { recursive: true });
+  mkdirSync(pageDir, {recursive: true})
 
-  const page = generateAstroPage({
-    name,
-    category,
-    kebab,
-    swiftExists,
-    swiftRelPath,
-    fixturePath: widgetEntry.fixturePath,
-  });
-  writeFileSync(pagePath, page, 'utf-8');
-  console.log(`Created: apps/docs/src/pages/alternates/${category}/${kebab}.astro`);
+  const page = generateAstroPage({name, category, kebab, swiftExists, swiftRelPath, fixturePath: widgetEntry.fixturePath})
+  writeFileSync(pagePath, page, 'utf-8')
+  console.log(`Created: apps/docs/src/pages/alternates/${category}/${kebab}.astro`)
 }
 
 // --- Fixture stubs ---
@@ -123,32 +97,30 @@ const fixtureVariants = [
   `${kebab}.populated-max.json`,
   `${kebab}.variation-a.json`,
   `${kebab}.variation-b.json`,
-  `${kebab}.variation-c.json`,
-];
+  `${kebab}.variation-c.json`
+]
 
 for (const fname of fixtureVariants) {
-  const fpath = resolve(fixtureDir, fname);
+  const fpath = resolve(fixtureDir, fname)
   if (existsSync(fpath)) {
-    console.log(`Skipping existing fixture: ${fname}`);
+    console.log(`Skipping existing fixture: ${fname}`)
   } else {
-    writeFileSync(fpath, '{}\n', 'utf-8');
-    console.log(
-      `Created fixture stub: Sources/LifegamesWidgets/Resources/widgets/${category}/${fname}`,
-    );
+    writeFileSync(fpath, '{}\n', 'utf-8')
+    console.log(`Created fixture stub: Sources/LifegamesWidgets/Resources/widgets/${category}/${fname}`)
   }
 }
 
-console.log('Done.');
+console.log('Done.')
 
 // --- Page template ---
-function generateAstroPage({ name, category, kebab, swiftExists, swiftRelPath, fixturePath }) {
-  const webPath = `packages/web/src/widgets/${category}/${name}.astro`;
-  const typesPath = `packages/web/src/widgets/${category}/${name}.types.ts`;
-  const fixtureFixedPath = `Sources/LifegamesWidgets/Resources/widgets/${fixturePath}`;
+function generateAstroPage({name, category, kebab, swiftExists, swiftRelPath, fixturePath}) {
+  const webPath = `packages/web/src/widgets/${category}/${name}.astro`
+  const typesPath = `packages/web/src/widgets/${category}/${name}.types.ts`
+  const fixtureFixedPath = `Sources/LifegamesWidgets/Resources/widgets/${fixturePath}`
 
   const iosCrossPlatformLine = swiftExists
     ? `        <li><strong>iOS:</strong> <code>${swiftRelPath}</code></li>`
-    : `        <li><strong>iOS:</strong> Not yet ported</li>`;
+    : `        <li><strong>iOS:</strong> Not yet ported</li>`
 
   return `---
 import '@lifegames/tokens/fonts';
@@ -245,5 +217,5 @@ ${iosCrossPlatformLine}
   <WidgetPageScript />
 </body>
 </html>
-`;
+`
 }

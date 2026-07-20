@@ -1,11 +1,11 @@
-import type { ArticlesExport } from '@lifegames/portal-contract/schemas';
-import { createArticlesFixture, createArticle } from '../factories/articles';
-import { isoDate, isoTimestamp } from '../factories/helpers';
+import type {ArticlesExport} from '@lifegames/portal-contract/schemas'
+import {createArticle, createArticlesFixture} from '../factories/articles'
+import {isoDate, isoTimestamp} from '../factories/helpers'
 
 export const articlesVariations: Record<string, ArticlesExport> = {
   baseline: createArticlesFixture(),
 
-  empty: createArticlesFixture({ articles: [] }),
+  empty: createArticlesFixture({articles: []}),
 
   withNotes: createArticlesFixture({
     articles: [
@@ -14,52 +14,50 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         articleTitle: 'How to Build Resilient Distributed Systems',
         sourceTitle: 'Hacker News',
         notes: [
-          { comment: 'Great point about consensus algorithms', createdAt: isoTimestamp() },
-          { comment: 'Follow up on the Raft paper', createdAt: isoTimestamp() },
-        ],
+          {comment: 'Great point about consensus algorithms', createdAt: isoTimestamp()},
+          {comment: 'Follow up on the Raft paper', createdAt: isoTimestamp()}
+        ]
       }),
       createArticle({
         articleUrl: 'https://techcrunch.com/notes2-placeholder',
         articleTitle: 'The Economics of Open Source Sustainability',
         sourceTitle: 'TechCrunch',
-        notes: [{ comment: 'Relevant to mantle licensing decisions', createdAt: isoTimestamp() }],
+        notes: [{comment: 'Relevant to mantle licensing decisions', createdAt: isoTimestamp()}]
       }),
       createArticle({
         articleUrl: 'https://arstechnica.com/notes3-placeholder',
         articleTitle: 'Aurora DSQL: A Deep Dive into Serverless Postgres',
         sourceTitle: 'Ars Technica',
         notes: [
-          { comment: 'Compare with our current DSQL usage', createdAt: isoTimestamp() },
-          { comment: 'Check the async index creation section', createdAt: isoTimestamp() },
-        ],
-      }),
-    ],
+          {comment: 'Compare with our current DSQL usage', createdAt: isoTimestamp()},
+          {comment: 'Check the async index creation section', createdAt: isoTimestamp()}
+        ]
+      })
+    ]
   }),
 
   overThirty: createArticlesFixture({
-    articles: Array.from({ length: 40 }, (_, i) =>
+    articles: Array.from({length: 40}, (_, i) =>
       createArticle({
         articleUrl: `https://example.com/article-${i + 1}`,
         articleTitle: `Article title number ${i + 1} in large dataset`,
         sourceTitle: ['Hacker News', 'TechCrunch', 'The Verge', 'Ars Technica', 'Gizmodo'][i % 5],
         articlePublishedAt: isoDate(),
-        savedAt: isoTimestamp(),
-      }),
-    ),
-    generatedAt: isoTimestamp(),
+        savedAt: isoTimestamp()
+      })),
+    generatedAt: isoTimestamp()
   }),
 
   pagination: createArticlesFixture({
-    articles: Array.from({ length: 25 }, (_, i) =>
+    articles: Array.from({length: 25}, (_, i) =>
       createArticle({
         articleUrl: `https://example.com/page-article-${i + 1}`,
         articleTitle: `Paginated article ${i + 1} of twenty-five`,
         sourceTitle: ['Hacker News', 'TechCrunch', 'The Verge'][i % 3],
         articlePublishedAt: isoDate(),
-        savedAt: isoTimestamp(),
-      }),
-    ),
-    generatedAt: isoTimestamp(),
+        savedAt: isoTimestamp()
+      })),
+    generatedAt: isoTimestamp()
   }),
 
   // Exercises the empty-title resilience path: articles where articleTitle is an
@@ -76,7 +74,7 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceUrl: 'https://hoodline.com',
         sourceDomain: 'hoodline.com',
         articlePublishedAt: isoDate(),
-        savedAt: isoTimestamp(),
+        savedAt: isoTimestamp()
       }),
       createArticle({
         articleUrl: 'https://hoodline.com/2026/03/soma-construction-permit',
@@ -85,7 +83,7 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceUrl: 'https://hoodline.com',
         sourceDomain: 'hoodline.com',
         articlePublishedAt: isoDate(1),
-        savedAt: isoTimestamp(1),
+        savedAt: isoTimestamp(1)
       }),
       createArticle({
         articleUrl: 'https://news.ycombinator.com/item?id=normalAfterEmpty',
@@ -93,9 +91,9 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceTitle: 'Hacker News',
         sourceUrl: 'https://news.ycombinator.com',
         articlePublishedAt: isoDate(2),
-        savedAt: isoTimestamp(2),
-      }),
-    ],
+        savedAt: isoTimestamp(2)
+      })
+    ]
   }),
 
   // Maximally populated: many articles, ALL nullable item fields set to non-null
@@ -123,9 +121,9 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         articleFirstComment: 'This aligns with my experience building Claude-based workflows',
         savedAt: isoTimestamp(),
         notes: [
-          { comment: 'Relevant to our agent orchestration approach', createdAt: isoTimestamp() },
-          { comment: 'Compare with OMC multi-agent patterns', createdAt: isoTimestamp() },
-        ],
+          {comment: 'Relevant to our agent orchestration approach', createdAt: isoTimestamp()},
+          {comment: 'Compare with OMC multi-agent patterns', createdAt: isoTimestamp()}
+        ]
       }),
       createArticle({
         articleUrl: 'https://www.theverge.com/full2-serverless-edge',
@@ -141,18 +139,16 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceDomain: 'theverge.com',
         articleEngagement: '842 shares',
         articleEngagementRate: '76.5%',
-        articleFirstHighlight:
-          'Edge functions reduce latency by 10x compared to regional deployments',
+        articleFirstHighlight: 'Edge functions reduce latency by 10x compared to regional deployments',
         articleFirstComment: 'We saw similar improvements after moving to CloudFront Functions',
         savedAt: isoTimestamp(),
         notes: [
-          { comment: 'Applies to our CloudFront interception layer', createdAt: isoTimestamp() },
-        ],
+          {comment: 'Applies to our CloudFront interception layer', createdAt: isoTimestamp()}
+        ]
       }),
       createArticle({
         articleUrl: 'https://arstechnica.com/full3-type-systems',
-        articleTitle:
-          'How Modern Type Systems Prevent Entire Categories of Runtime Errors at Scale',
+        articleTitle: 'How Modern Type Systems Prevent Entire Categories of Runtime Errors at Scale',
         articleAuthor: 'Julia Evans',
         articleFirstImageUrl: 'https://arstechnica.com/images/full3-hero.jpg',
         articlePublishedAt: isoDate(),
@@ -168,18 +164,14 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         articleFirstComment: 'This is exactly the pattern we use with authored<T>()',
         savedAt: isoTimestamp(),
         notes: [
-          { comment: 'Validates our branded type approach in schemas', createdAt: isoTimestamp() },
-          { comment: 'Share with the team for the tech talk series', createdAt: isoTimestamp() },
-          {
-            comment: 'Cross-reference with the DTCG token naming decisions',
-            createdAt: isoTimestamp(),
-          },
-        ],
+          {comment: 'Validates our branded type approach in schemas', createdAt: isoTimestamp()},
+          {comment: 'Share with the team for the tech talk series', createdAt: isoTimestamp()},
+          {comment: 'Cross-reference with the DTCG token naming decisions', createdAt: isoTimestamp()}
+        ]
       }),
       createArticle({
         articleUrl: 'https://techcrunch.com/full4-design-systems',
-        articleTitle:
-          'Why Every Engineering Organization Needs a Design System Before Scaling Past Ten Engineers',
+        articleTitle: 'Why Every Engineering Organization Needs a Design System Before Scaling Past Ten Engineers',
         articleAuthor: 'Brad Frost',
         articleFirstImageUrl: 'https://techcrunch.com/images/full4-hero.jpg',
         articlePublishedAt: isoDate(),
@@ -191,18 +183,16 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceDomain: 'techcrunch.com',
         articleEngagement: '523 shares',
         articleEngagementRate: '82.7%',
-        articleFirstHighlight:
-          'Token-driven design systems reduce inconsistency by 85% in the first year',
+        articleFirstHighlight: 'Token-driven design systems reduce inconsistency by 85% in the first year',
         articleFirstComment: 'The DTCG format is the key enabler here — single source of truth',
         savedAt: isoTimestamp(),
         notes: [
-          { comment: 'Directly relevant to our DS governance model', createdAt: isoTimestamp() },
-        ],
+          {comment: 'Directly relevant to our DS governance model', createdAt: isoTimestamp()}
+        ]
       }),
       createArticle({
         articleUrl: 'https://gizmodo.com/full5-health-wearables',
-        articleTitle:
-          'The Science Behind Apple Health Metrics and What They Actually Tell You About Wellness',
+        articleTitle: 'The Science Behind Apple Health Metrics and What They Actually Tell You About Wellness',
         articleAuthor: 'Dr. Sarah Chen',
         articleFirstImageUrl: 'https://gizmodo.com/images/full5-hero.jpg',
         articlePublishedAt: isoDate(),
@@ -214,22 +204,17 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceDomain: 'gizmodo.com',
         articleEngagement: '1089 views',
         articleEngagementRate: '91.3%',
-        articleFirstHighlight:
-          'HRV SDNN correlates strongly with recovery quality in trained individuals',
+        articleFirstHighlight: 'HRV SDNN correlates strongly with recovery quality in trained individuals',
         articleFirstComment: 'This explains the clinical ranges we use in the health widget',
         savedAt: isoTimestamp(),
         notes: [
-          { comment: 'Informs our health fixture quantity ranges', createdAt: isoTimestamp() },
-          {
-            comment: 'Cross-check with the DashboardHealth ranges config',
-            createdAt: isoTimestamp(),
-          },
-        ],
+          {comment: 'Informs our health fixture quantity ranges', createdAt: isoTimestamp()},
+          {comment: 'Cross-check with the DashboardHealth ranges config', createdAt: isoTimestamp()}
+        ]
       }),
       createArticle({
         articleUrl: 'https://fly.io/full6-distributed-sqlite',
-        articleTitle:
-          'Distributed SQLite at the Edge with LiteFS and Turso for Read-Heavy Workloads',
+        articleTitle: 'Distributed SQLite at the Edge with LiteFS and Turso for Read-Heavy Workloads',
         articleAuthor: 'Ben Johnson',
         articleFirstImageUrl: 'https://fly.io/images/full6-hero.jpg',
         articlePublishedAt: isoDate(),
@@ -241,17 +226,13 @@ export const articlesVariations: Record<string, ArticlesExport> = {
         sourceDomain: 'fly.io',
         articleEngagement: '756 points',
         articleEngagementRate: '85.9%',
-        articleFirstHighlight:
-          'LiteFS replication adds less than 5ms of write latency across regions',
+        articleFirstHighlight: 'LiteFS replication adds less than 5ms of write latency across regions',
         articleFirstComment: 'Interesting comparison with Aurora DSQL for our use case',
         savedAt: isoTimestamp(),
         notes: [
-          {
-            comment: 'Compare latency characteristics with our DSQL setup',
-            createdAt: isoTimestamp(),
-          },
-        ],
-      }),
-    ],
-  }),
-};
+          {comment: 'Compare latency characteristics with our DSQL setup', createdAt: isoTimestamp()}
+        ]
+      })
+    ]
+  })
+}

@@ -22,17 +22,17 @@
  * prettier-formatted (idempotent). Re-running yields byte-identical files, so the
  * freshness git-diff gate stays green and the repo-wide format:check gate passes.
  */
-import { writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import * as prettier from 'prettier';
-import { rawFixtures } from '../src/raw';
-import { fixtures } from '../src/post-adapter';
+import {existsSync, mkdirSync, readdirSync, rmSync, writeFileSync} from 'node:fs'
+import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import * as prettier from 'prettier'
+import {rawFixtures} from '../src/raw'
+import {fixtures} from '../src/post-adapter'
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-const PKG_ROOT = join(HERE, '..');
-const GENERATED_DIR = join(PKG_ROOT, 'src', 'generated');
-const POST_ADAPTER_DIR = join(PKG_ROOT, 'src', 'post-adapter');
+const HERE = dirname(fileURLToPath(import.meta.url))
+const PKG_ROOT = join(HERE, '..')
+const GENERATED_DIR = join(PKG_ROOT, 'src', 'generated')
+const POST_ADAPTER_DIR = join(PKG_ROOT, 'src', 'post-adapter')
 
 /** camelCase raw domain key → kebab-case on-disk directory (matches the web layout). */
 const DIRECTORY_MAP: Record<keyof typeof rawFixtures, string> = {
@@ -45,57 +45,51 @@ const DIRECTORY_MAP: Record<keyof typeof rawFixtures, string> = {
   starredRepos: 'github-starred-repos',
   articles: 'articles',
   focus: 'focus',
-  theatreReviews: 'theatre-reviews',
-};
+  theatreReviews: 'theatre-reviews'
+}
 
 // Format with prettier's resolved config so committed output passes the repo-wide
 // `format:check` CI gate AND stays deterministic (prettier is idempotent; key order
 // is fixed by the factory source). Mirrors the @lifegames/copy build.
 async function writeJson(path: string, value: unknown): Promise<void> {
-  const cfg = await prettier.resolveConfig(path);
-  const formatted = await prettier.format(JSON.stringify(value), {
-    ...cfg,
-    parser: 'json',
-    filepath: path,
-  });
-  writeFileSync(path, formatted, 'utf-8');
+  const cfg = await prettier.resolveConfig(path)
+  const formatted = await prettier.format(JSON.stringify(value), {...cfg, parser: 'json', filepath: path})
+  writeFileSync(path, formatted, 'utf-8')
 }
 
 // ── RAW family ────────────────────────────────────────────────────────────────
 // Clean the generated tree first so deleted variations don't linger (determinism).
-if (existsSync(GENERATED_DIR)) rmSync(GENERATED_DIR, { recursive: true, force: true });
-mkdirSync(GENERATED_DIR, { recursive: true });
+if (existsSync(GENERATED_DIR)) {
+  rmSync(GENERATED_DIR, {recursive: true, force: true})
+}
+mkdirSync(GENERATED_DIR, {recursive: true})
 
-let rawCount = 0;
+let rawCount = 0
 for (const [domain, directory] of Object.entries(DIRECTORY_MAP)) {
-  const variations = rawFixtures[domain as keyof typeof rawFixtures] as Record<string, unknown>;
-  const dir = join(GENERATED_DIR, directory);
-  mkdirSync(dir, { recursive: true });
+  const variations = rawFixtures[domain as keyof typeof rawFixtures] as Record<string, unknown>
+  const dir = join(GENERATED_DIR, directory)
+  mkdirSync(dir, {recursive: true})
   for (const [variation, value] of Object.entries(variations)) {
-    await writeJson(join(dir, `${variation}.json`), value);
-    rawCount++;
+    await writeJson(join(dir, `${variation}.json`), value)
+    rawCount++
   }
-  console.log(
-    `fixtures:generate — raw ${domain} → generated/${directory}/ (${Object.keys(variations).length})`,
-  );
+  console.log(`fixtures:generate — raw ${domain} → generated/${directory}/ (${Object.keys(variations).length})`)
 }
 
 // ── POST-ADAPTER family ─────────────────────────────────────────────────────────
 // Remove any previously generated post-adapter JSON (the .ts factories stay).
-mkdirSync(POST_ADAPTER_DIR, { recursive: true });
+mkdirSync(POST_ADAPTER_DIR, {recursive: true})
 for (const f of readdirSync(POST_ADAPTER_DIR).filter((n) => n.endsWith('.json'))) {
-  rmSync(join(POST_ADAPTER_DIR, f), { force: true });
+  rmSync(join(POST_ADAPTER_DIR, f), {force: true})
 }
 
-let postCount = 0;
+let postCount = 0
 for (const [domain, variations] of Object.entries(fixtures)) {
   for (const [variation, value] of Object.entries(variations)) {
-    await writeJson(join(POST_ADAPTER_DIR, `${domain}.${variation}.json`), value);
-    postCount++;
+    await writeJson(join(POST_ADAPTER_DIR, `${domain}.${variation}.json`), value)
+    postCount++
   }
-  console.log(
-    `fixtures:generate — post-adapter ${domain} → post-adapter/${domain}.*.json (${Object.keys(variations).length})`,
-  );
+  console.log(`fixtures:generate — post-adapter ${domain} → post-adapter/${domain}.*.json (${Object.keys(variations).length})`)
 }
 
-console.log(`fixtures:generate — done: ${rawCount} raw + ${postCount} post-adapter file(s).`);
+console.log(`fixtures:generate — done: ${rawCount} raw + ${postCount} post-adapter file(s).`)

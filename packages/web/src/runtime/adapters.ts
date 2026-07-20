@@ -1,193 +1,171 @@
-import { HYDRATION, STATUS_LABELS, ACTIVITY_TYPE_MAP, LANG_COLORS } from './constants';
-import {
-  computeTotalSleepSeconds,
-  formatDuration,
-  formatPhase,
-  computeSleepPercentages,
-} from './sleep';
+import {ACTIVITY_TYPE_MAP, HYDRATION, LANG_COLORS, STATUS_LABELS} from './constants'
+import {computeSleepPercentages, computeTotalSleepSeconds, formatDuration, formatPhase} from './sleep'
 import type {
-  HealthExport,
-  HealthExportWatch,
-  HealthExportGoals,
-  HealthExportSolar,
-  SleepExport,
-  WorkoutsExport,
+  ArticlesExport,
   BooksExport,
   GithubEventsExport,
-  ArticlesExport,
   GithubStarredReposExport,
-} from '../types/exports';
+  HealthExport,
+  HealthExportGoals,
+  HealthExportSolar,
+  HealthExportWatch,
+  SleepExport,
+  WorkoutsExport
+} from '../types/exports'
 
 // ── Adapted output types (what adapters produce for updaters) ──────
 
 export interface HealthQuantity {
-  value: number;
-  unit: string;
+  value: number
+  unit: string
 }
 
 // Re-export so widget types can import WatchState from adapters without
 // depending directly on the exports layer.
-export type { HealthExportWatch as WatchState };
+export type { HealthExportWatch as WatchState }
 
 export interface AdaptedHealth {
-  date: string;
-  quantities: Record<string, HealthQuantity>;
-  derived: {
-    totalCalories: number;
-    deepPct: number;
-    remPct: number;
-    corePct: number;
-  };
-  sleepScore: number;
-  sleepDurationFormatted: string;
-  sleepPhaseFormatted: Record<string, string>;
+  date: string
+  quantities: Record<string, HealthQuantity>
+  derived: {totalCalories: number; deepPct: number; remPct: number; corePct: number}
+  sleepScore: number
+  sleepDurationFormatted: string
+  sleepPhaseFormatted: Record<string, string>
   hydration: {
-    waterOz: number;
-    caffeineMg: number;
-    waterMax: number;
-    caffeineMax: number;
-    waterRangeLo: number;
-    waterRangeHi: number;
-    caffeineRangeLo: number;
-    caffeineRangeHi: number;
-  };
+    waterOz: number
+    caffeineMg: number
+    waterMax: number
+    caffeineMax: number
+    waterRangeLo: number
+    waterRangeHi: number
+    caffeineRangeLo: number
+    caffeineRangeHi: number
+  }
   // Activity ring goals from the export's `goals` object. Absent on legacy
   // payloads; per-field null until the device's first goals sync.
-  goals?: HealthExportGoals;
+  goals?: HealthExportGoals
   // Sunrise/sunset facts for the movement sun-arc footer (absent on legacy payloads).
-  solar?: HealthExportSolar;
+  solar?: HealthExportSolar
   // watch is the server-computed worn verdict from device_watch_state.
   // Absent means unknown (no device has ever reported) or watch is worn.
   // Present with worn=false means the widget should render the paused state.
-  watch?: HealthExportWatch;
+  watch?: HealthExportWatch
 }
 
 export interface AdaptedSleep {
-  isEmpty: boolean;
-  date: string;
-  sleepScore: number;
-  sleepDurationFormatted: string;
-  sleepPhaseFormatted: Record<string, string>;
-  derived: {
-    deepPct: number;
-    remPct: number;
-    corePct: number;
-  };
-  phases: Record<string, number>;
+  isEmpty: boolean
+  date: string
+  sleepScore: number
+  sleepDurationFormatted: string
+  sleepPhaseFormatted: Record<string, string>
+  derived: {deepPct: number; remPct: number; corePct: number}
+  phases: Record<string, number>
 }
 
 export interface WorkoutEntry {
-  activityType: string;
-  activityUrl?: string;
-  duration: number | null;
-  energyBurned: number | null;
-  distance: number | null;
-  source: string;
+  activityType: string
+  activityUrl?: string
+  duration: number | null
+  energyBurned: number | null
+  distance: number | null
+  source: string
 }
 
 export interface AdaptedGithubEvent {
-  type: string;
-  repo: string;
-  title: string;
-  date: string;
-  number?: number;
-  hash?: string;
-  additions?: number;
-  deletions?: number;
-  url: string;
+  type: string
+  repo: string
+  title: string
+  date: string
+  number?: number
+  hash?: string
+  additions?: number
+  deletions?: number
+  url: string
 }
 
 export interface AdaptedArticle {
-  title: string;
-  url: string;
-  source: string;
-  date: string;
-  hasNotes: boolean;
-  noteText: string | null;
+  title: string
+  url: string
+  source: string
+  date: string
+  hasNotes: boolean
+  noteText: string | null
 }
 
 export interface AdaptedBookEntry {
-  title: string;
-  author: string;
-  asin: string;
-  status: string;
-  rating: number | null;
-  progress: number | undefined;
-  link: string;
-  cover: string | null;
-  coverThumb: string | null;
-  coverCard: string | null;
-  coverAvif: string | null;
-  coverThumbAvif: string | null;
-  coverCardAvif: string | null;
-  notes: string | null;
-  finishedAt: string | null;
-  startedAt: string | null;
+  title: string
+  author: string
+  asin: string
+  status: string
+  rating: number | null
+  progress: number | undefined
+  link: string
+  cover: string | null
+  coverThumb: string | null
+  coverCard: string | null
+  coverAvif: string | null
+  coverThumbAvif: string | null
+  coverCardAvif: string | null
+  notes: string | null
+  finishedAt: string | null
+  startedAt: string | null
 }
 
 export interface BookMeta {
-  seriesName: string | null;
-  seriesNumber: number | null;
-  seriesTotal: number | null;
-  pages: number | null;
-  genres: string[];
-  year: number | null;
-  desc: string | null;
+  seriesName: string | null
+  seriesNumber: number | null
+  seriesTotal: number | null
+  pages: number | null
+  genres: string[]
+  year: number | null
+  desc: string | null
 }
 
 export interface AdaptedBooks {
-  books: AdaptedBookEntry[];
-  bookMeta: Record<string, BookMeta>;
-  statusLabels: Record<string, string>;
-  stats: {
-    total: number;
-    reading: number;
-    completed: number;
-    upcoming: number;
-  };
+  books: AdaptedBookEntry[]
+  bookMeta: Record<string, BookMeta>
+  statusLabels: Record<string, string>
+  stats: {total: number; reading: number; completed: number; upcoming: number}
 }
 
 export interface AdaptedStarredRepo {
-  owner: string;
-  name: string;
-  url: string;
-  stars: number;
-  language: string;
-  languageColor: string;
-  starredAt: string;
+  owner: string
+  name: string
+  url: string
+  stars: number
+  language: string
+  languageColor: string
+  starredAt: string
 }
 
 // ── Adapter functions ──────────────────────────────────────────────
 
-export function adaptHealth(
-  healthData: HealthExport,
-  sleepData: SleepExport | null,
-): AdaptedHealth {
-  const q = { ...healthData.quantities };
+export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | null): AdaptedHealth {
+  const q = {...healthData.quantities}
 
   // 1. Rename heartRateVariabilitySDNN → hrvSDNN
   if ('heartRateVariabilitySDNN' in q) {
-    q.hrvSDNN = q.heartRateVariabilitySDNN;
-    delete q.heartRateVariabilitySDNN;
+    q.hrvSDNN = q.heartRateVariabilitySDNN
+    delete q.heartRateVariabilitySDNN
   }
 
   // 2. Default exerciseTime if missing
   if (!q.exerciseTime) {
-    q.exerciseTime = { value: 0, unit: 'min' };
+    q.exerciseTime = {value: 0, unit: 'min'}
   }
 
   // 3. Convert dietaryWater mL → oz
-  const waterMl: number = q.dietaryWater?.value ?? 0;
-  const waterOz = Math.round(waterMl / 29.5735);
+  const waterMl: number = q.dietaryWater?.value ?? 0
+  const waterOz = Math.round(waterMl / 29.5735)
 
   // 4. Convert dietaryCaffeine grams → mg
-  const caffeineG: number = q.dietaryCaffeine?.value ?? 0;
-  const caffeineMg = Math.round(caffeineG * 1000);
+  const caffeineG: number = q.dietaryCaffeine?.value ?? 0
+  const caffeineMg = Math.round(caffeineG * 1000)
 
   // 5. Compute totalCalories
-  const activeEnergy: number = q.activeEnergyBurned?.value ?? 0;
-  const basalEnergy: number = q.basalEnergyBurned?.value ?? 0;
-  const totalCalories = Math.round(activeEnergy + basalEnergy);
+  const activeEnergy: number = q.activeEnergyBurned?.value ?? 0
+  const basalEnergy: number = q.basalEnergyBurned?.value ?? 0
+  const totalCalories = Math.round(activeEnergy + basalEnergy)
 
   // 6. Build hydration object
   const hydration = {
@@ -198,40 +176,30 @@ export function adaptHealth(
     waterRangeLo: HYDRATION.waterRangeLo,
     waterRangeHi: HYDRATION.waterRangeHi,
     caffeineRangeLo: HYDRATION.caffeineRangeLo,
-    caffeineRangeHi: HYDRATION.caffeineRangeHi,
-  };
+    caffeineRangeHi: HYDRATION.caffeineRangeHi
+  }
 
   // 7. Sleep fields
-  let sleepScore = q.sleepScore?.value ?? 0;
-  let sleepDurationFormatted = '';
-  let sleepPhaseFormatted: Record<string, string> = {};
-  let deepPct = 0;
-  let remPct = 0;
-  let corePct = 0;
+  let sleepScore = q.sleepScore?.value ?? 0
+  let sleepDurationFormatted = ''
+  let sleepPhaseFormatted: Record<string, string> = {}
+  let deepPct = 0
+  let remPct = 0
+  let corePct = 0
 
   if (sleepData) {
-    const rem = sleepData.rem as { seconds: number } | undefined;
-    const deep = sleepData.deep as { seconds: number } | undefined;
-    const core = sleepData.core as { seconds: number } | undefined;
-    const awake = sleepData.awake as { seconds: number } | undefined;
-    const phases = {
-      rem: rem?.seconds ?? 0,
-      deep: deep?.seconds ?? 0,
-      core: core?.seconds ?? 0,
-      awake: awake?.seconds ?? 0,
-    };
-    const totalSleepSeconds = computeTotalSleepSeconds(phases);
-    sleepDurationFormatted = formatDuration(totalSleepSeconds);
-    sleepPhaseFormatted = {
-      deep: formatPhase(phases.deep),
-      rem: formatPhase(phases.rem),
-      core: formatPhase(phases.core),
-      awake: formatPhase(phases.awake),
-    };
-    const pcts = computeSleepPercentages(phases);
-    deepPct = pcts.deepPct;
-    remPct = pcts.remPct;
-    corePct = pcts.corePct;
+    const rem = sleepData.rem as {seconds: number} | undefined
+    const deep = sleepData.deep as {seconds: number} | undefined
+    const core = sleepData.core as {seconds: number} | undefined
+    const awake = sleepData.awake as {seconds: number} | undefined
+    const phases = {rem: rem?.seconds ?? 0, deep: deep?.seconds ?? 0, core: core?.seconds ?? 0, awake: awake?.seconds ?? 0}
+    const totalSleepSeconds = computeTotalSleepSeconds(phases)
+    sleepDurationFormatted = formatDuration(totalSleepSeconds)
+    sleepPhaseFormatted = {deep: formatPhase(phases.deep), rem: formatPhase(phases.rem), core: formatPhase(phases.core), awake: formatPhase(phases.awake)}
+    const pcts = computeSleepPercentages(phases)
+    deepPct = pcts.deepPct
+    remPct = pcts.remPct
+    corePct = pcts.corePct
   }
 
   // 8+9. Build result matching health.json shape.
@@ -241,116 +209,105 @@ export function adaptHealth(
   return {
     date: healthData.date,
     quantities: q,
-    derived: {
-      totalCalories,
-      deepPct,
-      remPct,
-      corePct,
-    },
+    derived: {totalCalories, deepPct, remPct, corePct},
     sleepScore,
     sleepDurationFormatted,
     sleepPhaseFormatted,
     hydration,
     goals: healthData.goals,
     solar: healthData.solar,
-    watch: healthData.watch,
-  };
+    watch: healthData.watch
+  }
 }
 
 export function adaptSleep(sleepData: SleepExport, healthData: HealthExport | null): AdaptedSleep {
-  const rem = sleepData.rem as { seconds: number } | undefined;
-  const deep = sleepData.deep as { seconds: number } | undefined;
-  const core = sleepData.core as { seconds: number } | undefined;
-  const awake = sleepData.awake as { seconds: number } | undefined;
-  const phases = {
-    rem: rem?.seconds ?? 0,
-    deep: deep?.seconds ?? 0,
-    core: core?.seconds ?? 0,
-    awake: awake?.seconds ?? 0,
-  };
-  const totalSleepSeconds = computeTotalSleepSeconds(phases);
-  const isEmpty = totalSleepSeconds === 0;
-  const pcts = computeSleepPercentages(phases);
+  const rem = sleepData.rem as {seconds: number} | undefined
+  const deep = sleepData.deep as {seconds: number} | undefined
+  const core = sleepData.core as {seconds: number} | undefined
+  const awake = sleepData.awake as {seconds: number} | undefined
+  const phases = {rem: rem?.seconds ?? 0, deep: deep?.seconds ?? 0, core: core?.seconds ?? 0, awake: awake?.seconds ?? 0}
+  const totalSleepSeconds = computeTotalSleepSeconds(phases)
+  const isEmpty = totalSleepSeconds === 0
+  const pcts = computeSleepPercentages(phases)
 
   return {
     isEmpty,
     date: sleepData.date,
     sleepScore: healthData?.quantities?.sleepScore?.value ?? 0,
     sleepDurationFormatted: formatDuration(totalSleepSeconds),
-    sleepPhaseFormatted: {
-      deep: formatPhase(phases.deep),
-      rem: formatPhase(phases.rem),
-      core: formatPhase(phases.core),
-      awake: formatPhase(phases.awake),
-    },
-    derived: {
-      deepPct: pcts.deepPct,
-      remPct: pcts.remPct,
-      corePct: pcts.corePct,
-    },
-    phases,
-  };
+    sleepPhaseFormatted: {deep: formatPhase(phases.deep), rem: formatPhase(phases.rem), core: formatPhase(phases.core), awake: formatPhase(phases.awake)},
+    derived: {deepPct: pcts.deepPct, remPct: pcts.remPct, corePct: pcts.corePct},
+    phases
+  }
 }
 
 export function adaptWorkouts(workoutsData: WorkoutsExport | null): WorkoutEntry[] | null {
-  if (workoutsData === null) return null;
+  if (workoutsData === null) {
+    return null
+  }
   return workoutsData.workouts.map((w) => {
-    const mapped = ACTIVITY_TYPE_MAP[w.activityType];
+    const mapped = ACTIVITY_TYPE_MAP[w.activityType]
     if (mapped) {
-      return { ...w, activityType: mapped.label, activityUrl: mapped.url };
+      return {...w, activityType: mapped.label, activityUrl: mapped.url}
     }
-    return w;
-  });
+    return w
+  })
 }
 
-export function adaptGithubEvents(
-  data: GithubEventsExport | null,
-  now?: number,
-): AdaptedGithubEvent[] {
-  if (!data) return [];
-  const events = data.events || [];
-  const ts = now ?? Date.now();
+export function adaptGithubEvents(data: GithubEventsExport | null, now?: number): AdaptedGithubEvent[] {
+  if (!data) {
+    return []
+  }
+  const events = data.events || []
+  const ts = now ?? Date.now()
 
   return events.slice(0, 10).map((e) => {
-    let date = e.date;
+    let date = e.date
     if (date && date.includes('T')) {
-      const msAgo = ts - new Date(date).getTime();
-      const minutesAgo = Math.floor(msAgo / 60000);
-      const hoursAgo = Math.floor(minutesAgo / 60);
-      const daysAgo = Math.floor(hoursAgo / 24);
-      const weeksAgo = Math.floor(daysAgo / 7);
-      if (weeksAgo > 0) date = weeksAgo + 'w ago';
-      else if (daysAgo > 0) date = daysAgo + 'd ago';
-      else if (hoursAgo > 0) date = hoursAgo + 'h ago';
-      else date = minutesAgo + 'm ago';
+      const msAgo = ts - new Date(date).getTime()
+      const minutesAgo = Math.floor(msAgo / 60000)
+      const hoursAgo = Math.floor(minutesAgo / 60)
+      const daysAgo = Math.floor(hoursAgo / 24)
+      const weeksAgo = Math.floor(daysAgo / 7)
+      if (weeksAgo > 0) {
+        date = weeksAgo + 'w ago'
+      } else if (daysAgo > 0) {
+        date = daysAgo + 'd ago'
+      } else if (hoursAgo > 0) {
+        date = hoursAgo + 'h ago'
+      } else {
+        date = minutesAgo + 'm ago'
+      }
     }
 
-    const fullRepo = e.repo || '';
-    let repo = fullRepo;
-    const slashIdx = repo.indexOf('/');
-    if (slashIdx !== -1) repo = repo.substring(slashIdx + 1);
+    const fullRepo = e.repo || ''
+    let repo = fullRepo
+    const slashIdx = repo.indexOf('/')
+    if (slashIdx !== -1) {
+      repo = repo.substring(slashIdx + 1)
+    }
 
-    let url = '';
+    let url = ''
     if (e.type === 'commit' && e.hash) {
-      url = 'https://github.com/' + fullRepo + '/commit/' + e.hash;
+      url = 'https://github.com/' + fullRepo + '/commit/' + e.hash
     } else if (e.type?.startsWith('pr_') && e.number !== undefined) {
-      url = 'https://github.com/' + fullRepo + '/pull/' + e.number;
+      url = 'https://github.com/' + fullRepo + '/pull/' + e.number
     } else if (e.type?.startsWith('issue_') && e.number !== undefined) {
-      url = 'https://github.com/' + fullRepo + '/issues/' + e.number;
+      url = 'https://github.com/' + fullRepo + '/issues/' + e.number
     }
 
-    return { ...e, date, repo, url };
-  });
+    return {...e, date, repo, url}
+  })
 }
 
 export function adaptBooks(booksData: BooksExport): AdaptedBooks {
-  const rawBooks = booksData.books ?? [];
+  const rawBooks = booksData.books ?? []
 
   const books: AdaptedBookEntry[] = rawBooks.map((b) => {
-    const mappedStatus = b.status ?? 'upNext';
-    let progress: number | undefined;
+    const mappedStatus = b.status ?? 'upNext'
+    let progress: number | undefined
     if (b.currentPage != null && b.totalPages != null && b.totalPages > 0) {
-      progress = Math.round((b.currentPage / b.totalPages) * 100);
+      progress = Math.round((b.currentPage / b.totalPages) * 100)
     }
     return {
       title: b.title,
@@ -359,10 +316,7 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       status: mappedStatus,
       rating: b.rating ?? null,
       progress,
-      link:
-        'https://www.amazon.com/dp/' +
-        b.asin +
-        '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
+      link: 'https://www.amazon.com/dp/' + b.asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
       // CloudFront URLs flow through unchanged. The updater conditionally rewrites
       // to a local /images/books/<asin>-*.webp path only for ASINs that were in
       // the SSR fixture (`ssrAsins`) — those are the only ASINs that have a
@@ -378,11 +332,11 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       coverCardAvif: b.mainImageCardAvif ?? null,
       notes: b.notes ?? null,
       finishedAt: b.finishedAt ?? null,
-      startedAt: b.startedAt ?? null,
-    };
-  });
+      startedAt: b.startedAt ?? null
+    }
+  })
 
-  const bookMeta: Record<string, BookMeta> = {};
+  const bookMeta: Record<string, BookMeta> = {}
   for (const b of rawBooks) {
     if (b.asin) {
       bookMeta[b.asin] = {
@@ -392,43 +346,34 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
         pages: b.totalPages ?? b.pageCount ?? null,
         genres: b.category ? b.category.split(' > ') : [],
         year: b.publishedYear ?? null,
-        desc: b.description ?? null,
-      };
+        desc: b.description ?? null
+      }
     }
   }
 
-  const inProgress = books.filter((b) => b.status === 'reading').length;
-  const completed = books.filter((b) => b.status === 'finished').length;
-  const next = books.filter((b) => b.status === 'upNext').length;
+  const inProgress = books.filter((b) => b.status === 'reading').length
+  const completed = books.filter((b) => b.status === 'finished').length
+  const next = books.filter((b) => b.status === 'upNext').length
 
-  return {
-    books,
-    bookMeta,
-    statusLabels: STATUS_LABELS,
-    stats: {
-      total: books.length,
-      reading: inProgress,
-      completed,
-      upcoming: next,
-    },
-  };
+  return {books, bookMeta, statusLabels: STATUS_LABELS, stats: {total: books.length, reading: inProgress, completed, upcoming: next}}
 }
 
-export function adaptStarredRepos(
-  data: GithubStarredReposExport,
-  now?: number,
-): AdaptedStarredRepo[] {
-  const ts = now ?? Date.now();
+export function adaptStarredRepos(data: GithubStarredReposExport, now?: number): AdaptedStarredRepo[] {
+  const ts = now ?? Date.now()
   return (data.repos || []).slice(0, 5).map((r) => {
-    const msAgo = ts - new Date(r.starredAt).getTime();
-    const hoursAgo = Math.floor(msAgo / 3600000);
-    const daysAgo = Math.floor(hoursAgo / 24);
-    const weeksAgo = Math.floor(daysAgo / 7);
-    let starredAt: string;
-    if (weeksAgo > 0) starredAt = `${weeksAgo} week${weeksAgo > 1 ? 's' : ''} ago`;
-    else if (daysAgo > 0) starredAt = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
-    else starredAt = `${hoursAgo}h ago`;
-    const lang = r.languages?.[0]?.language || 'Unknown';
+    const msAgo = ts - new Date(r.starredAt).getTime()
+    const hoursAgo = Math.floor(msAgo / 3600000)
+    const daysAgo = Math.floor(hoursAgo / 24)
+    const weeksAgo = Math.floor(daysAgo / 7)
+    let starredAt: string
+    if (weeksAgo > 0) {
+      starredAt = `${weeksAgo} week${weeksAgo > 1 ? 's' : ''} ago`
+    } else if (daysAgo > 0) {
+      starredAt = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`
+    } else {
+      starredAt = `${hoursAgo}h ago`
+    }
+    const lang = r.languages?.[0]?.language || 'Unknown'
     return {
       owner: r.ownerLogin,
       name: r.name,
@@ -436,42 +381,38 @@ export function adaptStarredRepos(
       stars: r.stargazersCount,
       language: lang,
       languageColor: LANG_COLORS[lang] || '#8b949e',
-      starredAt,
-    };
-  });
+      starredAt
+    }
+  })
 }
 
 export function adaptArticles(data: ArticlesExport | null, now?: number): AdaptedArticle[] {
-  if (!data || !data.articles) return [];
+  if (!data || !data.articles) {
+    return []
+  }
 
-  const ts = now ?? Date.now();
+  const ts = now ?? Date.now()
 
-  return data.articles
-    .slice()
-    .sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime())
-    .slice(0, 30)
-    .map((a) => {
-      const msAgo = ts - new Date(a.savedAt).getTime();
-      const minutesAgo = Math.floor(msAgo / 60000);
-      const hoursAgo = Math.floor(minutesAgo / 60);
-      const daysAgo = Math.floor(hoursAgo / 24);
-      const weeksAgo = Math.floor(daysAgo / 7);
-      let date: string;
-      if (weeksAgo > 0) date = weeksAgo + 'w ago';
-      else if (daysAgo > 0) date = daysAgo + 'd ago';
-      else if (hoursAgo > 0) date = hoursAgo + 'h ago';
-      else date = minutesAgo + 'm ago';
+  return data.articles.slice().sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()).slice(0, 30).map((a) => {
+    const msAgo = ts - new Date(a.savedAt).getTime()
+    const minutesAgo = Math.floor(msAgo / 60000)
+    const hoursAgo = Math.floor(minutesAgo / 60)
+    const daysAgo = Math.floor(hoursAgo / 24)
+    const weeksAgo = Math.floor(daysAgo / 7)
+    let date: string
+    if (weeksAgo > 0) {
+      date = weeksAgo + 'w ago'
+    } else if (daysAgo > 0) {
+      date = daysAgo + 'd ago'
+    } else if (hoursAgo > 0) {
+      date = hoursAgo + 'h ago'
+    } else {
+      date = minutesAgo + 'm ago'
+    }
 
-      const hasNotes = Array.isArray(a.notes) && a.notes.length > 0;
-      const noteText = hasNotes ? a.notes.map((n) => n.comment).join('\n') : null;
+    const hasNotes = Array.isArray(a.notes) && a.notes.length > 0
+    const noteText = hasNotes ? a.notes.map((n) => n.comment).join('\n') : null
 
-      return {
-        title: a.articleTitle,
-        url: a.articleUrl,
-        source: a.sourceTitle || '',
-        date,
-        hasNotes,
-        noteText,
-      };
-    });
+    return {title: a.articleTitle, url: a.articleUrl, source: a.sourceTitle || '', date, hasNotes, noteText}
+  })
 }
