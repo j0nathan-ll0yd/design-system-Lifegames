@@ -1,13 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 const meta: Meta = {
   title: 'Primitives/Modal',
   tags: ['autodocs'],
-  argTypes: {
-    visible: { control: 'boolean' },
-  },
-  render: (args) => html`
+  argTypes: {visible: {control: 'boolean'}},
+  render: (args) =>
+    html`
     <div
       class="lg-modal-overlay ${args.visible ? 'visible' : ''}"
       role="dialog"
@@ -24,11 +23,11 @@ const meta: Meta = {
         </div>
       </div>
     </div>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Visible: Story = { args: { visible: true } };
-export const Hidden: Story = { args: { visible: false } };
+export const Visible: Story = {args: {visible: true}}
+export const Hidden: Story = {args: {visible: false}}

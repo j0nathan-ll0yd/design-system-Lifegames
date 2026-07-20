@@ -1,4 +1,4 @@
-export { default as BioTerminal } from './BioTerminal.astro';
-export { default as ComingSoon } from './ComingSoon.astro';
-export { default as IdentityCard } from './IdentityCard.astro';
-export { default as NotFound } from './NotFound.astro';
+export { default as BioTerminal } from './BioTerminal.astro'
+export { default as ComingSoon } from './ComingSoon.astro'
+export { default as IdentityCard } from './IdentityCard.astro'
+export { default as NotFound } from './NotFound.astro'

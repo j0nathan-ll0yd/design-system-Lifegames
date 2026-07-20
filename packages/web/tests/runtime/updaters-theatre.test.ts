@@ -1,17 +1,12 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach } from 'vitest';
-import { updateTheatreReviews } from '../../src/runtime/updaters-theatre';
-import { CLOUDFRONT_BASE } from '../../src/runtime/constants';
-import { widgets } from '@lifegames/copy';
-import type { TheatreReviewsExport } from '../../src/types/exports';
+import {beforeEach, describe, expect, it} from 'vitest'
+import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
+import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
+import {widgets} from '@lifegames/copy'
+import type {TheatreReviewsExport} from '../../src/types/exports'
 
 function makeExport(reviews: TheatreReviewsExport['reviews'] = []): TheatreReviewsExport {
-  return {
-    generatedAt: '2026-01-01T00:00:00Z',
-    source: 'test',
-    totalReviews: reviews.length,
-    reviews,
-  };
+  return {generatedAt: '2026-01-01T00:00:00Z', source: 'test', totalReviews: reviews.length, reviews}
 }
 
 function setup() {
@@ -20,28 +15,26 @@ function setup() {
       <span id="theatreCount"></span>
       <div id="theatreRow"></div>
     </div>
-  `;
+  `
 }
 
 describe('updateTheatreReviews', () => {
-  beforeEach(setup);
+  beforeEach(setup)
 
   it('does not throw when card is missing', () => {
-    document.body.innerHTML = '';
-    expect(() => updateTheatreReviews(makeExport())).not.toThrow();
-  });
+    document.body.innerHTML = ''
+    expect(() => updateTheatreReviews(makeExport())).not.toThrow()
+  })
 
   it('sets review count text', () => {
-    updateTheatreReviews(makeExport([]));
-    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews');
-  });
+    updateTheatreReviews(makeExport([]))
+    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews')
+  })
 
   it('removes is-loading when reviews is empty', () => {
-    updateTheatreReviews(makeExport([]));
-    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(
-      false,
-    );
-  });
+    updateTheatreReviews(makeExport([]))
+    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(false)
+  })
 
   it('renders theatre cards with titles', () => {
     const reviews = [
@@ -56,12 +49,12 @@ describe('updateTheatreReviews', () => {
         excerpt: 'Great show',
         imageUrl: null,
         imageWidth: null,
-        imageHeight: null,
-      },
-    ];
-    updateTheatreReviews(makeExport(reviews));
-    expect(document.getElementById('theatreRow')!.innerHTML).toContain('Hamilton');
-  });
+        imageHeight: null
+      }
+    ]
+    updateTheatreReviews(makeExport(reviews))
+    expect(document.getElementById('theatreRow')!.innerHTML).toContain('Hamilton')
+  })
 
   it('renders grade badge for rated review', () => {
     const reviews = [
@@ -76,13 +69,13 @@ describe('updateTheatreReviews', () => {
         excerpt: 'Fun',
         imageUrl: null,
         imageWidth: null,
-        imageHeight: null,
-      },
-    ];
-    updateTheatreReviews(makeExport(reviews));
-    expect(document.getElementById('theatreRow')!.innerHTML).toContain('theatre-grade');
-    expect(document.getElementById('theatreRow')!.innerHTML).toContain('B+');
-  });
+        imageHeight: null
+      }
+    ]
+    updateTheatreReviews(makeExport(reviews))
+    expect(document.getElementById('theatreRow')!.innerHTML).toContain('theatre-grade')
+    expect(document.getElementById('theatreRow')!.innerHTML).toContain('B+')
+  })
 
   it('does not render grade badge when rating is null', () => {
     const reviews = [
@@ -97,12 +90,12 @@ describe('updateTheatreReviews', () => {
         excerpt: 'Hmm',
         imageUrl: null,
         imageWidth: null,
-        imageHeight: null,
-      },
-    ];
-    updateTheatreReviews(makeExport(reviews));
-    expect(document.getElementById('theatreRow')!.innerHTML).not.toContain('theatre-grade');
-  });
+        imageHeight: null
+      }
+    ]
+    updateTheatreReviews(makeExport(reviews))
+    expect(document.getElementById('theatreRow')!.innerHTML).not.toContain('theatre-grade')
+  })
 
   it('renders localized image URL when imageUrl is a CloudFront URL', () => {
     const reviews = [
@@ -117,14 +110,14 @@ describe('updateTheatreReviews', () => {
         excerpt: 'Good',
         imageUrl: `${CLOUDFRONT_BASE}/images/theatre/cf-show.webp`,
         imageWidth: 95,
-        imageHeight: 143,
-      },
-    ];
-    updateTheatreReviews(makeExport(reviews));
-    const img = document.querySelector('#theatreRow img') as HTMLImageElement;
-    expect(img).not.toBeNull();
-    expect(img.src).toContain('/images/theatre/cf-show.webp');
-  });
+        imageHeight: 143
+      }
+    ]
+    updateTheatreReviews(makeExport(reviews))
+    const img = document.querySelector('#theatreRow img') as HTMLImageElement
+    expect(img).not.toBeNull()
+    expect(img.src).toContain('/images/theatre/cf-show.webp')
+  })
 
   it('removes is-loading after rendering reviews', () => {
     const reviews = [
@@ -139,15 +132,13 @@ describe('updateTheatreReviews', () => {
         excerpt: 'Nice',
         imageUrl: null,
         imageWidth: null,
-        imageHeight: null,
-      },
-    ];
-    updateTheatreReviews(makeExport(reviews));
-    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(
-      false,
-    );
-  });
-});
+        imageHeight: null
+      }
+    ]
+    updateTheatreReviews(makeExport(reviews))
+    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(false)
+  })
+})
 
 describe('updateTheatreReviews with widget-body DOM', () => {
   function setupWithBody() {
@@ -156,28 +147,26 @@ describe('updateTheatreReviews with widget-body DOM', () => {
         <div class="widget-header"><a id="theatreCount"></a></div>
         <div class="widget-body"><div id="theatreRow" class="theatre-row"></div></div>
       </div>
-    `;
+    `
   }
 
-  beforeEach(setupWithBody);
+  beforeEach(setupWithBody)
 
   it('renders widget-empty in widget-body and removes is-loading when reviews is empty', () => {
-    updateTheatreReviews(makeExport([]));
-    const empty = document.querySelector('#cardTheatreReviews .widget-body .widget-empty');
-    expect(empty).not.toBeNull();
-    expect(empty!.textContent).toBe(widgets.theatreReviews.empty);
-    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(
-      false,
-    );
-  });
+    updateTheatreReviews(makeExport([]))
+    const empty = document.querySelector('#cardTheatreReviews .widget-body .widget-empty')
+    expect(empty).not.toBeNull()
+    expect(empty!.textContent).toBe(widgets.theatreReviews.empty)
+    expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(false)
+  })
 
   it('sets header count to 0 reviews when reviews is empty', () => {
-    updateTheatreReviews(makeExport([]));
-    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews');
-  });
+    updateTheatreReviews(makeExport([]))
+    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews')
+  })
 
   it('recreates theatreRow and renders review title after empty-to-populated transition', () => {
-    updateTheatreReviews(makeExport([]));
+    updateTheatreReviews(makeExport([]))
     const oneReview = [
       {
         title: 'Hamilton',
@@ -193,12 +182,12 @@ describe('updateTheatreReviews with widget-body DOM', () => {
         imageUrlCard: null,
         imageUrlCardAvif: null,
         imageWidth: null,
-        imageHeight: null,
-      },
-    ];
-    expect(() => updateTheatreReviews(makeExport(oneReview))).not.toThrow();
-    const row = document.getElementById('theatreRow');
-    expect(row).not.toBeNull();
-    expect(row!.innerHTML).toContain('Hamilton');
-  });
-});
+        imageHeight: null
+      }
+    ]
+    expect(() => updateTheatreReviews(makeExport(oneReview))).not.toThrow()
+    const row = document.getElementById('theatreRow')
+    expect(row).not.toBeNull()
+    expect(row!.innerHTML).toContain('Hamilton')
+  })
+})

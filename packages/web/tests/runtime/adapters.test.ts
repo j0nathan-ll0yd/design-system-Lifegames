@@ -1,22 +1,7 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import {
-  adaptHealth,
-  adaptSleep,
-  adaptWorkouts,
-  adaptGithubEvents,
-  adaptBooks,
-  adaptArticles,
-  adaptStarredRepos,
-} from '../../src/runtime/adapters';
-import { HYDRATION, STATUS_LABELS, CLOUDFRONT_BASE } from '../../src/runtime/constants';
-import type {
-  HealthExport,
-  SleepExport,
-  WorkoutsExport,
-  BooksExport,
-  GithubEventsExport,
-  ArticlesExport,
-} from '../../src/types/exports';
+import {afterEach, describe, expect, it, vi} from 'vitest'
+import {adaptArticles, adaptBooks, adaptGithubEvents, adaptHealth, adaptSleep, adaptStarredRepos, adaptWorkouts} from '../../src/runtime/adapters'
+import {CLOUDFRONT_BASE, HYDRATION, STATUS_LABELS} from '../../src/runtime/constants'
+import type {ArticlesExport, BooksExport, GithubEventsExport, HealthExport, SleepExport, WorkoutsExport} from '../../src/types/exports'
 
 // ── Fixture factories ─────────────────────────────────────────────
 
@@ -25,30 +10,30 @@ function makeHealth(overrides: Partial<HealthExport['quantities']> = {}): Health
     date: '2026-01-15',
     generatedAt: '2026-01-15T10:30:00Z',
     quantities: {
-      heartRate: { value: 72, unit: 'bpm' },
-      stepCount: { value: 8432, unit: 'count' },
-      activeEnergyBurned: { value: 450, unit: 'kcal' },
-      basalEnergyBurned: { value: 1800, unit: 'kcal' },
-      dietaryWater: { value: 2839.14, unit: 'mL' }, // ~96 oz
-      dietaryCaffeine: { value: 0.28, unit: 'g' }, // 280 mg
-      heartRateVariabilitySDNN: { value: 45, unit: 'ms' },
-      exerciseTime: { value: 30, unit: 'min' },
-      sleepScore: { value: 82, unit: 'score' },
-      ...overrides,
-    },
-  };
+      heartRate: {value: 72, unit: 'bpm'},
+      stepCount: {value: 8432, unit: 'count'},
+      activeEnergyBurned: {value: 450, unit: 'kcal'},
+      basalEnergyBurned: {value: 1800, unit: 'kcal'},
+      dietaryWater: {value: 2839.14, unit: 'mL'}, // ~96 oz
+      dietaryCaffeine: {value: 0.28, unit: 'g'}, // 280 mg
+      heartRateVariabilitySDNN: {value: 45, unit: 'ms'},
+      exerciseTime: {value: 30, unit: 'min'},
+      sleepScore: {value: 82, unit: 'score'},
+      ...overrides
+    }
+  }
 }
 
 function makeSleep(overrides: Partial<SleepExport> = {}): SleepExport {
   return {
     date: '2026-01-15',
     generatedAt: '2026-01-15T08:00:00Z',
-    rem: { seconds: 5400 }, // 1h 30m
-    deep: { seconds: 3600 }, // 1h 0m
-    core: { seconds: 10800 }, // 3h 0m
-    awake: { seconds: 900 }, // 15m
-    ...overrides,
-  };
+    rem: {seconds: 5400}, // 1h 30m
+    deep: {seconds: 3600}, // 1h 0m
+    core: {seconds: 10800}, // 3h 0m
+    awake: {seconds: 900}, // 15m
+    ...overrides
+  }
 }
 
 function makeWorkouts(overrides: Partial<WorkoutsExport> = {}): WorkoutsExport {
@@ -56,30 +41,15 @@ function makeWorkouts(overrides: Partial<WorkoutsExport> = {}): WorkoutsExport {
     date: '2026-01-15',
     generatedAt: '2026-01-15T10:30:00Z',
     workouts: [
-      {
-        activityType: 'Other',
-        duration: 55,
-        energyBurned: 620,
-        distance: null,
-        source: 'Apple Watch',
-      },
-      {
-        activityType: 'Running',
-        duration: 32,
-        energyBurned: 380,
-        distance: 4.2,
-        source: 'Apple Watch',
-      },
+      {activityType: 'Other', duration: 55, energyBurned: 620, distance: null, source: 'Apple Watch'},
+      {activityType: 'Running', duration: 32, energyBurned: 380, distance: 4.2, source: 'Apple Watch'}
     ],
-    ...overrides,
-  };
+    ...overrides
+  }
 }
 
 function makeGithubEvents(events: GithubEventsExport['events'] = []): GithubEventsExport {
-  return {
-    generatedAt: '2026-01-15T10:30:00Z',
-    events,
-  };
+  return {generatedAt: '2026-01-15T10:30:00Z', events}
 }
 
 function makeBooks(bookOverrides: Partial<BooksExport['books'][0]>[] = []): BooksExport {
@@ -109,628 +79,566 @@ function makeBooks(bookOverrides: Partial<BooksExport['books'][0]>[] = []): Book
     currentPage: 150,
     totalPages: 300,
     rating: null,
-    notes: null,
-  };
+    notes: null
+  }
   return {
     generatedAt: '2026-01-15T10:30:00Z',
-    books:
-      bookOverrides.length > 0
-        ? bookOverrides.map((o) => ({ ...defaultBook, ...o }))
-        : [defaultBook],
-  };
+    books: bookOverrides.length > 0
+      ? bookOverrides.map((o) => ({...defaultBook, ...o}))
+      : [defaultBook]
+  }
 }
 
 function makeArticles(articles: ArticlesExport['articles'] = []): ArticlesExport {
-  return {
-    generatedAt: '2026-01-15T10:30:00Z',
-    articles,
-  };
+  return {generatedAt: '2026-01-15T10:30:00Z', articles}
 }
 
 // ── adaptHealth ───────────────────────────────────────────────────
 
 describe('adaptHealth', () => {
   it('renames heartRateVariabilitySDNN to hrvSDNN', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.quantities).toHaveProperty('hrvSDNN');
-    expect(result.quantities).not.toHaveProperty('heartRateVariabilitySDNN');
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.quantities).toHaveProperty('hrvSDNN')
+    expect(result.quantities).not.toHaveProperty('heartRateVariabilitySDNN')
+  })
 
   it('preserves the hrvSDNN value after rename', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.quantities.hrvSDNN.value).toBe(45);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.quantities.hrvSDNN.value).toBe(45)
+  })
 
   it('does not add hrvSDNN if heartRateVariabilitySDNN is absent', () => {
-    const health = makeHealth();
-    delete (health.quantities as any).heartRateVariabilitySDNN;
-    const result = adaptHealth(health, makeSleep());
-    expect(result.quantities).not.toHaveProperty('hrvSDNN');
-  });
+    const health = makeHealth()
+    delete (health.quantities as any).heartRateVariabilitySDNN
+    const result = adaptHealth(health, makeSleep())
+    expect(result.quantities).not.toHaveProperty('hrvSDNN')
+  })
 
   it('defaults exerciseTime to 0 min when missing', () => {
-    const health = makeHealth();
-    delete (health.quantities as any).exerciseTime;
-    const result = adaptHealth(health, makeSleep());
-    expect(result.quantities.exerciseTime).toEqual({ value: 0, unit: 'min' });
-  });
+    const health = makeHealth()
+    delete (health.quantities as any).exerciseTime
+    const result = adaptHealth(health, makeSleep())
+    expect(result.quantities.exerciseTime).toEqual({value: 0, unit: 'min'})
+  })
 
   it('does not override exerciseTime when already present', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.quantities.exerciseTime.value).toBe(30);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.quantities.exerciseTime.value).toBe(30)
+  })
 
   it('converts dietaryWater mL to oz (÷29.5735, rounded)', () => {
     // 2839.14 mL / 29.5735 ≈ 96
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.hydration.waterOz).toBe(96);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.hydration.waterOz).toBe(96)
+  })
 
   it('returns 0 waterOz when dietaryWater is absent', () => {
-    const health = makeHealth();
-    delete (health.quantities as any).dietaryWater;
-    const result = adaptHealth(health, makeSleep());
-    expect(result.hydration.waterOz).toBe(0);
-  });
+    const health = makeHealth()
+    delete (health.quantities as any).dietaryWater
+    const result = adaptHealth(health, makeSleep())
+    expect(result.hydration.waterOz).toBe(0)
+  })
 
   it('converts dietaryCaffeine grams to mg (×1000, rounded)', () => {
     // 0.28g × 1000 = 280mg
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.hydration.caffeineMg).toBe(280);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.hydration.caffeineMg).toBe(280)
+  })
 
   it('returns 0 caffeineMg when dietaryCaffeine is absent', () => {
-    const health = makeHealth();
-    delete (health.quantities as any).dietaryCaffeine;
-    const result = adaptHealth(health, makeSleep());
-    expect(result.hydration.caffeineMg).toBe(0);
-  });
+    const health = makeHealth()
+    delete (health.quantities as any).dietaryCaffeine
+    const result = adaptHealth(health, makeSleep())
+    expect(result.hydration.caffeineMg).toBe(0)
+  })
 
   it('computes totalCalories = activeEnergyBurned + basalEnergyBurned', () => {
     // 450 + 1800 = 2250
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.derived.totalCalories).toBe(2250);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.derived.totalCalories).toBe(2250)
+  })
 
   it('rounds totalCalories', () => {
-    const health = makeHealth({
-      activeEnergyBurned: { value: 450.7, unit: 'kcal' },
-      basalEnergyBurned: { value: 1800.4, unit: 'kcal' },
-    });
-    const result = adaptHealth(health, makeSleep());
-    expect(result.derived.totalCalories).toBe(2251);
-  });
+    const health = makeHealth({activeEnergyBurned: {value: 450.7, unit: 'kcal'}, basalEnergyBurned: {value: 1800.4, unit: 'kcal'}})
+    const result = adaptHealth(health, makeSleep())
+    expect(result.derived.totalCalories).toBe(2251)
+  })
 
   it('defaults totalCalories to 0 when energy fields absent', () => {
-    const health = makeHealth();
-    delete (health.quantities as any).activeEnergyBurned;
-    delete (health.quantities as any).basalEnergyBurned;
-    const result = adaptHealth(health, makeSleep());
-    expect(result.derived.totalCalories).toBe(0);
-  });
+    const health = makeHealth()
+    delete (health.quantities as any).activeEnergyBurned
+    delete (health.quantities as any).basalEnergyBurned
+    const result = adaptHealth(health, makeSleep())
+    expect(result.derived.totalCalories).toBe(0)
+  })
 
   it('includes HYDRATION constants in hydration object', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.hydration.waterMax).toBe(HYDRATION.waterMax);
-    expect(result.hydration.caffeineMax).toBe(HYDRATION.caffeineMax);
-    expect(result.hydration.waterRangeLo).toBe(HYDRATION.waterRangeLo);
-    expect(result.hydration.waterRangeHi).toBe(HYDRATION.waterRangeHi);
-    expect(result.hydration.caffeineRangeLo).toBe(HYDRATION.caffeineRangeLo);
-    expect(result.hydration.caffeineRangeHi).toBe(HYDRATION.caffeineRangeHi);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.hydration.waterMax).toBe(HYDRATION.waterMax)
+    expect(result.hydration.caffeineMax).toBe(HYDRATION.caffeineMax)
+    expect(result.hydration.waterRangeLo).toBe(HYDRATION.waterRangeLo)
+    expect(result.hydration.waterRangeHi).toBe(HYDRATION.waterRangeHi)
+    expect(result.hydration.caffeineRangeLo).toBe(HYDRATION.caffeineRangeLo)
+    expect(result.hydration.caffeineRangeHi).toBe(HYDRATION.caffeineRangeHi)
+  })
 
   it('returns the health date', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.date).toBe('2026-01-15');
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.date).toBe('2026-01-15')
+  })
 
   it('computes sleep percentages when sleepData provided', () => {
     // rem=5400, deep=3600, core=10800 → total=19800
     // deepPct=18, remPct=27, corePct=55
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.derived.deepPct).toBe(18);
-    expect(result.derived.remPct).toBe(27);
-    expect(result.derived.corePct).toBe(55);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.derived.deepPct).toBe(18)
+    expect(result.derived.remPct).toBe(27)
+    expect(result.derived.corePct).toBe(55)
+  })
 
   it('returns zero sleep percentages when sleepData is null', () => {
-    const result = adaptHealth(makeHealth(), null);
-    expect(result.derived.deepPct).toBe(0);
-    expect(result.derived.remPct).toBe(0);
-    expect(result.derived.corePct).toBe(0);
-  });
+    const result = adaptHealth(makeHealth(), null)
+    expect(result.derived.deepPct).toBe(0)
+    expect(result.derived.remPct).toBe(0)
+    expect(result.derived.corePct).toBe(0)
+  })
 
   it('returns empty sleepDurationFormatted when sleepData is null', () => {
-    const result = adaptHealth(makeHealth(), null);
-    expect(result.sleepDurationFormatted).toBe('');
-  });
+    const result = adaptHealth(makeHealth(), null)
+    expect(result.sleepDurationFormatted).toBe('')
+  })
 
   it('formats sleepDurationFormatted when sleepData provided', () => {
     // rem+deep+core = 5400+3600+10800 = 19800s = 5h 30m
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.sleepDurationFormatted).toBe('5h 30m');
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.sleepDurationFormatted).toBe('5h 30m')
+  })
 
   it('returns empty sleepPhaseFormatted when sleepData is null', () => {
-    const result = adaptHealth(makeHealth(), null);
-    expect(result.sleepPhaseFormatted).toEqual({});
-  });
+    const result = adaptHealth(makeHealth(), null)
+    expect(result.sleepPhaseFormatted).toEqual({})
+  })
 
   it('returns formatted sleep phases when sleepData provided', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.sleepPhaseFormatted).toEqual({
-      deep: '1h 0m',
-      rem: '1h 30m',
-      core: '3h 0m',
-      awake: '15m',
-    });
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.sleepPhaseFormatted).toEqual({deep: '1h 0m', rem: '1h 30m', core: '3h 0m', awake: '15m'})
+  })
 
   it('uses sleepScore from health quantities', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.sleepScore).toBe(82);
-  });
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.sleepScore).toBe(82)
+  })
 
   it('passes watch field through when present (F8 adapter passthrough)', () => {
-    const health: HealthExport = {
-      ...makeHealth(),
-      watch: { worn: false, since: null, source: 'hrGap' },
-    };
-    const result = adaptHealth(health, makeSleep());
-    expect(result.watch).toEqual({ worn: false, since: null, source: 'hrGap' });
-  });
+    const health: HealthExport = {...makeHealth(), watch: {worn: false, since: null, source: 'hrGap'}}
+    const result = adaptHealth(health, makeSleep())
+    expect(result.watch).toEqual({worn: false, since: null, source: 'hrGap'})
+  })
 
   it('passes watch.source=charging through', () => {
-    const health: HealthExport = {
-      ...makeHealth(),
-      watch: { worn: false, since: null, source: 'charging' },
-    };
-    const result = adaptHealth(health, makeSleep());
-    expect(result.watch?.source).toBe('charging');
-  });
+    const health: HealthExport = {...makeHealth(), watch: {worn: false, since: null, source: 'charging'}}
+    const result = adaptHealth(health, makeSleep())
+    expect(result.watch?.source).toBe('charging')
+  })
 
   it('watch is undefined when absent in health export', () => {
-    const result = adaptHealth(makeHealth(), makeSleep());
-    expect(result.watch).toBeUndefined();
-  });
-});
+    const result = adaptHealth(makeHealth(), makeSleep())
+    expect(result.watch).toBeUndefined()
+  })
+})
 
 // ── adaptSleep ────────────────────────────────────────────────────
 
 describe('adaptSleep', () => {
   it('isEmpty is false when sleep phases have seconds', () => {
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.isEmpty).toBe(false);
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.isEmpty).toBe(false)
+  })
 
   it('isEmpty is true when all phases are 0 or absent', () => {
-    const sleep: SleepExport = {
-      date: '2026-01-15',
-      generatedAt: '2026-01-15T08:00:00Z',
-    };
-    const result = adaptSleep(sleep, makeHealth());
-    expect(result.isEmpty).toBe(true);
-  });
+    const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z'}
+    const result = adaptSleep(sleep, makeHealth())
+    expect(result.isEmpty).toBe(true)
+  })
 
   it('returns the sleep date', () => {
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.date).toBe('2026-01-15');
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.date).toBe('2026-01-15')
+  })
 
   it('uses sleepScore from healthData quantities', () => {
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.sleepScore).toBe(82);
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.sleepScore).toBe(82)
+  })
 
   it('returns sleepScore 0 when healthData is null', () => {
-    const result = adaptSleep(makeSleep(), null);
-    expect(result.sleepScore).toBe(0);
-  });
+    const result = adaptSleep(makeSleep(), null)
+    expect(result.sleepScore).toBe(0)
+  })
 
   it('formats sleepDurationFormatted correctly', () => {
     // rem+deep+core = 5400+3600+10800 = 19800s = 5h 30m
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.sleepDurationFormatted).toBe('5h 30m');
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.sleepDurationFormatted).toBe('5h 30m')
+  })
 
   it('formats sleepPhaseFormatted for each phase', () => {
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.sleepPhaseFormatted.deep).toBe('1h 0m');
-    expect(result.sleepPhaseFormatted.rem).toBe('1h 30m');
-    expect(result.sleepPhaseFormatted.core).toBe('3h 0m');
-    expect(result.sleepPhaseFormatted.awake).toBe('15m');
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.sleepPhaseFormatted.deep).toBe('1h 0m')
+    expect(result.sleepPhaseFormatted.rem).toBe('1h 30m')
+    expect(result.sleepPhaseFormatted.core).toBe('3h 0m')
+    expect(result.sleepPhaseFormatted.awake).toBe('15m')
+  })
 
   it('computes sleep percentages correctly', () => {
     // deep=3600, rem=5400, core=10800, total=19800
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.derived.deepPct).toBe(18);
-    expect(result.derived.remPct).toBe(27);
-    expect(result.derived.corePct).toBe(55);
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.derived.deepPct).toBe(18)
+    expect(result.derived.remPct).toBe(27)
+    expect(result.derived.corePct).toBe(55)
+  })
 
   it('returns phases in seconds', () => {
-    const result = adaptSleep(makeSleep(), makeHealth());
-    expect(result.phases.rem).toBe(5400);
-    expect(result.phases.deep).toBe(3600);
-    expect(result.phases.core).toBe(10800);
-    expect(result.phases.awake).toBe(900);
-  });
+    const result = adaptSleep(makeSleep(), makeHealth())
+    expect(result.phases.rem).toBe(5400)
+    expect(result.phases.deep).toBe(3600)
+    expect(result.phases.core).toBe(10800)
+    expect(result.phases.awake).toBe(900)
+  })
 
   it('returns zero percentages when all phases are absent', () => {
-    const sleep: SleepExport = {
-      date: '2026-01-15',
-      generatedAt: '2026-01-15T08:00:00Z',
-    };
-    const result = adaptSleep(sleep, makeHealth());
-    expect(result.derived.deepPct).toBe(0);
-    expect(result.derived.remPct).toBe(0);
-    expect(result.derived.corePct).toBe(0);
-  });
-});
+    const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z'}
+    const result = adaptSleep(sleep, makeHealth())
+    expect(result.derived.deepPct).toBe(0)
+    expect(result.derived.remPct).toBe(0)
+    expect(result.derived.corePct).toBe(0)
+  })
+})
 
 // ── adaptWorkouts ─────────────────────────────────────────────────
 
 describe('adaptWorkouts', () => {
   it('returns null when input is null', () => {
-    expect(adaptWorkouts(null)).toBeNull();
-  });
+    expect(adaptWorkouts(null)).toBeNull()
+  })
 
   it('returns empty array for empty workouts list', () => {
-    const result = adaptWorkouts({ ...makeWorkouts(), workouts: [] });
-    expect(result).toEqual([]);
-  });
+    const result = adaptWorkouts({...makeWorkouts(), workouts: []})
+    expect(result).toEqual([])
+  })
 
   it('maps "Other" activityType to Barry\'s Bootcamp label', () => {
-    const result = adaptWorkouts(makeWorkouts());
-    expect(result![0].activityType).toBe("Barry's Bootcamp");
-  });
+    const result = adaptWorkouts(makeWorkouts())
+    expect(result![0].activityType).toBe("Barry's Bootcamp")
+  })
 
   it('maps "Other" activityType with correct URL', () => {
-    const result = adaptWorkouts(makeWorkouts());
-    expect(result![0].activityUrl).toBe('https://share.barrys.com/jsvsl');
-  });
+    const result = adaptWorkouts(makeWorkouts())
+    expect(result![0].activityUrl).toBe('https://share.barrys.com/jsvsl')
+  })
 
   it('preserves unmapped activityType as-is', () => {
-    const result = adaptWorkouts(makeWorkouts());
-    expect(result![1].activityType).toBe('Running');
-  });
+    const result = adaptWorkouts(makeWorkouts())
+    expect(result![1].activityType).toBe('Running')
+  })
 
   it('preserves no activityUrl for unmapped types', () => {
-    const result = adaptWorkouts(makeWorkouts());
-    expect(result![1].activityUrl).toBeUndefined();
-  });
+    const result = adaptWorkouts(makeWorkouts())
+    expect(result![1].activityUrl).toBeUndefined()
+  })
 
   it('preserves other workout fields for mapped entry', () => {
-    const result = adaptWorkouts(makeWorkouts());
-    expect(result![0].duration).toBe(55);
-    expect(result![0].energyBurned).toBe(620);
-    expect(result![0].source).toBe('Apple Watch');
-  });
+    const result = adaptWorkouts(makeWorkouts())
+    expect(result![0].duration).toBe(55)
+    expect(result![0].energyBurned).toBe(620)
+    expect(result![0].source).toBe('Apple Watch')
+  })
 
   it('preserves other workout fields for unmapped entry', () => {
-    const result = adaptWorkouts(makeWorkouts());
-    expect(result![1].duration).toBe(32);
-    expect(result![1].distance).toBe(4.2);
-  });
+    const result = adaptWorkouts(makeWorkouts())
+    expect(result![1].duration).toBe(32)
+    expect(result![1].distance).toBe(4.2)
+  })
 
   it('handles workouts with null numeric fields', () => {
     const workouts = makeWorkouts({
       workouts: [
-        {
-          activityType: 'Running',
-          duration: null,
-          energyBurned: null,
-          distance: null,
-          source: 'iPhone',
-        },
-      ],
-    });
-    const result = adaptWorkouts(workouts);
-    expect(result![0].duration).toBeNull();
-    expect(result![0].energyBurned).toBeNull();
-    expect(result![0].distance).toBeNull();
-  });
-});
+        {activityType: 'Running', duration: null, energyBurned: null, distance: null, source: 'iPhone'}
+      ]
+    })
+    const result = adaptWorkouts(workouts)
+    expect(result![0].duration).toBeNull()
+    expect(result![0].energyBurned).toBeNull()
+    expect(result![0].distance).toBeNull()
+  })
+})
 
 // ── adaptGithubEvents ─────────────────────────────────────────────
 
 describe('adaptGithubEvents', () => {
   afterEach(() => {
-    vi.useRealTimers();
-  });
+    vi.useRealTimers()
+  })
 
   it('returns empty array when input is null', () => {
-    expect(adaptGithubEvents(null)).toEqual([]);
-  });
+    expect(adaptGithubEvents(null)).toEqual([])
+  })
 
   it('returns empty array when events array is empty', () => {
-    const result = adaptGithubEvents(makeGithubEvents([]));
-    expect(result).toEqual([]);
-  });
+    const result = adaptGithubEvents(makeGithubEvents([]))
+    expect(result).toEqual([])
+  })
 
   it('slices to at most 10 events', () => {
-    const events = Array.from({ length: 15 }, (_, i) => ({
-      type: 'commit',
-      repo: 'org/repo',
-      title: `Commit ${i}`,
-      date: '2026-01-15',
-      hash: `abc${i}`,
-    }));
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result).toHaveLength(10);
-  });
+    const events = Array.from({length: 15}, (_, i) => ({type: 'commit', repo: 'org/repo', title: `Commit ${i}`, date: '2026-01-15', hash: `abc${i}`}))
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result).toHaveLength(10)
+  })
 
   it('strips org prefix from repo name', () => {
     const events = [
-      { type: 'commit', repo: 'myorg/my-repo', title: 'Test', date: '2026-01-01', hash: 'abc123' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].repo).toBe('my-repo');
-  });
+      {type: 'commit', repo: 'myorg/my-repo', title: 'Test', date: '2026-01-01', hash: 'abc123'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].repo).toBe('my-repo')
+  })
 
   it('preserves repo name without org prefix', () => {
     const events = [
-      {
-        type: 'commit',
-        repo: 'standalone-repo',
-        title: 'Test',
-        date: '2026-01-01',
-        hash: 'abc123',
-      },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].repo).toBe('standalone-repo');
-  });
+      {type: 'commit', repo: 'standalone-repo', title: 'Test', date: '2026-01-01', hash: 'abc123'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].repo).toBe('standalone-repo')
+  })
 
   it('generates commit URL with full repo path and hash', () => {
     const events = [
-      {
-        type: 'commit',
-        repo: 'myorg/my-repo',
-        title: 'Fix bug',
-        date: '2026-01-01',
-        hash: 'deadbeef',
-      },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].url).toBe('https://github.com/myorg/my-repo/commit/deadbeef');
-  });
+      {type: 'commit', repo: 'myorg/my-repo', title: 'Fix bug', date: '2026-01-01', hash: 'deadbeef'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].url).toBe('https://github.com/myorg/my-repo/commit/deadbeef')
+  })
 
   it('generates PR URL for pr_ event types', () => {
     const events = [
-      { type: 'pr_opened', repo: 'myorg/my-repo', title: 'New PR', date: '2026-01-01', number: 42 },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].url).toBe('https://github.com/myorg/my-repo/pull/42');
-  });
+      {type: 'pr_opened', repo: 'myorg/my-repo', title: 'New PR', date: '2026-01-01', number: 42}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].url).toBe('https://github.com/myorg/my-repo/pull/42')
+  })
 
   it('generates PR URL for pr_merged event type', () => {
     const events = [
-      {
-        type: 'pr_merged',
-        repo: 'myorg/my-repo',
-        title: 'Merged PR',
-        date: '2026-01-01',
-        number: 99,
-      },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].url).toBe('https://github.com/myorg/my-repo/pull/99');
-  });
+      {type: 'pr_merged', repo: 'myorg/my-repo', title: 'Merged PR', date: '2026-01-01', number: 99}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].url).toBe('https://github.com/myorg/my-repo/pull/99')
+  })
 
   it('generates issues URL for issue_ event types', () => {
     const events = [
-      { type: 'issue_opened', repo: 'myorg/my-repo', title: 'Bug', date: '2026-01-01', number: 7 },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].url).toBe('https://github.com/myorg/my-repo/issues/7');
-  });
+      {type: 'issue_opened', repo: 'myorg/my-repo', title: 'Bug', date: '2026-01-01', number: 7}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].url).toBe('https://github.com/myorg/my-repo/issues/7')
+  })
 
   it('returns empty URL for unknown event type without number/hash', () => {
     const events = [
-      { type: 'unknown_type', repo: 'myorg/my-repo', title: 'Something', date: '2026-01-01' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].url).toBe('');
-  });
+      {type: 'unknown_type', repo: 'myorg/my-repo', title: 'Something', date: '2026-01-01'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].url).toBe('')
+  })
 
   it('formats date as minutes ago for recent events', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const events = [
-      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].date).toBe('15m ago');
-  });
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].date).toBe('15m ago')
+  })
 
   it('formats date as hours ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const events = [
-      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T07:00:00Z', hash: 'abc' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].date).toBe('3h ago');
-  });
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T07:00:00Z', hash: 'abc'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].date).toBe('3h ago')
+  })
 
   it('formats date as days ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const events = [
-      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-12T10:30:00Z', hash: 'abc' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].date).toBe('3d ago');
-  });
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-12T10:30:00Z', hash: 'abc'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].date).toBe('3d ago')
+  })
 
   it('formats date as weeks ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const events = [
-      { type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].date).toBe('3w ago');
-  });
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].date).toBe('3w ago')
+  })
 
   it('preserves non-ISO date strings unchanged', () => {
-    const events = [{ type: 'commit', repo: 'org/repo', title: 'X', date: '3d ago', hash: 'abc' }];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].date).toBe('3d ago');
-  });
+    const events = [{type: 'commit', repo: 'org/repo', title: 'X', date: '3d ago', hash: 'abc'}]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].date).toBe('3d ago')
+  })
 
   it('preserves additions and deletions fields', () => {
     const events = [
-      {
-        type: 'commit',
-        repo: 'org/repo',
-        title: 'X',
-        date: '2026-01-01',
-        hash: 'abc',
-        additions: 10,
-        deletions: 3,
-      },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events));
-    expect(result[0].additions).toBe(10);
-    expect(result[0].deletions).toBe(3);
-  });
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-01', hash: 'abc', additions: 10, deletions: 3}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events))
+    expect(result[0].additions).toBe(10)
+    expect(result[0].deletions).toBe(3)
+  })
 
   it('uses an injected now timestamp for relative date formatting', () => {
     // No fake timers: the injected `now` (3w after the event) is the only clock.
-    const now = new Date('2026-01-15T10:30:00Z').getTime();
+    const now = new Date('2026-01-15T10:30:00Z').getTime()
     const events = [
-      { type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc' },
-    ];
-    const result = adaptGithubEvents(makeGithubEvents(events), now);
-    expect(result[0].date).toBe('3w ago');
-  });
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc'}
+    ]
+    const result = adaptGithubEvents(makeGithubEvents(events), now)
+    expect(result[0].date).toBe('3w ago')
+  })
 
   it('falls back to Date.now() when now is omitted (backward compatible)', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const events = [
-      { type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc' },
-    ];
-    expect(adaptGithubEvents(makeGithubEvents(events))[0].date).toBe('15m ago');
-  });
-});
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc'}
+    ]
+    expect(adaptGithubEvents(makeGithubEvents(events))[0].date).toBe('15m ago')
+  })
+})
 
 // ── adaptBooks ────────────────────────────────────────────────────
 
 describe('adaptBooks', () => {
   it('passes "reading" status through unchanged', () => {
-    const books = makeBooks([{ status: 'reading' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('reading');
-  });
+    const books = makeBooks([{status: 'reading'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].status).toBe('reading')
+  })
 
   it('passes "upNext" status through unchanged', () => {
-    const books = makeBooks([{ status: 'upNext' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('upNext');
-  });
+    const books = makeBooks([{status: 'upNext'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].status).toBe('upNext')
+  })
 
   it('passes "finished" status through unchanged', () => {
-    const books = makeBooks([{ status: 'finished' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('finished');
-  });
+    const books = makeBooks([{status: 'finished'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].status).toBe('finished')
+  })
 
   it('passes "pending" status through unchanged', () => {
-    const books = makeBooks([{ status: 'pending' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('pending');
-  });
+    const books = makeBooks([{status: 'pending'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].status).toBe('pending')
+  })
 
   it('falls back to original status for unknown values', () => {
-    const books = makeBooks([{ status: 'someUnknownStatus' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('someUnknownStatus');
-  });
+    const books = makeBooks([{status: 'someUnknownStatus'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].status).toBe('someUnknownStatus')
+  })
 
   it('defaults status to "upNext" when status is null', () => {
-    const books = makeBooks([{ status: null }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].status).toBe('upNext');
-  });
+    const books = makeBooks([{status: null}])
+    const result = adaptBooks(books)
+    expect(result.books[0].status).toBe('upNext')
+  })
 
   it('computes progress as percentage of currentPage/totalPages', () => {
-    const books = makeBooks([{ currentPage: 150, totalPages: 300 }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].progress).toBe(50);
-  });
+    const books = makeBooks([{currentPage: 150, totalPages: 300}])
+    const result = adaptBooks(books)
+    expect(result.books[0].progress).toBe(50)
+  })
 
   it('rounds progress to nearest integer', () => {
-    const books = makeBooks([{ currentPage: 1, totalPages: 3 }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].progress).toBe(33);
-  });
+    const books = makeBooks([{currentPage: 1, totalPages: 3}])
+    const result = adaptBooks(books)
+    expect(result.books[0].progress).toBe(33)
+  })
 
   it('returns undefined progress when currentPage is null', () => {
-    const books = makeBooks([{ currentPage: null, totalPages: 300 }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].progress).toBeUndefined();
-  });
+    const books = makeBooks([{currentPage: null, totalPages: 300}])
+    const result = adaptBooks(books)
+    expect(result.books[0].progress).toBeUndefined()
+  })
 
   it('returns undefined progress when totalPages is null', () => {
-    const books = makeBooks([{ currentPage: 150, totalPages: null }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].progress).toBeUndefined();
-  });
+    const books = makeBooks([{currentPage: 150, totalPages: null}])
+    const result = adaptBooks(books)
+    expect(result.books[0].progress).toBeUndefined()
+  })
 
   it('guards against division by zero (totalPages=0)', () => {
-    const books = makeBooks([{ currentPage: 50, totalPages: 0 }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].progress).toBeUndefined();
-  });
+    const books = makeBooks([{currentPage: 50, totalPages: 0}])
+    const result = adaptBooks(books)
+    expect(result.books[0].progress).toBeUndefined()
+  })
 
   it('generates affiliate Amazon link with asin', () => {
-    const books = makeBooks([{ asin: 'B0TESTBOOK' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].link).toContain('B0TESTBOOK');
-    expect(result.books[0].link).toContain('amazon.com/dp/');
-    expect(result.books[0].link).toContain('lifegames04-20');
-  });
+    const books = makeBooks([{asin: 'B0TESTBOOK'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].link).toContain('B0TESTBOOK')
+    expect(result.books[0].link).toContain('amazon.com/dp/')
+    expect(result.books[0].link).toContain('lifegames04-20')
+  })
 
   // CloudFront URLs pass through the adapter unchanged. The downstream updater
   // (updaters.ts) conditionally rewrites to a same-origin /images/ path only
   // for ASINs that were in the SSR fixture. See the comment in adapters.ts
   // for the bug-class rationale (Cloudflare Pages caches 404s for 30 days).
   it('passes CloudFront mainImage through unchanged', () => {
-    const cfImage = `${CLOUDFRONT_BASE}/images/books/B0TEST.webp`;
-    const books = makeBooks([{ mainImage: cfImage }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].cover).toBe(cfImage);
-  });
+    const cfImage = `${CLOUDFRONT_BASE}/images/books/B0TEST.webp`
+    const books = makeBooks([{mainImage: cfImage}])
+    const result = adaptBooks(books)
+    expect(result.books[0].cover).toBe(cfImage)
+  })
 
   it('preserves non-CloudFront mainImage URLs unchanged', () => {
-    const books = makeBooks([{ mainImage: 'https://amazon.com/images/B0TEST.jpg' }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].cover).toBe('https://amazon.com/images/B0TEST.jpg');
-  });
+    const books = makeBooks([{mainImage: 'https://amazon.com/images/B0TEST.jpg'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].cover).toBe('https://amazon.com/images/B0TEST.jpg')
+  })
 
   it('returns null cover when mainImage is null', () => {
-    const books = makeBooks([{ mainImage: null }]);
-    const result = adaptBooks(books);
-    expect(result.books[0].cover).toBeNull();
-  });
+    const books = makeBooks([{mainImage: null}])
+    const result = adaptBooks(books)
+    expect(result.books[0].cover).toBeNull()
+  })
 
   it('splits category on " > " for genres', () => {
     const books = makeBooks([
-      { asin: 'B000TEST01', category: 'Technology > Software > Engineering' },
-    ]);
-    const result = adaptBooks(books);
-    expect(result.bookMeta['B000TEST01'].genres).toEqual(['Technology', 'Software', 'Engineering']);
-  });
+      {asin: 'B000TEST01', category: 'Technology > Software > Engineering'}
+    ])
+    const result = adaptBooks(books)
+    expect(result.bookMeta['B000TEST01'].genres).toEqual(['Technology', 'Software', 'Engineering'])
+  })
 
   it('returns empty genres array when category is null', () => {
-    const books = makeBooks([{ asin: 'B000TEST01', category: null }]);
-    const result = adaptBooks(books);
-    expect(result.bookMeta['B000TEST01'].genres).toEqual([]);
-  });
+    const books = makeBooks([{asin: 'B000TEST01', category: null}])
+    const result = adaptBooks(books)
+    expect(result.bookMeta['B000TEST01'].genres).toEqual([])
+  })
 
   it('counts reading books in stats', () => {
     const books: BooksExport = {
@@ -762,7 +670,7 @@ describe('adaptBooks', () => {
           currentPage: null,
           totalPages: null,
           rating: null,
-          notes: null,
+          notes: null
         },
         {
           asin: 'A2',
@@ -790,7 +698,7 @@ describe('adaptBooks', () => {
           currentPage: null,
           totalPages: null,
           rating: null,
-          notes: null,
+          notes: null
         },
         {
           asin: 'A3',
@@ -818,63 +726,63 @@ describe('adaptBooks', () => {
           currentPage: null,
           totalPages: null,
           rating: null,
-          notes: null,
-        },
-      ],
-    };
-    const result = adaptBooks(books);
-    expect(result.stats.reading).toBe(1);
-    expect(result.stats.completed).toBe(1);
-    expect(result.stats.upcoming).toBe(1);
-    expect(result.stats.total).toBe(3);
-  });
+          notes: null
+        }
+      ]
+    }
+    const result = adaptBooks(books)
+    expect(result.stats.reading).toBe(1)
+    expect(result.stats.completed).toBe(1)
+    expect(result.stats.upcoming).toBe(1)
+    expect(result.stats.total).toBe(3)
+  })
 
   it('handles empty books array with zero stats', () => {
-    const result = adaptBooks({ generatedAt: '2026-01-15T10:30:00Z', books: [] });
-    expect(result.stats).toEqual({ total: 0, reading: 0, completed: 0, upcoming: 0 });
-    expect(result.books).toEqual([]);
-  });
+    const result = adaptBooks({generatedAt: '2026-01-15T10:30:00Z', books: []})
+    expect(result.stats).toEqual({total: 0, reading: 0, completed: 0, upcoming: 0})
+    expect(result.books).toEqual([])
+  })
 
   it('includes STATUS_LABELS in result', () => {
-    const result = adaptBooks(makeBooks());
-    expect(result.statusLabels).toEqual(STATUS_LABELS);
-  });
+    const result = adaptBooks(makeBooks())
+    expect(result.statusLabels).toEqual(STATUS_LABELS)
+  })
 
   it('builds bookMeta with series info', () => {
     const books = makeBooks([
-      { asin: 'B0SERIES01', series: 'The Test Series', seriesNumber: 2, seriesTotal: 5 },
-    ]);
-    const result = adaptBooks(books);
-    expect(result.bookMeta['B0SERIES01'].seriesName).toBe('The Test Series');
-    expect(result.bookMeta['B0SERIES01'].seriesNumber).toBe(2);
-    expect(result.bookMeta['B0SERIES01'].seriesTotal).toBe(5);
-  });
+      {asin: 'B0SERIES01', series: 'The Test Series', seriesNumber: 2, seriesTotal: 5}
+    ])
+    const result = adaptBooks(books)
+    expect(result.bookMeta['B0SERIES01'].seriesName).toBe('The Test Series')
+    expect(result.bookMeta['B0SERIES01'].seriesNumber).toBe(2)
+    expect(result.bookMeta['B0SERIES01'].seriesTotal).toBe(5)
+  })
 
   it('uses pageCount as fallback when totalPages is null', () => {
-    const books = makeBooks([{ asin: 'B000TEST01', totalPages: null, pageCount: 350 }]);
-    const result = adaptBooks(books);
-    expect(result.bookMeta['B000TEST01'].pages).toBe(350);
-  });
-});
+    const books = makeBooks([{asin: 'B000TEST01', totalPages: null, pageCount: 350}])
+    const result = adaptBooks(books)
+    expect(result.bookMeta['B000TEST01'].pages).toBe(350)
+  })
+})
 
 // ── adaptArticles ─────────────────────────────────────────────────
 
 describe('adaptArticles', () => {
   afterEach(() => {
-    vi.useRealTimers();
-  });
+    vi.useRealTimers()
+  })
 
   it('returns empty array when input is null', () => {
-    expect(adaptArticles(null)).toEqual([]);
-  });
+    expect(adaptArticles(null)).toEqual([])
+  })
 
   it('returns empty array when articles array is absent', () => {
-    expect(adaptArticles({ generatedAt: '2026-01-15T10:30:00Z', articles: [] })).toEqual([]);
-  });
+    expect(adaptArticles({generatedAt: '2026-01-15T10:30:00Z', articles: []})).toEqual([])
+  })
 
   it('sorts articles by savedAt descending', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T12:00:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T12:00:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com/1',
@@ -893,7 +801,7 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
+        articleFirstComment: null
       },
       {
         articleUrl: 'https://a.com/2',
@@ -912,17 +820,17 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].title).toBe('Newer');
-    expect(result[1].title).toBe('Older');
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].title).toBe('Newer')
+    expect(result[1].title).toBe('Older')
+  })
 
   it('slices to at most 30 articles', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-03-01T00:00:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-01T00:00:00Z'))
     const baseArticle = {
       articleAuthor: null,
       articleContent: null,
@@ -937,23 +845,24 @@ describe('adaptArticles', () => {
       articleEngagementRate: null,
       articleFirstHighlight: null,
       articleFirstComment: null,
-      notes: [] as any[],
-    };
+      notes: [] as any[]
+    }
     const articles = makeArticles(
-      Array.from({ length: 40 }, (_, i) => ({
-        ...baseArticle,
-        articleUrl: `https://a.com/${i}`,
-        articleTitle: `Article ${i}`,
-        savedAt: `2026-01-${String((i % 28) + 1).padStart(2, '0')}T00:00:00Z`,
-      })),
-    );
-    const result = adaptArticles(articles);
-    expect(result).toHaveLength(30);
-  });
+      Array.from({length: 40},
+        (_, i) => ({
+          ...baseArticle,
+          articleUrl: `https://a.com/${i}`,
+          articleTitle: `Article ${i}`,
+          savedAt: `2026-01-${String((i % 28) + 1).padStart(2, '0')}T00:00:00Z`
+        }))
+    )
+    const result = adaptArticles(articles)
+    expect(result).toHaveLength(30)
+  })
 
   it('formats date as minutes ago for recent articles', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -972,16 +881,16 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].date).toBe('30m ago');
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].date).toBe('30m ago')
+  })
 
   it('formats date as hours ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -1000,16 +909,16 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].date).toBe('3h ago');
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].date).toBe('3h ago')
+  })
 
   it('formats date as weeks ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -1028,24 +937,24 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].date).toBe('3w ago');
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].date).toBe('3w ago')
+  })
 
   it('sets hasNotes true and joins noteText when notes present', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
         articleTitle: 'Test',
         savedAt: '2026-01-15T10:29:00Z',
         notes: [
-          { comment: 'First note', savedBy: null, createdAt: '2026-01-15T10:29:00Z' },
-          { comment: 'Second note', savedBy: null, createdAt: '2026-01-15T10:29:00Z' },
+          {comment: 'First note', savedBy: null, createdAt: '2026-01-15T10:29:00Z'},
+          {comment: 'Second note', savedBy: null, createdAt: '2026-01-15T10:29:00Z'}
         ],
         articleAuthor: null,
         articleContent: null,
@@ -1059,17 +968,17 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].hasNotes).toBe(true);
-    expect(result[0].noteText).toBe('First note\nSecond note');
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].hasNotes).toBe(true)
+    expect(result[0].noteText).toBe('First note\nSecond note')
+  })
 
   it('sets hasNotes false and noteText null when notes is empty', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -1088,17 +997,17 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].hasNotes).toBe(false);
-    expect(result[0].noteText).toBeNull();
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].hasNotes).toBe(false)
+    expect(result[0].noteText).toBeNull()
+  })
 
   it('uses empty string source when sourceTitle is null', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -1117,16 +1026,16 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    const result = adaptArticles(articles);
-    expect(result[0].source).toBe('');
-  });
+        articleFirstComment: null
+      }
+    ])
+    const result = adaptArticles(articles)
+    expect(result[0].source).toBe('')
+  })
 
   it('uses an injected now timestamp for relative date formatting', () => {
     // No fake timers: the injected `now` (3w after savedAt) is the only clock.
-    const now = new Date('2026-01-15T10:30:00Z').getTime();
+    const now = new Date('2026-01-15T10:30:00Z').getTime()
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -1145,15 +1054,15 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    expect(adaptArticles(articles, now)[0].date).toBe('3w ago');
-  });
+        articleFirstComment: null
+      }
+    ])
+    expect(adaptArticles(articles, now)[0].date).toBe('3w ago')
+  })
 
   it('falls back to Date.now() when now is omitted (backward compatible)', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'));
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -1172,35 +1081,35 @@ describe('adaptArticles', () => {
         articleEngagement: null,
         articleEngagementRate: null,
         articleFirstHighlight: null,
-        articleFirstComment: null,
-      },
-    ]);
-    expect(adaptArticles(articles)[0].date).toBe('30m ago');
-  });
-});
+        articleFirstComment: null
+      }
+    ])
+    expect(adaptArticles(articles)[0].date).toBe('30m ago')
+  })
+})
 
 // ── adaptStarredRepos ─────────────────────────────────────────────
 
-function makeStarredRepo(
-  overrides: Partial<{
-    name: string;
-    ownerLogin: string;
-    ownerHtmlUrl: string;
-    htmlUrl: string;
-    description: string | null;
-    forksCount: number;
-    stargazersCount: number;
-    watchersCount: number;
-    openIssuesCount: number;
-    topics: string[];
-    size: number;
-    licenseKey: string | null;
-    licenseName: string | null;
-    licenseSpdxId: string | null;
-    starredAt: string;
-    languages: { language: string; lines: number }[];
-  }> = {},
-) {
+function makeStarredRepo(overrides: Partial<
+  {
+    name: string
+    ownerLogin: string
+    ownerHtmlUrl: string
+    htmlUrl: string
+    description: string | null
+    forksCount: number
+    stargazersCount: number
+    watchersCount: number
+    openIssuesCount: number
+    topics: string[]
+    size: number
+    licenseKey: string | null
+    licenseName: string | null
+    licenseSpdxId: string | null
+    starredAt: string
+    languages: {language: string; lines: number}[]
+  }
+> = {}) {
   return {
     name: 'test-repo',
     ownerLogin: 'test-owner',
@@ -1217,122 +1126,85 @@ function makeStarredRepo(
     licenseName: null,
     licenseSpdxId: null,
     starredAt: '2026-01-01T00:00:00Z',
-    languages: [{ language: 'TypeScript', lines: 5000 }],
-    ...overrides,
-  };
+    languages: [{language: 'TypeScript', lines: 5000}],
+    ...overrides
+  }
 }
 
 describe('adaptStarredRepos', () => {
   // Fixed reference timestamp: 2026-01-15T12:00:00Z = 1736942400000
-  const NOW = new Date('2026-01-15T12:00:00Z').getTime();
+  const NOW = new Date('2026-01-15T12:00:00Z').getTime()
 
   it('slices to at most 5 repos when given more', () => {
-    const repos = Array.from({ length: 8 }, (_, i) =>
-      makeStarredRepo({ name: `repo-${i}`, starredAt: '2026-01-01T00:00:00Z' }),
-    );
-    const result = adaptStarredRepos({ generatedAt: '2026-01-15T12:00:00Z', repos }, NOW);
-    expect(result).toHaveLength(5);
-  });
+    const repos = Array.from({length: 8}, (_, i) => makeStarredRepo({name: `repo-${i}`, starredAt: '2026-01-01T00:00:00Z'}))
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos}, NOW)
+    expect(result).toHaveLength(5)
+  })
 
   it('formats starredAt as weeks ago (plural)', () => {
     // 14 days before NOW = 2 weeks ago
-    const starredAt = new Date(NOW - 14 * 24 * 3600 * 1000).toISOString();
-    const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW,
-    );
-    expect(result[0].starredAt).toBe('2 weeks ago');
-  });
+    const starredAt = new Date(NOW - 14 * 24 * 3600 * 1000).toISOString()
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
+    expect(result[0].starredAt).toBe('2 weeks ago')
+  })
 
   it('formats starredAt as week ago (singular)', () => {
     // 7 days before NOW = 1 week ago
-    const starredAt = new Date(NOW - 7 * 24 * 3600 * 1000).toISOString();
-    const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW,
-    );
-    expect(result[0].starredAt).toBe('1 week ago');
-  });
+    const starredAt = new Date(NOW - 7 * 24 * 3600 * 1000).toISOString()
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
+    expect(result[0].starredAt).toBe('1 week ago')
+  })
 
   it('formats starredAt as days ago (plural)', () => {
     // 3 days before NOW
-    const starredAt = new Date(NOW - 3 * 24 * 3600 * 1000).toISOString();
-    const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW,
-    );
-    expect(result[0].starredAt).toBe('3 days ago');
-  });
+    const starredAt = new Date(NOW - 3 * 24 * 3600 * 1000).toISOString()
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
+    expect(result[0].starredAt).toBe('3 days ago')
+  })
 
   it('formats starredAt as day ago (singular)', () => {
     // 1 day before NOW
-    const starredAt = new Date(NOW - 1 * 24 * 3600 * 1000).toISOString();
-    const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW,
-    );
-    expect(result[0].starredAt).toBe('1 day ago');
-  });
+    const starredAt = new Date(NOW - 1 * 24 * 3600 * 1000).toISOString()
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
+    expect(result[0].starredAt).toBe('1 day ago')
+  })
 
   it('formats starredAt as hours ago when less than one day', () => {
     // 5 hours before NOW
-    const starredAt = new Date(NOW - 5 * 3600 * 1000).toISOString();
-    const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ starredAt })] },
-      NOW,
-    );
-    expect(result[0].starredAt).toBe('5h ago');
-  });
+    const starredAt = new Date(NOW - 5 * 3600 * 1000).toISOString()
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
+    expect(result[0].starredAt).toBe('5h ago')
+  })
 
   it('resolves primary language from languages array', () => {
-    const result = adaptStarredRepos(
-      {
-        generatedAt: '2026-01-15T12:00:00Z',
-        repos: [makeStarredRepo({ languages: [{ language: 'Go', lines: 1000 }] })],
-      },
-      NOW,
-    );
-    expect(result[0].language).toBe('Go');
-    expect(result[0].languageColor).toBe('#00ADD8');
-  });
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({languages: [{language: 'Go', lines: 1000}]})]}, NOW)
+    expect(result[0].language).toBe('Go')
+    expect(result[0].languageColor).toBe('#00ADD8')
+  })
 
   it('falls back to Unknown and default color when no languages', () => {
-    const result = adaptStarredRepos(
-      { generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({ languages: [] })] },
-      NOW,
-    );
-    expect(result[0].language).toBe('Unknown');
-    expect(result[0].languageColor).toBe('#8b949e');
-  });
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({languages: []})]}, NOW)
+    expect(result[0].language).toBe('Unknown')
+    expect(result[0].languageColor).toBe('#8b949e')
+  })
 
   it('uses default color for unknown language name', () => {
-    const result = adaptStarredRepos(
-      {
-        generatedAt: '2026-01-15T12:00:00Z',
-        repos: [makeStarredRepo({ languages: [{ language: 'FakeLang', lines: 100 }] })],
-      },
-      NOW,
-    );
-    expect(result[0].language).toBe('FakeLang');
-    expect(result[0].languageColor).toBe('#8b949e');
-  });
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({languages: [{language: 'FakeLang', lines: 100}]})]}, NOW)
+    expect(result[0].language).toBe('FakeLang')
+    expect(result[0].languageColor).toBe('#8b949e')
+  })
 
   it('returns empty array when repos is empty', () => {
-    const result = adaptStarredRepos({ generatedAt: '2026-01-15T12:00:00Z', repos: [] }, NOW);
-    expect(result).toEqual([]);
-  });
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: []}, NOW)
+    expect(result).toEqual([])
+  })
 
   it('maps owner, name, url, stars correctly', () => {
-    const repo = makeStarredRepo({
-      ownerLogin: 'octocat',
-      name: 'hello-world',
-      htmlUrl: 'https://github.com/octocat/hello-world',
-      stargazersCount: 42,
-    });
-    const result = adaptStarredRepos({ generatedAt: '2026-01-15T12:00:00Z', repos: [repo] }, NOW);
-    expect(result[0].owner).toBe('octocat');
-    expect(result[0].name).toBe('hello-world');
-    expect(result[0].url).toBe('https://github.com/octocat/hello-world');
-    expect(result[0].stars).toBe(42);
-  });
-});
+    const repo = makeStarredRepo({ownerLogin: 'octocat', name: 'hello-world', htmlUrl: 'https://github.com/octocat/hello-world', stargazersCount: 42})
+    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [repo]}, NOW)
+    expect(result[0].owner).toBe('octocat')
+    expect(result[0].name).toBe('hello-world')
+    expect(result[0].url).toBe('https://github.com/octocat/hello-world')
+    expect(result[0].stars).toBe(42)
+  })
+})

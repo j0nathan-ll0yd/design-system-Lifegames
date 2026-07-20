@@ -1,35 +1,39 @@
-import { FOCUS_MODES } from '@lifegames/portal-contract/constants';
-import type { FocusExport } from '../types/exports';
+import {FOCUS_MODES} from '@lifegames/portal-contract/constants'
+import type {FocusExport} from '../types/exports'
 
-let clockInterval: ReturnType<typeof setInterval> | null = null;
+let clockInterval: ReturnType<typeof setInterval> | null = null
 
 export function updateFocusOverlay(data: FocusExport | null): void {
-  const workOverlay = document.getElementById('focusOverlay');
-  const dndOverlay = document.getElementById('dndOverlay');
+  const workOverlay = document.getElementById('focusOverlay')
+  const dndOverlay = document.getElementById('dndOverlay')
   if (clockInterval) {
-    clearInterval(clockInterval);
-    clockInterval = null;
+    clearInterval(clockInterval)
+    clockInterval = null
   }
 
   // Hide both overlays first
-  if (workOverlay) workOverlay.style.display = 'none';
-  if (dndOverlay) dndOverlay.style.display = 'none';
+  if (workOverlay) {
+    workOverlay.style.display = 'none'
+  }
+  if (dndOverlay) {
+    dndOverlay.style.display = 'none'
+  }
 
-  const focus = data?.currentFocus;
-  let activeOverlay: HTMLElement | null = null;
-  let clockId: string | null = null;
+  const focus = data?.currentFocus
+  let activeOverlay: HTMLElement | null = null
+  let clockId: string | null = null
 
   if (focus === FOCUS_MODES.work && workOverlay) {
-    activeOverlay = workOverlay;
-    clockId = 'focusClock';
+    activeOverlay = workOverlay
+    clockId = 'focusClock'
   } else if (focus === FOCUS_MODES.doNotDisturb && dndOverlay) {
-    activeOverlay = dndOverlay;
-    clockId = 'dndClock';
+    activeOverlay = dndOverlay
+    clockId = 'dndClock'
   }
 
   if (activeOverlay && clockId) {
-    activeOverlay.style.display = 'flex';
-    const clockEl = document.getElementById(clockId);
+    activeOverlay.style.display = 'flex'
+    const clockEl = document.getElementById(clockId)
     if (clockEl) {
       const updateClock = () => {
         clockEl.textContent = new Date().toLocaleString('en-US', {
@@ -37,11 +41,11 @@ export function updateFocusOverlay(data: FocusExport | null): void {
           hour12: false,
           hour: '2-digit',
           minute: '2-digit',
-          second: '2-digit',
-        });
-      };
-      updateClock();
-      clockInterval = setInterval(updateClock, 1000);
+          second: '2-digit'
+        })
+      }
+      updateClock()
+      clockInterval = setInterval(updateClock, 1000)
     }
   }
 }

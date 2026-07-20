@@ -10,17 +10,17 @@
 // `@lifegames/fixtures/generated/<domain>/<variation>.json` for file-path consumers
 // (Playwright reads files by path). Both are produced from these factories.
 import {
-  healthVariations,
-  sleepVariations,
-  workoutsVariations,
-  booksVariations,
-  locationVariations,
-  githubEventsVariations,
-  starredReposVariations,
   articlesVariations,
+  booksVariations,
   focusVariations,
+  githubEventsVariations,
+  healthVariations,
+  locationVariations,
+  sleepVariations,
+  starredReposVariations,
   theatreReviewsVariations,
-} from './variations/index';
+  workoutsVariations
+} from './variations/index'
 
 /**
  * Raw pre-adapter fixtures keyed by domain then variation. Domain keys are the
@@ -37,21 +37,21 @@ export const rawFixtures = {
   starredRepos: starredReposVariations,
   articles: articlesVariations,
   focus: focusVariations,
-  theatreReviews: theatreReviewsVariations,
-} as const;
+  theatreReviews: theatreReviewsVariations
+} as const
 
 export {
-  healthVariations,
-  sleepVariations,
-  workoutsVariations,
-  booksVariations,
-  locationVariations,
-  githubEventsVariations,
-  starredReposVariations,
   articlesVariations,
+  booksVariations,
   focusVariations,
+  githubEventsVariations,
+  healthVariations,
+  locationVariations,
+  sleepVariations,
+  starredReposVariations,
   theatreReviewsVariations,
-};
+  workoutsVariations
+}
 
 // Re-export factories so consumers can construct ad-hoc variations if needed.
-export * from './factories/index';
+export * from './factories/index'

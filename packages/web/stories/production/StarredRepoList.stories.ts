@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 // DS-internal fixture: github/starred-repo-list.json
 const defaultRepos = [
@@ -10,7 +10,7 @@ const defaultRepos = [
     stars: 128000,
     language: 'JavaScript',
     languageColor: '#f1e05a',
-    starredAt: '2 days ago',
+    starredAt: '2 days ago'
   },
   {
     owner: 'astro-community',
@@ -19,7 +19,7 @@ const defaultRepos = [
     stars: 48000,
     language: 'TypeScript',
     languageColor: '#3178c6',
-    starredAt: '5 days ago',
+    starredAt: '5 days ago'
   },
   {
     owner: 'denoland',
@@ -28,12 +28,12 @@ const defaultRepos = [
     stars: 101000,
     language: 'TypeScript',
     languageColor: '#3178c6',
-    starredAt: '1 week ago',
-  },
-];
+    starredAt: '1 week ago'
+  }
+]
 
 function formatStars(n: number) {
-  return n >= 1000 ? (n / 1000).toFixed(0) + 'k' : String(n);
+  return n >= 1000 ? (n / 1000).toFixed(0) + 'k' : String(n)
 }
 
 function renderRepos(repos: typeof defaultRepos) {
@@ -48,14 +48,15 @@ function renderRepos(repos: typeof defaultRepos) {
           No starred repos
         </div>
       </div>
-    `;
+    `
   }
   return html`
     <div id="cardStarredRepos" class="tri-card">
       <div class="widget-header"><span class="widget-label">Starred Repos</span></div>
       <div class="widget-body" style="padding: 8px 16px; color: var(--lg-color-text-primary);">
-        ${repos.map(
-          (r) => html`
+        ${
+    repos.map((r) =>
+      html`
             <div
               style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);"
             >
@@ -74,32 +75,26 @@ function renderRepos(repos: typeof defaultRepos) {
                 >★ ${formatStars(r.stars)}</span
               >
             </div>
-          `,
-        )}
+          `
+    )
+  }
       </div>
     </div>
-  `;
+  `
 }
 
 const meta: Meta = {
   title: 'Production/Github/StarredRepoList',
   tags: ['stable', 'autodocs'],
-  argTypes: { repos: { control: 'object' } },
-  render: (args) => renderRepos(args.repos),
-};
+  argTypes: {repos: {control: 'object'}},
+  render: (args) => renderRepos(args.repos)
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = { args: { repos: defaultRepos } };
-export const Empty: Story = { args: { repos: [] } };
-export const Loading: Story = { args: { repos: [] } };
+export const Default: Story = {args: {repos: defaultRepos}}
+export const Empty: Story = {args: {repos: []}}
+export const Loading: Story = {args: {repos: []}}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: {
-      value: 'dark',
-    },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

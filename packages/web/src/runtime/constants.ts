@@ -48,8 +48,8 @@ export const LANG_COLORS: Record<string, string> = {
   YAML: '#cb171e',
   TOML: '#9c4221',
   Markdown: '#083fa1',
-  TeX: '#3D6117',
-};
+  TeX: '#3D6117'
+}
 
 export const HYDRATION = {
   waterMax: 140, // oz scale max
@@ -57,19 +57,12 @@ export const HYDRATION = {
   waterRangeLo: 74, // oz
   waterRangeHi: 125, // oz
   caffeineRangeLo: 200, // mg
-  caffeineRangeHi: 400, // mg FDA daily max
-} as const;
+  caffeineRangeHi: 400 // mg FDA daily max
+} as const
 
-export const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pending',
-  reading: 'Reading',
-  upNext: 'Up Next',
-  finished: 'Finished',
-} as const;
+export const STATUS_LABELS: Record<string, string> = {pending: 'Pending', reading: 'Reading', upNext: 'Up Next', finished: 'Finished'} as const
 
-export const ACTIVITY_TYPE_MAP: Record<string, { label: string; url?: string }> = {
-  Other: { label: "Barry's Bootcamp", url: 'https://share.barrys.com/jsvsl' },
-};
+export const ACTIVITY_TYPE_MAP: Record<string, {label: string; url?: string}> = {Other: {label: "Barry's Bootcamp", url: 'https://share.barrys.com/jsvsl'}}
 
 // Infrastructure addressing is owned by the backend (ADR 003); re-exported here for backward compatibility.
-export { CLOUDFRONT_BASE, WEBSOCKET_URL, ENDPOINTS } from '@lifegames/portal-contract/constants';
+export { CLOUDFRONT_BASE, ENDPOINTS, WEBSOCKET_URL } from '@lifegames/portal-contract/constants'

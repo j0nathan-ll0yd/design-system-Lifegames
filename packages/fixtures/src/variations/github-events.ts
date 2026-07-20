@@ -1,14 +1,14 @@
-import type { GithubEventsExport } from '@lifegames/portal-contract/schemas';
-import { createGithubEventsFixture, createEvent } from '../factories/github-events';
-import { isoDate, isoTimestamp } from '../factories/helpers';
+import type {GithubEventsExport} from '@lifegames/portal-contract/schemas'
+import {createEvent, createGithubEventsFixture} from '../factories/github-events'
+import {isoDate, isoTimestamp} from '../factories/helpers'
 
 export const githubEventsVariations: Record<string, GithubEventsExport> = {
   baseline: createGithubEventsFixture(),
 
-  empty: createGithubEventsFixture({ events: [] }),
+  empty: createGithubEventsFixture({events: []}),
 
   commitsOnly: createGithubEventsFixture({
-    events: Array.from({ length: 5 }, (_, i) =>
+    events: Array.from({length: 5}, (_, i) =>
       createEvent({
         type: 'commit',
         repo: i % 2 === 0 ? 'j0nathan-ll0yd/mantle' : 'j0nathan-ll0yd/j0nathan-ll0yd.github.io',
@@ -16,13 +16,12 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: `abc${i}def`,
         additions: (i + 1) * 10,
         deletions: i * 3,
-        date: isoDate(),
-      }),
-    ),
+        date: isoDate()
+      }))
   }),
 
   prsOnly: createGithubEventsFixture({
-    events: Array.from({ length: 5 }, (_, i) =>
+    events: Array.from({length: 5}, (_, i) =>
       createEvent({
         type: i % 2 === 0 ? 'pr_merged' : 'pr_opened',
         repo: 'j0nathan-ll0yd/mantle',
@@ -31,13 +30,12 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         date: isoDate(),
         hash: undefined,
         additions: undefined,
-        deletions: undefined,
-      }),
-    ),
+        deletions: undefined
+      }))
   }),
 
   overTen: createGithubEventsFixture({
-    events: Array.from({ length: 15 }, (_, i) =>
+    events: Array.from({length: 15}, (_, i) =>
       createEvent({
         type: i % 3 === 0 ? 'pr_merged' : 'commit',
         repo: i % 2 === 0 ? 'j0nathan-ll0yd/mantle' : 'j0nathan-ll0yd/j0nathan-ll0yd.github.io',
@@ -46,10 +44,9 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: i % 3 !== 0 ? `hash${i}` : undefined,
         number: i % 3 === 0 ? i + 1 : undefined,
         additions: i % 3 !== 0 ? i * 5 : undefined,
-        deletions: i % 3 !== 0 ? i * 2 : undefined,
-      }),
-    ),
-    generatedAt: isoTimestamp(),
+        deletions: i % 3 !== 0 ? i * 2 : undefined
+      })),
+    generatedAt: isoTimestamp()
   }),
 
   // Maximally populated: all event types represented, all truly-optional keys
@@ -64,7 +61,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'a9421b5',
         number: 142,
         additions: 245,
-        deletions: 89,
+        deletions: 89
       }),
       createEvent({
         type: 'commit',
@@ -74,7 +71,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'b3c4d5e',
         number: 87,
         additions: 512,
-        deletions: 134,
+        deletions: 134
       }),
       createEvent({
         type: 'pr_merged',
@@ -84,7 +81,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'c5d6e7f',
         number: 256,
         additions: 189,
-        deletions: 45,
+        deletions: 45
       }),
       createEvent({
         type: 'pr_opened',
@@ -94,7 +91,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'd7e8f9g',
         number: 60,
         additions: 1850,
-        deletions: 120,
+        deletions: 120
       }),
       createEvent({
         type: 'commit',
@@ -104,7 +101,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'e8f9g0h',
         number: 301,
         additions: 378,
-        deletions: 156,
+        deletions: 156
       }),
       createEvent({
         type: 'pr_merged',
@@ -114,7 +111,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'f9g0h1i',
         number: 42,
         additions: 634,
-        deletions: 28,
+        deletions: 28
       }),
       createEvent({
         type: 'commit',
@@ -124,7 +121,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'g0h1i2j',
         number: 55,
         additions: 420,
-        deletions: 67,
+        deletions: 67
       }),
       createEvent({
         type: 'pr_opened',
@@ -134,7 +131,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'h1i2j3k',
         number: 312,
         additions: 892,
-        deletions: 445,
+        deletions: 445
       }),
       createEvent({
         type: 'commit',
@@ -144,7 +141,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'i2j3k4l',
         number: 93,
         additions: 156,
-        deletions: 72,
+        deletions: 72
       }),
       createEvent({
         type: 'pr_merged',
@@ -154,7 +151,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'j3k4l5m',
         number: 289,
         additions: 98,
-        deletions: 31,
+        deletions: 31
       }),
       createEvent({
         type: 'commit',
@@ -164,7 +161,7 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'k4l5m6n',
         number: 48,
         additions: 1240,
-        deletions: 340,
+        deletions: 340
       }),
       createEvent({
         type: 'commit',
@@ -174,8 +171,8 @@ export const githubEventsVariations: Record<string, GithubEventsExport> = {
         hash: 'l5m6n7o',
         number: 315,
         additions: 267,
-        deletions: 89,
-      }),
-    ],
-  }),
-};
+        deletions: 89
+      })
+    ]
+  })
+}

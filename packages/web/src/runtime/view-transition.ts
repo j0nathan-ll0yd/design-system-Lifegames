@@ -10,20 +10,20 @@
 
 /** Returns true when the View Transition API is available in this browser. */
 function isViewTransitionSupported(): boolean {
-  return typeof document !== 'undefined' && typeof document.startViewTransition === 'function';
+  return typeof document !== 'undefined' && typeof document.startViewTransition === 'function'
 }
 
 /** Returns true when the user prefers reduced motion. */
 function prefersReducedMotion(): boolean {
   return (
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  )
 }
 
 // Module-level flag: true while a transition started via withViewTransition is
 // actively running. Set before startViewTransition() and cleared in the
 // returned ViewTransition.finished promise.
-let _transitionActive = false;
+let _transitionActive = false
 
 /**
  * Wraps a DOM update function in a same-document View Transition when the API
@@ -41,23 +41,20 @@ export function withViewTransition(update: () => void): ViewTransition | undefin
   // - user prefers reduced motion
   // - a transition is already active (concurrency guard)
   if (!isViewTransitionSupported() || prefersReducedMotion() || _transitionActive) {
-    update();
-    return undefined;
+    update()
+    return undefined
   }
 
-  _transitionActive = true;
-  const transition = document.startViewTransition(update);
+  _transitionActive = true
+  const transition = document.startViewTransition(update)
 
   // Clear the active flag once the transition completes (whether finished,
   // skipped, or errored). .finished is a Promise<void> that always settles.
-  transition.finished.then(
-    () => {
-      _transitionActive = false;
-    },
-    () => {
-      _transitionActive = false;
-    },
-  );
+  transition.finished.then(() => {
+    _transitionActive = false
+  }, () => {
+    _transitionActive = false
+  })
 
-  return transition;
+  return transition
 }

@@ -10,16 +10,14 @@
 // Authored as .mjs (not .ts) so the plain-node baseline-validate.mjs script can
 // import it directly; tsx-run .ts scripts import it transparently.
 
-import { createRequire } from 'node:module';
-import { dirname } from 'node:path';
+import {createRequire} from 'node:module'
+import {dirname} from 'node:path'
 
-const require = createRequire(import.meta.url);
+const require = createRequire(import.meta.url)
 
 /**
  * Absolute path to the on-disk directory containing the 10 raw export
  * *.schema.json files (plus index.json) published by @lifegames/portal-contract.
  * @type {string}
  */
-export const RAW_SCHEMAS_DIR = dirname(
-  require.resolve('@lifegames/portal-contract/raw-schemas/index.json'),
-);
+export const RAW_SCHEMAS_DIR = dirname(require.resolve('@lifegames/portal-contract/raw-schemas/index.json'))

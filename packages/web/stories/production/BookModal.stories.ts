@@ -1,18 +1,14 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 // DS-internal fixture: reading/book-modal.json (empty object — modal is initially empty, filled by click handler)
 // Synthetic fixture: show modal in open state with a sample book
 const meta: Meta = {
   title: 'Production/Reading/BookModal',
   tags: ['stable', 'autodocs'],
-  argTypes: {
-    visible: { control: 'boolean' },
-    bookTitle: { control: 'text' },
-    bookAuthor: { control: 'text' },
-    rating: { control: 'number' },
-  },
-  render: (args) => html`
+  argTypes: {visible: {control: 'boolean'}, bookTitle: {control: 'text'}, bookAuthor: {control: 'text'}, rating: {control: 'number'}},
+  render: (args) =>
+    html`
     <div
       id="bookModal"
       class="lg-modal-overlay ${args.visible ? 'visible' : ''}"
@@ -32,50 +28,36 @@ const meta: Meta = {
           &times;
         </button>
         <div class="lg-modal-body">
-          ${args.bookTitle
-            ? html`<h2 style="color: var(--lg-color-text-title); margin: 0 0 4px;">
+          ${
+      args.bookTitle
+        ? html`<h2 style="color: var(--lg-color-text-title); margin: 0 0 4px;">
                 ${args.bookTitle}
               </h2>`
-            : ''}
+        : ''
+    }
           <p style="color: var(--lg-color-text-muted); margin: 0 0 12px; font-size: 0.9em;">
             ${args.bookAuthor ?? 'Author'}
           </p>
-          ${args.rating != null
-            ? html`<div style="color: var(--lg-color-accent-amber);">
+          ${
+      args.rating != null
+        ? html`<div style="color: var(--lg-color-accent-amber);">
                 ${'★'.repeat(args.rating)}${'☆'.repeat(5 - args.rating)}
               </div>`
-            : ''}
+        : ''
+    }
         </div>
       </div>
     </div>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = {
-  args: {
-    visible: true,
-    bookTitle: 'The Pragmatic Programmer',
-    bookAuthor: 'David Thomas, Andrew Hunt',
-    rating: 5,
-  },
-};
+export const Default: Story = {args: {visible: true, bookTitle: 'The Pragmatic Programmer', bookAuthor: 'David Thomas, Andrew Hunt', rating: 5}}
 
-export const Empty: Story = {
-  args: { visible: false, bookTitle: '', bookAuthor: '', rating: null },
-};
+export const Empty: Story = {args: {visible: false, bookTitle: '', bookAuthor: '', rating: null}}
 
-export const Loading: Story = {
-  args: { visible: false, bookTitle: '', bookAuthor: '', rating: null },
-};
+export const Loading: Story = {args: {visible: false, bookTitle: '', bookAuthor: '', rating: null}}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: {
-      value: 'dark',
-    },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

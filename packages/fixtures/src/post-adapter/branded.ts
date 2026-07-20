@@ -1,4 +1,4 @@
-import type { SchemaDerived } from '@lifegames/schemas';
+import type {SchemaDerived} from '@lifegames/schemas'
 
 // The SchemaDerived brand (see @lifegames/schemas branded.ts) is a compile-time-only
 // `unique symbol` with no runtime representation, so a branded value cannot be
@@ -8,8 +8,8 @@ import type { SchemaDerived } from '@lifegames/schemas';
 // (missing and excess properties are caught here), then the brand is applied via
 // one localized assertion. Individual fixtures call `authored<T>({...})` and never
 // cast themselves.
-type Unbranded<T> = T extends SchemaDerived<infer U> ? U : T;
+type Unbranded<T> = T extends SchemaDerived<infer U> ? U : T
 
 export function authored<T>(value: Unbranded<T>): T {
-  return value as T;
+  return value as T
 }

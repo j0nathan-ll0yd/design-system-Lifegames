@@ -1,7 +1,7 @@
-import type { BooksExport } from '@lifegames/portal-contract/schemas';
-import { isoTimestamp, placeholderText } from './helpers';
+import type {BooksExport} from '@lifegames/portal-contract/schemas'
+import {isoTimestamp, placeholderText} from './helpers'
 
-type BookEntry = BooksExport['books'][number];
+type BookEntry = BooksExport['books'][number]
 
 export function createBook(overrides: Partial<BookEntry> = {}): BookEntry {
   return {
@@ -32,8 +32,8 @@ export function createBook(overrides: Partial<BookEntry> = {}): BookEntry {
     rating: 5,
     notes: null,
     updatedAt: isoTimestamp(),
-    ...overrides,
-  };
+    ...overrides
+  }
 }
 
 export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksExport {
@@ -58,7 +58,7 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         status: 'finished',
         currentPage: null,
         totalPages: 432,
-        rating: 5,
+        rating: 5
       }),
       createBook({
         asin: '0593723848',
@@ -78,7 +78,7 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         status: 'finished',
         currentPage: null,
         totalPages: 480,
-        rating: 5,
+        rating: 5
       }),
       createBook({
         asin: '0525573844',
@@ -98,7 +98,7 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         status: 'finished',
         currentPage: null,
         totalPages: 512,
-        rating: 5,
+        rating: 5
       }),
       createBook({
         asin: 'B07QVH2Q2K',
@@ -118,7 +118,7 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         status: 'reading',
         currentPage: 166,
         totalPages: 496,
-        rating: null,
+        rating: null
       }),
       createBook({
         asin: 'B0FBRJY116',
@@ -132,16 +132,15 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publishedYear: 2024,
         pageCount: 307,
         mainImage: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy.jpg',
-        mainImageThumb:
-          'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-thumb.jpg',
+        mainImageThumb: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-thumb.jpg',
         averageRating: '4.7',
         category: 'Technology, Business',
         status: 'upNext',
         currentPage: null,
         totalPages: 307,
-        rating: null,
-      }),
+        rating: null
+      })
     ],
-    ...overrides,
-  };
+    ...overrides
+  }
 }

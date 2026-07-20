@@ -13,12 +13,12 @@
  * EXCLUSIONS: tokens/projections/** is NOT validated (projection mapping tables, not DTCG tokens).
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import * as prettier from 'prettier';
+import fs from 'node:fs'
+import path from 'node:path'
+import * as prettier from 'prettier'
 
-const ROOT = path.resolve(import.meta.dirname, '..');
-const REPORT_ONLY = process.argv.includes('--report');
+const ROOT = path.resolve(import.meta.dirname, '..')
+const REPORT_ONLY = process.argv.includes('--report')
 
 const VALID_TYPES = new Set([
   'color',
@@ -37,31 +37,31 @@ const VALID_TYPES = new Set([
   'gradient',
   'strokeStyle',
   'border',
-  'composite',
-]);
+  'composite'
+])
 
 // ── file collection ───────────────────────────────────────────────────────────
 function walk(dir, ext) {
-  const results = [];
-  if (!fs.existsSync(dir)) return results;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
+  const results = []
+  if (!fs.existsSync(dir)) {
+    return results
+  }
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    const full = path.join(dir, entry.name)
     if (entry.isDirectory()) {
-      results.push(...walk(full, ext));
+      results.push(...walk(full, ext))
     } else if (entry.name.endsWith(ext)) {
-      results.push(full);
+      results.push(full)
     }
   }
-  return results;
+  return results
 }
 
-const sourceFiles = walk(path.join(ROOT, 'tokens'), '.tokens.json').filter(
-  (f) => !f.includes(`${path.sep}projections${path.sep}`),
-);
+const sourceFiles = walk(path.join(ROOT, 'tokens'), '.tokens.json').filter((f) => !f.includes(`${path.sep}projections${path.sep}`))
 
-const distFiles = walk(path.join(ROOT, 'packages/tokens/dist'), '.dtcg.json');
+const distFiles = walk(path.join(ROOT, 'packages/tokens/dist'), '.dtcg.json')
 
-const allFiles = [...sourceFiles, ...distFiles];
+const allFiles = [...sourceFiles, ...distFiles]
 
 // ── violation types ───────────────────────────────────────────────────────────
 /**
@@ -76,78 +76,60 @@ const allFiles = [...sourceFiles, ...distFiles];
  * @param {Violation[]} violations
  */
 function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
-  const relFile = path.relative(ROOT, filePath);
+  const relFile = path.relative(ROOT, filePath)
 
   // Check for bare 'value' or 'type' keys (deprecated pre-spec syntax)
   if ('value' in obj) {
-    violations.push({
-      file: relFile,
-      path: currentPath,
-      rule: 'BARE_VALUE_KEY',
-      detail: 'Uses deprecated bare "value" key instead of "$value".',
-    });
+    violations.push({file: relFile, path: currentPath, rule: 'BARE_VALUE_KEY', detail: 'Uses deprecated bare "value" key instead of "$value".'})
   }
   if ('type' in obj) {
-    violations.push({
-      file: relFile,
-      path: currentPath,
-      rule: 'BARE_TYPE_KEY',
-      detail: 'Uses deprecated bare "type" key instead of "$type".',
-    });
+    violations.push({file: relFile, path: currentPath, rule: 'BARE_TYPE_KEY', detail: 'Uses deprecated bare "type" key instead of "$type".'})
   }
 
-  const isLeaf = '$value' in obj;
-  const localType = obj['$type'];
+  const isLeaf = '$value' in obj
+  const localType = obj['$type']
 
   if (localType !== undefined && !VALID_TYPES.has(String(localType))) {
     violations.push({
       file: relFile,
       path: currentPath,
       rule: 'INVALID_TYPE',
-      detail: `Unknown $type "${localType}". Valid types: ${[...VALID_TYPES].join(', ')}.`,
-    });
+      detail: `Unknown $type "${localType}". Valid types: ${[...VALID_TYPES].join(', ')}.`
+    })
   }
 
-  const effectiveType = localType ?? inheritedType;
+  const effectiveType = localType ?? inheritedType
 
   if (isLeaf) {
     // Leaf token checks
     if (!effectiveType) {
-      violations.push({
-        file: relFile,
-        path: currentPath,
-        rule: 'MISSING_TYPE',
-        detail: 'Token leaf has no $type (not set locally or inherited from group).',
-      });
+      violations.push({file: relFile, path: currentPath, rule: 'MISSING_TYPE', detail: 'Token leaf has no $type (not set locally or inherited from group).'})
     }
 
     if (!('$description' in obj)) {
-      violations.push({
-        file: relFile,
-        path: currentPath,
-        rule: 'MISSING_DESCRIPTION',
-        detail: 'Token leaf is missing $description.',
-      });
+      violations.push({file: relFile, path: currentPath, rule: 'MISSING_DESCRIPTION', detail: 'Token leaf is missing $description.'})
     }
 
     // Check composite types: shadow, typography, transition, border
     // For shadow type: $value should be an object or array of shadow objects
     if (effectiveType === 'shadow' && obj['$value'] !== null) {
-      const val = obj['$value'];
-      const shadows = Array.isArray(val) ? val : [val];
+      const val = obj['$value']
+      const shadows = Array.isArray(val) ? val : [val]
       for (const s of shadows) {
-        if (typeof s === 'string') continue; // reference like {token.path}
+        if (typeof s === 'string') {
+          continue // reference like {token.path}
+        }
         if (typeof s === 'object' && s !== null) {
-          const required = ['offsetX', 'offsetY', 'blur', 'color'];
+          const required = ['offsetX', 'offsetY', 'blur', 'color']
           for (const k of required) {
             if (!(k in s)) {
               violations.push({
                 file: relFile,
                 path: currentPath,
                 rule: 'SHADOW_MISSING_FIELD',
-                detail: `Shadow value missing required field "${k}". Required: offsetX, offsetY, blur, color.`,
-              });
-              break;
+                detail: `Shadow value missing required field "${k}". Required: offsetX, offsetY, blur, color.`
+              })
+              break
             }
           }
         }
@@ -156,11 +138,11 @@ function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
 
     // For typography type: $value should be an object
     if (effectiveType === 'typography' && obj['$value'] !== null) {
-      const val = obj['$value'];
+      const val = obj['$value']
       if (typeof val === 'object' && !Array.isArray(val) && val !== null) {
         // DTCG typography composite fields
-        const dtcgFields = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing'];
-        const hasAny = dtcgFields.some((f) => f in val);
+        const dtcgFields = ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing']
+        const hasAny = dtcgFields.some((f) => f in val)
         // iOS scale metadata lives in $extensions.lifegames per DTCG convention.
         // Warn only if none of the standard DTCG fields are present in $value.
         if (!hasAny) {
@@ -168,71 +150,67 @@ function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
             file: relFile,
             path: currentPath,
             rule: 'TYPOGRAPHY_MISSING_FIELDS',
-            detail:
-              'Typography composite $value has none of the standard DTCG fields: fontFamily, fontSize, fontWeight, lineHeight, letterSpacing.',
-          });
+            detail: 'Typography composite $value has none of the standard DTCG fields: fontFamily, fontSize, fontWeight, lineHeight, letterSpacing.'
+          })
         }
       } else if (typeof val !== 'string') {
         violations.push({
           file: relFile,
           path: currentPath,
           rule: 'TYPOGRAPHY_INVALID_VALUE',
-          detail: 'Typography $value must be an object (composite) or a reference string.',
-        });
+          detail: 'Typography $value must be an object (composite) or a reference string.'
+        })
       }
     }
 
-    return; // don't recurse into $value
+    return // don't recurse into $value
   }
 
   // Group node — recurse into non-$ keys
   for (const [key, child] of Object.entries(obj)) {
-    if (key.startsWith('$')) continue;
+    if (key.startsWith('$')) {
+      continue
+    }
     if (typeof child !== 'object' || child === null || Array.isArray(child)) {
       violations.push({
         file: relFile,
         path: `${currentPath}.${key}`,
         rule: 'INVALID_NODE',
-        detail: `Expected object node but found ${Array.isArray(child) ? 'array' : typeof child}.`,
-      });
-      continue;
+        detail: `Expected object node but found ${Array.isArray(child) ? 'array' : typeof child}.`
+      })
+      continue
     }
-    walkTokens(child, filePath, `${currentPath}.${key}`, effectiveType ?? null, violations);
+    walkTokens(child, filePath, `${currentPath}.${key}`, effectiveType ?? null, violations)
   }
 }
 
 // ── run validation ────────────────────────────────────────────────────────────
 /** @type {Violation[]} */
-const allViolations = [];
+const allViolations = []
 
 for (const filePath of allFiles) {
-  let parsed;
+  let parsed
   try {
-    parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
   } catch (e) {
-    allViolations.push({
-      file: path.relative(ROOT, filePath),
-      path: '(root)',
-      rule: 'PARSE_ERROR',
-      detail: String(e),
-    });
-    continue;
+    allViolations.push({file: path.relative(ROOT, filePath), path: '(root)', rule: 'PARSE_ERROR', detail: String(e)})
+    continue
   }
-  walkTokens(parsed, filePath, '(root)', null, allViolations);
+  walkTokens(parsed, filePath, '(root)', null, allViolations)
 }
 
 // ── group violations by rule ──────────────────────────────────────────────────
-const byRule = {};
+const byRule = {}
 for (const v of allViolations) {
-  (byRule[v.rule] ??= []).push(v);
+  ;(byRule[v.rule] ??= []).push(v)
 }
 
 // ── build report ──────────────────────────────────────────────────────────────
-const totalViolations = allViolations.length;
-const violationTypes = Object.keys(byRule).sort();
+const totalViolations = allViolations.length
+const violationTypes = Object.keys(byRule).sort()
 
-const sourceCount = sourceFiles.length;
-const distCount = distFiles.length;
+const sourceCount = sourceFiles.length
+const distCount = distFiles.length
 
 let report = `# DTCG 2025.10 Conformance Audit Report
 
@@ -253,10 +231,10 @@ Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 
 ## Violations by Rule
 
-`;
+`
 
 if (totalViolations === 0) {
-  report += `**All files pass DTCG 2025.10 conformance checks.**\n`;
+  report += `**All files pass DTCG 2025.10 conformance checks.**\n`
 } else {
   const ruleDescriptions = {
     BARE_VALUE_KEY: 'Deprecated bare `"value"` key (must use `"$value"`)',
@@ -268,23 +246,23 @@ if (totalViolations === 0) {
     TYPOGRAPHY_MISSING_FIELDS: 'Typography composite missing standard DTCG fields',
     TYPOGRAPHY_INVALID_VALUE: 'Typography `$value` must be object or reference string',
     INVALID_NODE: 'Non-object node in token group position',
-    PARSE_ERROR: 'JSON parse error',
-  };
+    PARSE_ERROR: 'JSON parse error'
+  }
 
   for (const rule of violationTypes) {
-    const entries = byRule[rule];
-    const desc = ruleDescriptions[rule] ?? rule;
-    report += `### ${rule} — ${desc}\n\n`;
-    report += `${entries.length} occurrence(s)\n\n`;
-    report += `| File | Token Path | Detail |\n|---|---|---|\n`;
+    const entries = byRule[rule]
+    const desc = ruleDescriptions[rule] ?? rule
+    report += `### ${rule} — ${desc}\n\n`
+    report += `${entries.length} occurrence(s)\n\n`
+    report += `| File | Token Path | Detail |\n|---|---|---|\n`
     for (const v of entries.slice(0, 50)) {
-      const detail = v.detail.replace(/\|/g, '\\|');
-      report += `| \`${v.file}\` | \`${v.path}\` | ${detail} |\n`;
+      const detail = v.detail.replace(/\|/g, '\\|')
+      report += `| \`${v.file}\` | \`${v.path}\` | ${detail} |\n`
     }
     if (entries.length > 50) {
-      report += `| ... | ... | *(${entries.length - 50} more)* |\n`;
+      report += `| ... | ... | *(${entries.length - 50} more)* |\n`
     }
-    report += '\n';
+    report += '\n'
   }
 }
 
@@ -293,25 +271,31 @@ report += `## Composite-Type Token Candidates
 The following token groups use $type values that should be represented as
 composite types per DTCG 2025.10 (typography, shadow, transition):
 
-`;
+`
 
 // Identify composite candidates in source: already-typed composites are fine.
 // This section just lists what we found.
-const compositeCounts = { typography: 0, shadow: 0, transition: 0 };
+const compositeCounts = {typography: 0, shadow: 0, transition: 0}
 for (const filePath of sourceFiles) {
   try {
-    const src = fs.readFileSync(filePath, 'utf-8');
-    if (src.includes('"typography"')) compositeCounts.typography++;
-    if (src.includes('"shadow"')) compositeCounts.shadow++;
-    if (src.includes('"transition"')) compositeCounts.transition++;
+    const src = fs.readFileSync(filePath, 'utf-8')
+    if (src.includes('"typography"')) {
+      compositeCounts.typography++
+    }
+    if (src.includes('"shadow"')) {
+      compositeCounts.shadow++
+    }
+    if (src.includes('"transition"')) {
+      compositeCounts.transition++
+    }
   } catch (_) {}
 }
 
-report += `| Composite Type | Files Using It |\n|---|---|\n`;
+report += `| Composite Type | Files Using It |\n|---|---|\n`
 for (const [type, count] of Object.entries(compositeCounts)) {
-  report += `| \`${type}\` | ${count} |\n`;
+  report += `| \`${type}\` | ${count} |\n`
 }
-report += '\n';
+report += '\n'
 
 report += `## Files Validated
 
@@ -322,49 +306,41 @@ ${sourceFiles.map((f) => `- \`${path.relative(ROOT, f)}\``).join('\n')}
 ### Dist DTCG artifacts (\`packages/tokens/dist/*.dtcg.json\`)
 
 ${distFiles.length > 0 ? distFiles.map((f) => `- \`${path.relative(ROOT, f)}\``).join('\n') : '*(none found — run `pnpm build:tokens` to generate)*'}
-`;
+`
 
 // ── write report ──────────────────────────────────────────────────────────────
-fs.mkdirSync(path.join(ROOT, 'docs'), { recursive: true });
-const auditPath = path.join(ROOT, 'docs/dtcg-audit.md');
-const auditPrettierCfg = await prettier.resolveConfig(auditPath);
-const formattedReport = await prettier.format(report, {
-  ...auditPrettierCfg,
-  parser: 'markdown',
-  filepath: auditPath,
-});
-fs.writeFileSync(auditPath, formattedReport);
-console.log(`Wrote docs/dtcg-audit.md`);
+fs.mkdirSync(path.join(ROOT, 'docs'), {recursive: true})
+const auditPath = path.join(ROOT, 'docs/dtcg-audit.md')
+const auditPrettierCfg = await prettier.resolveConfig(auditPath)
+const formattedReport = await prettier.format(report, {...auditPrettierCfg, parser: 'markdown', filepath: auditPath})
+fs.writeFileSync(auditPath, formattedReport)
+console.log(`Wrote docs/dtcg-audit.md`)
 
 // ── print summary ─────────────────────────────────────────────────────────────
-console.log('');
-console.log('DTCG 2025.10 Conformance Audit');
-console.log('==============================');
-console.log(`Source files:  ${sourceCount}`);
-console.log(`Dist files:    ${distCount}`);
-console.log(`Violations:    ${totalViolations}`);
+console.log('')
+console.log('DTCG 2025.10 Conformance Audit')
+console.log('==============================')
+console.log(`Source files:  ${sourceCount}`)
+console.log(`Dist files:    ${distCount}`)
+console.log(`Violations:    ${totalViolations}`)
 if (totalViolations > 0) {
   for (const rule of violationTypes) {
-    console.log(`  ${rule}: ${byRule[rule].length}`);
+    console.log(`  ${rule}: ${byRule[rule].length}`)
   }
 }
-console.log('');
+console.log('')
 
 // ── exit code ─────────────────────────────────────────────────────────────────
 if (!REPORT_ONLY && totalViolations > 0) {
   // MISSING_DESCRIPTION is advisory (many tokens legitimately lack it)
   // Only hard-fail on structural violations
-  const hardViolations = allViolations.filter((v) => v.rule !== 'MISSING_DESCRIPTION');
+  const hardViolations = allViolations.filter((v) => v.rule !== 'MISSING_DESCRIPTION')
   if (hardViolations.length > 0) {
-    console.error(
-      `ERROR: ${hardViolations.length} hard DTCG conformance violation(s). See docs/dtcg-audit.md for details.`,
-    );
-    process.exit(1);
+    console.error(`ERROR: ${hardViolations.length} hard DTCG conformance violation(s). See docs/dtcg-audit.md for details.`)
+    process.exit(1)
   } else {
-    console.warn(
-      `WARN: ${totalViolations} advisory violation(s) (MISSING_DESCRIPTION only). See docs/dtcg-audit.md.`,
-    );
+    console.warn(`WARN: ${totalViolations} advisory violation(s) (MISSING_DESCRIPTION only). See docs/dtcg-audit.md.`)
   }
 } else if (totalViolations === 0) {
-  console.log('All files pass DTCG 2025.10 conformance checks.');
+  console.log('All files pass DTCG 2025.10 conformance checks.')
 }

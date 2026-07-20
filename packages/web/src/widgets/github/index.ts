@@ -1,23 +1,23 @@
-export { default as ActivityFeed } from './ActivityFeed.astro';
-export { default as CommitLog } from './CommitLog.astro';
-export { default as CommitTimeline } from './CommitTimeline.astro';
-export { default as DevActivityCards } from './DevActivityCards.astro';
-export { default as DevActivityLog } from './DevActivityLog.astro';
-export { default as DevActivityTimeline } from './DevActivityTimeline.astro';
-export { default as LanguageBars } from './LanguageBars.astro';
-export { default as LanguageStack } from './LanguageStack.astro';
-export { default as PinnedRepos } from './PinnedRepos.astro';
-export { default as StarredRepoList } from './StarredRepoList.astro';
-export { default as WeeklyPulse } from './WeeklyPulse.astro';
+export { default as ActivityFeed } from './ActivityFeed.astro'
+export { default as CommitLog } from './CommitLog.astro'
+export { default as CommitTimeline } from './CommitTimeline.astro'
+export { default as DevActivityCards } from './DevActivityCards.astro'
+export { default as DevActivityLog } from './DevActivityLog.astro'
+export { default as DevActivityTimeline } from './DevActivityTimeline.astro'
+export { default as LanguageBars } from './LanguageBars.astro'
+export { default as LanguageStack } from './LanguageStack.astro'
+export { default as PinnedRepos } from './PinnedRepos.astro'
+export { default as StarredRepoList } from './StarredRepoList.astro'
+export { default as WeeklyPulse } from './WeeklyPulse.astro'
 
-export type { ActivityFeedProps } from './ActivityFeed.types';
-export type { CommitLogProps } from './CommitLog.types';
-export type { CommitTimelineProps } from './CommitTimeline.types';
-export type { DevActivityCardsProps } from './DevActivityCards.types';
-export type { DevActivityLogProps } from './DevActivityLog.types';
-export type { DevActivityTimelineProps } from './DevActivityTimeline.types';
-export type { LanguageBarsProps } from './LanguageBars.types';
-export type { LanguageStackProps } from './LanguageStack.types';
-export type { PinnedReposProps } from './PinnedRepos.types';
-export type { StarredRepoListProps } from './StarredRepoList.types';
-export type { WeeklyPulseProps } from './WeeklyPulse.types';
+export type { ActivityFeedProps } from './ActivityFeed.types'
+export type { CommitLogProps } from './CommitLog.types'
+export type { CommitTimelineProps } from './CommitTimeline.types'
+export type { DevActivityCardsProps } from './DevActivityCards.types'
+export type { DevActivityLogProps } from './DevActivityLog.types'
+export type { DevActivityTimelineProps } from './DevActivityTimeline.types'
+export type { LanguageBarsProps } from './LanguageBars.types'
+export type { LanguageStackProps } from './LanguageStack.types'
+export type { PinnedReposProps } from './PinnedRepos.types'
+export type { StarredRepoListProps } from './StarredRepoList.types'
+export type { WeeklyPulseProps } from './WeeklyPulse.types'

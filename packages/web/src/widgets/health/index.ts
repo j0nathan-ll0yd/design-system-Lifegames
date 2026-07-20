@@ -1,5 +1,5 @@
-export { default as HeartRate } from './HeartRate.astro';
-export { default as Hydration } from './Hydration.astro';
-export { default as NightSummary } from './NightSummary.astro';
-export { default as Workouts } from './Workouts.astro';
-export type { HeartRateProps } from './HeartRate.types';
+export { default as HeartRate } from './HeartRate.astro'
+export { default as Hydration } from './Hydration.astro'
+export { default as NightSummary } from './NightSummary.astro'
+export { default as Workouts } from './Workouts.astro'
+export type { HeartRateProps } from './HeartRate.types'

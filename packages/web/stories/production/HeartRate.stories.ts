@@ -1,15 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 // DS-internal fixture: health/heart-rate.json
 const meta: Meta = {
   title: 'Production/Health/HeartRate',
   tags: ['stable', 'autodocs'],
-  argTypes: {
-    heartRate: { control: 'number' },
-    hrv: { control: 'number' },
-  },
-  render: (args) => html`
+  argTypes: {heartRate: {control: 'number'}, hrv: {control: 'number'}},
+  render: (args) =>
+    html`
     <div id="cardHeartRate" class="tri-card">
       <div class="widget-header">
         <span class="widget-label">Heart Rate</span>
@@ -40,29 +38,16 @@ const meta: Meta = {
         ></canvas>
       </div>
     </div>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = {
-  args: { heartRate: 62, hrv: 48 },
-};
+export const Default: Story = {args: {heartRate: 62, hrv: 48}}
 
-export const Empty: Story = {
-  args: { heartRate: null, hrv: null },
-};
+export const Empty: Story = {args: {heartRate: null, hrv: null}}
 
-export const Loading: Story = {
-  args: { heartRate: null, hrv: null },
-};
+export const Loading: Story = {args: {heartRate: null, hrv: null}}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: {
-      value: 'dark',
-    },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

@@ -43,12 +43,12 @@
  *                                                       lp-audit D4 ratchet policy)
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import { toKebabName } from './widget-compliance.mjs';
+import fs from 'node:fs'
+import path from 'node:path'
+import {toKebabName} from './widget-compliance.mjs'
 
-const ROOT = path.resolve(import.meta.dirname, '..');
-const STALE_DAYS_THRESHOLD = 14;
+const ROOT = path.resolve(import.meta.dirname, '..')
+const STALE_DAYS_THRESHOLD = 14
 
 // ---------------------------------------------------------------------------
 // Pure reconciliation logic (unit-tested in audit-widget-matrix.test.mjs with
@@ -66,7 +66,7 @@ const STALE_DAYS_THRESHOLD = 14;
  *     the actual Swift filenames on disk — uses the bare widget name)
  */
 export function canonicalize(name) {
-  return name.replace(/V\d+$/, '').replace(/View$/, '');
+  return name.replace(/V\d+$/, '').replace(/View$/, '')
 }
 
 /**
@@ -103,9 +103,9 @@ export function buildMatrix({
   hasDocPageImpl = () => false,
   hasStorybookStoryImpl = () => false,
   hasSwiftSnapshotImpl = () => false,
-  nowMs = Date.now(),
+  nowMs = Date.now()
 }) {
-  const byId = new Map();
+  const byId = new Map()
 
   function ensure(cid) {
     if (!byId.has(cid)) {
@@ -120,76 +120,76 @@ export function buildMatrix({
         inConsumersWidgets: false,
         inConsumersConsumedList: false,
         inDocsInventory: false,
-        docsInventoryHasStory: false,
-      });
+        docsInventoryHasStory: false
+      })
     }
-    return byId.get(cid);
+    return byId.get(cid)
   }
 
   for (const w of productionRegistry) {
-    const cid = canonicalize(w.name);
-    const row = ensure(cid);
-    row.nameVariants.add(w.name);
-    row.inProductionRegistry = true;
+    const cid = canonicalize(w.name)
+    const row = ensure(cid)
+    row.nameVariants.add(w.name)
+    row.inProductionRegistry = true
     if (w.platform === 'web' && w.buildStatus === 'shipped') {
-      row.productionWidgetsShippedWeb = true;
+      row.productionWidgetsShippedWeb = true
     }
   }
 
   for (const w of manifestWidgets) {
-    const cid = canonicalize(w.name);
-    const row = ensure(cid);
-    row.nameVariants.add(w.name);
-    row.inManifest = true;
-    row.manifestProduction = row.manifestProduction || w.production === true;
-    row.manifestEntry = w;
+    const cid = canonicalize(w.name)
+    const row = ensure(cid)
+    row.nameVariants.add(w.name)
+    row.inManifest = true
+    row.manifestProduction = row.manifestProduction || w.production === true
+    row.manifestEntry = w
   }
 
   for (const w of consumersDoc.widgets ?? []) {
-    const cid = canonicalize(w.name);
-    const row = ensure(cid);
-    row.nameVariants.add(w.name);
-    row.inConsumersWidgets = true;
+    const cid = canonicalize(w.name)
+    const row = ensure(cid)
+    row.nameVariants.add(w.name)
+    row.inConsumersWidgets = true
   }
 
   for (const rawName of consumersDoc.consumedWidgets ?? []) {
-    const cid = canonicalize(rawName);
-    const row = ensure(cid);
-    row.nameVariants.add(rawName);
-    row.inConsumersConsumedList = true;
+    const cid = canonicalize(rawName)
+    const row = ensure(cid)
+    row.nameVariants.add(rawName)
+    row.inConsumersConsumedList = true
   }
 
   for (const w of docsInventoryWidgets) {
-    const cid = canonicalize(w.id);
-    const row = ensure(cid);
-    row.nameVariants.add(w.id);
-    row.inDocsInventory = true;
-    row.docsInventoryHasStory = w.hasStory === true;
+    const cid = canonicalize(w.id)
+    const row = ensure(cid)
+    row.nameVariants.add(w.id)
+    row.inDocsInventory = true
+    row.docsInventoryHasStory = w.hasStory === true
   }
 
-  const rows = [];
-  const findings = [];
+  const rows = []
+  const findings = []
 
   for (const cid of [...byId.keys()].sort((a, b) => a.localeCompare(b))) {
-    const row = byId.get(cid);
-    const variants = [...row.nameVariants];
+    const row = byId.get(cid)
+    const variants = [...row.nameVariants]
 
-    const hasAstro = variants.some(hasAstroImpl);
-    const hasSwiftView = variants.some(hasSwiftViewImpl);
-    const hasDocPage = variants.some((v) => hasDocPageImpl(toKebabName(v)));
-    const hasStorybookStory = variants.some(hasStorybookStoryImpl);
-    const hasSwiftSnapshot = variants.some(hasSwiftSnapshotImpl);
+    const hasAstro = variants.some(hasAstroImpl)
+    const hasSwiftView = variants.some(hasSwiftViewImpl)
+    const hasDocPage = variants.some((v) => hasDocPageImpl(toKebabName(v)))
+    const hasStorybookStory = variants.some(hasStorybookStoryImpl)
+    const hasSwiftSnapshot = variants.some(hasSwiftSnapshotImpl)
 
-    let hasFixtureBase = false;
-    let hasFixtureEmpty = false;
-    let hasFixtureFull = false;
+    let hasFixtureBase = false
+    let hasFixtureEmpty = false
+    let hasFixtureFull = false
     if (row.manifestEntry?.fixturePath) {
-      const { fixturePath } = row.manifestEntry;
-      const dir = path.dirname(fixturePath);
-      const stem = path.basename(fixturePath, '.json');
-      hasFixtureBase = fixtureExists(fixturePath);
-      hasFixtureEmpty = fixtureExists(path.join(dir, `${stem}.empty.json`));
-      hasFixtureFull = fixtureExists(path.join(dir, `${stem}.populated-max.json`));
+      const {fixturePath} = row.manifestEntry
+      const dir = path.dirname(fixturePath)
+      const stem = path.basename(fixturePath, '.json')
+      hasFixtureBase = fixtureExists(fixturePath)
+      hasFixtureEmpty = fixtureExists(path.join(dir, `${stem}.empty.json`))
+      hasFixtureFull = fixtureExists(path.join(dir, `${stem}.populated-max.json`))
     }
 
     rows.push({
@@ -208,81 +208,71 @@ export function buildMatrix({
       hasFixtureFull,
       hasDocPage,
       hasStorybookStory,
-      hasSwiftSnapshot,
-    });
+      hasSwiftSnapshot
+    })
 
-    const isProductionWeb = row.manifestProduction || row.productionWidgetsShippedWeb;
+    const isProductionWeb = row.manifestProduction || row.productionWidgetsShippedWeb
 
     if (row.manifestProduction && !row.inProductionRegistry) {
       findings.push({
         id: cid,
         severity: 'high',
-        message: `widget-manifest.json marks "${cid}" production:true, but production-widgets.json (the authoritative registry) has no entry for it on any platform.`,
-      });
+        message:
+          `widget-manifest.json marks "${cid}" production:true, but production-widgets.json (the authoritative registry) has no entry for it on any platform.`
+      })
     }
 
     if (row.inConsumersConsumedList && !row.inConsumersWidgets) {
       findings.push({
         id: cid,
         severity: 'high',
-        message: `widget-consumers.json lists "${cid}" in consumedWidgets[] but has no matching entry in its own widgets[] array (self-inconsistent).`,
-      });
+        message: `widget-consumers.json lists "${cid}" in consumedWidgets[] but has no matching entry in its own widgets[] array (self-inconsistent).`
+      })
     }
 
     if (hasAstro && !row.inProductionRegistry && !row.inManifest) {
       findings.push({
         id: cid,
         severity: 'medium',
-        message: `"${cid}" has a web implementation (packages/web/src/widgets) but is registered in neither production-widgets.json nor widget-manifest.json.`,
-      });
+        message:
+          `"${cid}" has a web implementation (packages/web/src/widgets) but is registered in neither production-widgets.json nor widget-manifest.json.`
+      })
     }
 
     if (isProductionWeb && hasAstro && !hasDocPage) {
-      findings.push({
-        id: cid,
-        severity: 'medium',
-        message: `"${cid}" is a production web widget with no apps/docs page.`,
-      });
+      findings.push({id: cid, severity: 'medium', message: `"${cid}" is a production web widget with no apps/docs page.`})
     }
 
     if (row.inDocsInventory && row.docsInventoryHasStory !== hasStorybookStory) {
       findings.push({
         id: cid,
         severity: 'medium',
-        message: `docs/widget-inventory.json reports hasStory:${row.docsInventoryHasStory} for "${cid}", but the filesystem shows hasStorybookStory:${hasStorybookStory}. scripts/widget-inventory.mjs looks for co-located *.stories.tsx next to *.types.ts, which cannot see apps/storybook/src/production/*.stories.ts.`,
-      });
+        message:
+          `docs/widget-inventory.json reports hasStory:${row.docsInventoryHasStory} for "${cid}", but the filesystem shows hasStorybookStory:${hasStorybookStory}. scripts/widget-inventory.mjs looks for co-located *.stories.tsx next to *.types.ts, which cannot see apps/storybook/src/production/*.stories.ts.`
+      })
     }
 
     if (isProductionWeb && !hasStorybookStory) {
       findings.push({
         id: cid,
         severity: 'low',
-        message: `"${cid}" is a production web widget with no Storybook story (apps/storybook/src/production) — ratchet target, not yet a hard requirement.`,
-      });
+        message: `"${cid}" is a production web widget with no Storybook story (apps/storybook/src/production) — ratchet target, not yet a hard requirement.`
+      })
     }
 
     if (isProductionWeb && hasSwiftView && !hasSwiftSnapshot) {
-      findings.push({
-        id: cid,
-        severity: 'low',
-        message: `"${cid}" has a Swift View but no Swift snapshot test coverage — ratchet target.`,
-      });
+      findings.push({id: cid, severity: 'low', message: `"${cid}" has a Swift View but no Swift snapshot test coverage — ratchet target.`})
     }
 
     if (
-      row.manifestEntry?.fixturePath &&
-      (!hasFixtureBase || !hasFixtureEmpty || !hasFixtureFull)
+      row.manifestEntry?.fixturePath && (!hasFixtureBase || !hasFixtureEmpty || !hasFixtureFull)
     ) {
       const missing = [
         !hasFixtureBase && 'base',
         !hasFixtureEmpty && 'empty',
-        !hasFixtureFull && 'populated-max',
-      ].filter(Boolean);
-      findings.push({
-        id: cid,
-        severity: 'medium',
-        message: `"${cid}" is missing fixture variant(s): ${missing.join(', ')}.`,
-      });
+        !hasFixtureFull && 'populated-max'
+      ].filter(Boolean)
+      findings.push({id: cid, severity: 'medium', message: `"${cid}" is missing fixture variant(s): ${missing.join(', ')}.`})
     }
 
     // A "View"-suffixed variant is expected/by-design: production-widgets.json
@@ -290,37 +280,37 @@ export function buildMatrix({
     // "View" per Swift/SwiftUI convention) and the web name for web-platform
     // rows — that pairing is not drift. Only flag when the SAME platform
     // spelling disagrees across sources (the V3-suffix case).
-    const nonViewVariants = variants.filter((v) => !v.endsWith('View'));
+    const nonViewVariants = variants.filter((v) => !v.endsWith('View'))
     if (nonViewVariants.length > 1) {
       findings.push({
         id: cid,
         severity: 'info',
-        message: `naming variant across sources for "${cid}": ${[...nonViewVariants].sort().join(', ')} (resolved via canonicalize()).`,
-      });
+        message: `naming variant across sources for "${cid}": ${[...nonViewVariants].sort().join(', ')} (resolved via canonicalize()).`
+      })
     }
   }
 
   if (consumersDoc.generatedAt) {
-    const ageDays = (nowMs - Date.parse(consumersDoc.generatedAt)) / 86_400_000;
+    const ageDays = (nowMs - Date.parse(consumersDoc.generatedAt)) / 86_400_000
     if (ageDays > STALE_DAYS_THRESHOLD) {
       findings.push({
         id: '(widget-consumers.json)',
         severity: 'info',
-        message: `widget-consumers.json generatedAt is ${Math.round(ageDays)} days old (>${STALE_DAYS_THRESHOLD}d threshold): ${consumersDoc.generatedAt}.`,
-      });
+        message: `widget-consumers.json generatedAt is ${Math.round(ageDays)} days old (>${STALE_DAYS_THRESHOLD}d threshold): ${consumersDoc.generatedAt}.`
+      })
     }
   }
 
-  return { rows, findings };
+  return {rows, findings}
 }
 
-const SEVERITY_ORDER = { high: 0, medium: 1, low: 2, info: 3 };
+const SEVERITY_ORDER = {high: 0, medium: 1, low: 2, info: 3}
 
 export function sortFindings(findings) {
   return [...findings].sort((a, b) => {
-    const sev = SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
-    return sev !== 0 ? sev : a.id.localeCompare(b.id);
-  });
+    const sev = SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]
+    return sev !== 0 ? sev : a.id.localeCompare(b.id)
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -328,60 +318,50 @@ export function sortFindings(findings) {
 // ---------------------------------------------------------------------------
 
 function readJSON(relativePath) {
-  const fullPath = path.join(ROOT, relativePath);
-  if (!fs.existsSync(fullPath)) return null;
-  return JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+  const fullPath = path.join(ROOT, relativePath)
+  if (!fs.existsSync(fullPath)) {
+    return null
+  }
+  return JSON.parse(fs.readFileSync(fullPath, 'utf-8'))
 }
 
 function walk(dir, filterFn) {
-  const results = [];
-  if (!fs.existsSync(dir)) return results;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
+  const results = []
+  if (!fs.existsSync(dir)) {
+    return results
+  }
+  for (const entry of fs.readdirSync(dir, {withFileTypes: true})) {
+    const full = path.join(dir, entry.name)
     if (entry.isDirectory()) {
-      results.push(...walk(full, filterFn));
+      results.push(...walk(full, filterFn))
     } else if (entry.isFile() && filterFn(entry.name)) {
-      results.push(full);
+      results.push(full)
     }
   }
-  return results;
+  return results
 }
 
 function loadRealSources() {
-  const productionRegistry =
-    readJSON('Sources/LifegamesWidgets/Resources/production-widgets.json') ?? [];
-  const manifest = readJSON('Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json');
-  const manifestWidgets = manifest?.widgets ?? [];
-  const consumersDoc = readJSON('widget-consumers.json') ?? {};
-  const docsInventory = readJSON('docs/widget-inventory.json');
-  const docsInventoryWidgets = docsInventory?.widgets ?? [];
+  const productionRegistry = readJSON('Sources/LifegamesWidgets/Resources/production-widgets.json') ?? []
+  const manifest = readJSON('Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json')
+  const manifestWidgets = manifest?.widgets ?? []
+  const consumersDoc = readJSON('widget-consumers.json') ?? {}
+  const docsInventory = readJSON('docs/widget-inventory.json')
+  const docsInventoryWidgets = docsInventory?.widgets ?? []
 
-  const astroStems = new Set(
-    walk(path.join(ROOT, 'packages/web/src/widgets'), (n) => n.endsWith('.astro')).map((f) =>
-      path.basename(f, '.astro'),
-    ),
-  );
+  const astroStems = new Set(walk(path.join(ROOT, 'packages/web/src/widgets'), (n) => n.endsWith('.astro')).map((f) => path.basename(f, '.astro')))
   const swiftViewStems = new Set(
     ['Sources/LifegamesWidgets', 'Sources/LifegamesWidgetsWatch'].flatMap((dir) =>
-      walk(path.join(ROOT, dir), (n) => n.endsWith('View.swift')).map((f) =>
-        path.basename(f, '.swift').replace(/View$/, ''),
-      ),
-    ),
-  );
-  const docPageStems = new Set(
-    walk(path.join(ROOT, 'apps/docs/src/pages/widgets'), (n) => n.endsWith('.astro')).map((f) =>
-      path.basename(f, '.astro'),
-    ),
-  );
+      walk(path.join(ROOT, dir), (n) => n.endsWith('View.swift')).map((f) => path.basename(f, '.swift').replace(/View$/, ''))
+    )
+  )
+  const docPageStems = new Set(walk(path.join(ROOT, 'apps/docs/src/pages/widgets'), (n) => n.endsWith('.astro')).map((f) => path.basename(f, '.astro')))
   const storyStems = new Set(
-    walk(path.join(ROOT, 'apps/storybook/src/production'), (n) => n.endsWith('.stories.ts')).map(
-      (f) => path.basename(f, '.stories.ts'),
-    ),
-  );
-  const snapshotBasenames = walk(
-    path.join(ROOT, 'Tests/LifegamesWidgetsTests/__Snapshots__'),
-    (n) => n.endsWith('.png'),
-  ).map((f) => path.basename(f).toLowerCase());
+    walk(path.join(ROOT, 'apps/storybook/src/production'), (n) => n.endsWith('.stories.ts')).map((f) => path.basename(f, '.stories.ts'))
+  )
+  const snapshotBasenames = walk(path.join(ROOT, 'Tests/LifegamesWidgetsTests/__Snapshots__'), (n) => n.endsWith('.png')).map((f) =>
+    path.basename(f).toLowerCase()
+  )
 
   return {
     productionRegistry,
@@ -390,24 +370,23 @@ function loadRealSources() {
     docsInventoryWidgets,
     hasAstroImpl: (name) => astroStems.has(name),
     hasSwiftViewImpl: (name) => swiftViewStems.has(name),
-    fixtureExists: (relPath) =>
-      fs.existsSync(path.join(ROOT, 'Sources/LifegamesWidgets/Resources/widgets', relPath)),
+    fixtureExists: (relPath) => fs.existsSync(path.join(ROOT, 'Sources/LifegamesWidgets/Resources/widgets', relPath)),
     hasDocPageImpl: (kebabName) => docPageStems.has(kebabName),
     hasStorybookStoryImpl: (name) => storyStems.has(name),
     hasSwiftSnapshotImpl: (name) => {
-      const camelPrefix = name.charAt(0).toLowerCase() + name.slice(1);
-      return snapshotBasenames.some((b) => b.startsWith(camelPrefix.toLowerCase()));
-    },
-  };
+      const camelPrefix = name.charAt(0).toLowerCase() + name.slice(1)
+      return snapshotBasenames.some((b) => b.startsWith(camelPrefix.toLowerCase()))
+    }
+  }
 }
 
 function boolCell(v) {
-  return v ? 'YES' : 'no';
+  return v ? 'YES' : 'no'
 }
 
-function printReport({ rows, findings }) {
-  console.log('Widget Completeness Matrix (Design System)');
-  console.log('============================================\n');
+function printReport({rows, findings}) {
+  console.log('Widget Completeness Matrix (Design System)')
+  console.log('============================================\n')
 
   const cols = [
     'Widget',
@@ -420,58 +399,56 @@ function printReport({ rows, findings }) {
     'Fixture',
     'DocPage',
     'Story',
-    'Snapshot',
-  ];
-  const widths = [24, 8, 9, 9, 8, 6, 6, 8, 8, 6, 9];
-  console.log(cols.map((c, i) => c.padEnd(widths[i])).join(' '));
-  console.log(cols.map((_, i) => '-'.repeat(widths[i])).join(' '));
+    'Snapshot'
+  ]
+  const widths = [24, 8, 9, 9, 8, 6, 6, 8, 8, 6, 9]
+  console.log(cols.map((c, i) => c.padEnd(widths[i])).join(' '))
+  console.log(cols.map((_, i) => '-'.repeat(widths[i])).join(' '))
 
   for (const r of rows) {
-    console.log(
-      [
-        r.id.padEnd(widths[0]),
-        boolCell(r.inProductionRegistry).padEnd(widths[1]),
-        boolCell(r.inManifest).padEnd(widths[2]),
-        boolCell(r.inConsumersWidgets).padEnd(widths[3]),
-        boolCell(r.inDocsInventory).padEnd(widths[4]),
-        boolCell(r.hasAstro).padEnd(widths[5]),
-        boolCell(r.hasSwiftView).padEnd(widths[6]),
-        boolCell(r.hasFixtureBase).padEnd(widths[7]),
-        boolCell(r.hasDocPage).padEnd(widths[8]),
-        boolCell(r.hasStorybookStory).padEnd(widths[9]),
-        boolCell(r.hasSwiftSnapshot).padEnd(widths[10]),
-      ].join(' '),
-    );
+    console.log([
+      r.id.padEnd(widths[0]),
+      boolCell(r.inProductionRegistry).padEnd(widths[1]),
+      boolCell(r.inManifest).padEnd(widths[2]),
+      boolCell(r.inConsumersWidgets).padEnd(widths[3]),
+      boolCell(r.inDocsInventory).padEnd(widths[4]),
+      boolCell(r.hasAstro).padEnd(widths[5]),
+      boolCell(r.hasSwiftView).padEnd(widths[6]),
+      boolCell(r.hasFixtureBase).padEnd(widths[7]),
+      boolCell(r.hasDocPage).padEnd(widths[8]),
+      boolCell(r.hasStorybookStory).padEnd(widths[9]),
+      boolCell(r.hasSwiftSnapshot).padEnd(widths[10])
+    ].join(' '))
   }
 
-  console.log(`\nTotal canonical widgets: ${rows.length}`);
+  console.log(`\nTotal canonical widgets: ${rows.length}`)
 
-  const sorted = sortFindings(findings);
-  console.log(`\nFINDINGS (${sorted.length})`);
-  console.log('==========' + '='.repeat(String(sorted.length).length));
+  const sorted = sortFindings(findings)
+  console.log(`\nFINDINGS (${sorted.length})`)
+  console.log('==========' + '='.repeat(String(sorted.length).length))
   if (sorted.length === 0) {
-    console.log('None.');
+    console.log('None.')
   } else {
     for (const f of sorted) {
-      console.log(`[${f.severity.toUpperCase()}] ${f.id}: ${f.message}`);
+      console.log(`[${f.severity.toUpperCase()}] ${f.id}: ${f.message}`)
     }
   }
 
-  return sorted;
+  return sorted
 }
 
 function main() {
-  const sources = loadRealSources();
-  const { rows, findings } = buildMatrix(sources);
-  const sorted = printReport({ rows, findings });
+  const sources = loadRealSources()
+  const {rows, findings} = buildMatrix(sources)
+  const sorted = printReport({rows, findings})
 
   if (process.argv.includes('--check') && sorted.length > 0) {
-    process.exit(1);
+    process.exit(1)
   }
-  process.exit(0);
+  process.exit(0)
 }
 
-const isMain = import.meta.url === `file://${process.argv[1]}`;
+const isMain = import.meta.url === `file://${process.argv[1]}`
 if (isMain) {
-  main();
+  main()
 }

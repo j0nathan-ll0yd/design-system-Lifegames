@@ -5,8 +5,8 @@
 // from adaptBooks() (which feeds the runtime updater). The SSR shell reads this
 // authored display shape. Authored against `@lifegames/schemas` `DashboardBooks`
 // (authored/dashboard-books.schema.json). All values absolute — deterministic.
-import type { DashboardBooks } from '@lifegames/schemas';
-import { authored } from './branded';
+import type {DashboardBooks} from '@lifegames/schemas'
+import {authored} from './branded'
 
 export const baseline = authored<DashboardBooks>({
   books: [
@@ -18,7 +18,7 @@ export const baseline = authored<DashboardBooks>({
       link: 'https://amzn.to/example1',
       status: 'reading',
       rating: null,
-      progress: 55,
+      progress: 55
     },
     {
       title: 'Clean Code',
@@ -29,7 +29,7 @@ export const baseline = authored<DashboardBooks>({
       status: 'finished',
       rating: 4,
       progress: 100,
-      finishedAt: '2024-01-15T00:00:00Z',
+      finishedAt: '2024-01-15T00:00:00Z'
     },
     {
       title: 'Designing Data-Intensive Applications',
@@ -40,7 +40,7 @@ export const baseline = authored<DashboardBooks>({
       status: 'finished',
       rating: 5,
       progress: 100,
-      finishedAt: '2023-11-20T00:00:00Z',
+      finishedAt: '2023-11-20T00:00:00Z'
     },
     {
       title: 'A Philosophy of Software Design',
@@ -50,8 +50,8 @@ export const baseline = authored<DashboardBooks>({
       link: 'https://amzn.to/example4',
       status: 'upNext',
       rating: null,
-      progress: 0,
-    },
+      progress: 0
+    }
   ],
   bookMeta: {
     '0135957052': {
@@ -61,7 +61,7 @@ export const baseline = authored<DashboardBooks>({
       pages: 352,
       genres: ['Tech', 'Software Engineering'],
       year: 2019,
-      desc: 'A timeless guide to writing better code, covering topics from clean design to pragmatic philosophy for professional software developers.',
+      desc: 'A timeless guide to writing better code, covering topics from clean design to pragmatic philosophy for professional software developers.'
     },
     '0132350882': {
       seriesName: null,
@@ -70,7 +70,7 @@ export const baseline = authored<DashboardBooks>({
       pages: 431,
       genres: ['Tech', 'Software Engineering'],
       year: 2008,
-      desc: 'Seminal book on writing readable, maintainable code with practical advice on naming, functions, classes, and more.',
+      desc: 'Seminal book on writing readable, maintainable code with practical advice on naming, functions, classes, and more.'
     },
     '1449373321': {
       seriesName: null,
@@ -79,7 +79,7 @@ export const baseline = authored<DashboardBooks>({
       pages: 611,
       genres: ['Tech', 'Databases'],
       year: 2017,
-      desc: 'A comprehensive guide to the principles, design, and implementation of scalable, reliable data systems.',
+      desc: 'A comprehensive guide to the principles, design, and implementation of scalable, reliable data systems.'
     },
     '173210220X': {
       seriesName: null,
@@ -88,43 +88,21 @@ export const baseline = authored<DashboardBooks>({
       pages: 190,
       genres: ['Tech', 'Software Design'],
       year: 2018,
-      desc: 'A fresh look at the fundamental problem in computer science: how to decompose complex software systems into modules.',
-    },
+      desc: 'A fresh look at the fundamental problem in computer science: how to decompose complex software systems into modules.'
+    }
   },
-  statusLabels: {
-    pending: 'Pending',
-    reading: 'Reading',
-    upNext: 'Up Next',
-    finished: 'Finished',
-  },
-  stats: {
-    totalRead: 2,
-    currentlyReading: 1,
-    upNext: 1,
-    avgRating: 4.5,
-    booksThisYear: 3,
-  },
-});
+  statusLabels: {pending: 'Pending', reading: 'Reading', upNext: 'Up Next', finished: 'Finished'},
+  stats: {totalRead: 2, currentlyReading: 1, upNext: 1, avgRating: 4.5, booksThisYear: 3}
+})
 
 // Empty bookshelf: no books, empty bookMeta, statusLabels retained (UI needs the
 // label map even when the shelf is empty), zeroed stats.
 export const empty = authored<DashboardBooks>({
   books: [],
   bookMeta: {},
-  statusLabels: {
-    pending: 'Pending',
-    reading: 'Reading',
-    upNext: 'Up Next',
-    finished: 'Finished',
-  },
-  stats: {
-    totalRead: 0,
-    currentlyReading: 0,
-    upNext: 0,
-    avgRating: 0,
-    booksThisYear: 0,
-  },
-});
+  statusLabels: {pending: 'Pending', reading: 'Reading', upNext: 'Up Next', finished: 'Finished'},
+  stats: {totalRead: 0, currentlyReading: 0, upNext: 0, avgRating: 0, booksThisYear: 0}
+})
 
 // Maximally populated: many books across all statuses, all bookMeta populated with
 // non-null series info, all stats at high realistic values, all nullable fields
@@ -140,7 +118,7 @@ export const full = authored<DashboardBooks>({
       status: 'finished',
       rating: 5,
       progress: 100,
-      finishedAt: '2024-03-10T00:00:00Z',
+      finishedAt: '2024-03-10T00:00:00Z'
     },
     {
       title: 'A Drop of Corruption',
@@ -151,7 +129,7 @@ export const full = authored<DashboardBooks>({
       status: 'finished',
       rating: 5,
       progress: 100,
-      finishedAt: '2025-01-22T00:00:00Z',
+      finishedAt: '2025-01-22T00:00:00Z'
     },
     {
       title: 'Foundryside',
@@ -162,7 +140,7 @@ export const full = authored<DashboardBooks>({
       status: 'finished',
       rating: 5,
       progress: 100,
-      finishedAt: '2023-08-15T00:00:00Z',
+      finishedAt: '2023-08-15T00:00:00Z'
     },
     {
       title: 'Shorefall',
@@ -172,7 +150,7 @@ export const full = authored<DashboardBooks>({
       link: 'https://amzn.to/shorefall',
       status: 'reading',
       rating: 4,
-      progress: 63,
+      progress: 63
     },
     {
       title: 'Crafting Engineering Strategy',
@@ -182,7 +160,7 @@ export const full = authored<DashboardBooks>({
       link: 'https://amzn.to/crafting-eng-strategy',
       status: 'upNext',
       rating: 4,
-      progress: 0,
+      progress: 0
     },
     {
       title: 'Designing Data-Intensive Applications',
@@ -193,8 +171,8 @@ export const full = authored<DashboardBooks>({
       status: 'finished',
       rating: 5,
       progress: 100,
-      finishedAt: '2022-05-30T00:00:00Z',
-    },
+      finishedAt: '2022-05-30T00:00:00Z'
+    }
   ],
   bookMeta: {
     '1984820710': {
@@ -204,7 +182,8 @@ export const full = authored<DashboardBooks>({
       pages: 432,
       genres: ['Fantasy', 'Mystery', 'Thriller'],
       year: 2024,
-      desc: 'Outstanding mystery-fantasy hybrid with inventive worldbuilding — an investigator and her assistant solve murders in a city threatened by leviathans.',
+      desc:
+        'Outstanding mystery-fantasy hybrid with inventive worldbuilding — an investigator and her assistant solve murders in a city threatened by leviathans.'
     },
     '0593723848': {
       seriesName: 'Shadow of the Leviathan',
@@ -213,7 +192,7 @@ export const full = authored<DashboardBooks>({
       pages: 480,
       genres: ['Fantasy', 'Mystery', 'Thriller'],
       year: 2025,
-      desc: 'The political intrigue deepens as the investigation uncovers corruption at the heart of the empire — even better than the first installment.',
+      desc: 'The political intrigue deepens as the investigation uncovers corruption at the heart of the empire — even better than the first installment.'
     },
     '0525573844': {
       seriesName: 'The Founders Trilogy',
@@ -222,7 +201,7 @@ export const full = authored<DashboardBooks>({
       pages: 512,
       genres: ['Fantasy', 'Science Fiction'],
       year: 2018,
-      desc: 'Ingenious magic system based on industrial programming — a thief discovers her city is built on ancient, dangerous technology called scriving.',
+      desc: 'Ingenious magic system based on industrial programming — a thief discovers her city is built on ancient, dangerous technology called scriving.'
     },
     B07QVH2Q2K: {
       seriesName: 'The Founders Trilogy',
@@ -231,7 +210,8 @@ export const full = authored<DashboardBooks>({
       pages: 496,
       genres: ['Fantasy', 'Science Fiction'],
       year: 2020,
-      desc: 'The stakes escalate dramatically as an ancient intelligence returns to reshape reality — Valeria is a compelling antagonist who challenges everything.',
+      desc:
+        'The stakes escalate dramatically as an ancient intelligence returns to reshape reality — Valeria is a compelling antagonist who challenges everything.'
     },
     B0FBRJY116: {
       seriesName: 'Engineering Leadership Series',
@@ -240,7 +220,7 @@ export const full = authored<DashboardBooks>({
       pages: 307,
       genres: ['Technology', 'Business', 'Leadership'],
       year: 2024,
-      desc: 'Practical frameworks for engineering strategy at director+ level — covers organizational design, technical vision, and execution at scale.',
+      desc: 'Practical frameworks for engineering strategy at director+ level — covers organizational design, technical vision, and execution at scale.'
     },
     '1449373321': {
       seriesName: "O'Reilly Data Series",
@@ -249,22 +229,12 @@ export const full = authored<DashboardBooks>({
       pages: 611,
       genres: ['Tech', 'Databases', 'Distributed Systems'],
       year: 2017,
-      desc: 'A comprehensive guide to the principles, design, and implementation of scalable, reliable data systems from batch processing to stream processing.',
-    },
+      desc:
+        'A comprehensive guide to the principles, design, and implementation of scalable, reliable data systems from batch processing to stream processing.'
+    }
   },
-  statusLabels: {
-    pending: 'Pending',
-    reading: 'Reading',
-    upNext: 'Up Next',
-    finished: 'Finished',
-  },
-  stats: {
-    totalRead: 42,
-    currentlyReading: 3,
-    upNext: 8,
-    avgRating: 4.3,
-    booksThisYear: 18,
-  },
-});
+  statusLabels: {pending: 'Pending', reading: 'Reading', upNext: 'Up Next', finished: 'Finished'},
+  stats: {totalRead: 42, currentlyReading: 3, upNext: 8, avgRating: 4.3, booksThisYear: 18}
+})
 
-export const booksPostAdapter = { baseline, empty, full };
+export const booksPostAdapter = {baseline, empty, full}

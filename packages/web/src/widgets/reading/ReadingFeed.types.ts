@@ -3,13 +3,11 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 export interface Article {
-  title: string;
-  source: string;
-  date: string;
+  title: string
+  source: string
+  date: string
 }
 
 export interface ReadingFeedProps {
-  reading: {
-    articles: Article[];
-  };
+  reading: {articles: Article[]}
 }

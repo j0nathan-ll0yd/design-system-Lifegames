@@ -1,7 +1,7 @@
-import type { GithubStarredReposExport } from '@lifegames/portal-contract/schemas';
-import { isoTimestamp } from './helpers';
+import type {GithubStarredReposExport} from '@lifegames/portal-contract/schemas'
+import {isoTimestamp} from './helpers'
 
-type StarredRepo = GithubStarredReposExport['repos'][number];
+type StarredRepo = GithubStarredReposExport['repos'][number]
 
 export function createStarredRepo(overrides?: Partial<StarredRepo>): StarredRepo {
   return {
@@ -19,15 +19,13 @@ export function createStarredRepo(overrides?: Partial<StarredRepo>): StarredRepo
     licenseKey: 'mit',
     licenseName: 'MIT License',
     licenseSpdxId: 'MIT',
-    languages: [{ language: 'TypeScript', lines: 42000 }],
+    languages: [{language: 'TypeScript', lines: 42000}],
     starredAt: isoTimestamp(2),
-    ...overrides,
-  };
+    ...overrides
+  }
 }
 
-export function createStarredReposFixture(
-  overrides?: Partial<GithubStarredReposExport>,
-): GithubStarredReposExport {
+export function createStarredReposFixture(overrides?: Partial<GithubStarredReposExport>): GithubStarredReposExport {
   return {
     generatedAt: isoTimestamp(),
     repos: [
@@ -43,8 +41,8 @@ export function createStarredReposFixture(
         openIssuesCount: 180,
         topics: ['agent', 'llm', 'orchestration'],
         size: 98304,
-        languages: [{ language: 'JavaScript', lines: 210000 }],
-        starredAt: isoTimestamp(2),
+        languages: [{language: 'JavaScript', lines: 210000}],
+        starredAt: isoTimestamp(2)
       }),
       createStarredRepo({
         ownerLogin: 'memvid',
@@ -58,8 +56,8 @@ export function createStarredReposFixture(
         openIssuesCount: 9,
         topics: ['memory', 'llm', 'claude'],
         size: 16384,
-        languages: [{ language: 'TypeScript', lines: 28000 }],
-        starredAt: isoTimestamp(5),
+        languages: [{language: 'TypeScript', lines: 28000}],
+        starredAt: isoTimestamp(5)
       }),
       createStarredRepo({
         ownerLogin: 'alienplatform',
@@ -76,8 +74,8 @@ export function createStarredReposFixture(
         licenseKey: 'apache-2.0',
         licenseName: 'Apache License 2.0',
         licenseSpdxId: 'Apache-2.0',
-        languages: [{ language: 'Shell', lines: 9000 }],
-        starredAt: isoTimestamp(7),
+        languages: [{language: 'Shell', lines: 9000}],
+        starredAt: isoTimestamp(7)
       }),
       createStarredRepo({
         ownerLogin: 'macOS26',
@@ -91,8 +89,8 @@ export function createStarredReposFixture(
         openIssuesCount: 6,
         topics: ['macos', 'agent', 'automation'],
         size: 24576,
-        languages: [{ language: 'HTML', lines: 14000 }],
-        starredAt: isoTimestamp(14),
+        languages: [{language: 'HTML', lines: 14000}],
+        starredAt: isoTimestamp(14)
       }),
       createStarredRepo({
         ownerLogin: 'zindexai',
@@ -109,10 +107,10 @@ export function createStarredReposFixture(
         licenseKey: null,
         licenseName: null,
         licenseSpdxId: null,
-        languages: [{ language: 'Unknown', lines: 1200 }],
-        starredAt: isoTimestamp(21),
-      }),
+        languages: [{language: 'Unknown', lines: 1200}],
+        starredAt: isoTimestamp(21)
+      })
     ],
-    ...overrides,
-  };
+    ...overrides
+  }
 }

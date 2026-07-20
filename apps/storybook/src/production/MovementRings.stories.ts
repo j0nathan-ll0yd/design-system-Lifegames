@@ -1,68 +1,68 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 interface MovementRingsArgs {
-  moveKcal: number | null;
-  exerciseMin: number | null;
-  standHr: number | null;
-  steps: number | null;
-  distanceM: number | null;
-  flights: number | null;
-  daylightMin: number | null;
-  goalMoveKcal: number;
-  goalExerciseMin: number;
-  goalStandHr: number;
-  sunriseHHmm: string;
-  sunsetHHmm: string;
-  sunProgressPct: number;
+  moveKcal: number | null
+  exerciseMin: number | null
+  standHr: number | null
+  steps: number | null
+  distanceM: number | null
+  flights: number | null
+  daylightMin: number | null
+  goalMoveKcal: number
+  goalExerciseMin: number
+  goalStandHr: number
+  sunriseHHmm: string
+  sunsetHHmm: string
+  sunProgressPct: number
 }
 
 const meta: Meta<MovementRingsArgs> = {
   title: 'Production/Health/MovementRings',
   tags: ['stable', 'autodocs'],
   argTypes: {
-    moveKcal: { control: 'number' },
-    exerciseMin: { control: 'number' },
-    standHr: { control: 'number' },
-    steps: { control: 'number' },
-    distanceM: { control: 'number' },
-    flights: { control: 'number' },
-    daylightMin: { control: 'number' },
-    goalMoveKcal: { control: 'number' },
-    goalExerciseMin: { control: 'number' },
-    goalStandHr: { control: 'number' },
-    sunriseHHmm: { control: 'text' },
-    sunsetHHmm: { control: 'text' },
-    sunProgressPct: { control: { type: 'range', min: 0, max: 100 } },
+    moveKcal: {control: 'number'},
+    exerciseMin: {control: 'number'},
+    standHr: {control: 'number'},
+    steps: {control: 'number'},
+    distanceM: {control: 'number'},
+    flights: {control: 'number'},
+    daylightMin: {control: 'number'},
+    goalMoveKcal: {control: 'number'},
+    goalExerciseMin: {control: 'number'},
+    goalStandHr: {control: 'number'},
+    sunriseHHmm: {control: 'text'},
+    sunsetHHmm: {control: 'text'},
+    sunProgressPct: {control: {type: 'range', min: 0, max: 100}}
   },
   render: (args) => {
-    const isEmpty = !args.moveKcal && !args.steps && !args.distanceM && !args.exerciseMin;
-    const isLoading = args.moveKcal === null;
+    const isEmpty = !args.moveKcal && !args.steps && !args.distanceM && !args.exerciseMin
+    const isLoading = args.moveKcal === null
 
-    const goalMove = args.goalMoveKcal ?? 500;
-    const goalEx = args.goalExerciseMin ?? 30;
-    const goalStand = args.goalStandHr ?? 12;
+    const goalMove = args.goalMoveKcal ?? 500
+    const goalEx = args.goalExerciseMin ?? 30
+    const goalStand = args.goalStandHr ?? 12
 
-    const moveVal = Math.round(args.moveKcal ?? 0);
-    const exVal = Math.round(args.exerciseMin ?? 0);
-    const standVal = Math.round(args.standHr ?? 0);
-    const steps = Math.round(args.steps ?? 0);
-    const distanceKm = ((args.distanceM ?? 0) / 1000).toFixed(1);
-    const flights = Math.round(args.flights ?? 0);
-    const daylightMin = Math.round(args.daylightMin ?? 0);
+    const moveVal = Math.round(args.moveKcal ?? 0)
+    const exVal = Math.round(args.exerciseMin ?? 0)
+    const standVal = Math.round(args.standHr ?? 0)
+    const steps = Math.round(args.steps ?? 0)
+    const distanceKm = ((args.distanceM ?? 0) / 1000).toFixed(1)
+    const flights = Math.round(args.flights ?? 0)
+    const daylightMin = Math.round(args.daylightMin ?? 0)
 
-    const movePct = goalMove > 0 ? Math.min(1, moveVal / goalMove) : 0;
-    const exPct = goalEx > 0 ? Math.min(1, exVal / goalEx) : 0;
-    const standPct = goalStand > 0 ? Math.min(1, standVal / goalStand) : 0;
-    const centerPct = Math.round(movePct * 100);
+    const movePct = goalMove > 0 ? Math.min(1, moveVal / goalMove) : 0
+    const exPct = goalEx > 0 ? Math.min(1, exVal / goalEx) : 0
+    const standPct = goalStand > 0 ? Math.min(1, standVal / goalStand) : 0
+    const centerPct = Math.round(movePct * 100)
 
-    const CIRC = { move: 2 * Math.PI * 60, exercise: 2 * Math.PI * 44, stand: 2 * Math.PI * 28 };
-    const offset = (circ: number, pct: number) => (circ * (1 - pct)).toFixed(2);
+    const CIRC = {move: 2 * Math.PI * 60, exercise: 2 * Math.PI * 44, stand: 2 * Math.PI * 28}
+    const offset = (circ: number, pct: number) => (circ * (1 - pct)).toFixed(2)
 
-    const sunPct = args.sunProgressPct ?? 60;
-    const sunrise = args.sunriseHHmm ?? '06:30';
-    const sunset = args.sunsetHHmm ?? '20:15';
-    const daylightHit = daylightMin >= (args.daylightMin ?? 20);
+    const sunPct = args.sunProgressPct ?? 60
+    const sunrise = args.sunriseHHmm ?? '06:30'
+    const sunset = args.sunsetHHmm ?? '20:15'
+    const daylightHit = daylightMin >= (args.daylightMin ?? 20)
 
     return html`
       <div id="cardMovement" class="tri-card tri-card-accent-red" style="max-width: 340px;">
@@ -74,8 +74,9 @@ const meta: Meta<MovementRingsArgs> = {
           </div>
         </div>
         <div class="widget-body">
-          ${isLoading
-            ? html`
+          ${
+      isLoading
+        ? html`
                 <div class="skeleton-state">
                   <div
                     style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;"
@@ -101,8 +102,8 @@ const meta: Meta<MovementRingsArgs> = {
                   </div>
                 </div>
               `
-            : isEmpty
-              ? html`
+        : isEmpty
+        ? html`
                   <div
                     style="display: flex; align-items: center; justify-content: center; padding: 32px 0;"
                   >
@@ -112,7 +113,7 @@ const meta: Meta<MovementRingsArgs> = {
                     >
                   </div>
                 `
-              : html`
+        : html`
                   <div
                     style="display: grid; grid-template-columns: 144px 1fr; gap: 18px; align-items: center;"
                   >
@@ -319,20 +320,23 @@ const meta: Meta<MovementRingsArgs> = {
                       style="text-align: center; font-family: var(--lg-font-family-system); font-size: 0.60rem; letter-spacing: 0.09em; color: var(--lg-color-text-muted); margin: 0;"
                     >
                       ${daylightMin} min in daylight today &middot; goal ${args.daylightMin ?? 20}
-                      min${daylightHit
-                        ? html` <span style="color: var(--lg-color-health-green);">&#10003;</span>`
-                        : ''}
+                      min${
+          daylightHit
+            ? html` <span style="color: var(--lg-color-health-green);">&#10003;</span>`
+            : ''
+        }
                     </p>
                   </div>
-                `}
+                `
+    }
         </div>
       </div>
-    `;
-  },
-};
+    `
+  }
+}
 
-export default meta;
-type Story = StoryObj<MovementRingsArgs>;
+export default meta
+type Story = StoryObj<MovementRingsArgs>
 
 export const Default: Story = {
   args: {
@@ -348,9 +352,9 @@ export const Default: Story = {
     goalStandHr: 12,
     sunriseHHmm: '06:30',
     sunsetHHmm: '20:15',
-    sunProgressPct: 60,
-  },
-};
+    sunProgressPct: 60
+  }
+}
 
 export const AllRingsClosed: Story = {
   args: {
@@ -366,9 +370,9 @@ export const AllRingsClosed: Story = {
     goalStandHr: 12,
     sunriseHHmm: '06:30',
     sunsetHHmm: '20:15',
-    sunProgressPct: 72,
-  },
-};
+    sunProgressPct: 72
+  }
+}
 
 export const StandOnly: Story = {
   args: {
@@ -384,9 +388,9 @@ export const StandOnly: Story = {
     goalStandHr: 12,
     sunriseHHmm: '06:30',
     sunsetHHmm: '20:15',
-    sunProgressPct: 50,
-  },
-};
+    sunProgressPct: 50
+  }
+}
 
 export const Empty: Story = {
   args: {
@@ -402,9 +406,9 @@ export const Empty: Story = {
     goalStandHr: 12,
     sunriseHHmm: '06:30',
     sunsetHHmm: '20:15',
-    sunProgressPct: 0,
-  },
-};
+    sunProgressPct: 0
+  }
+}
 
 export const Skeleton: Story = {
   args: {
@@ -420,13 +424,8 @@ export const Skeleton: Story = {
     goalStandHr: 12,
     sunriseHHmm: '06:30',
     sunsetHHmm: '20:15',
-    sunProgressPct: 0,
-  },
-};
+    sunProgressPct: 0
+  }
+}
 
-export const Dark: Story = {
-  ...Default,
-  globals: {
-    backgrounds: { value: 'dark' },
-  },
-};
+export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}

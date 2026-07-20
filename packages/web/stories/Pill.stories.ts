@@ -1,14 +1,12 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { html } from 'lit';
+import type {Meta, StoryObj} from '@storybook/web-components-vite'
+import {html} from 'lit'
 
 const meta: Meta = {
   title: 'Primitives/Pill',
   tags: ['autodocs'],
-  argTypes: {
-    label: { control: 'text' },
-    href: { control: 'text' },
-  },
-  render: (args) => html`
+  argTypes: {label: {control: 'text'}, href: {control: 'text'}},
+  render: (args) =>
+    html`
     <style>
       .lg-pill {
         display: inline-block;
@@ -26,16 +24,12 @@ const meta: Meta = {
       }
     </style>
     <a href="${args.href || '#'}" class="lg-pill">${args.label || 'GitHub'}</a>
-  `,
-};
+  `
+}
 
-export default meta;
-type Story = StoryObj;
+export default meta
+type Story = StoryObj
 
-export const Default: Story = {
-  args: { label: 'GitHub', href: '#' },
-};
+export const Default: Story = {args: {label: 'GitHub', href: '#'}}
 
-export const LinkedIn: Story = {
-  args: { label: 'LinkedIn', href: '#' },
-};
+export const LinkedIn: Story = {args: {label: 'LinkedIn', href: '#'}}

@@ -9,16 +9,16 @@
 // This proves the pattern the other six domains avoid (their display shapes are
 // authored directly because the runtime adapters produce narrower/different
 // shapes). For starredRepos the adapter output IS the display shape consumed by SSR.
-import type { GithubStarredReposExport } from '@lifegames/portal-contract/schemas';
-import { adaptStarredRepos, type AdaptedStarredRepo } from '@lifegames/web/runtime/adapters';
+import type {GithubStarredReposExport} from '@lifegames/portal-contract/schemas'
+import {type AdaptedStarredRepo, adaptStarredRepos} from '@lifegames/web/runtime/adapters'
 
 // Stable generation timestamp shared by the raw input and the adapter clock so
 // "N weeks/days ago" strings never drift between fixture-gen runs.
-const STABLE_NOW_ISO = '2026-03-18T12:00:00.000Z';
-const STABLE_NOW_MS = new Date(STABLE_NOW_ISO).getTime();
+const STABLE_NOW_ISO = '2026-03-18T12:00:00.000Z'
+const STABLE_NOW_MS = new Date(STABLE_NOW_ISO).getTime()
 
 function daysBefore(days: number): string {
-  return new Date(STABLE_NOW_MS - days * 24 * 60 * 60 * 1000).toISOString();
+  return new Date(STABLE_NOW_MS - days * 24 * 60 * 60 * 1000).toISOString()
 }
 
 // Raw export with a spread of star ages so the adapter exercises hours/days/weeks
@@ -41,8 +41,8 @@ const baselineRaw: GithubStarredReposExport = {
       licenseKey: null,
       licenseName: null,
       licenseSpdxId: null,
-      languages: [{ language: 'JavaScript', lines: 12400 }],
-      starredAt: daysBefore(2),
+      languages: [{language: 'JavaScript', lines: 12400}],
+      starredAt: daysBefore(2)
     },
     {
       ownerLogin: 'memvid',
@@ -59,8 +59,8 @@ const baselineRaw: GithubStarredReposExport = {
       licenseKey: 'mit',
       licenseName: 'MIT License',
       licenseSpdxId: 'MIT',
-      languages: [{ language: 'TypeScript', lines: 8900 }],
-      starredAt: daysBefore(5),
+      languages: [{language: 'TypeScript', lines: 8900}],
+      starredAt: daysBefore(5)
     },
     {
       ownerLogin: 'alienplatform',
@@ -77,8 +77,8 @@ const baselineRaw: GithubStarredReposExport = {
       licenseKey: null,
       licenseName: null,
       licenseSpdxId: null,
-      languages: [{ language: 'Shell', lines: 3200 }],
-      starredAt: daysBefore(9),
+      languages: [{language: 'Shell', lines: 3200}],
+      starredAt: daysBefore(9)
     },
     {
       ownerLogin: 'macOS26',
@@ -95,8 +95,8 @@ const baselineRaw: GithubStarredReposExport = {
       licenseKey: null,
       licenseName: null,
       licenseSpdxId: null,
-      languages: [{ language: 'HTML', lines: 5600 }],
-      starredAt: daysBefore(16),
+      languages: [{language: 'HTML', lines: 5600}],
+      starredAt: daysBefore(16)
     },
     {
       ownerLogin: 'zindexai',
@@ -114,10 +114,10 @@ const baselineRaw: GithubStarredReposExport = {
       licenseName: null,
       licenseSpdxId: null,
       languages: [],
-      starredAt: daysBefore(23),
-    },
-  ],
-};
+      starredAt: daysBefore(23)
+    }
+  ]
+}
 
 // Maximal raw input: all nullable fields non-null (description, licenseKey,
 // licenseName, licenseSpdxId), multiple languages, topics populated. Six repos
@@ -130,8 +130,7 @@ const fullRaw: GithubStarredReposExport = {
       ownerHtmlUrl: 'https://github.com/vercel',
       name: 'next.js',
       htmlUrl: 'https://github.com/vercel/next.js',
-      description:
-        'The React Framework for the Web — production-grade, server-rendered React applications',
+      description: 'The React Framework for the Web — production-grade, server-rendered React applications',
       forksCount: 27800,
       stargazersCount: 128500,
       watchersCount: 128500,
@@ -142,11 +141,11 @@ const fullRaw: GithubStarredReposExport = {
       licenseName: 'MIT License',
       licenseSpdxId: 'MIT',
       languages: [
-        { language: 'TypeScript', lines: 1850000 },
-        { language: 'JavaScript', lines: 420000 },
-        { language: 'Rust', lines: 95000 },
+        {language: 'TypeScript', lines: 1850000},
+        {language: 'JavaScript', lines: 420000},
+        {language: 'Rust', lines: 95000}
       ],
-      starredAt: daysBefore(1),
+      starredAt: daysBefore(1)
     },
     {
       ownerLogin: 'denoland',
@@ -164,19 +163,18 @@ const fullRaw: GithubStarredReposExport = {
       licenseName: 'MIT License',
       licenseSpdxId: 'MIT',
       languages: [
-        { language: 'Rust', lines: 920000 },
-        { language: 'TypeScript', lines: 310000 },
-        { language: 'JavaScript', lines: 85000 },
+        {language: 'Rust', lines: 920000},
+        {language: 'TypeScript', lines: 310000},
+        {language: 'JavaScript', lines: 85000}
       ],
-      starredAt: daysBefore(3),
+      starredAt: daysBefore(3)
     },
     {
       ownerLogin: 'biomejs',
       ownerHtmlUrl: 'https://github.com/biomejs',
       name: 'biome',
       htmlUrl: 'https://github.com/biomejs/biome',
-      description:
-        'A performant toolchain for web projects — linting, formatting, and more in one tool',
+      description: 'A performant toolchain for web projects — linting, formatting, and more in one tool',
       forksCount: 890,
       stargazersCount: 16400,
       watchersCount: 16400,
@@ -187,18 +185,17 @@ const fullRaw: GithubStarredReposExport = {
       licenseName: 'Apache License 2.0',
       licenseSpdxId: 'Apache-2.0',
       languages: [
-        { language: 'Rust', lines: 520000 },
-        { language: 'TypeScript', lines: 48000 },
+        {language: 'Rust', lines: 520000},
+        {language: 'TypeScript', lines: 48000}
       ],
-      starredAt: daysBefore(8),
+      starredAt: daysBefore(8)
     },
     {
       ownerLogin: 'drizzle-team',
       ownerHtmlUrl: 'https://github.com/drizzle-team',
       name: 'drizzle-orm',
       htmlUrl: 'https://github.com/drizzle-team/drizzle-orm',
-      description:
-        'Headless TypeScript ORM with a head — lightweight, performant, type-safe SQL query builder',
+      description: 'Headless TypeScript ORM with a head — lightweight, performant, type-safe SQL query builder',
       forksCount: 1200,
       stargazersCount: 25800,
       watchersCount: 25800,
@@ -209,19 +206,18 @@ const fullRaw: GithubStarredReposExport = {
       licenseName: 'Apache License 2.0',
       licenseSpdxId: 'Apache-2.0',
       languages: [
-        { language: 'TypeScript', lines: 380000 },
-        { language: 'JavaScript', lines: 62000 },
-        { language: 'SQL', lines: 15000 },
+        {language: 'TypeScript', lines: 380000},
+        {language: 'JavaScript', lines: 62000},
+        {language: 'SQL', lines: 15000}
       ],
-      starredAt: daysBefore(15),
+      starredAt: daysBefore(15)
     },
     {
       ownerLogin: 'tauri-apps',
       ownerHtmlUrl: 'https://github.com/tauri-apps',
       name: 'tauri',
       htmlUrl: 'https://github.com/tauri-apps/tauri',
-      description:
-        'Build smaller, faster, and more secure desktop and mobile applications with a web frontend',
+      description: 'Build smaller, faster, and more secure desktop and mobile applications with a web frontend',
       forksCount: 2800,
       stargazersCount: 86500,
       watchersCount: 86500,
@@ -232,20 +228,19 @@ const fullRaw: GithubStarredReposExport = {
       licenseName: 'MIT License',
       licenseSpdxId: 'MIT',
       languages: [
-        { language: 'Rust', lines: 680000 },
-        { language: 'TypeScript', lines: 120000 },
-        { language: 'Swift', lines: 35000 },
-        { language: 'Kotlin', lines: 28000 },
+        {language: 'Rust', lines: 680000},
+        {language: 'TypeScript', lines: 120000},
+        {language: 'Swift', lines: 35000},
+        {language: 'Kotlin', lines: 28000}
       ],
-      starredAt: daysBefore(22),
+      starredAt: daysBefore(22)
     },
     {
       ownerLogin: 'astro-community',
       ownerHtmlUrl: 'https://github.com/astro-community',
       name: 'astro',
       htmlUrl: 'https://github.com/astro-community/astro',
-      description:
-        'The web framework for content-driven websites with island architecture and zero JS by default',
+      description: 'The web framework for content-driven websites with island architecture and zero JS by default',
       forksCount: 3200,
       stargazersCount: 47600,
       watchersCount: 47600,
@@ -256,29 +251,26 @@ const fullRaw: GithubStarredReposExport = {
       licenseName: 'MIT License',
       licenseSpdxId: 'MIT',
       languages: [
-        { language: 'TypeScript', lines: 640000 },
-        { language: 'JavaScript', lines: 180000 },
-        { language: 'CSS', lines: 42000 },
+        {language: 'TypeScript', lines: 640000},
+        {language: 'JavaScript', lines: 180000},
+        {language: 'CSS', lines: 42000}
       ],
-      starredAt: daysBefore(30),
-    },
-  ],
-};
+      starredAt: daysBefore(30)
+    }
+  ]
+}
 
 // Run the REAL adapter with the stable clock → deterministic post-adapter shape.
-export const baseline: AdaptedStarredRepo[] = adaptStarredRepos(baselineRaw, STABLE_NOW_MS);
+export const baseline: AdaptedStarredRepo[] = adaptStarredRepos(baselineRaw, STABLE_NOW_MS)
 
 // Empty starred list — exercises the "no starred repos" rendering path.
-export const empty: AdaptedStarredRepo[] = adaptStarredRepos(
-  { generatedAt: STABLE_NOW_ISO, repos: [] },
-  STABLE_NOW_MS,
-);
+export const empty: AdaptedStarredRepo[] = adaptStarredRepos({generatedAt: STABLE_NOW_ISO, repos: []}, STABLE_NOW_MS)
 
 // Maximally populated: all nullable fields non-null, multiple languages, topics,
 // diverse star ages. Derived via the real adapter for deterministic output.
-export const full: AdaptedStarredRepo[] = adaptStarredRepos(fullRaw, STABLE_NOW_MS);
+export const full: AdaptedStarredRepo[] = adaptStarredRepos(fullRaw, STABLE_NOW_MS)
 
-export const starredReposPostAdapter = { baseline, empty, full } satisfies Record<
+export const starredReposPostAdapter = {baseline, empty, full} satisfies Record<
   string,
   AdaptedStarredRepo[]
->;
+>

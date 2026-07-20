@@ -9,17 +9,17 @@
 //
 // See README.md for the full import-path contract.
 export {
-  fixtures,
-  getDashboardFixture,
-  type DashboardFixture,
-  type FixtureVariation,
-  profilePostAdapter,
-  healthPostAdapter,
-  githubPostAdapter,
-  readingPostAdapter,
   booksPostAdapter,
-  systemPostAdapter,
+  type DashboardFixture,
+  fixtures,
+  type FixtureVariation,
+  getDashboardFixture,
+  githubPostAdapter,
+  healthPostAdapter,
+  profilePostAdapter,
+  readingPostAdapter,
   starredReposPostAdapter,
-} from './post-adapter';
+  systemPostAdapter
+} from './post-adapter'
 
-export { rawFixtures } from './raw';
+export { rawFixtures } from './raw'

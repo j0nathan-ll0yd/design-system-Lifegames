@@ -1,7 +1,7 @@
-import type { TheatreReviewsExport } from '@lifegames/portal-contract/schemas';
-import { isoDate, isoTimestamp } from './helpers';
+import type {TheatreReviewsExport} from '@lifegames/portal-contract/schemas'
+import {isoDate, isoTimestamp} from './helpers'
 
-type TheatreReviewEntry = TheatreReviewsExport['reviews'][number];
+type TheatreReviewEntry = TheatreReviewsExport['reviews'][number]
 
 export function createReview(overrides?: Partial<TheatreReviewEntry>): TheatreReviewEntry {
   return {
@@ -22,13 +22,11 @@ export function createReview(overrides?: Partial<TheatreReviewEntry>): TheatreRe
     imageUrlAvif: null,
     imageUrlCard: null,
     imageUrlCardAvif: null,
-    ...overrides,
-  };
+    ...overrides
+  }
 }
 
-export function createTheatreReviewsFixture(
-  overrides?: Partial<TheatreReviewsExport>,
-): TheatreReviewsExport {
+export function createTheatreReviewsFixture(overrides?: Partial<TheatreReviewsExport>): TheatreReviewsExport {
   const reviews: TheatreReviewEntry[] = [
     createReview({
       title: 'The Glass Menagerie',
@@ -36,9 +34,8 @@ export function createTheatreReviewsFixture(
       url: 'https://coasttocoastreviews.com/reviews/the-glass-menagerie',
       rating: 'A',
       ratingNumeric: 4.0,
-      excerpt:
-        'A luminous revival that honors the original while finding fresh emotional resonance.',
-      publishedAt: isoDate(),
+      excerpt: 'A luminous revival that honors the original while finding fresh emotional resonance.',
+      publishedAt: isoDate()
     }),
     createReview({
       title: 'Death of a Salesman',
@@ -46,10 +43,9 @@ export function createTheatreReviewsFixture(
       url: 'https://coasttocoastreviews.com/reviews/death-of-a-salesman',
       rating: 'B+',
       ratingNumeric: 3.3,
-      excerpt:
-        'A gripping production with a towering central performance, though the pacing lags in Act II.',
+      excerpt: 'A gripping production with a towering central performance, though the pacing lags in Act II.',
       imageUrl: 'https://coasttocoastreviews.com/images/death-of-a-salesman.jpg',
-      publishedAt: isoDate(),
+      publishedAt: isoDate()
     }),
     createReview({
       title: 'Waiting for Godot',
@@ -57,18 +53,11 @@ export function createTheatreReviewsFixture(
       url: 'https://coasttocoastreviews.com/reviews/waiting-for-godot',
       rating: 'C',
       ratingNumeric: 2.0,
-      excerpt:
-        "The existential dread is palpable, but this staging fails to unlock Beckett's dark humor.",
+      excerpt: "The existential dread is palpable, but this staging fails to unlock Beckett's dark humor.",
       imageUrl: 'https://coasttocoastreviews.com/images/waiting-for-godot.jpg',
-      publishedAt: isoDate(),
-    }),
-  ];
+      publishedAt: isoDate()
+    })
+  ]
 
-  return {
-    generatedAt: isoTimestamp(),
-    source: 'coasttocoastreviews.com',
-    totalReviews: reviews.length,
-    reviews,
-    ...overrides,
-  };
+  return {generatedAt: isoTimestamp(), source: 'coasttocoastreviews.com', totalReviews: reviews.length, reviews, ...overrides}
 }

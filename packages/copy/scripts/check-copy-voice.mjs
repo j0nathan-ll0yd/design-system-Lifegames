@@ -25,78 +25,94 @@
  * Phase-5.1 atomic wave lands them in _meta; this lint covers what a schema can't.
  */
 
-import { readFileSync, readdirSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {readdirSync, readFileSync} from 'node:fs'
+import {dirname, join} from 'node:path'
+import {fileURLToPath} from 'node:url'
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-const SRC = join(HERE, '..', 'src');
-const REPORT_ONLY = process.argv.includes('--report');
+const HERE = dirname(fileURLToPath(import.meta.url))
+const SRC = join(HERE, '..', 'src')
+const REPORT_ONLY = process.argv.includes('--report')
 
 /** A copy leaf is { value, _meta } where value is string | string[]. */
 function isLeaf(n) {
   return (
-    n &&
-    typeof n === 'object' &&
-    !Array.isArray(n) &&
-    Object.prototype.hasOwnProperty.call(n, 'value') &&
-    Object.prototype.hasOwnProperty.call(n, '_meta')
-  );
+    n && typeof n === 'object' && !Array.isArray(n) && Object.prototype.hasOwnProperty.call(n, 'value') && Object.prototype.hasOwnProperty.call(n, '_meta')
+  )
 }
 
 /** Walk the rich tree, invoking cb(keyPath, value, meta) per string value. */
 function walk(node, path, cb) {
   if (isLeaf(node)) {
-    const vals = Array.isArray(node.value) ? node.value : [node.value];
-    for (const v of vals) if (typeof v === 'string') cb(path, v, node._meta || {});
-    return;
+    const vals = Array.isArray(node.value) ? node.value : [node.value]
+    for (const v of vals) {
+      if (typeof v === 'string') {
+        cb(path, v, node._meta || {})
+      }
+    }
+    return
   }
   if (node && typeof node === 'object') {
-    for (const [k, v] of Object.entries(node)) walk(v, path ? `${path}.${k}` : k, cb);
+    for (const [k, v] of Object.entries(node)) {
+      walk(v, path ? `${path}.${k}` : k, cb)
+    }
   }
 }
 
-const MACHINE_SURFACE_RE = /llms-txt|llms-full|json-ld|\.txt|feed|<system>/i;
-const HYPE_RE =
-  /\b(revolutioni[sz]e|unleash|seamless(?:ly)?|cutting-edge|passionate about|click here|we're sorry|game-?changer|best-in-class|next-level)\b/i;
+const MACHINE_SURFACE_RE = /llms-txt|llms-full|json-ld|\.txt|feed|<system>/i
+const HYPE_RE = /\b(revolutioni[sz]e|unleash|seamless(?:ly)?|cutting-edge|passionate about|click here|we're sorry|game-?changer|best-in-class|next-level)\b/i
 
 /** Returns an array of {rule, detail} violations for one value. */
 function lintValue(value, meta) {
-  const out = [];
-  if (value.includes('...')) out.push({ rule: 'MECH-ellipsis', detail: 'literal "..." — use "…"' });
-  if (/ -- /.test(value)) out.push({ rule: 'MECH-emdash', detail: 'spaced "--" — use "—"' });
-  const hype = value.match(HYPE_RE);
-  if (hype) out.push({ rule: 'MECH-hype', detail: `banned term "${hype[0]}"` });
-  if (/^\s*Please\b/.test(value)) out.push({ rule: 'MECH-please', detail: '"Please" as opener' });
-  if (/\b(whitelist|blacklist)\b/i.test(value))
-    out.push({ rule: 'MECH-inclusive', detail: 'whitelist/blacklist — use allowlist/blocklist' });
-  if ((value.match(/!/g) || []).length >= 2)
-    out.push({ rule: 'MECH-bang', detail: '2+ exclamation marks' });
+  const out = []
+  if (value.includes('...')) {
+    out.push({rule: 'MECH-ellipsis', detail: 'literal "..." — use "…"'})
+  }
+  if (/ -- /.test(value)) {
+    out.push({rule: 'MECH-emdash', detail: 'spaced "--" — use "—"'})
+  }
+  const hype = value.match(HYPE_RE)
+  if (hype) {
+    out.push({rule: 'MECH-hype', detail: `banned term "${hype[0]}"`})
+  }
+  if (/^\s*Please\b/.test(value)) {
+    out.push({rule: 'MECH-please', detail: '"Please" as opener'})
+  }
+  if (/\b(whitelist|blacklist)\b/i.test(value)) {
+    out.push({rule: 'MECH-inclusive', detail: 'whitelist/blacklist — use allowlist/blocklist'})
+  }
+  if ((value.match(/!/g) || []).length >= 2) {
+    out.push({rule: 'MECH-bang', detail: '2+ exclamation marks'})
+  }
 
-  const usage = Array.isArray(meta.usage) ? meta.usage.join(' ') : '';
-  if (MACHINE_SURFACE_RE.test(usage) && value.includes('!'))
-    out.push({ rule: 'ARB-machine', detail: 'exclamation in a machine surface' });
+  const usage = Array.isArray(meta.usage) ? meta.usage.join(' ') : ''
+  if (MACHINE_SURFACE_RE.test(usage) && value.includes('!')) {
+    out.push({rule: 'ARB-machine', detail: 'exclamation in a machine surface'})
+  }
 
-  return out;
+  return out
 }
 
-const violations = [];
+const violations = []
 for (const file of readdirSync(SRC).filter((f) => f.endsWith('.en-US.json'))) {
-  const tree = JSON.parse(readFileSync(join(SRC, file), 'utf-8'));
-  const ns = file.replace('.en-US.json', '');
+  const tree = JSON.parse(readFileSync(join(SRC, file), 'utf-8'))
+  const ns = file.replace('.en-US.json', '')
   walk(tree, '', (keyPath, value, meta) => {
     for (const v of lintValue(value, meta)) {
-      violations.push(`  ${ns}:${keyPath}  [${v.rule}] ${v.detail}`);
+      violations.push(`  ${ns}:${keyPath}  [${v.rule}] ${v.detail}`)
     }
-  });
+  })
 }
 
 if (violations.length > 0) {
-  const verb = REPORT_ONLY ? 'ADVISORY' : 'FAIL';
-  console.error(`copy:voice — ${verb}: ${violations.length} voice/mechanics violation(s).`);
-  console.error('See packages/copy/VOICE.md for the rules.\n');
-  for (const v of violations) console.error(v);
-  if (!REPORT_ONLY) process.exit(1);
+  const verb = REPORT_ONLY ? 'ADVISORY' : 'FAIL'
+  console.error(`copy:voice — ${verb}: ${violations.length} voice/mechanics violation(s).`)
+  console.error('See packages/copy/VOICE.md for the rules.\n')
+  for (const v of violations) {
+    console.error(v)
+  }
+  if (!REPORT_ONLY) {
+    process.exit(1)
+  }
 } else {
-  console.log('copy:voice — OK. No voice/mechanics violations in src/*.en-US.json.');
+  console.log('copy:voice — OK. No voice/mechanics violations in src/*.en-US.json.')
 }
