@@ -86,7 +86,7 @@
     #particle-canvas {
       position: fixed;
       inset: 0;
-      z-index: 0;
+      z-index: var(--lg-z-base);
       will-change: transform;
     }
 
@@ -99,7 +99,7 @@
       color: var(--text);
       padding: 8px 16px;
       border-radius: 0 0 8px 8px;
-      z-index: 10000;
+      z-index: var(--lg-z-skip-link);
       text-decoration: none;
       font-weight: 600;
     }
