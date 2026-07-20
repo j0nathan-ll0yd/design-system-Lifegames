@@ -63,12 +63,12 @@
     "code": {
       "$type": "typography",
       "$value": {
-        "fontFamily": "{font.family.system}",
+        "fontFamily": "{font.family.mono}",
         "fontWeight": "{font.weight.regular}",
         "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
         "lineHeight": 1.6
       },
-      "$description": "Monospaced code blocks and inline code. Uses system monospace fallback."
+      "$description": "Monospaced code blocks and inline code. Uses the mono family stack, ending in the monospace generic."
     }
   }
 }
