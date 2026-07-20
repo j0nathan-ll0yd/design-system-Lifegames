@@ -481,7 +481,8 @@ export default {
     "family": {
       "brand": "Space Grotesk",
       "brandFallback": "Space Grotesk Fallback",
-      "system": "system-ui"
+      "system": "system-ui",
+      "mono": "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
     },
     "weight": {
       "light": 300,
@@ -661,7 +662,7 @@ export default {
       "lineHeight": 1.3
     },
     "code": {
-      "fontFamily": "system-ui",
+      "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
       "fontWeight": 400,
       "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
       "lineHeight": 1.6

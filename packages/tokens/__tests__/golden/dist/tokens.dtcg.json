@@ -1081,6 +1081,10 @@
       "system": {
         "$value": "system-ui",
         "$type": "fontFamily"
+      },
+      "mono": {
+        "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
+        "$type": "fontFamily"
       }
     },
     "weight": {
@@ -1401,13 +1405,13 @@
     },
     "code": {
       "$value": {
-        "fontFamily": "system-ui",
+        "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
         "fontWeight": 400,
         "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
         "lineHeight": 1.6
       },
       "$type": "typography",
-      "$description": "Monospaced code blocks and inline code. Uses system monospace fallback."
+      "$description": "Monospaced code blocks and inline code. Uses the mono family stack, ending in the monospace generic."
     }
   }
 }

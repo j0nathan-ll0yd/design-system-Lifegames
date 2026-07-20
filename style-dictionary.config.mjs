@@ -299,10 +299,18 @@ function emitTokensCss() {
     }
   }
 
+  // A font-family value that already contains a comma is a full, author-managed
+  // stack (its own generic fallback included) and is emitted verbatim; a bare
+  // single family name is quoted and gets the sans-serif generic. This lets the
+  // mono family carry its own `..., monospace` fallback instead of a wrong
+  // sans-serif one, without changing any single-name family token.
+  const cssFontFamily = (value) =>
+    String(value).includes(',') ? String(value) : `'${value}', sans-serif`;
+
   css += '\n  /* Font families */\n';
   for (const t of tokens) {
     if (t.$type !== 'fontFamily') continue;
-    css += `  ${toCssVar(t.path)}: '${t.resolvedValue}', sans-serif;\n`;
+    css += `  ${toCssVar(t.path)}: ${cssFontFamily(t.resolvedValue)};\n`;
   }
 
   css += '\n  /* Font weights */\n';
@@ -350,7 +358,7 @@ function emitTokensCss() {
         val.fontFamily,
         new Map(tokens.map((t) => [t.path.join('.'), t])),
       );
-      css += `${prefix}-font-family: '${resolvedFamily}', sans-serif;\n`;
+      css += `${prefix}-font-family: ${cssFontFamily(resolvedFamily)};\n`;
     }
     if (val.letterSpacing) css += `${prefix}-letter-spacing: ${val.letterSpacing};\n`;
   }

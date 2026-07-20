@@ -3,7 +3,11 @@
     "family": {
       "brand": { "$type": "fontFamily", "$value": "Space Grotesk" },
       "brandFallback": { "$type": "fontFamily", "$value": "Space Grotesk Fallback" },
-      "system": { "$type": "fontFamily", "$value": "system-ui" }
+      "system": { "$type": "fontFamily", "$value": "system-ui" },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace"
+      }
     },
     "weight": {
       "light": { "$type": "fontWeight", "$value": 300 },
