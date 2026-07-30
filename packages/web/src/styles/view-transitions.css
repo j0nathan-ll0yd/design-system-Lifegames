@@ -24,11 +24,11 @@
    open crossfade a click on the backdrop resolved to <html> (the snapshot's
    originating element) and never reached the <dialog>'s click listener.
 
-   Removing the root name means only the explicitly-named elements
-   (`book-modal-content`, `live-content-swap`) are snapshotted/animated; the
-   rest of the page — including the full-viewport <dialog> and its backdrop —
-   stays LIVE and interactive throughout the transition. This is also the
-   intended visual: only the card should crossfade, not the entire page. */
+   Removing the root name means only the explicitly-named element
+   (`live-content-swap`) is snapshotted/animated; the rest of the page —
+   including the full-viewport <dialog> and its backdrop — stays LIVE and
+   interactive throughout the transition. This is also the intended visual:
+   only the swapped content should crossfade, not the entire page. */
 :root {
   view-transition-name: none;
 }

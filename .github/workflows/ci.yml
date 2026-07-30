@@ -278,12 +278,14 @@ jobs:
         env:
           LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      # The former step here (pnpm --filter @lifegames/web tsc) was a silent no-op:
-      # packages/web has no tsconfig, so tsc printed help and exited 0 via pnpm<=9's
-      # implicit exec fallback (removed in pnpm 11, which exposed it). The web unit
-      # suite (updaters/adapters — the TS side of the Props contract) previously ran
-      # in NO CI job; it runs here now. A real tsconfig-based typecheck remains a
-      # follow-up.
+      # This job runs the web unit suite (updaters/adapters — the TS side of the
+      # Props contract), which previously ran in NO CI job.
+      # It deliberately does NOT typecheck: packages/web gained a real
+      # tsconfig.json in #142 and is type-checked by the dedicated `typecheck`
+      # job (turbo run typecheck), so duplicating it here would only add runtime.
+      # The step that used to sit here (pnpm --filter @lifegames/web tsc) was a
+      # silent no-op — no tsconfig meant tsc printed help and exited 0 via
+      # pnpm<=9's implicit exec fallback. See #110.
       - name: Web unit tests (updaters/adapters Props contract)
         run: pnpm --filter @lifegames/web test
 

@@ -3,6 +3,10 @@ import '@lifegames/tokens/compat'
 import '@lifegames/tokens/components'
 import '@lifegames/tokens/animations'
 import '@lifegames/tokens/shadcn'
+// Primitive component CSS. Stories hand-render the markup with lit rather than
+// mounting the .astro components, so without this the primitives render
+// unstyled — see the header comment in packages/web/src/styles/primitives.css.
+import '@lifegames/web/styles/primitives.css'
 import type {Preview} from '@storybook/web-components-vite'
 import {html} from 'lit'
 

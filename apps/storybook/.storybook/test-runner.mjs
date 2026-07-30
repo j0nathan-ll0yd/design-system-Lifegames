@@ -22,19 +22,16 @@ const BG_TOLERANCE = 10
 // measured 0.0177%). Blank frames measure exactly 0.0000%.
 const MIN_CONTENT_RATIO = 0.0001
 
-/* Stories that render (near-)blank today for reasons unrelated to #123. Listed
-   explicitly so the exemption is visible and tracked rather than absorbed by a
-   lowered threshold — an unexplained entry here is a bug, not a config detail.
-   - primitives-skeleton--*: .lg-skeleton-* is defined only in the scoped <style>
-     of packages/web/src/components/Skeleton.astro, but Skeleton.stories.ts
-     hand-renders the markup with lit, so those styles never load.
-   - production-reading-bookmodal--empty/--loading: empty state legitimately
-     renders only the close button. */
+/* Stories that legitimately render (near-)blank. Listed explicitly so the
+   exemption is visible and tracked rather than absorbed by a lowered threshold —
+   an unexplained entry here is a bug, not a config detail.
+
+   All three are dismissed-modal states whose whole point is that nothing is
+   painted: the overlay resolves to `display: none`, so an empty frame is the
+   correct render, not a broken one. Verified via computed style rather than
+   pixels — primitives-modal--visible is `display: flex` and does render. */
 const SENTINEL_EXEMPT = new Set([
-  'primitives-skeleton--bar',
-  'primitives-skeleton--bar-wide',
-  'primitives-skeleton--circle',
-  'primitives-skeleton--circle-large',
+  'primitives-modal--hidden',
   'production-reading-bookmodal--empty',
   'production-reading-bookmodal--loading'
 ])

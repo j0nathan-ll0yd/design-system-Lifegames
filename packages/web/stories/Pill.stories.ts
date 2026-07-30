@@ -5,26 +5,11 @@ const meta: Meta = {
   title: 'Primitives/Pill',
   tags: ['autodocs'],
   argTypes: {label: {control: 'text'}, href: {control: 'text'}},
-  render: (args) =>
-    html`
-    <style>
-      .lg-pill {
-        display: inline-block;
-        padding: 8px 20px;
-        border: 1px solid var(--lg-color-border-subtle);
-        border-radius: 9999px;
-        color: var(--lg-color-text-primary);
-        text-decoration: none;
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: var(--lg-font-size-sm, 0.8rem);
-        font-weight: 500;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        background: var(--lg-color-surface-inset);
-      }
-    </style>
-    <a href="${args.href || '#'}" class="lg-pill">${args.label || 'GitHub'}</a>
-  `
+  // No inline <style> here: .lg-pill comes from
+  // packages/web/src/styles/primitives.css, imported once in .storybook/preview.ts.
+  // This story used to carry a hand-maintained copy that had already drifted from
+  // Pill.astro (literal `8px 20px` instead of the spacing tokens).
+  render: (args) => html`<a href="${args.href || '#'}" class="lg-pill">${args.label || 'GitHub'}</a>`
 }
 
 export default meta
