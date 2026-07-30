@@ -8,7 +8,7 @@ Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 | ------------------------- | ----- |
 | Source files validated    | 13    |
 | Dist DTCG files validated | 1     |
-| Total violations          | 120   |
+| Total violations          | 122   |
 | Violation types           | 1     |
 
 ## Scope Exclusions
@@ -19,7 +19,7 @@ Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 
 ### MISSING_DESCRIPTION — Token leaf missing `$description`
 
-120 occurrence(s)
+122 occurrence(s)
 
 | File                                       | Token Path                         | Detail                              |
 | ------------------------------------------ | ---------------------------------- | ----------------------------------- |
@@ -62,6 +62,7 @@ Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 | `tokens/primitive/typography.tokens.json`  | `(root).font.family.brand`         | Token leaf is missing $description. |
 | `tokens/primitive/typography.tokens.json`  | `(root).font.family.brandFallback` | Token leaf is missing $description. |
 | `tokens/primitive/typography.tokens.json`  | `(root).font.family.system`        | Token leaf is missing $description. |
+| `tokens/primitive/typography.tokens.json`  | `(root).font.family.mono`          | Token leaf is missing $description. |
 | `tokens/primitive/typography.tokens.json`  | `(root).font.weight.light`         | Token leaf is missing $description. |
 | `tokens/primitive/typography.tokens.json`  | `(root).font.weight.regular`       | Token leaf is missing $description. |
 | `tokens/primitive/typography.tokens.json`  | `(root).font.weight.medium`        | Token leaf is missing $description. |
@@ -72,8 +73,7 @@ Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 | `tokens/primitive/typography.tokens.json`  | `(root).iosTypography.footnote`    | Token leaf is missing $description. |
 | `tokens/primitive/typography.tokens.json`  | `(root).iosTypography.callout`     | Token leaf is missing $description. |
 | `tokens/semantic/color.tokens.json`        | `(root).color.accent.pink`         | Token leaf is missing $description. |
-| `tokens/semantic/color.tokens.json`        | `(root).color.accent.blue`         | Token leaf is missing $description. |
-| ...                                        | ...                                | _(70 more)_                         |
+| ...                                        | ...                                | _(72 more)_                         |
 
 ## Composite-Type Token Candidates
 

@@ -1,4 +1,5 @@
 ---
+import '../styles/primitives.css';
 interface Props {
   href: string;
   label: string;
@@ -11,47 +12,3 @@ const { href, label, class: className } = Astro.props;
 <a href={href} class:list={['lg-pill', className]}>
   {label}
 </a>
-
-<style>
-  .lg-pill {
-    display: inline-block;
-    padding: var(--lg-spacing-200, 8px) var(--lg-spacing-500, 20px);
-    border: 1px solid var(--lg-color-border-subtle);
-    border-radius: var(--lg-radius-pill, 9999px);
-    color: var(--lg-color-text-primary);
-    text-decoration: none;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: var(--lg-font-size-sm, 0.8rem);
-    font-weight: 500;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    background: var(--lg-color-surface-inset);
-    transition:
-      transform 0.3s ease,
-      color 0.3s ease,
-      background-color 0.3s ease,
-      border-color 0.3s ease,
-      box-shadow 0.3s ease;
-  }
-
-  @media (hover: hover) {
-    .lg-pill:hover {
-      border-color: var(--lg-color-accent-indigo);
-      box-shadow:
-        0 0 15px rgba(129, 140, 248, 0.25),
-        0 0 30px rgba(129, 140, 248, 0.1);
-    }
-  }
-
-  .lg-pill:focus-visible {
-    outline: 2px solid var(--lg-color-accent-pink);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(255, 0, 110, 0.25);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .lg-pill {
-      transition: none;
-    }
-  }
-</style>

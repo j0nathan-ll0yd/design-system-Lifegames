@@ -133,22 +133,8 @@
       --max-site-width: 2400px;
     }
 
-    /* =================================================================
-   STATIC-RENDER VISIBILITY OVERRIDE
-   =================================================================
-
-   .tri-card defaults to opacity: 0 + translateY(20px) in components.css.
-   The .visible class flips this, but .visible is added by client JS
-   (live-data.ts) that does NOT fire in static MDX previews or SSR.
-
-   This rule ensures widgets are visible in all static-render contexts
-   (docs site, Storybook) at all viewport widths.
-   ================================================================= */
-
-    [data-widget-preview] .tri-card {
-      opacity: 1;
-      transform: none;
-    }
+    /* STATIC-RENDER VISIBILITY OVERRIDE moved out of @layer compat —
+   see the unlayered block at the end of this file for why. */
 
     /* =================================================================
    WIDGET BOX-MODEL NORMALIZATION (parity with production)
@@ -265,4 +251,36 @@
       margin: 0 calc(-1 * var(--space-4));
     }
   }
+}
+
+/* =================================================================
+   STATIC-RENDER VISIBILITY OVERRIDE — INTENTIONALLY UNLAYERED
+   =================================================================
+
+   .tri-card defaults to opacity: 0 + translateY(20px) in @layer components.
+   The .visible class flips this, but .visible is added by client JS that does
+   NOT fire in static-render contexts (Storybook stories, static MDX previews,
+   SSR). This rule is the sanctioned escape hatch for those contexts.
+
+   WHY UNLAYERED: this rule previously lived in @layer compat and was therefore
+   DEAD in every consumer. Cascade-layer order beats specificity, and the inner
+   lifegames sub-layers are ordered by first appearance — every consumer
+   (apps/docs, apps/portfolio, apps/storybook) imports compat BEFORE components,
+   so @layer components always won and .tri-card stayed at opacity: 0. The docs
+   site masked this by adding .visible from its own JS; Storybook has no such JS,
+   so all 15 production widget stories rendered fully transparent and their
+   visual-regression baselines were blank (issue #123).
+
+   An unlayered rule outranks every layered rule regardless of import order, so
+   the escape hatch can no longer be silently reordered into uselessness. Keep it
+   here — do NOT move it back inside @layer lifegames.
+
+   Scope is deliberately narrow: [data-widget-preview] is a preview-only wrapper.
+   packages/web/src/production/BioTerminal.astro documents that the production
+   component does not inject it, so production scroll-reveal is unaffected.
+   ================================================================= */
+
+[data-widget-preview] .tri-card {
+  opacity: 1;
+  transform: none;
 }
