@@ -1,4 +1,4 @@
-import type {LocationExport} from '@lifegames/portal-contract/schemas'
+import type {LocationExport} from '@lifegames/web/types/exports'
 import {isoDate, isoTimestamp, last90DaysEntries} from './helpers'
 
 export function createLocationFixture(overrides: Partial<LocationExport> = {}): LocationExport {

@@ -6,7 +6,6 @@
     "sleep": "sleep-export.schema.json",
     "workouts": "workouts-export.schema.json",
     "books": "books-export.schema.json",
-    "location": "location-export.schema.json",
     "github-events": "github-events-export.schema.json",
     "github-starred-repos": "github-starred-repos-export.schema.json",
     "articles": "articles-export.schema.json",
