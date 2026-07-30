@@ -109,7 +109,6 @@ const VENDORED_TITLE_MAP: Record<string, string> = {
   'github-events-export.schema.json': 'GithubEventsExport',
   'github-starred-repos-export.schema.json': 'GithubStarredReposExport',
   'health-export.schema.json': 'HealthExport',
-  'location-export.schema.json': 'LocationExport',
   'sleep-export.schema.json': 'SleepExport',
   'theatre-reviews-export.schema.json': 'TheatreReviewsExport',
   'workouts-export.schema.json': 'WorkoutsExport'

@@ -216,7 +216,7 @@
       }
     },
     "longBio": {
-      "value": "Engineering director and backend engineer with 24+ years of experience. Built this portfolio as a living data dashboard — real biometrics and constant updates of body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
+      "value": "Engineering director and backend engineer with 24+ years of experience. Built this portfolio as a living data dashboard — real biometrics and constant updates of body (health, activity, hydration) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
       "_meta": {
         "description": "Person JSON-LD description — the long, structured-data biography. Names experience ('24+ years') and the AI-centric framing.",
         "usage": ["web:Dashboard.astro:102 (Person JSON-LD description)"],
