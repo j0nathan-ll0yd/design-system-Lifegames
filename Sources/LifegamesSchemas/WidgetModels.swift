@@ -2,7 +2,7 @@
 // Source: packages/schemas/{vendored,authored}/*.schema.json
 // Re-run: pnpm -F @lifegames/schemas codegen
 //
-// Contains Codable structs for all 22 widget data schemas.
+// Contains Codable structs for all 21 widget data schemas.
 // Shared decoder helpers appear once at the end of this file.
 
 import Foundation
@@ -687,6 +687,7 @@ struct HealthExport: Codable {
     let lastSync: String?
     let quantities: [String: Quantity]
     let solar: Solar?
+    let watch: Watch?
 }
 
 // MARK: HealthExport convenience initializers and mutators
@@ -713,7 +714,8 @@ extension HealthExport {
         goals: Goals?? = nil,
         lastSync: String?? = nil,
         quantities: [String: Quantity]? = nil,
-        solar: Solar?? = nil
+        solar: Solar?? = nil,
+        watch: Watch?? = nil
     ) -> HealthExport {
         return HealthExport(
             date: date ?? self.date,
@@ -721,7 +723,8 @@ extension HealthExport {
             goals: goals ?? self.goals,
             lastSync: lastSync ?? self.lastSync,
             quantities: quantities ?? self.quantities,
-            solar: solar ?? self.solar
+            solar: solar ?? self.solar,
+            watch: watch ?? self.watch
         )
     }
 
@@ -869,31 +872,18 @@ extension Solar {
     }
 }
 
-// MARK: - Helper functions for creating encoders and decoders
-
-// MARK: - Schema: LocationExport
-
-// MARK: - LocationExport
-struct LocationExport: Codable {
-    let categoryBreakdown: [CategoryBreakdown]
-    let citiesVisited: Int
-    let cityBreakdown: [CityBreakdown]
-    let currentCity: String?
-    let explorationStats: ExplorationStats
-    let generatedAt: String
-    let last90Days: [Last90Day]
-    let lastSeen: String?
-    let streaks: Streaks
-    let topPlaces: [TopPlace]
-    let totalDurationHours: Double
-    let totalPlaces, totalVisits: Int
+// MARK: - Watch
+struct Watch: Codable {
+    let since: String?
+    let source: Source
+    let worn: Bool
 }
 
-// MARK: LocationExport convenience initializers and mutators
+// MARK: Watch convenience initializers and mutators
 
-extension LocationExport {
+extension Watch {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(LocationExport.self, from: data)
+        self = try newJSONDecoder().decode(Watch.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -908,34 +898,14 @@ extension LocationExport {
     }
 
     func with(
-        categoryBreakdown: [CategoryBreakdown]? = nil,
-        citiesVisited: Int? = nil,
-        cityBreakdown: [CityBreakdown]? = nil,
-        currentCity: String?? = nil,
-        explorationStats: ExplorationStats? = nil,
-        generatedAt: String? = nil,
-        last90Days: [Last90Day]? = nil,
-        lastSeen: String?? = nil,
-        streaks: Streaks? = nil,
-        topPlaces: [TopPlace]? = nil,
-        totalDurationHours: Double? = nil,
-        totalPlaces: Int? = nil,
-        totalVisits: Int? = nil
-    ) -> LocationExport {
-        return LocationExport(
-            categoryBreakdown: categoryBreakdown ?? self.categoryBreakdown,
-            citiesVisited: citiesVisited ?? self.citiesVisited,
-            cityBreakdown: cityBreakdown ?? self.cityBreakdown,
-            currentCity: currentCity ?? self.currentCity,
-            explorationStats: explorationStats ?? self.explorationStats,
-            generatedAt: generatedAt ?? self.generatedAt,
-            last90Days: last90Days ?? self.last90Days,
-            lastSeen: lastSeen ?? self.lastSeen,
-            streaks: streaks ?? self.streaks,
-            topPlaces: topPlaces ?? self.topPlaces,
-            totalDurationHours: totalDurationHours ?? self.totalDurationHours,
-            totalPlaces: totalPlaces ?? self.totalPlaces,
-            totalVisits: totalVisits ?? self.totalVisits
+        since: String?? = nil,
+        source: Source? = nil,
+        worn: Bool? = nil
+    ) -> Watch {
+        return Watch(
+            since: since ?? self.since,
+            source: source ?? self.source,
+            worn: worn ?? self.worn
         )
     }
 
@@ -948,278 +918,9 @@ extension LocationExport {
     }
 }
 
-// MARK: - CategoryBreakdown
-struct CategoryBreakdown: Codable {
-    let category: String
-    let totalMinutes, visitCount: Int
-}
-
-// MARK: CategoryBreakdown convenience initializers and mutators
-
-extension CategoryBreakdown {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(CategoryBreakdown.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        category: String? = nil,
-        totalMinutes: Int? = nil,
-        visitCount: Int? = nil
-    ) -> CategoryBreakdown {
-        return CategoryBreakdown(
-            category: category ?? self.category,
-            totalMinutes: totalMinutes ?? self.totalMinutes,
-            visitCount: visitCount ?? self.visitCount
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - CityBreakdown
-struct CityBreakdown: Codable {
-    let city: String
-    let visitCount: Int
-}
-
-// MARK: CityBreakdown convenience initializers and mutators
-
-extension CityBreakdown {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(CityBreakdown.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        city: String? = nil,
-        visitCount: Int? = nil
-    ) -> CityBreakdown {
-        return CityBreakdown(
-            city: city ?? self.city,
-            visitCount: visitCount ?? self.visitCount
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - ExplorationStats
-struct ExplorationStats: Codable {
-    let totalCities, totalNeighborhoods, totalStates: Int
-}
-
-// MARK: ExplorationStats convenience initializers and mutators
-
-extension ExplorationStats {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(ExplorationStats.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        totalCities: Int? = nil,
-        totalNeighborhoods: Int? = nil,
-        totalStates: Int? = nil
-    ) -> ExplorationStats {
-        return ExplorationStats(
-            totalCities: totalCities ?? self.totalCities,
-            totalNeighborhoods: totalNeighborhoods ?? self.totalNeighborhoods,
-            totalStates: totalStates ?? self.totalStates
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Last90Day
-struct Last90Day: Codable {
-    let count: Int
-    let date: String
-    let totalDurationMinutes, uniquePlaces: Int
-}
-
-// MARK: Last90Day convenience initializers and mutators
-
-extension Last90Day {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Last90Day.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        count: Int? = nil,
-        date: String? = nil,
-        totalDurationMinutes: Int? = nil,
-        uniquePlaces: Int? = nil
-    ) -> Last90Day {
-        return Last90Day(
-            count: count ?? self.count,
-            date: date ?? self.date,
-            totalDurationMinutes: totalDurationMinutes ?? self.totalDurationMinutes,
-            uniquePlaces: uniquePlaces ?? self.uniquePlaces
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - Streaks
-struct Streaks: Codable {
-    let currentStreak, longestStreak, totalActiveDays: Int
-}
-
-// MARK: Streaks convenience initializers and mutators
-
-extension Streaks {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(Streaks.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        currentStreak: Int? = nil,
-        longestStreak: Int? = nil,
-        totalActiveDays: Int? = nil
-    ) -> Streaks {
-        return Streaks(
-            currentStreak: currentStreak ?? self.currentStreak,
-            longestStreak: longestStreak ?? self.longestStreak,
-            totalActiveDays: totalActiveDays ?? self.totalActiveDays
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
-}
-
-// MARK: - TopPlace
-struct TopPlace: Codable {
-    let category, lastVisitAt: String?
-    let name: String
-    let totalDurationMinutes, visitCount: Int
-}
-
-// MARK: TopPlace convenience initializers and mutators
-
-extension TopPlace {
-    init(data: Data) throws {
-        self = try newJSONDecoder().decode(TopPlace.self, from: data)
-    }
-
-    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
-        guard let data = json.data(using: encoding) else {
-            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
-        }
-        try self.init(data: data)
-    }
-
-    init(fromURL url: URL) throws {
-        try self.init(data: try Data(contentsOf: url))
-    }
-
-    func with(
-        category: String?? = nil,
-        lastVisitAt: String?? = nil,
-        name: String? = nil,
-        totalDurationMinutes: Int? = nil,
-        visitCount: Int? = nil
-    ) -> TopPlace {
-        return TopPlace(
-            category: category ?? self.category,
-            lastVisitAt: lastVisitAt ?? self.lastVisitAt,
-            name: name ?? self.name,
-            totalDurationMinutes: totalDurationMinutes ?? self.totalDurationMinutes,
-            visitCount: visitCount ?? self.visitCount
-        )
-    }
-
-    func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
-    }
-
-    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
-    }
+enum Source: String, Codable {
+    case charging = "charging"
+    case hrGap = "hrGap"
 }
 
 // MARK: - Helper functions for creating encoders and decoders
@@ -1449,7 +1150,7 @@ extension Rem {
 struct TheatreReviewsExport: Codable {
     let generatedAt: String
     let reviews: [Review]
-    let source: Source
+    let source: TheatreReviewsExportSource
     let totalReviews: Double
 }
 
@@ -1474,7 +1175,7 @@ extension TheatreReviewsExport {
     func with(
         generatedAt: String? = nil,
         reviews: [Review]? = nil,
-        source: Source? = nil,
+        source: TheatreReviewsExportSource? = nil,
         totalReviews: Double? = nil
     ) -> TheatreReviewsExport {
         return TheatreReviewsExport(
@@ -1498,7 +1199,7 @@ extension TheatreReviewsExport {
 struct Review: Codable {
     let author, excerpt: String
     let imageHeight: Double?
-    let imageURL: String?
+    let imageURL, imageURLAvif, imageURLCard, imageURLCardAvif: String?
     let imageWidth: Double?
     let publishedAt: String
     let rating: String?
@@ -1508,6 +1209,9 @@ struct Review: Codable {
     enum CodingKeys: String, CodingKey {
         case author, excerpt, imageHeight
         case imageURL = "imageUrl"
+        case imageURLAvif = "imageUrlAvif"
+        case imageURLCard = "imageUrlCard"
+        case imageURLCardAvif = "imageUrlCardAvif"
         case imageWidth, publishedAt, rating, ratingNumeric, slug, title, url
     }
 }
@@ -1535,6 +1239,9 @@ extension Review {
         excerpt: String? = nil,
         imageHeight: Double?? = nil,
         imageURL: String?? = nil,
+        imageURLAvif: String?? = nil,
+        imageURLCard: String?? = nil,
+        imageURLCardAvif: String?? = nil,
         imageWidth: Double?? = nil,
         publishedAt: String? = nil,
         rating: String?? = nil,
@@ -1548,6 +1255,9 @@ extension Review {
             excerpt: excerpt ?? self.excerpt,
             imageHeight: imageHeight ?? self.imageHeight,
             imageURL: imageURL ?? self.imageURL,
+            imageURLAvif: imageURLAvif ?? self.imageURLAvif,
+            imageURLCard: imageURLCard ?? self.imageURLCard,
+            imageURLCardAvif: imageURLCardAvif ?? self.imageURLCardAvif,
             imageWidth: imageWidth ?? self.imageWidth,
             publishedAt: publishedAt ?? self.publishedAt,
             rating: rating ?? self.rating,
@@ -1567,7 +1277,7 @@ extension Review {
     }
 }
 
-enum Source: String, Codable {
+enum TheatreReviewsExportSource: String, Codable {
     case coasttocoastreviewsCOM = "coasttocoastreviews.com"
 }
 
@@ -1938,6 +1648,7 @@ struct DashboardHealth: Codable {
     /// Composite sleep quality score (0-100).
     let sleepScore: Double?
     let solar: Solar?
+    let watch: Watch?
     /// List of workout records for the day. Empty array when no workouts were logged.
     let workouts: [DashboardHealthWorkout]
 }
@@ -1974,6 +1685,7 @@ extension DashboardHealth {
         sleepPhaseFormatted: SleepPhaseFormatted?? = nil,
         sleepScore: Double?? = nil,
         solar: Solar?? = nil,
+        watch: Watch?? = nil,
         workouts: [DashboardHealthWorkout]? = nil
     ) -> DashboardHealth {
         return DashboardHealth(
@@ -1990,6 +1702,7 @@ extension DashboardHealth {
             sleepPhaseFormatted: sleepPhaseFormatted ?? self.sleepPhaseFormatted,
             sleepScore: sleepScore ?? self.sleepScore,
             solar: solar ?? self.solar,
+            watch: watch ?? self.watch,
             workouts: workouts ?? self.workouts
         )
     }

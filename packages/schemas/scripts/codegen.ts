@@ -48,7 +48,6 @@ const SCHEMA_ENTRIES: Array<{relPath: string; name: string}> = [
   {relPath: 'vendored/github-events-export.schema.json', name: 'GithubEventsExport'},
   {relPath: 'vendored/github-starred-repos-export.schema.json', name: 'GithubStarredReposExport'},
   {relPath: 'vendored/health-export.schema.json', name: 'HealthExport'},
-  {relPath: 'vendored/location-export.schema.json', name: 'LocationExport'},
   {relPath: 'vendored/sleep-export.schema.json', name: 'SleepExport'},
   {relPath: 'vendored/theatre-reviews-export.schema.json', name: 'TheatreReviewsExport'},
   {relPath: 'vendored/workouts-export.schema.json', name: 'WorkoutsExport'},
