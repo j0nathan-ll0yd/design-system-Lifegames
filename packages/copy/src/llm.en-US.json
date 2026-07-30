@@ -1982,7 +1982,7 @@
   },
   "agentDiscovery": {
     "agentCardDescription": {
-      "value": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, theatre reviews, and location data as structured JSON via CloudFront.",
+      "value": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, and theatre reviews as structured JSON via CloudFront.",
       "_meta": {
         "description": "Top-level description field in the A2A agent-card (.well-known/agent-card.json). Summarises the agent interface in one sentence for agent-to-agent discovery.",
         "usage": [
@@ -2010,7 +2010,7 @@
       }
     },
     "agentCardSkillDescription": {
-      "value": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, GitHub contributions, and location aggregates. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
+      "value": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, and GitHub contributions. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
       "_meta": {
         "description": "Description of the personal-profile skill in the A2A agent-card. Tells consuming agents what the skill provides and when to use it.",
         "usage": [
@@ -2057,7 +2057,7 @@
       }
     },
     "aiCatalogMcpDescription": {
-      "value": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, theatre reviews, and location aggregates.",
+      "value": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews.",
       "_meta": {
         "description": "Description for the MCP-server catalog entry. Tells AI crawlers what data the MCP server exposes.",
         "usage": [

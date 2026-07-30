@@ -178,9 +178,9 @@
     "dsLocationDesc": "Aggregated place summaries and location data"
   },
   "agentDiscovery": {
-    "agentCardDescription": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, theatre reviews, and location data as structured JSON via CloudFront.",
+    "agentCardDescription": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, and theatre reviews as structured JSON via CloudFront.",
     "agentCardSkillName": "Personal Profile",
-    "agentCardSkillDescription": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, GitHub contributions, and location aggregates. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
+    "agentCardSkillDescription": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, and GitHub contributions. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
     "agentCardSkillExamples": [
       "What is Jonathan working on right now?",
       "What books is Jonathan currently reading?",
@@ -188,7 +188,7 @@
       "What are Jonathan's current health metrics?"
     ],
     "aiCatalogMcpName": "Human Datastream MCP Server",
-    "aiCatalogMcpDescription": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, theatre reviews, and location aggregates.",
+    "aiCatalogMcpDescription": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews.",
     "aiCatalogMcpQueries": [
       "What is Jonathan Lloyd's current heart rate?",
       "What has Jonathan been reading lately?",
