@@ -291,7 +291,7 @@
       }
     },
     "description": {
-      "value": "Personal portfolio of Jonathan Lloyd, an engineering director and backend engineer, built as a living data dashboard. Real biometrics and constant updates of his whole body (health, activity, hydration, location) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
+      "value": "Personal portfolio of Jonathan Lloyd, an engineering director and backend engineer, built as a living data dashboard. Real biometrics and constant updates of his whole body (health, activity, hydration) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
       "_meta": {
         "description": "WebSite JSON-LD description. The canonical 'about the portfolio' paragraph. IDENTICAL prose currently lives inline in the backend llms-txt.eta:3 (D1b threads this through siteDescription to close that duplication).",
         "usage": [
@@ -704,7 +704,7 @@
       }
     },
     "dataDisplayed": {
-      "value": "Everything shown on this dashboard is the owner's own self-published data — health metrics, activity, hydration, reading history, location check-ins, and GitHub activity. No visitor data is displayed.",
+      "value": "Everything shown on this dashboard is the owner's own self-published data — health metrics, activity, hydration, reading history, and GitHub activity. No visitor data is displayed.",
       "_meta": {
         "description": "Clarifies that the data rendered on the dashboard belongs to the site owner, not to visitors. Avoids confusion about whose data is being shown.",
         "usage": ["web:src/pages/privacy.astro (data displayed section)"],
