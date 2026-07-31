@@ -18,7 +18,26 @@
     "quantities": {
       "type": "object",
       "propertyNames": {
-        "type": "string"
+        "type": "string",
+        "enum": [
+          "stepCount",
+          "activeEnergyBurned",
+          "basalEnergyBurned",
+          "distanceWalkingRunning",
+          "flightsClimbed",
+          "exerciseTime",
+          "standTime",
+          "standHours",
+          "timeInDaylight",
+          "heartRate",
+          "restingHeartRate",
+          "hrvSDNN",
+          "respiratoryRate",
+          "wristTemperatureDelta",
+          "sleepScore",
+          "dietaryWater",
+          "dietaryCaffeine"
+        ]
       },
       "additionalProperties": {
         "type": "object",

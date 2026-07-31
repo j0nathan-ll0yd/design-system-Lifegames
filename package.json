@@ -57,7 +57,7 @@
     "culori": "^4.0.2"
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,mjs,cjs,json}": "dprint fmt",
+    "**/*.{ts,tsx,js,mjs,cjs,json}": "dprint fmt --allow-no-files",
     "**/*.{astro,md,mdx,css}": "prettier --write"
   }
 }

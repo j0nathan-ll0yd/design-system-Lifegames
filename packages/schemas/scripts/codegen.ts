@@ -70,13 +70,23 @@ const SCHEMA_ENTRIES: Array<{relPath: string; name: string}> = [
  * For each entry: vendored schema + overlay = generated schema written to generated/.
  * SCHEMA_ENTRIES still points at authored/ until Phase 3 switches it to generated/.
  */
-const OVERLAY_ENTRIES: Array<{vendored: string; overlay: string; outputRel: string; name: string; excludeFromVendored?: string[]}> = [
+const OVERLAY_ENTRIES: Array<
+  {vendored: string; overlay: string; outputRel: string; name: string; excludeFromVendored?: string[]; quantityKeyRenames?: Record<string, string>}
+> = [
   {
     vendored: 'vendored/health-export.schema.json',
     overlay: 'overlays/dashboard-health.overlay.json',
     outputRel: 'generated/dashboard-health.schema.json',
     name: 'DashboardHealth',
-    excludeFromVendored: ['generatedAt']
+    excludeFromVendored: ['generatedAt'],
+    // dashboard-health is the POST-adapter (display) shape. adaptHealth()
+    // (packages/web/src/runtime/adapters.ts) renames the LP publish key
+    // heartRateVariabilitySDNN → hrvSDNN before the widget consumes it, so the
+    // composed quantities allow-list must apply the same rename. Sourcing the
+    // enum from the vendored LP schema (rather than hardcoding it here) keeps it
+    // in lock-step with PUBLISHABLE_QUANTITY_TYPES; only the single documented
+    // rename is layered on top.
+    quantityKeyRenames: {heartRateVariabilitySDNN: 'hrvSDNN'}
   }
 ]
 
@@ -106,7 +116,12 @@ function resolveSchemaPath(relPath: string): string {
  * - type: "object" from vendored
  * - No top-level additionalProperties (forward-compat: LP ships new fields regularly)
  */
-function mergeSchemas(vendored: JsonObject, overlay: JsonObject, excludeFromVendored: string[] = []): JsonObject {
+function mergeSchemas(
+  vendored: JsonObject,
+  overlay: JsonObject,
+  excludeFromVendored: string[] = [],
+  quantityKeyRenames: Record<string, string> = {}
+): JsonObject {
   const vendoredProps = (vendored['properties'] as JsonObject) ?? {}
   const overlayProps = (overlay['properties'] as JsonObject) ?? {}
 
@@ -114,6 +129,20 @@ function mergeSchemas(vendored: JsonObject, overlay: JsonObject, excludeFromVend
   for (const [key, val] of Object.entries(vendoredProps)) {
     if (!excludeFromVendored.includes(key)) {
       filteredVendoredProps[key] = val
+    }
+  }
+
+  // Apply post-adapter quantity-key renames to the composed quantities allow-list
+  // (see OVERLAY_ENTRIES.quantityKeyRenames). The vendored `quantities` node carries
+  // `propertyNames.enum` (the LP publish allow-list); remap listed keys so the
+  // generated schema validates the display shape the adapter actually produces.
+  if (Object.keys(quantityKeyRenames).length > 0 && filteredVendoredProps['quantities']) {
+    const quantities = structuredClone(filteredVendoredProps['quantities']) as JsonObject
+    const propertyNames = quantities['propertyNames'] as JsonObject | undefined
+    const enumValues = propertyNames?.['enum'] as string[] | undefined
+    if (enumValues) {
+      propertyNames!['enum'] = enumValues.map((key) => quantityKeyRenames[key] ?? key)
+      filteredVendoredProps['quantities'] = quantities
     }
   }
 
@@ -187,7 +216,7 @@ for (const entry of OVERLAY_ENTRIES) {
 
   const vendored = JSON.parse(readFileSync(vendoredPath, 'utf-8')) as JsonObject
   const overlay = JSON.parse(readFileSync(overlayPath, 'utf-8')) as JsonObject
-  const merged = mergeSchemas(vendored, overlay, entry.excludeFromVendored)
+  const merged = mergeSchemas(vendored, overlay, entry.excludeFromVendored, entry.quantityKeyRenames)
 
   writeFileSync(outputPath, await formatWithPrettier(JSON.stringify(merged, null, 2), outputPath, 'json'), 'utf-8')
   console.log(`  generated: ${entry.outputRel} (${entry.name})`)

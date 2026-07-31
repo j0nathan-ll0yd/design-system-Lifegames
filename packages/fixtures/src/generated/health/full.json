@@ -7,12 +7,12 @@
     "heartRateVariabilitySDNN": { "value": 92, "unit": "ms" },
     "stepCount": { "value": 24500, "unit": "count" },
     "distanceWalkingRunning": { "value": 18200, "unit": "m" },
-    "appleExerciseTime": { "value": 120, "unit": "min" },
+    "exerciseTime": { "value": 120, "unit": "min" },
     "activeEnergyBurned": { "value": 1250, "unit": "kcal" },
     "basalEnergyBurned": { "value": 2100, "unit": "kcal" },
     "dietaryWater": { "value": 4800, "unit": "mL" },
     "dietaryCaffeine": { "value": 0.6, "unit": "g" },
-    "appleSleepingWristTemperature": { "value": 0.8, "unit": "degC" }
+    "wristTemperatureDelta": { "value": 0.8, "unit": "degC" }
   },
   "goals": { "moveKcal": 750, "exerciseMin": 60, "standHr": 14, "daylightMin": 30 },
   "solar": { "sunriseHHmm": "05:48", "sunsetHHmm": "20:42", "currentProgressPct": 85 },
