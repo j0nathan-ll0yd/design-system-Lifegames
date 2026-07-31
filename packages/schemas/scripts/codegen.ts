@@ -3,7 +3,7 @@
  * codegen.ts — Lifegames Schema Codegen Pipeline
  *
  * Generates from the JSON schemas registered in SCHEMA_ENTRIES (raw LP
- * exports from @lifegames/portal-contract + authored/generated DS):
+ * exports from @j0nathan-ll0yd/portal-contract + authored/generated DS):
  *   - dist/types/{Name}.ts      — TypeScript interfaces via json-schema-to-typescript
  *   - dist/types/branded.ts     — SchemaDerived<T> brand type
  *   - dist/types/index.ts       — Re-exports all types wrapped in SchemaDerived<T>
@@ -98,7 +98,7 @@ function ensureDir(p: string): void {
 
 /**
  * Resolve a SCHEMA_ENTRIES/OVERLAY_ENTRIES relPath to an absolute file path.
- * `vendored/<file>` paths now resolve from the @lifegames/portal-contract
+ * `vendored/<file>` paths now resolve from the @j0nathan-ll0yd/portal-contract
  * package (the single producer of the raw export schemas); `authored/` and
  * `generated/` paths remain local to this package.
  */

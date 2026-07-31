@@ -7,7 +7,6 @@
   "worktree": {
     "setup": [
       "MAIN=\"$(dirname \"$(git rev-parse --path-format=absolute --git-common-dir)\")\" && { cp \"$MAIN/.env\" .env 2>/dev/null || true; }",
-      "MAIN=\"$(dirname \"$(git rev-parse --path-format=absolute --git-common-dir)\")\" && find \"$MAIN\" -maxdepth 3 -type d -name .yalc -not -path '*/node_modules/*' | while read -r d; do rel=\"${d#\"$MAIN\"/}\"; mkdir -p \"$(dirname \"$rel\")\"; cp -R \"$d\" \"$rel\"; lf=\"$(dirname \"$d\")/yalc.lock\"; [ -f \"$lf\" ] && cp \"$lf\" \"$(dirname \"$rel\")/yalc.lock\"; done; true",
       "pnpm install",
       "pnpm build:tokens"
     ]

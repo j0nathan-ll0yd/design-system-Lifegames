@@ -1,6 +1,6 @@
 import {createHealthFixture} from '../factories/health'
 import {DEFAULT_QUANTITIES} from '../factories/health'
-import type {HealthExport} from '@lifegames/portal-contract/schemas'
+import type {HealthExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoTimestamp} from '../factories/helpers'
 
 export const baseline: HealthExport = createHealthFixture()

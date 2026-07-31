@@ -7,7 +7,7 @@
 // widget coverage lives in Storybook — the showcase does not carry its own suite.
 import {type DashboardFixture, getDashboardFixture} from '@lifegames/fixtures'
 import {rawFixtures} from '@lifegames/fixtures/raw'
-import type {FocusExport, TheatreReviewsExport} from '@lifegames/portal-contract/schemas'
+import type {FocusExport, TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 export interface ShowcaseData {
   dashboard: DashboardFixture

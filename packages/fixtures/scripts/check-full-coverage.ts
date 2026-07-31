@@ -29,7 +29,7 @@ const GENERATED_DIR = join(PKG_ROOT, 'src', 'generated')
 const require = createRequire(import.meta.url)
 
 // Mirror validate.ts: resolve raw-schemas dir from portal-contract package.
-const RAW_SCHEMAS_DIR = dirname(require.resolve('@lifegames/portal-contract/raw-schemas/index.json'))
+const RAW_SCHEMAS_DIR = dirname(require.resolve('@j0nathan-ll0yd/portal-contract/raw-schemas/index.json'))
 
 interface FixtureMap {
   raw: Record<string, string>

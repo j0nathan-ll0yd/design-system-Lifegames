@@ -1,4 +1,4 @@
-import type {ArticlesExport} from '@lifegames/portal-contract/schemas'
+import type {ArticlesExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createArticle, createArticlesFixture} from '../factories/articles'
 import {isoDate, isoTimestamp} from '../factories/helpers'
 

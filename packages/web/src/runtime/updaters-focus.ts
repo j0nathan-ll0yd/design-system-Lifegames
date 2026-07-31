@@ -1,4 +1,4 @@
-import {FOCUS_MODES} from '@lifegames/portal-contract/constants'
+import {FOCUS_MODES} from '@j0nathan-ll0yd/portal-contract/constants'
 import type {FocusExport} from '../types/exports'
 
 let clockInterval: ReturnType<typeof setInterval> | null = null

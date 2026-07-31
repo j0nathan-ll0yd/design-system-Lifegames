@@ -1,7 +1,7 @@
 // Raw (pre-adapter) fixture barrel.
 //
 // These are the raw LP-export-shaped fixtures, typed from
-// `@lifegames/portal-contract/schemas`. They are what the web's Playwright layer
+// `@j0nathan-ll0yd/portal-contract/schemas`. They are what the web's Playwright layer
 // serves when it intercepts CloudFront (`page.route(${CLOUDFRONT_BASE}/**)`),
 // fulfilling each endpoint from the committed JSON under `src/generated/<domain>/`.
 //

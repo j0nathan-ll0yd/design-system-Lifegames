@@ -1,4 +1,4 @@
-import type {SleepExport} from '@lifegames/portal-contract/schemas'
+import type {SleepExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoDate, isoTimestamp} from './helpers'
 
 export function createSleepFixture(overrides?: Partial<SleepExport>): SleepExport {

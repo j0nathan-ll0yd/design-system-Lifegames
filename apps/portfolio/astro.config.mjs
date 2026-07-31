@@ -3,7 +3,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import AstroPWA from '@vite-pwa/astro'
 import sitemap from '@astrojs/sitemap'
-import {CLOUDFRONT_BASE} from '@lifegames/portal-contract/constants'
+import {CLOUDFRONT_BASE} from '@j0nathan-ll0yd/portal-contract/constants'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

@@ -1,4 +1,4 @@
-import type {GithubStarredReposExport} from '@lifegames/portal-contract/schemas'
+import type {GithubStarredReposExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoTimestamp} from './helpers'
 
 type StarredRepo = GithubStarredReposExport['repos'][number]

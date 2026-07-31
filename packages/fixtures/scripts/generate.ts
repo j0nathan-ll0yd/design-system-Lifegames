@@ -6,7 +6,7 @@
  * Produces TWO committed fixture families from the package's TS factories:
  *
  *   1. RAW (pre-adapter) → src/generated/<kebab-domain>/<variation>.json
- *      LP-export-shaped fixtures (typed from @lifegames/portal-contract/schemas).
+ *      LP-export-shaped fixtures (typed from @j0nathan-ll0yd/portal-contract/schemas).
  *      Consumed by the web's Playwright CloudFront route-interception layer, which
  *      reads these files by path. Domain dirs use the kebab DIRECTORY_MAP form
  *      (githubEvents → github-events) to match the web's historical layout.

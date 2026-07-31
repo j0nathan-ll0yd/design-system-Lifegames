@@ -1,4 +1,4 @@
-import type {TheatreReviewsExport} from '@lifegames/portal-contract/schemas'
+import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createReview, createTheatreReviewsFixture} from '../factories/theatre-reviews'
 import {isoDate} from '../factories/helpers'
 

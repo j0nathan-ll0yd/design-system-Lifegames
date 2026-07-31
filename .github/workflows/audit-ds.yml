@@ -30,6 +30,7 @@ on:
 permissions:
   contents: read
   issues: write
+  packages: read # resolve @j0nathan-ll0yd/portal-contract from GitHub Packages on install
 
 concurrency:
   group: audit-ds # fixed name (D6) — a stuck/slow run never overlaps the next scheduled one
@@ -49,9 +50,10 @@ jobs:
           node-version-file: '.nvmrc'
           cache: pnpm
 
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
 
       # yalc:check hashes packages/tokens/dist/, which is a gitignored build

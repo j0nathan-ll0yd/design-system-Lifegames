@@ -1,4 +1,4 @@
-import type {HealthExport} from '@lifegames/portal-contract/schemas'
+import type {HealthExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoDate, isoTimestamp} from './helpers'
 
 export const DEFAULT_QUANTITIES: HealthExport['quantities'] = {
