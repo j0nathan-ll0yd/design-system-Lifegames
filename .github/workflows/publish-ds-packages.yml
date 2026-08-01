@@ -50,11 +50,30 @@ jobs:
           node-version-file: '.nvmrc'
           cache: pnpm
 
-      # User-level auth: pnpm reads the token here (not from the committed
-      # project .npmrc, which pnpm ignores). Covers both the install
-      # (resolve @j0nathan-ll0yd/portal-contract) and the publish.
-      - name: Authenticate to GitHub Packages
+      # Two auth wirings are needed because two different tools hit the
+      # registry, and pnpm and npm keep their auth in different files:
+      #
+      #   * pnpm — for `pnpm install` (resolve @j0nathan-ll0yd/portal-contract).
+      #     `pnpm config set` writes pnpm's own global config (~/.config/pnpm),
+      #     which npm does NOT read.
+      #   * npm  — for `changeset publish`, which shells out to `npm` (its
+      #     preflight is `npm info <pkg>` per package, then the publish). npm
+      #     reads ~/.npmrc, which `pnpm config set` never touches — so without
+      #     this second step every request goes out unauthenticated and the
+      #     preflight dies with `401 … authentication token not provided`
+      #     (measured: run 30678137203).
+      #
+      # This split is real, not redundant — do not "simplify" it to one step.
+      # The committed project .npmrc supplies only the scope→registry mapping;
+      # the token is intentionally not committed there (pnpm ignores an
+      # env-expanded auth line in a project .npmrc and warns).
+      - name: Authenticate pnpm to GitHub Packages
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate npm to GitHub Packages
+        run: npm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
