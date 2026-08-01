@@ -2,7 +2,7 @@
 # CI/pre-commit guard: ensures generated artifacts are up to date with their
 # sources. Covers three producers:
 #   - @lifegames/schemas — TS+Swift widget types + fixture-map (raw export schemas
-#     come from @lifegames/portal-contract, resolved from the package; no local
+#     come from @j0nathan-ll0yd/portal-contract, resolved from the package; no local
 #     vendored/ to sync).
 #   - @lifegames/copy — derived flat schema + flat JSON + TS/Zod + Swift
 #     (Identity.generated.swift) + bundled resource. The copy build writes into

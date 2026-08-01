@@ -2,6 +2,15 @@ packages:
   - 'packages/*'
   - 'apps/*'
 
+# pnpm 11's minimumReleaseAge defaults to 1440 min (24h) even though no repo
+# sets the key, and `pnpm config get minimumReleaseAge` reports `undefined`
+# (it never reports built-in defaults). A first publish has no older version to
+# fall back to, so a freshly-published dep fails to resolve until it ages out.
+# Exclude by BARE package name (applies to all versions) — never `name@version`,
+# which re-breaks on every bump. See atlas decision 0015(d).
+minimumReleaseAgeExclude:
+  - '@j0nathan-ll0yd/portal-contract'
+
 # pnpm 11 no longer reads pnpm settings from .npmrc; carried over from there.
 # Root-level build drivers (style-dictionary.config.mjs) resolve workspace-package
 # deps via the public hoist.

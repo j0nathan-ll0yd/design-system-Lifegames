@@ -63,12 +63,12 @@ importers:
 
   apps/portfolio:
     dependencies:
+      '@j0nathan-ll0yd/portal-contract':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@lifegames/fixtures':
         specifier: workspace:*
         version: link:../../packages/fixtures
-      '@lifegames/portal-contract':
-        specifier: file:.yalc/@lifegames/portal-contract
-        version: file:apps/portfolio/.yalc/@lifegames/portal-contract
       '@lifegames/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -190,18 +190,15 @@ importers:
 
   packages/fixtures:
     dependencies:
-      '@lifegames/portal-contract':
-        specifier: file:.yalc/@lifegames/portal-contract
-        version: file:packages/fixtures/.yalc/@lifegames/portal-contract
+      '@j0nathan-ll0yd/portal-contract':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@lifegames/schemas':
         specifier: workspace:*
         version: link:../schemas
       '@lifegames/web':
         specifier: workspace:*
         version: link:../web
-    dependenciesMeta:
-      '@lifegames/portal-contract':
-        injected: true
     devDependencies:
       '@lifegames/copy':
         specifier: workspace:*
@@ -233,18 +230,15 @@ importers:
 
   packages/schemas:
     dependencies:
-      '@lifegames/portal-contract':
-        specifier: file:.yalc/@lifegames/portal-contract
-        version: file:packages/schemas/.yalc/@lifegames/portal-contract
+      '@j0nathan-ll0yd/portal-contract':
+        specifier: ^1.0.0
+        version: 1.0.0
       ajv:
         specifier: ~8.20.0
         version: 8.20.0
       ajv-formats:
         specifier: ~3.0.1
         version: 3.0.1(ajv@8.20.0)
-    dependenciesMeta:
-      '@lifegames/portal-contract':
-        injected: true
     devDependencies:
       '@typescript-eslint/parser':
         specifier: ^8.61.0
@@ -289,18 +283,15 @@ importers:
 
   packages/web:
     dependencies:
+      '@j0nathan-ll0yd/portal-contract':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@lifegames/copy':
         specifier: workspace:*
         version: link:../copy
-      '@lifegames/portal-contract':
-        specifier: file:.yalc/@lifegames/portal-contract
-        version: file:packages/web/.yalc/@lifegames/portal-contract
       '@lifegames/tokens':
         specifier: workspace:*
         version: link:../tokens
-    dependenciesMeta:
-      '@lifegames/portal-contract':
-        injected: true
     devDependencies:
       '@typescript-eslint/parser':
         specifier: ^8.61.0
@@ -1822,6 +1813,9 @@ packages:
     resolution: {integrity: sha512-+Sg6GCR/wy1oSmQDFq4LQDAhm3ETKnorxN+y5nbLULOR3P0c14f2Wurzj3/xqPXtasLFfHd5iRFQ7AJt4KH2cw==}
     engines: {node: '>=8'}
 
+  '@j0nathan-ll0yd/portal-contract@1.0.0':
+    resolution: {integrity: sha512-l3lbq5wkVlzmAimZSJHxMmZEyR1GTfCukeP6Jzwcr4Wp5xJdvWF0+pTJPbWU2LR8NZAoY+PQQOJLK+B8U3F6mw==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/portal-contract/1.0.0/a245ceb7e43fafe37f3963a2d3e40df86aec7f7d}
+
   '@jest/console@30.4.1':
     resolution: {integrity: sha512-v3bhyxUh9Hgmo5p6hAOXe14/R3ZxZDOsvHleh4B07z3m/x4/ngPUXEm9XwK4sF4u+f+P2ORb0Ge+MgpaqRMVDA==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
@@ -2052,18 +2046,6 @@ packages:
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
-
-  '@lifegames/portal-contract@file:apps/portfolio/.yalc/@lifegames/portal-contract':
-    resolution: {directory: apps/portfolio/.yalc/@lifegames/portal-contract, type: directory}
-
-  '@lifegames/portal-contract@file:packages/fixtures/.yalc/@lifegames/portal-contract':
-    resolution: {directory: packages/fixtures/.yalc/@lifegames/portal-contract, type: directory}
-
-  '@lifegames/portal-contract@file:packages/schemas/.yalc/@lifegames/portal-contract':
-    resolution: {directory: packages/schemas/.yalc/@lifegames/portal-contract, type: directory}
-
-  '@lifegames/portal-contract@file:packages/web/.yalc/@lifegames/portal-contract':
-    resolution: {directory: packages/web/.yalc/@lifegames/portal-contract, type: directory}
 
   '@lit-labs/ssr-dom-shim@1.6.0':
     resolution: {integrity: sha512-VHb0ALPMTlgKjM6yIxxoQNnpKyUKLD04VzeQdsiXkMqkvYlAHxq9glGLmgbb889/1GsohSOAjvQYoiBppXFqrQ==}
@@ -9400,6 +9382,8 @@ snapshots:
 
   '@istanbuljs/schema@0.1.6': {}
 
+  '@j0nathan-ll0yd/portal-contract@1.0.0': {}
+
   '@jest/console@30.4.1':
     dependencies:
       '@jest/types': 30.4.1
@@ -9739,14 +9723,6 @@ snapshots:
       '@jsonjoy.com/buffers': 17.67.0(tslib@2.8.1)
       '@jsonjoy.com/codegen': 17.67.0(tslib@2.8.1)
       tslib: 2.8.1
-
-  '@lifegames/portal-contract@file:apps/portfolio/.yalc/@lifegames/portal-contract': {}
-
-  '@lifegames/portal-contract@file:packages/fixtures/.yalc/@lifegames/portal-contract': {}
-
-  '@lifegames/portal-contract@file:packages/schemas/.yalc/@lifegames/portal-contract': {}
-
-  '@lifegames/portal-contract@file:packages/web/.yalc/@lifegames/portal-contract': {}
 
   '@lit-labs/ssr-dom-shim@1.6.0': {}
 

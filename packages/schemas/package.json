@@ -27,14 +27,9 @@
     "lint": "eslint \"scripts/**/*.{ts,mjs}\""
   },
   "dependencies": {
-    "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
+    "@j0nathan-ll0yd/portal-contract": "^1.0.0",
     "ajv": "~8.20.0",
     "ajv-formats": "~3.0.1"
-  },
-  "dependenciesMeta": {
-    "@lifegames/portal-contract": {
-      "injected": true
-    }
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.61.0",

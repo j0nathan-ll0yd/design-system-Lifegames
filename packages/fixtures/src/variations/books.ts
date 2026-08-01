@@ -1,4 +1,4 @@
-import type {BooksExport} from '@lifegames/portal-contract/schemas'
+import type {BooksExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createBook, createBooksFixture} from '../factories/books'
 import {placeholderText} from '../factories/helpers'
 

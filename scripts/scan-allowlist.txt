@@ -17,8 +17,8 @@
 # throughout: the copy package's identity content (its entire purpose is to
 # be the public identity source of truth), docs/comments referencing the
 # consumer repo by name, `~/Repositories/<repo>`-style path-convention
-# defaults (mirrors the pattern already established in
-# scripts/ci-setup-portal-contract.sh's LP_DIR), schema/JSON `examples`
+# defaults (mirrors the pattern in
+# packages/schemas/scripts/generate-contract-lock.ts's LP_DIR), schema/JSON `examples`
 # fields, and apps/portfolio/ (the user's real portfolio — expected to
 # contain real identity per this scanner's own scope note).
 
@@ -61,7 +61,6 @@ packages/web/src/production/index.ts:marker:j0nathan-ll0yd
 # `~/Repositories/<repo>`-style local path-convention defaults, and upstream
 # repo-path references (mantle-LifegamesPortal, design-system-Lifegames).
 scripts/check-baseline-age.mjs:marker:j0nathan-ll0yd
-scripts/ci-setup-portal-contract.sh:marker:j0nathan-ll0yd
 scripts/sync-assets.sh:marker:j0nathan-ll0yd
 scripts/widget-inventory.mjs:marker:j0nathan-ll0yd
 packages/schemas/.contract-lock.json:marker:j0nathan-ll0yd
@@ -119,3 +118,50 @@ packages/schemas/tsconfig.json:marker:j0nathan-ll0yd
 packages/web/tsconfig.json:marker:j0nathan-ll0yd
 .github/workflows/ci.yml:marker:j0nathan-ll0yd
 .husky/pre-push:marker:j0nathan-ll0yd
+
+# @j0nathan-ll0yd/portal-contract CONSUMERS (yalc -> GitHub Packages migration,
+# atlas#1 / decision 0015 PR 2). Same rationale as the config blocks above: the
+# GitHub Packages scope must equal the repo owner's public handle, so the scope
+# string literally IS the marker and appears at every consumption site — the four
+# dependency manifests, `.npmrc` registry mapping, `minimumReleaseAgeExclude`,
+# each import/require of `@j0nathan-ll0yd/portal-contract/{constants,schemas,
+# raw-schemas}`, the CI auth-step comments, and doc/comment references. Not
+# personal data; it is the mandated distribution namespace.
+.npmrc:marker:j0nathan-ll0yd
+GOVERNANCE.md:marker:j0nathan-ll0yd
+pnpm-workspace.yaml:marker:j0nathan-ll0yd
+.github/workflows/audit-ds.yml:marker:j0nathan-ll0yd
+.github/workflows/visual-regression.yml:marker:j0nathan-ll0yd
+apps/portfolio/astro.config.mjs:marker:j0nathan-ll0yd
+apps/portfolio/package.json:marker:j0nathan-ll0yd
+apps/portfolio/src/lib/showcase-data.ts:marker:j0nathan-ll0yd
+packages/web/package.json:marker:j0nathan-ll0yd
+packages/web/src/runtime/constants.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/updaters-focus.ts:marker:j0nathan-ll0yd
+packages/schemas/package.json:marker:j0nathan-ll0yd
+packages/schemas/scripts/check-freshness.sh:marker:j0nathan-ll0yd
+packages/schemas/scripts/codegen.ts:marker:j0nathan-ll0yd
+packages/schemas/scripts/portal-contract-source.mjs:marker:j0nathan-ll0yd
+packages/schemas/scripts/validate.ts:marker:j0nathan-ll0yd
+packages/fixtures/README.md:marker:j0nathan-ll0yd
+packages/fixtures/package.json:marker:j0nathan-ll0yd
+packages/fixtures/scripts/check-full-coverage.ts:marker:j0nathan-ll0yd
+packages/fixtures/scripts/generate.ts:marker:j0nathan-ll0yd
+packages/fixtures/scripts/validate.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/raw.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/post-adapter/starredRepos.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/articles.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/books.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/focus.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/health.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/sleep.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/starred-repos.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/theatre-reviews.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/variations/workouts.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/articles.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/books.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/focus.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/health.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/sleep.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/theatre-reviews.ts:marker:j0nathan-ll0yd
+packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd

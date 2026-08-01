@@ -1,6 +1,6 @@
 // Shared resolver for the raw export JSON schemas.
 //
-// @lifegames/portal-contract is the single producer of the 10 raw export
+// @j0nathan-ll0yd/portal-contract is the single producer of the 10 raw export
 // *.schema.json files (published under its raw-schemas/ subpath). These scripts
 // read the schemas from the resolved package on disk instead of a hand-synced
 // local vendored/ copy. The canonical `https://lifegames.dev/vendored/<file>`
@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url)
 
 /**
  * Absolute path to the on-disk directory containing the 10 raw export
- * *.schema.json files (plus index.json) published by @lifegames/portal-contract.
+ * *.schema.json files (plus index.json) published by @j0nathan-ll0yd/portal-contract.
  * @type {string}
  */
-export const RAW_SCHEMAS_DIR = dirname(require.resolve('@lifegames/portal-contract/raw-schemas/index.json'))
+export const RAW_SCHEMAS_DIR = dirname(require.resolve('@j0nathan-ll0yd/portal-contract/raw-schemas/index.json'))

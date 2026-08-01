@@ -1,5 +1,5 @@
 import {createWorkout, createWorkoutsFixture} from '../factories/workouts'
-import type {WorkoutsExport} from '@lifegames/portal-contract/schemas'
+import type {WorkoutsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 export const baseline: WorkoutsExport = createWorkoutsFixture()
 

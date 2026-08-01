@@ -1,4 +1,4 @@
-import type {GithubEventsExport} from '@lifegames/portal-contract/schemas'
+import type {GithubEventsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createEvent, createGithubEventsFixture} from '../factories/github-events'
 import {isoDate, isoTimestamp} from '../factories/helpers'
 

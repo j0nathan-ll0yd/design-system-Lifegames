@@ -9,7 +9,7 @@
 // This proves the pattern the other six domains avoid (their display shapes are
 // authored directly because the runtime adapters produce narrower/different
 // shapes). For starredRepos the adapter output IS the display shape consumed by SSR.
-import type {GithubStarredReposExport} from '@lifegames/portal-contract/schemas'
+import type {GithubStarredReposExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {type AdaptedStarredRepo, adaptStarredRepos} from '@lifegames/web/runtime/adapters'
 
 // Stable generation timestamp shared by the raw input and the adapter clock so

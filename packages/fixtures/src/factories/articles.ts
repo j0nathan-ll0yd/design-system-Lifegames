@@ -1,4 +1,4 @@
-import type {ArticlesExport} from '@lifegames/portal-contract/schemas'
+import type {ArticlesExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoDate, isoTimestamp, placeholderText} from './helpers'
 
 export function createArticle(overrides?: Partial<ArticlesExport['articles'][number]>): ArticlesExport['articles'][number] {

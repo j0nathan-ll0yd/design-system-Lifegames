@@ -1,4 +1,4 @@
-import type {TheatreReviewsExport} from '@lifegames/portal-contract/schemas'
+import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoDate, isoTimestamp} from './helpers'
 
 type TheatreReviewEntry = TheatreReviewsExport['reviews'][number]

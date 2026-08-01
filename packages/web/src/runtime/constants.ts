@@ -65,4 +65,4 @@ export const STATUS_LABELS: Record<string, string> = {pending: 'Pending', readin
 export const ACTIVITY_TYPE_MAP: Record<string, {label: string; url?: string}> = {Other: {label: "Barry's Bootcamp", url: 'https://share.barrys.com/jsvsl'}}
 
 // Infrastructure addressing is owned by the backend (ADR 003); re-exported here for backward compatibility.
-export { CLOUDFRONT_BASE, ENDPOINTS, WEBSOCKET_URL } from '@lifegames/portal-contract/constants'
+export { CLOUDFRONT_BASE, ENDPOINTS, WEBSOCKET_URL } from '@j0nathan-ll0yd/portal-contract/constants'

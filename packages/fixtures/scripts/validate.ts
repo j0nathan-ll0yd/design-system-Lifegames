@@ -5,7 +5,7 @@
  *
  * Validates the committed fixture output produced by generate.ts:
  *   - RAW: every src/generated/<dir>/*.json against its portal-contract raw export
- *     schema (resolved on disk from @lifegames/portal-contract/raw-schemas/).
+ *     schema (resolved on disk from @j0nathan-ll0yd/portal-contract/raw-schemas/).
  *   - POST-ADAPTER: every src/post-adapter/<domain>.*.json against the matching
  *     @lifegames/schemas authored/ or generated/ display schema (by title).
  *
@@ -32,8 +32,8 @@ const POST_ADAPTER_DIR = join(PKG_ROOT, 'src', 'post-adapter')
 
 const require = createRequire(import.meta.url)
 
-// Raw export schemas ship inside @lifegames/portal-contract under raw-schemas/.
-const RAW_SCHEMAS_DIR = dirname(require.resolve('@lifegames/portal-contract/raw-schemas/index.json'))
+// Raw export schemas ship inside @j0nathan-ll0yd/portal-contract under raw-schemas/.
+const RAW_SCHEMAS_DIR = dirname(require.resolve('@j0nathan-ll0yd/portal-contract/raw-schemas/index.json'))
 
 // @lifegames/schemas exposes only its '.' entry; derive the package root from it to
 // reach the committed authored/ + generated/ display schemas.

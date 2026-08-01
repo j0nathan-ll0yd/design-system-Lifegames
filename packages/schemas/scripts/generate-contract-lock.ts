@@ -21,10 +21,10 @@ function sha256(content: string): string {
  * A3/Phase 4). Precedence:
  *   1. `--sha <sha>` CLI arg — explicit override, e.g. from a CI workflow
  *      that already knows the sha it wants pinned.
- *   2. `LP_DIR` env var (same variable scripts/ci-setup-portal-contract.sh
- *      reads) pointing at a git checkout of the backend.
- *   3. `/tmp/mantle-LifegamesPortal` — ci-setup-portal-contract.sh's default
- *      clone target; present in the same CI job that runs this script.
+ *   2. `LP_DIR` env var pointing at a git checkout of the backend — set it
+ *      in CI if a pinned upstream sha is wanted (portal-contract is now
+ *      consumed from GitHub Packages, so nothing clones the backend by default).
+ *   3. `/tmp/mantle-LifegamesPortal` — a conventional local clone target, if present.
  *   4. The monorepo hub sibling checkout (local dev only): both
  *      design-system-Lifegames and mantle-LifegamesPortal are symlinked
  *      siblings under ~/Repositories.

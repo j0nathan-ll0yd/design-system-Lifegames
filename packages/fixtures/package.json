@@ -27,14 +27,9 @@
     "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\" \"scripts/**/*.{ts,mjs}\""
   },
   "dependencies": {
-    "@lifegames/portal-contract": "file:.yalc/@lifegames/portal-contract",
+    "@j0nathan-ll0yd/portal-contract": "^1.0.0",
     "@lifegames/schemas": "workspace:*",
     "@lifegames/web": "workspace:*"
-  },
-  "dependenciesMeta": {
-    "@lifegames/portal-contract": {
-      "injected": true
-    }
   },
   "devDependencies": {
     "@lifegames/copy": "workspace:*",

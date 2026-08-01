@@ -48,7 +48,7 @@ function assertDraft07(schema: {$schema?: string}, file: string): void {
 }
 
 // Register all raw export schemas under their canonical vendored URIs.
-// Source is now @lifegames/portal-contract (resolved on disk); the canonical
+// Source is now @j0nathan-ll0yd/portal-contract (resolved on disk); the canonical
 // `https://lifegames.dev/vendored/<file>` namespace is preserved unchanged.
 for (const f of readdirSync(RAW_SCHEMAS_DIR).filter((f) => f.endsWith('.schema.json'))) {
   const schema = JSON.parse(readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8'))

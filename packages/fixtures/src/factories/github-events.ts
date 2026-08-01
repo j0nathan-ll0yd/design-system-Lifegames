@@ -1,4 +1,4 @@
-import type {GithubEventsExport} from '@lifegames/portal-contract/schemas'
+import type {GithubEventsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoDate, isoTimestamp} from './helpers'
 
 export function createEvent(overrides?: Partial<GithubEventsExport['events'][number]>): GithubEventsExport['events'][number] {

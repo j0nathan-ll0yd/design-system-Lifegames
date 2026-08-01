@@ -5,6 +5,13 @@ on:
   pull_request:
     branches: [main]
 
+# `packages: read` lets every install resolve @j0nathan-ll0yd/portal-contract
+# (and @j0nathan-ll0yd/config) from GitHub Packages; `contents: read` covers
+# checkout. See the "Authenticate to GitHub Packages" step in each job.
+permissions:
+  contents: read
+  packages: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -20,9 +27,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # format:check runs dprint (TS/JS/JSON) + prettier (astro/md/mdx/css).
       - run: pnpm format:check
@@ -40,9 +48,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
 
@@ -58,9 +67,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:schemas-freshness
       - name: Verify schema contract
@@ -83,9 +93,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm -F @lifegames/copy build
       - run: pnpm -F @lifegames/copy test
@@ -113,9 +124,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm -F @lifegames/fixtures build
       - run: pnpm -F @lifegames/fixtures test
@@ -131,9 +143,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
@@ -154,9 +167,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -177,9 +191,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -202,9 +217,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -274,9 +290,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # This job runs the web unit suite (updaters/adapters — the TS side of the
       # Props contract), which previously ran in NO CI job.
@@ -301,9 +318,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -339,9 +357,10 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: pnpm
-      - run: bash scripts/ci-setup-portal-contract.sh
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
-          LP_REPO_TOKEN: ${{ secrets.LP_REPO_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:

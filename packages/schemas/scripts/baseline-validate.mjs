@@ -18,7 +18,7 @@ try {
   /* ajv-formats not installed; OK */
 }
 
-// Load raw export schemas from @lifegames/portal-contract; register under the
+// Load raw export schemas from @j0nathan-ll0yd/portal-contract; register under the
 // canonical https://lifegames.dev/vendored/<basename> URIs (namespace unchanged).
 const vendored = readdirSync(RAW_SCHEMAS_DIR).filter((f) => f.endsWith('.schema.json'))
 for (const f of vendored) {
