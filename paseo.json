@@ -1,7 +1,6 @@
 {
   "_notes": [
     "Paseo worktree lifecycle. Setup builds tokens so the package outputs exist for local work.",
-    "Concurrency hazard (GUARDED): `pnpm yalc:publish` writes to the SHARED global ~/.yalc store and pushes into every linked consumer (web + mantle-LifegamesPortal, including their other worktrees). scripts/yalc-publish-guarded.sh refuses the publish from any linked worktree; a deliberate worktree publish requires YALC_PUBLISH_FROM_WORKTREE=1. Publish from the main checkout.",
     ".env is gitignored (see .env.example) — copied from the main checkout when present."
   ],
   "worktree": {

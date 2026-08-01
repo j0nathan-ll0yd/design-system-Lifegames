@@ -6,7 +6,6 @@
   "excludes": [
     "**/node_modules",
     "**/dist",
-    "**/.yalc/**",
     "**/.astro/**",
     "**/coverage/**",
     "**/storybook-static/**",

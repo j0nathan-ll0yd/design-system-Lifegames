@@ -120,7 +120,7 @@ Example shape:
 ]
 ```
 
-Consumers (web and iOS yalc consumers) can read this file to surface deprecation warnings at build time.
+Consumers (web and iOS) can read this file to surface deprecation warnings at build time.
 
 ---
 

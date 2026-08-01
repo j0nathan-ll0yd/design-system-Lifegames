@@ -48,4 +48,4 @@ The `widget-inventory` job in `.github/workflows/ci.yml` runs `node scripts/widg
 
 ## Fallback Manifest
 
-`widget-consumers.json` — root-level JSON listing portfolio-consumed widget IDs. Auto-written by `pnpm widget:inventory` and updated by `pnpm yalc:publish`. Used as CI fallback when the portfolio repo is not checked out.
+`widget-consumers.json` — root-level JSON listing portfolio-consumed widget IDs. Auto-written by `pnpm widget:inventory`. Used as CI fallback when the portfolio repo is not checked out.

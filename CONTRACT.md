@@ -6,7 +6,7 @@ discipline; this file is the authoritative mapping.
 
 > **Scope.** This contract covers what counts as a major / minor / patch
 > bump on each shipped surface. It does **not** cover release process
-> mechanics (changesets, yalc, GitHub Packages); see `CONTRIBUTING.md`
+> mechanics (changesets, GitHub Packages); see `CONTRIBUTING.md`
 > and `packages/*/CHANGELOG.md` for those.
 
 ## `@j0nathan-ll0yd/tokens` (npm, GitHub Packages)
