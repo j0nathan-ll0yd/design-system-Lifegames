@@ -32,7 +32,7 @@ Claude Artifacts run on React 18 + Tailwind + shadcn/ui. Importing `shadcn.css` 
 
 ```css
 /* Paste into your Claude Artifact's globals.css */
-@import '@lifegames/tokens/dist/shadcn.css';
+@import '@j0nathan-ll0yd/tokens/dist/shadcn.css';
 ```
 
 This sets all 10 shadcn role vars (`--primary`, `--secondary`, `--accent`, `--destructive`, `--muted`, `--card`, `--popover`, `--border`, `--input`, `--ring`) in OKLCH, plus `--radius` and native `--lg-color-surface-*` AI-surface vars.
@@ -49,7 +49,7 @@ Gemini-generated Material Design Expressive UIs consume `--md-sys-color-*` CSS c
 
 ```css
 /* Paste into your MWC/MDC host page */
-@import '@lifegames/tokens/dist/m3.css';
+@import '@j0nathan-ll0yd/tokens/dist/m3.css';
 ```
 
 This emits:
@@ -108,8 +108,8 @@ See [AI-surface token reference](/tokens/ai-surfaces) for full details.
 
 ## Quick reference
 
-| Consumer              | Import                               | Docs                                                           |
-| --------------------- | ------------------------------------ | -------------------------------------------------------------- |
-| Claude Artifacts      | `@lifegames/tokens/dist/shadcn.css`  | [/integration/claude-artifacts](/integration/claude-artifacts) |
-| Gemini / MWC          | `@lifegames/tokens/dist/m3.css`      | [/integration/material3](/integration/material3)               |
-| Figma / Tokens Studio | `@lifegames/tokens/dist/tokens.json` | [/tokens/colors](/tokens/colors)                               |
+| Consumer              | Import                                    | Docs                                                           |
+| --------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| Claude Artifacts      | `@j0nathan-ll0yd/tokens/dist/shadcn.css`  | [/integration/claude-artifacts](/integration/claude-artifacts) |
+| Gemini / MWC          | `@j0nathan-ll0yd/tokens/dist/m3.css`      | [/integration/material3](/integration/material3)               |
+| Figma / Tokens Studio | `@j0nathan-ll0yd/tokens/dist/tokens.json` | [/tokens/colors](/tokens/colors)                               |

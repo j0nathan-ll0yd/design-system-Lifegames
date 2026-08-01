@@ -4,12 +4,12 @@
 // ({ title, source, date, category, starred }) is a SIMPLIFIED, renamed projection
 // that does NOT match the runtime adapter output (adaptArticles produces a
 // different AdaptedArticle[] shape used only by the runtime updater). The SSR shell
-// reads this authored projection. Authored against `@lifegames/schemas`
+// reads this authored projection. Authored against `@j0nathan-ll0yd/schemas`
 // `DashboardReading` (authored/dashboard-reading.schema.json).
 //
 // `date` is a pre-formatted relative string ("Today", "2 days ago"), so it is
 // already deterministic — no clock injection needed for this domain.
-import type {DashboardReading} from '@lifegames/schemas'
+import type {DashboardReading} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
 export const baseline = authored<DashboardReading>({

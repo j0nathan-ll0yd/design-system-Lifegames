@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * check-copy-voice.mjs — @lifegames/copy voice & mechanics gate.
+ * check-copy-voice.mjs — @j0nathan-ll0yd/copy voice & mechanics gate.
  *
  * Enforces the mechanical, low-false-positive rules from packages/copy/VOICE.md
  * against the RICH authoring files (src/*.en-US.json) — the flat dist/ strips

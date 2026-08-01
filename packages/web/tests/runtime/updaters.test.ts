@@ -25,7 +25,7 @@ import type {
   WorkoutEntry
 } from '../../src/runtime/adapters'
 import type {LocationExport} from '../../src/types/exports'
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -912,7 +912,7 @@ describe('updateBookshelf', () => {
 
   it('renders the reading status badge (natural-case source, CSS uppercases to READING)', () => {
     updateBookshelf(makeBooks())
-    // The badge text is sourced from @lifegames/copy (widgets.bookshelf.statusReading,
+    // The badge text is sourced from @j0nathan-ll0yd/copy (widgets.bookshelf.statusReading,
     // canonical natural-case 'Reading'); .shelf-book-status applies text-transform:uppercase
     // so the visible pixels remain 'READING' (D3 display transform).
     const html = document.getElementById('dashShelfRow')!.innerHTML

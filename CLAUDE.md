@@ -2,7 +2,7 @@
 
 **Purpose:** Cross-platform design system providing the single source of truth for tokens, components, and widgets consumed by iOS (SwiftUI) and web (Astro). Governed by `GOVERNANCE.md` (principles P1–P8).
 
-**Stack:** DTCG tokens → Style Dictionary v5 → `@lifegames/tokens` (CSS/JS), `LifegamesTokens` (Swift). 29 web widgets + 30 Swift widgets (health, location, GitHub, identity, reading, other). Astro 6 + Storybook 10. Vite 7 unified.
+**Stack:** DTCG tokens → Style Dictionary v5 → `@j0nathan-ll0yd/tokens` (CSS/JS), `LifegamesTokens` (Swift). 29 web widgets + 30 Swift widgets (health, location, GitHub, identity, reading, other). Astro 6 + Storybook 10. Vite 7 unified.
 
 ## Token Rules
 
@@ -44,7 +44,7 @@ Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Re
 
 ```bash
 # From DS repo root
-pnpm yalc:publish    # rebuilds tokens + pushes @lifegames/{tokens,web,schemas}
+pnpm yalc:publish    # rebuilds tokens + pushes @j0nathan-ll0yd/{tokens,web,schemas}
 
 # In consumers (automatic propagation via yalc publish --push)
 ```

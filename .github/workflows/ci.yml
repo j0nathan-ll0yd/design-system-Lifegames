@@ -75,12 +75,12 @@ jobs:
       - run: pnpm check:schemas-freshness
       - name: Verify schema contract
         if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"
-        run: pnpm -F @lifegames/schemas contract:verify
+        run: pnpm -F @j0nathan-ll0yd/schemas contract:verify
         env:
           CONTRACT_CHECK_MODE: blocking
 
   copy:
-    # @lifegames/copy: build (validate rich + derive flat + codegen TS/Zod/Swift),
+    # @j0nathan-ll0yd/copy: build (validate rich + derive flat + codegen TS/Zod/Swift),
     # unit tests (Ajv + ICU MF1 parse + maxChars + flat round-trip), and the D9
     # zero-dependency leaf-boundary lint. The freshness git-diff of copy's
     # generated artifacts is covered by the schemas-freshness job above.
@@ -98,23 +98,23 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @lifegames/copy build
-      - run: pnpm -F @lifegames/copy test
-      - run: pnpm -F @lifegames/copy lint
+      - run: pnpm -F @j0nathan-ll0yd/copy build
+      - run: pnpm -F @j0nathan-ll0yd/copy test
+      - run: pnpm -F @j0nathan-ll0yd/copy lint
       # Grep gate: fail if a migrated copy value reappears hardcoded
       # in consumer source (DS web widgets + runtime + Swift widgets).
-      - run: pnpm -F @lifegames/copy grep-gate
+      - run: pnpm -F @j0nathan-ll0yd/copy grep-gate
       # Voice & mechanics gate: the register/audience enum is enforced by the
       # build (Ajv); check-copy-voice.mjs adds banned terms, punctuation, and the
       # human↔AI arbitration rule (no allusion in machine surfaces). See VOICE.md.
-      - run: pnpm -F @lifegames/copy voice
+      - run: pnpm -F @j0nathan-ll0yd/copy voice
 
   fixtures:
-    # @lifegames/fixtures: generate (deterministic raw + post-adapter fixtures) +
-    # validate (Ajv against portal-contract raw + @lifegames/schemas display schemas)
+    # @j0nathan-ll0yd/fixtures: generate (deterministic raw + post-adapter fixtures) +
+    # validate (Ajv against portal-contract raw + @j0nathan-ll0yd/schemas display schemas)
     # + unit tests (barrel shape + starredRepos adapter-derived determinism) + lint.
     # The freshness git-diff of the committed fixture output is covered by the
-    # schemas-freshness job above (it re-runs `pnpm -F @lifegames/fixtures generate`).
+    # schemas-freshness job above (it re-runs `pnpm -F @j0nathan-ll0yd/fixtures generate`).
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]
     steps:
@@ -129,9 +129,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @lifegames/fixtures build
-      - run: pnpm -F @lifegames/fixtures test
-      - run: pnpm -F @lifegames/fixtures lint
+      - run: pnpm -F @j0nathan-ll0yd/fixtures build
+      - run: pnpm -F @j0nathan-ll0yd/fixtures test
+      - run: pnpm -F @j0nathan-ll0yd/fixtures lint
 
   build-tokens:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
@@ -178,7 +178,7 @@ jobs:
           path: packages/tokens/dist/
       - run: pnpm lint
       - name: CSP inline-JS audit (Plan #07 sibling gate)
-        run: pnpm -F @lifegames/web audit:inline-scripts
+        run: pnpm -F @j0nathan-ll0yd/web audit:inline-scripts
 
   build-web:
     needs: build-tokens
@@ -201,7 +201,7 @@ jobs:
           name: token-dist
           path: packages/tokens/dist/
       # pnpm<=9 exited 0 with a warning when the filtered package had no "build"
-      # script — @lifegames/web has none (it ships source via yalc), so this job
+      # script — @j0nathan-ll0yd/web has none (it ships source via yalc), so this job
       # never built anything. pnpm 11 turned the missing script into a hard error,
       # exposing it. Run the real workspace build (turbo) instead.
       - run: pnpm build
@@ -300,11 +300,11 @@ jobs:
       # It deliberately does NOT typecheck: packages/web gained a real
       # tsconfig.json in #142 and is type-checked by the dedicated `typecheck`
       # job (turbo run typecheck), so duplicating it here would only add runtime.
-      # The step that used to sit here (pnpm --filter @lifegames/web tsc) was a
+      # The step that used to sit here (pnpm --filter @j0nathan-ll0yd/web tsc) was a
       # silent no-op — no tsconfig meant tsc printed help and exited 0 via
       # pnpm<=9's implicit exec fallback. See #110.
       - name: Web unit tests (updaters/adapters Props contract)
-        run: pnpm --filter @lifegames/web test
+        run: pnpm --filter @j0nathan-ll0yd/web test
 
   governance-gates:
     name: governance-gates
@@ -342,7 +342,7 @@ jobs:
       - name: P2 widget compliance (registry ↔ Astro/fixture/manifest)
         run: node scripts/widget-compliance.mjs
       - name: Style Dictionary golden-file characterization (F-005)
-        run: pnpm --filter @lifegames/tokens test
+        run: pnpm --filter @j0nathan-ll0yd/tokens test
       - name: S22 preview scheme audit
         run: bash scripts/check-preview-scheme.sh
 

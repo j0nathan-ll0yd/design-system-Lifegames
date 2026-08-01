@@ -43,12 +43,12 @@ step "schemas freshness"       pnpm check:schemas-freshness
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises
 # runtime behaviour of the updaters/adapters Props contract.
-step "web tests"               pnpm -F @lifegames/web test
-step "copy tests"              pnpm -F @lifegames/copy test
+step "web tests"               pnpm -F @j0nathan-ll0yd/web test
+step "copy tests"              pnpm -F @j0nathan-ll0yd/copy test
 step "audit script tests"      pnpm test:scripts
-step "copy grep-gate"          pnpm -F @lifegames/copy grep-gate
-step "web inline-script audit" pnpm -F @lifegames/web audit:inline-scripts
-step "schema contract verify"  pnpm -F @lifegames/schemas contract:verify
+step "copy grep-gate"          pnpm -F @j0nathan-ll0yd/copy grep-gate
+step "web inline-script audit" pnpm -F @j0nathan-ll0yd/web audit:inline-scripts
+step "schema contract verify"  pnpm -F @j0nathan-ll0yd/schemas contract:verify
 step "DTCG conformance"        pnpm dtcg:validate
 
 # ── Tier 3: governance gates (need token-dist; mirror CI governance-gates) ──
@@ -59,7 +59,7 @@ step "WCAG-AA contrast"        pnpm check:contrast
 step "Swift widget purity (P3)" pnpm swift:purity
 step "watch exclusions (F-014)" pnpm watch:exclusions
 step "promotion gate (P4/P7)"  pnpm promotion:check
-step "tokens golden test"      pnpm -F @lifegames/tokens test
+step "tokens golden test"      pnpm -F @j0nathan-ll0yd/tokens test
 
 # ── Tier 4: apps Astro builds (mirror the build-web + docs-build CI jobs) ────
 # These were previously absent from the gate; a widget-registry change that

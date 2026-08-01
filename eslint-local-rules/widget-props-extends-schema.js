@@ -1,15 +1,15 @@
 'use strict'
 
 const FILE_PATTERN = /\/packages\/web\/src\/widgets\/[^/]+\/[^/]+\.types\.ts$/
-const SCHEMA_IMPORT_SOURCE = '@lifegames/schemas'
+const SCHEMA_IMPORT_SOURCE = '@j0nathan-ll0yd/schemas'
 
 module.exports = {
   meta: {
     type: 'problem',
-    docs: {description: 'W16: production widget Props types must extend a @lifegames/schemas type'},
+    docs: {description: 'W16: production widget Props types must extend a @j0nathan-ll0yd/schemas type'},
     messages: {
       missingSchema:
-        "W16: '{{name}}' is not connected to @lifegames/schemas. Either extend/intersect with a type from '@lifegames/schemas', or add a leading comment '// schema-exempt: <reason>' to opt out."
+        "W16: '{{name}}' is not connected to @j0nathan-ll0yd/schemas. Either extend/intersect with a type from '@j0nathan-ll0yd/schemas', or add a leading comment '// schema-exempt: <reason>' to opt out."
     },
     schema: []
   },
@@ -27,7 +27,7 @@ module.exports = {
       return {}
     }
 
-    // Track whether @lifegames/schemas is imported
+    // Track whether @j0nathan-ll0yd/schemas is imported
     let schemaImported = false
 
     return {

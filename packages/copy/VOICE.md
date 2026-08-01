@@ -150,7 +150,7 @@ Data is a mirror, not a coach. This is why "quantified-self clarity" was deliber
 
 Every customer-facing string:
 
-1. **Picks a `register`** (the 7-value enum, enforced by Ajv at build — an unknown register fails `pnpm -F @lifegames/copy build`).
+1. **Picks a `register`** (the 7-value enum, enforced by Ajv at build — an unknown register fails `pnpm -F @j0nathan-ll0yd/copy build`).
 2. **Carries an `audience`** (`human` / `machine` / `dual`).
 3. **Obeys the arbitration rule** if `audience` is `machine`/`dual` (lint-enforced).
 4. **Passes the mechanics lint** (`check-copy-voice.mjs`: banned terms, case, punctuation, ICU).

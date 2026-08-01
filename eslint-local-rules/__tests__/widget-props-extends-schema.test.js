@@ -16,19 +16,19 @@ const tester = new RuleTester({languageOptions: {ecmaVersion: 2022, sourceType: 
 
 tester.run('widget-props-extends-schema', rule, {
   valid: [
-    // Props type imports from @lifegames/schemas — valid.
+    // Props type imports from @j0nathan-ll0yd/schemas — valid.
     {
       filename: widgetTypesFile,
       code: [
-        "import type { HeartRateSchema } from '@lifegames/schemas';",
+        "import type { HeartRateSchema } from '@j0nathan-ll0yd/schemas';",
         'export interface HeartRateProps extends HeartRateSchema {}'
       ].join('\n')
     },
-    // Multiple imports including @lifegames/schemas — valid.
+    // Multiple imports including @j0nathan-ll0yd/schemas — valid.
     {
       filename: widgetTypesFile,
       code: [
-        "import type { HeartRateSchema } from '@lifegames/schemas';",
+        "import type { HeartRateSchema } from '@j0nathan-ll0yd/schemas';",
         "import type { SomeOther } from './other';",
         'export type HeartRateProps = HeartRateSchema & { extra: string };'
       ].join('\n')
@@ -50,11 +50,11 @@ tester.run('widget-props-extends-schema', rule, {
   invalid: [
     // Props type missing schema import — must report.
     {filename: widgetTypesFile, code: 'export interface HeartRateProps { value: number; }', errors: [{messageId: 'missingSchema'}]},
-    // Imports from other packages but not @lifegames/schemas — must report.
+    // Imports from other packages but not @j0nathan-ll0yd/schemas — must report.
     {
       filename: widgetTypesFile,
       code: [
-        "import type { SomeType } from '@lifegames/tokens';",
+        "import type { SomeType } from '@j0nathan-ll0yd/tokens';",
         'export type HeartRateProps = { value: number };'
       ].join('\n'),
       errors: [{messageId: 'missingSchema'}]

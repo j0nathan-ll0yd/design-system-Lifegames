@@ -1,4 +1,4 @@
-import type {LocationExport} from '@lifegames/web/types/exports'
+import type {LocationExport} from '@j0nathan-ll0yd/web/types/exports'
 import {isoDate, isoTimestamp, last90DaysEntries} from './helpers'
 
 export function createLocationFixture(overrides: Partial<LocationExport> = {}): LocationExport {

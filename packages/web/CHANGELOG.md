@@ -1,4 +1,4 @@
-# @lifegames/web
+# @j0nathan-ll0yd/web
 
 ## 0.1.0
 
@@ -9,4 +9,4 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @lifegames/tokens@0.1.0
+  - @j0nathan-ll0yd/tokens@0.1.0

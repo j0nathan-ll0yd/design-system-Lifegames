@@ -6,8 +6,8 @@ Unified cross-platform design system powering the Lifegames portfolio — a sing
 
 ```
 tokens/          DTCG JSON source of truth (W3C Design Token Community Group format)
-packages/tokens  @lifegames/tokens — CSS custom properties, JS/JSON outputs via Style Dictionary v4
-packages/web     @lifegames/web — Astro components, 30 page-specific widgets, Storybook stories
+packages/tokens  @j0nathan-ll0yd/tokens — CSS custom properties, JS/JSON outputs via Style Dictionary v4
+packages/web     @j0nathan-ll0yd/web — Astro components, 30 page-specific widgets, Storybook stories
 Sources/         Swift packages — LifegamesTokens, LifegamesComponents, LifegamesWidgets (SPM)
 apps/docs        Astro Starlight documentation site
 apps/storybook   Storybook 10 component workshop
@@ -52,8 +52,8 @@ primitive → semantic → component → widget
 
 | Package                    | Language    | Description                               |
 | -------------------------- | ----------- | ----------------------------------------- |
-| `@lifegames/tokens`        | CSS/JS/JSON | Design tokens for any platform            |
-| `@lifegames/web`           | Astro       | Web components and 30 widgets             |
+| `@j0nathan-ll0yd/tokens`   | CSS/JS/JSON | Design tokens for any platform            |
+| `@j0nathan-ll0yd/web`      | Astro       | Web components and 30 widgets             |
 | `LifegamesTokens`          | Swift       | Generated Color, Font, Spacing extensions |
 | `LifegamesComponents`      | Swift       | iOS/macOS SwiftUI primitives              |
 | `LifegamesComponentsWatch` | Swift       | Watch-safe component subset               |
@@ -63,10 +63,10 @@ primitive → semantic → component → widget
 
 Four pathways for AI-native consumers — all built from the same DTCG token source:
 
-- **Claude Artifacts** (shadcn/ui + OKLCH) — import `@lifegames/tokens/dist/shadcn.css` for instant brand theming in React + Tailwind + shadcn/ui
-- **Gemini / Material Web Components** — import `@lifegames/tokens/dist/m3.css` for all 29 Material 3 color roles themed off Lifegames semantic tokens
-- **Figma / Tokens Studio / Penpot** — use `@lifegames/tokens/dist/tokens.json` (DTCG 2025.10 compliant)
-- **Claude Design** (claude.ai/design) — upload `@lifegames/tokens/dist/DESIGN.md` to seed the design system; one-command upload ritual via `pnpm sync:claude-design`
+- **Claude Artifacts** (shadcn/ui + OKLCH) — import `@j0nathan-ll0yd/tokens/dist/shadcn.css` for instant brand theming in React + Tailwind + shadcn/ui
+- **Gemini / Material Web Components** — import `@j0nathan-ll0yd/tokens/dist/m3.css` for all 29 Material 3 color roles themed off Lifegames semantic tokens
+- **Figma / Tokens Studio / Penpot** — use `@j0nathan-ll0yd/tokens/dist/tokens.json` (DTCG 2025.10 compliant)
+- **Claude Design** (claude.ai/design) — upload `@j0nathan-ll0yd/tokens/dist/DESIGN.md` to seed the design system; one-command upload ritual via `pnpm sync:claude-design`
 
 → [Full integration docs](apps/docs/src/content/docs/integration/overview.mdx)
 
@@ -83,7 +83,7 @@ Sync is one-way (this repo → Claude Design) and upload is a manual drag — Cl
 
 ## Governance
 
-- [CONTRACT.md](CONTRACT.md) — versioning contract: what counts as a major / minor / patch bump on each shipped surface (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`, SPM products).
+- [CONTRACT.md](CONTRACT.md) — versioning contract: what counts as a major / minor / patch bump on each shipped surface (`@j0nathan-ll0yd/tokens`, `@j0nathan-ll0yd/web`, `@j0nathan-ll0yd/schemas`, SPM products).
 - [GOVERNANCE.md](GOVERNANCE.md) — placement rules (P1–P8): what belongs in the design system vs the app.
 - [CHANGELOG.md](CHANGELOG.md) — cross-package narrative changelog; per-package histories live under `packages/*/CHANGELOG.md`.
 

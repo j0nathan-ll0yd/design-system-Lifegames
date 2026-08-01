@@ -1,6 +1,6 @@
 // mantle-cli-output: full-variation coverage check
 /**
- * check-full-coverage.ts — @lifegames/fixtures full-variation coverage oracle.
+ * check-full-coverage.ts — @j0nathan-ll0yd/fixtures full-variation coverage oracle.
  *
  * For each raw domain in fixture-map.json (excluding WALKER_EXCEPTIONS), loads the
  * domain's raw-export schema and its full.json fixture, then runs a two-condition

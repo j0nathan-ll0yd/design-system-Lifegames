@@ -1,6 +1,9 @@
 {
-  "name": "@lifegames/tokens",
-  "version": "0.1.0",
+  "name": "@j0nathan-ll0yd/tokens",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "description": "Design tokens for the Lifegames design system — CSS custom properties, JS constants, and JSON",
   "type": "module",
   "sideEffects": [

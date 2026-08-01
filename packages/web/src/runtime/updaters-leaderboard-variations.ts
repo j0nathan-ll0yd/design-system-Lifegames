@@ -1,4 +1,4 @@
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc, getCategoryColor} from './updaters'
 import type {LocationExport} from '../types/exports'
 

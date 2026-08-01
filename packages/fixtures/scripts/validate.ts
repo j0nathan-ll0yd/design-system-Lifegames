@@ -1,16 +1,16 @@
 #!/usr/bin/env tsx
 // mantle-cli-output: fixture validation report for stdout
 /**
- * validate.ts — @lifegames/fixtures Ajv validation gate.
+ * validate.ts — @j0nathan-ll0yd/fixtures Ajv validation gate.
  *
  * Validates the committed fixture output produced by generate.ts:
  *   - RAW: every src/generated/<dir>/*.json against its portal-contract raw export
  *     schema (resolved on disk from @j0nathan-ll0yd/portal-contract/raw-schemas/).
  *   - POST-ADAPTER: every src/post-adapter/<domain>.*.json against the matching
- *     @lifegames/schemas authored/ or generated/ display schema (by title).
+ *     @j0nathan-ll0yd/schemas authored/ or generated/ display schema (by title).
  *
  * Mapping comes from the package-local fixture-map.json (a deliberate, documented
- * decision NOT to overload @lifegames/schemas/fixture-map.json). starredRepos is an
+ * decision NOT to overload @j0nathan-ll0yd/schemas/fixture-map.json). starredRepos is an
  * AdaptedStarredRepo[] with no standalone post-adapter schema, so it is covered by
  * the package vitest rather than Ajv here.
  *
@@ -35,9 +35,9 @@ const require = createRequire(import.meta.url)
 // Raw export schemas ship inside @j0nathan-ll0yd/portal-contract under raw-schemas/.
 const RAW_SCHEMAS_DIR = dirname(require.resolve('@j0nathan-ll0yd/portal-contract/raw-schemas/index.json'))
 
-// @lifegames/schemas exposes only its '.' entry; derive the package root from it to
+// @j0nathan-ll0yd/schemas exposes only its '.' entry; derive the package root from it to
 // reach the committed authored/ + generated/ display schemas.
-const SCHEMAS_MAIN = require.resolve('@lifegames/schemas')
+const SCHEMAS_MAIN = require.resolve('@j0nathan-ll0yd/schemas')
 const SCHEMAS_ROOT = resolve(dirname(SCHEMAS_MAIN), '..', '..')
 const SCHEMAS_AUTHORED = join(SCHEMAS_ROOT, 'authored')
 const SCHEMAS_GENERATED = join(SCHEMAS_ROOT, 'generated')

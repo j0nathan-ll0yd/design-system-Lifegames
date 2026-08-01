@@ -1,6 +1,9 @@
 {
-  "name": "@lifegames/schemas",
-  "version": "0.1.0",
+  "name": "@j0nathan-ll0yd/schemas",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "description": "Cross-language widget data schemas (LP-vendored + DS-authored). Source of truth for fixture validation and codegen.",
   "type": "module",
   "exports": {

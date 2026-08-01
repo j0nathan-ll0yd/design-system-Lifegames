@@ -1,9 +1,9 @@
 import {describe, expect, it} from 'vitest'
 import {profilePostAdapter} from '../src/post-adapter/profile'
-import {identity} from '@lifegames/copy'
+import {identity} from '@j0nathan-ll0yd/copy'
 
 // The bio terminal simulates `ls -m interests/`, which sorts alphabetically. This
-// binds the terminal's interests to the canonical @lifegames/copy list
+// binds the terminal's interests to the canonical @j0nathan-ll0yd/copy list
 // (identity.person.interests — curated order, feeds llms-full.txt via
 // llm-content/view.ts) so the two cannot silently drift: the terminal MUST be
 // exactly the copy interests, sorted. The divergence in ORDER is intentional
@@ -27,7 +27,7 @@ function terminalInterests(variation: 'baseline' | 'full'): string[] {
   return (output.text ?? '').replace(/^→\s*/, '').split(',').map((s) => s.trim())
 }
 
-describe('bio-terminal interests ⟷ @lifegames/copy invariant', () => {
+describe('bio-terminal interests ⟷ @j0nathan-ll0yd/copy invariant', () => {
   // `empty` is cursor-only (no interests line) — only baseline + full carry it.
   for (const variation of ['baseline', 'full'] as const) {
     it(`${variation}: terminal interests are the copy interests, sorted`, () => {
@@ -54,7 +54,7 @@ function terminalSkills(variation: 'baseline' | 'full'): string[] {
   return (output.text ?? '').replace(/^→\s*/, '').split(/\s+/).filter(Boolean)
 }
 
-describe('bio-terminal skills ⟷ @lifegames/copy invariant', () => {
+describe('bio-terminal skills ⟷ @j0nathan-ll0yd/copy invariant', () => {
   // `printenv STACK` prints the env value verbatim — order-preserving (unlike `ls`),
   // so the baseline terminal skills MUST equal identity.person.skills exactly.
   it('baseline: terminal skills equal the copy skills, in order', () => {

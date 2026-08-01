@@ -123,14 +123,14 @@ function generateAstroPage({name, category, kebab, swiftExists, swiftRelPath, fi
     : `        <li><strong>iOS:</strong> Not yet ported</li>`
 
   return `---
-import '@lifegames/tokens/fonts';
-import '@lifegames/tokens/css';
-import '@lifegames/tokens/compat';
-import '@lifegames/tokens/components';
-import '@lifegames/tokens/effects';
-import '@lifegames/tokens/layout';
-import '@lifegames/tokens/base';
-import '@lifegames/tokens/docs-chrome';
+import '@j0nathan-ll0yd/tokens/fonts';
+import '@j0nathan-ll0yd/tokens/css';
+import '@j0nathan-ll0yd/tokens/compat';
+import '@j0nathan-ll0yd/tokens/components';
+import '@j0nathan-ll0yd/tokens/effects';
+import '@j0nathan-ll0yd/tokens/layout';
+import '@j0nathan-ll0yd/tokens/base';
+import '@j0nathan-ll0yd/tokens/docs-chrome';
 
 import ${name} from '@widgets/${category}/${name}.astro';
 import fixture from '@fixtures/${category}/${kebab}.json';
@@ -200,7 +200,7 @@ import var_c from '@fixtures/${category}/${kebab}.variation-c.json';
     <section class="wd-section">
       <h2 class="wd-section-title">Usage</h2>
       <pre class="wd-code"><code>---
-import ${name} from '@lifegames/web/widgets/${category}/${name}.astro';
+import ${name} from '@j0nathan-ll0yd/web/widgets/${category}/${name}.astro';
 ---
 &lt;${name} &#123;...data&#125; /&gt;</code></pre>
     </section>

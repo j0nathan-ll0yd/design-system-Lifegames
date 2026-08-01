@@ -1,4 +1,4 @@
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
 import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'

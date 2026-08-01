@@ -7,7 +7,7 @@
 //
 // `rawFixtures` exposes the same data as typed TS maps (domain → variation → raw
 // shape) for any TS consumer. The serialized JSON form lives at
-// `@lifegames/fixtures/generated/<domain>/<variation>.json` for file-path consumers
+// `@j0nathan-ll0yd/fixtures/generated/<domain>/<variation>.json` for file-path consumers
 // (Playwright reads files by path). Both are produced from these factories.
 import {
   articlesVariations,

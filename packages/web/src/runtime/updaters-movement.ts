@@ -1,6 +1,6 @@
 // Movement Rings widget + Heart Rate footer-vitals strip updaters.
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 import type {AdaptedHealth} from './adapters'
 
 // Default goals — kept in sync with MovementRings.astro SSR defaults.

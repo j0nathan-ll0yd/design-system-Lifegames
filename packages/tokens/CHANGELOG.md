@@ -1,4 +1,4 @@
-# @lifegames/tokens
+# @j0nathan-ll0yd/tokens
 
 ## 0.1.0
 

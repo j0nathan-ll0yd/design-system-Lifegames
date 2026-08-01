@@ -2,10 +2,10 @@
 //
 // Profile is a DS-authored display shape with NO raw LP export equivalent — it is
 // not produced by any runtime adapter. These fixtures are authored directly against
-// `@lifegames/schemas` `Profile` (authored/profile.schema.json) and feed the SSR
+// `@j0nathan-ll0yd/schemas` `Profile` (authored/profile.schema.json) and feed the SSR
 // shell via loadDashboardData. Runtime polling never overwrites profile (it is
 // static identity content), so `baseline` is the representative production state.
-import type {Profile} from '@lifegames/schemas'
+import type {Profile} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
 export const baseline = authored<Profile>({
@@ -43,7 +43,7 @@ export const baseline = authored<Profile>({
     {type: 'output', text: '→ "Enjoying the passage of time"'},
     {type: 'blank', text: ''},
     // interests listed alphabetically — `ls` always sorts. Order intentionally
-    // differs from @lifegames/copy interests.value (curated; feeds llms-full.txt via
+    // differs from @j0nathan-ll0yd/copy interests.value (curated; feeds llms-full.txt via
     // llm-content/view.ts). Enforced by tests/interests-invariant.test.ts.
     {type: 'prompt', text: '$ ls -m interests/'},
     {type: 'output', text: '→ conversation, edm, musical theatre, pc gaming, programming'},

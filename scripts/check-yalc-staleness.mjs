@@ -14,7 +14,7 @@
  *     a known fingerprint.
  *
  *   Consumer-side (--check)
- *     Compute SHA-256 over the contents of .yalc/@lifegames/tokens/dist/
+ *     Compute SHA-256 over the contents of .yalc/@j0nathan-ll0yd/tokens/dist/
  *     inside the consumer repo and compare it to the .yalc-content-hash
  *     file shipped under that same yalc-linked package root. Mismatch =
  *     consumer has stale bytes; user should `yalc update`.
@@ -26,7 +26,7 @@
  *                                                      or out-of-sync with current dist
  *   node scripts/check-yalc-staleness.mjs --consumer <consumerRoot>
  *     Same as --check but compares against the consumer's yalc copy at
- *     <consumerRoot>/.yalc/@lifegames/tokens/.yalc-content-hash. Useful as a
+ *     <consumerRoot>/.yalc/@j0nathan-ll0yd/tokens/.yalc-content-hash. Useful as a
  *     postinstall hook in the consumer.
  */
 
@@ -84,7 +84,7 @@ function fmt(sha) {
 
 // ── consumer mode: compare DS-shipped hash to consumer's local yalc dist ──────
 if (CONSUMER_ROOT) {
-  const yalcRoot = path.resolve(CONSUMER_ROOT, '.yalc/@lifegames/tokens')
+  const yalcRoot = path.resolve(CONSUMER_ROOT, '.yalc/@j0nathan-ll0yd/tokens')
   const shippedHashFile = path.join(yalcRoot, HASH_FILE_NAME)
   const yalcDist = path.join(yalcRoot, 'dist')
 
@@ -103,11 +103,11 @@ if (CONSUMER_ROOT) {
   const {sha: actual, fileCount} = hashDir(yalcDist)
 
   if (expected === actual) {
-    console.log(`Yalc OK — @lifegames/tokens consumer dist matches DS-published hash ${fmt(actual)} (${fileCount} files).`)
+    console.log(`Yalc OK — @j0nathan-ll0yd/tokens consumer dist matches DS-published hash ${fmt(actual)} (${fileCount} files).`)
     process.exit(0)
   }
   console.log(
-    `Yalc DRIFT — @lifegames/tokens consumer dist hash ${fmt(actual)} ` + `does not match DS-published hash ${fmt(expected)} (${fileCount} files).`
+    `Yalc DRIFT — @j0nathan-ll0yd/tokens consumer dist hash ${fmt(actual)} ` + `does not match DS-published hash ${fmt(expected)} (${fileCount} files).`
   )
   console.log('Run `yalc update` to refresh, or `pnpm yalc:publish` from the DS if you just rebuilt.')
   process.exit(MODE_CHECK ? 1 : 0)

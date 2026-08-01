@@ -4,7 +4,7 @@
 // Used by DS build and consumer prebuild.
 //
 // Consumer-side invocation (Phase D1):
-//   "prebuild": "LIFEGAMES_VALIDATE_CWD=$PWD pnpm --dir <ds-root> -F @lifegames/schemas validate"
+//   "prebuild": "LIFEGAMES_VALIDATE_CWD=$PWD pnpm --dir <ds-root> -F @j0nathan-ll0yd/schemas validate"
 // (or equivalent when consumed via yalc/npm package)
 
 import {existsSync, readdirSync, readFileSync} from 'node:fs'

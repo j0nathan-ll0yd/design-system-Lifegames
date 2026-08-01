@@ -1,10 +1,10 @@
 // Post-adapter display fixtures for the SystemStatus widget.
 //
 // System is a DS-authored display shape with NO raw LP export equivalent — it is
-// not produced by any runtime adapter. Authored directly against `@lifegames/schemas`
+// not produced by any runtime adapter. Authored directly against `@j0nathan-ll0yd/schemas`
 // `System` (authored/system.schema.json) and fed to the SSR shell via
 // loadDashboardData. Runtime polling flips PENDING rows to OK as live data arrives.
-import type {System} from '@lifegames/schemas'
+import type {System} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
 const SOURCES = [

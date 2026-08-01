@@ -30,7 +30,7 @@ public struct NightSummaryProps: Hashable, Codable, Sendable {
 public extension NightSummaryProps {
     /// Build a NightSummaryProps from raw sleep-stage durations.
     ///
-    /// Mirrors the web runtime contract in `@lifegames/web/runtime/sleep.ts`:
+    /// Mirrors the web runtime contract in `@j0nathan-ll0yd/web/runtime/sleep.ts`:
     /// `duration` and the phase-percentage denominator are `core + deep + rem`
     /// — **awake is NEVER counted as sleep**. Consumers (iOS app, watch app,
     /// design gallery, screenshots) must go through this factory so the rule

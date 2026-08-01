@@ -1,6 +1,6 @@
-import type {SchemaDerived} from '@lifegames/schemas'
+import type {SchemaDerived} from '@j0nathan-ll0yd/schemas'
 
-// The SchemaDerived brand (see @lifegames/schemas branded.ts) is a compile-time-only
+// The SchemaDerived brand (see @j0nathan-ll0yd/schemas branded.ts) is a compile-time-only
 // `unique symbol` with no runtime representation, so a branded value cannot be
 // produced by an object literal — it can only be asserted at a trusted authoring
 // boundary. `authored` is that single boundary for the post-adapter display

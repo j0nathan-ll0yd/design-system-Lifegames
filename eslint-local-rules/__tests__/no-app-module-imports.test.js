@@ -16,19 +16,19 @@ tester.run('no-app-module-imports', rule, {
     // Pure presentational helper import — allowed.
     {filename: widgetFile, code: "import { classifyHeartRate } from '../../runtime/heart-rate';"},
     // Token import — allowed.
-    {filename: widgetFile, code: "import { tokens } from '@lifegames/tokens';"},
+    {filename: widgetFile, code: "import { tokens } from '@j0nathan-ll0yd/tokens';"},
     // fetch() inside a function body — allowed (only module-scope fetch is flagged).
     {filename: widgetFile, code: 'function load() { return fetch("/x"); }'},
     // Forbidden source but OUTSIDE the widgets tree — rule inert.
-    {filename: outsideFile, code: "import client from '@lifegames/web/data';"}
+    {filename: outsideFile, code: "import client from '@j0nathan-ll0yd/web/data';"}
   ],
 
   invalid: [
     // App data layer import.
     {
       filename: widgetFile,
-      code: "import client from '@lifegames/web/data';",
-      errors: [{messageId: 'forbiddenImport', data: {source: '@lifegames/web/data'}}]
+      code: "import client from '@j0nathan-ll0yd/web/data';",
+      errors: [{messageId: 'forbiddenImport', data: {source: '@j0nathan-ll0yd/web/data'}}]
     },
     // Local api client.
     {filename: widgetFile, code: "import { get } from '../../lib/api';", errors: [{messageId: 'forbiddenImport', data: {source: '../../lib/api'}}]},

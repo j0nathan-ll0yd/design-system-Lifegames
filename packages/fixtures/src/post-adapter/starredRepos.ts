@@ -1,7 +1,7 @@
 // Post-adapter display fixtures for the StarredRepoList widget.
 //
 // starredRepos is the ONLY domain whose post-adapter shape is mechanically derived
-// by running the REAL runtime adapter (`adaptStarredRepos` from @lifegames/web) over
+// by running the REAL runtime adapter (`adaptStarredRepos` from @j0nathan-ll0yd/web) over
 // a raw GithubStarredReposExport. To keep the relative-time output ("2 weeks ago")
 // deterministic, the adapter is invoked with a STABLE injected `now` equal to the
 // raw fixture's `generatedAt` — the same trick the web's loadDashboardData used.
@@ -10,7 +10,7 @@
 // authored directly because the runtime adapters produce narrower/different
 // shapes). For starredRepos the adapter output IS the display shape consumed by SSR.
 import type {GithubStarredReposExport} from '@j0nathan-ll0yd/portal-contract/schemas'
-import {type AdaptedStarredRepo, adaptStarredRepos} from '@lifegames/web/runtime/adapters'
+import {type AdaptedStarredRepo, adaptStarredRepos} from '@j0nathan-ll0yd/web/runtime/adapters'
 
 // Stable generation timestamp shared by the raw input and the adapter clock so
 // "N weeks/days ago" strings never drift between fixture-gen runs.

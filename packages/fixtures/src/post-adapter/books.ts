@@ -3,9 +3,9 @@
 // DashboardBooks is a DS-owned display shape that is RICHER than the runtime
 // adapter output: its bookMeta/statusLabels/stats and the books[] field set differ
 // from adaptBooks() (which feeds the runtime updater). The SSR shell reads this
-// authored display shape. Authored against `@lifegames/schemas` `DashboardBooks`
+// authored display shape. Authored against `@j0nathan-ll0yd/schemas` `DashboardBooks`
 // (authored/dashboard-books.schema.json). All values absolute — deterministic.
-import type {DashboardBooks} from '@lifegames/schemas'
+import type {DashboardBooks} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
 export const baseline = authored<DashboardBooks>({

@@ -292,13 +292,13 @@ function resolveImportAlias(category, actualName) {
     return {
       importAlias: `@components/${actualName}.astro`,
       webPath: `packages/web/src/components/${actualName}.astro`,
-      pkgAlias: `@lifegames/web/components/${actualName}.astro`
+      pkgAlias: `@j0nathan-ll0yd/web/components/${actualName}.astro`
     }
   }
   return {
     importAlias: `@widgets/${category}/${actualName}.astro`,
     webPath: `packages/web/src/widgets/${category}/${actualName}.astro`,
-    pkgAlias: `@lifegames/web/widgets/${category}/${actualName}.astro`
+    pkgAlias: `@j0nathan-ll0yd/web/widgets/${category}/${actualName}.astro`
   }
 }
 

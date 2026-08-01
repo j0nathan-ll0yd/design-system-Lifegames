@@ -1,4 +1,4 @@
-import {a11y} from '@lifegames/copy'
+import {a11y} from '@j0nathan-ll0yd/copy'
 
 const PAGE_SIZE = 10
 

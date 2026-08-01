@@ -5,12 +5,12 @@
 // equivalent — it is computed from the GitHub API by the DS pipeline, not produced
 // by any runtime adapter (adaptGithubEvents produces a DIFFERENT, narrower
 // AdaptedGithubEvent[] shape used only by the runtime updater). These fixtures are
-// authored directly against `@lifegames/schemas` `DashboardGithub`
+// authored directly against `@j0nathan-ll0yd/schemas` `DashboardGithub`
 // (authored/dashboard-github.schema.json) and feed the SSR shell.
 //
 // `devActivity[].date` is a pre-formatted relative string ("2h ago"), so it is
 // already deterministic — no clock injection needed for this domain.
-import type {DashboardGithub} from '@lifegames/schemas'
+import type {DashboardGithub} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
 // Deterministic 52x7 contribution grid. Generated from a fixed integer sequence

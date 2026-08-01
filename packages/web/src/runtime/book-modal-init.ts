@@ -7,7 +7,7 @@
 // trap needed), automatic Escape-to-close (cancel→close events), top-layer
 // rendering (no z-index required), and UA margin:auto centering.
 
-import {a11y, widgets} from '@lifegames/copy'
+import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
 import {formatFinishedDate} from './updaters'
 

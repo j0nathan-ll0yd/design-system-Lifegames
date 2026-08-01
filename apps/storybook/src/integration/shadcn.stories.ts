@@ -6,7 +6,7 @@ const meta: Meta = {
   tags: ['stable'],
   parameters: {
     backgrounds: {default: 'dark'},
-    docs: {description: {component: 'Smoke fixture verifying shadcn OKLCH CSS vars from `@lifegames/tokens/shadcn`.'}}
+    docs: {description: {component: 'Smoke fixture verifying shadcn OKLCH CSS vars from `@j0nathan-ll0yd/tokens/shadcn`.'}}
   }
 }
 

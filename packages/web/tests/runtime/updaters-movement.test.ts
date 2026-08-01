@@ -2,7 +2,7 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {updateHeartRateFooter, updateMovementRings} from '../../src/runtime/updaters-movement'
 import type {AdaptedHealth} from '../../src/runtime/adapters'
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 

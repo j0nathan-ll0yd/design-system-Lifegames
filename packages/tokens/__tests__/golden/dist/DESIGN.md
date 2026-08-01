@@ -397,7 +397,7 @@ Single-purpose UI surfaces sharing a common dark/neon aesthetic. 32 widgets acro
 
 - **No raw hex** in component or widget source files. Use semantic tokens.
 - **No raw `Color(hex:)` or `Color(red:green:blue:)`** in Swift component files — use generated `LifegamesTokens` constants.
-- **No raw hex in CSS** — use `var(--lg-*)` custom properties from `@lifegames/tokens`.
+- **No raw hex in CSS** — use `var(--lg-*)` custom properties from `@j0nathan-ll0yd/tokens`.
 - All neon colors MUST resolve to **identical hex values** across web and iOS.
 - All SwiftUI `#Preview` blocks MUST include `.preferredColorScheme(.dark)`.
 - Fluid typography and spacing via `clamp()` on web; SwiftUI uses `relativeTo:` for Dynamic Type on iOS.

@@ -12,7 +12,7 @@ if echo "$staged" | grep -qE '^(packages/copy/(src/|scripts/)|packages/copy/dist
   if ! pnpm check:schemas-freshness; then
     echo "ERROR: generated artifacts are stale or unformatted." >&2
     echo "  Run the generators, then stage the regenerated files and re-commit:" >&2
-    echo "    pnpm -F @lifegames/copy build && pnpm -F @lifegames/schemas codegen" >&2
+    echo "    pnpm -F @j0nathan-ll0yd/copy build && pnpm -F @j0nathan-ll0yd/schemas codegen" >&2
     exit 1
   fi
 fi

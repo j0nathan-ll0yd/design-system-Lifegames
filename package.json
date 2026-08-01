@@ -16,7 +16,7 @@
     "storybook:test": "turbo run storybook:test",
     "check:schemas-freshness": "bash packages/schemas/scripts/check-freshness.sh",
     "yalc:publish": "bash scripts/yalc-publish-guarded.sh",
-    "yalc:publish:run": "pnpm build:tokens && node scripts/check-yalc-staleness.mjs --write && pnpm --filter @lifegames/tokens exec yalc publish --push && pnpm --filter @lifegames/web exec yalc publish --push && pnpm --filter @lifegames/schemas exec yalc publish --push && pnpm -F @lifegames/copy build && pnpm --filter @lifegames/copy exec yalc publish --push && pnpm -F @lifegames/fixtures build && pnpm --filter @lifegames/fixtures exec yalc publish --push",
+    "yalc:publish:run": "pnpm build:tokens && node scripts/check-yalc-staleness.mjs --write && pnpm --filter @j0nathan-ll0yd/tokens exec yalc publish --push && pnpm --filter @j0nathan-ll0yd/web exec yalc publish --push && pnpm --filter @j0nathan-ll0yd/schemas exec yalc publish --push && pnpm -F @j0nathan-ll0yd/copy build && pnpm --filter @j0nathan-ll0yd/copy exec yalc publish --push && pnpm -F @j0nathan-ll0yd/fixtures build && pnpm --filter @j0nathan-ll0yd/fixtures exec yalc publish --push",
     "yalc:update": "pnpm yalc:publish",
     "yalc:check": "node scripts/check-yalc-staleness.mjs --check",
     "baseline:age": "node scripts/check-baseline-age.mjs",
