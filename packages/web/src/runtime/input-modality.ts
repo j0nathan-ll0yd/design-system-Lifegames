@@ -1,4 +1,4 @@
-// Global input-modality tracker for @lifegames/web runtime.
+// Global input-modality tracker for @j0nathan-ll0yd/web runtime.
 //
 // Sets `document.documentElement.dataset.inputModality` to reflect the
 // active input device: `'pointer'` after a mouse/touch interaction,

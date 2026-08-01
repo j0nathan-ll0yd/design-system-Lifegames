@@ -1,11 +1,11 @@
 'use strict'
 
-// D9 — @lifegames/copy leaf boundary (GOVERNANCE P3.1).
+// D9 — @j0nathan-ll0yd/copy leaf boundary (GOVERNANCE P3.1).
 //
 // packages/copy/src/** MUST remain a ZERO-dependency content leaf so the backend
 // (an AWS Lambda) can import the copy package without pulling in any UI/DS code.
 // It therefore must NOT import:
-//   - any @lifegames/* package (tokens, web, schemas, …) — that would couple copy
+//   - any @j0nathan-ll0yd/* package (tokens, web, schemas, …) — that would couple copy
 //     to UI/DS packages and break the leaf guarantee;
 //   - any UI framework (react, vue, svelte, astro, …).
 //
@@ -20,7 +20,7 @@ const SRC_FILE_PATTERN = /\/packages\/copy\/src\/.+\.(?:ts|tsx|js|jsx|mjs|cjs)$/
 
 // An import is forbidden if its specifier starts with any of these prefixes.
 const FORBIDDEN_PREFIXES = [
-  '@lifegames/', // any DS/UI package — copy must stay a leaf
+  '@j0nathan-ll0yd/', // any DS/UI package — copy must stay a leaf
   '@astrojs/'
 ]
 
@@ -49,11 +49,11 @@ module.exports = {
     type: 'problem',
     docs: {
       description:
-        'D9 / P3.1: packages/copy/src must be a zero-dependency content leaf — no @lifegames/* or UI-framework imports (schema is a build-time devDep, importable only from scripts/).'
+        'D9 / P3.1: packages/copy/src must be a zero-dependency content leaf — no @j0nathan-ll0yd/* or UI-framework imports (schema is a build-time devDep, importable only from scripts/).'
     },
     messages: {
       forbiddenImport:
-        "D9: packages/copy/src must be a zero-dependency content leaf. '{{source}}' is forbidden here so the backend can import @lifegames/copy without pulling in UI/DS code. The package is self-contained (schema in packages/copy/schema/, read by the build). (GOVERNANCE P3.1)"
+        "D9: packages/copy/src must be a zero-dependency content leaf. '{{source}}' is forbidden here so the backend can import @j0nathan-ll0yd/copy without pulling in UI/DS code. The package is self-contained (schema in packages/copy/schema/, read by the build). (GOVERNANCE P3.1)"
     },
     schema: []
   },

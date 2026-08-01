@@ -1,12 +1,12 @@
 // Post-adapter (display-shape) fixture barrel.
 //
 // These are the SSR-shell fixtures the web's loadDashboardData consumes. Each
-// domain maps variation name → display shape typed from `@lifegames/schemas`
-// (plus AdaptedStarredRepo[] from @lifegames/web for starredRepos, the one
+// domain maps variation name → display shape typed from `@j0nathan-ll0yd/schemas`
+// (plus AdaptedStarredRepo[] from @j0nathan-ll0yd/web for starredRepos, the one
 // adapter-derived domain). The `baseline` variation is the default SSR shell;
 // `empty` exercises the no-data path. Visual tests select variations explicitly.
-import type {DashboardBooks, DashboardGithub, DashboardHealth, DashboardReading, Profile, System} from '@lifegames/schemas'
-import type {AdaptedStarredRepo} from '@lifegames/web/runtime/adapters'
+import type {DashboardBooks, DashboardGithub, DashboardHealth, DashboardReading, Profile, System} from '@j0nathan-ll0yd/schemas'
+import type {AdaptedStarredRepo} from '@j0nathan-ll0yd/web/runtime/adapters'
 
 import {profilePostAdapter} from './post-adapter/profile'
 import {healthPostAdapter} from './post-adapter/health'

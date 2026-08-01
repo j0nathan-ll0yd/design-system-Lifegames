@@ -1,6 +1,9 @@
 {
-  "name": "@lifegames/copy",
-  "version": "0.1.0",
+  "name": "@j0nathan-ll0yd/copy",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "description": "Single source of truth for customer-facing copy (identity + widgets + a11y + app + permissions + errors + llm) across web, iOS, the design system, and the backend. Zero runtime dependencies; rich per-string authoring context (_meta); ICU MessageFormat 1 syntax.",
   "type": "module",
   "exports": {

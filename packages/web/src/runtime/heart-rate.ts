@@ -1,4 +1,4 @@
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 
 export interface HeartRateZone {
   zone: string

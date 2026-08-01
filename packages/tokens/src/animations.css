@@ -1,7 +1,7 @@
 @layer lifegames {
   @layer animations {
     /* Curated keyframe animations for the Lifegames design system.
-   Import via: @lifegames/tokens/animations */
+   Import via: @j0nathan-ll0yd/tokens/animations */
 
     @keyframes glowPulse {
       0%,

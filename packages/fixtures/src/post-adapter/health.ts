@@ -6,10 +6,10 @@
 // sampleWorkouts that adaptHealth() does NOT produce (adaptHealth feeds the runtime
 // updater with a narrower AdaptedHealth shape — though goals/solar DO pass through
 // it now that the live movement widget renders them). The SSR shell therefore reads
-// this authored display shape, not adapter output. Authored against `@lifegames/schemas`
+// this authored display shape, not adapter output. Authored against `@j0nathan-ll0yd/schemas`
 // `DashboardHealth` (generated/dashboard-health.schema.json). All values are
 // absolute (no relative timestamps), so this domain is inherently deterministic.
-import type {DashboardHealth} from '@lifegames/schemas'
+import type {DashboardHealth} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
 export const baseline = authored<DashboardHealth>({

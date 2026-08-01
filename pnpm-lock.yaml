@@ -66,13 +66,13 @@ importers:
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
         version: 1.0.0
-      '@lifegames/fixtures':
+      '@j0nathan-ll0yd/fixtures':
         specifier: workspace:*
         version: link:../../packages/fixtures
-      '@lifegames/tokens':
+      '@j0nathan-ll0yd/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
-      '@lifegames/web':
+      '@j0nathan-ll0yd/web':
         specifier: workspace:*
         version: link:../../packages/web
       astro:
@@ -193,14 +193,14 @@ importers:
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
         version: 1.0.0
-      '@lifegames/schemas':
+      '@j0nathan-ll0yd/schemas':
         specifier: workspace:*
         version: link:../schemas
-      '@lifegames/web':
+      '@j0nathan-ll0yd/web':
         specifier: workspace:*
         version: link:../web
     devDependencies:
-      '@lifegames/copy':
+      '@j0nathan-ll0yd/copy':
         specifier: workspace:*
         version: link:../copy
       '@typescript-eslint/parser':
@@ -286,10 +286,10 @@ importers:
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
         version: 1.0.0
-      '@lifegames/copy':
+      '@j0nathan-ll0yd/copy':
         specifier: workspace:*
         version: link:../copy
-      '@lifegames/tokens':
+      '@j0nathan-ll0yd/tokens':
         specifier: workspace:*
         version: link:../tokens
     devDependencies:

@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 // mantle-cli-output: fixture generation progress for stdout
 /**
- * generate.ts — @lifegames/fixtures generation pipeline.
+ * generate.ts — @j0nathan-ll0yd/fixtures generation pipeline.
  *
  * Produces TWO committed fixture families from the package's TS factories:
  *
@@ -50,7 +50,7 @@ const DIRECTORY_MAP: Record<keyof typeof rawFixtures, string> = {
 
 // Format with prettier's resolved config so committed output passes the repo-wide
 // `format:check` CI gate AND stays deterministic (prettier is idempotent; key order
-// is fixed by the factory source). Mirrors the @lifegames/copy build.
+// is fixed by the factory source). Mirrors the @j0nathan-ll0yd/copy build.
 async function writeJson(path: string, value: unknown): Promise<void> {
   const cfg = await prettier.resolveConfig(path)
   const formatted = await prettier.format(JSON.stringify(value), {...cfg, parser: 'json', filepath: path})

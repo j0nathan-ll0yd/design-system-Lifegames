@@ -2,16 +2,16 @@
 // Shared static-showcase dashboard body, rendered identically by `/` (baseline)
 // and every `/scenarios/<name>/` page. All data is supplied by the caller from
 // `getScenarioData(scenario)` (src/lib/scenario-data.ts) — the canonical
-// `@lifegames/fixtures` source. This component owns NO data fetching: the
+// `@j0nathan-ll0yd/fixtures` source. This component owns NO data fetching: the
 // portfolio is a static build, so each scenario is a distinct build-time render.
 import Dashboard from '../layouts/Dashboard.astro';
 import IdentityCard from '@widgets/identity/IdentityCard.astro';
-import BioTerminal from '@lifegames/web/production/BioTerminal.astro';
+import BioTerminal from '@j0nathan-ll0yd/web/production/BioTerminal.astro';
 import SystemStatus from '@widgets/other/SystemStatus.astro';
 import HeartRate from '@widgets/health/HeartRate.astro';
 import Workouts from '@widgets/health/Workouts.astro';
 import NightSummary from '@widgets/health/NightSummary.astro';
-import Hydration from '@lifegames/web/production/Hydration.astro';
+import Hydration from '@j0nathan-ll0yd/web/production/Hydration.astro';
 import StarredRepoList from '@widgets/github/StarredRepoList.astro';
 import DevActivityLog from '@widgets/github/DevActivityLog.astro';
 import ReadingFeed from '@widgets/reading/ReadingFeed.astro';

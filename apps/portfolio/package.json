@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@j0nathan-ll0yd/portal-contract": "^1.0.0",
-    "@lifegames/fixtures": "workspace:*",
-    "@lifegames/tokens": "workspace:*",
-    "@lifegames/web": "workspace:*",
+    "@j0nathan-ll0yd/fixtures": "workspace:*",
+    "@j0nathan-ll0yd/tokens": "workspace:*",
+    "@j0nathan-ll0yd/web": "workspace:*",
     "astro": "^6.4.4"
   },
   "devDependencies": {

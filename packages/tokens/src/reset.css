@@ -14,7 +14,7 @@
    on a specific box-sizing model), and reset margin/padding only on the
    text/list elements that ship with browser-default margins.
 
-   Consumers that want the reset import `@lifegames/tokens/reset`. Starlight
+   Consumers that want the reset import `@j0nathan-ll0yd/tokens/reset`. Starlight
    (which ships its own reset) intentionally does NOT import this file. */
 
 *,

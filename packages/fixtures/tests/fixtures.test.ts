@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 import {fixtures, getDashboardFixture, rawFixtures} from '../src/index'
-import type {AdaptedStarredRepo} from '@lifegames/web/runtime/adapters'
+import type {AdaptedStarredRepo} from '@j0nathan-ll0yd/web/runtime/adapters'
 import {RESERVED_VARIATIONS} from '../src/reserved-variations'
 import {DEFAULT_QUANTITIES} from '../src/factories/health'
 

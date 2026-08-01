@@ -17,22 +17,38 @@ tester.run('copy-src-no-dependencies', rule, {
     {filename: srcFile, code: "import { readFileSync } from 'node:fs';"},
     // Relative import of generated data — allowed.
     {filename: srcFile, code: "import data from './identity.flat.json';"},
-    // @lifegames/* is allowed OUTSIDE src (the rule is scoped to src/ only).
-    {filename: scriptsFile, code: "import { z } from '@lifegames/schemas';"},
+    // @j0nathan-ll0yd/* is allowed OUTSIDE src (the rule is scoped to src/ only).
+    {filename: scriptsFile, code: "import { z } from '@j0nathan-ll0yd/schemas';"},
     // UI framework imported from scripts — rule inert outside src.
     {filename: scriptsFile, code: "import React from 'react';"}
   ],
 
   invalid: [
-    // Any @lifegames/* package in src is forbidden.
-    {filename: srcFile, code: "import { tokens } from '@lifegames/tokens';", errors: [{messageId: 'forbiddenImport', data: {source: '@lifegames/tokens'}}]},
-    // Any @lifegames/* package in src is forbidden (here: schemas).
-    {filename: srcFile, code: "import { z } from '@lifegames/schemas';", errors: [{messageId: 'forbiddenImport', data: {source: '@lifegames/schemas'}}]},
+    // Any @j0nathan-ll0yd/* package in src is forbidden.
+    {
+      filename: srcFile,
+      code: "import { tokens } from '@j0nathan-ll0yd/tokens';",
+      errors: [{messageId: 'forbiddenImport', data: {source: '@j0nathan-ll0yd/tokens'}}]
+    },
+    // Any @j0nathan-ll0yd/* package in src is forbidden (here: schemas).
+    {
+      filename: srcFile,
+      code: "import { z } from '@j0nathan-ll0yd/schemas';",
+      errors: [{messageId: 'forbiddenImport', data: {source: '@j0nathan-ll0yd/schemas'}}]
+    },
     // UI frameworks are forbidden in src.
     {filename: srcFile, code: "import React from 'react';", errors: [{messageId: 'forbiddenImport', data: {source: 'react'}}]},
     // require() form.
-    {filename: srcFile, code: "const web = require('@lifegames/web');", errors: [{messageId: 'forbiddenImport', data: {source: '@lifegames/web'}}]},
+    {
+      filename: srcFile,
+      code: "const web = require('@j0nathan-ll0yd/web');",
+      errors: [{messageId: 'forbiddenImport', data: {source: '@j0nathan-ll0yd/web'}}]
+    },
     // re-export form.
-    {filename: srcFile, code: "export { x } from '@lifegames/tokens';", errors: [{messageId: 'forbiddenImport', data: {source: '@lifegames/tokens'}}]}
+    {
+      filename: srcFile,
+      code: "export { x } from '@j0nathan-ll0yd/tokens';",
+      errors: [{messageId: 'forbiddenImport', data: {source: '@j0nathan-ll0yd/tokens'}}]
+    }
   ]
 })

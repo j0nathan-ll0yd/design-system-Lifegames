@@ -8,13 +8,13 @@ import { Steps, Aside } from '@astrojs/starlight/components';
 # Phase 2 Cutover: yalc → GitHub Packages
 
 When `vars.REMOTE_ENABLED` flips to `true`, the publish workflow will start pushing
-`@lifegames/tokens`, `@lifegames/web`, and `@lifegames/schemas` to GitHub Packages
+`@j0nathan-ll0yd/tokens`, `@j0nathan-ll0yd/web`, and `@j0nathan-ll0yd/schemas` to GitHub Packages
 (`npm.pkg.github.com`). At that point, every consumer can switch from `yalc` links
 to real npm version ranges — **no source changes required**.
 
 <Aside type="caution">
   Do not perform this cutover until the npm publish workflow has successfully published at least one
-  version. Confirm with `npm view @lifegames/tokens --registry https://npm.pkg.github.com`.
+  version. Confirm with `npm view @j0nathan-ll0yd/tokens --registry https://npm.pkg.github.com`.
 </Aside>
 
 ---
@@ -26,7 +26,7 @@ Before starting the cutover:
 - [ ] `vars.REMOTE_ENABLED` has been set to `true` in GitHub repo settings
 - [ ] At least one successful run of `.github/workflows/publish.yml` (non-dry-run)
 - [ ] GitHub Personal Access Token with `read:packages` scope available for consumers
-- [ ] Confirm published version: `npm view @lifegames/tokens --registry https://npm.pkg.github.com`
+- [ ] Confirm published version: `npm view @j0nathan-ll0yd/tokens --registry https://npm.pkg.github.com`
 
 ---
 
@@ -38,7 +38,7 @@ Before starting the cutover:
 
    ```bash
    cd ~/Repositories/j0nathan-ll0yd.github.io
-   yalc remove @lifegames/tokens @lifegames/web @lifegames/schemas
+   yalc remove @j0nathan-ll0yd/tokens @j0nathan-ll0yd/web @j0nathan-ll0yd/schemas
    ```
 
 2. **Add GitHub Packages registry config**
@@ -46,17 +46,17 @@ Before starting the cutover:
    Create or update `.npmrc` at the repo root:
 
    ```ini
-   @lifegames:registry=https://npm.pkg.github.com
+   @j0nathan-ll0yd:registry=https://npm.pkg.github.com
    //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
    ```
 
 3. **Install from GitHub Packages**
 
    ```bash
-   pnpm add @lifegames/tokens@^0.1.0 @lifegames/web@^0.1.0 @lifegames/schemas@^0.1.0
+   pnpm add @j0nathan-ll0yd/tokens@^1.0.0 @j0nathan-ll0yd/web@^1.0.0 @j0nathan-ll0yd/schemas@^1.0.0
    ```
 
-   Replace `^0.1.0` with the actual published version from the prerequisite check.
+   Replace `^1.0.0` with the actual published version from the prerequisite check.
 
 4. **Remove yalc artifacts**
 
@@ -81,7 +81,7 @@ Before starting the cutover:
    cd ~/Repositories/design-system-Lifegames
    pnpm yalc:publish
    cd ~/Repositories/j0nathan-ll0yd.github.io
-   yalc add @lifegames/tokens @lifegames/web @lifegames/schemas
+   yalc add @j0nathan-ll0yd/tokens @j0nathan-ll0yd/web @j0nathan-ll0yd/schemas
    pnpm install
    ```
 
@@ -156,14 +156,14 @@ If a publish goes sideways and consumers pull a broken version:
    # In design-system-Lifegames
    pnpm yalc:publish
    # In each consumer
-   yalc add @lifegames/tokens @lifegames/web @lifegames/schemas
+   yalc add @j0nathan-ll0yd/tokens @j0nathan-ll0yd/web @j0nathan-ll0yd/schemas
    pnpm install
    ```
 
 2. **Retract the bad npm version** (requires write access to GitHub Packages):
 
    ```bash
-   npm unpublish @lifegames/tokens@<bad-version> --registry https://npm.pkg.github.com
+   npm unpublish @j0nathan-ll0yd/tokens@<bad-version> --registry https://npm.pkg.github.com
    ```
 
    Note: GitHub Packages does not allow re-publishing the same version. Publish a patch
@@ -177,11 +177,11 @@ If a publish goes sideways and consumers pull a broken version:
 
 After cutover, keep these versions in sync:
 
-| Package              | npm (GitHub Packages) | SPM tag      |
-| -------------------- | --------------------- | ------------ |
-| `@lifegames/tokens`  | `^X.Y.Z`              | `X.Y.Z`      |
-| `@lifegames/web`     | `^X.Y.Z`              | — (web-only) |
-| `@lifegames/schemas` | `^X.Y.Z`              | `X.Y.Z`      |
+| Package                   | npm (GitHub Packages) | SPM tag      |
+| ------------------------- | --------------------- | ------------ |
+| `@j0nathan-ll0yd/tokens`  | `^X.Y.Z`              | `X.Y.Z`      |
+| `@j0nathan-ll0yd/web`     | `^X.Y.Z`              | — (web-only) |
+| `@j0nathan-ll0yd/schemas` | `^X.Y.Z`              | `X.Y.Z`      |
 
 SPM and npm versions are kept in lock-step via Changesets: `pnpm changeset:version`
 bumps all three `package.json` versions, then the release workflow tags and publishes.

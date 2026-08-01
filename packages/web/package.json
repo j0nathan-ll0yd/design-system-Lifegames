@@ -1,6 +1,9 @@
 {
-  "name": "@lifegames/web",
-  "version": "0.1.0",
+  "name": "@j0nathan-ll0yd/web",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "description": "Astro components and widgets for the Lifegames design system",
   "type": "module",
   "sideEffects": [
@@ -43,8 +46,8 @@
   },
   "dependencies": {
     "@j0nathan-ll0yd/portal-contract": "^1.0.0",
-    "@lifegames/copy": "workspace:*",
-    "@lifegames/tokens": "workspace:*"
+    "@j0nathan-ll0yd/copy": "workspace:*",
+    "@j0nathan-ll0yd/tokens": "workspace:*"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.61.0",

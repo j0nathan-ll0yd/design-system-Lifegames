@@ -1,6 +1,9 @@
 {
-  "name": "@lifegames/fixtures",
-  "version": "0.1.0",
+  "name": "@j0nathan-ll0yd/fixtures",
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "description": "Canonical cross-consumer fixtures for the Lifegames dashboard. Produces BOTH raw pre-adapter export fixtures (for the web's Playwright CloudFront route-interception layer) AND post-adapter display-shape fixtures (the SSR shell consumed by loadDashboardData). Single source of truth: web + iOS + showcase consume these instead of hand-baking local snapshots.",
   "type": "module",
   "exports": {
@@ -28,11 +31,11 @@
   },
   "dependencies": {
     "@j0nathan-ll0yd/portal-contract": "^1.0.0",
-    "@lifegames/schemas": "workspace:*",
-    "@lifegames/web": "workspace:*"
+    "@j0nathan-ll0yd/schemas": "workspace:*",
+    "@j0nathan-ll0yd/web": "workspace:*"
   },
   "devDependencies": {
-    "@lifegames/copy": "workspace:*",
+    "@j0nathan-ll0yd/copy": "workspace:*",
     "@typescript-eslint/parser": "^8.61.0",
     "ajv": "~8.20.0",
     "ajv-formats": "~3.0.1",

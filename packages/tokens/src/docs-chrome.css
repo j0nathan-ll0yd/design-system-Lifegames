@@ -11,7 +11,7 @@
 
    Specificity escalated with `body` prefix to win over the per-page
    `<style is:global>` blocks that already duplicate the .wd-* rules.
-   This file is loaded via `import '@lifegames/tokens/docs-chrome'`
+   This file is loaded via `import '@j0nathan-ll0yd/tokens/docs-chrome'`
    in each detail page wrapper.
 
    All recommendations from /tmp/parity-design-review.md (12 total).

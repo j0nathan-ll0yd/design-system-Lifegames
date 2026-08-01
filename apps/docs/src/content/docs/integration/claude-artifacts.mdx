@@ -15,14 +15,14 @@ rendered in Claude can pick up the brand with a single import.
 
 ```css
 /* Paste this at the top of your Claude Artifact's global CSS */
-@import url('https://cdn.jsdelivr.net/npm/@lifegames/tokens/dist/shadcn.css');
+@import url('https://cdn.jsdelivr.net/npm/@j0nathan-ll0yd/tokens/dist/shadcn.css');
 ```
 
 Or, if consuming from GitHub Packages after Phase 2 cutover:
 
 ```tsx
 // In your Artifact's App.tsx or globals.css import
-import '@lifegames/tokens/shadcn';
+import '@j0nathan-ll0yd/tokens/shadcn';
 ```
 
 ## Token mapping
@@ -66,7 +66,7 @@ They have no shadcn equivalents but are essential for styling LLM-rendered surfa
 1. **Add the CSS import** at the top of your Artifact's style block:
 
    ```css
-   @import url('https://cdn.jsdelivr.net/npm/@lifegames/tokens/dist/shadcn.css');
+   @import url('https://cdn.jsdelivr.net/npm/@j0nathan-ll0yd/tokens/dist/shadcn.css');
    ```
 
 2. **Add `.dark` to your root element** (Lifegames is dark-first):

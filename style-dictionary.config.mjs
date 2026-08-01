@@ -746,7 +746,7 @@ function emitDesignMd() {
   // (source of truth: packages/copy/VOICE.md). Hand-authored + committed, NOT a
   // build output, so reading it here adds no build-order edge (build:tokens has
   // no dependsOn). If it ever becomes generated, add a build:tokens ->
-  // @lifegames/copy#build edge in turbo.json.
+  // @j0nathan-ll0yd/copy#build edge in turbo.json.
   const voice = JSON.parse(readFileSync(resolve(__dirname, 'packages/copy/voice.summary.json'), 'utf-8'))
   md += '_Voice source of truth: `packages/copy/VOICE.md` — this section is generated from `packages/copy/voice.summary.json`._\n\n'
   md += `**${voice.adjectives.join(' · ')}.** ${voice.spine}\n\n`
@@ -909,7 +909,7 @@ function emitDesignMd() {
   md += '## Authoring Rules\n\n'
   md += '- **No raw hex** in component or widget source files. Use semantic tokens.\n'
   md += '- **No raw `Color(hex:)` or `Color(red:green:blue:)`** in Swift component files — use generated `LifegamesTokens` constants.\n'
-  md += '- **No raw hex in CSS** — use `var(--lg-*)` custom properties from `@lifegames/tokens`.\n'
+  md += '- **No raw hex in CSS** — use `var(--lg-*)` custom properties from `@j0nathan-ll0yd/tokens`.\n'
   md += '- All neon colors MUST resolve to **identical hex values** across web and iOS.\n'
   md += '- All SwiftUI `#Preview` blocks MUST include `.preferredColorScheme(.dark)`.\n'
   md += '- Fluid typography and spacing via `clamp()` on web; SwiftUI uses `relativeTo:` for Dynamic Type on iOS.\n\n'

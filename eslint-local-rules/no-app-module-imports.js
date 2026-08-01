@@ -17,7 +17,7 @@ const FILE_PATTERN = /\/packages\/web\/src\/widgets\/.+\.(?:ts|tsx|js|jsx|mjs|cj
 // Forbidden import-source fragments. An import is flagged if its specifier
 // CONTAINS any of these substrings (case-insensitive). Kept small + explicit.
 const FORBIDDEN_SOURCE_FRAGMENTS = [
-  '@lifegames/web/data', // app data layer
+  '@j0nathan-ll0yd/web/data', // app data layer
   '/lib/api', // local api client
   '/api/', // api modules
   'apiclient', // APIClient-style modules

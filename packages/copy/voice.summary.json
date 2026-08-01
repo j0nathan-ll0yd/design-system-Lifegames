@@ -1,5 +1,5 @@
 {
-  "$comment": "Machine-readable summary of packages/copy/VOICE.md. Hand-authored + committed (NOT a build output). Consumed by the repo-root style-dictionary.config.mjs to render the DESIGN.md '## Brand & Voice' section, and optionally by the docs Voice & Tone page. If this ever becomes generated, add a build:tokens -> @lifegames/copy#build edge in turbo.json. Source of truth for the prose is VOICE.md.",
+  "$comment": "Machine-readable summary of packages/copy/VOICE.md. Hand-authored + committed (NOT a build output). Consumed by the repo-root style-dictionary.config.mjs to render the DESIGN.md '## Brand & Voice' section, and optionally by the docs Voice & Tone page. If this ever becomes generated, add a build:tokens -> @j0nathan-ll0yd/copy#build edge in turbo.json. Source of truth for the prose is VOICE.md.",
   "spine": "The voice of a human broadcasting himself in machine-readable form — on his own terms. Legible to the machine, never surrendered to it. A wry engineer at a terminal: precise, dry, quietly confident; shows the work, skips the hype; renders a life as a datastream while insisting the human is the irreducible source, not an obsolete algorithm.",
   "adjectives": ["Precise", "Wry", "Defiantly human"],
   "registers": [

@@ -1,4 +1,4 @@
-import {a11y, widgets} from '@lifegames/copy'
+import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {classifyHeartRate, classifyHRV} from './heart-rate'
 import {HYDRATION} from './constants'
 import {withViewTransition} from './view-transition'

@@ -1,4 +1,4 @@
-/* Public cascade-layer contract for @lifegames/tokens.
+/* Public cascade-layer contract for @j0nathan-ll0yd/tokens.
    Import this as the FIRST stylesheet in any consumer app, then declare
    site-specific overrides inside @layer site { ... }.
    Internal sub-layers (reset, base, tokens, fonts, components, effects,

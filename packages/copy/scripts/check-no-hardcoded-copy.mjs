@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * check-no-hardcoded-copy.mjs — @lifegames/copy grep gate.
+ * check-no-hardcoded-copy.mjs — @j0nathan-ll0yd/copy grep gate.
  *
  * Fails CI if a migrated copy VALUE reappears as a hardcoded quoted literal in
  * CONSUMER source — the highest-tier enforcement of "zero hardcoded
@@ -19,7 +19,7 @@
  *      natural-case value ("Heart Rate").
  *
  * Pure Node (no ripgrep/grep dependency) so it runs anywhere CI does.
- * Extend NAMESPACES whenever a new namespace is migrated into @lifegames/copy.
+ * Extend NAMESPACES whenever a new namespace is migrated into @j0nathan-ll0yd/copy.
  */
 
 import {readdirSync, readFileSync, statSync} from 'node:fs'
@@ -184,7 +184,7 @@ for (const root of CONSUMER_ROOTS) {
 
 if (violations.length > 0) {
   console.error('copy:grep-gate — FAIL: migrated copy values found hardcoded in consumer source.')
-  console.error('Replace each with the @lifegames/copy reference (e.g. widgets.<group>.<key>).')
+  console.error('Replace each with the @j0nathan-ll0yd/copy reference (e.g. widgets.<group>.<key>).')
   console.error('')
   for (const v of violations) {
     console.error(`  ${v}`)

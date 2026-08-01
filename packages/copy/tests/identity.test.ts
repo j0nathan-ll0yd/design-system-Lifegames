@@ -93,7 +93,7 @@ for (const ns of NAMESPACES) {
   const leaves: Leaf[] = []
   collectLeaves(richInstance, '', leaves)
 
-  describe(`@lifegames/copy ${ns.name}`, () => {
+  describe(`@j0nathan-ll0yd/copy ${ns.name}`, () => {
     it('rich instance validates against the rich schema', () => {
       const validate = ajv.compile(richSchema as object)
       const ok = validate(richInstance)
@@ -142,7 +142,7 @@ for (const ns of NAMESPACES) {
   })
 }
 
-describe('@lifegames/copy cross-namespace invariants', () => {
+describe('@j0nathan-ll0yd/copy cross-namespace invariants', () => {
   it('the $defs block is byte-identical across every schema (inlined per file, no cross-file $ref)', () => {
     const defs = NAMESPACES.map((ns) => {
       const schema = readJson(join(PKG, 'schema', `${ns.name}.schema.json`)) as Record<

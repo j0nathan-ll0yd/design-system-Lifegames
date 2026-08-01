@@ -23,5 +23,5 @@ The judgment pass a linter can't do. Run this against any new or reworded custom
 ## Wave sign-off (reword)
 
 - [ ] Diff reviewed by the BDFL before commit.
-- [ ] `pnpm -F @lifegames/copy build` green (codegen byte-deterministic).
+- [ ] `pnpm -F @j0nathan-ll0yd/copy build` green (codegen byte-deterministic).
 - [ ] `pnpm test` + `check-freshness.sh` green.

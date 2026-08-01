@@ -92,7 +92,7 @@ for (const w of widgets) {
 }
 
 // ── step 4: consumedByPortfolio ───────────────────────────────────────────────
-// Primary: scan portfolio .astro files for `from '@lifegames/web/production'` imports.
+// Primary: scan portfolio .astro files for `from '@j0nathan-ll0yd/web/production'` imports.
 // Fallback: read widget-consumers.json at repo root.
 // CI fail condition: portfolio unavailable AND fallback manifest missing.
 
@@ -112,8 +112,8 @@ if (fs.existsSync(portfolioPages) || fs.existsSync(portfolioComponents)) {
   for (const f of astroFiles) {
     const src = fs.readFileSync(f, 'utf-8')
     const base = path.basename(f)
-    // Find `from '@lifegames/web/production'` import blocks (possibly multi-line)
-    const importBlockRe = /import\s*\{([^}]+)\}\s*from\s*['"]@lifegames\/web\/production['"]/gs
+    // Find `from '@j0nathan-ll0yd/web/production'` import blocks (possibly multi-line)
+    const importBlockRe = /import\s*\{([^}]+)\}\s*from\s*['"]@j0nathan-ll0yd\/web\/production['"]/gs
     let match
     while ((match = importBlockRe.exec(src)) !== null) {
       const names = match[1].split(',').map((s) => s.trim().replace(/\s+as\s+\S+/, '').trim()).filter(Boolean)

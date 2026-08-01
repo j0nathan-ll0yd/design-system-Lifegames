@@ -11,7 +11,7 @@ Generated: 2026-06-06 by verifier agent (task #27).
 | `swift build` | PASS | Build complete in 0.67s, no errors |
 | `pnpm build:tokens` | PASS | 160 tokens processed, all outputs generated |
 | `pnpm build` (full) | **FAIL** | `docs#build` exits 1 — see [Critical Issue: docs build] below |
-| `pnpm lint` | PASS | 1/6 packages checked (only `@lifegames/web` had cache miss), no errors |
+| `pnpm lint` | PASS | 1/6 packages checked (only `@j0nathan-ll0yd/web` had cache miss), no errors |
 | `swift test` | PASS | 69 tests in 12 suites, all passed |
 
 ---

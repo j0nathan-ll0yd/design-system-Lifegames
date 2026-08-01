@@ -72,7 +72,7 @@ _(Cite: Abramov/Taivara presentational/container pattern; Martin Fowler headless
 
 ### P3.1 — Copy is a single-source-of-truth content leaf
 
-`@lifegames/copy` (`packages/copy/`) is the single source of truth for every
+`@j0nathan-ll0yd/copy` (`packages/copy/`) is the single source of truth for every
 customer-facing string across web, iOS, the design system, and the backend. It is a
 **zero-runtime-dependency content leaf** — data in, strings out — the copy analogue of
 the P3 presentational-purity boundary. Rules:
@@ -98,7 +98,7 @@ the P3 presentational-purity boundary. Rules:
   codegen from a schema-derived FLAT schema. Only `CopyLoader.swift` + `CopyError` are
   hand-written.
 - **Zero-dependency boundary (enforced).** `packages/copy/src/**` must not import any
-  `@lifegames/*` package or UI framework, so the backend (an AWS Lambda) can import copy
+  `@j0nathan-ll0yd/*` package or UI framework, so the backend (an AWS Lambda) can import copy
   without pulling in UI/DS code. The package is self-contained: the authoring JSON Schema
   lives in `packages/copy/schema/` and is read by the build (`packages/copy/scripts/**`).
 
@@ -113,7 +113,7 @@ _(Cite: single-source-of-truth content modeling; ICU MessageFormat; Ousterhout d
 
 ### P3.2 — Fixtures are a single-source-of-truth content leaf
 
-`@lifegames/fixtures` (`packages/fixtures/`) is the single source of truth for the
+`@j0nathan-ll0yd/fixtures` (`packages/fixtures/`) is the single source of truth for the
 representative dashboard content every consumer renders before live data arrives. It is
 the **data analogue of P3.1's copy leaf** — factories in, deterministic fixtures out — and
 of the P3 presentational-purity boundary. Live production data is _real_ but not
@@ -121,7 +121,7 @@ _comprehensive_; fixtures supply the all-states-populated (empty, sparse, full, 
 content that an SSR shell and visual tests need. Rules:
 
 - **One home for fixtures.** Canonical fixtures are source-of-truth in
-  `@lifegames/fixtures`. The factories, named variations, and their committed generated
+  `@j0nathan-ll0yd/fixtures`. The factories, named variations, and their committed generated
   output (raw `src/generated/` + post-adapter `src/post-adapter/`) all live in the DS
   package. Consumers (web, iOS, future surfaces) **MUST NOT hand-bake or commit local
   fixture snapshots** — per the cross-plan Invariant I2, any consumer-side fixture is a
@@ -158,13 +158,13 @@ content that an SSR shell and visual tests need. Rules:
 **Enforcement:** the consumer-side `audit:fixtures` gate (`scripts/audit-fixtures.mjs` in
 each consumer, run in `prebuild` + CI — fails the build if any `data/**`,
 `test/fixtures/**`, or `src/**/fixtures/**` JSON reappears, per Invariant I2); the DS
-`fixtures` CI job (`pnpm -F @lifegames/fixtures build`/`test`/`lint`) — where `test`
+`fixtures` CI job (`pnpm -F @j0nathan-ll0yd/fixtures build`/`test`/`lint`) — where `test`
 fail-closes if any domain is missing a reserved triad key (post-adapter exactly the triad,
 raw at least the triad) and `build` runs the `check:full-coverage` oracle that asserts every
 raw `full` fixture is maximally populated (optional keys present + nullable-but-required
 fields non-null; `focus` and `health.quantities` are documented `WALKER_EXCEPTIONS`); and
 the freshness git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in
-`packages/schemas/scripts/check-freshness.sh` (re-runs `pnpm -F @lifegames/fixtures
+`packages/schemas/scripts/check-freshness.sh` (re-runs `pnpm -F @j0nathan-ll0yd/fixtures
 generate` and fails on drift).
 
 _(Cite: Plan #04 `04-fixtures-as-ssr-shell.md` — DS-owned fixtures as the SSR shell; Invariant I2 — no consumer-side fixtures; Ousterhout deep modules — a simple `getDashboardFixture()` interface over a rich factory/adapter/codegen implementation.)_
@@ -301,17 +301,17 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 
 ## 5. Enforcement Map
 
-| Principle                                       | Tier                        | Mechanism                                                                                                                                                                                                                                                                                                                                           | Hook                                                                                  |
-| ----------------------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| **P1** Tokens tiered / no raw hex               | Lint + Script (CI)          | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff)                                                                                                                                 | `check-token-parity` → CI; `validate-dtcg` → `pnpm test`                              |
-| **P2** Native reimpl / spec parity / divergence | Script (CI) + agent-review  | `scripts/widget-compliance.mjs` runs in the `governance-gates` CI job over the complete 43-entry registry (R7 done) — validates each entry against its Astro/fixture/manifest artifacts. Divergence traced via mandatory ADR in `docs/adr/`.                                                                                                        | ADR presence → agent-review                                                           |
-| **P3** Presentational purity                    | Lint + Script (CI)          | `eslint-local-rules/no-app-module-imports.js` (web); `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation; F-015 color/UIKit over `Sources/LifegamesComponents{,Core}/**`). Local-vs-domain-state judgment → agent-review.                                    | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI                |
-| **P3.2** Fixtures are a DS-owned content leaf   | Script (consumer + DS) + CI | Consumer-side `audit:fixtures` (`scripts/audit-fixtures.mjs`) bans `data/**`, `test/fixtures/**`, `src/**/fixtures/**` JSON (Invariant I2); DS `fixtures` CI job (`pnpm -F @lifegames/fixtures build`/`test`/`lint`); freshness git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in `check-freshness.sh` (re-runs `generate`).  | `audit:fixtures` → consumer `prebuild` + CI; `fixtures` + `schemas-freshness` → DS CI |
-| **P4** 1-surface-now + credible-2nd test        | Script (CI)                 | `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Reads `consumers: []` + `plannedSurface` fields (R6) over the complete 43-entry registry (R7 done). Showcase/stub excluded by name-allowlist. | CI (advisory; blocking only on structural errors)                                     |
-| **P5** Surface-differentiated consumption       | Agent-review + doc          | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence.                                                                                                                                                                                                                                                            | Agent-review checklist                                                                |
-| **P6** Organism pattern-first                   | Agent-review + doc          | Judgment. ADR required if organism promoted without pattern-first stage.                                                                                                                                                                                                                                                                            | Agent-review checklist                                                                |
-| **P7** Lifecycle labels                         | Script (existing, extended) | `scripts/widget-inventory.mjs --check`: fails on missing `status`; advisory when `Stable` but <2 consumers in registry. Runs over the complete 43-entry registry (R7 done).                                                                                                                                                                         | CI (blocking)                                                                         |
-| **P8** Governance stack                         | Advisory                    | Changesets configured (`.changeset/config.json`). `changeset status` → non-blocking CI advisory on publish only. `widget-inventory --check` surfaces per-platform count vs ~20–40 cap.                                                                                                                                                              | CI advisory only                                                                      |
+| Principle                                       | Tier                        | Mechanism                                                                                                                                                                                                                                                                                                                                               | Hook                                                                                  |
+| ----------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **P1** Tokens tiered / no raw hex               | Lint + Script (CI)          | `eslint-local-rules/no-deprecated-tokens.js`; W2 token-only CSS; Swift `LifegamesTokens` rule; extend `scripts/validate-dtcg.mjs` (Tier-1 refs); `scripts/check-token-parity.mjs` (semantic-tier web vs Swift diff)                                                                                                                                     | `check-token-parity` → CI; `validate-dtcg` → `pnpm test`                              |
+| **P2** Native reimpl / spec parity / divergence | Script (CI) + agent-review  | `scripts/widget-compliance.mjs` runs in the `governance-gates` CI job over the complete 43-entry registry (R7 done) — validates each entry against its Astro/fixture/manifest artifacts. Divergence traced via mandatory ADR in `docs/adr/`.                                                                                                            | ADR presence → agent-review                                                           |
+| **P3** Presentational purity                    | Lint + Script (CI)          | `eslint-local-rules/no-app-module-imports.js` (web); `scripts/check-swift-widget-purity.mjs` (greps `Sources/LifegamesWidgets/**` for TCA / HealthKit / APIClient / SharedModels / CoreLocation; F-015 color/UIKit over `Sources/LifegamesComponents{,Core}/**`). Local-vs-domain-state judgment → agent-review.                                        | `no-app-module-imports` → pre-commit; `check-swift-widget-purity` → CI                |
+| **P3.2** Fixtures are a DS-owned content leaf   | Script (consumer + DS) + CI | Consumer-side `audit:fixtures` (`scripts/audit-fixtures.mjs`) bans `data/**`, `test/fixtures/**`, `src/**/fixtures/**` JSON (Invariant I2); DS `fixtures` CI job (`pnpm -F @j0nathan-ll0yd/fixtures build`/`test`/`lint`); freshness git-diff over `packages/fixtures/src/generated` + `src/post-adapter` in `check-freshness.sh` (re-runs `generate`). | `audit:fixtures` → consumer `prebuild` + CI; `fixtures` + `schemas-freshness` → DS CI |
+| **P4** 1-surface-now + credible-2nd test        | Script (CI)                 | `scripts/check-promotion.mjs --check` — 0-surface/no-`plannedSurface` → **incubating** (INFO, not a violation). 1-surface + `plannedSurface` → advisory. Gate fails only on structural inconsistency. Reads `consumers: []` + `plannedSurface` fields (R6) over the complete 43-entry registry (R7 done). Showcase/stub excluded by name-allowlist.     | CI (advisory; blocking only on structural errors)                                     |
+| **P5** Surface-differentiated consumption       | Agent-review + doc          | Judgment; partially covered by P3 + P4. ADR required for intentional surface divergence.                                                                                                                                                                                                                                                                | Agent-review checklist                                                                |
+| **P6** Organism pattern-first                   | Agent-review + doc          | Judgment. ADR required if organism promoted without pattern-first stage.                                                                                                                                                                                                                                                                                | Agent-review checklist                                                                |
+| **P7** Lifecycle labels                         | Script (existing, extended) | `scripts/widget-inventory.mjs --check`: fails on missing `status`; advisory when `Stable` but <2 consumers in registry. Runs over the complete 43-entry registry (R7 done).                                                                                                                                                                             | CI (blocking)                                                                         |
+| **P8** Governance stack                         | Advisory                    | Changesets configured (`.changeset/config.json`). `changeset status` → non-blocking CI advisory on publish only. `widget-inventory --check` surfaces per-platform count vs ~20–40 cap.                                                                                                                                                                  | CI advisory only                                                                      |
 
 **Existing checks — mapped:**
 
@@ -345,15 +345,15 @@ Uses **Changesets** (`.changeset/config.json`) with **semantic versioning**.
 
 **Release workflow:** `pnpm changeset` (record) → `pnpm changeset:version` → `pnpm changeset:publish`. Not a gate on every commit (P8).
 
-**SPM constraint:** The DS must remain a separate Git repository — SPM requires a Git remote to resolve package dependencies. The iOS `Package.swift` resolves `design-system-Lifegames` via SPM; a path-local pnpm workspace cannot satisfy this. The web consumer (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`) has no such constraint — co-locating with the web repo would eliminate the yalc dance but couples web build to DS repo layout. Decision deferred; see `.omc/plans/open-questions.md` Q3.
+**SPM constraint:** The DS must remain a separate Git repository — SPM requires a Git remote to resolve package dependencies. The iOS `Package.swift` resolves `design-system-Lifegames` via SPM; a path-local pnpm workspace cannot satisfy this. The web consumer (`@j0nathan-ll0yd/tokens`, `@j0nathan-ll0yd/web`, `@j0nathan-ll0yd/schemas`) has no such constraint — co-locating with the web repo would eliminate the yalc dance but couples web build to DS repo layout. Decision deferred; see `.omc/plans/open-questions.md` Q3.
 
 ### 6.1 Distribution — yalc-only
 
-The JS packages (`@lifegames/tokens`, `@lifegames/web`, `@lifegames/schemas`) are distributed **via yalc only.** There is no published npm package today and no active CI path that publishes one.
+The JS packages (`@j0nathan-ll0yd/tokens`, `@j0nathan-ll0yd/web`, `@j0nathan-ll0yd/schemas`) are distributed **via yalc only.** There is no published npm package today and no active CI path that publishes one.
 
-The earlier `REMOTE_ENABLED`-gated workflows (`publish.yml`, `release.yml`, `deploy-docs.yml`) were removed because the gate never flipped to `true` in the workflows' entire lifetime — GitHub Packages has zero published `@lifegames/*` versions, and every push to `main` short-circuited the jobs. Carrying dormant CI implies a working publish pipeline that does not exist. Per the no-middle-state rule, the workflows are gone until a concrete, dated need brings them back.
+The earlier `REMOTE_ENABLED`-gated workflows (`publish.yml`, `release.yml`, `deploy-docs.yml`) were removed because the gate never flipped to `true` in the workflows' entire lifetime — GitHub Packages has zero published `@j0nathan-ll0yd/*` versions, and every push to `main` short-circuited the jobs. Carrying dormant CI implies a working publish pipeline that does not exist. Per the no-middle-state rule, the workflows are gone until a concrete, dated need brings them back.
 
-**Restoring the npm path** (only when a non-monorepo consumer actually requires `npm install @lifegames/tokens`):
+**Restoring the npm path** (only when a non-monorepo consumer actually requires `npm install @j0nathan-ll0yd/tokens`):
 
 1. Recover the workflows from git history. The last-known-good revisions are visible in `git log -- .github/workflows/publish.yml` (range `d75b222`..`189599d`, May–Jun 2026); `git show <sha>:.github/workflows/publish.yml > .github/workflows/publish.yml` reconstitutes them.
 2. Remove the `REMOTE_ENABLED` gate or set the repo variable to `true`; the gate's only purpose was to keep the workflow inert during the deferral.
@@ -374,17 +374,17 @@ The design system has two consumer surfaces with two distribution mechanisms. To
 **The contract:**
 
 1. **DS Git tags are canonical.** When DS state is worth a tag (a tokens change consumers should reference, a coordinated DS+iOS+web rollout, etc.), tag the commit on `main`: `git tag v0.1.1 && git push --tags`.
-2. **`packages/tokens/package.json` `version` aligns to the Git tag.** A `v0.1.1` tag implies that `packages/tokens/package.json` reads `"version": "0.1.1"` at that commit, and similarly for `@lifegames/web` and `@lifegames/schemas`. Bump versions in the same commit that gets tagged.
+2. **`packages/tokens/package.json` `version` aligns to the Git tag.** A `v0.1.1` tag implies that `packages/tokens/package.json` reads `"version": "0.1.1"` at that commit, and similarly for `@j0nathan-ll0yd/web` and `@j0nathan-ll0yd/schemas`. Bump versions in the same commit that gets tagged.
 3. **Swift consumers** add `.package(url: "...", from: "0.1.1")` (or `.branch("main")` during development). SPM resolves this to a Git SHA, fully reproducible.
-4. **JS consumers** run `pnpm yalc:publish` from DS, then `pnpm yalc:add @lifegames/tokens` in the consumer. The consumer's `package.json` records the yalc-installed version (`0.1.1`); the consumer's `yalc.lock` records the content hash. This is **not** as reproducible as SPM's SHA — yalc captures a built artifact, not a source commit — which is why Task 5.2 adds a `yalc:check` staleness detector.
+4. **JS consumers** run `pnpm yalc:publish` from DS, then `pnpm yalc:add @j0nathan-ll0yd/tokens` in the consumer. The consumer's `package.json` records the yalc-installed version (`0.1.1`); the consumer's `yalc.lock` records the content hash. This is **not** as reproducible as SPM's SHA — yalc captures a built artifact, not a source commit — which is why Task 5.2 adds a `yalc:check` staleness detector.
 5. **Semver tier meaning** (applies to both surfaces):
    - `patch` — bug fix, no token name changes, no API changes.
    - `minor` — new tokens, new components, new exported widgets; backward-compatible.
-   - `major` — token rename or removal, component removal, SPM product rename, breaking type changes in `@lifegames/schemas`. Requires consumer code changes.
+   - `major` — token rename or removal, component removal, SPM product rename, breaking type changes in `@j0nathan-ll0yd/schemas`. Requires consumer code changes.
 
 **Why a single version stream:** Two version streams (a Git tag separate from the JS package version) would force every consumer-facing change to be reasoned about twice and would let the streams drift silently. Keeping them lockstep means "DS at v0.1.1" has the same meaning whether you are an iOS developer or a yalc-linked JS consumer.
 
-**Why not npm-published JS today:** see §6.1. When npm distribution returns, it inherits this contract unchanged — `npm install @lifegames/tokens@^0.1` then maps to the same version stream as the Git tag and the yalc artifact.
+**Why not npm-published JS today:** see §6.1. When npm distribution returns, it inherits this contract unchanged — `npm install @j0nathan-ll0yd/tokens@^0.1` then maps to the same version stream as the Git tag and the yalc artifact.
 
 ---
 

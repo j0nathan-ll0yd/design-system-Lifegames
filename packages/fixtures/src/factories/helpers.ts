@@ -2,7 +2,7 @@
  * Shared utilities for fixture factories.
  *
  * DETERMINISM: these factories produce COMMITTED, freshness-gated fixtures, so the
- * clock MUST be stable — re-running `pnpm -F @lifegames/fixtures generate` has to
+ * clock MUST be stable — re-running `pnpm -F @j0nathan-ll0yd/fixtures generate` has to
  * yield byte-identical output. `isoDate`/`isoTimestamp` are therefore anchored to a
  * fixed reference instant, NOT `Date.now()`. Override the anchor with the
  * `FIXTURES_NOW` env var (ISO string) for ad-hoc regeneration; absent that, the

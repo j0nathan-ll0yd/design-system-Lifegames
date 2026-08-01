@@ -1,0 +1,73 @@
+name: Publish @j0nathan-ll0yd DS packages
+
+# Publishes the five design-system packages — copy, tokens, schemas, web,
+# fixtures — to GitHub Packages via Changesets.
+#
+# Mirrors .github/workflows/publish-config.yml (GitHub-hosted runner, built-in
+# Actions GITHUB_TOKEN — never a local/personal token, pinned action SHAs) and
+# LP's publish-portal-contract.yml (which added a build step). It differs from
+# both in two ways that make the config/portal-contract single-package pattern
+# insufficient:
+#
+#   1. The five packages have build steps (tokens/copy/schemas emit dist/
+#      artifacts listed in their `files` allow-list; tokens/dist is gitignored),
+#      so a full `pnpm build` runs before publish.
+#   2. They reference each other with `workspace:*` and depend on
+#      @j0nathan-ll0yd/portal-contract from GitHub Packages, so a full workspace
+#      install is required. Changesets (`changeset publish`) rewrites each
+#      `workspace:*` to the concrete published version at pack time — which is
+#      what makes the interdependent set publishable together.
+#
+# Auth uses the `pnpm config set` user-level pattern (see audit-ds.yml and LP's
+# setup-mantle action), NOT setup-node's registry-url/NODE_AUTH_TOKEN: pnpm
+# ignores an env-expanded auth line in a project .npmrc, and the workspace
+# install must resolve @j0nathan-ll0yd/portal-contract (packages: read, covered
+# by packages: write). The committed .npmrc maps the @j0nathan-ll0yd scope to
+# npm.pkg.github.com. See atlas decision 0015.
+#
+# Trigger deliberately: manual dispatch, or push a `ds-v*` tag. Set each
+# package's `version` before triggering; `changeset publish` skips any
+# version already on the registry, so re-runs are safe.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'ds-v*'
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  publish:
+    # GitHub-hosted runner: hermetic, no dependency on the self-hosted fleet.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      # User-level auth: pnpm reads the token here (not from the committed
+      # project .npmrc, which pnpm ignores). Covers both the install
+      # (resolve @j0nathan-ll0yd/portal-contract) and the publish.
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: pnpm install --frozen-lockfile
+
+      # Build every package so the dist/ artifacts in each `files` allow-list
+      # exist before pack (tokens/dist is gitignored; copy/schemas emit dist).
+      - run: pnpm build
+
+      # changeset publish packs each non-private, non-ignored package whose
+      # version is not yet on the registry, rewriting workspace:* to the
+      # concrete version. publishConfig.registry routes each to GitHub Packages.
+      - name: Publish
+        run: pnpm changeset:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

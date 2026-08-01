@@ -2,7 +2,7 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
-import {widgets} from '@lifegames/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 import type {TheatreReviewsExport} from '../../src/types/exports'
 
 function makeExport(reviews: TheatreReviewsExport['reviews'] = []): TheatreReviewsExport {

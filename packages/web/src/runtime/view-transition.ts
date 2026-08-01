@@ -1,4 +1,4 @@
-// Shared same-document View Transition helper for @lifegames/web runtime.
+// Shared same-document View Transition helper for @j0nathan-ll0yd/web runtime.
 //
 // Design constraints implemented here:
 //   1. Graceful fallback: browsers without startViewTransition (or with

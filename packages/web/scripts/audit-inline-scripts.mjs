@@ -3,7 +3,7 @@
  *
  * The web consumer (web-Lifegames-Portal) ships production CSP `script-src
  * 'self'` -- no 'unsafe-inline', no 'unsafe-hashes'. DS owns the widgets the
- * web repo sources via @lifegames/web/production, so inline JS introduced here
+ * web repo sources via @j0nathan-ll0yd/web/production, so inline JS introduced here
  * would be blocked at runtime downstream. This gate stops re-introduction at
  * the source by scanning the DS web package widgets for the three patterns the
  * CSP rejects:

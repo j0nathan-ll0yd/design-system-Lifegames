@@ -9,9 +9,9 @@ discipline; this file is the authoritative mapping.
 > mechanics (changesets, yalc, GitHub Packages); see `CONTRIBUTING.md`
 > and `packages/*/CHANGELOG.md` for those.
 
-## `@lifegames/tokens` (npm, GitHub Packages)
+## `@j0nathan-ll0yd/tokens` (npm, GitHub Packages)
 
-Consumed by `@lifegames/web` and downstream Astro/SwiftUI consumers via
+Consumed by `@j0nathan-ll0yd/web` and downstream Astro/SwiftUI consumers via
 `tokens.css`, `tokens.js`, and the generated `LifegamesTokens` Swift
 module (mirror).
 
@@ -33,7 +33,7 @@ Mapping to platform outputs (web vs iOS) is encoded in
 values stay identical across platforms — a parity-breaking change
 without an entry in `tokens/parity-exceptions.json` is rejected at CI.
 
-## `@lifegames/web` (npm, GitHub Packages)
+## `@j0nathan-ll0yd/web` (npm, GitHub Packages)
 
 Consumed by Astro apps (the portfolio site) and by Storybook.
 
@@ -49,14 +49,14 @@ Consumed by Astro apps (the portfolio site) and by Storybook.
 | Internal refactor with no public API change                    | patch |
 | Schema-exempt widget marker change (`// schema-exempt:`)       | minor |
 
-The contract-test job (`pnpm --filter @lifegames/web tsc --noEmit`)
+The contract-test job (`pnpm --filter @j0nathan-ll0yd/web tsc --noEmit`)
 plus the W16 ESLint advisory enforces that `*.types.ts` props match
 schemas; the consumer-facing impact of a widget change is judged
 against the public `production/index.ts` barrel.
 
-## `@lifegames/schemas` (npm, GitHub Packages)
+## `@j0nathan-ll0yd/schemas` (npm, GitHub Packages)
 
-Consumed by `@lifegames/web` and the mantle backend (vendored).
+Consumed by `@j0nathan-ll0yd/web` and the mantle backend (vendored).
 
 | Change                                                     | Bump  |
 | ---------------------------------------------------------- | ----- |
@@ -89,7 +89,7 @@ SPM resolves the latest reachable tag matching the consumer's pin.
 
 The SPM-to-JS version mapping is documented in
 [docs/SPM-VERSION-MAPPING.md](docs/SPM-VERSION-MAPPING.md). When a
-breaking SPM change ships, the corresponding `@lifegames/*` npm
+breaking SPM change ships, the corresponding `@j0nathan-ll0yd/*` npm
 packages should also bump (so consumers cannot end up on a JS+Swift
 mix that disagrees on a shared role).
 
