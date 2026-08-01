@@ -201,7 +201,7 @@ jobs:
           name: token-dist
           path: packages/tokens/dist/
       # pnpm<=9 exited 0 with a warning when the filtered package had no "build"
-      # script — @j0nathan-ll0yd/web has none (it ships source via yalc), so this job
+      # script — @j0nathan-ll0yd/web has none (it ships source, not a build artifact), so this job
       # never built anything. pnpm 11 turned the missing script into a hard error,
       # exposing it. Run the real workspace build (turbo) instead.
       - run: pnpm build

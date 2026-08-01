@@ -38,18 +38,9 @@ Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads 
 
 ## Cross-Repo Consumption
 
-Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Repositories/ios-LifegamesPortal`. Both consume via **yalc** (local npm registry simulator).
+Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Repositories/ios-LifegamesPortal`. Both consume the DS JS packages from **GitHub Packages** (`@j0nathan-ll0yd/{copy,tokens,schemas,web,fixtures}` at `^1.0.0`, public — install with the built-in `GITHUB_TOKEN` in CI, no PAT); Swift consumers pin the DS Git tag via SPM.
 
-**Workflow when DS packages change:**
-
-```bash
-# From DS repo root
-pnpm yalc:publish    # rebuilds tokens + pushes @j0nathan-ll0yd/{tokens,web,schemas}
-
-# In consumers (automatic propagation via yalc publish --push)
-```
-
-Phase 2 flips to npm `^X.Y.Z` from GitHub Packages without source changes.
+**When DS packages change:** land the change on `main` with a Changeset; publishing runs from `.github/workflows/publish-ds-packages.yml` (Changesets — `ds-v*` tag or manual dispatch), and `@j0nathan-ll0yd/config` from `publish-config.yml`. Consumers pick up the new version via a normal `pnpm install` / lockfile bump — no local linking step. See `GOVERNANCE.md` §6.1–6.2 for the distribution and version contract.
 
 ## Apps
 
@@ -67,7 +58,7 @@ All use Vite 7 (unified from prior Vite 6/7 split).
   - **Prettier 3.x** (exact-pinned) owns everything dprint can't: `.astro` (dprint has no Astro plugin), `.md/.mdx/.css`. Config: `.prettierrc.mjs` at repo root.
 - **Run locally:** `pnpm format` (write) / `pnpm format:check` (CI-equivalent). Both run **dprint then prettier** for the respective file sets.
 - **CI gate:** `format` job in `ci.yml` runs `pnpm format:check` (dprint check + prettier check) and is **required for merge**.
-- **dprint excludes** (root `dprint.json`) mirror `.prettierignore` so generated/golden files are never reformatted: `**/dist`, tokens golden snapshots, generated schema/fixture artifacts (`packages/schemas/generated`, `fixture-map.json`, `packages/fixtures/src/generated`), `widget-consumers.json`, `Tests/golden-mdx`, `docs/maintenance`, `.yalc`, and **all `*.astro`**. The schemas-freshness gate is the proof that no generated artifact was reformatted.
+- **dprint excludes** (root `dprint.json`) mirror `.prettierignore` so generated/golden files are never reformatted: `**/dist`, tokens golden snapshots, generated schema/fixture artifacts (`packages/schemas/generated`, `fixture-map.json`, `packages/fixtures/src/generated`), `widget-consumers.json`, `Tests/golden-mdx`, `docs/maintenance`, and **all `*.astro`**. The schemas-freshness gate is the proof that no generated artifact was reformatted.
 - **Generated artifacts** (`packages/copy/dist`, `packages/schemas/dist`, `packages/schemas/fixture-map.json`) are formatted **in-generator** using `prettier.resolveConfig()` + the root `.prettierrc.mjs` (still Prettier). They are dprint-excluded and are proven consistent by the freshness git-diff, not a top-level format pass. Do not add them to `.prettierignore`.
 - **Pre-commit:** `lint-staged` runs `dprint fmt` on staged TS/JS/JSON and `prettier --write` on staged astro/md/mdx/css (via `.husky/pre-commit`). Personal-data scan also runs.
 - **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
@@ -76,7 +67,7 @@ All use Vite 7 (unified from prior Vite 6/7 split).
 
 ## lp-audit (Audit System — D domain)
 
-This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), `scripts/check-yalc-staleness.mjs` (D5 — yalc link freshness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. The audit catalog and finding reports live in the monorepo hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the monorepo hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
 
 ## Commits
 

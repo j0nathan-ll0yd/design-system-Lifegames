@@ -372,7 +372,6 @@ packages/web/src/widgets/reading/TheatreReviews.types.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-movement.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-theatre.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters.test.ts:marker:j0nathan-ll0yd
-scripts/check-yalc-staleness.mjs:marker:j0nathan-ll0yd
 scripts/generate-widget-docs.mjs:marker:j0nathan-ll0yd
 scripts/scaffold-alternate-page.mjs:marker:j0nathan-ll0yd
 style-dictionary.config.mjs:marker:j0nathan-ll0yd

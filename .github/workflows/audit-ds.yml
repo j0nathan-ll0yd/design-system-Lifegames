@@ -1,26 +1,25 @@
 name: Audit DS
 
-# lp-audit Phase 4 — DS hygiene audits: widget completeness matrix (D1),
-# baseline-age advisory (D2), and yalc publish-staleness (D5).
+# lp-audit Phase 4 — DS hygiene audits: widget completeness matrix (D1)
+# and baseline-age advisory (D2).
 #
-# Report-only (D4/D5): a failure here files/updates a GitHub issue labeled
-# audit + audit:report-only — but ONLY once the repo variable
-# LP_AUDIT_ISSUE_FILING is set to 'on' (Phase-6 bake promotion, plan §8 Q4:
-# issue filing starts AFTER the 30-day bake). It does not block any other
-# workflow, merge, or PR — ci.yml's existing push/PR-triggered gates
-# (widget-compliance.mjs, token-parity, etc.) are unaffected. This workflow adds (a) SCHEDULED
-# execution of two checks that already existed but were never wired to run
-# anywhere (check-baseline-age.mjs, check-yalc-staleness.mjs) and (b) the D1
-# widget completeness matrix, which reconciles all 4 widget registries plus
+# Report-only: D1 and D2 run in default (non---check) mode and cannot fail
+# this job by design — see each script's own report-only framing. It does not
+# block any other workflow, merge, or PR — ci.yml's existing push/PR-triggered
+# gates (widget-compliance.mjs, token-parity, etc.) are unaffected. This
+# workflow adds (a) SCHEDULED execution of check-baseline-age.mjs, which
+# existed but was never wired to run anywhere, and (b) the D1 widget
+# completeness matrix, which reconciles all 4 widget registries plus
 # the filesystem — something scripts/widget-compliance.mjs structurally
 # cannot do, since it only validates entries that ARE in production-widgets.json
 # and can't detect a widget missing from that registry entirely (see
 # scripts/audit-widget-matrix.mjs's header for the concrete drift this caught).
 #
-# D1 and D2 run in default (non---check) mode and cannot fail this job by
-# design — see each script's own report-only framing. Only D5 (yalc:check)
-# can fail today; promoting D1 to --check (blocking) is a Phase 6 bake-in
-# decision, not made here.
+# Promoting D1 to --check (blocking) is a Phase 6 bake-in decision, not made here.
+#
+# (D5 yalc publish-staleness was retired with the yalc machinery — atlas#1
+# / decision 0015 PR 6. Its runner scripts/check-yalc-staleness.mjs is gone;
+# the D5 registration in atlas/audits/audits.yaml is retired separately in Atlas.)
 
 on:
   schedule:
@@ -29,7 +28,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
   packages: read # resolve @j0nathan-ll0yd/portal-contract from GitHub Packages on install
 
 concurrency:
@@ -38,7 +36,7 @@ concurrency:
 
 jobs:
   audit:
-    name: DS hygiene audits (D1/D2/D5)
+    name: DS hygiene audits (D1/D2)
     runs-on: [self-hosted, linux, arm64, node]
     timeout-minutes: 20
     steps:
@@ -56,9 +54,8 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
 
-      # yalc:check hashes packages/tokens/dist/, which is a gitignored build
-      # artifact (not committed) — must build fresh before either D5 or a
-      # meaningful D1 Astro/fixture check.
+      # A meaningful D1 Astro/fixture check needs packages/tokens/dist/, which
+      # is a gitignored build artifact (not committed) — build it fresh first.
       - run: pnpm build:tokens
 
       - name: D1 widget completeness matrix
@@ -71,15 +68,6 @@ jobs:
       - name: D2 baseline age (advisory)
         shell: bash
         run: pnpm baseline:age | tee -a audit-ds-report.txt
-
-      - name: D5 yalc publish staleness
-        id: yalc_check
-        # shell: bash turns on GitHub's `-o pipefail` default for explicit bash,
-        # so the tee pipe stops masking yalc:check's exit code. Without it this
-        # step's outcome could NEVER be 'failure' and the issue step below was a
-        # silent no-op gate (the A2 class; first-cycle finding, 2026-07-17).
-        shell: bash
-        run: pnpm yalc:check | tee -a audit-ds-report.txt
 
       - name: Job summary
         if: always()
@@ -98,63 +86,6 @@ jobs:
           name: audit-ds-report
           path: audit-ds-report.txt
           retention-days: 30
-
-      - name: File issue on yalc staleness
-        if: steps.yalc_check.outcome == 'failure' && github.event_name != 'workflow_dispatch' && vars.LP_AUDIT_ISSUE_FILING == 'on'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
-        with:
-          script: |
-            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const title = 'lp-audit D5: yalc publish staleness detected';
-
-            for (const label of [
-              {name: 'audit', color: '0e8a16', description: 'lp-audit monorepo audit system finding'},
-              {name: 'audit:report-only', color: 'c5def5', description: 'lp-audit finding — report-only, does not block merges/deploys'},
-            ]) {
-              await github.rest.issues.createLabel({owner: context.repo.owner, repo: context.repo.repo, ...label}).catch(() => {});
-            }
-
-            const existing = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'audit',
-              per_page: 100,
-            });
-            const dup = existing.data.find((i) => i.title === title);
-            if (dup) {
-              core.info(`Open issue already exists (#${dup.number}); appending run link instead of creating a duplicate.`);
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: dup.number,
-                body: `Another D5 yalc:check run failed: [View workflow run](${runUrl})`,
-              });
-              return;
-            }
-
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title,
-              labels: ['audit', 'audit:report-only'],
-              body: [
-                '## lp-audit D5: Yalc Publish Staleness Detected',
-                '',
-                'The committed `.yalc-content-hash` no longer matches a fresh `pnpm build:tokens` output —',
-                'packages/tokens source changed since the last `pnpm yalc:publish`, so consumers (web, iOS docs)',
-                'may be running against stale published bytes. See `scripts/check-yalc-staleness.mjs`.',
-                '',
-                `**Run:** [View workflow run](${runUrl})`,
-                '',
-                '### Next Steps',
-                '1. Open the `audit-ds-report` artifact (or the job summary) above for the exact hash mismatch.',
-                '2. Reproduce locally: `pnpm build:tokens && pnpm yalc:check`.',
-                '3. If the source change was intentional, republish: `pnpm yalc:publish` (writes a fresh',
-                '   `.yalc-content-hash` and pushes to consumers via yalc).',
-                '4. This check is report-only (D4) — it does not block any other CI job, merge, or deploy.',
-              ].join('\n'),
-            });
 
   # Separate hosted-runner job (first-cycle finding #14, 2026-07-17): the ping
   # curl timed out (exit 28) from the self-hosted fleet containers while
