@@ -91,4 +91,30 @@ struct CoffeeTrackingPropsTests {
         #expect(props.consumedGrams == 120)
         #expect(props.caffeineMgThisCup == 240)
     }
+
+    // MARK: - Link-lost mid-session derivations
+
+    @Test func linkLostMidSessionIsSippingFalse() {
+        let props = CoffeeTrackingProps(
+            connection: .error, isSessionActive: true, isCupOnScale: false
+        )
+        #expect(props.isLinkLostMidSession == true)
+        #expect(props.isSipping == false)
+    }
+
+    @Test func connectedLiftedMidSessionIsSippingTrue() {
+        let props = CoffeeTrackingProps(
+            connection: .connected, isSessionActive: true, isCupOnScale: false
+        )
+        #expect(props.isLinkLostMidSession == false)
+        #expect(props.isSipping == true)
+    }
+
+    @Test func errorWithNoActiveSessionIsNeitherLinkLostNorSipping() {
+        let props = CoffeeTrackingProps(
+            connection: .error, isSessionActive: false
+        )
+        #expect(props.isLinkLostMidSession == false)
+        #expect(props.isSipping == false)
+    }
 }

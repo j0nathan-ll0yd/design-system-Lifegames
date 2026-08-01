@@ -62,6 +62,19 @@ public struct CoffeeTrackingProps: Hashable, Codable, Sendable {
         Int((consumedGrams * beverage.caffeineMgPerGram).rounded())
     }
 
+    /// A tracked cup whose scale link has failed. The session outlives the link — meter,
+    /// elapsed timer and persisted snapshot all survive — so this is NOT the never-paired
+    /// empty state, and `isCupOnScale` carries no presence information while it holds.
+    public var isLinkLostMidSession: Bool {
+        isSessionActive && connection == .error
+    }
+
+    /// True while the cup is genuinely lifted mid-sip. Excludes the link-lost case, where
+    /// `isCupOnScale` is forced false by the consumer and means "unknown", not "lifted".
+    public var isSipping: Bool {
+        isSessionActive && !isCupOnScale && !isLinkLostMidSession
+    }
+
     // MARK: - Init
 
     public init(
