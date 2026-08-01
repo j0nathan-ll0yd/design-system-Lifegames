@@ -45,23 +45,28 @@ public struct CoffeeTrackingView: View {
 
     /// Desaturate the mug when not connected or on error.
     private var mugGrayscale: Double {
+        if props.isLinkLostMidSession {
+            return 0.5
+        }
         switch props.connection {
-        case .unpaired, .error: 1.0
-        case .searching: 0.5
-        case .connected: 0.0
+        case .unpaired, .error: return 1.0
+        case .searching: return 0.5
+        case .connected: return 0.0
         }
     }
 
     /// Dim the mug when connection is absent OR the cup is lifted mid-sip.
     private var mugOpacity: Double {
-        if props.connection == .unpaired || props.connection == .error { return 0.35 }
-        if props.isSessionActive && !props.isCupOnScale { return 0.60 }
+        if props.isLinkLostMidSession {
+            return 0.60
+        }
+        if props.connection == .unpaired || props.connection == .error {
+            return 0.35
+        }
+        if props.isSessionActive && !props.isCupOnScale {
+            return 0.60
+        }
         return 1.0
-    }
-
-    /// True while cup is actively lifted — triggers the "Sipping…" affordance.
-    private var isSipping: Bool {
-        props.isSessionActive && !props.isCupOnScale
     }
 
     // MARK: - Body
@@ -87,7 +92,7 @@ public struct CoffeeTrackingView: View {
                     // Reserves Spacing.s1000 (40 pt) regardless of active state so
                     // the mug's vertical position stays locked as steam fades in/out.
                     HeroSteamRisers(
-                        active: props.fillPercent > 0.05 && !isSipping,
+                        active: props.fillPercent > 0.05 && !props.isSipping,
                         animated: shouldAnimate
                     )
                     .frame(height: Spacing.s1000)
@@ -107,7 +112,7 @@ public struct CoffeeTrackingView: View {
                         .animation(shouldAnimate ? .easeInOut(duration: 0.4) : nil, value: mugGrayscale)
 
                         // "Sipping…" floats just below the mug while cup is lifted
-                        if isSipping {
+                        if props.isSipping {
                             Text(CopyLoader.widgets.coffee.sipping)
                                 .font(Font.Tokens.caption2())
                                 .fontWeight(.medium)
@@ -335,7 +340,11 @@ private struct HeroSteamRisers: View {
         // Hardened: was bare `.animation(.easeInOut(duration: 0.6), value: active)`
         // which does not auto-respect reduce motion. Gate on `animated` (C-MOTION).
         .animation(animated ? .easeInOut(duration: 0.6) : nil, value: active)
-        .onAppear { if animated { rising = active } }
+        .onAppear {
+            if animated {
+                rising = active
+            }
+        }
     }
 
     private func riser(index: Int, lateralDrift: CGFloat) -> some View {
@@ -434,6 +443,28 @@ private extension CoffeeTrackingProps.Beverage {
                 currentWeightGrams: 2,
                 flowRateGramsPerSec: 0,
                 sessionElapsedSeconds: 62,
+                dailyCaffeineMg: 220,
+                dailyTargetMg: 400,
+                cupsToday: 3,
+                beverage: .drip
+            )
+        )
+        .preferredColorScheme(.dark)
+    }
+
+    #Preview("Coffee — Link lost mid-session") {
+        CoffeeTrackingView(
+            props: CoffeeTrackingProps(
+                connection: .error,
+                errorMessage: "Scale offline — your cup is still being tracked",
+                batteryPercent: 78,
+                isSessionActive: true,
+                isCupOnScale: false,
+                startWeightGrams: 300,
+                lastStableWeightGrams: 170,
+                currentWeightGrams: 170,
+                flowRateGramsPerSec: 0,
+                sessionElapsedSeconds: 240,
                 dailyCaffeineMg: 220,
                 dailyTargetMg: 400,
                 cupsToday: 3,
