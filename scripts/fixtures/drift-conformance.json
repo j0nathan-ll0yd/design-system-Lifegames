@@ -1,0 +1,213 @@
+{
+  "$comment": "Cross-implementation conformance vectors for the C147 content-based package payload digest. atlas, mantle and design-system-Lifegames must all reproduce every expected digest byte for byte. A digest-spec change bumps specVersion and must update all three in one PR.",
+  "specVersion": 1,
+  "digest": "sha256 over the sorted, newline-joined \"<posix path> <sha256(normalized bytes)>\" lines. normalize: package.json is recursively key-sorted (arrays keep order) with the top-level version deleted; every other file is raw bytes. effectiveDigest additionally excludes any *.map whose sources[], resolved relative to the map's own directory, all land outside the packed file set.",
+  "cases": [
+    {
+      "id": "manifest-only",
+      "why": "the minimum payload: package.json alone.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ=="
+      },
+      "expectedStrictDigest": "a9d62524c927005004cd909e1a8b7a0341825e2f914339ffa895e2497230995b",
+      "expectedEffectiveDigest": "a9d62524c927005004cd909e1a8b7a0341825e2f914339ffa895e2497230995b"
+    },
+    {
+      "id": "manifest-key-order-a",
+      "why": "key order A. Must produce the same digest as key-order-b — pnpm reinserts workspace dependency keys in resolution-completion order, so the same tree packs differently on consecutive runs.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZGVwZW5kZW5jaWVzIjp7ImEiOiIxLjAuMCIsImIiOiIyLjAuMCJ9LCJmaWxlcyI6WyJkaXN0Il19"
+      },
+      "expectedStrictDigest": "0c64d52b87b45cbdfbeb48b6128a57df9378f7b9243930eb00028c8fc43f81d2",
+      "expectedEffectiveDigest": "0c64d52b87b45cbdfbeb48b6128a57df9378f7b9243930eb00028c8fc43f81d2"
+    },
+    {
+      "id": "manifest-key-order-b",
+      "why": "key order B — same keys, same values, different order. Same digest as key-order-a.",
+      "files": {
+        "package.json": "eyJmaWxlcyI6WyJkaXN0Il0sImRlcGVuZGVuY2llcyI6eyJiIjoiMi4wLjAiLCJhIjoiMS4wLjAifSwidmVyc2lvbiI6IjEuMC4wIiwibmFtZSI6IkB0b3kveCJ9"
+      },
+      "expectedStrictDigest": "0c64d52b87b45cbdfbeb48b6128a57df9378f7b9243930eb00028c8fc43f81d2",
+      "expectedEffectiveDigest": "0c64d52b87b45cbdfbeb48b6128a57df9378f7b9243930eb00028c8fc43f81d2"
+    },
+    {
+      "id": "manifest-version-differs",
+      "why": "the top-level version is DELETED before hashing, so only the version differs from manifest-key-order-a and the digest must match it.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjkuOS45IiwiZGVwZW5kZW5jaWVzIjp7ImEiOiIxLjAuMCIsImIiOiIyLjAuMCJ9LCJmaWxlcyI6WyJkaXN0Il19"
+      },
+      "expectedStrictDigest": "0c64d52b87b45cbdfbeb48b6128a57df9378f7b9243930eb00028c8fc43f81d2",
+      "expectedEffectiveDigest": "0c64d52b87b45cbdfbeb48b6128a57df9378f7b9243930eb00028c8fc43f81d2"
+    },
+    {
+      "id": "nested-dependency-version-differs",
+      "why": "a NESTED dependency version is KEPT. This is the workspace cascade and it must NOT collide with manifest-key-order-a.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZGVwZW5kZW5jaWVzIjp7ImEiOiIxLjAuMSIsImIiOiIyLjAuMCJ9LCJmaWxlcyI6WyJkaXN0Il19"
+      },
+      "expectedStrictDigest": "eb736fa8141b0d8ddf94e93877277a792865815e51317888638945e6f5937347",
+      "expectedEffectiveDigest": "eb736fa8141b0d8ddf94e93877277a792865815e51317888638945e6f5937347"
+    },
+    {
+      "id": "array-order-is-significant",
+      "why": "arrays keep their order — order is meaning in files[]/keywords[].",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiYiIsImEiXX0="
+      },
+      "expectedStrictDigest": "1b6bec0555c6214d00c529aef801b867721ad7c8b10d5fda2590b2345af6403b",
+      "expectedEffectiveDigest": "1b6bec0555c6214d00c529aef801b867721ad7c8b10d5fda2590b2345af6403b"
+    },
+    {
+      "id": "array-order-reversed",
+      "why": "the same array reversed must produce a DIFFERENT digest from array-order-is-significant.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiYSIsImIiXX0="
+      },
+      "expectedStrictDigest": "58742d75a0d22c2672d942a754daa3559b94f4c7de4a1098f53d6165f323d502",
+      "expectedEffectiveDigest": "58742d75a0d22c2672d942a754daa3559b94f4c7de4a1098f53d6165f323d502"
+    },
+    {
+      "id": "nested-object-key-order",
+      "why": "canonicalisation is recursive, not just top level.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZXhwb3J0cyI6eyIuL2IiOiJiLmpzIiwiLi9hIjoiYS5qcyJ9fQ=="
+      },
+      "expectedStrictDigest": "540ef3314835d4f5fe04847d827cec35a4fa9fe0ead9b2223a9a7ad9022be7cb",
+      "expectedEffectiveDigest": "540ef3314835d4f5fe04847d827cec35a4fa9fe0ead9b2223a9a7ad9022be7cb"
+    },
+    {
+      "id": "nested-object-key-order-reversed",
+      "why": "same nested object, keys reversed. Same digest as nested-object-key-order.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZXhwb3J0cyI6eyIuL2EiOiJhLmpzIiwiLi9iIjoiYi5qcyJ9fQ=="
+      },
+      "expectedStrictDigest": "540ef3314835d4f5fe04847d827cec35a4fa9fe0ead9b2223a9a7ad9022be7cb",
+      "expectedEffectiveDigest": "540ef3314835d4f5fe04847d827cec35a4fa9fe0ead9b2223a9a7ad9022be7cb"
+    },
+    {
+      "id": "null-and-boolean-values",
+      "why": "canonicalize must pass null/boolean/number through untouched.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwicHJpdmF0ZSI6ZmFsc2UsInoiOm51bGwsIm4iOjB9"
+      },
+      "expectedStrictDigest": "7f7995a2a743d4ad3495880cd7619466cbcc40cac81b4a4f9d9b428b8787eb7c",
+      "expectedEffectiveDigest": "7f7995a2a743d4ad3495880cd7619466cbcc40cac81b4a4f9d9b428b8787eb7c"
+    },
+    {
+      "id": "empty-file",
+      "why": "a zero-byte payload entry must still contribute a manifest line.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/empty.js": ""
+      },
+      "expectedStrictDigest": "ddfb8c3e63208374b832b8b02ecc355a52346afa974c6ba9b839e0cdd4a8f29d",
+      "expectedEffectiveDigest": "ddfb8c3e63208374b832b8b02ecc355a52346afa974c6ba9b839e0cdd4a8f29d"
+    },
+    {
+      "id": "nested-dirs",
+      "why": "paths are posix and sorted lexicographically, not by depth.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/a/b/c/deep.js": "ZGVlcAo=",
+        "dist/z.js": "ego="
+      },
+      "expectedStrictDigest": "c1e7ae657e293d326aa71528fe055b3cc06a385ca766a0f0bdc42ee8d94c3bb4",
+      "expectedEffectiveDigest": "c1e7ae657e293d326aa71528fe055b3cc06a385ca766a0f0bdc42ee8d94c3bb4"
+    },
+    {
+      "id": "path-sort-is-lexicographic",
+      "why": "the same file set inserted in a different order must produce the same digest.",
+      "files": {
+        "dist/z.js": "ego=",
+        "dist/a/b/c/deep.js": "ZGVlcAo=",
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ=="
+      },
+      "expectedStrictDigest": "c1e7ae657e293d326aa71528fe055b3cc06a385ca766a0f0bdc42ee8d94c3bb4",
+      "expectedEffectiveDigest": "c1e7ae657e293d326aa71528fe055b3cc06a385ca766a0f0bdc42ee8d94c3bb4"
+    },
+    {
+      "id": "unicode-filename",
+      "why": "non-ASCII paths are hashed as UTF-8 bytes, unnormalised.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/café-日本語.js": "dW5pY29kZQo="
+      },
+      "expectedStrictDigest": "385063cc560d957f640eb5f550b8a1ca2aa411e35e78ad15af19d0245f4d8aaa",
+      "expectedEffectiveDigest": "385063cc560d957f640eb5f550b8a1ca2aa411e35e78ad15af19d0245f4d8aaa"
+    },
+    {
+      "id": "crlf-content",
+      "why": "line endings are raw bytes. CRLF and LF are DIFFERENT payloads and must not collide.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/a.js": "YQ0KYg0K"
+      },
+      "expectedStrictDigest": "32950316b5d65938fd586d9ca84824cd38703fff50c2b49985b4380a9e7060bb",
+      "expectedEffectiveDigest": "32950316b5d65938fd586d9ca84824cd38703fff50c2b49985b4380a9e7060bb"
+    },
+    {
+      "id": "lf-content",
+      "why": "the LF twin of crlf-content. Must have a different digest.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/a.js": "YQpiCg=="
+      },
+      "expectedStrictDigest": "45fc0b78c9cbb7f8f59febe75805c47aa6d866f46732d613fe6aff8b2e22f3c9",
+      "expectedEffectiveDigest": "45fc0b78c9cbb7f8f59febe75805c47aa6d866f46732d613fe6aff8b2e22f3c9"
+    },
+    {
+      "id": "map-with-resolvable-sources",
+      "why": "the map resolves to a packed file, so it is real payload: strict and effective digests must AGREE.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCIsInNyYyJdfQ==",
+        "dist/a.js": "YQo=",
+        "dist/a.js.map": "eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9hLnRzIl0sIm1hcHBpbmdzIjoiQUFBQSJ9",
+        "src/a.ts": "ZXhwb3J0IGNvbnN0IGEgPSAxCg=="
+      },
+      "expectedStrictDigest": "09641f68714b3b9bd7d074ecbe6e121082327ab06c0bda24ba4f2d321dbf8b8e",
+      "expectedEffectiveDigest": "09641f68714b3b9bd7d074ecbe6e121082327ab06c0bda24ba4f2d321dbf8b8e"
+    },
+    {
+      "id": "map-with-unresolvable-sources",
+      "why": "the map's sources[] resolve outside the packed set (src/ is not shipped), so it is dead weight for every consumer: strict and effective digests must DIFFER.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/a.js": "YQo=",
+        "dist/a.js.map": "eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9hLnRzIl0sIm1hcHBpbmdzIjoiQUFBQSJ9"
+      },
+      "expectedStrictDigest": "3cfec07a87487af5d1fce77d131d531cec8ce39cd41b0715d408844e9e95b950",
+      "expectedEffectiveDigest": "3cf3148c607afdfa5063208c26283a322b5d5ac887319d50bdbb6641f8be21d9"
+    },
+    {
+      "id": "map-with-unresolvable-sources-different-mappings",
+      "why": "only the mappings differ from the previous case. strictDigest must differ; effectiveDigest must MATCH — this is the comment-shifted-VLQ case that decides whether a comment-only edit is a version bump.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/a.js": "YQo=",
+        "dist/a.js.map": "eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9hLnRzIl0sIm1hcHBpbmdzIjoiQUFDQSJ9"
+      },
+      "expectedStrictDigest": "c2d080e96623c44ebaaf222ad5afc3fd47933e48763dc31edf7af2858c15ace4",
+      "expectedEffectiveDigest": "3cf3148c607afdfa5063208c26283a322b5d5ac887319d50bdbb6641f8be21d9"
+    },
+    {
+      "id": "map-with-malformed-json",
+      "why": "an unparseable .map is treated as opaque payload bytes, never as dead weight.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIiwiZmlsZXMiOlsiZGlzdCJdfQ==",
+        "dist/a.js.map": "bm90IGpzb24="
+      },
+      "expectedStrictDigest": "7975cc65a43d1578aaf07a53c32c73ad9d844ad3b2df1bcbab62e73375b4b700",
+      "expectedEffectiveDigest": "7975cc65a43d1578aaf07a53c32c73ad9d844ad3b2df1bcbab62e73375b4b700"
+    },
+    {
+      "id": "no-files-field",
+      "why": "a manifest with no files[] is still hashable; files[] resolution belongs to pnpm pack, not to the digest.",
+      "files": {
+        "package.json": "eyJuYW1lIjoiQHRveS94IiwidmVyc2lvbiI6IjEuMC4wIn0=",
+        "index.js": "eAo="
+      },
+      "expectedStrictDigest": "b16a7d1fb5b30ff3fa107f904fbba1e22b27a3db3e5937624568b6796d36fb92",
+      "expectedEffectiveDigest": "b16a7d1fb5b30ff3fa107f904fbba1e22b27a3db3e5937624568b6796d36fb92"
+    }
+  ]
+}

@@ -40,16 +40,24 @@ step "lint"                    pnpm lint
 step "typecheck"               pnpm typecheck
 step "schemas freshness"       pnpm check:schemas-freshness
 
-# Published-package version drift: source changed inside a published package but
-# nobody bumped the version, so consumers silently never receive the change.
-# Deliberately unfiltered (no --base), matching the CI job — this hook is a
-# CI-parity gate, and a drift someone else landed on main still blocks the
-# release, so it should block here too (B9).
+# C147 — published-package payload drift: a published package's payload changed
+# but nobody bumped that package's version, so `changeset publish` silently skips
+# it and consumers never receive the change. Content-based: it compares the
+# payload this checkout would publish against the payload already published under
+# the declared version.
 #
-# The check reads the git REF, never the working tree, so it must run AFTER the
-# bump is committed. It also needs full history; a shallow clone exits 2 with
-# instructions (`git fetch --unshallow`) rather than passing silently.
-step "package version drift"   pnpm check:package-drift
+# There is no base-ref filtering, matching the CI job — this hook is a CI-parity
+# gate, and a drift someone else landed on main still blocks the release, so it
+# should block here too (B9).
+#
+# It evaluates the WORKING TREE (a build is required, and a build needs a
+# materialised tree), so an uncommitted bump IS visible here — unlike the
+# previous git-ref-based generation.
+#
+# It needs the network and a GitHub Packages token; there is no anonymous access
+# even for public packages, so offline is INDETERMINATE/exit 3, never a pass. The
+# documented escape for a genuine emergency is DS_SKIP_PREPUSH=1.
+step "package payload drift"   pnpm check:package-drift -- --lane=pre-push
 
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises

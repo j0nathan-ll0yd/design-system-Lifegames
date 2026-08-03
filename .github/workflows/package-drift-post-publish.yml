@@ -1,0 +1,56 @@
+name: Package payload drift (post-publish)
+
+# The post-publish LANE of the C147 gate (scripts/check-package-drift.mjs).
+#
+# WHY A SECOND LANE EXISTS
+# On a branch, "this package declares 1.2.0 and the registry's newest is 1.1.0"
+# is correct and non-blocking: consumers still resolve 1.1.0, and the pending
+# payload is exactly what the publish workflow will ship. After that workflow has
+# run it must NOT persist — a declared-but-unpublished version means main is
+# green while every consumer on `^1.0.0` still resolves the stale tarball. That
+# window is invisible to the branch lane by design, so it is closed here:
+# --lane=post-publish escalates PENDING_PUBLISH and NEVER_PUBLISHED to exit 2.
+# The verdict itself is unchanged — only its exit class is lane-dependent, so a
+# machine consumer reading `verdict` never sees a different answer per lane.
+#
+# The legitimate transient is one publish-workflow run. The schedule catches the
+# case where a publish workflow was never triggered at all.
+
+on:
+  workflow_run:
+    workflows:
+      - Publish @j0nathan-ll0yd DS packages
+      - Publish @j0nathan-ll0yd/config
+    types: [completed]
+  schedule:
+    # 07:00 UTC daily. Drift that survives a night is not a transient.
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: package-drift-post-publish
+  cancel-in-progress: true
+
+jobs:
+  package-version-drift-post-publish:
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - name: Package payload drift (post-publish lane)
+        run: node scripts/check-package-drift.mjs --lane=post-publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

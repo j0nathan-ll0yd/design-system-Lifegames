@@ -377,11 +377,14 @@ scripts/scaffold-alternate-page.mjs:marker:j0nathan-ll0yd
 style-dictionary.config.mjs:marker:j0nathan-ll0yd
 .github/workflows/publish-ds-packages.yml:marker:j0nathan-ll0yd
 
-# The published-package version-drift gate. Same rationale as the blocks above:
-# the check's whole subject is the @j0nathan-ll0yd scope, so the marker appears
-# in the scope assertion it enforces (`manifest.name` must start with
-# '@j0nathan-ll0yd/'), in the per-package release-path guidance it prints, and in
-# the known-answer vectors that name the real packages. Not personal data; it is
-# the mandated distribution namespace.
+# The published-package payload-drift gate (C147). Same rationale as the blocks
+# above: the check's whole subject is the @j0nathan-ll0yd scope, so the marker
+# appears in DEFAULT_SCOPE (the publishable-package filter), in the measured
+# evidence cited in its header comments, in the post-publish workflow's
+# `workflow_run` trigger (which must name the publish workflows exactly), and in
+# the fixtures CHANGELOG heading. Not personal data; it is the mandated
+# distribution namespace.
 scripts/check-package-drift.mjs:marker:j0nathan-ll0yd
 scripts/check-package-drift.test.mjs:marker:j0nathan-ll0yd
+.github/workflows/package-drift-post-publish.yml:marker:j0nathan-ll0yd
+packages/fixtures/CHANGELOG.md:marker:j0nathan-ll0yd
