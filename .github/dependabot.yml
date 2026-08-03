@@ -1,12 +1,66 @@
 version: 2
+
+# @j0nathan-ll0yd/portal-contract resolves from GitHub Packages (packages/web,
+# packages/schemas, packages/fixtures and apps/portfolio all depend on it at
+# ^1.0.0; every other @j0nathan-ll0yd/* dependency here is `workspace:*` and is
+# not a registry dependency). GitHub Packages requires authentication even for
+# public packages -- an unauthenticated GET of
+# https://npm.pkg.github.com/@j0nathan-ll0yd%2fconfig returns 401. Without this
+# block Dependabot cannot see portal-contract at all, so an LP contract release
+# never reaches the design system automatically.
+#
+# The token must live in the *Dependabot* secret store (Settings -> Secrets and
+# variables -> Dependabot), not the Actions one: Dependabot never sees the
+# workflow GITHUB_TOKEN, and GitHub forbids Dependabot secret names beginning
+# with `GITHUB_`, so `${{secrets.GITHUB_TOKEN}}` is not expressible here.
+# `read:packages` is the only scope required.
+#
+# Deliberately NOT set:
+#   replaces-base -- would route *every* npm dependency through GitHub Packages,
+#     which does not proxy registry.npmjs.org.
+#   scope         -- would make Dependabot regenerate .npmrc purely from these
+#     credentials and discard the committed one. The committed
+#     `@j0nathan-ll0yd:registry=` line already does the scope mapping and
+#     Dependabot appends the credential from here.
+registries:
+  github-packages:
+    type: npm-registry
+    url: https://npm.pkg.github.com
+    token: ${{secrets.GH_PACKAGES_READ_TOKEN}}
+
 updates:
   - package-ecosystem: npm
     directory: /
+    registries:
+      - github-packages
     schedule:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
     groups:
+      # Declared FIRST on purpose: a dependency lands in the first group it
+      # matches, so this rule must win over the framework groups below.
+      #
+      # portal-contract is consumed by four workspace manifests at once
+      # (packages/web, packages/schemas, packages/fixtures, apps/portfolio).
+      # Dependabot walks pnpm workspace members from the root directory (see
+      # PR #43/#44, which bumped apps/*/packages/* manifests), so without a
+      # group this would be up to four racing PRs for one version. One grouped
+      # PR lands them together.
+      #
+      # MAJORS ARE INCLUDED: major/minor/patch are listed explicitly, and the
+      # `ignore` rules below are ajv-/starlight-specific, so nothing filters
+      # semver-major for this scope. Dependabot still only sees versions that
+      # were actually published, so the Atlas package-version-drift
+      # reconciliation runner remains the backstop for source that changed
+      # without a version bump -- Dependabot cannot detect that case at all.
+      lifegames-internal:
+        patterns:
+          - '@j0nathan-ll0yd/*'
+        update-types:
+          - major
+          - minor
+          - patch
       # Group ajv + ajv-formats so they update together. They share a
       # versioning cadence and historically a mismatched pair has broken
       # validation (8.18 -> 8.20 incident, May 2026).
