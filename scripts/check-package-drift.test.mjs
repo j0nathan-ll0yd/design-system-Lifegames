@@ -41,6 +41,7 @@ import {
   LANES,
   leakScreen,
   normalizeEntry,
+  parseArgs,
   readTarball,
   resolveToken,
   semverMax,
@@ -265,6 +266,27 @@ test('exitClassFor: post-publish escalates the "declared but never shipped" wind
 
 test('exitClassFor rejects an unknown verdict rather than defaulting to pass', () => {
   assert.throws(() => exitClassFor('PROBABLY_FINE', 'branch'), /unknown verdict/)
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CLI argument parsing
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('parseArgs accepts a bare -- (pnpm 11 forwards it from `pnpm run x -- --flag`)', () => {
+  // Regression: the pre-push hook originally invoked the gate as
+  // `pnpm check:package-drift -- --lane=pre-push`, and pnpm passed the `--`
+  // through as a literal argument. The gate rejected it and the push failed
+  // with "unknown argument --" — caught by the hook itself on its first run.
+  assert.equal(parseArgs(['--', '--lane=pre-push']).lane, 'pre-push')
+})
+
+test('parseArgs rejects an unknown flag and an unknown lane rather than ignoring them', () => {
+  assert.throws(() => parseArgs(['--lane=whenever']), /--lane must be one of/)
+  assert.throws(() => parseArgs(['--yolo']), /unknown argument --yolo/)
+})
+
+test('parseArgs defaults to the branch lane with the cache and build enabled', () => {
+  assert.deepEqual(parseArgs([]), {lane: 'branch', json: false, strictMaps: false, useCache: true, build: true, selfTest: false, mutant: null, help: false})
 })
 
 // ─────────────────────────────────────────────────────────────────────────────

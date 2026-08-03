@@ -1695,7 +1695,12 @@ async function selfTestCommand({mutant}) {
 export function parseArgs(argv) {
   const opts = {lane: 'branch', json: false, strictMaps: false, useCache: true, build: true, selfTest: false, mutant: null, help: false}
   for (const arg of argv) {
-    if (arg === '--json') {
+    if (arg === '--') {
+      // POSIX end-of-options marker. pnpm 11 forwards a bare `--` from
+      // `pnpm run <script> -- --flag` straight through to the script, so
+      // rejecting it turns a standard invocation into a hard error.
+      continue
+    } else if (arg === '--json') {
       opts.json = true
     } else if (arg === '--strict-maps') {
       opts.strictMaps = true

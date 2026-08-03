@@ -57,7 +57,10 @@ step "schemas freshness"       pnpm check:schemas-freshness
 # It needs the network and a GitHub Packages token; there is no anonymous access
 # even for public packages, so offline is INDETERMINATE/exit 3, never a pass. The
 # documented escape for a genuine emergency is DS_SKIP_PREPUSH=1.
-step "package payload drift"   pnpm check:package-drift -- --lane=pre-push
+# Invoked directly rather than through `pnpm check:package-drift -- --lane=...`:
+# pnpm 11 forwards the bare `--` to the script as a literal argument, which the
+# parser rejects. Caught by this very hook on its first run.
+step "package payload drift"   node scripts/check-package-drift.mjs --lane=pre-push
 
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises
