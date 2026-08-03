@@ -376,3 +376,12 @@ scripts/generate-widget-docs.mjs:marker:j0nathan-ll0yd
 scripts/scaffold-alternate-page.mjs:marker:j0nathan-ll0yd
 style-dictionary.config.mjs:marker:j0nathan-ll0yd
 .github/workflows/publish-ds-packages.yml:marker:j0nathan-ll0yd
+
+# The published-package version-drift gate. Same rationale as the blocks above:
+# the check's whole subject is the @j0nathan-ll0yd scope, so the marker appears
+# in the scope assertion it enforces (`manifest.name` must start with
+# '@j0nathan-ll0yd/'), in the per-package release-path guidance it prints, and in
+# the known-answer vectors that name the real packages. Not personal data; it is
+# the mandated distribution namespace.
+scripts/check-package-drift.mjs:marker:j0nathan-ll0yd
+scripts/check-package-drift.test.mjs:marker:j0nathan-ll0yd

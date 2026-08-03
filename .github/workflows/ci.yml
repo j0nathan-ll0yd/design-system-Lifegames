@@ -79,6 +79,37 @@ jobs:
         env:
           CONTRACT_CHECK_MODE: blocking
 
+  package-version-drift:
+    # Catches "source changed inside a published package but nobody bumped the
+    # version". No other gate sees it: typecheck, lint and tests all pass, and
+    # `changeset publish` SILENTLY SKIPS any version already on the registry and
+    # exits 0 — so consumers just never receive the change.
+    #
+    # fetch-depth: 0 is REQUIRED, not an optimisation. The check locates the
+    # commit that set each package's current version by walking that manifest's
+    # own history; a default depth-1 checkout has no history at all, every
+    # package comes back INDETERMINATE and the job exits 2. That is the intended
+    # loud failure, but it wastes a run, so fetch the full history.
+    #
+    # No pnpm install: the check is dependency-free on purpose, so it cannot be
+    # defeated by a broken lockfile or an unauthenticated registry.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+      # A2b — a gate that can never fail is as dangerous as one that never runs.
+      # The known-answer vectors run FIRST so a broken evaluator reddens here
+      # instead of quietly passing every package below.
+      - name: Known-answer self-test
+        run: node scripts/check-package-drift.mjs --self-test
+      - name: Package version drift
+        run: node scripts/check-package-drift.mjs
+
   copy:
     # @j0nathan-ll0yd/copy: build (validate rich + derive flat + codegen TS/Zod/Swift),
     # unit tests (Ajv + ICU MF1 parse + maxChars + flat round-trip), and the D9

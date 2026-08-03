@@ -40,6 +40,17 @@ step "lint"                    pnpm lint
 step "typecheck"               pnpm typecheck
 step "schemas freshness"       pnpm check:schemas-freshness
 
+# Published-package version drift: source changed inside a published package but
+# nobody bumped the version, so consumers silently never receive the change.
+# Deliberately unfiltered (no --base), matching the CI job — this hook is a
+# CI-parity gate, and a drift someone else landed on main still blocks the
+# release, so it should block here too (B9).
+#
+# The check reads the git REF, never the working tree, so it must run AFTER the
+# bump is committed. It also needs full history; a shallow clone exits 2 with
+# instructions (`git fetch --unshallow`) rather than passing silently.
+step "package version drift"   pnpm check:package-drift
+
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises
 # runtime behaviour of the updaters/adapters Props contract.
