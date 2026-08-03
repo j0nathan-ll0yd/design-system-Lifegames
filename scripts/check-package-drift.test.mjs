@@ -12,7 +12,14 @@ import assert from 'node:assert/strict'
 import {execFileSync} from 'node:child_process'
 import path from 'node:path'
 import {describe, test} from 'node:test'
-import {classifyChangedPath, evaluatePackageDrift, matchPattern, selectVersionSettingCommit, selfTest} from './check-package-drift.mjs'
+import {
+  classifyChangedPath,
+  computeIntroducedHere,
+  evaluatePackageDrift,
+  matchPattern,
+  selectVersionSettingCommit,
+  selfTest
+} from './check-package-drift.mjs'
 
 const SCRIPT = path.join(import.meta.dirname, 'check-package-drift.mjs')
 
@@ -44,6 +51,15 @@ describe('check-package-drift', () => {
 
     test('a basename-matching implementation would swallow the tokens golden-fixture trap', () => {
       assert.equal(matchPattern('dist', '__tests__/golden/dist/x.css'), false)
+    })
+
+    test('a shallow graft boundary is not a root commit (a depth-1 clone must not pass)', () => {
+      // Regression lock. git prints a graft boundary as parentless, exactly like a
+      // real root commit; an earlier draft called that "introduced", and a real
+      // `git clone --depth 1` of this repo then reported 0 drifted for all six
+      // packages — the gate silently passing in full.
+      assert.equal(computeIntroducedHere({parentCount: 0, isShallowBoundary: true, manifestInFirstParent: false}), false)
+      assert.equal(computeIntroducedHere({parentCount: 0, isShallowBoundary: false, manifestInFirstParent: false}), true)
     })
 
     test('shallow history is INDETERMINATE, never a silent CLEAN', () => {

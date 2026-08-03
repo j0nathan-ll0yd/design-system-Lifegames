@@ -428,14 +428,49 @@ function readManifestAt(ref, pkgDir) {
   }
 }
 
-/** Was the manifest absent in this commit's first parent (or is this a root commit)? */
-function manifestIntroducedAt(sha, pkgDir) {
-  // `rev-list --parents -n 1 <sha>` prints "<sha> <parent1> [<parent2> ...]".
-  const parents = gitOrThrow(['rev-list', '--parents', '-n', '1', sha]).trim().split(/\s+/).filter(Boolean)
-  if (parents.length <= 1) {
-    return true // root commit
+/**
+ * Did the OLDEST observable manifest commit actually introduce the manifest?
+ *
+ * `parentCount === 0` is ambiguous and the ambiguity is dangerous: git presents a
+ * SHALLOW GRAFT BOUNDARY as a parentless commit, exactly like a real root commit.
+ * Treating a graft boundary as "introduced" makes every package in a depth-1
+ * checkout come back CLEAN with an empty diff — a silent, total pass of the whole
+ * gate. (Observed: a `git clone --depth 1` of this repo reported 0 drifted.)
+ *
+ * So a boundary commit is never "introduced": it resolves to 'truncated', which
+ * is INDETERMINATE and exit 2.
+ */
+export function computeIntroducedHere({parentCount, isShallowBoundary, manifestInFirstParent}) {
+  if (isShallowBoundary) {
+    return false // history is cut here; whether the manifest predates this commit is unknowable
   }
-  return !git(['cat-file', '-e', `${parents[1]}:${pkgDir}/package.json`]).ok
+  if (parentCount === 0) {
+    return true // genuine root commit
+  }
+  return !manifestInFirstParent
+}
+
+/** The commits listed in .git/shallow — where a shallow clone's history was cut. */
+function readShallowBoundaries() {
+  const shallowPath = git(['rev-parse', '--git-path', 'shallow'])
+  if (!shallowPath.ok) {
+    return new Set()
+  }
+  try {
+    return new Set(lines(readFileSync(path.resolve(ROOT, shallowPath.stdout.trim()), 'utf8')))
+  } catch {
+    return new Set() // absent file = complete history
+  }
+}
+
+function manifestIntroducedAt(sha, pkgDir, shallowBoundaries) {
+  // `rev-list --parents -n 1 <sha>` prints "<sha> <parent1> [<parent2> ...]".
+  const parents = gitOrThrow(['rev-list', '--parents', '-n', '1', sha]).trim().split(/\s+/).filter(Boolean).slice(1)
+  return computeIntroducedHere({
+    parentCount: parents.length,
+    isShallowBoundary: shallowBoundaries.has(sha),
+    manifestInFirstParent: parents.length > 0 && git(['cat-file', '-e', `${parents[0]}:${pkgDir}/package.json`]).ok
+  })
 }
 
 /**
@@ -445,14 +480,14 @@ function manifestIntroducedAt(sha, pkgDir) {
  * manifest the version-setting commit, and keeps the walk on the branch that
  * actually shipped.
  */
-export function readManifestHistory(head, pkgDir) {
+export function readManifestHistory(head, pkgDir, shallowBoundaries = readShallowBoundaries()) {
   const shas = lines(gitOrThrow(['rev-list', '--first-parent', head, '--', `${pkgDir}/package.json`]))
   return shas.map((sha, index) => {
     const manifest = readManifestAt(sha, pkgDir)
     const version = typeof manifest?.version === 'string' ? manifest.version : null
     const entry = {sha, version}
     if (index === shas.length - 1) {
-      entry.introducedHere = manifestIntroducedAt(sha, pkgDir)
+      entry.introducedHere = manifestIntroducedAt(sha, pkgDir, shallowBoundaries)
     }
     return entry
   })
@@ -575,6 +610,27 @@ export function selfTest() {
     status: 'truncated'
   })
   assert.deepEqual(selectVersionSettingCommit('1.0.0', [], true), {sha: null, status: 'no-history'})
+
+  // ── computeIntroducedHere: the shallow-graft trap ──
+  // git presents a shallow graft boundary as a PARENTLESS commit, exactly like a
+  // real root commit. Calling that "introduced" made every package in a depth-1
+  // checkout report CLEAN with an empty diff — a silent, total pass of the gate.
+  // Regression-locked here because it is the whole point of A2b.
+  assert.equal(computeIntroducedHere({parentCount: 0, isShallowBoundary: true, manifestInFirstParent: false}), false)
+  assert.equal(computeIntroducedHere({parentCount: 0, isShallowBoundary: false, manifestInFirstParent: false}), true)
+  assert.equal(computeIntroducedHere({parentCount: 1, isShallowBoundary: false, manifestInFirstParent: false}), true)
+  assert.equal(computeIntroducedHere({parentCount: 1, isShallowBoundary: false, manifestInFirstParent: true}), false)
+  // A boundary always wins, even when a parent happens to be reachable.
+  assert.equal(computeIntroducedHere({parentCount: 1, isShallowBoundary: true, manifestInFirstParent: false}), false)
+  // End to end: a boundary-rooted single-commit history must be truncated, not introduced.
+  assert.deepEqual(
+    selectVersionSettingCommit('1.0.0', [{
+      sha: 'graft',
+      version: '1.0.0',
+      introducedHere: computeIntroducedHere({parentCount: 0, isShallowBoundary: true, manifestInFirstParent: false})
+    }], false),
+    {sha: null, status: 'truncated'}
+  )
 
   // ── matchPattern: root-anchored, case-sensitive, POSIX ──
   assert.equal(matchPattern('dist', 'dist/index.mjs'), true)
