@@ -16,15 +16,26 @@
  *
  * The observation layer is covered by `node scripts/check-package-drift.mjs
  * --self-test`, which stands up a throwaway git repo and an offline registry, runs
- * the SHIPPED pipeline end to end against them, and then re-runs it under nine
+ * the SHIPPED pipeline end to end against them, and then re-runs it under thirteen
  * deliberate SOURCE-TEXT mutations of the real evaluator — failing if any survives.
+ *
+ * THIS FILE RUNS IN CI (finding D4). It carries the 34 shared conformance vectors AND
+ * the fixture-checksum assertion that makes vendoring them safe, and until now it was
+ * reachable only through `pnpm test:scripts` — present in .husky/pre-push and in no
+ * workflow — so this repo could diverge from the estate's canonical digest rule with
+ * every CI check green. It is now a step in the `package-version-drift` job.
  *
  * THE PROCESS-EXIT BOUNDARY IS NOT COVERED HERE, DELIBERATELY. Nothing in this file
  * spawns the script, so `process.exitCode = code` could be changed to `= 0` and every
  * test here would stay green while the gate exited 0 on real drift (finding X2). That
- * boundary is covered by --self-test scenario S13, which spawns the script as a real
- * OS process against a fixture holding a known drift and reads its actual status; the
- * `exitcode` mutation proves S13 can fail.
+ * boundary is covered by four --self-test rungs that spawn the script as a real OS
+ * process and read its actual status: S13 (a known drift -> 2), S17 (a clean tree -> 0),
+ * S18 (a dead registry -> 3) and S19 (nothing publishable -> 3). All four are needed,
+ * because one rung asserting only DRIFT -> 2 could not see any exit-mapping edit that
+ * PRESERVED 2 — MEASURED (finding D3): rewriting that line to launder exit 3 into exit 0
+ * left the previous suite reporting "self-test passed, all 9 mutations killed" while
+ * every "could not tell" silently became a pass. The `exitcode`, `exitalways2` and
+ * `exitlaunder3` mutations prove each direction can fail.
  */
 
 import assert from 'node:assert/strict'

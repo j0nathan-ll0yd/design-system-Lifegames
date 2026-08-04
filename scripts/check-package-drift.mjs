@@ -523,36 +523,323 @@ export function compareSemver(a, b) {
 export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Step 0 — Discovery (no globbing, no history)
+// Step 0 — Discovery (package-manager-agnostic, no history)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * `pnpm list -r --depth -1 --json` is the authoritative workspace enumeration. The
- * hand-rolled `packages/*` scan and the pnpm-workspace.yaml glob walker both die here,
- * and with them the divergence risk of three separate glob engines.
+ * WHY THIS IS NOT `pnpm list -r --depth -1 --json` ANY MORE (finding D1/X1).
  *
- * M6 (inventory discovered from the working tree while evaluating another ref) is fixed
- * BY CONSTRUCTION: there is exactly one tree now. Discovery, build and pack all read
- * `repoRoot`. `--head` / `--base` no longer exist — evaluating an arbitrary ref is not
+ * That call was this file's ONLY enumeration source, and its doc comment called it "the
+ * authoritative workspace enumeration". It is not authoritative — it is the package
+ * manager's opinion of DECLARED MEMBERSHIP, and a package the workspace config does not
+ * name is invisible to it.
+ *
+ * MEASURED, on the real mantle-LifegamesPortal: that repo's `pnpm-workspace.yaml` is
+ * settings-only and carries no `packages:` key at all, so `pnpm list -r --depth -1
+ * --json` returns the PRIVATE ROOT ALONE. Its `packages/portal-contract` — a real,
+ * published `@j0nathan-ll0yd/*` package — was therefore never inventoried, and this gate
+ * printed "0 publishable package(s): nothing evaluated / exit 0". A gate that reports a
+ * silent total pass on a repo it is meant to protect is worse than no gate.
+ *
+ * The fix is to UNION two independent sources so neither can narrow the inventory:
+ *
+ *   1. the workspace globs DECLARED by whichever package manager this repo uses
+ *      (`declaredWorkspaceGlobs`), and
+ *   2. a plain directory scan for every `package.json` in the tree
+ *      (`manifestDirectories`), which does not care about workspace config at all.
+ *
+ * Git-ignored candidates are then removed (`gitIgnoredPaths`) and the survivors reduced
+ * to the directories that name a package in their own right (`selectPackageDirectories`).
+ * A manifest that exists but cannot be read becomes a RECORDED ERROR that raises the exit
+ * floor — never a silent drop.
+ *
+ * M6 (inventory discovered from the working tree while evaluating another ref) remains
+ * fixed BY CONSTRUCTION: there is exactly one tree. Discovery, build and pack all read
+ * `repoRoot`. `--head` / `--base` do not exist — evaluating an arbitrary ref is not
  * meaningful when the payload requires a build and a build requires a materialised tree.
  */
-export function discoverWorkspace(repoRoot) {
-  const result = spawnSync('pnpm', ['list', '-r', '--depth', '-1', '--json'], {cwd: repoRoot, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024})
-  if (result.error) {
-    throw new Error(`pnpm list failed to run (${result.error.code ?? result.error.message})`)
-  }
-  if (result.status !== 0) {
-    throw new Error(`pnpm list exited ${result.status}: ${(result.stderr || '').trim()}`)
-  }
-  return JSON.parse(result.stdout)
+
+/**
+ * A symlink-loop and pathological-tree guard, NOT a layout assumption. It is deliberately
+ * far deeper than any real layout (the deepest package directory in this estate is
+ * `packages/<name>`, depth 2) precisely so it can never become the reason a package is
+ * missed. Symlinked directories are skipped outright, so this bound is only ever reached
+ * by a genuinely pathological tree.
+ */
+const MAX_SCAN_DEPTH = 12
+
+/**
+ * Workspace globs are matched with the SAME `globToRegExp` the turbo-outputs leak screen
+ * uses — one glob engine in this file, which was the one genuine merit of the pnpm-only
+ * design. Only the surrounding syntax is normalised: a leading `./` and a trailing `/`
+ * are spellings, not meaning.
+ */
+export function workspaceGlobToRegExp(glob) {
+  return globToRegExp(glob.replace(/^\.\//, '').replace(/\/$/, ''))
 }
 
-export function classifyMember(member, {registry, scope}) {
+/**
+ * Workspace member globs DECLARED by whichever package manager this repo uses.
+ *
+ * pnpm keeps them under `packages:` in `pnpm-workspace.yaml`; npm, yarn and bun keep them
+ * in the root manifest's `workspaces`, either as an array or as `{packages: [...]}` (yarn
+ * classic). ANY OF THESE MAY BE ABSENT — this is one of two enumeration sources, not the
+ * authority, and returning `[]` is a perfectly normal answer.
+ *
+ * The YAML read is a deliberate ~15-line list scanner rather than a YAML dependency: the
+ * shape is a fixed one (`packages:` followed by `- <glob>` items) and this gate must run
+ * from a bare `node scripts/...` with no runtime dependency at all. Anything it cannot
+ * parse simply contributes no globs, and the directory scan still finds the packages.
+ */
+export function declaredWorkspaceGlobs(repoRoot) {
+  const globs = []
+  const workspaceFile = path.join(repoRoot, 'pnpm-workspace.yaml')
+  if (fs.existsSync(workspaceFile)) {
+    let inPackages = false
+    for (const line of fs.readFileSync(workspaceFile, 'utf8').split('\n')) {
+      if (/^packages:\s*$/.test(line)) {
+        inPackages = true
+        continue
+      }
+      if (!inPackages) {
+        continue
+      }
+      const item = /^\s+-\s*(.+?)\s*$/.exec(line)
+      if (!item) {
+        // Any non-blank line at column 0 ends the block.
+        if (line.trim() !== '' && !line.startsWith(' ')) {
+          inPackages = false
+        }
+        continue
+      }
+      globs.push(item[1].replace(/^['"]|['"]$/g, ''))
+    }
+  }
+  const rootManifestFile = path.join(repoRoot, 'package.json')
+  if (fs.existsSync(rootManifestFile)) {
+    let workspaces
+    try {
+      workspaces = JSON.parse(fs.readFileSync(rootManifestFile, 'utf8'))?.workspaces
+    } catch {
+      workspaces = undefined
+    }
+    if (Array.isArray(workspaces)) {
+      globs.push(...workspaces.filter((entry) => typeof entry === 'string'))
+    } else if (isPlainObject(workspaces) && Array.isArray(workspaces.packages)) {
+      globs.push(...workspaces.packages.filter((entry) => typeof entry === 'string'))
+    }
+  }
+  return globs
+}
+
+/**
+ * Bare directory names declared as build outputs by the ROOT turbo config, used only to
+ * prune the scan. A `dist/package.json` is part of its package's payload, never a
+ * separate publishable unit — `selectPackageDirectories` would reject it anyway, so this
+ * is a cost saving with a defence-in-depth flavour, not a correctness rule.
+ */
+export function buildOutputDirNames(repoRoot) {
+  const dirs = new Set(['dist'])
+  const turboFile = path.join(repoRoot, 'turbo.json')
+  if (!fs.existsSync(turboFile)) {
+    return dirs
+  }
+  let tasks
+  try {
+    tasks = JSON.parse(fs.readFileSync(turboFile, 'utf8').replace(/^\s*\/\/.*$/gm, ''))?.tasks
+  } catch {
+    return dirs
+  }
+  for (const [taskName, task] of Object.entries(tasks ?? {})) {
+    if (taskName !== 'build' && !taskName.endsWith('#build')) {
+      continue
+    }
+    for (const output of Array.isArray(task?.outputs) ? task.outputs : []) {
+      const head = String(output).replace(/^!/, '').split('/')[0]
+      if (head && head !== '**' && head !== '.' && head !== '..') {
+        dirs.add(head)
+      }
+    }
+  }
+  return dirs
+}
+
+/**
+ * Every directory under `repoRoot` carrying a `package.json`, as repo-relative posix
+ * paths (`.` for the root itself).
+ *
+ * THIS IS THE SOURCE THAT DOES NOT CARE WHICH PACKAGE MANAGER THE REPO USES, which is the
+ * whole point of finding D1. It cannot be narrowed by a missing `packages:` key, by an
+ * unconventional layout, or by a workspace glob that silently stopped matching.
+ */
+export function manifestDirectories(repoRoot, skipDirNames = new Set()) {
+  const found = []
+  const walk = (absolute, depth) => {
+    let entries
+    try {
+      entries = fs.readdirSync(absolute, {withFileTypes: true})
+    } catch {
+      return
+    }
+    if (entries.some((entry) => entry.isFile() && entry.name === 'package.json')) {
+      found.push(path.relative(repoRoot, absolute).split(path.sep).join('/') || '.')
+    }
+    if (depth >= MAX_SCAN_DEPTH) {
+      return
+    }
+    for (const entry of entries) {
+      // isSymbolicLink() is checked BEFORE isDirectory(): a symlinked directory reports as
+      // a link here, and following one is how a walk finds pnpm's node_modules farm or a
+      // cycle.
+      if (entry.isSymbolicLink() || !entry.isDirectory()) {
+        continue
+      }
+      if (entry.name.startsWith('.') || entry.name === 'node_modules' || skipDirNames.has(entry.name)) {
+        continue
+      }
+      walk(path.join(absolute, entry.name), depth + 1)
+    }
+  }
+  walk(repoRoot, 0)
+  return found.sort()
+}
+
+/**
+ * The subset of `candidates` that git ignores — scaffolding scratch, generated fixtures
+ * and the like, which are by construction not part of the repo's published surface.
+ * Untracked-but-not-ignored directories are deliberately KEPT, so a package added in the
+ * working tree and not yet committed is still checked.
+ *
+ * If git cannot answer (not a repo, git absent), NOTHING is filtered: dropping a candidate
+ * on a failed probe would be exactly the silent-narrowing bug this change exists to remove.
+ */
+export function gitIgnoredPaths(repoRoot, candidates) {
+  const relevant = [...candidates].filter((entry) => entry !== '.')
+  if (relevant.length === 0) {
+    return new Set()
+  }
+  const result = spawnSync('git', ['check-ignore', '--stdin', '-z'], {
+    cwd: repoRoot,
+    input: `${relevant.join('\0')}\0`,
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024
+  })
+  // 0 = some paths are ignored, 1 = none are, anything else (128, ENOENT) = git could not
+  // answer, and "could not tell" must never narrow the inventory.
+  if (result.error || (result.status !== 0 && result.status !== 1)) {
+    return new Set()
+  }
+  return new Set(result.stdout.split('\0').filter(Boolean))
+}
+
+/**
+ * Directories that name a package in their own right, from the union of both sources.
+ *
+ * A directory qualifies when it is the repo root, when it matches a DECLARED workspace
+ * glob, or when its nearest manifest-bearing ancestor is the root. That last rule is what
+ * makes a bare scan safe: a `package.json` nested INSIDE another package (a fixture, a
+ * scaffolding template, a `dist/package.json`) belongs to that package's payload and is
+ * hashed as part of it, exactly as the digest rule says — it is not a separate publishable
+ * unit. A genuinely nested layout is still covered, because such a layout must declare the
+ * inner glob for its own package manager to work, and the glob source picks it up.
+ */
+export function selectPackageDirectories(manifestDirs, globs) {
+  const present = new Set(manifestDirs)
+  const positive = globs.filter((glob) => !glob.startsWith('!')).map((glob) => workspaceGlobToRegExp(glob))
+  const negative = globs.filter((glob) => glob.startsWith('!')).map((glob) => workspaceGlobToRegExp(glob.slice(1)))
+  const selected = new Set()
+  for (const dir of manifestDirs) {
+    if (dir === '.') {
+      selected.add(dir)
+      continue
+    }
+    if (negative.some((pattern) => pattern.test(dir))) {
+      continue
+    }
+    if (positive.some((pattern) => pattern.test(dir))) {
+      selected.add(dir)
+      continue
+    }
+    const segments = dir.split('/')
+    const hasNearerAncestor = segments.slice(0, -1).some((_, index) => present.has(segments.slice(0, index + 1).join('/')))
+    if (!hasNearerAncestor) {
+      selected.add(dir)
+    }
+  }
+  return [...selected].sort()
+}
+
+/**
+ * Step 0. Returns `{members, errors, sources}` — never throws for a per-manifest problem.
+ *
+ * `members` carry an ABSOLUTE `path` (the contract the rest of this file already had, from
+ * the days of `pnpm list`), plus `relativePath` and `discoveredBy` for the report.
+ * `errors` are manifests that exist and could not be read; they raise the exit floor to
+ * INDETERMINATE rather than vanishing.
+ */
+export function discoverWorkspace(repoRoot) {
+  const globs = declaredWorkspaceGlobs(repoRoot)
+  const manifestDirs = manifestDirectories(repoRoot, buildOutputDirNames(repoRoot))
+  const ignored = gitIgnoredPaths(repoRoot, manifestDirs)
+  const selected = selectPackageDirectories(manifestDirs.filter((dir) => !ignored.has(dir)), globs)
+
+  const positive = globs.filter((glob) => !glob.startsWith('!')).map((glob) => workspaceGlobToRegExp(glob))
+  const members = []
+  const errors = []
+  const sources = new Set()
+
+  for (const relativePath of selected) {
+    const absolutePath = relativePath === '.' ? repoRoot : path.join(repoRoot, relativePath)
+    let manifest
+    try {
+      manifest = JSON.parse(fs.readFileSync(path.join(absolutePath, 'package.json'), 'utf8'))
+    } catch (err) {
+      errors.push(`${relativePath}/package.json could not be read: ${err.message}`)
+      continue
+    }
+    if (!isPlainObject(manifest)) {
+      errors.push(`${relativePath}/package.json is not a JSON object`)
+      continue
+    }
+    const discoveredBy = relativePath === '.'
+      ? 'repository root'
+      : (positive.some((pattern) => pattern.test(relativePath)) ? 'declared workspace glob' : 'directory scan')
+    sources.add(discoveredBy)
+    members.push({
+      name: manifest.name,
+      version: manifest.version,
+      path: absolutePath,
+      relativePath,
+      private: manifest.private,
+      publishConfig: manifest.publishConfig,
+      discoveredBy
+    })
+  }
+  return {members, errors, sources: [...sources].sort()}
+}
+
+/**
+ * `registryOverridden` exists because discovery now reads the MANIFEST rather than
+ * `pnpm list --json`, which never reported `publishConfig` at all. That is strictly more
+ * information, but it makes an explicit `--registry=` ambiguous: every fixture manifest
+ * declares its own toy-registry URL, so comparing the two would classify a deliberately
+ * retargeted run as "publishes somewhere else" and skip everything — which is precisely
+ * the silent-narrowing shape this change exists to remove.
+ *
+ * An operator who names a registry has said which registry to evaluate against, so the
+ * override wins over `publishConfig` (this is mantle's `registryOverride !== undefined`
+ * rule). It can only ever WIDEN the inventory, never narrow it, so it cannot launder a
+ * green run: a wrong URL yields INDETERMINATE / exit 3 (A2b), never a pass.
+ */
+export function classifyMember(member, {registry, scope, registryOverridden = false}) {
   if (member.private === true) {
     return {publishable: false, reason: 'private: true'}
   }
   if (!member.name) {
     return {publishable: false, reason: 'no name'}
+  }
+  if (registryOverridden) {
+    return {publishable: true}
   }
   const configured = member.publishConfig?.registry
   if (configured) {
@@ -940,6 +1227,10 @@ export function exitClassFor(verdict, lane) {
     case 'LEAKED_ARTIFACT':
       return EXIT_BLOCK
     case 'INDETERMINATE':
+    case 'NO_PUBLISHABLE_PACKAGES':
+      // "I could not tell" and "I inventoried nothing" are the same class of answer, and
+      // NEITHER IS A PASS (A2b). Exit 3 rather than 2 because the honest statement is that
+      // this gate could not evaluate anything, not that a package is broken.
       return EXIT_INDETERMINATE
     case 'BUILD_FAILED':
       return EXIT_BUILD
@@ -1022,28 +1313,50 @@ export async function runGate({
     })
 
   // ── Step 0 — discover ─────────────────────────────────────────────────────
-  let members
+  let discovery
   try {
-    members = discoverWorkspace(repoRoot)
+    discovery = discoverWorkspace(repoRoot)
   } catch (err) {
-    return {rows: [], lane, fatal: `discovery failed: ${err.message}`, exitCode: EXIT_INDETERMINATE}
+    // Belt and braces: discovery records per-manifest problems rather than throwing, so
+    // reaching here means the tree itself is unreadable. Still not a pass.
+    return {rows: [], lane, fatal: `discovery failed: ${err.message}`, exitCode: EXIT_INDETERMINATE, discoveryErrors: [], discoverySources: []}
   }
+  const {members, errors: discoveryErrors, sources: discoverySources} = discovery
+  // Discovery errors are "could not tell" evidence about the inventory itself, so they
+  // raise the floor to exit 3 no matter how clean the packages that WERE read look.
+  const finish = (extra = {}) => ({
+    rows,
+    lane,
+    discoveryErrors,
+    discoverySources,
+    exitCode: Math.max(computeExit(rows), discoveryErrors.length > 0 ? EXIT_INDETERMINATE : EXIT_OK),
+    ...extra
+  })
 
+  const skipReasons = []
   const publishable = []
+  // Derived, not plumbed: naming any registry other than the estate default IS the
+  // override. Passing the default explicitly is indistinguishable from not passing it,
+  // which is the correct behaviour rather than a gap.
+  const registryOverridden = registry.replace(/\/$/, '') !== DEFAULT_REGISTRY.replace(/\/$/, '')
   for (const member of members) {
-    const classification = classifyMember(member, {registry, scope})
+    const classification = classifyMember(member, {registry, scope, registryOverridden})
     if (classification.publishable) {
       publishable.push(member)
     } else {
       // A complete census, not a filtered list: a package must never silently fall out
       // of scope because someone flipped `private` or edited publishConfig.
+      const name = member.name ?? path.basename(member.path)
+      const where = member.relativePath ?? (path.relative(repoRoot, member.path) || '.')
+      skipReasons.push(`${name} (${where}: ${classification.reason})`)
       push({
-        name: member.name ?? path.basename(member.path),
+        name,
         path: member.path,
         declared: member.version ?? null,
         referenceVersion: null,
         verdict: 'SKIPPED',
         reason: classification.reason,
+        discoveredBy: member.discoveredBy,
         advisories: [],
         differingFiles: [],
         leakedPaths: []
@@ -1052,7 +1365,35 @@ export async function runGate({
   }
 
   if (publishable.length === 0) {
-    return {rows, lane, empty: true, exitCode: EXIT_OK}
+    // THE EMPTY-SET GUARD (finding D2/X1b). "I inventoried nothing" must NEVER render as
+    // "all clean". This is the exact shape of the silent total pass D1 measured: on
+    // mantle-LifegamesPortal the pnpm-only enumeration returned the private root alone,
+    // every row was SKIPPED, and this function returned exit 0 on a repo whose
+    // @j0nathan-ll0yd/portal-contract was live. The discovery fix removes that CAUSE; this
+    // removes the CLASS, so the next way discovery can narrow — a deleted packages/
+    // directory, a glob that stopped matching, a `private: true` added by accident — is
+    // loud instead of green.
+    //
+    // A repo that genuinely publishes nothing does not reach here: the consumer-repo
+    // wrappers answer "this repo publishes nothing, so nothing can drift" from their own
+    // scan and never invoke this engine. This file ships in a repo that publishes six
+    // packages, so zero is always a defect.
+    push({
+      name: '(workspace)',
+      path: repoRoot,
+      declared: null,
+      referenceVersion: null,
+      verdict: 'NO_PUBLISHABLE_PACKAGES',
+      reason: `ZERO publishable packages were discovered — ${
+        members.length === 0
+          ? 'no package.json was found anywhere in this checkout'
+          : `${members.length} manifest(s) were found and every one was skipped: ${skipReasons.join('; ')}`
+      }. Sources consulted: declared workspace globs and a full directory scan.`,
+      advisories: [],
+      differingFiles: [],
+      leakedPaths: []
+    })
+    return finish()
   }
 
   // ── Step 1 — auth (before any work) ───────────────────────────────────────
@@ -1068,7 +1409,7 @@ export async function runGate({
           `no ${new URL(registry).host} token. Tried, in order: ${resolved.tried.join(', ')}. ` +
             'Fix with `gh auth login`, or export GITHUB_TOKEN=$(gh auth token).')
       }
-      return {rows, lane, exitCode: computeExit(rows)}
+      return finish()
     }
   }
   log(`auth: ${authSource}`)
@@ -1091,7 +1432,7 @@ export async function runGate({
     }
   }
   if (live.length === 0) {
-    return {rows, lane, exitCode: computeExit(rows)}
+    return finish()
   }
 
   // ── Step 3 — build once, whole workspace ──────────────────────────────────
@@ -1112,7 +1453,7 @@ export async function runGate({
           leakedPaths: []
         })
       }
-      return {rows, lane, exitCode: computeExit(rows)}
+      return finish()
     }
   }
 
@@ -1138,7 +1479,7 @@ export async function runGate({
     ready.push({member, manifest, outputs})
   }
   if (ready.length === 0) {
-    return {rows, lane, exitCode: computeExit(rows)}
+    return finish()
   }
 
   // ── Step 4 — pack the local side ──────────────────────────────────────────
@@ -1281,7 +1622,7 @@ export async function runGate({
     fs.rmSync(packRoot, {recursive: true, force: true})
   }
 
-  return {rows, lane, exitCode: computeExit(rows)}
+  return finish()
 }
 
 function computeExit(rows) {
@@ -1299,10 +1640,6 @@ function report(result) {
   }
   const evaluated = result.rows.filter((r) => r.verdict !== 'SKIPPED')
   const skipped = result.rows.filter((r) => r.verdict === 'SKIPPED')
-
-  if (result.empty) {
-    console.log('this repo publishes no packages')
-  }
 
   console.log(`\npackage payload drift — lane=${result.lane}, spec v${SPEC_VERSION}\n`)
   for (const row of evaluated) {
@@ -1331,12 +1668,26 @@ function report(result) {
     }
   }
 
+  // An unreadable manifest is a hole in the INVENTORY, not in a package, so it is
+  // reported separately and raises the exit floor on its own (it can be the only reason
+  // this run is not exit 0).
+  if (result.discoveryErrors?.length) {
+    console.log('\n  discovery errors (the inventory is incomplete — this is why the exit floor is 3):')
+    for (const error of result.discoveryErrors) {
+      console.log(`    ${error}`)
+    }
+  }
+
   const counts = {}
   for (const row of evaluated) {
     counts[row.verdict] = (counts[row.verdict] ?? 0) + 1
   }
   const summary = Object.entries(counts).map(([k, v]) => `${v} ${k}`).join(', ') || 'nothing evaluated'
-  console.log(`\n  ${evaluated.length} publishable package(s): ${summary}`)
+  const publishableCount = evaluated.filter((r) => r.verdict !== 'NO_PUBLISHABLE_PACKAGES').length
+  console.log(`\n  ${publishableCount} publishable package(s): ${summary}`)
+  if (result.discoverySources?.length) {
+    console.log(`  discovered via: ${result.discoverySources.join(', ')}`)
+  }
   console.log(`  exit ${result.exitCode}\n`)
 }
 
@@ -1464,9 +1815,31 @@ function buildFixture(registryUrl) {
   return root
 }
 
-async function packFixture(root, pkgDir) {
+/**
+ * A workspace with NOTHING publishable, for the S19 empty-set rung.
+ *
+ * Deliberately a SEPARATE repo rather than a mutation of the main fixture: S19 asserts
+ * what the gate does when its inventory comes back empty, and reaching that state by
+ * flipping the main fixture's manifests would leave every later rung reasoning about a
+ * tree that had been temporarily gutted.
+ */
+function buildEmptyFixture() {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-empty-')))
+  fs.mkdirSync(path.join(root, 'packages', 'internal'), {recursive: true})
+  fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), "packages:\n  - 'packages/*'\n")
+  writeJson(path.join(root, 'package.json'), {name: 'drift-empty-root', private: true, version: '0.0.0'})
+  writeJson(path.join(root, 'packages', 'internal', 'package.json'), {name: '@toy/internal', private: true, version: '1.0.0'})
+  git(root, 'init', '-q')
+  git(root, 'config', 'user.email', 'selftest@example.invalid')
+  git(root, 'config', 'user.name', 'drift self-test')
+  git(root, 'add', '-A')
+  git(root, 'commit', '-qm', 'empty fixture')
+  return root
+}
+
+async function packFixtureAt(root, relDir) {
   const dest = fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-seed-'))
-  const result = await packOne({path: path.join(root, 'packages', pkgDir)}, dest)
+  const result = await packOne({path: path.join(root, relDir)}, dest)
   if (!result.ok) {
     throw new Error(`fixture pack failed: ${result.detail}`)
   }
@@ -1474,6 +1847,8 @@ async function packFixture(root, pkgDir) {
   fs.rmSync(dest, {recursive: true, force: true})
   return bytes
 }
+
+const packFixture = (root, pkgDir) => packFixtureAt(root, path.join('packages', pkgDir))
 
 /**
  * Seeds the toy registry the way `npm publish` does, NOT the way `pnpm publish` does.
@@ -1543,6 +1918,52 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
 
   const gate = (overrides = {}) =>
     evaluator.runGate({repoRoot: root, registry: registryUrl, scope: '@toy', token: 'selftest-token', useCache: false, concurrency: 2, ...overrides})
+
+  /**
+   * THE PROCESS-EXIT BOUNDARY, as a reusable rung (findings X2 and D3).
+   *
+   * Every `gate()` assertion above reads runGate's RETURN VALUE; not one of them observes
+   * what the process actually does. The four lines that turn a report into an exit status
+   * are reachable only from here — and a single rung asserting DRIFT -> 2 was not enough:
+   * ANY exit-mapping mutation that happens to preserve 2 stayed invisible, so
+   * `process.exitCode = 2` (block everything) and `code === 3 ? 0 : code` (launder every
+   * "could not tell" into a pass) both survived a fully green suite. The mapping is now
+   * pinned in BOTH directions, by spawning at a CLEAN state (must be 0) and at two
+   * distinct exit-3 states (must be 3) as well as at a drift (must be 2).
+   *
+   * ASYNCHRONOUSLY, deliberately. The toy registry is an http server on THIS process's
+   * event loop, so a synchronous spawnSync would block it and the child's packument fetch
+   * would time out — the child would report INDETERMINATE for a reason that has nothing to
+   * do with the code under test. (Measured: UND_ERR_HEADERS_TIMEOUT, and the half-open
+   * socket then poisoned the next in-process rung with ECONNRESET.)
+   */
+  const spawnGate = (extraArgs = [], {repoRoot = root, registryArg = registryUrl} = {}) =>
+    new Promise((resolve) => {
+      execFile(process.execPath, [
+        scriptPath,
+        '--lane=branch',
+        `--repo-root=${repoRoot}`,
+        `--registry=${registryArg}`,
+        '--scope=@toy',
+        '--no-cache',
+        '--no-build',
+        '--json',
+        ...extraArgs
+      ], {encoding: 'utf8', env: {...process.env, DRIFT_REGISTRY_TOKEN: 'selftest-token'}, maxBuffer: 64 * 1024 * 1024}, (error, stdout, stderr) => {
+        let doc = null
+        try {
+          doc = JSON.parse(stdout)
+        } catch (err) {
+          doc = {parseError: err.message}
+        }
+        resolve({status: error ? (typeof error.code === 'number' ? error.code : null) : 0, signal: error?.signal ?? null, stdout, stderr, doc})
+      })
+    })
+
+  const spawnTail = (run) =>
+    `spawned exit=${run.status} signal=${run.signal ?? 'none'} verdicts=${
+      JSON.stringify((run.doc?.rows ?? []).map((r) => `${r.name}:${r.verdict}`))
+    } stderr=${String(run.stderr).trim().split('\n').slice(-3).join(' / ')}`
 
   const check = (id, ok, detail) => {
     if (ok) {
@@ -1616,6 +2037,46 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
         row(warm, '@toy/leaf').verdict === 'CLEAN' &&
         row(cold, '@toy/leaf').referenceDigest === row(warm, '@toy/leaf').referenceDigest, 'warm cache changed the verdict or the reference digest')
 
+    // S17 — SPAWNED, AT A CLEAN TREE: the process MUST exit 0 (finding D3).
+    // The negative control for the whole exit boundary. Without it a gate hard-wired to a
+    // blocking status passes every other spawned assertion in this file while being
+    // useless — `process.exitCode = 2` is a one-token edit that S13 below cannot see,
+    // because S13 expects 2 anyway. The `exitalways2` mutation is exactly that edit.
+    const cleanRun = await spawnGate()
+    check('S17 the real process exits 0 at a clean tree', cleanRun.status === 0, spawnTail(cleanRun))
+    check('S17 the spawned document agrees the tree is clean', cleanRun.doc?.rows?.find((r) =>
+          r.name === '@toy/leaf'
+        )?.verdict === 'CLEAN' && cleanRun.doc?.exitCode === 0, spawnTail(cleanRun))
+
+    // S18 — SPAWNED, AGAINST A DEAD REGISTRY: the process MUST exit 3 (finding D3).
+    // "Could not tell" is not a pass (A2b), and until now that rule was only ever asserted
+    // on runGate's RETURN VALUE (S0, S5, S11). Nothing checked that exit 3 survives the
+    // process boundary, so `code === 3 ? 0 : code` — the single most dangerous edit this
+    // file admits, because it launders every unknown into green while DRIFT still blocks —
+    // left the entire suite passing. The `exitlaunder3` mutation is exactly that edit.
+    const deadRun = await spawnGate([], {registryArg: 'http://127.0.0.1:1/'})
+    check('S18 the real process exits 3 when the registry is unreachable', deadRun.status === 3, spawnTail(deadRun))
+    check('S18 the spawned document says INDETERMINATE, not CLEAN', deadRun.doc?.rows?.some((r) => r.verdict === 'INDETERMINATE') === true,
+      spawnTail(deadRun))
+
+    // S19 — SPAWNED, AT A WORKSPACE WITH NOTHING PUBLISHABLE: exit 3 (findings D2/X1b).
+    // "I inventoried nothing" must never render as "all clean". This is the shape of the
+    // silent total pass D1 measured on mantle-LifegamesPortal: every row SKIPPED, zero
+    // publishable, exit 0, on a repo with a live published package. The `emptyset`
+    // mutation removes the guard and only this rung notices.
+    const emptyRoot = buildEmptyFixture()
+    try {
+      const emptyRun = await spawnGate([], {repoRoot: emptyRoot})
+      check('S19 the real process exits 3 when nothing publishable is discovered', emptyRun.status === 3, spawnTail(emptyRun))
+      check('S19 the document names the verdict rather than reporting an empty pass', emptyRun.doc?.rows?.some((r) =>
+        r.verdict === 'NO_PUBLISHABLE_PACKAGES'
+      ) === true, spawnTail(emptyRun))
+      check('S19 the verdict enumerates every manifest found and why each was skipped',
+        /@toy\/internal/.test(emptyRun.doc?.rows?.find((r) => r.verdict === 'NO_PUBLISHABLE_PACKAGES')?.reason ?? ''), spawnTail(emptyRun))
+    } finally {
+      fs.rmSync(emptyRoot, {recursive: true, force: true})
+    }
+
     // S2 — payload change, NO bump. THE headline case.
     fs.writeFileSync(path.join(root, 'packages', 'leaf', 'src', 'index.js'), 'module.exports = 11\n')
     commitAll(root, 'edit leaf')
@@ -1624,43 +2085,16 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     check('S2 names the differing payload path', (row(result, '@toy/leaf').differingFiles ?? []).includes('dist/index.js'),
       `differingFiles=${JSON.stringify(row(result, '@toy/leaf').differingFiles)}`)
 
-    // S13 — THE PROCESS-EXIT BOUNDARY (finding X2). Every assertion above reads
-    // runGate()'s RETURN VALUE; not one of them observes what the process actually does.
-    // A one-line change at the exit-assignment site at the bottom of this file (assign 0
-    // instead of the computed code) therefore left the entire suite green while the gate
-    // exited 0 on the real drift S2 just created. This is the only rung that spawns the
-    // script as a real OS process and reads its actual status, and it is the only thing
-    // the `exitcode` mutation breaks.
+    // S13 — SPAWNED, AT A REAL DRIFT: the process MUST exit 2 (finding X2). The original
+    // exit-boundary rung, and still the one that proves a blocking verdict actually
+    // blocks; S17/S18/S19 above pin the other three exit classes so that no exit-mapping
+    // edit which merely PRESERVES 2 can hide behind it (finding D3).
     //
     // It doubles as the X8 regression: --json must put THE DOCUMENT AND NOTHING ELSE on
     // stdout. Before the fix, turbo's build log preceded it and JSON.parse threw.
-    // ASYNCHRONOUSLY, deliberately. The toy registry is an http server on THIS process's
-    // event loop, so a synchronous spawnSync would block it and the child's packument
-    // fetch would time out — the child would report INDETERMINATE for a reason that has
-    // nothing to do with the code under test. (Measured: UND_ERR_HEADERS_TIMEOUT, and the
-    // half-open socket then poisoned the next in-process rung with ECONNRESET.)
-    const spawned = await new Promise((resolve) => {
-      execFile(process.execPath, [
-        scriptPath,
-        '--lane=branch',
-        `--repo-root=${root}`,
-        `--registry=${registryUrl}`,
-        '--scope=@toy',
-        '--no-cache',
-        '--no-build',
-        '--json'
-      ], {encoding: 'utf8', env: {...process.env, DRIFT_REGISTRY_TOKEN: 'selftest-token'}, maxBuffer: 64 * 1024 * 1024}, (error, stdout, stderr) => {
-        resolve({status: error ? (typeof error.code === 'number' ? error.code : null) : 0, signal: error?.signal ?? null, stdout, stderr})
-      })
-    })
-    check('S13 the real process exits 2 on a real drift', spawned.status === 2,
-      `spawned exit=${spawned.status} signal=${spawned.signal ?? 'none'} stderr=${String(spawned.stderr).trim().split('\n').slice(-3).join(' / ')}`)
-    let spawnedDoc = null
-    try {
-      spawnedDoc = JSON.parse(spawned.stdout)
-    } catch (err) {
-      spawnedDoc = {parseError: err.message}
-    }
+    const spawned = await spawnGate()
+    check('S13 the real process exits 2 on a real drift', spawned.status === 2, spawnTail(spawned))
+    const spawnedDoc = spawned.doc
     check('S13 --json stdout is a parseable document and nothing else (X8)', spawnedDoc?.parseError === undefined,
       `JSON.parse(stdout) failed: ${spawnedDoc?.parseError} — first 80 bytes ${JSON.stringify(spawned.stdout.slice(0, 80))}`)
     const spawnedLeaf = spawnedDoc?.rows?.find((r) => r.name === '@toy/leaf')
@@ -1720,6 +2154,50 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     registry.publish('@toy/npmpub', '1.0.0', npmPackFixture(root, 'npmpub'))
     result = await gate({build: false})
     expect('S14 npm-published reference vs pnpm-packed head is CLEAN', result, '@toy/npmpub', 'CLEAN', 0)
+
+    // S15 — DISCOVERY MUST NOT DEPEND ON DECLARED MEMBERSHIP (findings D1/X1).
+    //
+    // Two independent ways a real, published package goes invisible, reproduced together:
+    //
+    //   (a) THE WORKSPACE FILE IS SETTINGS-ONLY and carries no `packages:` key at all.
+    //       That is not hypothetical — it is mantle-LifegamesPortal, verbatim. There,
+    //       `pnpm list -r --depth -1 --json` (this file's ONLY enumeration source until
+    //       now, whose doc comment called it "the authoritative workspace enumeration")
+    //       returns the PRIVATE ROOT ALONE, so its `packages/portal-contract` — a real,
+    //       published @j0nathan-ll0yd package — was never inventoried and the gate printed
+    //       "0 publishable package(s): nothing evaluated / exit 0".
+    //   (b) THE PACKAGE LIVES OUTSIDE EVERY DECLARED GLOB (`contracts/portal`, not
+    //       `packages/*`), so even a repo that does declare its members can still hide one.
+    //
+    // The union of declared globs and a full directory scan sees both, and the run is
+    // pointed at a package the registry serves with DIFFERENT bytes, so "discovered" is
+    // proven by a real DRIFT verdict rather than by the row merely existing. The
+    // `globonly` mutation restores the narrowing and this is the only rung that kills it.
+    fs.mkdirSync(path.join(root, 'contracts', 'portal', 'src'), {recursive: true})
+    writeJson(path.join(root, 'contracts', 'portal', 'package.json'), {
+      name: '@toy/portal',
+      version: '1.0.0',
+      files: ['src'],
+      publishConfig: {registry: registryUrl}
+    })
+    fs.writeFileSync(path.join(root, 'contracts', 'portal', 'src', 'index.js'), 'module.exports = "published"\n')
+    commitAll(root, 'add an undeclared package outside every workspace glob')
+    registry.publish('@toy/portal', '1.0.0', await packFixtureAt(root, path.join('contracts', 'portal')))
+    fs.writeFileSync(path.join(root, 'contracts', 'portal', 'src', 'index.js'), 'module.exports = "edited, never republished"\n')
+    // The settings-only workspace file, byte-for-byte the shape LP ships.
+    const savedWorkspaceFile = fs.readFileSync(path.join(root, 'pnpm-workspace.yaml'), 'utf8')
+    fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), 'nodeLinker: hoisted\nverifyDepsBeforeRun: false\n')
+    commitAll(root, 'settings-only workspace file, no packages: key')
+
+    result = await gate({build: false})
+    expect('S15 a package no workspace config declares is still discovered and evaluated', result, '@toy/portal', 'DRIFT', 2)
+    check('S15 the declared-glob source is UNIONED with the scan, not replaced by it', ['@toy/leaf', '@toy/dependent'].every((name) =>
+      row(result, name) !== undefined
+    ), `dropping the glob source would lose the declared members too — rows=${JSON.stringify(result.rows.map((r) => r.name))}`)
+
+    fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), savedWorkspaceFile)
+    fs.rmSync(path.join(root, 'contracts'), {recursive: true, force: true})
+    commitAll(root, 'restore the declared workspace file')
 
     // S6 — a bump whose source edit never reaches the payload. `docs/notes.md` is
     // outside files[] and is not one of npm's injected root files, so the packed
@@ -1884,11 +2362,35 @@ const MUTATIONS = {
     anchor: 'for (const name of PUBLISH_ONLY_SCRIPTS) {\n      delete canonical.scripts[name]\n    }',
     replacement: 'void PUBLISH_ONLY_SCRIPTS'
   },
-  // THE PROCESS-EXIT BOUNDARY (finding X2). Every other assertion in this file, and every
-  // unit test, reads runGate()'s return value — so this one line could be changed to
-  // `= 0` and the entire suite would stay green while the gate exited 0 on real drift.
-  // Only S13, which SPAWNS this file as a real process, reads the actual exit status.
-  exitcode: {scenario: 'S13', anchor: 'process.exitCode = code', replacement: 'process.exitCode = 0'}
+  // Restore the pnpm-list-only inventory of finding D1: discovery narrowed back to
+  // DECLARED workspace members, so a package no workspace config names is invisible. This
+  // is the mutant that reproduces the real mantle-LifegamesPortal silent exit 0.
+  globonly: {
+    scenario: 'S15',
+    anchor: 'const selected = selectPackageDirectories(manifestDirs.filter((dir) => !ignored.has(dir)), globs)',
+    replacement: 'const selected = manifestDirs.filter((dir) => !ignored.has(dir))\n' +
+      "    .filter((dir) => dir === '.' || globs.some((glob) => workspaceGlobToRegExp(glob).test(dir)))"
+  },
+  // Remove the empty-set guard, so "I inventoried nothing" renders as "all clean" again
+  // (finding D2/X1b) — the second half of the same silent total pass.
+  emptyset: {scenario: 'S19', anchor: "      verdict: 'NO_PUBLISHABLE_PACKAGES',", replacement: "      verdict: 'SKIPPED',"},
+  // ── The verdict -> exit mapping, pinned in BOTH directions (finding D3) ──────────
+  //
+  // All three mutants below edit the SAME one line at the bottom of this file. Before D3
+  // the only spawned rung was S13, which expects 2 — so any edit that PRESERVED 2 was
+  // invisible, and "the exit boundary is covered" was true of exactly one of four exit
+  // classes. Each mutant is killed by a different rung, and by only that rung.
+  //
+  // Direction 1: a blocking verdict laundered into a pass. Killed by S13 (drift -> 2).
+  exitcode: {scenario: 'S13', anchor: 'process.exitCode = code', replacement: 'process.exitCode = 0'},
+  // Direction 2: every verdict blocks. S13 still sees 2 and stays green, so this survived
+  // the whole suite while the gate blocked every clean push in the estate. Killed by S17.
+  exitalways2: {scenario: 'S17', anchor: 'process.exitCode = code', replacement: 'process.exitCode = EXIT_BLOCK'},
+  // Direction 3: THE DANGEROUS ONE. DRIFT still blocks — so the gate looks alive, S13 is
+  // green, and every "could not tell" (dead registry, missing token, unreadable manifest,
+  // nothing discovered) silently becomes a pass. This is A2b defeated at the process
+  // boundary rather than in the verdict logic. Killed by S18, and again by S19.
+  exitlaunder3: {scenario: 'S18', anchor: 'process.exitCode = code', replacement: 'process.exitCode = code === EXIT_INDETERMINATE ? EXIT_OK : code'}
 }
 // ---8<--- MUTATION TABLE END ---8<---
 
@@ -2021,8 +2523,9 @@ export function parseArgs(argv) {
       // never a pass, so this cannot be used to launder a green run.
       opts.registry = arg.slice('--registry='.length)
     } else if (arg.startsWith('--scope=')) {
-      // Same reason. `pnpm list --json` does not report publishConfig, so scope is the
-      // only classifier available to a spawned run over a fixture workspace.
+      // Same reason. Discovery reads publishConfig from the manifest now, but `--registry`
+      // overrides it (see classifyMember), so scope stays the classifier that decides which
+      // names a spawned run over a fixture workspace treats as this estate's own.
       opts.scope = arg.slice('--scope='.length)
     } else if (arg.startsWith('--lane=')) {
       opts.lane = arg.slice('--lane='.length)
@@ -2069,14 +2572,46 @@ async function main(argv) {
     log: opts.json ? () => {} : (line) => console.log(`[drift] ${line}`)
   })
   if (opts.json) {
-    console.log(JSON.stringify({specVersion: SPEC_VERSION, lane: result.lane, exitCode: result.exitCode, rows: result.rows}, null, 2))
+    console.log(
+      JSON.stringify({
+        specVersion: SPEC_VERSION,
+        lane: result.lane,
+        exitCode: result.exitCode,
+        discoveryErrors: result.discoveryErrors ?? [],
+        discoverySources: result.discoverySources ?? [],
+        rows: result.rows
+      }, null, 2)
+    )
   } else {
     report(result)
   }
   return result.exitCode
 }
 
-const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+/**
+ * SILENT-PASS-BY-NON-EXECUTION (finding D6). BOTH SIDES MUST BE REALPATH-RESOLVED.
+ *
+ * Node resolves symlinks when it loads an ES module, so `import.meta.url` is always the
+ * REAL path; `process.argv[1]` is whatever the caller typed and is NOT resolved. Comparing
+ * a raw argv[1] against a realpath therefore returns false for every symlinked
+ * invocation — and this file then loads, defines everything, runs nothing, prints nothing
+ * and exits 0. MEASURED before this fix: `node /tmp/drift-link.mjs --lane=branch
+ * --repo-root=<repo>` produced zero bytes of output and status 0.
+ *
+ * That is the worst failure mode a gate has: it is indistinguishable from a pass, and
+ * symlinked entry points are ordinary (a `node_modules/.bin` shim, a Homebrew-style
+ * wrapper, a vendored copy linked into a consumer repo). `fs.realpathSync` is applied to
+ * both sides, and a path that cannot be realpath'd (deleted mid-run) falls back to
+ * `path.resolve` rather than throwing at module scope.
+ */
+const realpath = (target) => {
+  try {
+    return fs.realpathSync(target)
+  } catch {
+    return path.resolve(target)
+  }
+}
+const invokedDirectly = Boolean(process.argv[1]) && realpath(process.argv[1]) === realpath(fileURLToPath(import.meta.url))
 if (invokedDirectly) {
   main(process.argv.slice(2)).then((code) => {
     process.exitCode = code
