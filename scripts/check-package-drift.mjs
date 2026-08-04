@@ -75,6 +75,18 @@
  * A2b: NO STATE MEANS "could not tell, so pass". Registry unreachable, missing auth,
  * integrity mismatch and pack failure are all INDETERMINATE / exit 3 in every lane.
  *
+ * THE SECOND QUESTION: DID THE PUBLIC SURFACE SHRINK?
+ * The payload comparison above cannot see a removed entry point — a shrunk `exports`
+ * map is a legitimate payload difference under a legitimate version bump, which is
+ * PENDING_PUBLISH / exit 0. @j0nathan-ll0yd/web@1.1.0, a package of this repo, removed
+ * the `./types/*` subpath and shipped as a MINOR with every gate green. The
+ * export-surface rule (spec v1, see the SURFACE_SPEC_VERSION block) compares the
+ * `exports` subpath KEYS of the packed payload against the same published reference the
+ * digest uses, sizes the declared bump with CARET-RANGE semantics, and reports
+ * SURFACE_BREAK — exit 2 in EVERY lane — when the declared bump is too small. It is
+ * defined by atlas/contracts/export-surface/reference.mjs and pinned by the 50 vendored
+ * vectors in scripts/fixtures/, not by this file.
+ *
  * Usage:
  *   node scripts/check-package-drift.mjs [--lane=branch|pre-push|post-publish]
  *                                        [--json] [--strict-maps] [--no-cache]
@@ -122,6 +134,15 @@ export const SPEC_VERSION = 3
  * Re-vendor and update this constant in the SAME change.
  */
 export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924cc3f1eeda6fc2fd10c6fb88ce'
+
+/**
+ * sha256 of scripts/fixtures/export-surface-conformance.json, vendored verbatim from
+ * atlas/contracts/export-surface/. Same discipline, same reason, DIFFERENT NUMBER: the
+ * export-surface rule and the payload digest change for different reasons, so they carry
+ * independent spec versions and independent checksums. Re-vendor and update this constant
+ * in the SAME change.
+ */
+export const EXPORT_SURFACE_CONFORMANCE_SHA256 = '725d704acf1bbc50b3393a76da058a853bb975c8c0cf9227e0cd55ff1bb09818'
 
 export const DEFAULT_REGISTRY = 'https://npm.pkg.github.com'
 export const DEFAULT_SCOPE = '@j0nathan-ll0yd'
@@ -524,6 +545,276 @@ export function compareSemver(a, b) {
 }
 
 export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Export-surface compatibility (spec v1)
+//
+// THE GAP THIS CLOSES — MEASURED 2026-08-04, NOT HYPOTHESISED. Everything above
+// answers ONE question: "does the payload we would publish differ from the payload
+// already published?" It never asks "did the PUBLIC SURFACE shrink?", so a removed
+// export ships green under ANY version bump.
+//
+// `@j0nathan-ll0yd/web@1.1.0` — a package of THIS repo — removed the `./types/*`
+// subpath from its `exports` map and shipped as a MINOR. Every gate in the estate
+// passed, and correctly so by its own rules: the payload legitimately differed and
+// the version was legitimately ahead of the registry, which is PENDING_PUBLISH —
+// exit 0 on a branch. Nothing anywhere was red. A consumer on `^1.0.0` picked up
+// 1.1.0 on its next install and lost an entry point.
+//
+// SCOPE IS LEVEL 1 (subpath KEYS) AND THAT IS A MEASURED DECISION, not laziness.
+// Level 2 — enumerating the named exports behind each entry point — was probed
+// against all 24 published packages in the estate and is deterministic but not yet
+// gateable: 121 of the estate's 253 concrete subpaths are .css/.json/.md assets with
+// no export surface at all, and 28 are .astro components whose implicit `default`
+// a TypeScript parse reports as zero exports — a SILENTLY WRONG answer. Treating
+// those honestly puts 11.9% of subpaths at INDETERMINATE, which would block 5 of 24
+// packages permanently. See atlas decision 0020 and the reference's header.
+//
+// THE RULE IS NOT DEFINED HERE. It is defined in atlas/contracts/export-surface/
+// reference.mjs and pinned by the 50 vectors vendored into scripts/fixtures/. This
+// is one of three implementations that must reproduce those vectors exactly; the
+// estate has already paid once for three hand-written copies of a shared rule
+// diverging silently (findings X3 and X7).
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * SAME NUMBER <=> IDENTICAL VERDICTS, for every input.
+ *
+ * Bump if and only if the surface or bump classification changes for ANY input: the
+ * surface kinds, the cross-kind reconciliation, the delta rule, or the bump sizing. Do NOT
+ * bump for reporting, plumbing or caching. A bump is atomic across the estate: regenerate
+ * the fixture in atlas, re-vendor it here and into mantle, and move all three numbers in
+ * the same change. The vendored runner asserts `specVersion === fixture.specVersion` as
+ * case zero, so a rule change without a bump cannot pass conformance anywhere.
+ *
+ * Deliberately INDEPENDENT of SPEC_VERSION above: the two schemes change for different
+ * reasons, and coupling them would force reference-cache invalidation for unrelated edits.
+ */
+export const SURFACE_SPEC_VERSION = 1
+
+/** Ordered weakest to strongest. `BUMP_ORDER.indexOf` is the comparison. */
+export const BUMP_ORDER = Object.freeze(['none', 'patch', 'minor', 'major'])
+
+const bumpRank = (level) => BUMP_ORDER.indexOf(level)
+
+/**
+ * The verdicts this rule is applied over: a successfully-compared pair, where a reference
+ * surface genuinely exists and describes the SAME artifact the payload digest compared
+ * against. NEVER_PUBLISHED has no reference surface to shrink from, and VERSION_REGRESSION
+ * is a more fundamental defect in the same exit class — neither is second-guessed here.
+ */
+export const SURFACE_APPLICABLE_VERDICTS = new Set(['CLEAN', 'DRIFT', 'PENDING_PUBLISH', 'BUMP_NOT_NEEDED'])
+
+/**
+ * How a package declares what consumers may import: `exports-map`, `legacy` or `unreadable`.
+ *
+ * `legacy` is a REAL, determinable state, not a failure — a package with no `exports` field
+ * lets Node resolve any file inside it. Both sides `legacy` means "surface unchanged", not
+ * "surface unknown", so `main`-only packages stay quiet instead of blocking.
+ *
+ * Every branch is total: no throw, no silent default. An input this cannot classify becomes
+ * `unreadable` WITH A REASON, and the caller must escalate that to INDETERMINATE (exit 3).
+ * "I could not read the surface" is never a pass — that is the estate's A2b rule, and it is
+ * the same rule that already governs an unreachable registry twenty lines further down.
+ *
+ * @param {string|null|undefined} manifestText the packed payload's top-level package.json
+ * @returns {{kind: 'exports-map'|'legacy'|'unreadable', subpaths: string[], detail: string|null}}
+ */
+export function readExportSurface(manifestText) {
+  if (typeof manifestText !== 'string') {
+    return {kind: 'unreadable', subpaths: [], detail: `the payload contains no ${MANIFEST_ENTRY}`}
+  }
+  let parsed
+  try {
+    parsed = JSON.parse(manifestText)
+  } catch (error) {
+    return {kind: 'unreadable', subpaths: [], detail: `${MANIFEST_ENTRY} is not parseable JSON: ${error?.message ?? String(error)}`}
+  }
+  if (!isPlainObject(parsed)) {
+    return {kind: 'unreadable', subpaths: [], detail: `${MANIFEST_ENTRY} is not a JSON object`}
+  }
+  if (!('exports' in parsed) || parsed.exports === undefined) {
+    return {kind: 'legacy', subpaths: [], detail: null}
+  }
+  const exportsField = parsed.exports
+  if (exportsField === null) {
+    // `"exports": null` is valid and blocks every specifier, including '.'. An EMPTY surface.
+    return {kind: 'exports-map', subpaths: [], detail: null}
+  }
+  if (typeof exportsField === 'string' || Array.isArray(exportsField)) {
+    // Sugar for `{".": <target>}` — one subpath, and only one.
+    return {kind: 'exports-map', subpaths: ['.'], detail: null}
+  }
+  if (!isPlainObject(exportsField)) {
+    return {kind: 'unreadable', subpaths: [], detail: `"exports" is a ${typeof exportsField}, which Node does not accept`}
+  }
+  const keys = Object.keys(exportsField)
+  if (keys.length === 0) {
+    return {kind: 'exports-map', subpaths: [], detail: null}
+  }
+  const subpathKeys = keys.filter((key) => key.startsWith('.'))
+  if (subpathKeys.length === keys.length) {
+    // Sorted, so manifest key ORDER can never move a verdict — pnpm reorders keys when it
+    // packs, which is the same reason canonicalize() exists for the digest.
+    return {kind: 'exports-map', subpaths: [...subpathKeys].sort(), detail: null}
+  }
+  if (subpathKeys.length === 0) {
+    // The conditions form (`{"import": ..., "require": ...}`) is sugar for '.' with conditions.
+    return {kind: 'exports-map', subpaths: ['.'], detail: null}
+  }
+  // Node rejects a mixed object outright ("Invalid package config ... cannot contain some
+  // keys starting with '.' and some not"). Guessing which half was meant would be inference,
+  // so this is the one shape the reader refuses.
+  return {
+    kind: 'unreadable',
+    subpaths: [],
+    detail: `"exports" mixes ${subpathKeys.length} subpath key(s) with ${keys.length - subpathKeys.length} condition key(s), ` +
+      'which Node rejects as an invalid package config'
+  }
+}
+
+/**
+ * The export surface of a PACKED PAYLOAD — the adapter between this engine's tarball
+ * representation (Map<path, Buffer>, from readTarball) and the shared rule, which is
+ * defined over the manifest TEXT.
+ *
+ * A payload with no top-level `package.json` yields `unreadable`, not `legacy`: npm injects
+ * the manifest at the package root unconditionally, so its absence means the tarball is not
+ * what it claims to be, and that is a "could not tell", not "no exports map".
+ */
+export function surfaceOfPayload(files) {
+  const bytes = files.get(MANIFEST_ENTRY)
+  return readExportSurface(bytes === undefined ? null : bytes.toString('utf8'))
+}
+
+/**
+ * The bump the delta between two surfaces REQUIRES.
+ *
+ *   removed subpath -> MAJOR      added subpath -> MINOR      neither -> nothing imposed
+ *
+ * The two cross-kind cases are deterministic rather than guesses, and both follow from what
+ * a consumer can actually import:
+ *
+ *   legacy -> exports-map   introducing an `exports` map REVOKES deep-import access to every
+ *                           file that is not listed. That is a removal: MAJOR. (It is the
+ *                           most commonly shipped accidental breaking change on npm.)
+ *   exports-map -> legacy   removing the map restores unbounded access. Additive: MINOR.
+ *
+ * `required: null` means a side was unreadable. It is NOT "no requirement" — the caller must
+ * turn it into INDETERMINATE.
+ */
+export function surfaceDelta(reference, candidate) {
+  if (reference.kind === 'unreadable' || candidate.kind === 'unreadable') {
+    const sides = []
+    if (reference.kind === 'unreadable') {
+      sides.push(`reference: ${reference.detail ?? 'unreadable'}`)
+    }
+    if (candidate.kind === 'unreadable') {
+      sides.push(`candidate: ${candidate.detail ?? 'unreadable'}`)
+    }
+    return {required: null, removed: [], added: [], detail: sides.join('; ')}
+  }
+  if (reference.kind === 'legacy' && candidate.kind === 'legacy') {
+    return {required: 'none', removed: [], added: [], detail: null}
+  }
+  if (reference.kind === 'legacy') {
+    return {
+      required: 'major',
+      removed: [],
+      added: [...candidate.subpaths],
+      detail: `the published version declared no "exports" map, so consumers could deep-import any file; declaring ${candidate.subpaths.length} ` +
+        'subpath(s) revokes access to everything else'
+    }
+  }
+  if (candidate.kind === 'legacy') {
+    return {required: 'minor', removed: [], added: [], detail: 'the "exports" map was removed entirely, restoring unbounded deep-import access (additive)'}
+  }
+  const referenceSet = new Set(reference.subpaths)
+  const candidateSet = new Set(candidate.subpaths)
+  const removed = reference.subpaths.filter((subpath) => !candidateSet.has(subpath)).sort()
+  const added = candidate.subpaths.filter((subpath) => !referenceSet.has(subpath)).sort()
+  if (removed.length > 0) {
+    return {required: 'major', removed, added, detail: null}
+  }
+  if (added.length > 0) {
+    return {required: 'minor', removed, added, detail: null}
+  }
+  return {required: 'none', removed, added, detail: null}
+}
+
+/** Release triple only. Prerelease and build metadata are parsed and then ignored. */
+function surfaceTriple(value) {
+  const parsed = parseSemver(String(value ?? '').trim())
+  return parsed === null ? null : {major: parsed.major, minor: parsed.minor, patch: parsed.patch}
+}
+
+/**
+ * The strongest compatibility promise the move `from` -> `to` breaks.
+ *
+ * CARET-RANGE semantics, not naive field comparison, and the difference is load-bearing for
+ * 0.x packages: `^0.1.2` resolves `>=0.1.2 <0.2.0`, so 0.1.2 -> 0.2.0 breaks a consumer
+ * exactly as hard as 1.0.0 -> 2.0.0 does. Reading only the major field would let a 0.x
+ * package delete an export under a "minor" and pass — the same class of hole this whole rule
+ * exists to close. `^0.0.1` resolves `>=0.0.1 <0.0.2`, so nothing inside 0.0.x is compatible
+ * with anything else. This repo ships 0.x packages, so that branch is live, not theoretical.
+ *
+ * PRERELEASE IDENTIFIERS ARE IGNORED for the level: 1.0.0 -> 2.0.0-rc.1 crosses a major
+ * boundary and reads `major`; 1.0.0 -> 1.0.0-rc.1 crosses nothing and reads `none`. A
+ * prerelease tag cannot manufacture headroom the release triple does not have.
+ *
+ * `null` when either version is unparseable — an unknown bump can never CLEAR a requirement.
+ */
+export function bumpBetween(from, to) {
+  const left = surfaceTriple(from)
+  const right = surfaceTriple(to)
+  if (left === null || right === null) {
+    return null
+  }
+  if (left.major !== right.major) {
+    return 'major'
+  }
+  if (left.major === 0) {
+    if (left.minor !== right.minor) {
+      return 'major'
+    }
+    if (left.patch === right.patch) {
+      return 'none'
+    }
+    return left.minor === 0 ? 'major' : 'patch'
+  }
+  if (left.minor !== right.minor) {
+    return 'minor'
+  }
+  return left.patch === right.patch ? 'none' : 'patch'
+}
+
+/**
+ * Decide whether `declared` carries enough of a bump for the surface change against
+ * `referenceVersion`.
+ *
+ * `referenceVersion` is the version whose PUBLISHED tarball the surface was read from — the
+ * same reference the payload digest is compared against, so both halves of a row describe
+ * the same pair of artifacts. When the declared version is itself already published the two
+ * strings are equal, the declared bump is `none`, and ANY surface change breaks: moving the
+ * surface of a version already in the registry is a breaking change with no bump at all.
+ *
+ * @returns {{kind: 'ok'|'break', delta: object, declaredBump: string, required?: string}
+ *   | {kind: 'indeterminate', detail: string}}
+ */
+export function evaluateSurface({declared, referenceVersion, reference, candidate}) {
+  const delta = surfaceDelta(reference, candidate)
+  if (delta.required === null) {
+    return {kind: 'indeterminate', detail: `the export surface could not be read (${delta.detail || 'no detail'})`}
+  }
+  const declaredBump = bumpBetween(referenceVersion, declared)
+  if (declaredBump === null) {
+    return {kind: 'indeterminate', detail: `cannot size the bump from ${referenceVersion} to ${declared}: one of them is not semver`}
+  }
+  if (bumpRank(declaredBump) >= bumpRank(delta.required)) {
+    return {kind: 'ok', delta, declaredBump}
+  }
+  return {kind: 'break', delta, declaredBump, required: delta.required}
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Step 0 — Discovery (package-manager-agnostic, no history)
@@ -1310,6 +1601,14 @@ export function exitClassFor(verdict, lane) {
     case 'VERSION_REGRESSION':
     case 'LEAKED_ARTIFACT':
       return EXIT_BLOCK
+    case 'SURFACE_BREAK':
+      // BLOCKING IN EVERY LANE, deliberately — unlike PENDING_PUBLISH above, which is the
+      // state this defect hid inside. The lane changes SEVERITY, never a verdict, and there
+      // is no lane in which shipping a removed entry point under an insufficient bump is
+      // acceptable: by the time the post-publish lane runs, consumers on a caret range have
+      // already resolved the tarball that lost the subpath. `@j0nathan-ll0yd/web@1.1.0` was
+      // PENDING_PUBLISH / exit 0 on the branch that shipped it.
+      return EXIT_BLOCK
     case 'INDETERMINATE':
     case 'NO_PUBLISHABLE_PACKAGES':
       // "I could not tell" and "I inventoried nothing" are the same class of answer, and
@@ -1331,30 +1630,55 @@ function cacheFile(repoRoot, name, version) {
   return path.join(repoRoot, 'node_modules', '.cache', 'pkg-drift', `v${SPEC_VERSION}`, `${sha256(`${name}@${version}`)}.json`)
 }
 
-function readCache(repoRoot, name, version) {
+/**
+ * THE REFERENCE SURFACE IS CACHED ALONGSIDE THE REFERENCE DIGESTS, not fetched separately.
+ * Both are read out of the same immutable published tarball, so caching one and not the
+ * other would mean downloading it twice — or, worse, tempt a later edit into reading the
+ * surface from something that is not the reference at all.
+ *
+ * THE SPEC_VERSION KEY IS DELIBERATELY NOT BUMPED FOR THIS. That number means "the digest
+ * bytes changed", and they have not: every cached digest written before this change is still
+ * exactly correct. Bumping it would discard a valid estate-wide cache to express something
+ * it does not mean. Narrowing on the SHAPE is what makes that safe — an entry written before
+ * the field existed fails the check below and is refetched, which costs one download and can
+ * never produce a wrong answer. `surfaceSpecVersion` is checked too, so a future surface-rule
+ * bump invalidates surfaces without touching digests.
+ */
+const cachedSurfaceIsUsable = (surface) => isPlainObject(surface) && typeof surface.kind === 'string' && Array.isArray(surface.subpaths)
+
+export function readCache(repoRoot, name, version) {
   try {
     const parsed = JSON.parse(fs.readFileSync(cacheFile(repoRoot, name, version), 'utf8'))
-    if (parsed.specVersion !== SPEC_VERSION) {
+    if (parsed.specVersion !== SPEC_VERSION || parsed.surfaceSpecVersion !== SURFACE_SPEC_VERSION) {
+      return null
+    }
+    if (!cachedSurfaceIsUsable(parsed.surface)) {
       return null
     }
     // The per-file digests are Maps in memory and plain objects on disk.
-    return {strictPerFile: new Map(Object.entries(parsed.strictPerFile)), effectivePerFile: new Map(Object.entries(parsed.effectivePerFile))}
+    return {
+      strictPerFile: new Map(Object.entries(parsed.strictPerFile)),
+      effectivePerFile: new Map(Object.entries(parsed.effectivePerFile)),
+      surface: {kind: parsed.surface.kind, subpaths: [...parsed.surface.subpaths], detail: parsed.surface.detail ?? null}
+    }
   } catch {
     return null
   }
 }
 
-function writeCache(repoRoot, name, version, {strictPerFile, effectivePerFile}) {
+export function writeCache(repoRoot, name, version, {strictPerFile, effectivePerFile, surface}) {
   try {
     const file = cacheFile(repoRoot, name, version)
     fs.mkdirSync(path.dirname(file), {recursive: true})
     fs.writeFileSync(file,
       JSON.stringify({
         specVersion: SPEC_VERSION,
+        surfaceSpecVersion: SURFACE_SPEC_VERSION,
         name,
         version,
         strictPerFile: Object.fromEntries(strictPerFile),
-        effectivePerFile: Object.fromEntries(effectivePerFile)
+        effectivePerFile: Object.fromEntries(effectivePerFile),
+        surface
       }))
   } catch {
     // A cache that cannot be written is not a gate failure.
@@ -1662,11 +1986,22 @@ export async function runGate({
             }
             if (!referenceFailed) {
               const ref = payloadDigests(refFiles)
-              reference = {version: referenceVersion, strictPerFile: ref.strictEntries, effectivePerFile: ref.effectiveEntries}
+              // The surface is read from the SAME tarball bytes as the digests, in the same
+              // pass, so the two halves of the row cannot describe different artifacts.
+              reference = {
+                version: referenceVersion,
+                strictPerFile: ref.strictEntries,
+                effectivePerFile: ref.effectiveEntries,
+                surface: surfaceOfPayload(refFiles)
+              }
               // Only the immutable published payload is cached; the packument never is,
               // so registry reachability is re-proven on every single run.
               if (useCache) {
-                writeCache(repoRoot, member.name, referenceVersion, {strictPerFile: reference.strictPerFile, effectivePerFile: reference.effectivePerFile})
+                writeCache(repoRoot, member.name, referenceVersion, {
+                  strictPerFile: reference.strictPerFile,
+                  effectivePerFile: reference.effectivePerFile,
+                  surface: reference.surface
+                })
               }
             }
           }
@@ -1687,16 +2022,62 @@ export async function runGate({
         advisories.push('cosmetic-only')
       }
 
+      // ── Step 7b — did the PUBLIC SURFACE shrink? ────────────────────────────
+      //
+      // Applied ONLY over a successfully-compared pair, and against the SAME
+      // `decision.referenceVersion` the payload digest used, so both halves of the row
+      // describe the same two artifacts. NEVER_PUBLISHED has no reference surface;
+      // VERSION_REGRESSION is a more fundamental defect in the same exit class.
+      let verdict = decision.verdict
+      let surfaceReason = null
+      let removedSubpaths = []
+      let addedSubpaths = []
+      let requiredBump = null
+      let declaredBump = null
+      if (SURFACE_APPLICABLE_VERDICTS.has(decision.verdict)) {
+        const outcome = evaluateSurface({
+          declared: member.version,
+          referenceVersion: decision.referenceVersion,
+          reference: reference.surface,
+          candidate: surfaceOfPayload(headFiles)
+        })
+        if (outcome.kind === 'indeterminate') {
+          // A2b, one level below the digest: "I could not read the public surface" is exit
+          // 3, NEVER a fall-through to whatever the payload comparison happened to say. A
+          // surface that cannot be read cannot be shown not to have shrunk.
+          verdict = 'INDETERMINATE'
+          surfaceReason = `the export surface could not be evaluated — ${outcome.detail}`
+        } else {
+          removedSubpaths = [...outcome.delta.removed]
+          addedSubpaths = [...outcome.delta.added]
+          requiredBump = outcome.delta.required
+          declaredBump = outcome.declaredBump
+          if (outcome.kind === 'break') {
+            verdict = 'SURFACE_BREAK'
+            surfaceReason = `the export surface changed in a way that requires a ${outcome.required.toUpperCase()} bump, but ` +
+              `${decision.referenceVersion} -> ${member.version} is a ${outcome.declaredBump} bump` +
+              (removedSubpaths.length > 0
+                ? `. Consumers importing ${removedSubpaths.map((subpath) => `"${subpath}"`).join(', ')} lose that entry point on their next install`
+                : `. ${outcome.delta.detail ?? ''}`)
+          }
+        }
+      }
+
       push({
         name: member.name,
         path: member.path,
         declared: member.version,
         referenceVersion: decision.referenceVersion,
-        verdict: decision.verdict,
+        verdict,
+        ...(surfaceReason ? {reason: surfaceReason} : {}),
         advisories,
         differingFiles: refCompare ? differingFiles(headEffectivePerFile, refCompare) : [],
         cosmeticPaths: [...headDeadMaps].sort(),
         leakedPaths: [],
+        removedSubpaths,
+        addedSubpaths,
+        requiredBump,
+        declaredBump,
         strictDigest,
         effectiveDigest,
         referenceDigest: refCompare ? digestOf(refCompare) : null
@@ -1725,7 +2106,7 @@ function report(result) {
   const evaluated = result.rows.filter((r) => r.verdict !== 'SKIPPED')
   const skipped = result.rows.filter((r) => r.verdict === 'SKIPPED')
 
-  console.log(`\npackage payload drift — lane=${result.lane}, spec v${SPEC_VERSION}\n`)
+  console.log(`\npackage payload drift — lane=${result.lane}, digest spec v${SPEC_VERSION}, export-surface spec v${SURFACE_SPEC_VERSION}\n`)
   for (const row of evaluated) {
     const ref = row.referenceVersion ? ` ref=${row.referenceVersion}` : ''
     const adv = row.advisories?.length ? `  [${row.advisories.join(', ')}]` : ''
@@ -1738,6 +2119,18 @@ function report(result) {
     }
     for (const file of row.leakedPaths ?? []) {
       console.log(`      leaked:  ${file}`)
+    }
+    // Printed whenever the surface MOVED, not only when it broke: an addition under a patch
+    // is legal and silent in the exit code, but a reader diffing two runs should still be
+    // able to see that the public surface is not what it was.
+    for (const subpath of row.removedSubpaths ?? []) {
+      console.log(`      export REMOVED: ${subpath}`)
+    }
+    for (const subpath of row.addedSubpaths ?? []) {
+      console.log(`      export added:   ${subpath}`)
+    }
+    if ((row.removedSubpaths?.length ?? 0) + (row.addedSubpaths?.length ?? 0) > 0) {
+      console.log(`      surface bump: requires ${row.requiredBump}, declared ${row.declaredBump}`)
     }
     if (row.advisories?.includes('cosmetic-only')) {
       for (const file of row.cosmeticPaths ?? []) {
@@ -2394,6 +2787,84 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     fs.rmSync(path.join(root, 'contracts'), {recursive: true, force: true})
     commitAll(root, 'restore the declared workspace file')
 
+    // S22 — DID THE PUBLIC SURFACE SHRINK? (the export-surface rule, spec v1)
+    //
+    // THE MEASURED GAP, and the reason this rung exists at all. Every scenario above
+    // compares PAYLOADS, and a removed entry point is invisible to that question: the
+    // payload legitimately differs and the version is legitimately ahead of the registry,
+    // which is PENDING_PUBLISH — exit 0 on a branch. @j0nathan-ll0yd/web@1.1.0, a package
+    // of THIS repo, removed the `./types/*` subpath from its exports map and shipped as a
+    // MINOR with every gate in the estate green; consumers on `^1.0.0` lost an entry point
+    // on their next install. S22b reproduces that shape end to end.
+    //
+    // S22c IS THE NEGATIVE CONTROL AND IT IS NOT OPTIONAL. The rule is a BUMP rule, not a
+    // ban on removing exports. A gate that blocked every surface change — or simply blocked
+    // everything — would pass S22b and look correct.
+    const surfaceDir = path.join(root, 'packages', 'surface')
+    const setSurface = (version, exportsField) =>
+      writeJson(path.join(surfaceDir, 'package.json'), {
+        name: '@toy/surface',
+        version,
+        files: ['src'],
+        exports: exportsField,
+        publishConfig: {registry: registryUrl}
+      })
+    const surfaceRow = (evaluated) => row(evaluated, '@toy/surface') ?? {}
+    fs.mkdirSync(path.join(surfaceDir, 'src', 'types'), {recursive: true})
+    fs.writeFileSync(path.join(surfaceDir, 'src', 'index.js'), 'module.exports = "surface"\n')
+    fs.writeFileSync(path.join(surfaceDir, 'src', 'types', 'thing.js'), 'module.exports = {}\n')
+    setSurface('1.0.0', {'.': './src/index.js', './types/*': './src/types/*.js'})
+    commitAll(root, 'add a package with a two-subpath export surface')
+    registry.publish('@toy/surface', '1.0.0', await packFixture(root, 'surface'))
+
+    result = await gate({build: false})
+    expect('S22 an unchanged surface is CLEAN', result, '@toy/surface', 'CLEAN', 0)
+    check('S22 an unchanged surface is QUIET — no subpath churn is reported',
+      (surfaceRow(result).removedSubpaths ?? []).length === 0 && (surfaceRow(result).addedSubpaths ?? []).length === 0,
+      `removed=${JSON.stringify(surfaceRow(result).removedSubpaths)} added=${JSON.stringify(surfaceRow(result).addedSubpaths)}`)
+
+    // S22b — THE REGRESSION, verbatim: drop a subpath and ship it as a MINOR.
+    setSurface('1.1.0', {'.': './src/index.js'})
+    commitAll(root, 'remove the ./types/* subpath under a minor')
+    result = await gate({build: false})
+    expect('S22b a removed subpath under a MINOR is SURFACE_BREAK', result, '@toy/surface', 'SURFACE_BREAK', 2)
+    check('S22b names the removed subpath and both bump levels',
+      (surfaceRow(result).removedSubpaths ?? []).includes('./types/*') && surfaceRow(result).requiredBump === 'major' &&
+        surfaceRow(result).declaredBump === 'minor',
+      `removed=${JSON.stringify(surfaceRow(result).removedSubpaths)} required=${surfaceRow(result).requiredBump} declared=${
+        surfaceRow(result).declaredBump
+      }`)
+    // The lane changes SEVERITY, never a verdict — and unlike PENDING_PUBLISH, which this
+    // defect hid inside, there is no lane in which a removed entry point under too small a
+    // bump is acceptable.
+    for (const surfaceLane of LANES) {
+      const laneResult = await gate({build: false, lane: surfaceLane})
+      expect(`S22b SURFACE_BREAK blocks in the ${surfaceLane} lane`, laneResult, '@toy/surface', 'SURFACE_BREAK', 2)
+    }
+
+    // S22c — THE NEGATIVE CONTROL. The SAME removal under a MAJOR must pass, and must leave
+    // the whole run at exit 0 — asserted explicitly, because `expect` only checks that the
+    // process code is at least as severe as the row's class and 0 is satisfied by anything.
+    setSurface('2.0.0', {'.': './src/index.js'})
+    commitAll(root, 'republish the same removal as the major it should have been')
+    result = await gate({build: false})
+    expect('S22c the SAME removal under a MAJOR passes', result, '@toy/surface', 'PENDING_PUBLISH', 0)
+    check('S22c a correctly-bumped removal leaves the whole run green', result.exitCode === 0,
+      `exitCode=${result.exitCode} — rows=${JSON.stringify(result.rows.map((r) => `${r.name}:${r.verdict}:${r.exitClass}`))}`)
+
+    // S22d — A2b AT THE SURFACE LAYER. `"exports": 42` is a shape Node does not accept, so
+    // the surface cannot be read at all. "I could not tell" is exit 3, never a fall-through
+    // to whatever the payload comparison happened to say — which here would be a pass.
+    setSurface('2.0.0', 42)
+    commitAll(root, 'an exports field no reader can classify')
+    result = await gate({build: false})
+    expect('S22d an unreadable export surface is INDETERMINATE', result, '@toy/surface', 'INDETERMINATE', 3)
+    check('S22d the row says WHY the surface could not be read', /export surface/.test(surfaceRow(result).reason ?? ''),
+      `reason=${JSON.stringify(surfaceRow(result).reason)}`)
+
+    fs.rmSync(surfaceDir, {recursive: true, force: true})
+    commitAll(root, 'remove the surface fixture package')
+
     // S6 — a bump whose source edit never reaches the payload. `docs/notes.md` is
     // outside files[] and is not one of npm's injected root files, so the packed
     // payload is byte-identical to the published 1.0.1: the bump would publish the
@@ -2601,7 +3072,30 @@ const MUTATIONS = {
   // green, and every "could not tell" (dead registry, missing token, unreadable manifest,
   // nothing discovered) silently becomes a pass. This is A2b defeated at the process
   // boundary rather than in the verdict logic. Killed by S18, and again by S19.
-  exitlaunder3: {scenario: 'S18', anchor: 'process.exitCode = code', replacement: 'process.exitCode = code === EXIT_INDETERMINATE ? EXIT_OK : code'}
+  exitlaunder3: {scenario: 'S18', anchor: 'process.exitCode = code', replacement: 'process.exitCode = code === EXIT_INDETERMINATE ? EXIT_OK : code'},
+  // ── The export-surface rule, pinned the same three ways (spec v1) ────────────────
+  //
+  // Compare the candidate surface against ITSELF instead of against the published
+  // reference. Every delta is then empty, nothing ever requires a bump, and the rule is a
+  // no-op that still prints, still reports fields and still looks wired in — the exact
+  // shape of the `selfref` mutant one layer up, which is the mutation the PREVIOUS
+  // generation of this gate could not see at all. Killed by S22b.
+  surfaceselfref: {scenario: 'S22b', anchor: 'reference: reference.surface,', replacement: 'reference: surfaceOfPayload(headFiles),'},
+  // Turn "I could not read the public surface" back into a pass — A2b defeated one layer
+  // below the digest. The row keeps whatever verdict the PAYLOAD comparison produced, so a
+  // package whose exports map is unreadable sails through as CLEAN or PENDING_PUBLISH.
+  // Killed by S22d.
+  surfaceindetpass: {scenario: 'S22d', anchor: "verdict = 'INDETERMINATE'", replacement: 'verdict = decision.verdict'},
+  // A bump sizer that always answers 'major'. THE SUBTLE ONE: the rule stays wired in, the
+  // reference is still the published tarball, the reporting is still correct — and because
+  // every declared bump now outranks every requirement, nothing can ever break. It is also
+  // the shape a naive "read the major field" implementation degenerates into for 0.x
+  // packages, which is why bumpBetween uses caret-range semantics. Killed by S22b.
+  surfacealwaysmajor: {
+    scenario: 'S22b',
+    anchor: 'export function bumpBetween(from, to) {',
+    replacement: "export function bumpBetween(from, to) {\n  return 'major'"
+  }
 }
 // ---8<--- MUTATION TABLE END ---8<---
 
@@ -2786,6 +3280,7 @@ async function main(argv) {
     console.log(
       JSON.stringify({
         specVersion: SPEC_VERSION,
+        surfaceSpecVersion: SURFACE_SPEC_VERSION,
         lane: result.lane,
         exitCode: result.exitCode,
         discoveryErrors: result.discoveryErrors ?? [],
