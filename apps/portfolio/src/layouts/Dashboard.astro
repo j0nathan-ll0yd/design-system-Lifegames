@@ -285,13 +285,13 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <style is:global>
     @import '@j0nathan-ll0yd/tokens/css';
     @import '@j0nathan-ll0yd/tokens/compat';
-    @import '@j0nathan-ll0yd/tokens/components';
+    @import '@j0nathan-ll0yd/web/styles/components.css';
     @import '@j0nathan-ll0yd/tokens/effects';
-    @import '@j0nathan-ll0yd/tokens/layout';
+    @import '@j0nathan-ll0yd/web/styles/layout.css';
     @import '@j0nathan-ll0yd/tokens/base';
 
     /* Reset: universal `* { margin: 0 }` would unlayer-beat .right-panel's
-       margin-left: var(--left-width) in tokens/layout.css and collapse the
+       margin-left: var(--left-width) in web/styles/layout.css and collapse the
        layout. Instead reset margins explicitly on the standard text/list
        elements that ship with browser-default margins, and keep the
        universal box-sizing + padding reset which doesn't conflict. */

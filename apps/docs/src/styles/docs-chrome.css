@@ -11,8 +11,9 @@
 
    Specificity escalated with `body` prefix to win over the per-page
    `<style is:global>` blocks that already duplicate the .wd-* rules.
-   This file is loaded via `import '@j0nathan-ll0yd/tokens/docs-chrome'`
-   in each detail page wrapper.
+   This file is loaded via `import '@docs-styles/docs-chrome.css'` in each
+   detail page wrapper. It is app-private: apps/docs is its only consumer, so
+   it deliberately is NOT a published subpath of any package.
 
    All recommendations from /tmp/parity-design-review.md (12 total).
    ================================================================= */

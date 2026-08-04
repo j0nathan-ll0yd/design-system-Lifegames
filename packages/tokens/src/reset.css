@@ -6,8 +6,9 @@
    Critically: this MUST NOT use a universal `* { margin: 0; padding: 0 }`
    reset. Un-layered styles win over layered styles regardless of specificity,
    so a universal margin/padding reset would clobber `.right-panel`'s
-   `margin-left: var(--left-width)` in `tokens/layout.css` (which lives inside
-   `@layer lifegames { @layer layout }`) and collapse the dashboard layout —
+   `margin-left: var(--left-width)` in `@j0nathan-ll0yd/web/styles/layout.css`
+   (which lives inside `@layer lifegames { @layer layout }`) and collapse the
+   dashboard layout —
    the BIO/profile fixed panel ends up overlapping the BODY column.
 
    Instead: keep the universal selector for `box-sizing` (no widget depends

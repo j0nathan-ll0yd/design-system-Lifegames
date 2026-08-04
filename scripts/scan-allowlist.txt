@@ -302,7 +302,6 @@ packages/tokens/CHANGELOG.md:marker:j0nathan-ll0yd
 packages/tokens/__tests__/golden/dist/DESIGN.md:marker:j0nathan-ll0yd
 packages/tokens/package.json:marker:j0nathan-ll0yd
 packages/tokens/src/animations.css:marker:j0nathan-ll0yd
-packages/tokens/src/docs-chrome.css:marker:j0nathan-ll0yd
 packages/tokens/src/preamble.css:marker:j0nathan-ll0yd
 packages/tokens/src/reset.css:marker:j0nathan-ll0yd
 packages/web/CHANGELOG.md:marker:j0nathan-ll0yd

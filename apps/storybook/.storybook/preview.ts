@@ -1,6 +1,6 @@
 import '@j0nathan-ll0yd/tokens/css'
 import '@j0nathan-ll0yd/tokens/compat'
-import '@j0nathan-ll0yd/tokens/components'
+import '@j0nathan-ll0yd/web/styles/components.css'
 import '@j0nathan-ll0yd/tokens/animations'
 import '@j0nathan-ll0yd/tokens/shadcn'
 // Primitive component CSS. Stories hand-render the markup with lit rather than

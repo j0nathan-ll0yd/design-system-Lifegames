@@ -31,12 +31,14 @@ export default defineConfig({
         '../../packages/tokens/src/preamble.css',
         // Layered tokens variant (wrapped in @layer lifegames > tokens)
         '../../packages/tokens/dist/tokens-layered.css',
-        // Source CSS files (all wrapped in @layer lifegames > <name> as of Step 5)
+        // Source CSS files (all wrapped in @layer lifegames > <name> as of Step 5).
+        // components.css/layout.css style the @j0nathan-ll0yd/web components, so they
+        // ship from that package rather than from tokens.
         '../../packages/tokens/src/fonts.css',
         '../../packages/tokens/src/compat.css',
-        '../../packages/tokens/src/components.css',
+        '../../packages/web/src/styles/components.css',
         '../../packages/tokens/src/effects.css',
-        '../../packages/tokens/src/layout.css',
+        '../../packages/web/src/styles/layout.css',
         '../../packages/tokens/src/base.css',
         // Web package styles (intentionally unlayered — overrides DS defaults)
         '../../packages/web/src/styles/a11y.css',
@@ -122,6 +124,8 @@ export default defineConfig({
         '@components': path.resolve(__dirname, '../../packages/web/src/components'),
         '@fixtures': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets'),
         '@islands': path.resolve(__dirname, '../../packages/web/src/islands'),
+        '@styles': path.resolve(__dirname, '../../packages/web/src/styles'),
+        '@docs-styles': path.resolve(__dirname, './src/styles'),
         '@runtime': path.resolve(__dirname, '../../packages/web/src/runtime')
       }
     }

@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/tokens",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -22,28 +22,22 @@
     "./json": "./dist/tokens.json",
     "./design-md": "./dist/DESIGN.md",
     "./animations": "./src/animations.css",
-    "./components": "./src/components.css",
     "./effects": "./src/effects.css",
-    "./layout": "./src/layout.css",
     "./base": "./src/base.css",
     "./reset": "./src/reset.css",
     "./compat": "./src/compat.css",
     "./fonts": "./src/fonts.css",
-    "./docs-chrome": "./src/docs-chrome.css",
     "./shadcn": "./dist/shadcn.css",
     "./m3": "./dist/m3.css"
   },
   "files": [
     "dist",
     "src/animations.css",
-    "src/components.css",
     "src/effects.css",
-    "src/layout.css",
     "src/base.css",
     "src/reset.css",
     "src/compat.css",
     "src/fonts.css",
-    "src/docs-chrome.css",
     "src/preamble.css"
   ],
   "scripts": {
