@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/web",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -23,10 +23,6 @@
     "./runtime/*": {
       "types": "./src/runtime/*.ts",
       "import": "./src/runtime/*.ts"
-    },
-    "./types/*": {
-      "types": "./src/types/*.ts",
-      "import": "./src/types/*.ts"
     },
     "./islands/*": "./src/islands/*",
     "./styles/*": "./src/styles/*",

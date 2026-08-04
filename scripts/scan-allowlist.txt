@@ -310,11 +310,14 @@ packages/web/scripts/audit-inline-scripts.mjs:marker:j0nathan-ll0yd
 packages/web/src/astro-shim.d.ts:marker:j0nathan-ll0yd
 packages/web/src/components/Modal.astro:marker:j0nathan-ll0yd
 packages/web/src/production/HeartRate.astro:marker:j0nathan-ll0yd
+packages/web/src/runtime/adapters.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/book-modal-init.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/heart-rate.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/input-modality.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/location-types.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/place-leaderboard-init.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/reading-feed-init.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/theatre-init.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/updaters-leaderboard-variations.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/updaters-movement.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/updaters-theatre.ts:marker:j0nathan-ll0yd
@@ -369,6 +372,8 @@ packages/web/src/widgets/reading/ReadingFeed.astro:marker:j0nathan-ll0yd
 packages/web/src/widgets/reading/ReadingFeed.types.ts:marker:j0nathan-ll0yd
 packages/web/src/widgets/reading/TheatreReviews.astro:marker:j0nathan-ll0yd
 packages/web/src/widgets/reading/TheatreReviews.types.ts:marker:j0nathan-ll0yd
+packages/web/tests/runtime/adapters.test.ts:marker:j0nathan-ll0yd
+packages/web/tests/runtime/updaters-focus.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-movement.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-theatre.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters.test.ts:marker:j0nathan-ll0yd

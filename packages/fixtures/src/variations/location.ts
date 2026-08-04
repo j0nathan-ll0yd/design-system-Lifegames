@@ -1,4 +1,4 @@
-import type {LocationExport} from '@j0nathan-ll0yd/web/types/exports'
+import type {LocationExport} from '@j0nathan-ll0yd/web/runtime/location-types'
 import {createLocationFixture} from '../factories/location'
 import {isoDate, last90DaysEntries} from '../factories/helpers'
 

@@ -1,4 +1,4 @@
-import type {LocationExport} from '../types/exports'
+import type {LocationExport} from './location-types'
 
 const TRACKING_START = new Date('2026-03-02T00:00:00').getTime()
 

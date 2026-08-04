@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {updateFocusOverlay} from '../../src/runtime/updaters-focus'
-import type {FocusExport} from '../../src/types/exports'
+import type {FocusExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 function setup() {
   document.body.innerHTML = `
