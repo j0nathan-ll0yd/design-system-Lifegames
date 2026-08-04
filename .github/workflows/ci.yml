@@ -79,6 +79,109 @@ jobs:
         env:
           CONTRACT_CHECK_MODE: blocking
 
+  package-version-drift:
+    # C147. Catches "a published package's payload changed but nobody bumped that
+    # package's version". No other gate sees it: typecheck, lint and tests all
+    # pass, and `changeset publish` SILENTLY SKIPS any version already on the
+    # registry and exits 0 — so consumers just never receive the change.
+    #
+    # THE STATUS CONTEXT TO REQUIRE IN BRANCH PROTECTION IS `package-version-drift`
+    # (the job id, identical in mantle/LP/OMD so one set of gh commands covers the
+    # estate). Today the job is advisory here: this is the repo holding the live
+    # drifts, and a red gate is still mergeable until the context is required.
+    #
+    # No fetch-depth: 0. The previous generation walked each manifest's own commit
+    # history to find the version-setting commit, so it needed the full history
+    # (and a shallow graft boundary looked exactly like a real root commit — a
+    # silent total pass). The check is now CONTENT-BASED: it compares the payload
+    # this checkout would publish against the payload already published under the
+    # declared version. The only git it does is one `git ls-files` per package for
+    # the leak screen, which is depth-independent.
+    #
+    # It DOES now need an install and a build (the payload includes dist/), and a
+    # registry token — GitHub Packages returns E401 even for public packages, so
+    # there is no anonymous fallback and a missing token is INDETERMINATE/exit 3,
+    # never a pass.
+    #
+    # FORK PRs (finding D12). This job deliberately carries NO job-level `if:`, unlike its
+    # thirteen siblings in this file. They may skip; a gate intended to be a REQUIRED
+    # status context may not, because GITHUB REPORTS A SKIPPED JOB AS SATISFYING A REQUIRED
+    # CHECK. Requiring `package-version-drift` while it skips on fork PRs would therefore
+    # buy nothing on exactly the pull requests a maintainer has least reason to trust: the
+    # context would go green having measured nothing. That is the "I could not tell, so
+    # pass" laundering the engine itself refuses to do at the verdict layer (a dead
+    # registry, a missing token or an empty inventory are all exit 3, never 0), and it must
+    # not be reintroduced at the workflow layer.
+    #
+    # It genuinely CANNOT measure fork-PR code: it runs on SELF-HOSTED runners and its
+    # measurement is `pnpm install` + a real workspace build + `pnpm pack`, i.e. arbitrary
+    # execution of the pull request's code on this estate's own hardware with a GitHub
+    # Packages token in the environment. So it runs and fails LOUDLY instead. The refusal
+    # is the FIRST step and precedes `actions/checkout`, so no fork-controlled byte is ever
+    # fetched, let alone executed — for a `pull_request` event the workflow definition
+    # itself comes from the base branch, so the self-hosted runner only ever echoes.
+    #
+    # A maintainer clears it by pushing the branch to this repository, which is what they
+    # must do to land it in any case. If that trade is ever judged wrong, the one-line
+    # revert is to restore the sibling `if:` — but then this context MUST NOT be added to
+    # branch protection, because a required-and-skippable check is worse than no check.
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - name: Refuse to measure fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=package-version-drift cannot evaluate a fork PR::This gate builds and packs the workspace on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check - it would claim 'no drift' having measured nothing. Push the branch to this repository and re-run."
+          exit 1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      # D4 — THE SHARED DIGEST CONTRACT, AND IT RAN IN NO WORKFLOW AT ALL.
+      # scripts/check-package-drift.test.mjs carries the 34 cross-implementation
+      # conformance vectors vendored from atlas/contracts/package-digest/, AND the
+      # Layer-1 assertion that the vendored fixture still hashes to
+      # DRIFT_CONFORMANCE_SHA256 — the check that makes vendoring safe rather than
+      # merely convenient. It was reachable only through `pnpm test:scripts`, which
+      # appears in .husky/pre-push and in no workflow on any event, so this repo
+      # could diverge from the canonical normalization rule with all 20 CI checks
+      # green and only a local pre-push hook standing between that and a merge.
+      # It is 52 assertions in ~70 ms and runs FIRST: a digest rule that no longer
+      # agrees with the estate makes every verdict below meaningless.
+      - name: Digest conformance + unit suite (34 shared vectors, fixture checksum)
+        run: node --test scripts/check-package-drift.test.mjs
+      # A2b — a gate that can never fail is as dangerous as one that never runs.
+      # --self-test stands up a throwaway git repo and an offline registry, runs
+      # the SHIPPED pipeline end to end against them, and then re-runs it under
+      # thirteen deliberate SOURCE-TEXT mutations, failing if any survives.
+      #
+      # Four of those thirteen cross the PROCESS boundary, and that number is the
+      # point (finding D3). Every in-process assertion reads the pipeline's return
+      # value, so the exit site itself was untested and a one-line change there kept
+      # the whole suite green while the gate exited 0 on real drift (finding X2).
+      # One spawned rung was not enough either: it asserted only DRIFT -> 2, so any
+      # edit that PRESERVED 2 stayed invisible. S13/S17/S18/S19 now spawn the script
+      # as a real OS process at a drift, a clean tree, a dead registry and an empty
+      # inventory, pinning exits 2/0/3/3 — MEASURED: with `process.exitCode` rewritten
+      # to launder exit 3 into 0, the previous suite reported "self-test passed, all
+      # 9 mutations killed" while every "could not tell" became a pass.
+      #
+      # It requires npm on PATH as well as pnpm — S14 seeds the toy registry with
+      # `npm pack` to reproduce the npm-publish/pnpm-pack manifest asymmetry
+      # (finding X3) end to end.
+      - name: Known-answer self-test (must prove it can fail)
+        run: node scripts/check-package-drift.mjs --self-test
+      - name: Package payload drift
+        run: node scripts/check-package-drift.mjs --lane=branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   copy:
     # @j0nathan-ll0yd/copy: build (validate rich + derive flat + codegen TS/Zod/Swift),
     # unit tests (Ajv + ICU MF1 parse + maxChars + flat round-trip), and the D9

@@ -18,6 +18,24 @@ and this package adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   location previews, S98): `visit-timeline.schema.json`,
   `saved-places.schema.json`, `place-search-results.schema.json`.
 
+## [1.0.1]
+
+### Fixed
+
+- `scripts/validate.ts` (a `files[]` entry, so it ships in the tarball): the
+  consumer-invocation banner still told readers to run the validator "via
+  yalc/npm package". yalc was retired in #153; it now says "via the published
+  npm package". Comment-only — no validation behaviour changes.
+
+  Published 1.0.0 predates that edit, so every consumer of `@j0nathan-ll0yd/schemas`
+  is still resolving the stale banner. This release exists to actually ship it,
+  and is the drift that `pnpm check:package-drift` (added in the same change)
+  found.
+
+## [1.0.0]
+
+- Renamed from `@lifegames/schemas` and published to GitHub Packages (#151).
+
 ## [0.1.0]
 
 - Initial published version (history predates this changelog; see the root
