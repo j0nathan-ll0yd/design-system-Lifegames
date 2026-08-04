@@ -1837,6 +1837,39 @@ function buildEmptyFixture() {
   return root
 }
 
+/**
+ * A workspace whose inventory is PARTLY unreadable, for the S20 discovery-floor rung.
+ *
+ * The mix is the whole point. One READABLE, publishable package keeps `computeExit(rows)`
+ * at 0, so the only thing that can lift the process out of green is the discovery floor
+ * itself; one manifest that exists and cannot be parsed puts an entry in
+ * `discovery.errors`. A fixture whose readable half already blocked would assert nothing —
+ * the floor would be invisible underneath a verdict that exits non-zero anyway, which is
+ * exactly how the floor clause in `finish()` could be deleted outright while all 13
+ * mutations stayed killed and the suite reported baseline green.
+ *
+ * The broken manifest is truncated mid-object rather than empty or absent: that is the
+ * shape a half-written, interrupted or merge-conflicted `package.json` actually has on
+ * disk, and it is the one shape that reaches the `JSON.parse` catch in discoverWorkspace
+ * instead of being skipped earlier as "no manifest here".
+ */
+function buildUnreadableManifestFixture() {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-unreadable-')))
+  fs.mkdirSync(path.join(root, 'packages', 'readable', 'src'), {recursive: true})
+  fs.mkdirSync(path.join(root, 'packages', 'unreadable'), {recursive: true})
+  fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), "packages:\n  - 'packages/*'\n")
+  writeJson(path.join(root, 'package.json'), {name: 'drift-unreadable-root', private: true, version: '0.0.0'})
+  writeJson(path.join(root, 'packages', 'readable', 'package.json'), {name: '@toy/readable', version: '1.0.0', files: ['src']})
+  fs.writeFileSync(path.join(root, 'packages', 'readable', 'src', 'index.js'), 'module.exports = "readable"\n')
+  fs.writeFileSync(path.join(root, 'packages', 'unreadable', 'package.json'), '{"name": "@toy/unreadable", "version":\n')
+  git(root, 'init', '-q')
+  git(root, 'config', 'user.email', 'selftest@example.invalid')
+  git(root, 'config', 'user.name', 'drift self-test')
+  git(root, 'add', '-A')
+  git(root, 'commit', '-qm', 'unreadable-manifest fixture')
+  return root
+}
+
 async function packFixtureAt(root, relDir) {
   const dest = fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-seed-'))
   const result = await packOne({path: path.join(root, relDir)}, dest)
@@ -1892,6 +1925,21 @@ function commitAll(root, message) {
 const row = (result, name) => result.rows.find((r) => r.name === name)
 
 const STOP = Symbol('self-test-stop')
+
+/**
+ * Does assertion `id` belong to `scenario`? MATCHING IS AT A TOKEN BOUNDARY, NOT A BARE
+ * PREFIX — a scenario matches its own rungs and no others.
+ *
+ * A bare `id.startsWith(scenario)` disarms a mutation the moment someone adds a rung whose
+ * id merely BEGINS with an existing scenario name. MEASURED while adding S20/S21: `selfref`
+ * (scenario 'S2') stopped the ladder at "S20 ..." — which passes, because selfref does not
+ * break it — so the ladder unwound before ever reaching "S2 payload change with no bump"
+ * and the headline mutation of this whole file was reported SURVIVED. The numbering makes
+ * that a standing trap: S3x collides with S3, S1x with S1, and so on for every rung yet to
+ * be written. Requiring end-of-string or a following space removes the trap at the source
+ * rather than by rationing which numbers may be used next.
+ */
+const matchesScenario = (id, scenario) => id === scenario || id.startsWith(`${scenario} `)
 
 /**
  * `stopAfter` unwinds the ladder as soon as the named scenario has been evaluated. It
@@ -1972,7 +2020,7 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
       say(`  FAIL  ${id} — ${detail}`)
       failures.push(`${id} — ${detail}`)
     }
-    if (stopAfter && id.startsWith(stopAfter)) {
+    if (stopAfter && matchesScenario(id, stopAfter)) {
       throw STOP
     }
   }
@@ -2076,6 +2124,69 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     } finally {
       fs.rmSync(emptyRoot, {recursive: true, force: true})
     }
+
+    // S20 — SPAWNED, WITH HALF THE INVENTORY UNREADABLE: exit 3 (finding A4).
+    //
+    // The doc comment on discoverWorkspace promises that manifests which exist and cannot
+    // be read "raise the exit floor to INDETERMINATE rather than vanishing", and `finish()`
+    // implements it in one clause. NOTHING pinned that clause. Deleting it outright —
+    // `Math.max(computeExit(rows), EXIT_OK)` — left this suite reporting "baseline green,
+    // all 13 mutations killed", exit 0 (measured). That is the A2b silent pass one level
+    // below the verdict logic: every row the gate MANAGED to read is clean, so it reports a
+    // pass while a package it could not read at all sits unevaluated beside them.
+    //
+    // The fixture is deliberately mixed — one readable package (NEVER_PUBLISHED, exit class
+    // 0) and one truncated manifest — so the ONLY thing that can lift this run off 0 is the
+    // floor. The `discoveryfloor` mutation removes it and only this rung notices.
+    const partialRoot = buildUnreadableManifestFixture()
+    try {
+      const partialRun = await spawnGate([], {repoRoot: partialRoot})
+      check('S20 the real process exits 3 when a manifest could not be read', partialRun.status === 3, spawnTail(partialRun))
+      check('S20 the readable half is clean, so ONLY the discovery floor can be lifting this run', (partialRun.doc?.rows ?? []).every((r) =>
+        (r.exitClass ?? 0) === 0
+      ), `a row already blocks, so this rung would pass with no floor at all — rows=${
+        JSON.stringify((partialRun.doc?.rows ?? []).map((r) => `${r.name}:${r.verdict}:${r.exitClass}`))
+      }`)
+      check('S20 the document names the manifest it could not read rather than dropping it', (partialRun.doc?.discoveryErrors ?? []).some((e) =>
+        /packages\/unreadable\/package\.json/.test(e)
+      ), `discoveryErrors=${JSON.stringify(partialRun.doc?.discoveryErrors)}`)
+    } finally {
+      fs.rmSync(partialRoot, {recursive: true, force: true})
+    }
+
+    // S21 — A GITIGNORED MANIFEST IS NOT PART OF THE INVENTORY (finding A4, LOW half).
+    //
+    // Discovery scans the whole tree, so it finds `package.json` files git was told to
+    // ignore: vendored copies, scaffolding scratch, extracted tarballs. Subtracting them is
+    // one `.filter()` in discoverWorkspace, and neutering it (measured, via an empty ignore
+    // set so every existing anchor stayed intact) left the whole suite green.
+    //
+    // The consequence is not cosmetic. This rung publishes @toy/ghost from a tree git
+    // ignores and then edits it WITHOUT republishing, so an inventory that fails to
+    // subtract it lands a blocking verdict — the ignored copy's payload no longer matches
+    // the registry, and its files are untracked inside its own files[] allowlist — and the
+    // gate blocks every push in a repo whose tracked contents are entirely clean.
+    fs.mkdirSync(path.join(root, 'vendor', 'ghost', 'src'), {recursive: true})
+    writeJson(path.join(root, 'vendor', 'ghost', 'package.json'), {
+      name: '@toy/ghost',
+      version: '1.0.0',
+      files: ['src'],
+      publishConfig: {registry: registryUrl}
+    })
+    fs.writeFileSync(path.join(root, 'vendor', 'ghost', 'src', 'index.js'), 'module.exports = "published"\n')
+    fs.appendFileSync(path.join(root, '.gitignore'), 'vendor/\n')
+    commitAll(root, 'ignore the vendored tree')
+    registry.publish('@toy/ghost', '1.0.0', await packFixtureAt(root, path.join('vendor', 'ghost')))
+    fs.writeFileSync(path.join(root, 'vendor', 'ghost', 'src', 'index.js'), 'module.exports = "edited, never republished"\n')
+
+    result = await gate({build: false})
+    check('S21 a manifest git ignores is not inventoried', row(result, '@toy/ghost') === undefined,
+      `an ignored tree was evaluated as a package — rows=${JSON.stringify(result.rows.map((r) => `${r.name}:${r.verdict}`))}`)
+    check('S21 an ignored tree cannot move the exit status of a clean checkout', result.exitCode === 0,
+      `exitCode=${result.exitCode} on a tracked tree that is entirely clean — rows=${
+        JSON.stringify(result.rows.map((r) => `${r.name}:${r.verdict}:${r.exitClass}`))
+      }`)
+    fs.rmSync(path.join(root, 'vendor'), {recursive: true, force: true})
 
     // S2 — payload change, NO bump. THE headline case.
     fs.writeFileSync(path.join(root, 'packages', 'leaf', 'src', 'index.js'), 'module.exports = 11\n')
@@ -2374,6 +2485,22 @@ const MUTATIONS = {
   // Remove the empty-set guard, so "I inventoried nothing" renders as "all clean" again
   // (finding D2/X1b) — the second half of the same silent total pass.
   emptyset: {scenario: 'S19', anchor: "      verdict: 'NO_PUBLISHABLE_PACKAGES',", replacement: "      verdict: 'SKIPPED',"},
+  // Delete the discovery-error exit floor, so a manifest that could not be READ AT ALL
+  // stops raising the exit status and the packages that WERE readable report a pass on
+  // their own (finding A4). Killed by S20. Until that rung existed this exact edit left the
+  // suite reporting "baseline green, all 13 mutations killed" and exiting 0 — the guarantee
+  // D1 claims in discoverWorkspace's doc comment was, measurably, unpinned.
+  discoveryfloor: {scenario: 'S20', anchor: 'discoveryErrors.length > 0 ? EXIT_INDETERMINATE : EXIT_OK', replacement: 'EXIT_OK'},
+  // Stop subtracting the paths git ignores, so vendored copies, scaffolding scratch and
+  // extracted tarballs are inventoried as if they were publishable packages of this repo
+  // (finding A4, LOW half). Killed by S21. Patches the SAME line as `globonly` with the
+  // opposite defect — that one narrows the inventory, this one widens it — and each is
+  // applied to its own pristine copy, so the two never interfere.
+  ignorekept: {
+    scenario: 'S21',
+    anchor: 'const selected = selectPackageDirectories(manifestDirs.filter((dir) => !ignored.has(dir)), globs)',
+    replacement: 'const selected = selectPackageDirectories(manifestDirs, globs)'
+  },
   // ── The verdict -> exit mapping, pinned in BOTH directions (finding D3) ──────────
   //
   // All three mutants below edit the SAME one line at the bottom of this file. Before D3
@@ -2436,7 +2563,7 @@ async function selfTestCommand({mutation}) {
     const {scenario} = MUTATIONS[mutation]
     console.log(`\nself-test with mutation=${mutation} (expected to FAIL at "${scenario}")\n`)
     const failures = await runSelfTest({mutation, stopAfter: scenario})
-    const relevant = failures.filter((f) => f.startsWith(scenario))
+    const relevant = failures.filter((f) => matchesScenario(f, scenario))
     if (relevant.length === 0) {
       console.error(`\nMUTATION ${mutation} SURVIVED — the suite cannot detect it. That is a build failure.\n`)
       return 1
@@ -2462,11 +2589,11 @@ async function selfTestCommand({mutation}) {
   for (const id of ids) {
     const {scenario} = MUTATIONS[id]
     const failures = await runSelfTest({mutation: id, verbose: false, stopAfter: scenario})
-    const killed = failures.find((f) => f.startsWith(scenario)) ?? null
+    const killed = failures.find((f) => matchesScenario(f, scenario)) ?? null
     if (killed) {
-      console.log(`  killed    ${id.padEnd(12)} by ${killed.split(' — ')[0]}`)
+      console.log(`  killed    ${id.padEnd(14)} by ${killed.split(' — ')[0]}`)
     } else {
-      console.error(`  SURVIVED  ${id.padEnd(12)} — expected "${scenario}" to fail`)
+      console.error(`  SURVIVED  ${id.padEnd(14)} — expected "${scenario}" to fail`)
       survivors += 1
     }
   }
