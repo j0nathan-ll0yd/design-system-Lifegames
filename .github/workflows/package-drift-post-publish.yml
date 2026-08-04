@@ -19,8 +19,9 @@ name: Package payload drift (post-publish)
 on:
   workflow_run:
     workflows:
+      # Only one publish workflow left: @j0nathan-ll0yd/config moved to j0nathan-ll0yd/mantle and
+      # is published from there, so its trigger was removed with publish-config.yml.
       - Publish @j0nathan-ll0yd DS packages
-      - Publish @j0nathan-ll0yd/config
     types: [completed]
   schedule:
     # 07:00 UTC daily. Drift that survives a night is not a transient.

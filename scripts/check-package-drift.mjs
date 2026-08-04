@@ -48,7 +48,10 @@
  * WHY SIX SCRIPTS — MEASURED 2026-08-03, NOT ASSUMED.
  * The two sides of the comparison are produced by DIFFERENT TOOLS, and this estate
  * publishes BOTH ways: `pnpm changeset publish` for copy|tokens|schemas|web|fixtures, and
- * `npm publish` for packages/config (.github/workflows/publish-config.yml). Measured on a
+ * `npm publish` for LifegamesPortal's @j0nathan-ll0yd/portal-contract. (@j0nathan-ll0yd/config
+ * was this repo's npm-published example until its source moved to j0nathan-ll0yd/mantle; every
+ * tarball it published from here, up to and including 1.2.1, is still npm-shaped in the
+ * registry, so the rule below is what keeps mantle's gate reading them as CLEAN.) Measured on a
  * synthetic package carrying all 20 lifecycle hooks, npm 11.13.0 / pnpm 11.13.0:
  *   npm pack  applies NO manifest transform whatsoever — all 20 scripts survive.
  *   pnpm pack DELETES exactly six — postpack, postpublish, prepack, prepare,
@@ -1887,9 +1890,9 @@ const packFixture = (root, pkgDir) => packFixtureAt(root, path.join('packages', 
  * Seeds the toy registry the way `npm publish` does, NOT the way `pnpm publish` does.
  * MEASURED: `npm pack` applies no manifest transform at all, so the seeded tarball keeps
  * every lifecycle script — which is exactly the shape of the real published
- * @j0nathan-ll0yd/portal-contract@1.0.0 and of this repo's own packages/config
- * (.github/workflows/publish-config.yml runs `npm publish`). S14 uses it to reproduce the
- * X3 false positive end to end rather than only in the pure conformance vectors.
+ * @j0nathan-ll0yd/portal-contract@1.0.0, and of every @j0nathan-ll0yd/config tarball this repo
+ * published before that package's source moved to j0nathan-ll0yd/mantle. S14 uses it to reproduce
+ * the X3 false positive end to end rather than only in the pure conformance vectors.
  */
 function npmPackFixture(root, pkgDir) {
   const dest = fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-npmseed-'))
@@ -2246,8 +2249,9 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     // (which deletes six publish-only lifecycle scripts). Nothing about the package has
     // changed, so the truth is CLEAN — but an engine without the spec-v3 script rule sees
     // a manifest difference and reports DRIFT on a perfectly clean package. That was live
-    // in this estate on @j0nathan-ll0yd/portal-contract, and this repo's own
-    // packages/config publishes the same way. `prepublish` is present deliberately:
+    // in this estate on @j0nathan-ll0yd/portal-contract, and on @j0nathan-ll0yd/config, whose
+    // registry copies up to 1.2.1 were npm-published from here before its source moved to
+    // j0nathan-ll0yd/mantle, which packs with pnpm. `prepublish` is present deliberately:
     // NEITHER tool strips it, so it must survive normalization on both sides.
     fs.mkdirSync(path.join(root, 'packages', 'npmpub', 'src'), {recursive: true})
     writeJson(path.join(root, 'packages', 'npmpub', 'package.json'), {

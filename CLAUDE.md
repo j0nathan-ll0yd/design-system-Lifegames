@@ -40,7 +40,7 @@ Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads 
 
 Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Repositories/ios-LifegamesPortal`. Both consume the DS JS packages from **GitHub Packages** (`@j0nathan-ll0yd/{copy,tokens,schemas,web,fixtures}` at `^1.0.0`, public — install with the built-in `GITHUB_TOKEN` in CI, no PAT); Swift consumers pin the DS Git tag via SPM.
 
-**When DS packages change:** land the change on `main` with a Changeset; publishing runs from `.github/workflows/publish-ds-packages.yml` (Changesets — `ds-v*` tag or manual dispatch), and `@j0nathan-ll0yd/config` from `publish-config.yml`. Consumers pick up the new version via a normal `pnpm install` / lockfile bump — no local linking step. See `GOVERNANCE.md` §6.1–6.2 for the distribution and version contract.
+**When DS packages change:** land the change on `main` with a Changeset; publishing runs from `.github/workflows/publish-ds-packages.yml` (Changesets — `ds-v*` tag or manual dispatch). That is now the repo's **only** publish pipeline: `@j0nathan-ll0yd/config` moved to `j0nathan-ll0yd/mantle` after 1.2.1 and is published from there, so DS consumes it from the registry like every other repo. Consumers pick up the new version via a normal `pnpm install` / lockfile bump — no local linking step. See `GOVERNANCE.md` §6.1–6.2 for the distribution and version contract.
 
 ## Apps
 
@@ -54,7 +54,7 @@ All use Vite 7 (unified from prior Vite 6/7 split).
 ## Formatting & Type Safety
 
 - **Formatters (split by language):**
-  - **dprint** owns TS/JS/JSON (`.ts/.tsx/.mts/.cts/.js/.mjs/.cjs/.jsx/.json`). Config: root `dprint.json`, which `extends` the estate standard `@j0nathan-ll0yd/config/dprint.json` (consumed via `workspace:*`, resolved through the pnpm symlink — no GitHub-Packages auth needed for DS's own build). Pinned exact: `dprint` in root devDeps + `allowBuilds` (its postinstall downloads the binary).
+  - **dprint** owns TS/JS/JSON (`.ts/.tsx/.mts/.cts/.js/.mjs/.cjs/.jsx/.json`). Config: root `dprint.json`, which `extends` the estate standard `@j0nathan-ll0yd/config/dprint.json` — a registry dependency (`^1.2.1`) published from `j0nathan-ll0yd/mantle`, so installing it needs `packages: read` like the other `@j0nathan-ll0yd` scopes. Pinned exact: `dprint` in root devDeps + `allowBuilds` (its postinstall downloads the binary).
   - **Prettier 3.x** (exact-pinned) owns everything dprint can't: `.astro` (dprint has no Astro plugin), `.md/.mdx/.css`. Config: `.prettierrc.mjs` at repo root.
 - **Run locally:** `pnpm format` (write) / `pnpm format:check` (CI-equivalent). Both run **dprint then prettier** for the respective file sets.
 - **CI gate:** `format` job in `ci.yml` runs `pnpm format:check` (dprint check + prettier check) and is **required for merge**.

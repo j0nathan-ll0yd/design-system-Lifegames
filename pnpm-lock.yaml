@@ -16,8 +16,8 @@ importers:
         specifier: ^2.31.0
         version: 2.31.0(@types/node@25.9.2)
       '@j0nathan-ll0yd/config':
-        specifier: workspace:*
-        version: link:packages/config
+        specifier: ^1.2.1
+        version: 1.2.1(eslint@10.4.1)(typescript@5.9.3)
       '@playwright/test':
         specifier: ^1.60.0
         version: 1.60.0
@@ -127,24 +127,6 @@ importers:
       vitest:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@25.9.2)(@vitest/coverage-v8@4.1.8)(jsdom@29.1.1)(vite@8.0.16(@types/node@25.9.2)(esbuild@0.28.0)(terser@5.48.0)(tsx@4.22.4)(yaml@2.9.0))
-
-  packages/config:
-    dependencies:
-      '@eslint/js':
-        specifier: ^10.0.1
-        version: 10.0.1(eslint@10.4.1)
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^8.64.0
-        version: 8.64.0(@typescript-eslint/parser@8.64.0(eslint@10.4.1)(typescript@5.9.3))(eslint@10.4.1)(typescript@5.9.3)
-      '@typescript-eslint/parser':
-        specifier: ^8.64.0
-        version: 8.64.0(eslint@10.4.1)(typescript@5.9.3)
-      eslint:
-        specifier: '>=10.0.0'
-        version: 10.4.1
-      typescript-eslint:
-        specifier: ^8.64.0
-        version: 8.64.0(eslint@10.4.1)(typescript@5.9.3)
 
   packages/copy:
     devDependencies:
@@ -1809,6 +1791,11 @@ packages:
   '@istanbuljs/schema@0.1.6':
     resolution: {integrity: sha512-+Sg6GCR/wy1oSmQDFq4LQDAhm3ETKnorxN+y5nbLULOR3P0c14f2Wurzj3/xqPXtasLFfHd5iRFQ7AJt4KH2cw==}
     engines: {node: '>=8'}
+
+  '@j0nathan-ll0yd/config@1.2.1':
+    resolution: {integrity: sha512-5HCj1nQIiH9EGcn/B0AYhzlrbBoVc1yge5trveYGPMmagD9usgTc9BYRYpWvDt83I3ylu8jv0KZPr4J8E3qhEQ==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/config/1.2.1/214758e92b98a3b404508a9801ee0cdc33469b17}
+    peerDependencies:
+      eslint: '>=10.0.0'
 
   '@j0nathan-ll0yd/portal-contract@1.0.0':
     resolution: {integrity: sha512-l3lbq5wkVlzmAimZSJHxMmZEyR1GTfCukeP6Jzwcr4Wp5xJdvWF0+pTJPbWU2LR8NZAoY+PQQOJLK+B8U3F6mw==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/portal-contract/1.0.0/a245ceb7e43fafe37f3963a2d3e40df86aec7f7d}
@@ -9346,6 +9333,17 @@ snapshots:
 
   '@istanbuljs/schema@0.1.6': {}
 
+  '@j0nathan-ll0yd/config@1.2.1(eslint@10.4.1)(typescript@5.9.3)':
+    dependencies:
+      '@eslint/js': 10.0.1(eslint@10.4.1)
+      '@typescript-eslint/eslint-plugin': 8.64.0(@typescript-eslint/parser@8.64.0(eslint@10.4.1)(typescript@5.9.3))(eslint@10.4.1)(typescript@5.9.3)
+      '@typescript-eslint/parser': 8.64.0(eslint@10.4.1)(typescript@5.9.3)
+      eslint: 10.4.1
+      typescript-eslint: 8.64.0(eslint@10.4.1)(typescript@5.9.3)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   '@j0nathan-ll0yd/portal-contract@1.0.0': {}
 
   '@jest/console@30.4.1':
@@ -10590,7 +10588,7 @@ snapshots:
   '@typescript-eslint/project-service@8.61.0(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.61.0(typescript@5.9.3)
-      '@typescript-eslint/types': 8.61.0
+      '@typescript-eslint/types': 8.64.0
       debug: 4.4.3
       typescript: 5.9.3
     transitivePeerDependencies:

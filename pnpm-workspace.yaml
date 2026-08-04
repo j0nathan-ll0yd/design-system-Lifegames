@@ -10,6 +10,10 @@ packages:
 # which re-breaks on every bump. See atlas decision 0015(d).
 minimumReleaseAgeExclude:
   - '@j0nathan-ll0yd/portal-contract'
+  # @j0nathan-ll0yd/config is published from j0nathan-ll0yd/mantle since it moved out of
+  # packages/ here. It is this repo's formatting and type-safety floor, so a release must be
+  # installable the moment mantle ships it rather than 24h later.
+  - '@j0nathan-ll0yd/config'
 
 # pnpm 11 no longer reads pnpm settings from .npmrc; carried over from there.
 # Root-level build drivers (style-dictionary.config.mjs) resolve workspace-package

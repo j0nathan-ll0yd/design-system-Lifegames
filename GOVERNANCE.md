@@ -351,7 +351,7 @@ Uses **Changesets** (`.changeset/config.json`) with **semantic versioning**.
 
 The JS packages (`@j0nathan-ll0yd/{copy,tokens,schemas,web,fixtures}`) are published to **GitHub Packages** (`npm.pkg.github.com`) at `^1.0.0`. They are **public**, so consumers install them with the built-in `GITHUB_TOKEN` in CI (or a local `read:packages` token) — no PAT beyond `packages: read` is required.
 
-Publishing runs from `.github/workflows/publish-ds-packages.yml` (Changesets; triggered by a `ds-v*` tag or manual dispatch). `@j0nathan-ll0yd/config` ships from its own `.github/workflows/publish-config.yml`.
+Publishing runs from `.github/workflows/publish-ds-packages.yml` (Changesets; triggered by a `ds-v*` tag or manual dispatch), and that is the repository's only publish pipeline. `@j0nathan-ll0yd/config` — the estate's dprint/tsconfig/ESLint floor — was published from here through 1.2.1; its source moved to `j0nathan-ll0yd/mantle`, which owns the other toolchain packages (`eslint-config`, `eslint-rules`) and releases it from 1.2.2 onward. This repository consumes it from the registry like every other consumer.
 
 **Swift consumers** continue to pin to a DS Git tag (or branch) via SPM — that path is independent of the JS distribution model.
 
