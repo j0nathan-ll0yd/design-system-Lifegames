@@ -35,6 +35,9 @@
  * fix it — still CLEAN, still exit 0. That is a silent total pass on an unreachable
  * registry. fetch() throws ECONNREFUSED and has no HTTP cache. Do not "simplify" this
  * by shelling npm; the `swallow` self-test mutant exists to catch that regression.
+ * Requests are RETRIED (4 attempts, 500ms/1.5s/4s) on the statuses that mean "ask again",
+ * because GitHub Packages answers 403 when it throttles — see REQUEST_ATTEMPTS. That can
+ * only remove a flake; an exhausted retry reports exactly what it reported before.
  *
  * CANONICALISATION IS MANDATORY — raw tarball bytes are unusable.
  * MEASURED: three consecutive `pnpm pack` runs of one unedited package produced three
@@ -914,15 +917,98 @@ export function resolveToken({
 // Steps 2 / 6 — Registry client (packument ALWAYS over the wire, never cached)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Attempts per request, and the pause before each retry.
+ *
+ * WHY THIS EXISTS — MEASURED 2026-08-04, not theorised. GitHub Packages answers `HTTP 403`
+ * WHEN IT THROTTLES, the same status it uses for a genuinely bad token, and during a burst
+ * of merges it did so for a single package. One unretried 403 is enough: that package went
+ * INDETERMINATE, the run exited 3 (correctly — "could not tell" is never a pass), the CI
+ * gate failed, and because the publish workflow is gated on CI, NOTHING published from main
+ * for the next two merges. This repo's PR #158 drift job failed the same way after 14m1s.
+ * A momentary throttle stopped the release train.
+ *
+ * RETRYING DOES NOT WEAKEN A2b, and that is the property to protect when editing this.
+ * Exhausted attempts return the SAME auth/unreachable result they returned before and still
+ * become INDETERMINATE / exit 3. This removes a flake; it can never manufacture a pass. A
+ * genuinely bad token costs these four attempts and then reports exactly what it always
+ * reported. The `retries never manufacture a pass` tests in check-package-drift.test.mjs
+ * pin both halves.
+ *
+ * Ported verbatim in behaviour from the twin mantle engine
+ * (packages/cli/src/commands/check/package-versions/registry.ts) — same attempt count, same
+ * backoff, same status set — because two engines answering the same question must not
+ * disagree about when the answer is trustworthy.
+ */
+const REQUEST_ATTEMPTS = 4
+const RETRY_BACKOFF_MS = [500, 1500, 4000]
+
+/**
+ * Statuses worth a second ask: throttling, timeouts, and the transient 5xx family.
+ * 404 IS DELIBERATELY ABSENT — an absent package is an answer, not a flake, and retrying it
+ * would only make the common NEVER_PUBLISHED path four times slower.
+ */
+const RETRYABLE_STATUSES = new Set([403, 408, 425, 429, 500, 502, 503, 504])
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * `Retry-After` in seconds, or as an HTTP date. Ignored when absent, unparseable, or longer
+ * than a minute — a throttle we would have to wait out that long is better reported than
+ * slept through, because a gate that hangs is a gate nobody runs.
+ */
+export function retryAfterMs(response) {
+  const header = response.headers.get('retry-after')
+  if (header === null) {
+    return null
+  }
+  const seconds = Number(header)
+  const ms = Number.isFinite(seconds) ? seconds * 1000 : Date.parse(header) - Date.now()
+  return Number.isFinite(ms) && ms > 0 && ms <= 60_000 ? ms : null
+}
+
+/**
+ * `fetch` with bounded retries. Returns `{response}` for the last response, or `{error}` when
+ * every attempt threw.
+ *
+ * It classifies NOTHING. The caller alone decides what a status means, so no retry decision
+ * can quietly become a verdict decision — a 403 that survives every attempt still reaches
+ * fetchPackument as a 403 and still becomes `auth`.
+ */
+async function fetchWithRetry(url, init) {
+  let last = {error: new Error('no attempt was made')}
+  for (let attempt = 0; attempt < REQUEST_ATTEMPTS; attempt += 1) {
+    let retryDelay = RETRY_BACKOFF_MS[attempt] ?? null
+    try {
+      const response = await fetch(url, init)
+      last = {response}
+      if (!RETRYABLE_STATUSES.has(response.status)) {
+        return last
+      }
+      retryDelay = retryDelay === null ? null : (retryAfterMs(response) ?? retryDelay)
+    } catch (err) {
+      last = {error: err}
+    }
+    if (retryDelay === null) {
+      return last
+    }
+    await sleep(retryDelay)
+  }
+  return last
+}
+
+/** The `unreachable` detail for a transport-level failure, shared by both fetchers. */
+const transportDetail = (err, url) => `${err?.cause?.code ?? err?.code ?? 'FETCH_FAILED'} fetching ${url}`
+
 export async function fetchPackument(registry, name, token) {
   const url = `${registry.replace(/\/$/, '')}/${encodeURIComponent(name)}`
-  let response
-  try {
-    response = await fetch(url, {headers: {Authorization: `Bearer ${token}`, Accept: 'application/vnd.npm.install-v1+json', 'Cache-Control': 'no-cache'}})
-  } catch (err) {
-    const code = err?.cause?.code ?? err?.code ?? 'FETCH_FAILED'
-    return {kind: 'unreachable', detail: `${code} fetching ${url}`}
+  const attempt = await fetchWithRetry(url, {
+    headers: {Authorization: `Bearer ${token}`, Accept: 'application/vnd.npm.install-v1+json', 'Cache-Control': 'no-cache'}
+  })
+  if (!('response' in attempt)) {
+    return {kind: 'unreachable', detail: transportDetail(attempt.error, url)}
   }
+  const response = attempt.response
   if (response.status === 404) {
     return {kind: 'absent', versions: {}}
   }
@@ -942,13 +1028,11 @@ export async function fetchPackument(registry, name, token) {
 }
 
 export async function fetchTarball(url, token, integrity) {
-  let response
-  try {
-    response = await fetch(url, {headers: {Authorization: `Bearer ${token}`}})
-  } catch (err) {
-    const code = err?.cause?.code ?? err?.code ?? 'FETCH_FAILED'
-    return {kind: 'unreachable', detail: `${code} fetching ${url}`}
+  const attempt = await fetchWithRetry(url, {headers: {Authorization: `Bearer ${token}`}})
+  if (!('response' in attempt)) {
+    return {kind: 'unreachable', detail: transportDetail(attempt.error, url)}
   }
+  const response = attempt.response
   if (!response.ok) {
     return {kind: 'unreachable', detail: `HTTP ${response.status} from ${url}`}
   }

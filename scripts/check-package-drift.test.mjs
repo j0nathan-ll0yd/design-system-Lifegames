@@ -4,15 +4,17 @@
  * automatically by the root `test:scripts` script (`node --test scripts/*.test.mjs`),
  * which pre-push runs as "audit script tests".
  *
- * SCOPE, STATED HONESTLY. This file covers the PURE layer only: canonicalisation,
- * the digest, the verdict matrix, the lane→exitClass mapping, the leak screen, the
- * tar reader and auth resolution. It deliberately does NOT claim to cover the
- * observation layer (pnpm pack, fetch(), git ls-files, the workspace build) — a
- * previous generation of this gate had 51 green unit tests and a passing
- * --self-test while a one-line mutation to its git observation made it report "17
- * clean" on a tree with two real drifts (finding H1). Pure-function tests cannot
- * see that class of defect, and pretending otherwise is worse than not claiming
- * the coverage.
+ * SCOPE, STATED HONESTLY. This file covers the PURE layer: canonicalisation, the
+ * digest, the verdict matrix, the lane→exitClass mapping, the leak screen, the tar
+ * reader and auth resolution — plus ONE observation-layer slice, the registry
+ * transport's retry behaviour, which is driven against a real loopback HTTP server
+ * at the bottom of this file (fetch() is exercised for real there, and nowhere
+ * else). It deliberately does NOT claim to cover the rest of the observation layer
+ * (pnpm pack, git ls-files, the workspace build) — a previous generation of this
+ * gate had 51 green unit tests and a passing --self-test while a one-line mutation
+ * to its git observation made it report "17 clean" on a tree with two real drifts
+ * (finding H1). Pure-function tests cannot see that class of defect, and pretending
+ * otherwise is worse than not claiming the coverage.
  *
  * The observation layer is covered by `node scripts/check-package-drift.mjs
  * --self-test`, which stands up a throwaway git repo and an offline registry, runs
@@ -40,6 +42,7 @@
 
 import assert from 'node:assert/strict'
 import fs from 'node:fs'
+import http from 'node:http'
 import path from 'node:path'
 import test from 'node:test'
 import {fileURLToPath} from 'node:url'
@@ -54,6 +57,7 @@ import {
   differingFiles,
   DRIFT_CONFORMANCE_SHA256,
   exitClassFor,
+  fetchPackument,
   globToRegExp,
   isDeadSourceMap,
   isDeclaredOutput,
@@ -65,6 +69,7 @@ import {
   PUBLISH_ONLY_SCRIPTS,
   readTarball,
   resolveToken,
+  retryAfterMs,
   semverMax,
   SPEC_VERSION
 } from './check-package-drift.mjs'
@@ -595,4 +600,131 @@ test('resolveToken keys the .npmrc lookup off the registry host, not a hardcoded
   assert.equal(resolveToken({home, env: {}, allowGhCli: false}).token, null)
   assert.equal(resolveToken({home, env: {}, allowGhCli: false, registry: 'https://other.example.com'}).token, 'nope')
   fs.rmSync(home, {recursive: true, force: true})
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Registry transport — retries, driven against a REAL loopback HTTP server
+//
+// The one observation-layer slice this file covers, and it is covered here rather
+// than in --self-test because the property under test is about ATTEMPT COUNTS, which
+// only a server that counts requests can see.
+//
+// WHY THE RETRIES EXIST — MEASURED 2026-08-04. GitHub Packages answers HTTP 403 when
+// it THROTTLES, the same status it uses for a genuinely bad token. One such 403 in
+// the twin mantle engine took a package to INDETERMINATE, the run to exit 3
+// (correctly — "could not tell" is never a pass), CI to red, and, because publishing
+// is gated on CI, stopped the release train for two merges. This repo's PR #158
+// drift job failed the same way.
+//
+// BOTH HALVES OF THE FIX ARE PINNED BELOW. Retrying has to absorb the flake, and it
+// must never buy that by turning a real failure into a pass.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * A toy registry that counts requests and answers whatever `respond(attempt)` says.
+ * Returns the base URL, the live attempt count, and a close() for the caller's finally.
+ */
+async function startCountingRegistry(respond) {
+  let attempts = 0
+  const server = http.createServer((_request, response) => {
+    attempts += 1
+    const reply = respond(attempts)
+    response.writeHead(reply.status, {'content-type': 'application/json', ...reply.headers})
+    response.end(reply.body ?? '{}')
+  })
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  return {url: `http://127.0.0.1:${server.address().port}`, attempts: () => attempts, close: () => new Promise((resolve) => server.close(resolve))}
+}
+
+const TOY_PACKUMENT = JSON.stringify({versions: {'1.0.0': {dist: {tarball: 'http://127.0.0.1:1/x.tgz', integrity: 'sha512-abc'}}}})
+
+test('the transport recovers when a throttled request succeeds on a later attempt', async () => {
+  const registry = await startCountingRegistry((attempt) => (attempt < 3 ? {status: 403} : {status: 200, body: TOY_PACKUMENT}))
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'ok')
+    assert.equal(registry.attempts(), 3)
+  } finally {
+    await registry.close()
+  }
+})
+
+test('the transport honours Retry-After without letting it stall the run', async () => {
+  const registry = await startCountingRegistry((attempt) =>
+    attempt === 1 ? {status: 429, headers: {'retry-after': '0.05'}} : {status: 200, body: TOY_PACKUMENT}
+  )
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'ok')
+    assert.equal(registry.attempts(), 2)
+  } finally {
+    await registry.close()
+  }
+})
+
+test('retries NEVER manufacture a pass: every attempt rejected still reports auth, never ok', async () => {
+  // THE GUARANTEE THAT MATTERS, and the reason retrying is safe to add to an A2b gate
+  // at all. A genuinely bad token costs the four attempts and then reports exactly
+  // what it reported before the retries existed — which runGate turns into
+  // INDETERMINATE / exit 3, never CLEAN. If this assertion is ever "fixed" by making
+  // an exhausted retry return ok, the gate has been defeated.
+  const registry = await startCountingRegistry(() => ({status: 403}))
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'auth')
+    assert.notEqual(result.kind, 'ok')
+    assert.equal(registry.attempts(), 4)
+  } finally {
+    await registry.close()
+  }
+})
+
+test('retries NEVER manufacture a pass: a persistent 500 stays unreachable, never ok', async () => {
+  // The same guarantee on the other retryable family. `unreachable` is INDETERMINATE
+  // too, so a registry that is answering but broken cannot be read as "nothing
+  // published, so fine" — that is the shape the `swallow` self-test mutant exists for.
+  const registry = await startCountingRegistry(() => ({status: 503}))
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'unreachable')
+    assert.equal(registry.attempts(), 4)
+  } finally {
+    await registry.close()
+  }
+})
+
+test('a 404 is NOT retried — an absent package is an answer, not a flake', async () => {
+  const registry = await startCountingRegistry(() => ({status: 404}))
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'absent')
+    assert.equal(registry.attempts(), 1)
+  } finally {
+    await registry.close()
+  }
+})
+
+test('a 200 is NOT retried — the happy path costs exactly one request', async () => {
+  const registry = await startCountingRegistry(() => ({status: 200, body: TOY_PACKUMENT}))
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'ok')
+    assert.equal(registry.attempts(), 1)
+  } finally {
+    await registry.close()
+  }
+})
+
+test('retryAfterMs ignores an absent, unparseable or absurd Retry-After', () => {
+  // Falling back to the fixed backoff is the safe direction: the request is still
+  // retried. Honouring a multi-hour Retry-After would hang the gate instead, and a
+  // gate that hangs is a gate nobody runs.
+  const headers = (value) => ({headers: new Headers(value === null ? {} : {'retry-after': value})})
+  assert.equal(retryAfterMs(headers(null)), null)
+  assert.equal(retryAfterMs(headers('later please')), null)
+  assert.equal(retryAfterMs(headers('3600')), null)
+  assert.equal(retryAfterMs(headers('-5')), null)
+  assert.equal(retryAfterMs(headers('2')), 2000)
+  const inTwentySeconds = new Date(Date.now() + 20_000).toUTCString()
+  assert.ok(Math.abs(retryAfterMs(headers(inTwentySeconds)) - 20_000) < 1500)
 })
