@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/config",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Single source of truth for the Lifegames estate's TypeScript formatting (dprint), type-safety floor (tsconfig), and ESLint flat-config standard. Every TS repo — including the mantle framework — extends this package.",
   "type": "module",
   "license": "MIT",
@@ -16,7 +16,8 @@
     "dprint.json",
     "tsconfig-base.json",
     "eslint.js",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "peerDependencies": {
     "eslint": ">=10.0.0"
