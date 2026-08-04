@@ -1,6 +1,6 @@
 import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc, getCategoryColor} from './updaters'
-import type {LocationExport} from '../types/exports'
+import type {LocationExport} from './location-types'
 
 type Place = LocationExport['topPlaces'][number]
 

@@ -4,7 +4,7 @@ import {HYDRATION} from './constants'
 import {withViewTransition} from './view-transition'
 import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, AdaptedSleep, AdaptedStarredRepo, BookMeta, WorkoutEntry} from './adapters'
 import {LANG_COLORS} from './constants'
-import type {LocationExport} from '../types/exports'
+import type {LocationExport} from './location-types'
 import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
 

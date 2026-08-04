@@ -24,7 +24,7 @@ import type {
   AdaptedStarredRepo,
   WorkoutEntry
 } from '../../src/runtime/adapters'
-import type {LocationExport} from '../../src/types/exports'
+import type {LocationExport} from '../../src/runtime/location-types'
 import {widgets} from '@j0nathan-ll0yd/copy'
 
 // ── helpers ───────────────────────────────────────────────────────────────────

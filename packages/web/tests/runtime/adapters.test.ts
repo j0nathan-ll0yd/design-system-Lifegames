@@ -1,7 +1,7 @@
 import {afterEach, describe, expect, it, vi} from 'vitest'
 import {adaptArticles, adaptBooks, adaptGithubEvents, adaptHealth, adaptSleep, adaptStarredRepos, adaptWorkouts} from '../../src/runtime/adapters'
 import {CLOUDFRONT_BASE, HYDRATION, STATUS_LABELS} from '../../src/runtime/constants'
-import type {ArticlesExport, BooksExport, GithubEventsExport, HealthExport, SleepExport, WorkoutsExport} from '../../src/types/exports'
+import type {ArticlesExport, BooksExport, GithubEventsExport, HealthExport, SleepExport, WorkoutsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 // ── Fixture factories ─────────────────────────────────────────────
 

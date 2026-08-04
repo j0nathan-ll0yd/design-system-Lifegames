@@ -1,5 +1,5 @@
 import {FOCUS_MODES} from '@j0nathan-ll0yd/portal-contract/constants'
-import type {FocusExport} from '../types/exports'
+import type {FocusExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 let clockInterval: ReturnType<typeof setInterval> | null = null
 

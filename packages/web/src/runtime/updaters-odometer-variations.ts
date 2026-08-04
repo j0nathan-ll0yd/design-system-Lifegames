@@ -1,5 +1,5 @@
 import {esc} from './updaters'
-import type {LocationExport} from '../types/exports'
+import type {LocationExport} from './location-types'
 
 // ─── V3: Gradient Text with Home Icon ────────────────────────────────────────
 

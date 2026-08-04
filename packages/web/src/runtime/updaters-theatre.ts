@@ -2,7 +2,7 @@ import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
 import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
-import type {TheatreReviewsExport} from '../types/exports'
+import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 const GRADE_COLORS: Record<string, string> = {
   'A+': '#06d6a0',

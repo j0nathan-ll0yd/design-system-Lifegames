@@ -3,7 +3,7 @@ import {beforeEach, describe, expect, it} from 'vitest'
 import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
 import {widgets} from '@j0nathan-ll0yd/copy'
-import type {TheatreReviewsExport} from '../../src/types/exports'
+import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 function makeExport(reviews: TheatreReviewsExport['reviews'] = []): TheatreReviewsExport {
   return {generatedAt: '2026-01-01T00:00:00Z', source: 'test', totalReviews: reviews.length, reviews}

@@ -6,12 +6,16 @@ import type {
   GithubEventsExport,
   GithubStarredReposExport,
   HealthExport,
-  HealthExportGoals,
-  HealthExportSolar,
-  HealthExportWatch,
   SleepExport,
   WorkoutsExport
-} from '../types/exports'
+} from '@j0nathan-ll0yd/portal-contract/schemas'
+
+// The contract inlines these three optional sub-objects inside HealthExport
+// rather than naming them. Derive the names here instead of re-declaring the
+// shapes, so they can never drift from the schema they came from.
+type HealthExportGoals = NonNullable<HealthExport['goals']>
+type HealthExportSolar = NonNullable<HealthExport['solar']>
+type HealthExportWatch = NonNullable<HealthExport['watch']>
 
 // ── Adapted output types (what adapters produce for updaters) ──────
 
