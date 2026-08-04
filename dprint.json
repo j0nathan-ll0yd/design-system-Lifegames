@@ -25,6 +25,8 @@
     "**/*.astro",
     "**/*.swift",
     "Sources/**",
-    "packages/schemas/.contract-lock.json"
+    "packages/schemas/.contract-lock.json",
+    "scripts/fixtures/drift-conformance.json",
+    "scripts/fixtures/drift-conformance-runner.mjs"
   ]
 }

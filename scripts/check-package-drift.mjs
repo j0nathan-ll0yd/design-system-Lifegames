@@ -45,6 +45,30 @@
  * integrity hash is still used, correctly, to verify the DOWNLOAD. The `rawbytes`
  * mutant pins this.
  *
+ * WHY SIX SCRIPTS — MEASURED 2026-08-03, NOT ASSUMED.
+ * The two sides of the comparison are produced by DIFFERENT TOOLS, and this estate
+ * publishes BOTH ways: `pnpm changeset publish` for copy|tokens|schemas|web|fixtures, and
+ * `npm publish` for packages/config (.github/workflows/publish-config.yml). Measured on a
+ * synthetic package carrying all 20 lifecycle hooks, npm 11.13.0 / pnpm 11.13.0:
+ *   npm pack  applies NO manifest transform whatsoever — all 20 scripts survive.
+ *   pnpm pack DELETES exactly six — postpack, postpublish, prepack, prepare,
+ *             prepublishOnly, publish — and KEEPS legacy `prepublish`.
+ * Ground truth from real registry bytes: the published @j0nathan-ll0yd/portal-contract@1.0.0
+ * manifest is BYTE-IDENTICAL to its source, `prepublishOnly` included, while `pnpm pack` of
+ * that same unmodified source drops it. So an engine that normalizes NOTHING — which is what
+ * this file did before spec v3 — reports DRIFT on a package whose HEAD is exactly what is
+ * published. That is finding X3, and it was live.
+ * Dropping these six hides nothing consumer-visible: npm NEVER runs them from an installed
+ * registry dependency, and whatever they produce lands in the built files, which ARE hashed.
+ * Scripts a consumer DOES run — preinstall, install, postinstall — are deliberately excluded.
+ * Legacy `prepublish` is excluded because NEITHER tool strips it, so both sides carry it
+ * identically; stripping it would buy no agreement and only blind the gate to a real edit.
+ * publishConfig hoisting and workspace:/catalog: rewriting are the same class of tool
+ * asymmetry but are deliberately NOT normalized — normalizing them would destroy the
+ * workspace-cascade signal this gate exists for. The full rationale, the normative
+ * implementation and the 34 conformance vectors live in
+ * atlas/contracts/package-digest/ (reference.mjs is the spec).
+ *
  * A2b: NO STATE MEANS "could not tell, so pass". Registry unreachable, missing auth,
  * integrity mismatch and pack failure are all INDETERMINATE / exit 3 in every lane.
  *
@@ -52,7 +76,12 @@
  *   node scripts/check-package-drift.mjs [--lane=branch|pre-push|post-publish]
  *                                        [--json] [--strict-maps] [--no-cache]
  *                                        [--no-build]
- *   node scripts/check-package-drift.mjs --self-test [--mutant=<id>]
+ *                                        [--repo-root=<dir>] [--registry=<url>]
+ *                                        [--scope=<@scope>]
+ *   node scripts/check-package-drift.mjs --self-test [--mutation=<id>]
+ *
+ * --json writes the JSON document to STDOUT AND NOTHING ELSE; all progress and build
+ * output goes to stderr, so `check-package-drift.mjs --json | jq` works.
  */
 
 import {createHash} from 'node:crypto'
@@ -61,16 +90,35 @@ import fs from 'node:fs'
 import http from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
-import {fileURLToPath} from 'node:url'
+import {fileURLToPath, pathToFileURL} from 'node:url'
 import zlib from 'node:zlib'
 
 /**
- * Part of the reference-digest cache key and printed in --json. Bump this whenever
- * canonicalize(), the normalize rule, or the unresolvable-map rule changes, or stale
- * digests will silently produce wrong verdicts on developer machines while CI (with a
- * fresh node_modules) is correct. The conformance vectors assert it.
+ * The digest scheme identifier. SAME NUMBER <=> BYTE-IDENTICAL NORMALIZATION, for every
+ * input, across every implementation of this gate in the estate.
+ *
+ * Bump if and only if the bytes normalizeEntry()/payloadDigests() produce change for ANY
+ * input: the stripped-key sets, canonicalize(), the serialization, the dead-source-map
+ * predicate, or the payload line format. Do NOT bump for discovery, reporting, verdict
+ * mapping, CLI flags or caching — those cannot alter a digest, and bumping for them
+ * needlessly invalidates every cached reference.
+ *
+ * History: `1` meant "version only" here, but `1` ALSO meant "version + seven scripts" in
+ * atlas and `2` meant "version only" in mantle. The number identified nothing (finding
+ * X7). `3` is the first value greater than every number that was ever in circulation, and
+ * it is asserted against the shared conformance fixture — so a scheme change without a
+ * bump can no longer pass conformance in any repo.
  */
-export const SPEC_VERSION = 1
+export const SPEC_VERSION = 3
+
+/**
+ * sha256 of scripts/fixtures/drift-conformance.json, vendored verbatim from
+ * atlas/contracts/package-digest/. Pinned HERE, beside the implementation, so that
+ * editing the vendored fixture without editing this constant turns the suite red
+ * immediately — that is what makes vendoring safe rather than merely convenient.
+ * Re-vendor and update this constant in the SAME change.
+ */
+export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924cc3f1eeda6fc2fd10c6fb88ce'
 
 export const DEFAULT_REGISTRY = 'https://npm.pkg.github.com'
 export const DEFAULT_SCOPE = '@j0nathan-ll0yd'
@@ -231,7 +279,7 @@ export function readTarball(gzBytes) {
     if (typeflag === '5' || name.endsWith('/')) {
       continue
     }
-    if (typeflag !== '0' && typeflag !== ' ') {
+    if (typeflag !== '0' && typeflag !== '\0') {
       throw new Error(`unsupported tar entry type ${JSON.stringify(typeflag)} for ${name}`)
     }
 
@@ -248,105 +296,165 @@ export function readTarball(gzBytes) {
 // Canonical payload digest
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Publish-time-only lifecycle scripts, removed from the manifest before hashing.
+ * Sorted, and EXACTLY the set `pnpm pack` removes — see the "WHY SIX SCRIPTS" block in
+ * the file header for the measurement. Legacy `prepublish` is deliberately absent.
+ */
+export const PUBLISH_ONLY_SCRIPTS = Object.freeze([
+  'postpack',
+  'postpublish',
+  'prepack',
+  'prepare',
+  'prepublishOnly',
+  'publish'
+])
+
+/** The one entry path that is normalized. Nested manifests (dist/package.json) are raw. */
+export const MANIFEST_ENTRY = 'package.json'
+
+const isPlainObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
+
 /** Recursively sorts object keys. Arrays keep their order — order is meaning there. */
 export function canonicalize(value) {
   if (Array.isArray(value)) {
-    return value.map(canonicalize)
+    return value.map((entry) => canonicalize(entry))
   }
-  if (value && typeof value === 'object') {
-    const out = {}
-    for (const key of Object.keys(value).sort()) {
-      out[key] = canonicalize(value[key])
-    }
-    return out
+  if (!isPlainObject(value)) {
+    return value
   }
-  return value
+  const sorted = {}
+  for (const key of Object.keys(value).sort()) {
+    sorted[key] = canonicalize(value[key])
+  }
+  return sorted
 }
 
 /**
- * package.json is canonicalised and has its top-level `version` DELETED; every other
- * file is hashed as raw bytes.
+ * Canonical bytes for one packed file. Only the TOP-LEVEL `package.json` is normalized;
+ * every other entry — including a nested `dist/package.json` — is compared as RAW BYTES.
+ *
+ * A manifest that will not parse, or that parses to something other than an object, is
+ * also compared raw. It must surface as a difference rather than be swallowed, and it
+ * must NOT throw: this implementation previously threw a SyntaxError there while the
+ * other two fell back to raw bytes, which is exactly the divergence the shared
+ * conformance fixture now pins (`cmp-malformed-manifest-edit-is-drift`).
  *
  * Nested workspace-dependency versions are deliberately KEPT — that is exactly what
  * catches the cascade (a sibling moving 1.0.0 -> 1.0.1 inside dependencies[]).
  * `version` is deleted so the head-vs-semverMax(R) comparison is meaningful; when the
  * declared version IS published the two versions match anyway, so the deletion is inert.
  */
-export function normalizeEntry(entryPath, bytes, opts = {}) {
-  if (entryPath !== 'package.json') {
+export function normalizeEntry(entryPath, bytes) {
+  if (entryPath !== MANIFEST_ENTRY) {
     return bytes
   }
-  const parsed = JSON.parse(bytes.toString('utf8'))
-  if (!opts.keepVersion) {
-    delete parsed.version
+  let parsed
+  try {
+    parsed = JSON.parse(bytes.toString('utf8'))
+  } catch {
+    return bytes
   }
-  return Buffer.from(JSON.stringify(opts.skipCanonicalize ? parsed : canonicalize(parsed)))
+  if (!isPlainObject(parsed)) {
+    return bytes
+  }
+  const canonical = canonicalize(parsed)
+  delete canonical.version
+  if (isPlainObject(canonical.scripts)) {
+    for (const name of PUBLISH_ONLY_SCRIPTS) {
+      delete canonical.scripts[name]
+    }
+    // `pnpm pack` emits `"scripts": {}` where `npm publish` emits the original object and
+    // a source with no scripts emits no key at all. Collapsing empty-to-absent makes those
+    // three spellings of "no runnable scripts" hash identically.
+    if (Object.keys(canonical.scripts).length === 0) {
+      delete canonical.scripts
+    }
+  }
+  return Buffer.from(JSON.stringify(canonical), 'utf8')
 }
 
 /**
- * A `.map` whose every `sources[]` entry resolves OUTSIDE the packed file set is dead
- * weight for every consumer: the path it points at is present in no consumer's
- * node_modules, so the map cannot be resolved by any tool. A map-only difference
- * therefore cannot change what a consumer executes, typechecks against, or resolves.
+ * Is this a source map that NO consumer can resolve?
  *
- * This inspects the payload and the map's own sources array. It is not a path
- * heuristic, and it cannot hide a real change: anything altering behaviour or types
+ * Dead only when EVERY `sources[]` entry lands outside the packed set. A map with even
+ * one resolvable source is still usable, so it stays in the effective digest — the
+ * conservative direction, since keeping a file can only ever cause a report, never
+ * suppress one.
+ *
+ * `sourceRoot` is honoured, per the source-map spec: it is prefixed to every source
+ * before resolution. A `data:` source is inlined content, always resolvable, so a map
+ * carrying one is never dead. Both were missing here before spec v3.
+ *
+ * A map-only difference cannot hide a real change: anything altering behaviour or types
  * also alters a .js/.mjs/.d.ts entry.
  */
-export function unresolvableMaps(files) {
-  const dead = new Set()
-  for (const [entryPath, bytes] of files) {
-    if (!entryPath.endsWith('.map')) {
-      continue
-    }
-    let sources
-    try {
-      sources = JSON.parse(bytes.toString('utf8')).sources
-    } catch {
-      continue
-    }
-    if (!Array.isArray(sources) || sources.length === 0) {
-      continue
-    }
-    const dir = path.posix.dirname(entryPath)
-    const allOutside = sources.every((src) => {
-      if (typeof src !== 'string') {
-        return false
-      }
-      const resolved = path.posix.normalize(path.posix.join(dir === '.' ? '' : dir, src))
-      return !files.has(resolved)
-    })
-    if (allOutside) {
-      dead.add(entryPath)
-    }
+export function isDeadSourceMap(entryPath, bytes, packedPaths) {
+  if (!entryPath.endsWith('.map')) {
+    return false
   }
-  return dead
+  let map
+  try {
+    map = JSON.parse(bytes.toString('utf8'))
+  } catch {
+    return false
+  }
+  if (!isPlainObject(map) || !Array.isArray(map.sources) || map.sources.length === 0) {
+    return false
+  }
+  const sourceRoot = typeof map.sourceRoot === 'string' ? map.sourceRoot : ''
+  const dir = path.posix.dirname(entryPath)
+  return map.sources.every((source) => {
+    if (typeof source !== 'string' || source.startsWith('data:')) {
+      return false
+    }
+    return !packedPaths.has(path.posix.normalize(path.posix.join(dir === '.' ? '' : dir, sourceRoot, source)))
+  })
 }
 
-/** Per-file normalized digests — the input to both the payload digest and the diff. */
-export function fileDigests(files, exclude = new Set(), opts = {}) {
-  const out = {}
-  for (const [entryPath, bytes] of files) {
+/** Per-file normalized digests, as a Map — the input to the payload digest and the diff. */
+export function fileDigests(files, exclude = new Set()) {
+  const out = new Map()
+  for (const entryPath of [...files.keys()].sort()) {
     if (exclude.has(entryPath)) {
       continue
     }
-    out[entryPath] = sha256(normalizeEntry(entryPath, bytes, opts))
+    out.set(entryPath, sha256(normalizeEntry(entryPath, files.get(entryPath))))
   }
   return out
 }
 
+/** digest = sha256( sorted `<posix path> <sha256hex>` lines joined by "\n" ) */
 export function digestOf(perFile) {
-  const manifest = Object.keys(perFile).map((p) => `${p} ${perFile[p]}`).sort().join('\n')
-  return sha256(manifest)
+  const lines = [...perFile].map(([entryPath, hash]) => `${entryPath} ${hash}`).sort()
+  return sha256(Buffer.from(lines.join('\n'), 'utf8'))
 }
 
-export function payloadDigest(files, exclude = new Set(), opts = {}) {
-  return digestOf(fileDigests(files, exclude, opts))
+/**
+ * Both digests plus the dead maps, in one pass. This is the shape the shared conformance
+ * runner asserts against.
+ *
+ * @param {Map<string, Buffer>} files packed entries, posix paths relative to the tarball root
+ * @param {Set<string>} [exclude] leak-screen hits, removed entirely so a leak reports as
+ *   LEAKED_ARTIFACT rather than masquerading as DRIFT
+ */
+export function payloadDigests(files, exclude = new Set()) {
+  const packedPaths = new Set([...files.keys()].filter((entryPath) => !exclude.has(entryPath)))
+  const strict = fileDigests(files, exclude)
+  const dead = []
+  for (const entryPath of strict.keys()) {
+    if (isDeadSourceMap(entryPath, files.get(entryPath), packedPaths)) {
+      dead.push(entryPath)
+    }
+  }
+  const deadSet = new Set(dead)
+  const effective = new Map([...strict].filter(([entryPath]) => !deadSet.has(entryPath)))
+  return {strictDigest: digestOf(strict), effectiveDigest: digestOf(effective), strictEntries: strict, effectiveEntries: effective, deadMaps: dead.sort()}
 }
 
 export function differingFiles(headPerFile, refPerFile) {
-  const names = new Set([...Object.keys(headPerFile), ...Object.keys(refPerFile)])
-  return [...names].filter((n) => headPerFile[n] !== refPerFile[n]).sort()
+  const names = new Set([...headPerFile.keys(), ...refPerFile.keys()])
+  return [...names].filter((n) => headPerFile.get(n) !== refPerFile.get(n)).sort()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -573,12 +681,22 @@ export async function fetchTarball(url, token, integrity) {
 // Step 3 — Build (once, whole workspace)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function runWorkspaceBuild(repoRoot) {
+/**
+ * `quiet` redirects the CHILD's stdout to OUR stderr (fd 2) rather than discarding it.
+ *
+ * MEASURED before the fix: `check-package-drift.mjs --lane=branch --json` wrote 39657
+ * bytes to stdout, of which the JSON document was the tail — turbo streams its whole
+ * build log to the inherited stdout first, so `JSON.parse(stdout)` threw
+ * `Unexpected token '•'` and --json was unusable by any machine consumer (finding X8).
+ * The log is diagnostic output, not the document, so it belongs on stderr; discarding it
+ * instead would make a BUILD_FAILED verdict undiagnosable from a CI log.
+ */
+export function runWorkspaceBuild(repoRoot, {quiet = false} = {}) {
   const rootManifest = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'))
   // Use the REPO'S OWN build. Never per-package: turbo's dependsOn: ["^build"] graph
   // already orders it, and N separate invocations serialise the dependency chain.
   const args = rootManifest.scripts?.build ? ['run', 'build'] : ['-r', 'run', 'build']
-  const result = spawnSync('pnpm', args, {cwd: repoRoot, stdio: 'inherit'})
+  const result = spawnSync('pnpm', args, {cwd: repoRoot, stdio: ['ignore', quiet ? 2 : 'inherit', 'inherit']})
   if (result.error) {
     return {ok: false, detail: `pnpm ${args.join(' ')} failed to run (${result.error.code ?? result.error.message})`}
   }
@@ -677,11 +795,11 @@ export function assertBuildOutputs(pkgPath, filesField, outputs) {
  * `npm pack` leaves `"@j0nathan-ll0yd/env": "workspace:*"` and `"drizzle-orm":
  * "catalog:"` in the manifest; `pnpm pack` produces the published manifest with the
  * concrete versions. Hashing an `npm pack` payload reports every workspace package as
- * DRIFT forever. The `npmpack` mutant pins this.
+ * DRIFT forever. The `npmpack` self-test mutation pins this.
  */
-function packOne(pkg, destDir, {useNpm = false} = {}) {
+function packOne(pkg, destDir) {
   fs.mkdirSync(destDir, {recursive: true})
-  const cmd = useNpm ? 'npm' : 'pnpm'
+  const cmd = 'pnpm'
   return new Promise((resolve) => {
     execFile(cmd, ['pack', '--pack-destination', destDir], {cwd: pkg.path, maxBuffer: 64 * 1024 * 1024}, (error, _stdout, stderr) => {
       if (error) {
@@ -841,17 +959,28 @@ function cacheFile(repoRoot, name, version) {
 function readCache(repoRoot, name, version) {
   try {
     const parsed = JSON.parse(fs.readFileSync(cacheFile(repoRoot, name, version), 'utf8'))
-    return parsed.specVersion === SPEC_VERSION ? parsed : null
+    if (parsed.specVersion !== SPEC_VERSION) {
+      return null
+    }
+    // The per-file digests are Maps in memory and plain objects on disk.
+    return {strictPerFile: new Map(Object.entries(parsed.strictPerFile)), effectivePerFile: new Map(Object.entries(parsed.effectivePerFile))}
   } catch {
     return null
   }
 }
 
-function writeCache(repoRoot, name, version, payload) {
+function writeCache(repoRoot, name, version, {strictPerFile, effectivePerFile}) {
   try {
     const file = cacheFile(repoRoot, name, version)
     fs.mkdirSync(path.dirname(file), {recursive: true})
-    fs.writeFileSync(file, JSON.stringify({specVersion: SPEC_VERSION, name, version, ...payload}))
+    fs.writeFileSync(file,
+      JSON.stringify({
+        specVersion: SPEC_VERSION,
+        name,
+        version,
+        strictPerFile: Object.fromEntries(strictPerFile),
+        effectivePerFile: Object.fromEntries(effectivePerFile)
+      }))
   } catch {
     // A cache that cannot be written is not a gate failure.
   }
@@ -870,8 +999,8 @@ export async function runGate({
   strictMaps = false,
   useCache = true,
   build = true,
+  quiet = false,
   concurrency = 8,
-  mutant = null,
   log = () => {}
 }) {
   const rows = []
@@ -947,12 +1076,7 @@ export async function runGate({
   // ── Step 2 — packuments, in parallel, ALWAYS over the wire ────────────────
   const packuments = new Map()
   await Promise.all(publishable.map(async (member) => {
-    let result = await fetchPackument(registry, member.name, authToken)
-    if (mutant === 'swallow' && (result.kind === 'unreachable' || result.kind === 'auth')) {
-      // MUTANT: pretend an unreachable registry means "nothing published, so fine".
-      result = {kind: 'ok', versions: {}}
-    }
-    packuments.set(member.name, result)
+    packuments.set(member.name, await fetchPackument(registry, member.name, authToken))
   }))
 
   const live = []
@@ -973,7 +1097,7 @@ export async function runGate({
   // ── Step 3 — build once, whole workspace ──────────────────────────────────
   if (build) {
     log('building workspace...')
-    const built = runWorkspaceBuild(repoRoot)
+    const built = runWorkspaceBuild(repoRoot, {quiet})
     if (!built.ok) {
       for (const member of live) {
         push({
@@ -1021,7 +1145,7 @@ export async function runGate({
   const packRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-pack-'))
   try {
     const packed = await mapWithConcurrency(ready, concurrency, async (entry, index) => {
-      const result = await packOne(entry.member, path.join(packRoot, String(index)), {useNpm: mutant === 'npmpack'})
+      const result = await packOne(entry.member, path.join(packRoot, String(index)))
       if (!result.ok) {
         return {entry, error: result.detail}
       }
@@ -1046,22 +1170,21 @@ export async function runGate({
 
       // Step 5 — leak screen
       let leaked = []
-      if (mutant !== 'noleak') {
-        try {
-          leaked = leakScreen([...headFiles.keys()], {tracked: gitTrackedFiles(repoRoot, member.path), outputs})
-        } catch (err) {
-          indeterminate(member, `leak screen could not read git: ${err.message}`)
-          continue
-        }
+      try {
+        leaked = leakScreen([...headFiles.keys()], {tracked: gitTrackedFiles(repoRoot, member.path), outputs})
+      } catch (err) {
+        indeterminate(member, `leak screen could not read git: ${err.message}`)
+        continue
       }
       const leakedSet = new Set(leaked)
 
-      const digestOpts = {skipCanonicalize: mutant === 'nocanon', keepVersion: mutant === 'versionkept'}
-      const headDeadMaps = strictMaps ? new Set() : unresolvableMaps(headFiles)
-      const headStrictPerFile = fileDigests(headFiles, leakedSet, digestOpts)
-      const headEffectivePerFile = fileDigests(headFiles, new Set([...leakedSet, ...headDeadMaps]), digestOpts)
-      const strictDigest = digestOf(headStrictPerFile)
-      const effectiveDigest = digestOf(headEffectivePerFile)
+      // --strict-maps compares every packed file, including maps no consumer can
+      // resolve; the default drops those from the comparison but still reports them.
+      const head = payloadDigests(headFiles, leakedSet)
+      const headDeadMaps = strictMaps ? [] : head.deadMaps
+      const headEffectivePerFile = strictMaps ? head.strictEntries : head.effectiveEntries
+      const strictDigest = head.strictDigest
+      const effectiveDigest = strictMaps ? head.strictDigest : head.effectiveDigest
 
       if (leaked.length > 0) {
         push({
@@ -1113,15 +1236,11 @@ export async function runGate({
               referenceFailed = true
             }
             if (!referenceFailed) {
-              const refDeadMaps = strictMaps ? new Set() : unresolvableMaps(refFiles)
-              reference = {
-                version: referenceVersion,
-                strictPerFile: fileDigests(refFiles, new Set(), digestOpts),
-                effectivePerFile: fileDigests(refFiles, refDeadMaps, digestOpts)
-              }
+              const ref = payloadDigests(refFiles)
+              reference = {version: referenceVersion, strictPerFile: ref.strictEntries, effectivePerFile: ref.effectiveEntries}
               // Only the immutable published payload is cached; the packument never is,
               // so registry reachability is re-proven on every single run.
-              if (useCache && !mutant) {
+              if (useCache) {
                 writeCache(repoRoot, member.name, referenceVersion, {strictPerFile: reference.strictPerFile, effectivePerFile: reference.effectivePerFile})
               }
             }
@@ -1132,27 +1251,9 @@ export async function runGate({
         continue
       }
 
-      if (mutant === 'selfref' && reference) {
-        // MUTANT: short-circuit the reference to the local payload. This is the direct
-        // analogue of the `<head> <head>` two-point-diff mutation that made the previous
-        // generation report "17 clean" on a tree with two real drifts while its
-        // --self-test printed "self-test passed" and its unit suite went 51/51 green.
-        reference = {version: reference.version, strictPerFile: headStrictPerFile, effectivePerFile: headEffectivePerFile}
-      }
-
-      const useStrict = strictMaps || mutant === 'rawbytes'
-      const headCompare = useStrict ? headStrictPerFile : headEffectivePerFile
-      const refCompare = reference ? (useStrict ? reference.strictPerFile : reference.effectivePerFile) : null
-
-      // MUTANT `rawbytes`: compare the raw tarball bytes instead of the canonical
-      // digest. Pinned by measurement — three consecutive packs of one unedited tree
-      // gave three different tarball hashes and one identical canonical digest.
-      const refDigest = mutant === 'rawbytes'
-        ? (reference ? `raw:${reference.version}` : null)
-        : refCompare
-        ? digestOf(refCompare)
-        : null
-      const headDigest = mutant === 'rawbytes' ? `raw:${sha256(bytes)}` : useStrict ? strictDigest : effectiveDigest
+      const refCompare = reference ? (strictMaps ? reference.strictPerFile : reference.effectivePerFile) : null
+      const refDigest = refCompare ? digestOf(refCompare) : null
+      const headDigest = effectiveDigest
 
       const decision = decideVerdict({declared: member.version, registryVersions, headDigest, referenceDigest: refDigest})
 
@@ -1168,7 +1269,7 @@ export async function runGate({
         referenceVersion: decision.referenceVersion,
         verdict: decision.verdict,
         advisories,
-        differingFiles: refCompare ? differingFiles(headCompare, refCompare) : [],
+        differingFiles: refCompare ? differingFiles(headEffectivePerFile, refCompare) : [],
         cosmeticPaths: [...headDeadMaps].sort(),
         leakedPaths: [],
         strictDigest,
@@ -1374,6 +1475,33 @@ async function packFixture(root, pkgDir) {
   return bytes
 }
 
+/**
+ * Seeds the toy registry the way `npm publish` does, NOT the way `pnpm publish` does.
+ * MEASURED: `npm pack` applies no manifest transform at all, so the seeded tarball keeps
+ * every lifecycle script — which is exactly the shape of the real published
+ * @j0nathan-ll0yd/portal-contract@1.0.0 and of this repo's own packages/config
+ * (.github/workflows/publish-config.yml runs `npm publish`). S14 uses it to reproduce the
+ * X3 false positive end to end rather than only in the pure conformance vectors.
+ */
+function npmPackFixture(root, pkgDir) {
+  const dest = fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-npmseed-'))
+  const result = spawnSync('npm', ['pack', '--pack-destination', dest], {
+    cwd: path.join(root, 'packages', pkgDir),
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024
+  })
+  if (result.status !== 0) {
+    throw new Error(`npm pack failed: ${String(result.stderr).trim()}`)
+  }
+  const produced = fs.readdirSync(dest).filter((f) => f.endsWith('.tgz'))
+  if (produced.length !== 1) {
+    throw new Error(`npm pack produced ${produced.length} tarballs`)
+  }
+  const bytes = fs.readFileSync(path.join(dest, produced[0]))
+  fs.rmSync(dest, {recursive: true, force: true})
+  return bytes
+}
+
 function setVersion(root, pkgDir, version) {
   const file = path.join(root, 'packages', pkgDir, 'package.json')
   const manifest = JSON.parse(fs.readFileSync(file, 'utf8'))
@@ -1395,7 +1523,7 @@ const STOP = Symbol('self-test-stop')
  * exists only so a mutant run costs the rungs up to its target rather than all of them;
  * the BASELINE run never sets it, so every scenario is always exercised.
  */
-async function runSelfTest({mutant = null, verbose = true, stopAfter = null} = {}) {
+async function runSelfTest({mutation = null, verbose = true, stopAfter = null} = {}) {
   const registry = startToyRegistry()
   const registryUrl = await registry.listen()
   const root = buildFixture(registryUrl)
@@ -1406,8 +1534,15 @@ async function runSelfTest({mutant = null, verbose = true, stopAfter = null} = {
     }
   }
 
+  // The suite runs against a PATCHED COPY of this file, never against a branch inside it.
+  // `scriptPath` is what S13 spawns, so the process-exit boundary is exercised on the same
+  // artifact every other scenario evaluates in-process.
+  const mutantDir = mutation ? fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-mutation-')) : null
+  const scriptPath = mutation ? writeMutatedScript(mutation, mutantDir) : fileURLToPath(import.meta.url)
+  const evaluator = mutation ? await import(pathToFileURL(scriptPath).href) : {runGate}
+
   const gate = (overrides = {}) =>
-    runGate({repoRoot: root, registry: registryUrl, scope: '@toy', token: 'selftest-token', useCache: false, concurrency: 2, mutant, ...overrides})
+    evaluator.runGate({repoRoot: root, registry: registryUrl, scope: '@toy', token: 'selftest-token', useCache: false, concurrency: 2, ...overrides})
 
   const check = (id, ok, detail) => {
     if (ok) {
@@ -1430,7 +1565,7 @@ async function runSelfTest({mutant = null, verbose = true, stopAfter = null} = {
   const expect = (id, result, name, verdict, exitClass) => {
     const found = row(result, name)
     const got = found
-      ? `${found.verdict}/class=${found.exitClass}/process=${result.exitCode}`
+      ? `${found.verdict}/class=${found.exitClass}/process=${result.exitCode}${found.reason ? ` — ${found.reason}` : ''}`
       : `<no row for ${name}>`
     check(id, found?.verdict === verdict && found?.exitClass === exitClass && result.exitCode >= exitClass,
       `expected ${verdict}/class=${exitClass}, got ${got}`)
@@ -1489,6 +1624,51 @@ async function runSelfTest({mutant = null, verbose = true, stopAfter = null} = {
     check('S2 names the differing payload path', (row(result, '@toy/leaf').differingFiles ?? []).includes('dist/index.js'),
       `differingFiles=${JSON.stringify(row(result, '@toy/leaf').differingFiles)}`)
 
+    // S13 — THE PROCESS-EXIT BOUNDARY (finding X2). Every assertion above reads
+    // runGate()'s RETURN VALUE; not one of them observes what the process actually does.
+    // A one-line change at the exit-assignment site at the bottom of this file (assign 0
+    // instead of the computed code) therefore left the entire suite green while the gate
+    // exited 0 on the real drift S2 just created. This is the only rung that spawns the
+    // script as a real OS process and reads its actual status, and it is the only thing
+    // the `exitcode` mutation breaks.
+    //
+    // It doubles as the X8 regression: --json must put THE DOCUMENT AND NOTHING ELSE on
+    // stdout. Before the fix, turbo's build log preceded it and JSON.parse threw.
+    // ASYNCHRONOUSLY, deliberately. The toy registry is an http server on THIS process's
+    // event loop, so a synchronous spawnSync would block it and the child's packument
+    // fetch would time out — the child would report INDETERMINATE for a reason that has
+    // nothing to do with the code under test. (Measured: UND_ERR_HEADERS_TIMEOUT, and the
+    // half-open socket then poisoned the next in-process rung with ECONNRESET.)
+    const spawned = await new Promise((resolve) => {
+      execFile(process.execPath, [
+        scriptPath,
+        '--lane=branch',
+        `--repo-root=${root}`,
+        `--registry=${registryUrl}`,
+        '--scope=@toy',
+        '--no-cache',
+        '--no-build',
+        '--json'
+      ], {encoding: 'utf8', env: {...process.env, DRIFT_REGISTRY_TOKEN: 'selftest-token'}, maxBuffer: 64 * 1024 * 1024}, (error, stdout, stderr) => {
+        resolve({status: error ? (typeof error.code === 'number' ? error.code : null) : 0, signal: error?.signal ?? null, stdout, stderr})
+      })
+    })
+    check('S13 the real process exits 2 on a real drift', spawned.status === 2,
+      `spawned exit=${spawned.status} signal=${spawned.signal ?? 'none'} stderr=${String(spawned.stderr).trim().split('\n').slice(-3).join(' / ')}`)
+    let spawnedDoc = null
+    try {
+      spawnedDoc = JSON.parse(spawned.stdout)
+    } catch (err) {
+      spawnedDoc = {parseError: err.message}
+    }
+    check('S13 --json stdout is a parseable document and nothing else (X8)', spawnedDoc?.parseError === undefined,
+      `JSON.parse(stdout) failed: ${spawnedDoc?.parseError} — first 80 bytes ${JSON.stringify(spawned.stdout.slice(0, 80))}`)
+    const spawnedLeaf = spawnedDoc?.rows?.find((r) => r.name === '@toy/leaf')
+    check('S13 the spawned document agrees with the in-process verdict', spawnedLeaf?.verdict === 'DRIFT' && spawnedDoc?.exitCode === 2,
+      `document reported ${JSON.stringify(spawnedLeaf?.verdict)} / exitCode ${spawnedDoc?.exitCode}${spawnedLeaf?.reason ? ` — ${spawnedLeaf.reason}` : ''}`)
+    check('S13 the document declares the digest spec version it was produced under', spawnedDoc?.specVersion === SPEC_VERSION,
+      `specVersion=${spawnedDoc?.specVersion}, expected ${SPEC_VERSION}`)
+
     // S3 — bump to an unpublished version.
     setVersion(root, 'leaf', '1.0.1')
     commitAll(root, 'bump leaf')
@@ -1515,6 +1695,31 @@ async function runSelfTest({mutant = null, verbose = true, stopAfter = null} = {
     registry.publish('@toy/dependent', '1.0.1', await packFixture(root, 'dependent'))
     result = await gate()
     expect('S7b cascade resolved by bump + publish', result, '@toy/dependent', 'CLEAN', 0)
+
+    // S14 — THE X3 REGRESSION, END TO END. A package whose registry copy was uploaded by
+    // `npm publish` (which strips NOTHING) but whose HEAD is measured by `pnpm pack`
+    // (which deletes six publish-only lifecycle scripts). Nothing about the package has
+    // changed, so the truth is CLEAN — but an engine without the spec-v3 script rule sees
+    // a manifest difference and reports DRIFT on a perfectly clean package. That was live
+    // in this estate on @j0nathan-ll0yd/portal-contract, and this repo's own
+    // packages/config publishes the same way. `prepublish` is present deliberately:
+    // NEITHER tool strips it, so it must survive normalization on both sides.
+    fs.mkdirSync(path.join(root, 'packages', 'npmpub', 'src'), {recursive: true})
+    writeJson(path.join(root, 'packages', 'npmpub', 'package.json'), {
+      name: '@toy/npmpub',
+      version: '1.0.0',
+      files: ['dist'],
+      publishConfig: {registry: registryUrl},
+      scripts: {build: 'node ../../build.js', prepack: 'node -e ""', prepublishOnly: 'node -e ""', prepublish: 'node -e ""'}
+    })
+    fs.writeFileSync(path.join(root, 'packages', 'npmpub', 'src', 'index.js'), 'module.exports = 3\n')
+    commitAll(root, 'add npm-published package')
+    if (!runWorkspaceBuild(root).ok) {
+      throw new Error('fixture build failed before S14')
+    }
+    registry.publish('@toy/npmpub', '1.0.0', npmPackFixture(root, 'npmpub'))
+    result = await gate({build: false})
+    expect('S14 npm-published reference vs pnpm-packed head is CLEAN', result, '@toy/npmpub', 'CLEAN', 0)
 
     // S6 — a bump whose source edit never reaches the payload. `docs/notes.md` is
     // outside files[] and is not one of npm's injected root files, so the packed
@@ -1612,48 +1817,129 @@ async function runSelfTest({mutant = null, verbose = true, stopAfter = null} = {
   } finally {
     await registry.close().catch(() => {})
     fs.rmSync(root, {recursive: true, force: true})
+    if (mutantDir) {
+      fs.rmSync(mutantDir, {recursive: true, force: true})
+    }
   }
 
   return failures
 }
 
 /**
- * mutant id -> the scenario id prefix it MUST break. Every one of these is a mutation
- * of the SHIPPED evaluator, not of a test double; if a mutant survives, the suite
- * cannot see a defect of that class and --self-test fails.
+ * MUTATIONS ARE PATCHES OF THE SOURCE TEXT, NOT BRANCHES IN IT (finding X11).
+ *
+ * The previous generation threaded a `mutant` parameter through runGate() and packOne()
+ * and wrote `if (mutant === 'nocanon')` inline. That has two defects that matter: the
+ * SHIPPED binary carried test-only branches, and each mutant exercised a DIFFERENT
+ * expression from the one production evaluates — so a mutant could be "killed" while the
+ * production expression beside it stayed broken.
+ *
+ * Here each entry names a literal fragment of THIS file. `writeMutatedScript` asserts the
+ * anchor matches EXACTLY ONCE (an anchor that drifted out of the source, or that became
+ * ambiguous, is a hard error rather than a silently skipped mutation), applies the patch
+ * to a temp copy, and the suite runs against that copy. Production code carries nothing.
+ *
+ * `scenario` is the id prefix the mutation MUST break; if it survives, --self-test fails.
  */
-const MUTANTS = {
+// ---8<--- MUTATION TABLE BEGIN (this region is excluded from the anchor search, because
+// it quotes every anchor verbatim and would otherwise make all of them ambiguous) ---8<---
+const MUTATIONS = {
   // The direct analogue of the `<head> <head>` mutation that the previous generation
   // could not see: short-circuit the reference to the local payload.
-  selfref: 'S2',
-  // Compare raw tarball bytes instead of the canonical digest.
-  rawbytes: 'S1 clean baseline (leaf)',
-  // Use `npm pack`, which never rewrites workspace:* .
-  npmpack: 'S1 clean baseline (dependent)',
-  // Map a registry fetch() failure to "nothing published, so fine".
-  swallow: 'S0',
+  selfref: {
+    scenario: 'S2',
+    anchor: 'const refCompare = reference ? (strictMaps ? reference.strictPerFile : reference.effectivePerFile) : null',
+    replacement: 'const refCompare = reference ? headEffectivePerFile : null'
+  },
+  // Compare raw tarball bytes instead of the canonical digest. MEASURED: three
+  // consecutive packs of one unedited tree give three different tarball hashes.
+  rawbytes: {
+    scenario: 'S1 clean baseline (leaf)',
+    anchor: 'const refDigest = refCompare ? digestOf(refCompare) : null\n      const headDigest = effectiveDigest',
+    replacement: 'const refDigest = reference ? `raw:${reference.version}` : null\n      const headDigest = `raw:${sha256(bytes)}`'
+  },
+  // Use `npm pack`, which never rewrites workspace:* to a concrete version.
+  npmpack: {scenario: 'S1 clean baseline (dependent)', anchor: "const cmd = 'pnpm'", replacement: "const cmd = 'npm'"},
+  // Map a registry fetch() failure to "nothing published, so fine" — the A2b silent pass.
+  swallow: {
+    scenario: 'S0',
+    anchor: 'packuments.set(member.name, await fetchPackument(registry, member.name, authToken))',
+    replacement: 'const probe = await fetchPackument(registry, member.name, authToken)\n' +
+      "    packuments.set(member.name, probe.kind === 'ok' ? probe : {kind: 'ok', versions: {}})"
+  },
   // Skip the recursive key sort in canonicalize().
-  nocanon: 'S1b',
+  nocanon: {scenario: 'S1b', anchor: 'const canonical = canonicalize(parsed)', replacement: 'const canonical = parsed'},
   // Skip the leak screen.
-  noleak: 'S8 gitignored',
+  noleak: {
+    scenario: 'S8 gitignored',
+    anchor: 'leaked = leakScreen([...headFiles.keys()], {tracked: gitTrackedFiles(repoRoot, member.path), outputs})',
+    replacement: 'leaked = []'
+  },
   // Retain `version` in the canonical manifest.
-  versionkept: 'S6'
+  versionkept: {scenario: 'S6', anchor: 'delete canonical.version', replacement: 'void canonical.version'},
+  // Drop the six publish-only lifecycle scripts rule — the pre-spec-v3 behaviour that
+  // reported DRIFT on an npm-published package whose HEAD is exactly what is published.
+  keepscripts: {
+    scenario: 'S14',
+    anchor: 'for (const name of PUBLISH_ONLY_SCRIPTS) {\n      delete canonical.scripts[name]\n    }',
+    replacement: 'void PUBLISH_ONLY_SCRIPTS'
+  },
+  // THE PROCESS-EXIT BOUNDARY (finding X2). Every other assertion in this file, and every
+  // unit test, reads runGate()'s return value — so this one line could be changed to
+  // `= 0` and the entire suite would stay green while the gate exited 0 on real drift.
+  // Only S13, which SPAWNS this file as a real process, reads the actual exit status.
+  exitcode: {scenario: 'S13', anchor: 'process.exitCode = code', replacement: 'process.exitCode = 0'}
+}
+// ---8<--- MUTATION TABLE END ---8<---
+
+/**
+ * Writes a one-patch copy of this file into `dir` and returns its path.
+ *
+ * The anchor must match EXACTLY ONCE outside the table region — otherwise the mutation is
+ * not testing what it claims to test, and that is a hard error rather than a silently
+ * skipped mutation. The table itself is excluded from the search because it necessarily
+ * quotes every anchor verbatim; this function is defined after the END marker, so its own
+ * references to the marker strings are outside the excluded slice and harmless.
+ */
+function writeMutatedScript(id, dir) {
+  const {anchor, replacement} = MUTATIONS[id]
+  const source = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8')
+  const start = source.indexOf('MUTATION TABLE BEGIN')
+  const end = source.indexOf('MUTATION TABLE END')
+  if (start < 0 || end <= start) {
+    throw new Error('the mutation table markers are missing or out of order — anchors cannot be searched safely')
+  }
+  const before = source.slice(0, start)
+  const table = source.slice(start, end)
+  const after = source.slice(end)
+  const hits = before.split(anchor).length - 1 + (after.split(anchor).length - 1)
+  if (hits !== 1) {
+    throw new Error(`mutation ${id}: anchor matched ${hits} time(s) outside the table, expected exactly 1 — the anchor has drifted out of the source`)
+  }
+  const patched = before.includes(anchor)
+    ? before.replace(anchor, replacement) + table + after
+    : before + table + after.replace(anchor, replacement)
+  fs.mkdirSync(dir, {recursive: true})
+  const file = path.join(dir, 'check-package-drift.mjs')
+  fs.writeFileSync(file, patched)
+  return file
 }
 
-async function selfTestCommand({mutant}) {
-  if (mutant) {
-    if (!(mutant in MUTANTS)) {
-      console.error(`unknown mutant ${mutant}; known: ${Object.keys(MUTANTS).join(', ')}`)
+async function selfTestCommand({mutation}) {
+  if (mutation) {
+    if (!(mutation in MUTATIONS)) {
+      console.error(`unknown mutation ${mutation}; known: ${Object.keys(MUTATIONS).join(', ')}`)
       return 1
     }
-    console.log(`\nself-test with mutant=${mutant} (expected to FAIL at "${MUTANTS[mutant]}")\n`)
-    const failures = await runSelfTest({mutant, stopAfter: MUTANTS[mutant]})
-    const relevant = failures.filter((f) => f.startsWith(MUTANTS[mutant]))
+    const {scenario} = MUTATIONS[mutation]
+    console.log(`\nself-test with mutation=${mutation} (expected to FAIL at "${scenario}")\n`)
+    const failures = await runSelfTest({mutation, stopAfter: scenario})
+    const relevant = failures.filter((f) => f.startsWith(scenario))
     if (relevant.length === 0) {
-      console.error(`\nMUTANT ${mutant} SURVIVED — the suite cannot detect it. That is a build failure.\n`)
+      console.error(`\nMUTATION ${mutation} SURVIVED — the suite cannot detect it. That is a build failure.\n`)
       return 1
     }
-    console.log(`\nmutant ${mutant} killed by ${relevant.length} assertion(s) at ${MUTANTS[mutant]}*.\n`)
+    console.log(`\nmutation ${mutation} killed by ${relevant.length} assertion(s) at ${scenario}*.\n`)
     return 0
   }
 
@@ -1667,11 +1953,13 @@ async function selfTestCommand({mutant}) {
     }
     return 1
   }
-  console.log('\nbaseline green. Now proving the suite CAN fail (A2b) — 7 mutants:\n')
+  const ids = Object.keys(MUTATIONS)
+  console.log(`\nbaseline green. Now proving the suite CAN fail (A2b) — ${ids.length} source mutations:\n`)
 
   let survivors = 0
-  for (const [id, scenario] of Object.entries(MUTANTS)) {
-    const failures = await runSelfTest({mutant: id, verbose: false, stopAfter: scenario})
+  for (const id of ids) {
+    const {scenario} = MUTATIONS[id]
+    const failures = await runSelfTest({mutation: id, verbose: false, stopAfter: scenario})
     const killed = failures.find((f) => f.startsWith(scenario)) ?? null
     if (killed) {
       console.log(`  killed    ${id.padEnd(12)} by ${killed.split(' — ')[0]}`)
@@ -1681,10 +1969,10 @@ async function selfTestCommand({mutant}) {
     }
   }
   if (survivors > 0) {
-    console.error(`\nself-test FAILED: ${survivors} mutant(s) survived.\n`)
+    console.error(`\nself-test FAILED: ${survivors} mutation(s) survived.\n`)
     return 1
   }
-  console.log(`\nself-test passed: baseline green, all 7 mutants killed (${((Date.now() - started) / 1000).toFixed(1)}s).\n`)
+  console.log(`\nself-test passed: baseline green, all ${ids.length} mutations killed (${((Date.now() - started) / 1000).toFixed(1)}s).\n`)
   return 0
 }
 
@@ -1693,7 +1981,19 @@ async function selfTestCommand({mutant}) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function parseArgs(argv) {
-  const opts = {lane: 'branch', json: false, strictMaps: false, useCache: true, build: true, selfTest: false, mutant: null, help: false}
+  const opts = {
+    lane: 'branch',
+    json: false,
+    strictMaps: false,
+    useCache: true,
+    build: true,
+    selfTest: false,
+    mutation: null,
+    repoRoot: null,
+    registry: null,
+    scope: null,
+    help: false
+  }
   for (const arg of argv) {
     if (arg === '--') {
       // POSIX end-of-options marker. pnpm 11 forwards a bare `--` from
@@ -1710,8 +2010,20 @@ export function parseArgs(argv) {
       opts.build = false
     } else if (arg === '--self-test') {
       opts.selfTest = true
-    } else if (arg.startsWith('--mutant=')) {
-      opts.mutant = arg.slice('--mutant='.length)
+    } else if (arg.startsWith('--mutation=')) {
+      opts.mutation = arg.slice('--mutation='.length)
+    } else if (arg.startsWith('--repo-root=')) {
+      // Point the gate at another checkout. Exists so the end-to-end exit-code test can
+      // spawn THIS file as a real process against a throwaway fixture repo (finding X2).
+      opts.repoRoot = arg.slice('--repo-root='.length)
+    } else if (arg.startsWith('--registry=')) {
+      // Same reason. A wrong value can only ever produce INDETERMINATE / exit 3 (A2b),
+      // never a pass, so this cannot be used to launder a green run.
+      opts.registry = arg.slice('--registry='.length)
+    } else if (arg.startsWith('--scope=')) {
+      // Same reason. `pnpm list --json` does not report publishConfig, so scope is the
+      // only classifier available to a spawned run over a fixture workspace.
+      opts.scope = arg.slice('--scope='.length)
     } else if (arg.startsWith('--lane=')) {
       opts.lane = arg.slice('--lane='.length)
     } else if (arg === '--help' || arg === '-h') {
@@ -1742,13 +2054,18 @@ async function main(argv) {
     return selfTestCommand(opts)
   }
 
-  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+  const repoRoot = opts.repoRoot ? path.resolve(opts.repoRoot) : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
   const result = await runGate({
     repoRoot,
+    ...(opts.registry ? {registry: opts.registry} : {}),
+    ...(opts.scope ? {scope: opts.scope} : {}),
     lane: opts.lane,
     strictMaps: opts.strictMaps,
     useCache: opts.useCache,
     build: opts.build,
+    // Under --json, STDOUT CARRIES THE DOCUMENT AND NOTHING ELSE. Progress lines are
+    // suppressed and the workspace build's stdout is redirected to stderr (finding X8).
+    quiet: opts.json,
     log: opts.json ? () => {} : (line) => console.log(`[drift] ${line}`)
   })
   if (opts.json) {

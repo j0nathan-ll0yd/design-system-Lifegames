@@ -46,8 +46,14 @@ MARKERS=(
 # use them as the standard "obviously synthetic" email convention throughout
 # this repo (e.g. Sources/LifegamesWidgets/Resources/widgets/media/*.json),
 # and a real leak would essentially never land on a reserved domain.
+# The same RFC also reserves the .test/.example/.invalid/.localhost TLDs, which
+# are guaranteed never to resolve; check-package-drift.mjs's self-test uses
+# @example.invalid for the throwaway git repo's committer identity. Excluding
+# them by TLD keeps the email check ACTIVE on those files, which allowlisting
+# the path would not — an allowlist entry suppresses the check for the whole
+# file, including any real address added to it later.
 EMAIL_REGEX='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
-EMAIL_ALLOW_REGEX='(webmaster@lifegames\.org|(^|[^a-zA-Z])[Nn]o-?[Rr]eply@|@no-?reply\.|@example\.(com|org|net))'
+EMAIL_ALLOW_REGEX='(webmaster@lifegames\.org|(^|[^a-zA-Z])[Nn]o-?[Rr]eply@|@no-?reply\.|@example\.(com|org|net)|@[A-Za-z0-9.-]+\.(test|example|invalid|localhost)([^A-Za-z0-9.-]|$))'
 
 # US-style phone number pattern: NNN-NNN-NNNN / (NNN) NNN-NNNN / NNN.NNN.NNNN,
 # optionally prefixed +1. (Not spelled out as a literal example here so this

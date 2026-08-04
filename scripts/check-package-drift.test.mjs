@@ -16,8 +16,15 @@
  *
  * The observation layer is covered by `node scripts/check-package-drift.mjs
  * --self-test`, which stands up a throwaway git repo and an offline registry, runs
- * the SHIPPED pipeline end to end against them, and then re-runs it under seven
- * deliberate mutations of the real evaluator — failing if any mutant survives.
+ * the SHIPPED pipeline end to end against them, and then re-runs it under nine
+ * deliberate SOURCE-TEXT mutations of the real evaluator — failing if any survives.
+ *
+ * THE PROCESS-EXIT BOUNDARY IS NOT COVERED HERE, DELIBERATELY. Nothing in this file
+ * spawns the script, so `process.exitCode = code` could be changed to `= 0` and every
+ * test here would stay green while the gate exited 0 on real drift (finding X2). That
+ * boundary is covered by --self-test scenario S13, which spawns the script as a real
+ * OS process against a fixture holding a known drift and reads its actual status; the
+ * `exitcode` mutation proves S13 can fail.
  */
 
 import assert from 'node:assert/strict'
@@ -27,91 +34,122 @@ import test from 'node:test'
 import {fileURLToPath} from 'node:url'
 import zlib from 'node:zlib'
 
+import {assertFixtureIntegrity, runConformance} from './fixtures/drift-conformance-runner.mjs'
 import {
   assertBuildOutputs,
   canonicalize,
   compareSemver,
   decideVerdict,
   differingFiles,
-  digestOf,
+  DRIFT_CONFORMANCE_SHA256,
   exitClassFor,
-  fileDigests,
   globToRegExp,
+  isDeadSourceMap,
   isDeclaredOutput,
   LANES,
   leakScreen,
   normalizeEntry,
   parseArgs,
+  payloadDigests,
+  PUBLISH_ONLY_SCRIPTS,
   readTarball,
   resolveToken,
   semverMax,
-  SPEC_VERSION,
-  unresolvableMaps
+  SPEC_VERSION
 } from './check-package-drift.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const conformance = JSON.parse(fs.readFileSync(path.join(here, 'fixtures/drift-conformance.json'), 'utf8'))
+const conformanceBytes = fs.readFileSync(path.join(here, 'fixtures/drift-conformance.json'))
+const conformance = JSON.parse(conformanceBytes.toString('utf8'))
 const tmpdir = (prefix) => fs.mkdtempSync(path.join(process.env.TMPDIR ?? '/tmp', prefix))
-
-const toFileMap = (files) => new Map(Object.entries(files).map(([p, data]) => [p, Buffer.from(data, 'base64')]))
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Cross-implementation conformance vectors
+//
+// THE FIXTURE AND THE RUNNER ARE VENDORED VERBATIM from the single source of truth,
+// atlas/contracts/package-digest/. There used to be three files called
+// drift-conformance.json in this estate — atlas (25 cases, specVersion 1),
+// design-system (21 cases, specVersion 1) and mantle (20 cases, specVersion 2) — no
+// two of which shared content OR a spec version, so nothing could detect that the three
+// engines had silently diverged on what a package.json hashes to (findings X5 and X7).
+// One fixture, one runner, one number: same specVersion <=> byte-identical normalization.
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('conformance: the vector file is pinned to this implementation SPEC_VERSION', () => {
-  // If this fails, someone changed the digest spec without bumping SPEC_VERSION.
-  // Stale reference digests would then survive in developer caches (keyed on
-  // v<SPEC_VERSION>) and produce wrong verdicts locally while CI, with a fresh
-  // node_modules, is correct — a divergence that is very hard to diagnose.
-  assert.equal(conformance.specVersion, SPEC_VERSION)
+test('conformance: the vendored fixture matches the checksum this implementation pins', () => {
+  // Layer 1 of three. Editing the vendored fixture without editing
+  // DRIFT_CONFORMANCE_SHA256 beside the engine turns this red immediately — which is
+  // what makes vendoring safe rather than merely convenient. (Layer 2 is the atlas host
+  // audit that re-hashes every repo's vendored copy against the SoT; layer 3 is
+  // `build-fixture.mjs --check` in atlas CI.)
+  assert.deepEqual(assertFixtureIntegrity(conformanceBytes, DRIFT_CONFORMANCE_SHA256), [])
 })
 
-test('conformance: every vector reproduces its expected digests byte for byte', () => {
-  assert.ok(conformance.cases.length >= 20, 'expected at least 20 vectors')
-  for (const vector of conformance.cases) {
-    const files = toFileMap(vector.files)
-    assert.equal(digestOf(fileDigests(files)), vector.expectedStrictDigest, `strict: ${vector.id}`)
-    assert.equal(digestOf(fileDigests(files, unresolvableMaps(files))), vector.expectedEffectiveDigest, `effective: ${vector.id}`)
-  }
+test('conformance: all 34 shared vectors pass under the SHARED runner', () => {
+  assert.equal(conformance.cases.length, 34)
+  const failures = runConformance({
+    fixture: conformance,
+    specVersion: SPEC_VERSION,
+    normalizeEntry,
+    payloadDigests: (files, exclude) => payloadDigests(files, exclude)
+  })
+  assert.deepEqual(failures, [])
 })
 
 /**
- * The vectors above lock this implementation against the OTHER implementations of
- * the same rule (atlas, mantle). On their own they cannot tell a correct digest
- * from a consistently wrong one, so the relations they exist to express are
- * asserted here independently of the recorded values.
+ * The runner asserts specVersion as case zero and short-circuits, so an X7-class
+ * mismatch is one loud failure rather than 34 confusing ones. Proven here rather than
+ * assumed, because the whole value of the number rests on it.
  */
-test('conformance: the relations the vectors exist to pin', () => {
-  const strict = Object.fromEntries(conformance.cases.map((c) => [c.id, c.expectedStrictDigest]))
-  const effective = Object.fromEntries(conformance.cases.map((c) => [c.id, c.expectedEffectiveDigest]))
+test('conformance: a wrong SPEC_VERSION short-circuits with exactly one message', () => {
+  const failures = runConformance({fixture: conformance, specVersion: SPEC_VERSION + 1, normalizeEntry, payloadDigests})
+  assert.equal(failures.length, 1)
+  assert.match(failures[0], /^SPEC_VERSION: implementation is 4, fixture is 3$/)
+})
 
-  // pnpm reinserts workspace dependency keys in resolution-completion order, so
-  // the same unedited tree packs with different key order on consecutive runs.
-  assert.equal(strict['manifest-key-order-a'], strict['manifest-key-order-b'])
-  assert.equal(strict['nested-object-key-order'], strict['nested-object-key-order-reversed'])
+/**
+ * The vectors lock this implementation against the other two. On their own they cannot
+ * tell a correct digest from a consistently wrong one, so the relations they exist to
+ * express are asserted here independently of the recorded values — and, critically, the
+ * vectors that the PREVIOUS design-system rule failed are named explicitly.
+ */
+test('conformance: the relations the shared vectors exist to pin', () => {
+  const byId = Object.fromEntries(conformance.cases.map((c) => [c.id, c]))
+  const verdictOf = (id) => byId[id].expect.verdict
 
-  // The top-level version is deleted; NESTED dependency versions are kept, which
-  // is the entire mechanism by which the workspace cascade is detected.
-  assert.equal(strict['manifest-key-order-a'], strict['manifest-version-differs'])
-  assert.notEqual(strict['manifest-key-order-a'], strict['nested-dependency-version-differs'])
+  // THE X3 REGRESSION VECTOR, built from the real published portal-contract@1.0.0 bytes:
+  // an npm-published registry manifest vs a pnpm-packed head of the SAME source. Truth is
+  // CLEAN. The old design-system rule (normalize nothing) reported DRIFT here — a false
+  // positive on a package that is exactly what is published.
+  assert.equal(verdictOf('cmp-npm-published-vs-pnpm-packed-is-clean'), 'CLEAN')
+  // ...and the six-script rule must not over-strip into scripts a consumer actually runs,
+  // nor into legacy `prepublish`, which NEITHER pack tool removes.
+  assert.equal(verdictOf('cmp-postinstall-edit-is-drift'), 'DRIFT')
+  assert.equal(verdictOf('cmp-legacy-prepublish-edit-is-drift'), 'DRIFT')
+  // The workspace cascade — a sibling moving 1.0.0 -> 1.0.1 with no source file changing
+  // — is the signal this gate exists for and must survive normalization.
+  assert.equal(verdictOf('cmp-nested-dep-cascade-is-drift'), 'DRIFT')
+  // publishConfig hoisting is the same class of tool asymmetry but is deliberately NOT
+  // normalized; this vector stops anyone quietly normalizing it later.
+  assert.equal(verdictOf('cmp-publishconfig-edit-is-drift'), 'DRIFT')
+  // pnpm's `"scripts": {}`, npm's full object and an absent key are one equivalence class.
+  assert.equal(verdictOf('cmp-empty-scripts-vs-absent-scripts-is-clean'), 'CLEAN')
+  // Formatting and key order are not drift; array order and a nested manifest's version are.
+  assert.equal(verdictOf('cmp-formatting-and-key-order-is-clean'), 'CLEAN')
+  assert.equal(verdictOf('cmp-files-array-reorder-is-drift'), 'DRIFT')
+  assert.equal(verdictOf('cmp-nested-manifest-version-edit-is-drift'), 'DRIFT')
+  // A malformed manifest must report a difference and must NOT throw. This implementation
+  // threw a SyntaxError here before spec v3.
+  assert.equal(verdictOf('cmp-malformed-manifest-edit-is-drift'), 'DRIFT')
+  // A difference confined to an unresolvable map moves strictDigest but not effectiveDigest.
+  assert.equal(verdictOf('cmp-dead-map-only-difference-is-clean-on-effective'), 'CLEAN')
+})
 
-  // Arrays are order-significant; file insertion order is not.
-  assert.notEqual(strict['array-order-is-significant'], strict['array-order-reversed'])
-  assert.equal(strict['nested-dirs'], strict['path-sort-is-lexicographic'])
-
-  // Non-manifest files are raw bytes: CRLF is a different payload from LF.
-  assert.notEqual(strict['crlf-content'], strict['lf-content'])
-
-  // A map whose sources[] resolve inside the payload is real payload.
-  assert.equal(strict['map-with-resolvable-sources'], effective['map-with-resolvable-sources'])
-  // A map whose sources[] all resolve outside it is dead weight for every consumer.
-  assert.notEqual(strict['map-with-unresolvable-sources'], effective['map-with-unresolvable-sources'])
-  // The decisive pair: only `mappings` differs (the comment-shifted-VLQ case).
-  // strictDigest sees it, effectiveDigest does not — which is exactly the choice
-  // between "a comment-only edit needs a version bump" and "it does not".
-  assert.notEqual(strict['map-with-unresolvable-sources'], strict['map-with-unresolvable-sources-different-mappings'])
-  assert.equal(effective['map-with-unresolvable-sources'], effective['map-with-unresolvable-sources-different-mappings'])
+test('the stripped set is exactly the six scripts pnpm pack removes — prepublish is NOT one', () => {
+  assert.deepEqual([...PUBLISH_ONLY_SCRIPTS], ['postpack', 'postpublish', 'prepack', 'prepare', 'prepublishOnly', 'publish'])
+  assert.ok(!PUBLISH_ONLY_SCRIPTS.includes('prepublish'), 'legacy prepublish must survive — neither pack tool strips it')
+  for (const consumerRun of ['preinstall', 'install', 'postinstall']) {
+    assert.ok(!PUBLISH_ONLY_SCRIPTS.includes(consumerRun), `${consumerRun} runs on a consumer machine and must be hashed`)
+  }
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -141,20 +179,65 @@ test('normalizeEntry keeps nested dependency versions (the cascade signal)', () 
   assert.match(normalizeEntry('package.json', manifest).toString(), /"@s\/dep":"1\.0\.1"/)
 })
 
-test('differingFiles reports additions, removals and modifications, sorted', () => {
-  assert.deepEqual(differingFiles({a: '1', b: '1', c: '1'}, {a: '1', b: '2', d: '1'}), [
-    'b',
-    'c',
-    'd'
-  ])
+test('normalizeEntry falls back to raw bytes instead of throwing on an unusable manifest', () => {
+  // The old rule called JSON.parse with no try/catch, so a malformed manifest crashed
+  // the gate where the other two implementations reported a difference.
+  const malformed = Buffer.from('{"name":"x",}')
+  assert.equal(normalizeEntry('package.json', malformed).toString(), '{"name":"x",}')
+  const notAnObject = Buffer.from('["not","a","manifest"]')
+  assert.equal(normalizeEntry('package.json', notAnObject).toString(), '["not","a","manifest"]')
 })
 
-test('unresolvableMaps ignores a map with no sources and one that is not JSON', () => {
+test('normalizeEntry collapses the three spellings of "no runnable scripts"', () => {
+  const withOnlyPublishScripts = normalizeEntry('package.json', Buffer.from('{"name":"x","scripts":{"prepack":"tsc"}}')).toString()
+  const withEmptyScripts = normalizeEntry('package.json', Buffer.from('{"name":"x","scripts":{}}')).toString()
+  const withNoScripts = normalizeEntry('package.json', Buffer.from('{"name":"x"}')).toString()
+  assert.equal(withOnlyPublishScripts, '{"name":"x"}')
+  assert.equal(withEmptyScripts, '{"name":"x"}')
+  assert.equal(withNoScripts, '{"name":"x"}')
+})
+
+test('differingFiles reports additions, removals and modifications, sorted', () => {
+  const left = new Map([['a', '1'], ['b', '1'], ['c', '1']])
+  const right = new Map([['a', '1'], ['b', '2'], ['d', '1']])
+  assert.deepEqual(differingFiles(left, right), ['b', 'c', 'd'])
+})
+
+test('isDeadSourceMap ignores a map with no sources and one that is not JSON', () => {
   const files = new Map([
     ['dist/a.js.map', Buffer.from('{"version":3,"mappings":"AAAA"}')],
     ['dist/b.js.map', Buffer.from('nonsense')]
   ])
-  assert.deepEqual([...unresolvableMaps(files)], [])
+  assert.deepEqual(payloadDigests(files).deadMaps, [])
+})
+
+test('isDeadSourceMap honours sourceRoot and never kills a data: source', () => {
+  const packed = new Set(['dist/a.js.map', 'src/a.ts'])
+  // Without sourceRoot the source resolves to dist/a.ts, which is NOT packed; with it,
+  // to src/a.ts, which is. Ignoring sourceRoot would wrongly call this map dead and drop
+  // a real payload file out of the effective digest.
+  assert.equal(isDeadSourceMap('dist/a.js.map', Buffer.from('{"sourceRoot":"../src","sources":["a.ts"]}'), packed), false)
+  assert.equal(isDeadSourceMap('dist/a.js.map', Buffer.from('{"sources":["a.ts"]}'), packed), true)
+  // Inlined content is always resolvable.
+  assert.equal(isDeadSourceMap('dist/a.js.map', Buffer.from('{"sources":["data:text/plain,hi"]}'), packed), false)
+})
+
+test('a map with even ONE resolvable source stays in the effective digest', () => {
+  // The conservative direction: keeping a file can only cause a report, never suppress
+  // one. (mantle dropped a map when ANY source was missing — the unsafe direction.)
+  const files = new Map([
+    ['dist/a.js', Buffer.from('x')],
+    ['dist/a.js.map', Buffer.from('{"sources":["a.js","../elsewhere/gone.ts"]}')]
+  ])
+  assert.deepEqual(payloadDigests(files).deadMaps, [])
+})
+
+test('payloadDigests excludes leak-screen hits entirely from both digests', () => {
+  const files = new Map([['dist/a.js', Buffer.from('x')], ['src/.omc/scratch.json', Buffer.from('{}')]])
+  const withLeak = payloadDigests(files, new Set(['src/.omc/scratch.json']))
+  const withoutLeak = payloadDigests(new Map([['dist/a.js', Buffer.from('x')]]))
+  assert.equal(withLeak.strictDigest, withoutLeak.strictDigest)
+  assert.equal(withLeak.effectiveDigest, withoutLeak.effectiveDigest)
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -286,7 +369,26 @@ test('parseArgs rejects an unknown flag and an unknown lane rather than ignoring
 })
 
 test('parseArgs defaults to the branch lane with the cache and build enabled', () => {
-  assert.deepEqual(parseArgs([]), {lane: 'branch', json: false, strictMaps: false, useCache: true, build: true, selfTest: false, mutant: null, help: false})
+  assert.deepEqual(parseArgs([]), {
+    lane: 'branch',
+    json: false,
+    strictMaps: false,
+    useCache: true,
+    build: true,
+    selfTest: false,
+    mutation: null,
+    repoRoot: null,
+    registry: null,
+    scope: null,
+    help: false
+  })
+})
+
+test('parseArgs accepts the overrides the end-to-end exit-code test needs', () => {
+  const opts = parseArgs(['--repo-root=/tmp/fixture', '--registry=http://127.0.0.1:9/', '--scope=@toy'])
+  assert.equal(opts.repoRoot, '/tmp/fixture')
+  assert.equal(opts.registry, 'http://127.0.0.1:9/')
+  assert.equal(opts.scope, '@toy')
 })
 
 // ─────────────────────────────────────────────────────────────────────────────

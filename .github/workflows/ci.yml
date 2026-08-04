@@ -119,9 +119,17 @@ jobs:
       # A2b — a gate that can never fail is as dangerous as one that never runs.
       # --self-test stands up a throwaway git repo and an offline registry, runs
       # the SHIPPED pipeline end to end against them, and then re-runs it under
-      # seven deliberate mutations, failing if any mutant survives. It runs FIRST
-      # so a broken evaluator reddens here instead of quietly passing every
+      # nine deliberate SOURCE-TEXT mutations, failing if any survives. It runs
+      # FIRST so a broken evaluator reddens here instead of quietly passing every
       # package below.
+      #
+      # Scenario S13 is the one that SPAWNS the script as a real OS process and
+      # asserts its actual exit status: every other assertion, and every unit
+      # test, reads the pipeline's return value, so the exit site itself was
+      # untested and a one-line change there kept the whole suite green while the
+      # gate exited 0 on real drift (finding X2). It requires npm on PATH as well
+      # as pnpm — S14 seeds the toy registry with `npm pack` to reproduce the
+      # npm-publish/pnpm-pack manifest asymmetry (finding X3) end to end.
       - name: Known-answer self-test (must prove it can fail)
         run: node scripts/check-package-drift.mjs --self-test
       - name: Package payload drift
