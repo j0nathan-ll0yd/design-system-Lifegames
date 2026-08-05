@@ -125,7 +125,14 @@ jobs:
     # must do to land it in any case. If that trade is ever judged wrong, the one-line
     # revert is to restore the sibling `if:` — but then this context MUST NOT be added to
     # branch protection, because a required-and-skippable check is worse than no check.
-    runs-on: [self-hosted, linux, arm64, node]
+    # Github-hosted, NOT the self-hosted fleet: the "Known-answer self-test" step
+    # (dozens of throwaway pnpm builds + an offline registry + 23 source mutations)
+    # exhausts the shared self-hosted arm64 runner's RAM and the OOM killer reaps the
+    # VM mid-step (`runner: null`, `BlobNotFound`) — it dies even running solo. On
+    # engine-change PRs (where the self-test still runs per the paths-filter below)
+    # that is fatal. github-hosted has the headroom, matches the nightly full
+    # self-test (drift-self-test-nightly.yml) and mantle's publish-job pattern.
+    runs-on: ubuntu-latest
     steps:
       - name: Refuse to measure fork-PR code on a self-hosted runner
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
