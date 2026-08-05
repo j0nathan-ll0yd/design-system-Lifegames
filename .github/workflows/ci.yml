@@ -133,6 +133,37 @@ jobs:
           echo "::error title=package-version-drift cannot evaluate a fork PR::This gate builds and packs the workspace on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check - it would claim 'no drift' having measured nothing. Push the branch to this repository and re-run."
           exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      # RUNNER-DEATH ROOT CAUSE (this filter is the remedy). The "Known-answer
+      # self-test" step below stands up throwaway repos + an offline registry and
+      # re-runs the shipped pipeline under 13 source mutations — a ~14-minute,
+      # memory-and-IO-heavy step. Run on EVERY pull request across the shared
+      # self-hosted arm64 fleet, two unrelated PRs land on the same physical host
+      # and the host exhausts memory; the OOM killer reaps a runner VM mid-step, so
+      # the log blob is never flushed (`BlobNotFound`) and `package-version-drift`
+      # goes RED on PRs that never touched the drift engine (#165, #167). It is NOT
+      # a TCP-port collision: the toy registry already binds an ephemeral port
+      # (`server.listen(0, ...)`) and each VM has its own network namespace, so a
+      # port could never collide across concurrent jobs — the contention is for host
+      # RAM. The fix is to stop paying that cost on PRs that cannot change the
+      # verdict: gate the self-test to engine/contract changes here, and run the
+      # FULL self-test nightly on a github-hosted runner
+      # (.github/workflows/drift-self-test-nightly.yml) as the main-branch safety net.
+      # The two ALWAYS-ON steps (digest conformance + unit suite, and the payload
+      # drift measurement) keep running unconditionally, so the job still reports the
+      # `package-version-drift` status context on every PR — the required-gate
+      # contract is intact whether or not the self-test step runs.
+      - name: Detect drift-engine / contract changes
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: drift-engine-changes
+        with:
+          # scripts/fixtures/** is exactly the vendored contract (the conformance
+          # JSON/sha256 vectors and the three shared runner .mjs files); the two
+          # check-package-drift files are the engine and its unit/self-test suite.
+          filters: |
+            engine:
+              - 'scripts/check-package-drift.mjs'
+              - 'scripts/check-package-drift.test.mjs'
+              - 'scripts/fixtures/**'
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -175,7 +206,13 @@ jobs:
       # It requires npm on PATH as well as pnpm — S14 seeds the toy registry with
       # `npm pack` to reproduce the npm-publish/pnpm-pack manifest asymmetry
       # (finding X3) end to end.
+      # Gated to engine/contract changes (see the paths-filter above). On a PR that
+      # does not touch the drift engine this step is SKIPPED — a skipped step does
+      # not fail the job, and the two always-on steps still report the required
+      # `package-version-drift` context. The nightly workflow re-runs the full
+      # self-test against main so nothing that skipped here goes unvalidated.
       - name: Known-answer self-test (must prove it can fail)
+        if: steps.drift-engine-changes.outputs.engine == 'true'
         run: node scripts/check-package-drift.mjs --self-test
       - name: Package payload drift
         run: node scripts/check-package-drift.mjs --lane=branch
