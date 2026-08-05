@@ -103,6 +103,7 @@ import {createHash} from 'node:crypto'
 import {execFile, spawnSync} from 'node:child_process'
 import fs from 'node:fs'
 import http from 'node:http'
+import {createRequire} from 'node:module'
 import os from 'node:os'
 import path from 'node:path'
 import {fileURLToPath, pathToFileURL} from 'node:url'
@@ -143,6 +144,26 @@ export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924
  * in the SAME change.
  */
 export const EXPORT_SURFACE_CONFORMANCE_SHA256 = '725d704acf1bbc50b3393a76da058a853bb975c8c0cf9227e0cd55ff1bb09818'
+
+/**
+ * The verdict-ladder contract version this engine implements — the DECISION (`decideVerdict`) and
+ * the lane→exitClass mapping (`exitClassFor`), NOT the digest and NOT the export surface. Same
+ * number <=> identical verdicts and exit classes for every input, across mantle's CLI, this script,
+ * and atlas's pkg-drift engine. Deliberately INDEPENDENT of SPEC_VERSION and SURFACE_SPEC_VERSION:
+ * the three schemes change for different reasons. Bump it (and re-vendor verdict-conformance.json)
+ * only when the verdict SET or an exit mapping changes — never for the probe, discovery, reporting
+ * or CLI flags. See atlas decision 0022.
+ */
+export const LADDER_SPEC_VERSION = 1
+
+/**
+ * sha256 of scripts/fixtures/verdict-conformance.json, vendored verbatim from
+ * atlas/contracts/verdict-ladder/. Same discipline as DRIFT_CONFORMANCE_SHA256 and
+ * EXPORT_SURFACE_CONFORMANCE_SHA256, DIFFERENT NUMBER: the ladder, the payload digest and the
+ * export-surface rule change for different reasons, so they carry independent spec versions and
+ * independent checksums. Re-vendor and update this constant in the SAME change.
+ */
+export const LADDER_CONFORMANCE_SHA256 = '2dd86a7865b58e02d9b7a6d9a015efd97c5194c6d2a09aab600f564d6bbf507e'
 
 export const DEFAULT_REGISTRY = 'https://npm.pkg.github.com'
 export const DEFAULT_SCOPE = '@j0nathan-ll0yd'
@@ -499,7 +520,12 @@ export function compareSemver(a, b) {
   const pa = parseSemver(a)
   const pb = parseSemver(b)
   if (!pa || !pb) {
-    return String(a).localeCompare(String(b))
+    // Two unparseable versions are EQUAL, deterministically, and an unparseable version sorts BEFORE
+    // any parseable one: the ladder never manufactures an ordering between strings it cannot parse,
+    // and an unknown version can never read as "ahead of the registry" (a would-be PENDING_PUBLISH
+    // becomes VERSION_REGRESSION). Held to atlas/contracts/verdict-ladder by the semver-*-not-semver
+    // conformance vectors; the previous `localeCompare` disagreed on both counts.
+    return !pa && !pb ? 0 : (!pa ? -1 : 1)
   }
   for (const key of ['major', 'minor', 'patch']) {
     if (pa[key] !== pb[key]) {
@@ -612,7 +638,11 @@ const bumpRank = (level) => BUMP_ORDER.indexOf(level)
  * against. NEVER_PUBLISHED has no reference surface to shrink from, and VERSION_REGRESSION
  * is a more fundamental defect in the same exit class — neither is second-guessed here.
  */
-export const SURFACE_APPLICABLE_VERDICTS = new Set(['CLEAN', 'DRIFT', 'PENDING_PUBLISH', 'BUMP_NOT_NEEDED'])
+// PENDING_CHANGESET MUST be here: it is a genuine DRIFT the changeset excuse softened, and a
+// shrinking export surface on an excused package must still become SURFACE_BREAK. Omitting it would
+// let a surface break on an excused package escape the surface rule entirely and ship green. The
+// surface rule runs AFTER decideVerdict and overrides it, exactly as it does for a plain DRIFT.
+export const SURFACE_APPLICABLE_VERDICTS = new Set(['CLEAN', 'DRIFT', 'PENDING_CHANGESET', 'PENDING_PUBLISH', 'BUMP_NOT_NEEDED'])
 
 /**
  * How a package declares what consumers may import: `exports-map`, `legacy` or `unreadable`.
@@ -1563,48 +1593,252 @@ export function leakScreen(packedPaths, {tracked, outputs}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The changesets probe — the deep module behind `pendingRelease`
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * A bare changeset is a PROMISE to bump, not a bump: the gate measures `package.json` on disk, so a
+ * PR carrying a perfectly good `.changeset/*.md` still reads as DRIFT (design-system PR #164). This
+ * probe answers, once per workspace, "what version would `changeset version` write for each
+ * package?" — the authoritative cascade closure, `ignore`, `pre.json` and
+ * `updateInternalDependencies` semantics included, because that closure is NOT derivable from the
+ * changeset frontmatter (a changeset naming only `tokens` forced `web` and `fixtures` in #164).
+ * `decideVerdict` then grants an excuse iff that version is itself a clean PENDING_PUBLISH. See
+ * atlas decision 0022.
+ *
+ * WHY A SUBPROCESS, not an in-process import: resolution anchored at `repoRoot` means the version
+ * that answers is the version that will actually run `changeset version` in THAT repo, changesets
+ * ships CJS (a process boundary sidesteps the interop), and it gives a hard timeout. `changeset
+ * status` is deliberately NOT used: it makes a git call that cannot resolve in the depth-1 CI
+ * checkout and `process.exit(1)`s on the common green-PR case; `getReleasePlan(cwd)` with
+ * `sinceRef === undefined` touches git not at all.
+ */
+const PROBE_TIMEOUT_MS = 30_000
+
+/**
+ * The child program. ESM (top-level `await`), imports `@changesets/get-release-plan` resolved
+ * against the child's `cwd` (= `repoRoot`), prints `{releases}` to stdout on success, and on any
+ * throw writes the message to stderr and exits 9. `readChangesets` parses EVERY changeset before
+ * `assembleReleasePlan` runs, so a malformed changeset throws here and can never yield a partial
+ * excuse set. changesets ships CJS, hence the interop unwrap; `writeSync` keeps the bytes on the
+ * pipe before the child exits.
+ */
+const PROBE_SOURCE = `
+import {writeSync} from 'node:fs'
+const repoRoot = process.argv[1]
+try {
+  const namespace = await import('@changesets/get-release-plan')
+  const candidate = namespace.default ?? namespace
+  const getReleasePlan = typeof candidate === 'function' ? candidate : (candidate.default ?? candidate.getReleasePlan)
+  const plan = await getReleasePlan(repoRoot)
+  writeSync(1, JSON.stringify({releases: plan.releases}))
+} catch (error) {
+  writeSync(2, error && error.message ? String(error.message) : String(error))
+  process.exit(9)
+}
+`
+
+/** The first non-empty line of stderr, truncated, for an indeterminate detail. */
+function firstStderrLine(stderr) {
+  const line = String(stderr).split('\n').map((entry) => entry.trim()).find((entry) => entry !== '') ?? 'no diagnostic'
+  return line.length > 200 ? `${line.slice(0, 200)}…` : line
+}
+
+/**
+ * Parse the child's stdout into a bump map, or null when the payload is not the shape we expect
+ * (subprocess stdout is external data, narrowed rather than trusted), so the caller degrades to
+ * INDETERMINATE instead of trusting a malformed answer. `ignore`d packages surface as `type: 'none'`
+ * with `newVersion === oldVersion`; the cascade surfaces as a real bump with an empty `changesets`.
+ * Keep the latter, drop the former.
+ */
+export function parseReleasePlan(stdout) {
+  let parsed
+  try {
+    parsed = JSON.parse(stdout)
+  } catch {
+    return null
+  }
+  if (!isPlainObject(parsed) || !Array.isArray(parsed.releases)) {
+    return null
+  }
+  const bumps = new Map()
+  for (const entry of parsed.releases) {
+    if (!isPlainObject(entry)) {
+      return null
+    }
+    const {name, type, newVersion, oldVersion} = entry
+    if (typeof name !== 'string' || typeof type !== 'string' || typeof newVersion !== 'string') {
+      return null
+    }
+    if (type !== 'none' && newVersion !== oldVersion) {
+      bumps.set(name, newVersion)
+    }
+  }
+  return bumps
+}
+
+/**
+ * The PURE decision: spawn outcome → probe result. A non-zero exit, a timeout signal, or a spawn
+ * error is INDETERMINATE regardless of stdout — the child's exit code is the SOLE success signal, so
+ * a probe that trusted stdout on a failed child would read a stalled/failed run as "no bumps".
+ * Extracted so this rule is provable without a subprocess.
+ */
+export function interpretProbeResult(result) {
+  if (result.error !== undefined || result.signal !== null || result.status !== 0) {
+    const detail = result.signal === null ? firstStderrLine(result.stderr) : `changeset probe timed out after ${PROBE_TIMEOUT_MS}ms`
+    return {kind: 'indeterminate', detail}
+  }
+  const bumps = parseReleasePlan(result.stdout)
+  if (bumps === null) {
+    return {kind: 'indeterminate', detail: 'changeset probe stdout was not a parseable release plan'}
+  }
+  return {kind: 'measured', bumps}
+}
+
+/**
+ * Resolve the pending release plan for the whole workspace at `repoRoot`. Every ambiguity resolves
+ * toward blocking: a repo with no `.changeset/config.json` is `not-measured` (no excuse, DRIFT
+ * stands — the LP/OMD property), and a probe that ran and could not answer is `indeterminate` (a
+ * would-be DRIFT becomes exit 3).
+ */
+export function resolvePendingRelease(repoRoot) {
+  const changesetDir = path.join(repoRoot, '.changeset')
+  const configPath = path.join(changesetDir, 'config.json')
+  if (!fs.existsSync(configPath)) {
+    // A `.changeset/` directory carrying changeset files but no config.json is a broken setup, not
+    // "not a changesets repo" — that is indeterminate, not a silent not-measured.
+    if (fs.existsSync(changesetDir)) {
+      const hasChangesetFiles = fs.readdirSync(changesetDir).some((entry) => entry.endsWith('.md') && entry.toLowerCase() !== 'readme.md')
+      if (hasChangesetFiles) {
+        return {kind: 'indeterminate', detail: '.changeset/ holds changeset files but no config.json'}
+      }
+    }
+    return {kind: 'not-measured', reason: 'no .changeset/config.json'}
+  }
+
+  const resolver = createRequire(pathToFileURL(path.join(repoRoot, 'package.json')))
+  try {
+    resolver.resolve('@changesets/get-release-plan')
+  } catch {
+    return {kind: 'indeterminate', detail: `@changesets/get-release-plan is not installed in ${repoRoot}, but .changeset/config.json exists`}
+  }
+
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', PROBE_SOURCE, repoRoot], {
+    cwd: repoRoot,
+    timeout: PROBE_TIMEOUT_MS,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe']
+  })
+  return interpretProbeResult(result)
+}
+
+/** Narrow the workspace probe to the per-package signal `decideVerdict` consumes. */
+export function pendingReleaseFor(probe, packageName) {
+  if (probe.kind === 'measured') {
+    return {kind: 'measured', newVersion: probe.bumps.get(packageName) ?? null}
+  }
+  return probe
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Step 7 — Verdict
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * PURE. The verdict is a function of the registry version set, the declared version and
- * the two digests — and of NOTHING ELSE. In particular it does not take the lane.
+ * PURE. The verdict is a function of the registry version set, the declared version, whether the
+ * packed payload matches the reference tarball, and an optional changesets probe signal — and of
+ * NOTHING ELSE. In particular it does not take the lane.
  *
- * M7: a verdict is never rewritten to satisfy an exit code. The previous implementation
- * rewrote a pre-existing drift's verdict to CLEAN under --base, so a machine consumer
- * reading `verdict` saw CLEAN for a drifting package. Here `verdict` is the truth and
- * `exitClass` is the only lane-dependent field — the generalisation of mantle's
- * suppressedByBase discipline. Because the reference is the registry rather than a git
- * ref, "declared version IS published but the payload differs" is ALWAYS a genuine
- * defect: `changeset publish` skips versions already in the registry, so no merge
- * sequence makes it benign and there is nothing legitimate to suppress.
+ * `payloadMatchesReference` is `true`/`false`/`null` (null = the reference could not be compared →
+ * INDETERMINATE, A2b). `pendingRelease` is the per-package changesets probe result; absent/undefined
+ * MUST read as `{kind:'not-measured'}` — the FAIL-SAFE DEFAULT, so a repo the probe never ran on (LP,
+ * OMD) behaves identically to before this field existed.
+ *
+ * M7: a verdict is never rewritten to satisfy an exit code. `verdict` is the truth and `exitClass`
+ * is the only lane-dependent field. Because the reference is the registry rather than a git ref,
+ * "declared version IS published but the payload differs" is ALWAYS a genuine defect — `changeset
+ * publish` skips versions already in the registry — UNLESS a pending changeset adequately covers it
+ * (PENDING_CHANGESET). This is the ONLY verdict the changeset excuse may relabel, and only when the
+ * projected version is itself a clean PENDING_PUBLISH (the mandatory adequacy test below). See atlas
+ * decision 0022; this engine is held byte-for-byte to the shared contract by verdict-conformance.json.
  */
-export function decideVerdict({declared, registryVersions, headDigest, referenceDigest}) {
+export function decideVerdict({declared, registryVersions, payloadMatchesReference, pendingRelease}) {
+  const advisories = []
   if (registryVersions.length === 0) {
-    return {verdict: 'NEVER_PUBLISHED', referenceVersion: null, advisories: []}
+    return {verdict: 'NEVER_PUBLISHED', referenceVersion: null, advisories}
   }
   const max = semverMax(registryVersions)
-  if (registryVersions.includes(declared)) {
-    return {verdict: headDigest === referenceDigest ? 'CLEAN' : 'DRIFT', referenceVersion: declared, advisories: declared === max ? [] : ['behind-registry']}
+  const published = registryVersions.includes(declared)
+  const referenceVersion = published ? declared : max
+
+  // "Could not tell" is exit 3, never a pass (A2b). Sits BEFORE the position split so it protects
+  // published and unpublished packages equally.
+  if (payloadMatchesReference === null) {
+    return {verdict: 'INDETERMINATE', referenceVersion, advisories: [...advisories, 'reference-payload-unavailable']}
+  }
+
+  if (published) {
+    if (max !== null && max !== declared) {
+      advisories.push('behind-registry')
+    }
+    if (payloadMatchesReference === true) {
+      return {verdict: 'CLEAN', referenceVersion, advisories}
+    }
+
+    // ── The changeset excuse. Reached ONLY from the DRIFT position. ─────────────────────────────
+    // Unreachable from every other verdict by construction, not by a guard: NEVER_PUBLISHED,
+    // VERSION_REGRESSION and the BUMP_NOT_NEEDED/PENDING_PUBLISH arm all `return` before here, and
+    // the excuse sits inside the `published && !matches` position. A mutant cannot delete a guard
+    // that does not exist.
+    const pending = pendingRelease ?? {kind: 'not-measured', reason: 'caller supplied none'}
+    if (pending.kind === 'indeterminate') {
+      return {verdict: 'INDETERMINATE', referenceVersion, advisories: [...advisories, `changeset-probe-failed:${pending.detail}`]}
+    }
+    if (pending.kind === 'measured' && pending.newVersion !== null) {
+      // ADEQUACY, and it is MANDATORY. Re-run THIS SAME LADDER with the version `changeset version`
+      // would write. Depth is exactly 1: the recursive call passes not-measured, so it can never
+      // itself become PENDING_CHANGESET. Grant the excuse iff that version is a clean PENDING_PUBLISH
+      // — anything else keeps DRIFT (a patch that projects onto an already-published number would let
+      // `changeset publish` skip it silently, the exact C147 failure this gate exists to prevent).
+      const projected = decideVerdict({
+        declared: pending.newVersion,
+        registryVersions,
+        payloadMatchesReference: false,
+        pendingRelease: {kind: 'not-measured', reason: 'projection'}
+      })
+      if (projected.verdict === 'PENDING_PUBLISH') {
+        return {verdict: 'PENDING_CHANGESET', referenceVersion, advisories: [...advisories, `changeset-target:${pending.newVersion}`]}
+      }
+      advisories.push(`changeset-inadequate:${pending.newVersion}->${projected.verdict}`)
+    }
+    return {verdict: 'DRIFT', referenceVersion, advisories}
   }
   if (compareSemver(declared, max) > 0) {
-    return {verdict: headDigest === referenceDigest ? 'BUMP_NOT_NEEDED' : 'PENDING_PUBLISH', referenceVersion: max, advisories: []}
+    return {verdict: payloadMatchesReference === true ? 'BUMP_NOT_NEEDED' : 'PENDING_PUBLISH', referenceVersion, advisories}
   }
-  return {verdict: 'VERSION_REGRESSION', referenceVersion: max, advisories: []}
+  return {verdict: 'VERSION_REGRESSION', referenceVersion, advisories}
 }
 
 export function exitClassFor(verdict, lane) {
+  // An unrecognised LANE throws — it would otherwise fail the `post-publish` comparison silently and
+  // downgrade a blocking verdict to a pass. The shared contract pins this for the two `.mjs` engines
+  // that have no compiler (the `__UNKNOWN_LANE__` vectors in verdict-conformance.json).
+  if (!LANES.includes(lane)) {
+    throw new Error(`unknown lane ${lane}`)
+  }
   switch (verdict) {
     case 'CLEAN':
     case 'BUMP_NOT_NEEDED':
     case 'SKIPPED':
       return EXIT_OK
     case 'PENDING_PUBLISH':
+    case 'PENDING_CHANGESET':
     case 'NEVER_PUBLISHED':
-      // On a branch this is correct: consumers still resolve the published version and
-      // the pending payload is exactly what the publish workflow will ship. After that
-      // workflow has run it must not persist — that is the "main is green while
-      // consumers still resolve the stale tarball" window (finding H2).
+      // On a branch this is correct: consumers still resolve the published version and the pending
+      // payload is exactly what the publish workflow will ship (or, for PENDING_CHANGESET, what
+      // `changeset version` will move the number to in the release lane). After that workflow has
+      // run it must not persist — that is the "main is green while consumers still resolve the stale
+      // tarball" window (finding H2). PENDING_CHANGESET tracks PENDING_PUBLISH exactly.
       return lane === 'post-publish' ? EXIT_BLOCK : EXIT_OK
     case 'DRIFT':
     case 'VERSION_REGRESSION':
@@ -1709,6 +1943,7 @@ export async function runGate({
   build = true,
   quiet = false,
   concurrency = 8,
+  changesetProbe = undefined,
   log = () => {}
 }) {
   const rows = []
@@ -1874,6 +2109,12 @@ export async function runGate({
     }
   }
 
+  // The changesets probe runs ONCE per workspace, never per package: it reads the whole release
+  // plan (cascade closure included) in a single subprocess. A repo with no `.changeset/config.json`
+  // returns not-measured before any I/O, so the verdict is byte-identical to before this existed.
+  // The self-test injects a synthetic probe through `changesetProbe`; production leaves it undefined.
+  const probe = changesetProbe ?? resolvePendingRelease(repoRoot)
+
   const ready = []
   for (const member of live) {
     const manifest = JSON.parse(fs.readFileSync(path.join(member.path, 'package.json'), 'utf8'))
@@ -2024,7 +2265,8 @@ export async function runGate({
       const refDigest = refCompare ? digestOf(refCompare) : null
       const headDigest = effectiveDigest
 
-      const decision = decideVerdict({declared: member.version, registryVersions, headDigest, referenceDigest: refDigest})
+      const pendingRelease = pendingReleaseFor(probe, member.name)
+      const decision = decideVerdict({declared: member.version, registryVersions, payloadMatchesReference: headDigest === refDigest, pendingRelease})
 
       const advisories = [...decision.advisories]
       if (!strictMaps && strictDigest !== effectiveDigest) {
@@ -2087,6 +2329,8 @@ export async function runGate({
         addedSubpaths,
         requiredBump,
         declaredBump,
+        pendingNewVersion: pendingRelease.kind === 'measured' ? pendingRelease.newVersion : null,
+        changesetProbe: probe.kind,
         strictDigest,
         effectiveDigest,
         referenceDigest: refCompare ? digestOf(refCompare) : null
@@ -2298,6 +2542,65 @@ function buildFixture(registryUrl) {
   git(root, 'config', 'user.name', 'drift self-test')
   git(root, 'add', '-A')
   git(root, 'commit', '-qm', 'fixture')
+  return root
+}
+
+/**
+ * A workspace that stands up the REAL changesets machinery, for the S26 cascade rung — the only
+ * place --self-test exercises the actual `@changesets/get-release-plan` probe rather than an
+ * injected result. `@toy/csdep` depends on `@toy/csleaf` by `workspace:*`, and the sole changeset
+ * names ONLY the leaf; `updateInternalDependencies: patch` bumps the dependent anyway, with an empty
+ * `changesets` — the cascade closure a frontmatter-only gate would miss (design-system PR #164). The
+ * probe resolves `@changesets/get-release-plan` from this root, so we symlink the scope already
+ * installed in THIS repo's node_modules (the same tree the real gate resolves). getReleasePlan with
+ * no `sinceRef` touches git not at all, so no history is needed beyond the initial commit.
+ */
+function buildChangesetCascadeFixture(registryUrl) {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-cascade-')))
+  fs.mkdirSync(path.join(root, 'packages', 'csleaf', 'src'), {recursive: true})
+  fs.mkdirSync(path.join(root, 'packages', 'csdep', 'src'), {recursive: true})
+  fs.writeFileSync(path.join(root, 'pnpm-workspace.yaml'), "packages:\n  - 'packages/*'\n")
+  fs.writeFileSync(path.join(root, '.gitignore'), 'dist/\nnode_modules/\n')
+  fs.writeFileSync(path.join(root, 'build.js'), BUILD_JS)
+  writeJson(path.join(root, 'package.json'), {name: 'drift-cascade-root', private: true, version: '0.0.0', scripts: {build: 'pnpm -r run build'}})
+  writeJson(path.join(root, 'turbo.json'), {tasks: {build: {outputs: ['dist/**']}}})
+  writeJson(path.join(root, 'packages', 'csleaf', 'package.json'), {
+    name: '@toy/csleaf',
+    version: '1.0.0',
+    files: ['dist'],
+    publishConfig: {registry: registryUrl},
+    scripts: {build: 'node ../../build.js'}
+  })
+  writeJson(path.join(root, 'packages', 'csdep', 'package.json'), {
+    name: '@toy/csdep',
+    version: '1.0.0',
+    files: ['dist'],
+    dependencies: {'@toy/csleaf': 'workspace:*'},
+    publishConfig: {registry: registryUrl},
+    scripts: {build: 'node ../../build.js'}
+  })
+  fs.writeFileSync(path.join(root, 'packages', 'csleaf', 'src', 'index.js'), 'module.exports = 1\n')
+  fs.writeFileSync(path.join(root, 'packages', 'csdep', 'src', 'index.js'), 'module.exports = 2\n')
+  fs.mkdirSync(path.join(root, '.changeset'), {recursive: true})
+  writeJson(path.join(root, '.changeset', 'config.json'), {
+    changelog: false,
+    commit: false,
+    access: 'restricted',
+    baseBranch: 'main',
+    updateInternalDependencies: 'patch',
+    ignore: [],
+    fixed: [],
+    linked: []
+  })
+  fs.writeFileSync(path.join(root, '.changeset', 'bump-leaf.md'), '---\n"@toy/csleaf": patch\n---\n\nbump the leaf only\n')
+  fs.mkdirSync(path.join(root, 'node_modules'), {recursive: true})
+  fs.symlinkSync(fs.realpathSync(path.join(repoRoot, 'node_modules', '@changesets')), path.join(root, 'node_modules', '@changesets'))
+  git(root, 'init', '-q')
+  git(root, 'config', 'user.email', 'selftest@example.invalid')
+  git(root, 'config', 'user.name', 'drift self-test')
+  git(root, 'add', '-A')
+  git(root, 'commit', '-qm', 'cascade fixture')
   return root
 }
 
@@ -2954,6 +3257,71 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     expect('S9b empty declared output is BUILD_FAILED', result, '@toy/leaf', 'BUILD_FAILED', 4)
     fs.writeFileSync(path.join(root, 'build.js'), BUILD_JS)
 
+    // ── The PENDING_CHANGESET excuse (atlas decision 0022), end to end. ─────────────────────────
+    //
+    // A bare changeset is a promise to bump, not a bump: this gate measures package.json on disk, so
+    // a PR carrying a good `.changeset/*.md` reads as DRIFT and the required check stays red — the
+    // exact tax design-system PR #164 paid by running `changeset version` in-PR. The excuse relabels
+    // a covered DRIFT to PENDING_CHANGESET (exit 0 on a branch), and ONLY when the projected version
+    // is itself a clean PENDING_PUBLISH (mandatory adequacy). S23–S25 inject a synthetic probe (the
+    // throwaway fixture has no `@changesets/*`); S26 stands up a real one.
+    setVersion(root, 'leaf', '1.0.1')
+    fs.writeFileSync(path.join(root, 'packages', 'leaf', 'src', 'index.js'), 'module.exports = 23\n')
+    commitAll(root, 'drift leaf for the changeset excuse')
+
+    // S23 — a covered drift. leaf drifts under its published 1.0.1, and a pending changeset would
+    // move it to a clean, not-yet-published 1.0.2. Green on a branch with no in-PR `changeset version`.
+    result = await gate({changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}})
+    expect('S23 a covered drift is PENDING_CHANGESET', result, '@toy/leaf', 'PENDING_CHANGESET', 0)
+    check('S23 the excuse names its projected target', (row(result, '@toy/leaf').advisories ?? []).includes('changeset-target:1.0.2'),
+      `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
+
+    // S23b — the lane changes SEVERITY, never a verdict (M7). A changeset still unapplied after the
+    // release workflow ran is a stalled train: consumers resolve a stale tarball (the H2 window).
+    result = await gate({lane: 'post-publish', changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}})
+    expect('S23b post-publish escalates PENDING_CHANGESET', result, '@toy/leaf', 'PENDING_CHANGESET', 2)
+    check('S23b the lane never rewrites the verdict', row(result, '@toy/leaf').verdict === 'PENDING_CHANGESET' && row(result, '@toy/leaf').exitClass === 2,
+      'lane leaked into the verdict field')
+
+    // S24 — ADEQUACY IS MANDATORY. Publish 1.0.2, then a pending PATCH projects onto 1.0.2 — ALREADY
+    // PUBLISHED. Excusing it would let `changeset publish` skip a resident version and exit 0 while
+    // the drift never ships (the exact C147 failure), so it stays DRIFT with a `changeset-inadequate`
+    // advisory. The excuse must never MANUFACTURE the failure it exists to excuse.
+    registry.publish('@toy/leaf', '1.0.2', await packFixture(root, 'leaf'))
+    result = await gate({changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}})
+    expect('S24 an inadequate changeset bump stays DRIFT', result, '@toy/leaf', 'DRIFT', 2)
+    check('S24 stamps changeset-inadequate on the denied excuse', (row(result, '@toy/leaf').advisories ?? []).some((a) =>
+      a.startsWith('changeset-inadequate:')
+    ), `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
+
+    // S25 — A2b at the seam introduced to enforce it: a probe that ran and could not answer softens a
+    // would-be DRIFT to INDETERMINATE (exit 3), never a pass. The scoping is deliberate — only a
+    // would-be DRIFT escalates; a CLEAN row proved clean stays clean regardless of the probe.
+    result = await gate({changesetProbe: {kind: 'indeterminate', detail: 'simulated probe failure'}})
+    expect('S25 an indeterminate probe softens a drift to INDETERMINATE', result, '@toy/leaf', 'INDETERMINATE', 3)
+    check('S25 the row records the probe failure', (row(result, '@toy/leaf').advisories ?? []).some((a) => a.startsWith('changeset-probe-failed:')),
+      `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
+
+    // S26 — THE CASCADE CLOSURE, against the REAL probe. `@toy/csdep` is named in NO changeset;
+    // `updateInternalDependencies: patch` bumps it anyway, and that bump is not derivable from the
+    // changeset frontmatter. Bumping csleaf on disk rewrites csdep's `workspace:*` pin, drifting it
+    // under its still-published 1.0.0 — the excuse must cover it, which it can only do because the
+    // probe read the closure from `@changesets/get-release-plan` rather than from the `.md` files.
+    const cascadeRoot = buildChangesetCascadeFixture(registryUrl)
+    if (!runWorkspaceBuild(cascadeRoot).ok) {
+      throw new Error('cascade fixture build failed')
+    }
+    registry.publish('@toy/csleaf', '1.0.0', await packFixture(cascadeRoot, 'csleaf'))
+    registry.publish('@toy/csdep', '1.0.0', await packFixture(cascadeRoot, 'csdep'))
+    setVersion(cascadeRoot, 'csleaf', '1.0.1')
+    commitAll(cascadeRoot, 'bump csleaf on disk, drifting the dependent')
+    result = await gate({repoRoot: cascadeRoot, build: false})
+    expect('S26 the cascade closure excuses an unnamed dependent', result, '@toy/csdep', 'PENDING_CHANGESET', 0)
+    check('S26 the excuse names the cascade target the probe supplied', (row(result, '@toy/csdep').advisories ?? []).some((a) =>
+      a.startsWith('changeset-target:')
+    ), `advisories=${JSON.stringify(row(result, '@toy/csdep').advisories)}`)
+    fs.rmSync(cascadeRoot, {recursive: true, force: true})
+
     // S5 — THE SCENARIO THAT PROVED THE TRANSPORT CHOICE. Rehearsing it against an
     // `npm view`/`npm pack` reference caught a real defect: with the registry process
     // killed the gate reported CLEAN / exit 0, because npm served the packument from
@@ -3104,6 +3472,44 @@ const MUTATIONS = {
     scenario: 'S22b',
     anchor: 'export function bumpBetween(from, to) {',
     replacement: "export function bumpBetween(from, to) {\n  return 'major'"
+  },
+  // ── The PENDING_CHANGESET excuse (atlas decision 0022). A subset of mantle's ten mutants: the
+  // guardrails whose defect this .mjs engine can express through a NAMED scenario. Mantle's
+  // exit-mapping and OVERRIDABLE mutants are pinned by the shared verdict-conformance runner and the
+  // SURFACE_APPLICABLE_VERDICTS set instead. ──────────────────────────────────────────────────────
+  //
+  // Moving the PENDING_CHANGESET literal to the DRIFT arm: a covered drift never gets its excuse.
+  // Killed by S23.
+  changesetblocking: {
+    scenario: 'S23',
+    anchor: "return {verdict: 'PENDING_CHANGESET', referenceVersion, advisories: [...advisories, `changeset-target:${pending.newVersion}`]}",
+    replacement: "return {verdict: 'DRIFT', referenceVersion, advisories: [...advisories, `changeset-target:${pending.newVersion}`]}"
+  },
+  // Excusing the DRIFT fall-through unconditionally, which would grant PENDING_CHANGESET to a
+  // not-measured probe (the LP/OMD path) — a bare changeset dir would excuse every drift. Killed by
+  // S2, where the main fixture has no `.changeset/` and the real probe returns not-measured.
+  changesetnotmeasuredexcuses: {
+    scenario: 'S2',
+    anchor: "return {verdict: 'DRIFT', referenceVersion, advisories}",
+    replacement: "return {verdict: 'PENDING_CHANGESET', referenceVersion, advisories}"
+  },
+  // Softening an indeterminate probe back into whatever the ladder said instead of INDETERMINATE —
+  // the A2b violation at the seam introduced to enforce it. Killed by S25.
+  changesetindeterminatepasses: {
+    scenario: 'S25',
+    anchor: "return {verdict: 'INDETERMINATE', referenceVersion, advisories: [...advisories, `changeset-probe-failed:${pending.detail}`]}",
+    replacement: 'advisories.push(`changeset-probe-failed:${pending.detail}`)'
+  },
+  // Dropping the mandatory adequacy test, so a patch that projects onto an already-published version
+  // is excused — the excuse MANUFACTURING the C147 silent-skip it exists to prevent. Killed by S24.
+  changesetalwaysexcuses: {scenario: 'S24', anchor: "if (projected.verdict === 'PENDING_PUBLISH') {", replacement: 'if (true) {'},
+  // Filtering the release plan to `changesets.length > 0`, dropping the cascade closure a
+  // frontmatter-only gate would also miss (design-system PR #164). Killed by S26, the ONLY rung that
+  // runs the real `@changesets/get-release-plan` probe.
+  probecascadedropped: {
+    scenario: 'S26',
+    anchor: "if (type !== 'none' && newVersion !== oldVersion) {",
+    replacement: "if (type !== 'none' && newVersion !== oldVersion && Array.isArray(entry.changesets) && entry.changesets.length > 0) {"
   }
 }
 // ---8<--- MUTATION TABLE END ---8<---
