@@ -561,6 +561,15 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 // exit 0 on a branch. Nothing anywhere was red. A consumer on `^1.0.0` picked up
 // 1.1.0 on its next install and lost an entry point.
 //
+// PROVENANCE, since the motivating artifact is gone: 1.1.0 was DELETED from the
+// registry on 2026-08-04 and republished as `2.0.0` — content-identical, carrying the
+// major the removal always warranted. `npm pack @j0nathan-ll0yd/web@1.1.0` now 404s.
+// The same delta is still reproducible from real artifacts: `1.0.0`'s `exports` map
+// contains `"./types/*"` and `2.0.0`'s does not. Nothing here depends on that, and
+// deliberately so — the conformance vectors are self-contained literals, because a
+// test that reads a mutable registry to establish a fixed historical fact is a test
+// that breaks when someone tidies the registry.
+//
 // SCOPE IS LEVEL 1 (subpath KEYS) AND THAT IS A MEASURED DECISION, not laziness.
 // Level 2 — enumerating the named exports behind each entry point — was probed
 // against all 24 published packages in the estate and is deterministic but not yet
