@@ -64,6 +64,9 @@ import {assertFixtureIntegrity, runConformance} from './fixtures/drift-conforman
 // Both vendored runners export `assertFixtureIntegrity` — same function, different fixture —
 // so the second is aliased rather than renamed in the vendored copy, which must stay verbatim.
 import {assertFixtureIntegrity as assertSurfaceFixtureIntegrity, runSurfaceConformance} from './fixtures/export-surface-runner.mjs'
+// The third vendored runner — same `assertFixtureIntegrity` name, aliased again — carries the shared
+// verdict-ladder vectors (atlas/contracts/verdict-ladder/).
+import {assertFixtureIntegrity as assertLadderFixtureIntegrity, runLadderConformance} from './fixtures/verdict-conformance-runner.mjs'
 import {
   assertBuildOutputs,
   bumpBetween,
@@ -79,6 +82,8 @@ import {
   globToRegExp,
   isDeadSourceMap,
   isDeclaredOutput,
+  LADDER_CONFORMANCE_SHA256,
+  LADDER_SPEC_VERSION,
   LANES,
   leakScreen,
   normalizeEntry,
@@ -104,6 +109,8 @@ const conformanceBytes = fs.readFileSync(path.join(here, 'fixtures/drift-conform
 const conformance = JSON.parse(conformanceBytes.toString('utf8'))
 const surfaceBytes = fs.readFileSync(path.join(here, 'fixtures/export-surface-conformance.json'))
 const surfaceConformance = JSON.parse(surfaceBytes.toString('utf8'))
+const ladderBytes = fs.readFileSync(path.join(here, 'fixtures/verdict-conformance.json'))
+const ladderConformance = JSON.parse(ladderBytes.toString('utf8'))
 const tmpdir = (prefix) => fs.mkdtempSync(path.join(process.env.TMPDIR ?? '/tmp', prefix))
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -228,6 +235,54 @@ test('surface conformance: a wrong SURFACE_SPEC_VERSION short-circuits with exac
   assert.match(failures[0], /^SURFACE_SPEC_VERSION: implementation is 2, fixture is 1$/)
 })
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Cross-implementation VERDICT-LADDER conformance vectors
+//
+// THE FIXTURE AND THE RUNNER ARE VENDORED VERBATIM from atlas/contracts/verdict-ladder/. The ladder
+// (decideVerdict + exitClassFor) was triplicated across mantle, this script and atlas with ZERO
+// cross-implementation vectors — strictly worse than the pre-contract digest, and the three even
+// disagreed on the most dangerous axis (what an UNKNOWN verdict does: compile error / throw / silent
+// pass). These vectors pin all three to one definition; the __UNKNOWN_VERDICT__ / __UNKNOWN_LANE__
+// cases assert exitClassFor THROWS rather than passing an unclassified verdict. See atlas 0022.
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('ladder conformance: the vendored fixture matches the checksum this implementation pins', () => {
+  assert.deepEqual(assertLadderFixtureIntegrity(ladderBytes, LADDER_CONFORMANCE_SHA256), [])
+})
+
+test('ladder conformance: the vendored .sha256 sidecar agrees with the pinned constant', () => {
+  const sidecar = fs.readFileSync(path.join(here, 'fixtures/verdict-conformance.sha256'), 'utf8').trim().split(/\s+/)[0]
+  assert.equal(sidecar, LADDER_CONFORMANCE_SHA256)
+})
+
+test('ladder conformance: every vector passes under the SHARED runner', () => {
+  const failures = runLadderConformance({
+    fixture: ladderConformance,
+    specVersion: LADDER_SPEC_VERSION,
+    resolveVerdict: (input) => decideVerdict(input),
+    exitClassOf: (verdict, lane) => exitClassFor(verdict, lane),
+    compareSemver
+  })
+  assert.deepEqual(failures, [])
+})
+
+test('ladder conformance: it carries the __UNKNOWN_VERDICT__ / __UNKNOWN_LANE__ throw vectors', () => {
+  assert.equal(ladderConformance.specVersion, LADDER_SPEC_VERSION)
+  assert.ok(ladderConformance.cases.some((c) => c.expect?.throws === true))
+})
+
+test('ladder conformance: a wrong LADDER_SPEC_VERSION short-circuits with exactly one message', () => {
+  const failures = runLadderConformance({
+    fixture: ladderConformance,
+    specVersion: LADDER_SPEC_VERSION + 1,
+    resolveVerdict: (input) => decideVerdict(input),
+    exitClassOf: (verdict, lane) => exitClassFor(verdict, lane),
+    compareSemver
+  })
+  assert.equal(failures.length, 1)
+  assert.match(failures[0], /^LADDER_SPEC_VERSION: implementation is 2, fixture is 1$/)
+})
+
 /**
  * The vectors lock this implementation against the other two. On their own they cannot
  * tell a correct rule from a consistently wrong one, so the relations they exist to
@@ -273,11 +328,13 @@ test('surface conformance: the relations the shared vectors exist to pin', () =>
 // remember. Those are this repo's obligations and are asserted here.
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('the surface rule is applied over exactly the four successfully-compared verdicts', () => {
+test('the surface rule is applied over exactly the five successfully-compared verdicts', () => {
   // NEVER_PUBLISHED has no reference surface to shrink from, and VERSION_REGRESSION is a
   // more fundamental defect in the same exit class — neither is second-guessed by this
   // rule. Widening this set silently is how a "could not tell" becomes a surface verdict.
-  assert.deepEqual([...SURFACE_APPLICABLE_VERDICTS].sort(), ['BUMP_NOT_NEEDED', 'CLEAN', 'DRIFT', 'PENDING_PUBLISH'])
+  // PENDING_CHANGESET is present precisely so a SURFACE_BREAK on an excused package is NEVER
+  // laundered green: the surface rule runs after the excuse and overrides it (atlas 0022).
+  assert.deepEqual([...SURFACE_APPLICABLE_VERDICTS].sort(), ['BUMP_NOT_NEEDED', 'CLEAN', 'DRIFT', 'PENDING_CHANGESET', 'PENDING_PUBLISH'])
 })
 
 test('surfaceOfPayload reads the TOP-LEVEL manifest out of a packed tarball map', () => {
@@ -455,46 +512,90 @@ test('payloadDigests excludes leak-screen hits entirely from both digests', () =
 const verdictCases = [
   {
     why: 'declared version is published and the payloads match',
-    input: {declared: '1.0.0', registryVersions: ['1.0.0'], headDigest: 'a', referenceDigest: 'a'},
+    input: {declared: '1.0.0', registryVersions: ['1.0.0'], payloadMatchesReference: true},
     verdict: 'CLEAN',
     referenceVersion: '1.0.0'
   },
   {
     why: 'declared version is published and the payloads differ — always blocking',
-    input: {declared: '1.0.0', registryVersions: ['1.0.0'], headDigest: 'a', referenceDigest: 'b'},
+    input: {declared: '1.0.0', registryVersions: ['1.0.0'], payloadMatchesReference: false},
     verdict: 'DRIFT',
     referenceVersion: '1.0.0'
   },
   {
     why: 'a published-but-not-newest declared version carries an advisory, not a different verdict',
-    input: {declared: '1.0.0', registryVersions: ['1.0.0', '1.1.0'], headDigest: 'a', referenceDigest: 'a'},
+    input: {declared: '1.0.0', registryVersions: ['1.0.0', '1.1.0'], payloadMatchesReference: true},
     verdict: 'CLEAN',
     referenceVersion: '1.0.0',
     advisories: ['behind-registry']
   },
   {
     why: 'bumped ahead of the registry with a real payload change (finding H2)',
-    input: {declared: '1.2.0', registryVersions: ['1.0.0', '1.1.0'], headDigest: 'a', referenceDigest: 'b'},
+    input: {declared: '1.2.0', registryVersions: ['1.0.0', '1.1.0'], payloadMatchesReference: false},
     verdict: 'PENDING_PUBLISH',
     referenceVersion: '1.1.0'
   },
   {
     why: 'bumped ahead of the registry but the payload is identical — revert the bump',
-    input: {declared: '1.2.0', registryVersions: ['1.0.0', '1.1.0'], headDigest: 'a', referenceDigest: 'a'},
+    input: {declared: '1.2.0', registryVersions: ['1.0.0', '1.1.0'], payloadMatchesReference: true},
     verdict: 'BUMP_NOT_NEEDED',
     referenceVersion: '1.1.0'
   },
   {
     why: 'the manifest declares a version below what is already published',
-    input: {declared: '0.9.0', registryVersions: ['1.0.0'], headDigest: 'a', referenceDigest: 'a'},
+    input: {declared: '0.9.0', registryVersions: ['1.0.0'], payloadMatchesReference: true},
     verdict: 'VERSION_REGRESSION',
     referenceVersion: '1.0.0'
   },
   {
     why: 'packument 404 — nothing to compare against, never inferred as CLEAN',
-    input: {declared: '1.0.0', registryVersions: [], headDigest: 'a', referenceDigest: null},
+    input: {declared: '1.0.0', registryVersions: [], payloadMatchesReference: false},
     verdict: 'NEVER_PUBLISHED',
     referenceVersion: null
+  },
+  {
+    why: 'the reference payload could not be compared — INDETERMINATE, never a pass (A2b)',
+    input: {declared: '1.0.0', registryVersions: ['1.0.0'], payloadMatchesReference: null},
+    verdict: 'INDETERMINATE',
+    referenceVersion: '1.0.0',
+    advisories: ['reference-payload-unavailable']
+  },
+  {
+    why: 'a covered drift whose projected version is a clean PENDING_PUBLISH becomes PENDING_CHANGESET',
+    input: {declared: '1.0.0', registryVersions: ['1.0.0'], payloadMatchesReference: false, pendingRelease: {kind: 'measured', newVersion: '1.0.1'}},
+    verdict: 'PENDING_CHANGESET',
+    referenceVersion: '1.0.0',
+    advisories: ['changeset-target:1.0.1']
+  },
+  {
+    why: 'adequacy: a projected version that is already published stays DRIFT (never the C147 skip)',
+    input: {
+      declared: '1.0.0',
+      registryVersions: ['1.0.0', '1.0.1'],
+      payloadMatchesReference: false,
+      pendingRelease: {kind: 'measured', newVersion: '1.0.1'}
+    },
+    verdict: 'DRIFT',
+    referenceVersion: '1.0.0',
+    advisories: ['behind-registry', 'changeset-inadequate:1.0.1->DRIFT']
+  },
+  {
+    why: 'a not-measured probe grants no excuse — DRIFT stands (the LP/OMD property)',
+    input: {
+      declared: '1.0.0',
+      registryVersions: ['1.0.0'],
+      payloadMatchesReference: false,
+      pendingRelease: {kind: 'not-measured', reason: 'no .changeset/config.json'}
+    },
+    verdict: 'DRIFT',
+    referenceVersion: '1.0.0'
+  },
+  {
+    why: 'an indeterminate probe softens a would-be DRIFT to INDETERMINATE, never a pass',
+    input: {declared: '1.0.0', registryVersions: ['1.0.0'], payloadMatchesReference: false, pendingRelease: {kind: 'indeterminate', detail: 'boom'}},
+    verdict: 'INDETERMINATE',
+    referenceVersion: '1.0.0',
+    advisories: ['changeset-probe-failed:boom']
   }
 ]
 
@@ -511,19 +612,20 @@ test('decideVerdict never reads the lane — the verdict cannot be rewritten by 
   // Regression lock on the defect this replaced: the previous implementation
   // rewrote a pre-existing drift's verdict to CLEAN under --base, so a machine
   // consumer reading `verdict` saw CLEAN for a package that was drifting.
-  const input = {declared: '1.0.0', registryVersions: ['1.0.0'], headDigest: 'a', referenceDigest: 'b'}
+  const input = {declared: '1.0.0', registryVersions: ['1.0.0'], payloadMatchesReference: false}
   for (const lane of LANES) {
     assert.equal(decideVerdict({...input, lane}).verdict, 'DRIFT')
   }
 })
 
-test('exitClassFor: only PENDING_PUBLISH and NEVER_PUBLISHED vary by lane', () => {
-  const laneVarying = new Set(['PENDING_PUBLISH', 'NEVER_PUBLISHED'])
+test('exitClassFor: only the PENDING family and NEVER_PUBLISHED vary by lane', () => {
+  const laneVarying = new Set(['PENDING_PUBLISH', 'PENDING_CHANGESET', 'NEVER_PUBLISHED'])
   const allVerdicts = [
     'CLEAN',
     'BUMP_NOT_NEEDED',
     'SKIPPED',
     'PENDING_PUBLISH',
+    'PENDING_CHANGESET',
     'NEVER_PUBLISHED',
     'DRIFT',
     'SURFACE_BREAK',
