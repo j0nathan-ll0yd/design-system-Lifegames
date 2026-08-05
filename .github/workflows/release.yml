@@ -1,0 +1,95 @@
+name: Release (Version PR)
+
+# VERSION-ONLY changesets automation (C147 / atlas decision 0022).
+#
+# THE GAP THIS CLOSES. The DS publisher (.github/workflows/publish-ds-packages.yml)
+# runs only `pnpm changeset:publish` — it never runs `changeset version`. So a
+# committed changeset is never APPLIED: package versions never bump, changelogs
+# never render, and `changeset publish` then silently skips every package whose
+# version is already on the registry. Proof it is real, not theoretical:
+# `.changeset/repo-wide-formatting.md` has sat un-applied in the tree.
+#
+# WHAT THIS DOES. On every push to main this opens/updates a single "Version
+# Packages" PR that applies all pending changesets (bumps versions + writes
+# changelogs). It does NOT publish — publishing stays entirely in
+# publish-ds-packages.yml (triggered by a `ds-v*` tag / manual dispatch). This
+# workflow has NO `publish:` input for exactly that reason: the two planes are
+# kept separate.
+#
+# THE FLOW.
+#   feature PR (with a changeset) merges to main
+#     -> this workflow opens/updates the Version PR (applies changesets)
+#     -> the Version PR runs the required checks (incl. package-version-drift)
+#        and merges -> versions are bumped on main
+#     -> publish-ds-packages.yml publishes the bumped versions.
+#
+# THE TOKEN (why a PAT, not GITHUB_TOKEN). The changesets/action step uses BOTH
+# `token:` and `env.GITHUB_TOKEN` set to secrets.CHANGESETS_TOKEN — a
+# fine-grained PAT (Contents R+W, Pull requests R+W). This is required so the
+# Version PR it opens TRIGGERS CI: a PR created with the built-in GITHUB_TOKEN
+# does not start workflow runs, and under this repo's branch protection the
+# required `package-version-drift` context would never report — the Version PR
+# would be unmergeable. A PAT-authored PR triggers the checks normally.
+#
+# Until CHANGESETS_TOKEN is set in repo secrets this workflow is INERT (the
+# changesets step fails fast on the missing token); nothing else is affected.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  # Install resolves the scoped workspace deps (portal-contract, config) from
+  # GitHub Packages; `packages: read` covers that (same as ci.yml).
+  packages: read
+
+# Serialise Version-PR runs on main; do not cancel an in-flight run — it may be
+# mid git-push / PR-update and interrupting it can leave a half-written branch.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    # GitHub-hosted runner: hermetic and independent of the self-hosted fleet,
+    # matching the sibling release-plane workflow (publish-ds-packages.yml).
+    runs-on: ubuntu-latest
+    steps:
+      # Persist the PAT (not the default GITHUB_TOKEN) as the git credential:
+      # changesets/action pushes the Version branch with whatever checkout
+      # persisted, and GitHub suppresses CI on GITHUB_TOKEN-pushed commits — so a
+      # default-token push would open a Version PR that never triggers the
+      # required checks. The action's own token/env only covers the PR API call.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          token: ${{ secrets.CHANGESETS_TOKEN }}
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      # `pnpm install` must resolve the scoped workspace deps (portal-contract,
+      # config) from GitHub Packages. The built-in GITHUB_TOKEN covers packages: read;
+      # this is the SAME auth wiring every ci.yml job uses.
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: pnpm install --frozen-lockfile
+
+      # Version-only: apply pending changesets (bump + changelog) and open/update
+      # the Version PR. No `publish:` input — publishing lives in
+      # publish-ds-packages.yml. token + env.GITHUB_TOKEN are the PAT so the
+      # opened PR triggers required CI (see header).
+      - name: Create Version Packages PR
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        with:
+          version: pnpm changeset:version
+          commit: 'ci(release): version packages'
+          title: 'ci(release): version packages'
+          token: ${{ secrets.CHANGESETS_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHANGESETS_TOKEN }}
