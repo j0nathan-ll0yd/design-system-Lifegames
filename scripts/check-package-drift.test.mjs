@@ -18,14 +18,26 @@
  *
  * The observation layer is covered by `node scripts/check-package-drift.mjs
  * --self-test`, which stands up a throwaway git repo and an offline registry, runs
- * the SHIPPED pipeline end to end against them, and then re-runs it under thirteen
- * deliberate SOURCE-TEXT mutations of the real evaluator — failing if any survives.
+ * the SHIPPED pipeline end to end against them, and then re-runs it under every entry
+ * in that file's MUTATION TABLE — deliberate SOURCE-TEXT mutations of the real
+ * evaluator, each naming the scenario it must break — failing if any survives. The
+ * count is deliberately not quoted here; it grows whenever the table does.
  *
- * THIS FILE RUNS IN CI (finding D4). It carries the 34 shared conformance vectors AND
- * the fixture-checksum assertion that makes vendoring them safe, and until now it was
- * reachable only through `pnpm test:scripts` — present in .husky/pre-push and in no
- * workflow — so this repo could diverge from the estate's canonical digest rule with
- * every CI check green. It is now a step in the `package-version-drift` job.
+ * THIS FILE RUNS IN CI (finding D4). It carries the 34 shared digest vectors and the 50
+ * shared export-surface vectors, plus the fixture-checksum assertion that makes vendoring
+ * each of them safe, and until now it was reachable only through `pnpm test:scripts` —
+ * present in .husky/pre-push and in no workflow — so this repo could diverge from the
+ * estate's canonical rules with every CI check green. It is now a step in the
+ * `package-version-drift` job.
+ *
+ * THE EXPORT-SURFACE RULE IS COVERED IN BOTH PLACES, and the split is the same one.
+ * Its 50 vectors define the rule and are asserted here; the WIRING — which verdicts it is
+ * applied over, that an unreadable surface reaches exit 3, that the reference it compares
+ * against is the published tarball and not the local one — is asserted end to end by the
+ * --self-test S22 rungs, and by three source mutations (`surfaceselfref`,
+ * `surfaceindetpass`, `surfacealwaysmajor`) that each break exactly one of them. S22c is
+ * the NEGATIVE CONTROL: the same export removal under a MAJOR must pass and leave the run
+ * at exit 0, so a gate that simply blocked everything cannot masquerade as this rule.
  *
  * THE PROCESS-EXIT BOUNDARY IS NOT COVERED HERE, DELIBERATELY. Nothing in this file
  * spawns the script, so `process.exitCode = code` could be changed to `= 0` and every
@@ -49,14 +61,20 @@ import {fileURLToPath} from 'node:url'
 import zlib from 'node:zlib'
 
 import {assertFixtureIntegrity, runConformance} from './fixtures/drift-conformance-runner.mjs'
+// Both vendored runners export `assertFixtureIntegrity` — same function, different fixture —
+// so the second is aliased rather than renamed in the vendored copy, which must stay verbatim.
+import {assertFixtureIntegrity as assertSurfaceFixtureIntegrity, runSurfaceConformance} from './fixtures/export-surface-runner.mjs'
 import {
   assertBuildOutputs,
+  bumpBetween,
   canonicalize,
   compareSemver,
   decideVerdict,
   differingFiles,
   DRIFT_CONFORMANCE_SHA256,
+  evaluateSurface,
   exitClassFor,
+  EXPORT_SURFACE_CONFORMANCE_SHA256,
   fetchPackument,
   globToRegExp,
   isDeadSourceMap,
@@ -67,16 +85,25 @@ import {
   parseArgs,
   payloadDigests,
   PUBLISH_ONLY_SCRIPTS,
+  readCache,
+  readExportSurface,
   readTarball,
   resolveToken,
   retryAfterMs,
   semverMax,
-  SPEC_VERSION
+  SPEC_VERSION,
+  SURFACE_APPLICABLE_VERDICTS,
+  SURFACE_SPEC_VERSION,
+  surfaceDelta,
+  surfaceOfPayload,
+  writeCache
 } from './check-package-drift.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const conformanceBytes = fs.readFileSync(path.join(here, 'fixtures/drift-conformance.json'))
 const conformance = JSON.parse(conformanceBytes.toString('utf8'))
+const surfaceBytes = fs.readFileSync(path.join(here, 'fixtures/export-surface-conformance.json'))
+const surfaceConformance = JSON.parse(surfaceBytes.toString('utf8'))
 const tmpdir = (prefix) => fs.mkdtempSync(path.join(process.env.TMPDIR ?? '/tmp', prefix))
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -158,6 +185,171 @@ test('conformance: the relations the shared vectors exist to pin', () => {
   assert.equal(verdictOf('cmp-malformed-manifest-edit-is-drift'), 'DRIFT')
   // A difference confined to an unresolvable map moves strictDigest but not effectiveDigest.
   assert.equal(verdictOf('cmp-dead-map-only-difference-is-clean-on-effective'), 'CLEAN')
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Export-surface conformance vectors (spec v1)
+//
+// SAME DISCIPLINE, SECOND RULE. The fixture and runner are vendored VERBATIM from
+// atlas/contracts/export-surface/ and the checksum is pinned beside the engine, so
+// editing either without editing the other turns this red. The rule is defined THERE,
+// not here: the estate has already paid once for three hand-written copies of a shared
+// rule diverging silently (findings X5 and X7), and birthing a second cross-repo rule
+// as three independent copies would repeat exactly that.
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('surface conformance: the vendored fixture matches the checksum this implementation pins', () => {
+  assert.deepEqual(assertSurfaceFixtureIntegrity(surfaceBytes, EXPORT_SURFACE_CONFORMANCE_SHA256), [])
+})
+
+test('surface conformance: all 50 shared vectors pass under the SHARED runner', () => {
+  assert.equal(surfaceConformance.cases.length, 50)
+  const failures = runSurfaceConformance({
+    fixture: surfaceConformance,
+    specVersion: SURFACE_SPEC_VERSION,
+    readExportSurface,
+    surfaceDelta,
+    bumpBetween,
+    evaluateSurface
+  })
+  assert.deepEqual(failures, [])
+})
+
+test('surface conformance: a wrong SURFACE_SPEC_VERSION short-circuits with exactly one message', () => {
+  const failures = runSurfaceConformance({
+    fixture: surfaceConformance,
+    specVersion: SURFACE_SPEC_VERSION + 1,
+    readExportSurface,
+    surfaceDelta,
+    bumpBetween,
+    evaluateSurface
+  })
+  assert.equal(failures.length, 1)
+  assert.match(failures[0], /^SURFACE_SPEC_VERSION: implementation is 2, fixture is 1$/)
+})
+
+/**
+ * The vectors lock this implementation against the other two. On their own they cannot
+ * tell a correct rule from a consistently wrong one, so the relations they exist to
+ * express are asserted here independently of the recorded values — starting with the
+ * measured regression that motivated the whole rule.
+ */
+test('surface conformance: the relations the shared vectors exist to pin', () => {
+  const byId = Object.fromEntries(surfaceConformance.cases.map((c) => [c.id, c]))
+
+  // THE REGRESSION, exactly as it shipped: @j0nathan-ll0yd/web@1.1.0 dropped `./types/*`
+  // and went out as a MINOR. Every payload gate in the estate passed.
+  const shipped = byId['out-web-1.0.0-to-1.1.0-BREAKS']
+  assert.equal(shipped.expect.kind, 'break')
+  assert.equal(shipped.expect.required, 'major')
+  assert.equal(shipped.expect.declaredBump, 'minor')
+  assert.deepEqual(shipped.expect.removed, ['./types/*'])
+
+  // 0.x uses CARET-RANGE semantics, not naive field comparison: `^0.1.2` resolves
+  // `>=0.1.2 <0.2.0`, so 0.1.0 -> 0.2.0 breaks a consumer as hard as 1.0.0 -> 2.0.0 does.
+  // Reading only the major field would let a 0.x package delete an export under a "minor"
+  // and pass — the same hole this rule exists to close. This repo ships 0.x packages.
+  assert.equal(byId['bmp-zerox-minor-is-major'].expect.level, 'major')
+  assert.equal(byId['bmp-zerozerox-patch-is-major'].expect.level, 'major')
+  // An unparseable version is `null`, and null can never CLEAR a requirement.
+  assert.equal(byId['bmp-unparseable-from-is-null'].expect.level, null)
+  // Introducing an exports map REVOKES deep-import access to everything unlisted: MAJOR.
+  // Removing it restores unbounded access: additive, MINOR.
+  assert.equal(byId['sur-absent-exports-is-legacy'].expect.kind, 'legacy')
+  // Every shape the reader refuses must carry a reason — an unreadable surface with no
+  // reason is unactionable, and the caller must escalate it to exit 3 regardless.
+  for (const id of ['sur-mixed-keys-is-unreadable', 'sur-number-exports-is-unreadable', 'sur-missing-manifest-is-unreadable']) {
+    assert.equal(byId[id].expect.kind, 'unreadable')
+    assert.ok(readExportSurface(byId[id].input).detail, `${id} produced no reason`)
+  }
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Export-surface wiring — the parts the shared vectors deliberately do NOT cover
+//
+// The vectors define the RULE. They say nothing about how this engine reaches it: which
+// verdicts it is applied over, what an unreadable surface does to the exit code, how the
+// packed tarball becomes a manifest string, or what the reference cache is allowed to
+// remember. Those are this repo's obligations and are asserted here.
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('the surface rule is applied over exactly the four successfully-compared verdicts', () => {
+  // NEVER_PUBLISHED has no reference surface to shrink from, and VERSION_REGRESSION is a
+  // more fundamental defect in the same exit class — neither is second-guessed by this
+  // rule. Widening this set silently is how a "could not tell" becomes a surface verdict.
+  assert.deepEqual([...SURFACE_APPLICABLE_VERDICTS].sort(), ['BUMP_NOT_NEEDED', 'CLEAN', 'DRIFT', 'PENDING_PUBLISH'])
+})
+
+test('surfaceOfPayload reads the TOP-LEVEL manifest out of a packed tarball map', () => {
+  const packed = new Map([
+    ['package.json', Buffer.from('{"name":"x","exports":{".":"./i.js","./types/*":"./t/*.js"}}')],
+    // A nested manifest is part of its package's payload, never the contract Node resolves.
+    ['dist/package.json', Buffer.from('{"name":"x","exports":{"./nested":"./n.js"}}')]
+  ])
+  assert.deepEqual(surfaceOfPayload(packed).subpaths, ['.', './types/*'])
+})
+
+test('surfaceOfPayload treats a payload with NO manifest as unreadable, not as legacy', () => {
+  // npm injects package.json at the package root unconditionally, so its absence means the
+  // tarball is not what it claims to be. Calling that `legacy` would read "no exports map"
+  // — i.e. a pass — out of an artifact nothing could be determined from.
+  const surface = surfaceOfPayload(new Map([['dist/a.js', Buffer.from('x')]]))
+  assert.equal(surface.kind, 'unreadable')
+  assert.ok(surface.detail)
+})
+
+test('evaluateSurface: a version already published has NO headroom for a surface change', () => {
+  // When the declared version IS the reference version the declared bump is `none`, so any
+  // surface change breaks. Moving the surface of a version already in the registry is a
+  // breaking change with no bump at all — `changeset publish` would skip it entirely.
+  const before = readExportSurface('{"exports":{".":"./i.js","./t":"./t.js"}}')
+  const after = readExportSurface('{"exports":{".":"./i.js"}}')
+  const outcome = evaluateSurface({declared: '1.0.0', referenceVersion: '1.0.0', reference: before, candidate: after})
+  assert.equal(outcome.kind, 'break')
+  assert.equal(outcome.declaredBump, 'none')
+  assert.equal(outcome.required, 'major')
+})
+
+test('evaluateSurface: an unreadable side is INDETERMINATE, never "no requirement"', () => {
+  const readable = readExportSurface('{"exports":{".":"./i.js"}}')
+  const unreadable = readExportSurface('{"exports":42}')
+  assert.equal(evaluateSurface({declared: '2.0.0', referenceVersion: '1.0.0', reference: unreadable, candidate: readable}).kind, 'indeterminate')
+  assert.equal(evaluateSurface({declared: '2.0.0', referenceVersion: '1.0.0', reference: readable, candidate: unreadable}).kind, 'indeterminate')
+  // ...and an unsizeable bump is the same answer, for the same reason.
+  assert.equal(evaluateSurface({declared: 'nightly', referenceVersion: '1.0.0', reference: readable, candidate: readable}).kind, 'indeterminate')
+})
+
+test('exitClassFor: SURFACE_BREAK is exit 2 in EVERY lane — the lane changes severity, not verdicts', () => {
+  // Deliberately unlike PENDING_PUBLISH, which is the state this defect hid inside. By the
+  // time the post-publish lane runs, consumers on a caret range have already resolved the
+  // tarball that lost the subpath, so there is no lane in which this is tolerable.
+  for (const lane of LANES) {
+    assert.equal(exitClassFor('SURFACE_BREAK', lane), 2)
+  }
+})
+
+test('the reference cache refuses an entry written before it recorded a surface', () => {
+  // The digest SPEC_VERSION is deliberately NOT bumped for the added field — that number
+  // means "the digest bytes changed", and they have not. Narrowing on the SHAPE is what
+  // makes that safe: a pre-existing entry fails this check and is refetched, which costs
+  // one download and can never produce a wrong answer. If this ever passes, a stale entry
+  // would be read as `surface: undefined` and every surface comparison against it would
+  // throw or silently pass.
+  const repoRoot = tmpdir('drift-cache-')
+  const surface = {kind: 'exports-map', subpaths: ['.', './types/*'], detail: null}
+  const perFile = new Map([['package.json', 'abc']])
+  writeCache(repoRoot, '@toy/cached', '1.0.0', {strictPerFile: perFile, effectivePerFile: perFile, surface})
+  assert.deepEqual(readCache(repoRoot, '@toy/cached', '1.0.0').surface, surface)
+
+  // Now rewrite it in the pre-surface shape, exactly as an older checkout left it on disk.
+  const file = path.join(repoRoot, 'node_modules', '.cache', 'pkg-drift', `v${SPEC_VERSION}`,
+    fs.readdirSync(path.join(repoRoot, 'node_modules', '.cache', 'pkg-drift', `v${SPEC_VERSION}`))[0])
+  const legacy = JSON.parse(fs.readFileSync(file, 'utf8'))
+  delete legacy.surface
+  delete legacy.surfaceSpecVersion
+  fs.writeFileSync(file, JSON.stringify(legacy))
+  assert.equal(readCache(repoRoot, '@toy/cached', '1.0.0'), null)
+  fs.rmSync(repoRoot, {recursive: true, force: true})
 })
 
 test('the stripped set is exactly the six scripts pnpm pack removes — prepublish is NOT one', () => {
@@ -334,6 +526,7 @@ test('exitClassFor: only PENDING_PUBLISH and NEVER_PUBLISHED vary by lane', () =
     'PENDING_PUBLISH',
     'NEVER_PUBLISHED',
     'DRIFT',
+    'SURFACE_BREAK',
     'VERSION_REGRESSION',
     'LEAKED_ARTIFACT',
     'INDETERMINATE',

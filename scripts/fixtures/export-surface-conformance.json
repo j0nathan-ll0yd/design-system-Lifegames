@@ -1,0 +1,707 @@
+{
+  "$schema": "https://lifegames.org/schemas/export-surface-conformance.v1.json",
+  "specVersion": 1,
+  "generatedBy": "contracts/export-surface/build-fixture.mjs",
+  "rule": {
+    "manifestEntry": "package.json",
+    "removedSubpathRequires": "major",
+    "addedSubpathRequires": "minor",
+    "legacyToExportsMapRequires": "major",
+    "exportsMapToLegacyRequires": "minor",
+    "bumpSizing": "caret-range semantics: crossing the minor field inside 0.x, or any field inside 0.0.x, counts as major",
+    "unreadableSurface": "INDETERMINATE (exit 3) — never a pass (A2b)"
+  },
+  "cases": [
+    {
+      "id": "sur-web-1.0.0-fifteen-subpaths",
+      "why": "The real @j0nathan-ll0yd/web@1.0.0 map, verbatim from the registry.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./components",
+          "./components/OGImage.astro",
+          "./islands/*",
+          "./production",
+          "./production/*",
+          "./runtime/*",
+          "./styles/*",
+          "./types/*",
+          "./widgets/github",
+          "./widgets/health",
+          "./widgets/identity",
+          "./widgets/location",
+          "./widgets/other",
+          "./widgets/reading"
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-web-1.1.0-fourteen-subpaths",
+      "why": "The real 1.1.0 map: 1.0.0 minus ./types/*.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./components",
+          "./components/OGImage.astro",
+          "./islands/*",
+          "./production",
+          "./production/*",
+          "./runtime/*",
+          "./styles/*",
+          "./widgets/github",
+          "./widgets/health",
+          "./widgets/identity",
+          "./widgets/location",
+          "./widgets/other",
+          "./widgets/reading"
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-subpath-object-form",
+      "why": "The ordinary case: every key starts with a dot.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./a.js\",\"./b\":\"./b.js\"}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./b"
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-keys-are-sorted",
+      "why": "pnpm pack reorders manifest keys, so key ORDER must never move a verdict.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\"./z\":\"./z.js\",\".\":\"./a.js\",\"./m\":\"./m.js\"}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./m",
+          "./z"
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-string-form-is-dot",
+      "why": "\"exports\": \"./i.js\" is sugar for {\".\": \"./i.js\"}.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":\"./i.js\"}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-array-form-is-dot",
+      "why": "An array target is also sugar for a single \".\" subpath.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":[\"./i.js\",\"./j.js\"]}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-conditions-form-is-dot",
+      "why": "An object whose keys are ALL conditions is sugar for \".\" with conditions.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\"types\":\"./i.d.ts\",\"import\":\"./i.mjs\",\"require\":\"./i.cjs\"}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-absent-exports-is-legacy",
+      "why": "No exports field: Node resolves any file. A REAL state, not a failure.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\"}",
+      "kind": "surface",
+      "expect": {
+        "kind": "legacy",
+        "subpaths": [],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-null-exports-is-empty-map",
+      "why": "\"exports\": null is valid and blocks every specifier, including \".\".",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":null}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-empty-object-is-empty-map",
+      "why": "An empty object blocks everything too, and is determinable.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "exports-map",
+        "subpaths": [],
+        "detail": null
+      }
+    },
+    {
+      "id": "sur-mixed-keys-is-unreadable",
+      "why": "A2b. Node rejects a mixed subpath/condition object; guessing which half was meant would be inference.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.mjs\",\"import\":\"./i.mjs\"}}",
+      "kind": "surface",
+      "expect": {
+        "kind": "unreadable",
+        "subpaths": [],
+        "detail": "\"exports\" mixes 1 subpath key(s) with 1 condition key(s), which Node rejects as an invalid package config"
+      }
+    },
+    {
+      "id": "sur-number-exports-is-unreadable",
+      "why": "A2b. Node does not accept a numeric exports field.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":42}",
+      "kind": "surface",
+      "expect": {
+        "kind": "unreadable",
+        "subpaths": [],
+        "detail": "\"exports\" is a number, which Node does not accept"
+      }
+    },
+    {
+      "id": "sur-unparseable-manifest-is-unreadable",
+      "why": "A2b. A manifest that will not parse must never fall through to a pass.",
+      "input": "{ not json",
+      "kind": "surface",
+      "expect": {
+        "kind": "unreadable",
+        "subpaths": [],
+        "detail": "package.json is not parseable JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+      }
+    },
+    {
+      "id": "sur-non-object-manifest-is-unreadable",
+      "why": "A2b. A manifest that parses to a string is not a package.",
+      "input": "\"a string\"",
+      "kind": "surface",
+      "expect": {
+        "kind": "unreadable",
+        "subpaths": [],
+        "detail": "package.json is not a JSON object"
+      }
+    },
+    {
+      "id": "sur-missing-manifest-is-unreadable",
+      "why": "A2b. A payload with no package.json proves nothing about the surface.",
+      "input": null,
+      "kind": "surface",
+      "expect": {
+        "kind": "unreadable",
+        "subpaths": [],
+        "detail": "the payload contains no package.json"
+      }
+    },
+    {
+      "id": "dlt-web-types-wildcard-removed-requires-major",
+      "why": "THE MEASURED CASE. web 1.0.0 -> 1.1.0 dropped ./types/*; a removal requires a MAJOR.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "delta",
+      "expect": {
+        "required": "major",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "dlt-web-unchanged-imposes-nothing",
+      "why": "The rule must be silent when the surface did not move, or it is noise.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "dlt-subpath-added-requires-minor",
+      "why": "An added subpath is a new feature, not a break.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\",\"./extra\":\"./e.js\"}}",
+      "kind": "delta",
+      "expect": {
+        "required": "minor",
+        "removed": [],
+        "added": [
+          "./extra"
+        ]
+      }
+    },
+    {
+      "id": "dlt-added-and-removed-still-requires-major",
+      "why": "A removal dominates: swapping ./old for ./new is still a break.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\",\"./old\":\"./o\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\",\"./new\":\"./n\"}}",
+      "kind": "delta",
+      "expect": {
+        "required": "major",
+        "removed": [
+          "./old"
+        ],
+        "added": [
+          "./new"
+        ]
+      }
+    },
+    {
+      "id": "dlt-legacy-to-exports-map-requires-major",
+      "why": "Declaring an exports map REVOKES deep-import access to every unlisted file — the most commonly shipped accidental break on npm.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\"}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.mjs\"}}",
+      "kind": "delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [
+          "."
+        ]
+      }
+    },
+    {
+      "id": "dlt-exports-map-to-legacy-requires-minor",
+      "why": "Removing the map restores unbounded access. Purely additive.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.mjs\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\"}",
+      "kind": "delta",
+      "expect": {
+        "required": "minor",
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "dlt-legacy-to-legacy-imposes-nothing",
+      "why": "main-only packages on both sides must stay quiet rather than block.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\"}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\"}",
+      "kind": "delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "dlt-all-subpaths-removed-requires-major",
+      "why": "\"exports\": null revokes everything at once.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":null}",
+      "kind": "delta",
+      "expect": {
+        "required": "major",
+        "removed": [
+          ".",
+          "./components",
+          "./components/OGImage.astro",
+          "./islands/*",
+          "./production",
+          "./production/*",
+          "./runtime/*",
+          "./styles/*",
+          "./types/*",
+          "./widgets/github",
+          "./widgets/health",
+          "./widgets/identity",
+          "./widgets/location",
+          "./widgets/other",
+          "./widgets/reading"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "dlt-unreadable-reference-has-no-requirement",
+      "why": "A2b. required=null is NOT \"no requirement\" — the caller must escalate it to INDETERMINATE.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":42}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "kind": "delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "dlt-unreadable-candidate-has-no-requirement",
+      "why": "A2b, the other side.",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":42}",
+      "kind": "delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "bmp-same-version-is-none",
+      "from": "1.0.0",
+      "to": "1.0.0",
+      "why": "No movement, no headroom.",
+      "kind": "bump",
+      "expect": {
+        "level": "none"
+      }
+    },
+    {
+      "id": "bmp-patch",
+      "from": "1.0.0",
+      "to": "1.0.1",
+      "why": "Ordinary patch.",
+      "kind": "bump",
+      "expect": {
+        "level": "patch"
+      }
+    },
+    {
+      "id": "bmp-minor",
+      "from": "1.0.0",
+      "to": "1.1.0",
+      "why": "THE web CASE: the bump that shipped the removal.",
+      "kind": "bump",
+      "expect": {
+        "level": "minor"
+      }
+    },
+    {
+      "id": "bmp-minor-with-patch",
+      "from": "1.0.0",
+      "to": "1.1.1",
+      "why": "The strongest promise crossed is the minor one.",
+      "kind": "bump",
+      "expect": {
+        "level": "minor"
+      }
+    },
+    {
+      "id": "bmp-major",
+      "from": "1.0.0",
+      "to": "2.0.0",
+      "why": "The bump that WOULD have covered the removal.",
+      "kind": "bump",
+      "expect": {
+        "level": "major"
+      }
+    },
+    {
+      "id": "bmp-zerox-minor-is-major",
+      "from": "0.1.0",
+      "to": "0.2.0",
+      "why": "CARET SEMANTICS: ^0.1.0 resolves >=0.1.0 <0.2.0, so this breaks consumers exactly like a major.",
+      "kind": "bump",
+      "expect": {
+        "level": "major"
+      }
+    },
+    {
+      "id": "bmp-zerox-patch-is-patch",
+      "from": "0.1.0",
+      "to": "0.1.1",
+      "why": "Inside 0.1.x a patch is still a patch.",
+      "kind": "bump",
+      "expect": {
+        "level": "patch"
+      }
+    },
+    {
+      "id": "bmp-zerox-to-one-is-major",
+      "from": "0.1.0",
+      "to": "1.0.0",
+      "why": "Crossing the major field is always major.",
+      "kind": "bump",
+      "expect": {
+        "level": "major"
+      }
+    },
+    {
+      "id": "bmp-zerozerox-patch-is-major",
+      "from": "0.0.1",
+      "to": "0.0.2",
+      "why": "^0.0.1 resolves >=0.0.1 <0.0.2 — nothing in 0.0.x is compatible with anything else.",
+      "kind": "bump",
+      "expect": {
+        "level": "major"
+      }
+    },
+    {
+      "id": "bmp-prerelease-of-next-major-is-major",
+      "from": "1.0.0",
+      "to": "2.0.0-rc.1",
+      "why": "The release triple crossed a major boundary.",
+      "kind": "bump",
+      "expect": {
+        "level": "major"
+      }
+    },
+    {
+      "id": "bmp-prerelease-of-same-version-is-none",
+      "from": "1.0.0",
+      "to": "1.0.0-rc.1",
+      "why": "A prerelease tag cannot manufacture headroom the triple does not have.",
+      "kind": "bump",
+      "expect": {
+        "level": "none"
+      }
+    },
+    {
+      "id": "bmp-unparseable-from-is-null",
+      "from": "latest",
+      "to": "1.0.0",
+      "why": "A2b. An unknown bump can never CLEAR a requirement.",
+      "kind": "bump",
+      "expect": {
+        "level": null
+      }
+    },
+    {
+      "id": "bmp-unparseable-to-is-null",
+      "from": "1.0.0",
+      "to": "nightly",
+      "why": "A2b, the other side.",
+      "kind": "bump",
+      "expect": {
+        "level": null
+      }
+    },
+    {
+      "id": "out-web-1.0.0-to-1.1.0-BREAKS",
+      "why": "THE REGRESSION, exactly as it shipped. Removal under a MINOR must be a break.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "minor",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-web-same-removal-under-major-PASSES",
+      "why": "THE NEGATIVE CONTROL. Without it the case above proves nothing about the version arithmetic.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "major",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-web-removal-under-patch-BREAKS",
+      "why": "A patch covers even less than a minor.",
+      "declared": "1.0.1",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "patch",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-web-removal-with-no-bump-BREAKS",
+      "why": "The worst case: the surface of an ALREADY-PUBLISHED version moved, with no bump at all.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-unchanged-surface-no-bump-PASSES",
+      "why": "The rule must impose nothing when the surface did not move.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "none",
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "out-unchanged-surface-major-bump-PASSES",
+      "why": "A bump larger than required is never a problem.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "major",
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "out-addition-under-patch-BREAKS",
+      "why": "An added subpath requires at least a MINOR; a patch does not carry it.",
+      "declared": "1.0.1",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\",\"./extra\":\"./e.js\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "minor",
+        "declaredBump": "patch",
+        "removed": [],
+        "added": [
+          "./extra"
+        ]
+      }
+    },
+    {
+      "id": "out-addition-under-minor-PASSES",
+      "why": "The matching negative control for the addition rule.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\",\"./extra\":\"./e.js\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "minor",
+        "removed": [],
+        "added": [
+          "./extra"
+        ]
+      }
+    },
+    {
+      "id": "out-zerox-removal-under-minor-BREAKS",
+      "why": "CARET SEMANTICS end to end: 0.1.0 -> 0.2.0 does NOT cover a removal.",
+      "declared": "0.2.0",
+      "referenceVersion": "0.1.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\",\"./gone\":\"./g\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "major",
+        "removed": [
+          "./gone"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-unreadable-candidate-is-INDETERMINATE",
+      "why": "A2b. Never a pass, at any version.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":42}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "indeterminate",
+        "required": null,
+        "declaredBump": null,
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "out-unreadable-reference-is-INDETERMINATE",
+      "why": "A2b, the other side.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":42}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "indeterminate",
+        "required": null,
+        "declaredBump": null,
+        "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "out-unparseable-version-is-INDETERMINATE",
+      "why": "A2b. \"The surface is fine but I cannot size the bump\" is still \"I could not tell\".",
+      "declared": "nightly",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "indeterminate",
+        "required": null,
+        "declaredBump": null,
+        "removed": [],
+        "added": []
+      }
+    }
+  ]
+}

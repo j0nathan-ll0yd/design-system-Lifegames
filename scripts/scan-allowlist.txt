@@ -404,3 +404,15 @@ packages/fixtures/CHANGELOG.md:marker:j0nathan-ll0yd
 # namespace, not personal data. This file must never be edited in place; re-vendor
 # from atlas and update the pinned checksum together.
 scripts/fixtures/drift-conformance.json:marker:j0nathan-ll0yd
+
+# The shared export-surface conformance fixture, vendored VERBATIM from
+# atlas/contracts/export-surface/ (same discipline, second rule; its sha256 is
+# pinned in check-package-drift.mjs as EXPORT_SURFACE_CONFORMANCE_SHA256 and
+# asserted before the 50 vectors run). The single hit is a `why` field naming the
+# real @j0nathan-ll0yd/web@1.0.0 exports map, read verbatim off the registry —
+# that IS the measured regression the rule exists to catch, so citing the real
+# package is the point of the vector. Same rationale as every block above: the
+# scope string is the mandated GitHub Packages distribution namespace, not
+# personal data. Never edit in place; re-vendor from atlas and update the pinned
+# checksum together.
+scripts/fixtures/export-surface-conformance.json:marker:j0nathan-ll0yd
