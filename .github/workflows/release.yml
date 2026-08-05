@@ -56,7 +56,14 @@ jobs:
     # matching the sibling release-plane workflow (publish-ds-packages.yml).
     runs-on: ubuntu-latest
     steps:
+      # Persist the PAT (not the default GITHUB_TOKEN) as the git credential:
+      # changesets/action pushes the Version branch with whatever checkout
+      # persisted, and GitHub suppresses CI on GITHUB_TOKEN-pushed commits — so a
+      # default-token push would open a Version PR that never triggers the
+      # required checks. The action's own token/env only covers the PR API call.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          token: ${{ secrets.CHANGESETS_TOKEN }}
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
