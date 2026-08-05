@@ -87,8 +87,9 @@ jobs:
     #
     # THE STATUS CONTEXT TO REQUIRE IN BRANCH PROTECTION IS `package-version-drift`
     # (the job id, identical in mantle/LP/OMD so one set of gh commands covers the
-    # estate). Today the job is advisory here: this is the repo holding the live
-    # drifts, and a red gate is still mergeable until the context is required.
+    # estate). It IS required on `main` as of 2026-08-04: a red gate now BLOCKS merge,
+    # which is why the transport retries a throttled 403 rather than let a momentary
+    # throttle fail the check (see REQUEST_ATTEMPTS in scripts/check-package-drift.mjs).
     #
     # No fetch-depth: 0. The previous generation walked each manifest's own commit
     # history to find the version-setting commit, so it needed the full history

@@ -2192,6 +2192,7 @@ function report(result) {
 /** ~50 lines of node:http implementing the two routes a real npm client needs. */
 function startToyRegistry() {
   const packages = new Map() // name -> Map<version, {tarball: Buffer, integrity: string}>
+  const throttles = new Map() // name -> remaining 403s to answer before the packument is served
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://127.0.0.1')
     const tarMatch = /^\/-\/tarball\/(.+)$/.exec(url.pathname)
@@ -2206,6 +2207,16 @@ function startToyRegistry() {
       return
     }
     const name = decodeURIComponent(url.pathname.slice(1))
+    const throttleLeft = throttles.get(name) ?? 0
+    if (throttleLeft > 0) {
+      // GitHub Packages answers 403 when it throttles, the SAME status as a bad token. This
+      // reproduces a momentary throttle: the packument is refused N times, then served — so
+      // only a transport that retries the retryable statuses recovers. Scoped to the
+      // packument route (the tarball route is left alone) to keep the recovery deterministic.
+      throttles.set(name, throttleLeft - 1)
+      res.writeHead(403, {'content-type': 'application/json'}).end('{"error":"throttled"}')
+      return
+    }
     const versions = packages.get(name)
     if (!versions || versions.size === 0) {
       res.writeHead(404, {'content-type': 'application/json'}).end('{"error":"Not found"}')
@@ -2234,6 +2245,12 @@ function startToyRegistry() {
         ? `sha512-${sha512b64(Buffer.concat([tarball, Buffer.from('tamper')]))}`
         : `sha512-${sha512b64(tarball)}`
       packages.get(name).set(version, {tarball, integrity})
+    },
+    // Refuse the next `times` packument requests for `name` with 403 (throttling), then serve
+    // it normally. The counter self-clears as it is consumed, so a scenario that sets it does
+    // not leak throttling into the rungs that follow.
+    throttle(name, times) {
+      throttles.set(name, times)
     },
     close: () =>
       new Promise((resolve) => {
@@ -2543,6 +2560,20 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     result = await gate()
     expect('S1 clean baseline (leaf)', result, '@toy/leaf', 'CLEAN', 0)
     expect('S1 clean baseline (dependent)', result, '@toy/dependent', 'CLEAN', 0)
+
+    // S23 — A THROTTLED PACKUMENT RECOVERS ON RETRY (the 2026-08-04 incident, end to end).
+    // GitHub Packages answers HTTP 403 when it throttles — the same status a genuinely bad
+    // token gets — and one such 403 took a package to INDETERMINATE / exit 3 and stopped the
+    // release train (see REQUEST_ATTEMPTS). The transport retries the retryable statuses, so
+    // a 403 that clears on a later attempt MUST land on the same verdict a never-throttled
+    // request would: here CLEAN, still exit 0. Nothing else in the ladder exercises the retry
+    // loop end to end — S0/S5 prove an unreachable registry is INDETERMINATE, which a single
+    // attempt already satisfies. With the retry removed the first 403 is final, @toy/leaf
+    // becomes `auth` -> INDETERMINATE, and this is the only rung that notices. The `retryoff`
+    // mutation is exactly that removal.
+    registry.throttle('@toy/leaf', 2)
+    result = await gate({build: false})
+    expect('S23 a throttled packument recovers on retry', result, '@toy/leaf', 'CLEAN', 0)
 
     // S1b — manifest KEY ORDER must not change the verdict. The reference is packed
     // from a manifest whose top-level keys are in a different order; every key and
@@ -3020,6 +3051,13 @@ const MUTATIONS = {
     replacement: 'const probe = await fetchPackument(registry, member.name, authToken)\n' +
       "    packuments.set(member.name, probe.kind === 'ok' ? probe : {kind: 'ok', versions: {}})"
   },
+  // Disable the transport retry — one attempt, no second ask. A throttling 403 (exactly how
+  // GitHub Packages answers when it throttles) is then final, the package goes `auth` ->
+  // INDETERMINATE, and a momentary throttle stops the release train: the 2026-08-04 incident
+  // this retry exists to prevent. It NEVER manufactures a pass, so the guarantee is unharmed;
+  // only the flake returns. Killed by S23, where a packument throttled twice must still
+  // recover to CLEAN.
+  retryoff: {scenario: 'S23', anchor: 'const REQUEST_ATTEMPTS = 4', replacement: 'const REQUEST_ATTEMPTS = 1'},
   // Skip the recursive key sort in canonicalize().
   nocanon: {scenario: 'S1b', anchor: 'const canonical = canonicalize(parsed)', replacement: 'const canonical = parsed'},
   // Skip the leak screen.
