@@ -16,12 +16,10 @@ name: Drift self-test (nightly, full)
 # closes that gap: it re-runs the FULL self-test — baseline + all 13 source
 # mutations, no skipping — against main every night, and on demand.
 #
-# WHY ubuntu-latest, NOT the self-hosted fleet
-# The whole point is a RELIABLE safety net. github-hosted runners are freshly
-# provisioned per job with a dedicated memory budget, so the full self-test cannot
-# be OOM-reaped by a neighbouring job the way it was on the shared self-hosted
-# host. npm, pnpm and git are all present on ubuntu-latest, which is everything
-# the self-test shells out to (it seeds the toy registry with `npm pack`).
+# WHY self-hosted linux arm64 node
+# Self-hosted estate policy requires all jobs to run on self-hosted runners.
+# Memory isolation in check-package-drift.mjs ensures the self-test runs within
+# memory limits without OOM-reaping.
 
 on:
   schedule:
@@ -41,7 +39,7 @@ concurrency:
 
 jobs:
   drift-self-test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
