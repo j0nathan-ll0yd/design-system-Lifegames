@@ -3579,14 +3579,20 @@ async function selfTestCommand({mutation}) {
   console.log(`\nbaseline green. Now proving the suite CAN fail (A2b) — ${ids.length} source mutations:\n`)
 
   let survivors = 0
+  const selfScript = fileURLToPath(import.meta.url)
   for (const id of ids) {
     const {scenario} = MUTATIONS[id]
-    const failures = await runSelfTest({mutation: id, verbose: false, stopAfter: scenario})
-    const killed = failures.find((f) => matchesScenario(f, scenario)) ?? null
+    const res = spawnSync(process.execPath, [selfScript, '--self-test', `--mutation=${id}`], {encoding: 'utf8'})
+    const killed = res.status === 0
     if (killed) {
-      console.log(`  killed    ${id.padEnd(14)} by ${killed.split(' — ')[0]}`)
+      const match = res.stdout?.match(/killed by (\d+) assertion\(s\)/)
+      const detail = match ? `by ${match[1]} assertion(s)` : `at "${scenario}"`
+      console.log(`  killed    ${id.padEnd(14)} ${detail}`)
     } else {
       console.error(`  SURVIVED  ${id.padEnd(14)} — expected "${scenario}" to fail`)
+      if (res.stderr) {
+        console.error(res.stderr)
+      }
       survivors += 1
     }
   }
