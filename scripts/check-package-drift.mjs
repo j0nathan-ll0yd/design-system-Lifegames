@@ -3580,9 +3580,28 @@ async function selfTestCommand({mutation}) {
 
   let survivors = 0
   const selfScript = fileURLToPath(import.meta.url)
-  for (const id of ids) {
-    const {scenario} = MUTATIONS[id]
-    const res = spawnSync(process.execPath, [selfScript, '--self-test', `--mutation=${id}`], {encoding: 'utf8'})
+  const concurrency = Math.min(4, os.availableParallelism?.() ?? os.cpus().length)
+  const results = new Array(ids.length)
+  let index = 0
+
+  async function worker() {
+    while (index < ids.length) {
+      const i = index++
+      const id = ids[i]
+      const {scenario} = MUTATIONS[id]
+      const res = await new Promise((resolve) => {
+        execFile(process.execPath, [selfScript, '--self-test', `--mutation=${id}`], {encoding: 'utf8', maxBuffer: 64 * 1024 * 1024},
+          (error, stdout, stderr) => {
+            resolve({status: error ? (typeof error.code === 'number' ? error.code : 1) : 0, stdout, stderr})
+          })
+      })
+      results[i] = {id, scenario, res}
+    }
+  }
+
+  await Promise.all(Array.from({length: concurrency}, () => worker()))
+
+  for (const {id, scenario, res} of results) {
     const killed = res.status === 0
     if (killed) {
       const match = res.stdout?.match(/killed by (\d+) assertion\(s\)/)
