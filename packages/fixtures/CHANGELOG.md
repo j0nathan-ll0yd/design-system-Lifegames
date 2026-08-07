@@ -1,5 +1,13 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies [514314a]
+  - @j0nathan-ll0yd/schemas@1.0.2
+  - @j0nathan-ll0yd/web@2.0.2
+
 ## 1.0.4
 
 ### Patch Changes
