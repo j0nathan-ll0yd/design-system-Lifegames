@@ -125,7 +125,7 @@ jobs:
     # must do to land it in any case. If that trade is ever judged wrong, the one-line
     # revert is to restore the sibling `if:` — but then this context MUST NOT be added to
     # branch protection, because a required-and-skippable check is worse than no check.
-    runs-on: [self-hosted, linux, arm64, node]
+    runs-on: [self-hosted, linux, arm64, node-highmem]
     steps:
       - name: Refuse to measure fork-PR code on a self-hosted runner
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
