@@ -80,11 +80,11 @@
  * map is a legitimate payload difference under a legitimate version bump, which is
  * PENDING_PUBLISH / exit 0. @j0nathan-ll0yd/web@1.1.0, a package of this repo, removed
  * the `./types/*` subpath and shipped as a MINOR with every gate green. The
- * export-surface rule (spec v1, see the SURFACE_SPEC_VERSION block) compares the
+ * export-surface rule (spec v2, see the SURFACE_SPEC_VERSION block) compares the
  * `exports` subpath KEYS of the packed payload against the same published reference the
  * digest uses, sizes the declared bump with CARET-RANGE semantics, and reports
  * SURFACE_BREAK — exit 2 in EVERY lane — when the declared bump is too small. It is
- * defined by atlas/contracts/export-surface/reference.mjs and pinned by the 50 vendored
+ * defined by atlas/contracts/export-surface/reference.mjs and pinned by the 61 vendored
  * vectors in scripts/fixtures/, not by this file.
  *
  * Usage:
@@ -143,7 +143,7 @@ export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924
  * independent spec versions and independent checksums. Re-vendor and update this constant
  * in the SAME change.
  */
-export const EXPORT_SURFACE_CONFORMANCE_SHA256 = '725d704acf1bbc50b3393a76da058a853bb975c8c0cf9227e0cd55ff1bb09818'
+export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'd6499ed176c7c97e6bc82c6fad08104c0544bce7818d420f5dbd938d32c4e7d9'
 
 /**
  * The verdict-ladder contract version this engine implements — the DECISION (`decideVerdict`) and
@@ -573,7 +573,7 @@ export function compareSemver(a, b) {
 export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Export-surface compatibility (spec v1)
+// Export-surface compatibility (spec v2)
 //
 // THE GAP THIS CLOSES — MEASURED 2026-08-04, NOT HYPOTHESISED. Everything above
 // answers ONE question: "does the payload we would publish differ from the payload
@@ -606,7 +606,7 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 // packages permanently. See atlas decision 0020 and the reference's header.
 //
 // THE RULE IS NOT DEFINED HERE. It is defined in atlas/contracts/export-surface/
-// reference.mjs and pinned by the 50 vectors vendored into scripts/fixtures/. This
+// reference.mjs and pinned by the 61 vectors vendored into scripts/fixtures/. This
 // is one of three implementations that must reproduce those vectors exactly; the
 // estate has already paid once for three hand-written copies of a shared rule
 // diverging silently (findings X3 and X7).
@@ -624,8 +624,17 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
  *
  * Deliberately INDEPENDENT of SPEC_VERSION above: the two schemes change for different
  * reasons, and coupling them would force reference-cache invalidation for unrelated edits.
+ *
+ * WHY 2 (atlas decision 0024). `evaluateSurface` became changeset-aware: it now sizes the
+ * surface delta against the PROJECTED post-`changeset version` version when a changeset is
+ * measured, so an adequate pending bump satisfies the rule (the DS #164 class of PR, forced to
+ * manual-bump under v1). The verdict moves for at least one input — a removed subpath under a
+ * declared MINOR with a pending MAJOR is now `ok` where v1 said `break` — so the number moves.
+ * The change is fail-safe by construction: no measured changeset, an inadequate projection, or a
+ * projection that is not a genuine forward move all fall back to the v1 declared-version
+ * behaviour, and the mandatory-adequacy comparison is the SAME rank test as before.
  */
-export const SURFACE_SPEC_VERSION = 1
+export const SURFACE_SPEC_VERSION = 2
 
 /** Ordered weakest to strongest. `BUMP_ORDER.indexOf` is the comparison. */
 export const BUMP_ORDER = Object.freeze(['none', 'patch', 'minor', 'major'])
@@ -828,8 +837,63 @@ export function bumpBetween(from, to) {
 }
 
 /**
- * Decide whether `declared` carries enough of a bump for the surface change against
- * `referenceVersion`.
+ * Fail-safe coercion of the OPTIONAL `pendingRelease` input into the same `PendingRelease` union
+ * decision 0022 defined for the verdict ladder, so both rules read one shape and one source of
+ * truth (the caller passes the SAME measured `pendingRelease` the ladder used, never a
+ * re-derivation).
+ *
+ *   {kind: 'not-measured', reason}        THE DEFAULT. No changeset was measured; grant no credit.
+ *   {kind: 'measured', newVersion|null}   Authoritative. `newVersion` is null when this package is
+ *                                         not in the computed bump set.
+ *   {kind: 'indeterminate', detail}       The probe ran and could not answer.
+ *
+ * ABSENT / undefined / malformed / an unknown kind ALL collapse to `not-measured` — the projection
+ * can only ever SOFTEN a break, so an unreadable input must prove nothing and grant nothing. This
+ * matters most here, in a .mjs engine, where no compiler enforces the union.
+ */
+export function normalizePendingRelease(pendingRelease) {
+  if (!isPlainObject(pendingRelease) || typeof pendingRelease.kind !== 'string') {
+    return {kind: 'not-measured', reason: 'no pendingRelease supplied'}
+  }
+  if (pendingRelease.kind === 'measured') {
+    return {kind: 'measured', newVersion: typeof pendingRelease.newVersion === 'string' ? pendingRelease.newVersion : null}
+  }
+  if (pendingRelease.kind === 'not-measured' || pendingRelease.kind === 'indeterminate') {
+    return pendingRelease
+  }
+  return {kind: 'not-measured', reason: `unknown pendingRelease kind ${pendingRelease.kind}`}
+}
+
+/**
+ * Is `candidate`'s RELEASE TRIPLE strictly greater than `baseline`'s? Prerelease and build metadata
+ * are ignored, exactly as `bumpBetween` ignores them — a prerelease tag cannot manufacture a
+ * forward move the triple does not have (`2.0.0-rc.1` IS ahead of `1.1.0`; `1.0.0-rc.1` is NOT
+ * ahead of `1.0.0`). An unparseable version is NEVER ahead: an unknown version can never earn
+ * credit (A2b).
+ *
+ * This is the direction guard that keeps the changeset credit honest. `bumpBetween` is
+ * directionless — `bumpBetween('1.0.0', '0.9.0')` reads `major` because the fields merely differ —
+ * so without a direction test a backward (regression-shaped) projection could size to a large bump
+ * and excuse a surface break. Requiring the projection to be strictly ahead of the declared
+ * on-disk version means the credit can only ever come from a genuine forward release.
+ */
+function isStrictlyAhead(candidate, baseline) {
+  const a = surfaceTriple(candidate)
+  const b = surfaceTriple(baseline)
+  if (a === null || b === null) {
+    return false
+  }
+  if (a.major !== b.major) {
+    return a.major > b.major
+  }
+  if (a.minor !== b.minor) {
+    return a.minor > b.minor
+  }
+  return a.patch > b.patch
+}
+
+/**
+ * Decide whether the surface change against `referenceVersion` is covered by a bump.
  *
  * `referenceVersion` is the version whose PUBLISHED tarball the surface was read from — the
  * same reference the payload digest is compared against, so both halves of a row describe
@@ -837,10 +901,34 @@ export function bumpBetween(from, to) {
  * strings are equal, the declared bump is `none`, and ANY surface change breaks: moving the
  * surface of a version already in the registry is a breaking change with no bump at all.
  *
- * @returns {{kind: 'ok'|'break', delta: object, declaredBump: string, required?: string}
- *   | {kind: 'indeterminate', detail: string}}
+ * ── CHANGESET-AWARENESS (atlas decision 0024, spec version 2) ────────────────────────────────
+ *
+ * The bump sized here defaults to `referenceVersion -> declared` — the on-disk version, exactly as
+ * spec version 1 did. But `changeset version` has not run yet on a PR that defers its bump to a
+ * `.changeset/*.md`, so `declared` understates the version that will actually publish. When the
+ * caller passes a MEASURED `pendingRelease` (the SAME projected post-`changeset version` version the
+ * verdict ladder used — reuse the measured value, never re-derive), the rule sizes against that
+ * PROJECTED version instead, under three mandatory safety rules, each with its own conformance
+ * vector in the vendored fixture:
+ *
+ *   1. MANDATORY ADEQUACY. The projection is sized by the SAME `bumpBetween` + `bumpRank` comparison
+ *      as the declared version; a projected bump that does not cover the delta still `break`s.
+ *   2. NOT-MEASURED / ABSENT / INDETERMINATE FALL BACK. No measured changeset, a package not in the
+ *      bump set (`newVersion: null`), or an indeterminate probe all size against `declared` —
+ *      byte-for-byte spec-version-1 behaviour.
+ *   3. CREDIT ONLY RAISES, NEVER LAUNDERS. Credited only when the projection is BOTH strictly ahead
+ *      of `declared` (`isStrictlyAhead`) AND carries a strictly larger bump, so it can only ADD
+ *      headroom — never weaken an adequate declared bump, never let a backward projection excuse a
+ *      break. VERSION_REGRESSION / LEAKED_ARTIFACT never reach this rule (SURFACE_APPLICABLE_VERDICTS).
+ *
+ * `declaredBump` in the result is ALWAYS `referenceVersion -> declared` (for reporting continuity);
+ * `sizingBump` is the bump actually compared against `delta.required`; `creditedVersion` is the
+ * projected version that was credited, or null.
+ *
+ * @returns {{kind: 'ok'|'break', delta: object, declaredBump: string, sizingBump: string,
+ *   creditedVersion: string|null, required?: string} | {kind: 'indeterminate', detail: string}}
  */
-export function evaluateSurface({declared, referenceVersion, reference, candidate}) {
+export function evaluateSurface({declared, referenceVersion, reference, candidate, pendingRelease}) {
   const delta = surfaceDelta(reference, candidate)
   if (delta.required === null) {
     return {kind: 'indeterminate', detail: `the export surface could not be read (${delta.detail || 'no detail'})`}
@@ -849,10 +937,22 @@ export function evaluateSurface({declared, referenceVersion, reference, candidat
   if (declaredBump === null) {
     return {kind: 'indeterminate', detail: `cannot size the bump from ${referenceVersion} to ${declared}: one of them is not semver`}
   }
-  if (bumpRank(declaredBump) >= bumpRank(delta.required)) {
-    return {kind: 'ok', delta, declaredBump}
+
+  let sizingBump = declaredBump
+  let creditedVersion = null
+  const pending = normalizePendingRelease(pendingRelease)
+  if (pending.kind === 'measured' && pending.newVersion !== null) {
+    const projectedBump = bumpBetween(referenceVersion, pending.newVersion)
+    if (projectedBump !== null && isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)) {
+      sizingBump = projectedBump
+      creditedVersion = pending.newVersion
+    }
   }
-  return {kind: 'break', delta, declaredBump, required: delta.required}
+
+  if (bumpRank(sizingBump) >= bumpRank(delta.required)) {
+    return {kind: 'ok', delta, declaredBump, sizingBump, creditedVersion}
+  }
+  return {kind: 'break', delta, declaredBump, sizingBump, creditedVersion, required: delta.required}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -2290,7 +2390,11 @@ export async function runGate({
           declared: member.version,
           referenceVersion: decision.referenceVersion,
           reference: reference.surface,
-          candidate: surfaceOfPayload(headFiles)
+          candidate: surfaceOfPayload(headFiles),
+          // The SAME measured pendingRelease the verdict ladder consumed (decision 0024): one source
+          // of truth, never a re-derivation. An adequate projected bump credits the surface delta;
+          // not-measured/absent/indeterminate/backward all fall back to the declared version.
+          pendingRelease
         })
         if (outcome.kind === 'indeterminate') {
           // A2b, one level below the digest: "I could not read the public surface" is exit
@@ -3145,7 +3249,7 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     fs.rmSync(path.join(root, 'contracts'), {recursive: true, force: true})
     commitAll(root, 'restore the declared workspace file')
 
-    // S22 — DID THE PUBLIC SURFACE SHRINK? (the export-surface rule, spec v1)
+    // S22 — DID THE PUBLIC SURFACE SHRINK? (the export-surface rule, spec v2)
     //
     // THE MEASURED GAP, and the reason this rung exists at all. Every scenario above
     // compares PAYLOADS, and a removed entry point is invisible to that question: the
@@ -3219,6 +3323,60 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     expect('S22d an unreadable export surface is INDETERMINATE', result, '@toy/surface', 'INDETERMINATE', 3)
     check('S22d the row says WHY the surface could not be read', /export surface/.test(surfaceRow(result).reason ?? ''),
       `reason=${JSON.stringify(surfaceRow(result).reason)}`)
+
+    // ── S22e–S22j — CHANGESET-AWARE SURFACE (atlas decision 0024, spec v2). ──────────────────────
+    //
+    // A surface removal deferred to a `.changeset/*.md` reads as a small `declaredBump` on disk and
+    // would SURFACE_BREAK under v1 (that is exactly S22b — the DS #164 tax). v2 sizes the delta
+    // against the MEASURED projected version instead — the SAME per-package `pendingRelease` the
+    // verdict ladder consumes — but only under three mandatory safety rules. These rungs pin all
+    // four properties end to end, and the `surfacechangeset*` mutants below each break exactly one.
+    // The on-disk state is IDENTICAL across the cluster (declared 1.0.1, the ./types/* removal, a
+    // patch that never covers a MAJOR removal); ONLY the injected probe changes, so the delta
+    // between a PASS and a BREAK is purely the projected credit.
+    setSurface('1.0.1', {'.': './src/index.js'})
+    commitAll(root, 'defer the ./types/* removal to a changeset (declared as a patch)')
+
+    // S22e — ADEQUATE PROJECTION credits the removal (the DS #164 fix). A pending changeset projects
+    // 2.0.0 — a MAJOR that covers the removal — so the would-be break goes green, and the WHOLE run
+    // returns exit 0 (asserted explicitly, as S22c does: `expect` alone is satisfied by any 0).
+    result = await gate({build: false, changesetProbe: {kind: 'measured', bumps: new Map([['@toy/surface', '2.0.0']])}})
+    expect('S22e an adequate projected MAJOR credits the removal', result, '@toy/surface', 'PENDING_PUBLISH', 0)
+    check('S22e the credit turns the whole run green', result.exitCode === 0, `exitCode=${result.exitCode} — rows=${
+      JSON.stringify(result.rows.map((r) => `${r.name}:${r.verdict}:${r.exitClass}`))
+    }`)
+    check('S22e the credited row still reports the removed subpath', (surfaceRow(result).removedSubpaths ?? []).includes('./types/*'),
+      `removed=${JSON.stringify(surfaceRow(result).removedSubpaths)}`)
+
+    // S22f — MANDATORY ADEQUACY. A projected 1.1.0 is a genuine forward move carrying a larger bump
+    // than the declared patch (so it IS credited), but a MINOR still does not cover a removal needing
+    // MAJOR: SURFACE_BREAK stands. The excuse never excuses an inadequate bump.
+    result = await gate({build: false, changesetProbe: {kind: 'measured', bumps: new Map([['@toy/surface', '1.1.0']])}})
+    expect('S22f an inadequate projected MINOR still SURFACE_BREAKs', result, '@toy/surface', 'SURFACE_BREAK', 2)
+
+    // S22g — MEASURED-BUT-ABSENT falls back. The probe ran but @toy/surface is not in the computed
+    // bump set (newVersion null), so there is no projection to credit and the removal breaks.
+    result = await gate({build: false, changesetProbe: {kind: 'measured', bumps: new Map([['@toy/other', '9.9.9']])}})
+    expect('S22g a measured-but-absent package gets no surface credit', result, '@toy/surface', 'SURFACE_BREAK', 2)
+
+    // S22h — NOT-MEASURED falls back, and the `measured` kind gate is load-bearing: even a
+    // not-measured probe that CARRIES a version grants no credit (only a `measured` kind is
+    // authoritative — the version is ignored). SURFACE_BREAK stands.
+    result = await gate({build: false, changesetProbe: {kind: 'not-measured', reason: 'no .changeset/config.json', newVersion: '2.0.0'}})
+    expect('S22h a not-measured probe grants no surface credit', result, '@toy/surface', 'SURFACE_BREAK', 2)
+
+    // S22i — CREDIT ONLY RAISES. A projection BEHIND the declared version (0.9.0 < 1.0.1) is
+    // regression-shaped; bumpBetween would size it as a MAJOR (it is directionless), but
+    // isStrictlyAhead refuses it, so the declared patch stands and the removal breaks. The excuse
+    // can never launder a backward move.
+    result = await gate({build: false, changesetProbe: {kind: 'measured', bumps: new Map([['@toy/surface', '0.9.0']])}})
+    expect('S22i a backward projection is never credited', result, '@toy/surface', 'SURFACE_BREAK', 2)
+
+    // S22j — INDETERMINATE probe falls back. An untrustworthy projection grants no surface credit.
+    // (The ladder separately escalates a would-be DRIFT to INDETERMINATE upstream; here the surface
+    // row is a PENDING_PUBLISH, so the probe only denies credit and the break stands.)
+    result = await gate({build: false, changesetProbe: {kind: 'indeterminate', detail: 'simulated surface probe failure'}})
+    expect('S22j an indeterminate probe grants no surface credit', result, '@toy/surface', 'SURFACE_BREAK', 2)
 
     fs.rmSync(surfaceDir, {recursive: true, force: true})
     commitAll(root, 'remove the surface fixture package')
@@ -3496,7 +3654,7 @@ const MUTATIONS = {
   // nothing discovered) silently becomes a pass. This is A2b defeated at the process
   // boundary rather than in the verdict logic. Killed by S18, and again by S19.
   exitlaunder3: {scenario: 'S18', anchor: 'process.exitCode = code', replacement: 'process.exitCode = code === EXIT_INDETERMINATE ? EXIT_OK : code'},
-  // ── The export-surface rule, pinned the same three ways (spec v1) ────────────────
+  // ── The export-surface rule, pinned the same three ways (spec v2) ────────────────
   //
   // Compare the candidate surface against ITSELF instead of against the published
   // reference. Every delta is then empty, nothing ever requires a bump, and the rule is a
@@ -3518,6 +3676,37 @@ const MUTATIONS = {
     scenario: 'S22b',
     anchor: 'export function bumpBetween(from, to) {',
     replacement: "export function bumpBetween(from, to) {\n  return 'major'"
+  },
+  // ── Changeset-aware surface credit (atlas decision 0024, spec v2). Each mutant breaks exactly one
+  // of the four safety invariants S22e–S22j pin; the vendored 61 vectors pin the same four at the
+  // contract layer. ────────────────────────────────────────────────────────────────────────────────
+  //
+  // Never enter the credit block, so an adequate projection no longer excuses the removal — the DS
+  // #164 fix would be a no-op. Killed by S22e, which expects the credited removal to go green.
+  surfacechangesetnevercredits: {
+    scenario: 'S22e',
+    anchor: 'if (projectedBump !== null && isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)) {',
+    replacement:
+      'if (false && projectedBump !== null && isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)) {'
+  },
+  // Force every credited projection to the strongest bump, so an inadequate MINOR would excuse a
+  // removal that needs a MAJOR — the excuse manufacturing the pass it must never grant. Killed by S22f.
+  surfacechangesetalwaysexcuses: {scenario: 'S22f', anchor: 'sizingBump = projectedBump', replacement: "sizingBump = 'major'"},
+  // Drop the `measured` kind gate, so a not-measured (or indeterminate) probe that happens to carry a
+  // version would be credited — the fail-safe default defeated. Killed by S22h.
+  // (The `normalizePendingRelease` prefix makes this anchor unique to evaluateSurface — the same
+  // `measured && newVersion` guard also appears in decideVerdict's ladder excuse.)
+  surfacechangesetnotmeasuredexcuses: {
+    scenario: 'S22h',
+    anchor: "const pending = normalizePendingRelease(pendingRelease)\n  if (pending.kind === 'measured' && pending.newVersion !== null) {",
+    replacement: 'const pending = normalizePendingRelease(pendingRelease)\n  if (pending.newVersion !== null && pending.newVersion !== undefined) {'
+  },
+  // Drop the direction guard, so a backward, regression-shaped projection sizes to a large
+  // directionless bumpBetween and launders the break. Killed by S22i.
+  surfacechangesetignoresdirection: {
+    scenario: 'S22i',
+    anchor: 'isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)',
+    replacement: 'bumpRank(projectedBump) > bumpRank(declaredBump)'
   },
   // ── The PENDING_CHANGESET excuse (atlas decision 0022). A subset of mantle's ten mutants: the
   // guardrails whose defect this .mjs engine can express through a NAMED scenario. Mantle's
