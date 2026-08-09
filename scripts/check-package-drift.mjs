@@ -2768,8 +2768,27 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
   const scriptPath = mutation ? writeMutatedScript(mutation, mutantDir) : fileURLToPath(import.meta.url)
   const evaluator = mutation ? await import(pathToFileURL(scriptPath).href) : {runGate}
 
+  // PERF: `build` defaults to FALSE here, the inverse of runGate's own default. The fixture is
+  // built ONCE per suite run (S1's explicit runWorkspaceBuild, and S14's for the npmpub package),
+  // and no scenario's payload changes between rungs unless it edits src/** or build.js — so a
+  // per-rung `pnpm -r run build` only re-copies identical bytes. Rebuilding on every gate() was the
+  // dominant cost of --self-test: ~9 pnpm spawns per suite run, and the 24 mutation subprocesses
+  // each re-run the suite. The FOUR rungs that mutate a build input (S2 edits leaf src, S9/S9b
+  // rewrite build.js, S23 edits leaf src) pass build:true explicitly; every other rung reuses the
+  // dist the prior build produced. This does NOT weaken A2b: `--no-build` is a shipped production
+  // code path (S14/S15/S21/S22 already exercised it), and any rung that needs a rebuild but does not
+  // get one FAILS ITS EXACT-VERDICT ASSERTION in the baseline — a red run, never a silent pass.
   const gate = (overrides = {}) =>
-    evaluator.runGate({repoRoot: root, registry: registryUrl, scope: '@toy', token: 'selftest-token', useCache: false, concurrency: 2, ...overrides})
+    evaluator.runGate({
+      repoRoot: root,
+      registry: registryUrl,
+      scope: '@toy',
+      token: 'selftest-token',
+      useCache: false,
+      concurrency: 2,
+      build: false,
+      ...overrides
+    })
 
   /**
    * THE PROCESS-EXIT BOUNDARY, as a reusable rung (findings X2 and D3).
@@ -3007,7 +3026,7 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     // S2 — payload change, NO bump. THE headline case.
     fs.writeFileSync(path.join(root, 'packages', 'leaf', 'src', 'index.js'), 'module.exports = 11\n')
     commitAll(root, 'edit leaf')
-    result = await gate()
+    result = await gate({build: true}) // edits leaf src → dist must be rebuilt for the drift to surface
     expect('S2 payload change with no bump', result, '@toy/leaf', 'DRIFT', 2)
     check('S2 names the differing payload path', (row(result, '@toy/leaf').differingFiles ?? []).includes('dist/index.js'),
       `differingFiles=${JSON.stringify(row(result, '@toy/leaf').differingFiles)}`)
@@ -3273,14 +3292,14 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
 
     // S9 — a build script that fails.
     fs.writeFileSync(path.join(root, 'build.js'), 'process.exit(7)\n')
-    result = await gate()
+    result = await gate({build: true}) // rewrites build.js → the build must run to hit the failing exit
     expect('S9 broken build is BUILD_FAILED', result, '@toy/leaf', 'BUILD_FAILED', 4)
 
     // S9b — a build that exits 0 but leaves a declared output empty.
     fs.writeFileSync(path.join(root, 'build.js'), 'require("fs").mkdirSync("dist", {recursive: true})\n')
     fs.rmSync(path.join(root, 'packages', 'leaf', 'dist'), {recursive: true, force: true})
     fs.rmSync(path.join(root, 'packages', 'dependent', 'dist'), {recursive: true, force: true})
-    result = await gate()
+    result = await gate({build: true}) // rewrites build.js + removes dist → the build must run to leave the output empty
     expect('S9b empty declared output is BUILD_FAILED', result, '@toy/leaf', 'BUILD_FAILED', 4)
     fs.writeFileSync(path.join(root, 'build.js'), BUILD_JS)
 
@@ -3298,7 +3317,7 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
 
     // S23 — a covered drift. leaf drifts under its published 1.0.1, and a pending changeset would
     // move it to a clean, not-yet-published 1.0.2. Green on a branch with no in-PR `changeset version`.
-    result = await gate({changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}})
+    result = await gate({build: true, changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}}) // edits leaf src → dist must be rebuilt for the covered drift to surface
     expect('S23 a covered drift is PENDING_CHANGESET', result, '@toy/leaf', 'PENDING_CHANGESET', 0)
     check('S23 the excuse names its projected target', (row(result, '@toy/leaf').advisories ?? []).includes('changeset-target:1.0.2'),
       `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
@@ -3614,7 +3633,11 @@ async function selfTestCommand({mutation}) {
 
   let survivors = 0
   const selfScript = fileURLToPath(import.meta.url)
-  const concurrency = Math.min(4, os.availableParallelism?.() ?? os.cpus().length)
+  // PERF: fan the mutant subprocesses across every available core, capped at the mutation count.
+  // The old min(4, …) throttled 24 mutants to four lanes even on an 8+ core self-hosted runner;
+  // now that a mutant no longer rebuilds the fixture on every rung (see the gate() helper's
+  // build:false default), each mutant is I/O-light and higher parallelism scales cleanly.
+  const concurrency = Math.min(ids.length, os.availableParallelism?.() ?? os.cpus().length)
   const results = new Array(ids.length)
   let index = 0
 
