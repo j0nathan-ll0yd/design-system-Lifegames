@@ -2436,6 +2436,7 @@ function report(result) {
 /** ~50 lines of node:http implementing the two routes a real npm client needs. */
 function startToyRegistry() {
   const packages = new Map() // name -> Map<version, {tarball: Buffer, integrity: string}>
+  const throttles = new Map() // name -> count of packument reads still to answer with 403
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://127.0.0.1')
     const tarMatch = /^\/-\/tarball\/(.+)$/.exec(url.pathname)
@@ -2450,6 +2451,16 @@ function startToyRegistry() {
       return
     }
     const name = decodeURIComponent(url.pathname.slice(1))
+    // A momentary GitHub Packages throttle (finding behind REQUEST_ATTEMPTS): 403 the next N
+    // packument reads for `name`, then serve normally. Scoped to the packument route so a
+    // tarball fetch is unaffected, and self-clearing so later scenarios see a healthy
+    // registry — exactly the transient burst the transport retry exists to ride out.
+    const remainingThrottle = throttles.get(name) ?? 0
+    if (remainingThrottle > 0) {
+      throttles.set(name, remainingThrottle - 1)
+      res.writeHead(403, {'content-type': 'application/json'}).end('{"error":"throttled"}')
+      return
+    }
     const versions = packages.get(name)
     if (!versions || versions.size === 0) {
       res.writeHead(404, {'content-type': 'application/json'}).end('{"error":"Not found"}')
@@ -2478,6 +2489,10 @@ function startToyRegistry() {
         ? `sha512-${sha512b64(Buffer.concat([tarball, Buffer.from('tamper')]))}`
         : `sha512-${sha512b64(tarball)}`
       packages.get(name).set(version, {tarball, integrity})
+    },
+    // Refuse the next `times` packument reads for `name` with 403, then serve normally.
+    throttle(name, times) {
+      throttles.set(name, times)
     },
     close: () =>
       new Promise((resolve) => {
@@ -2846,6 +2861,18 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     result = await gate()
     expect('S1 clean baseline (leaf)', result, '@toy/leaf', 'CLEAN', 0)
     expect('S1 clean baseline (dependent)', result, '@toy/dependent', 'CLEAN', 0)
+
+    // S27 — A THROTTLED PACKUMENT RECOVERS ON RETRY. The flake that stalled the release train
+    // (findings behind #158/#161): GitHub Packages answers 403 during a merge burst, and one
+    // unretried 403 sends a package INDETERMINATE and exits the gate 3. The transport retries
+    // (REQUEST_ATTEMPTS), so a momentary throttle must land EXACTLY where a never-throttled read
+    // does — CLEAN / exit 0 — off the same clean tree S1 just proved. Throttle the leaf's next
+    // two reads (retries 1 and 2 eat them; attempt 3 serves the packument); dependent is
+    // untouched. The `retryoff` mutation (REQUEST_ATTEMPTS 4 -> 1) makes the first 403 final:
+    // leaf becomes auth -> INDETERMINATE and this assertion goes red, killing the mutant.
+    registry.throttle('@toy/leaf', 2)
+    result = await gate()
+    expect('S27 a throttled packument recovers on retry', result, '@toy/leaf', 'CLEAN', 0)
 
     // S1b — manifest KEY ORDER must not change the verdict. The reference is packed
     // from a manifest whose top-level keys are in a different order; every key and
@@ -3510,7 +3537,14 @@ const MUTATIONS = {
     scenario: 'S26',
     anchor: "if (type !== 'none' && newVersion !== oldVersion) {",
     replacement: "if (type !== 'none' && newVersion !== oldVersion && Array.isArray(entry.changesets) && entry.changesets.length > 0) {"
-  }
+  },
+  // Disable the transport retry (four attempts -> one), so the first throttled 403 is final —
+  // the regression that let a momentary GitHub Packages throttle stall the release train
+  // (#158/#161). The node:test suite pins the retry, but the mutation ladder did not, so
+  // deleting it would have left --self-test green. Killed by S27, where the leaf's first two
+  // packument reads are throttled: with one attempt the 403 survives, leaf goes auth ->
+  // INDETERMINATE, and S27's CLEAN assertion fails.
+  retryoff: {scenario: 'S27', anchor: 'const REQUEST_ATTEMPTS = 4', replacement: 'const REQUEST_ATTEMPTS = 1'}
 }
 // ---8<--- MUTATION TABLE END ---8<---
 
