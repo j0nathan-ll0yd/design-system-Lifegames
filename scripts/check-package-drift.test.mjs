@@ -23,15 +23,16 @@
  * evaluator, each naming the scenario it must break — failing if any survives. The
  * count is deliberately not quoted here; it grows whenever the table does.
  *
- * THIS FILE RUNS IN CI (finding D4). It carries the 34 shared digest vectors and the 50
- * shared export-surface vectors, plus the fixture-checksum assertion that makes vendoring
- * each of them safe, and until now it was reachable only through `pnpm test:scripts` —
+ * THIS FILE RUNS IN CI (finding D4). It carries the 34 shared digest vectors and the 61
+ * shared export-surface vectors (spec v2, changeset-aware — atlas decision 0024), plus the
+ * fixture-checksum assertion that makes vendoring each of them safe, and until now it was
+ * reachable only through `pnpm test:scripts` —
  * present in .husky/pre-push and in no workflow — so this repo could diverge from the
  * estate's canonical rules with every CI check green. It is now a step in the
  * `package-version-drift` job.
  *
  * THE EXPORT-SURFACE RULE IS COVERED IN BOTH PLACES, and the split is the same one.
- * Its 50 vectors define the rule and are asserted here; the WIRING — which verdicts it is
+ * Its 61 vectors define the rule and are asserted here; the WIRING — which verdicts it is
  * applied over, that an unreadable surface reaches exit 3, that the reference it compares
  * against is the published tarball and not the local one — is asserted end to end by the
  * --self-test S22 rungs, and by three source mutations (`surfaceselfref`,
@@ -195,7 +196,7 @@ test('conformance: the relations the shared vectors exist to pin', () => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Export-surface conformance vectors (spec v1)
+// Export-surface conformance vectors (spec v2 — changeset-aware, atlas decision 0024)
 //
 // SAME DISCIPLINE, SECOND RULE. The fixture and runner are vendored VERBATIM from
 // atlas/contracts/export-surface/ and the checksum is pinned beside the engine, so
@@ -209,8 +210,8 @@ test('surface conformance: the vendored fixture matches the checksum this implem
   assert.deepEqual(assertSurfaceFixtureIntegrity(surfaceBytes, EXPORT_SURFACE_CONFORMANCE_SHA256), [])
 })
 
-test('surface conformance: all 50 shared vectors pass under the SHARED runner', () => {
-  assert.equal(surfaceConformance.cases.length, 50)
+test('surface conformance: all 61 shared vectors pass under the SHARED runner', () => {
+  assert.equal(surfaceConformance.cases.length, 61)
   const failures = runSurfaceConformance({
     fixture: surfaceConformance,
     specVersion: SURFACE_SPEC_VERSION,
@@ -232,7 +233,7 @@ test('surface conformance: a wrong SURFACE_SPEC_VERSION short-circuits with exac
     evaluateSurface
   })
   assert.equal(failures.length, 1)
-  assert.match(failures[0], /^SURFACE_SPEC_VERSION: implementation is 2, fixture is 1$/)
+  assert.match(failures[0], /^SURFACE_SPEC_VERSION: implementation is 3, fixture is 2$/)
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -317,6 +318,36 @@ test('surface conformance: the relations the shared vectors exist to pin', () =>
     assert.equal(byId[id].expect.kind, 'unreadable')
     assert.ok(readExportSurface(byId[id].input).detail, `${id} produced no reason`)
   }
+
+  // CHANGESET-AWARENESS (spec v2, atlas decision 0024). The four safety invariants the vendored
+  // vectors pin, asserted independently of their recorded outcomes so a consistently-wrong credit
+  // could not slip through. These are the same properties DS's --self-test S22e–S22j mirror.
+  // 1. An ADEQUATE projected bump credits the delta (the DS #164 fix): removal under a declared
+  //    MINOR with a pending MAJOR is `ok`, sized against the credited 2.0.0.
+  const covered = byId['out-changeset-covers-removal-projected-major-PASSES']
+  assert.equal(covered.expect.kind, 'ok')
+  assert.equal(covered.expect.sizingBump, 'major')
+  assert.equal(covered.expect.creditedVersion, '2.0.0')
+  // 2. MANDATORY ADEQUACY: a projected MINOR does not cover a removal needing MAJOR — still a break,
+  //    and the credited version is still recorded on the row.
+  assert.equal(byId['out-changeset-inadequate-projected-minor-BREAKS'].expect.kind, 'break')
+  assert.equal(byId['out-changeset-inadequate-projected-minor-BREAKS'].expect.required, 'major')
+  // 3. FALLBACK: not-measured, measured-but-absent and indeterminate all size against `declared` and
+  //    grant no credit (creditedVersion null) — byte-for-byte spec-version-1 behaviour.
+  for (
+    const id of [
+      'out-changeset-not-measured-removal-BREAKS',
+      'out-changeset-measured-absent-removal-BREAKS',
+      'out-changeset-indeterminate-probe-removal-BREAKS'
+    ]
+  ) {
+    assert.equal(byId[id].expect.kind, 'break', `${id} must fall back to a break`)
+    assert.equal(byId[id].expect.creditedVersion, null, `${id} must credit nothing`)
+  }
+  // 4. CREDIT ONLY RAISES: a backward, regression-shaped projection (1.2.0 behind a declared 1.5.0)
+  //    is refused by isStrictlyAhead, so the declared bump stands and the removal breaks.
+  assert.equal(byId['out-changeset-backward-projection-not-credited-BREAKS'].expect.kind, 'break')
+  assert.equal(byId['out-changeset-backward-projection-not-credited-BREAKS'].expect.creditedVersion, null)
 })
 
 // ─────────────────────────────────────────────────────────────────────────────

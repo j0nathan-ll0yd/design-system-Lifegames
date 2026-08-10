@@ -1,6 +1,6 @@
 {
   "$schema": "https://lifegames.org/schemas/export-surface-conformance.v1.json",
-  "specVersion": 1,
+  "specVersion": 2,
   "generatedBy": "contracts/export-surface/build-fixture.mjs",
   "rule": {
     "manifestEntry": "package.json",
@@ -9,7 +9,8 @@
     "legacyToExportsMapRequires": "major",
     "exportsMapToLegacyRequires": "minor",
     "bumpSizing": "caret-range semantics: crossing the minor field inside 0.x, or any field inside 0.0.x, counts as major",
-    "unreadableSurface": "INDETERMINATE (exit 3) — never a pass (A2b)"
+    "unreadableSurface": "INDETERMINATE (exit 3) — never a pass (A2b)",
+    "changesetAwareness": "a MEASURED pendingRelease sizes the delta against the projected post-`changeset version` version, credited only when it is strictly ahead of declared AND carries a larger bump; not-measured/absent/indeterminate/absent-from-bump-set fall back to the declared version; adequacy is still the same rank comparison (decision 0024)"
   },
   "cases": [
     {
@@ -509,6 +510,8 @@
         "kind": "break",
         "required": "major",
         "declaredBump": "minor",
+        "sizingBump": "minor",
+        "creditedVersion": null,
         "removed": [
           "./types/*"
         ],
@@ -527,6 +530,8 @@
         "kind": "ok",
         "required": null,
         "declaredBump": "major",
+        "sizingBump": "major",
+        "creditedVersion": null,
         "removed": [
           "./types/*"
         ],
@@ -545,6 +550,8 @@
         "kind": "break",
         "required": "major",
         "declaredBump": "patch",
+        "sizingBump": "patch",
+        "creditedVersion": null,
         "removed": [
           "./types/*"
         ],
@@ -563,6 +570,8 @@
         "kind": "break",
         "required": "major",
         "declaredBump": "none",
+        "sizingBump": "none",
+        "creditedVersion": null,
         "removed": [
           "./types/*"
         ],
@@ -581,6 +590,8 @@
         "kind": "ok",
         "required": null,
         "declaredBump": "none",
+        "sizingBump": "none",
+        "creditedVersion": null,
         "removed": [],
         "added": []
       }
@@ -597,6 +608,8 @@
         "kind": "ok",
         "required": null,
         "declaredBump": "major",
+        "sizingBump": "major",
+        "creditedVersion": null,
         "removed": [],
         "added": []
       }
@@ -613,6 +626,8 @@
         "kind": "break",
         "required": "minor",
         "declaredBump": "patch",
+        "sizingBump": "patch",
+        "creditedVersion": null,
         "removed": [],
         "added": [
           "./extra"
@@ -631,6 +646,8 @@
         "kind": "ok",
         "required": null,
         "declaredBump": "minor",
+        "sizingBump": "minor",
+        "creditedVersion": null,
         "removed": [],
         "added": [
           "./extra"
@@ -649,6 +666,8 @@
         "kind": "ok",
         "required": null,
         "declaredBump": "major",
+        "sizingBump": "major",
+        "creditedVersion": null,
         "removed": [
           "./gone"
         ],
@@ -667,6 +686,8 @@
         "kind": "indeterminate",
         "required": null,
         "declaredBump": null,
+        "sizingBump": null,
+        "creditedVersion": null,
         "removed": [],
         "added": []
       }
@@ -683,6 +704,8 @@
         "kind": "indeterminate",
         "required": null,
         "declaredBump": null,
+        "sizingBump": null,
+        "creditedVersion": null,
         "removed": [],
         "added": []
       }
@@ -699,7 +722,269 @@
         "kind": "indeterminate",
         "required": null,
         "declaredBump": null,
+        "sizingBump": null,
+        "creditedVersion": null,
         "removed": [],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-covers-removal-projected-major-PASSES",
+      "why": "THE DS #164 FIX. web dropped ./types/* and shipped as a MINOR (breaks under v1), but a pending changeset projects to 2.0.0 — an adequate MAJOR. Credited, so ok.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "2.0.0"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "minor",
+        "sizingBump": "major",
+        "creditedVersion": "2.0.0",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-inadequate-projected-minor-BREAKS",
+      "why": "MANDATORY ADEQUACY. A removal needs MAJOR; a pending changeset projecting only to 1.1.0 (a MINOR) does not cover it. Still a break — the excuse never excuses an inadequate bump.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "1.1.0"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "sizingBump": "minor",
+        "creditedVersion": "1.1.0",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-not-measured-removal-BREAKS",
+      "why": "FALLBACK. No changeset was measured, so the rule sizes against the declared version — exactly spec-version-1 behaviour. A surface change with no pending bump still breaks.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "not-measured",
+        "reason": "the caller measured no changeset"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "sizingBump": "none",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-measured-absent-removal-BREAKS",
+      "why": "FALLBACK. The probe ran but this package is not in the computed bump set (newVersion null) — no projection to credit, so the declared bump stands and the removal breaks.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": null
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "sizingBump": "none",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-indeterminate-probe-removal-BREAKS",
+      "why": "FALLBACK. An indeterminate probe is not a trustworthy projection, so the surface rule grants no credit and the break stands (the ladder separately escalates the probe failure to INDETERMINATE upstream).",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "indeterminate",
+        "detail": "getReleasePlan threw"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "sizingBump": "none",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-covers-addition-projected-minor-PASSES",
+      "why": "An added subpath needs a MINOR; a pending changeset projecting to 1.1.0 covers it. The credit works for additions, not only removals.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\",\"./extra\":\"./e.js\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "1.1.0"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "none",
+        "sizingBump": "minor",
+        "creditedVersion": "1.1.0",
+        "removed": [],
+        "added": [
+          "./extra"
+        ]
+      }
+    },
+    {
+      "id": "out-changeset-prerelease-major-projected-PASSES",
+      "why": "PRE.JSON. A prerelease target of the next major (2.0.0-rc.1) is a genuine forward move that crosses the major boundary, so it covers the removal — prerelease-aware, matching bumpBetween.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "2.0.0-rc.1"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "none",
+        "sizingBump": "major",
+        "creditedVersion": "2.0.0-rc.1",
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-prerelease-same-triple-not-credited-BREAKS",
+      "why": "A prerelease tag on the SAME release triple (1.0.0-rc.1) adds no headroom — not strictly ahead of 1.0.0 — so it is not credited and the removal breaks.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "1.0.0-rc.1"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "sizingBump": "none",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-backward-projection-not-credited-BREAKS",
+      "why": "CREDIT ONLY RAISES. A projection BELOW the declared version (1.2.0 < 1.5.0) is regression-shaped; bumpBetween would read it as a MAJOR, but isStrictlyAhead refuses it, so the declared MINOR stands and the removal breaks. The excuse can never launder a backward move.",
+      "declared": "1.5.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "1.2.0"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "minor",
+        "sizingBump": "minor",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-adequate-on-declared-projection-is-noop-PASSES",
+      "why": "The declared version already carries an adequate MAJOR, so the pending changeset adds no headroom and is not credited (creditedVersion null). The rule passes on the declared bump alone.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "2.1.0"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "major",
+        "sizingBump": "major",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": []
+      }
+    },
+    {
+      "id": "out-changeset-missing-field-equals-not-measured-BREAKS",
+      "why": "BACKWARD COMPAT. An absent pendingRelease field must read as not-measured: this is the real web regression (declared 1.1.0, a MINOR) with no pending field at all, and it breaks exactly as under spec version 1.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "minor",
+        "sizingBump": "minor",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
         "added": []
       }
     }
