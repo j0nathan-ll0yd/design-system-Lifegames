@@ -86,7 +86,10 @@ export function runSurfaceConformance({fixture, specVersion, readExportSurface, 
           declared: testCase.declared,
           referenceVersion: testCase.referenceVersion,
           reference: readExportSurface(testCase.reference),
-          candidate: readExportSurface(testCase.candidate)
+          candidate: readExportSurface(testCase.candidate),
+          // Present only on the changeset-aware (spec version 2) cases; absent means not-measured,
+          // which the reference must treat exactly as spec version 1 did.
+          pendingRelease: testCase.pendingRelease
         })
         if (got.kind !== testCase.expect.kind) {
           fail(id, `outcome want ${testCase.expect.kind} got ${got.kind} — ${testCase.why}`)
@@ -99,6 +102,19 @@ export function runSurfaceConformance({fixture, specVersion, readExportSurface, 
         const declaredBump = got.kind === 'indeterminate' ? null : got.declaredBump
         if (declaredBump !== testCase.expect.declaredBump) {
           fail(id, `declaredBump want ${testCase.expect.declaredBump} got ${declaredBump}`)
+        }
+        // sizingBump is the bump actually compared against the requirement (the credited projection
+        // or the declared bump); creditedVersion is the projected version credited, or null. These
+        // pin the changeset-awareness: which version the rule sized against, and whether it granted
+        // credit. `?? null` is deliberate — a spec-version-1 runner reading a v2 fixture would fail
+        // the case-zero SURFACE_SPEC_VERSION assertion first, never reach here.
+        const sizingBump = got.kind === 'indeterminate' ? null : (got.sizingBump ?? null)
+        if (sizingBump !== testCase.expect.sizingBump) {
+          fail(id, `sizingBump want ${testCase.expect.sizingBump} got ${sizingBump} — ${testCase.why}`)
+        }
+        const creditedVersion = got.kind === 'indeterminate' ? null : (got.creditedVersion ?? null)
+        if (creditedVersion !== testCase.expect.creditedVersion) {
+          fail(id, `creditedVersion want ${JSON.stringify(testCase.expect.creditedVersion)} got ${JSON.stringify(creditedVersion)} — ${testCase.why}`)
         }
         if (got.kind !== 'indeterminate') {
           for (const key of ['removed', 'added']) {
