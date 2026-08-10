@@ -418,3 +418,12 @@ scripts/fixtures/drift-conformance.json:marker:j0nathan-ll0yd
 # personal data. Never edit in place; re-vendor from atlas and update the pinned
 # checksum together.
 scripts/fixtures/export-surface-conformance.json:marker:j0nathan-ll0yd
+
+# ADR-0007 (issue #180) — reconciles PR #164's `!` BREAKING marker against the
+# MINOR bump it shipped. Same rationale as the docs/adr/0005 entry and every
+# scope block above: the ADR's entire subject is the semver tier of
+# `@j0nathan-ll0yd/tokens`, so it must name that package (and the consumer repo
+# j0nathan-ll0yd.github.io, whose npm flat-hoisting is the evidence that decided
+# the verdict) throughout. The mandated GitHub Packages distribution namespace and
+# a public GitHub handle — not personal data.
+docs/adr/0007-tokens-style-dictionary-removal-semver-tier.md:marker:j0nathan-ll0yd
