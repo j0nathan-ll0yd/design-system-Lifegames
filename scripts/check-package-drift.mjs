@@ -122,7 +122,7 @@ import zlib from 'node:zlib'
  * `scripts/fixtures/reference.mjs` is the three-line adapter that points its one relative import
  * back at this file (see that file's header for why the cycle is safe).
  */
-import {acceptsCachedSurface, EXPECTED_TS_VERSION, EXTRACT_SPEC_VERSION, extractSurfaceNames} from './fixtures/extract.mjs'
+import {acceptsCachedSurface, EXTRACT_SPEC_VERSION, extractSurfaceNames, VERIFIED_TS_VERSIONS} from './fixtures/extract.mjs'
 
 /**
  * The digest scheme identifier. SAME NUMBER <=> BYTE-IDENTICAL NORMALIZATION, for every
@@ -158,23 +158,25 @@ export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924
  * independent spec versions and independent checksums. Re-vendor and update this constant
  * in the SAME change.
  */
-export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'ebeb8607c56384b0b489a1630797ac63210806b0f0005fc88579e3820c303eba'
+export const EXPORT_SURFACE_CONFORMANCE_SHA256 = '61acdd91e1cf356f265380b6dc822d78072d852797e2c9ea9c832e3e900e2ae5'
 
-// EXPORT_EXTRACT_CONFORMANCE_SHA256 IS DELIBERATELY ABSENT UNTIL EXTRACT SPEC VERSION 2.
-//
-// TWO FIXTURES, TWO CHECKSUMS, TWO NUMBERS (atlas decision 0028 §D1): the rule fixture above
-// pins the RULE, and a second fixture pins the EXTRACTOR — the volatile half that turns a
-// packed file tree into a name set, and the only half that depends on `typescript`. That
-// split is exactly what lets the extractor's number move without forcing a re-vendor of a
-// rule that did not change, and it is being exercised for the first time right now:
-// decision 0030 replaces the extractor's single-version guard with a VERIFIED version SET
-// ({5.9.2, 5.9.3, 6.0.3}, proven byte-identical), which bumps EXTRACT_SPEC_VERSION 1 -> 2
-// and regenerates `export-extract-conformance.json` under a new sha256.
-//
-// Vendoring the v1 fixture here and re-vendoring it days later would pin a checksum this
-// repo never conformed to, so it is held until the v2 bytes land. The RULE fixture's
-// checksum is untouched by that bump — which is the churn-isolation claim, observed rather
-// than asserted. See the Level-2 status note in the export-surface block below.
+/**
+ * sha256 of scripts/fixtures/export-extract-conformance.json, vendored verbatim from
+ * atlas/contracts/export-surface/. TWO FIXTURES, TWO CHECKSUMS, TWO NUMBERS (atlas
+ * decision 0028 §D1). This one pins the EXTRACTOR — the volatile half that turns a packed
+ * file tree into a name set, and the only half that depends on `typescript`. Re-vendor and
+ * update this constant in the SAME change.
+ *
+ * THE CHURN-ISOLATION CLAIM IS NOW MEASURED, NOT ARGUED. Decision 0030 bumped
+ * EXTRACT_SPEC_VERSION 1 -> 2 (the single-version toolchain guard became a verified version
+ * SET) and regenerated only this fixture. Had the two been one file, that extractor-only
+ * change would have moved the RULE fixture's checksum too and forced an estate-wide
+ * re-vendor of a rule nobody touched. It did move the rule fixture's checksum here — but
+ * for an unrelated reason that landed in the same atlas commit (a `targets` sugar vector),
+ * which is exactly why the two numbers are independent: they moved for two different causes
+ * and each says which.
+ */
+export const EXPORT_EXTRACT_CONFORMANCE_SHA256 = '09ff0fe255c3e139ba9df1012be55dbb0073531cf0580a6a2ffbe58cc1bcfb64'
 
 /**
  * The verdict-ladder contract version this engine implements — the DECISION (`decideVerdict`) and
@@ -638,22 +640,18 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 // and total (NO_SURFACE / SFC_ENTRY / INDETERMINATE), which drops corpus INDETERMINATE
 // from 30/253 to 2/253 — and those 2 are genuinely broken targets that SHOULD be red.
 //
-// LEVEL 2 IS ADVISORY IN THIS REPO TODAY (0028 PR 3). The rule is computed and reported;
-// it moves no exit code. The enforce-flip is 0028 PR 4, after all three engines are on
-// spec v3. See `level1View`.
+// LEVEL 2 IS ADVISORY IN THIS REPO (0028 PR 3). The rule is computed and reported; it moves
+// no exit code. The enforce-flip is 0028 PR 4, after all three engines are on spec v3.
+// See `level1View`, and the `level2*` mutants in the MUTATION TABLE.
 //
-// AND IT IS CURRENTLY INERT, DELIBERATELY AND VISIBLY. The vendored `extract.mjs` is extract
-// spec version 1, whose toolchain guard admits exactly one `typescript` (5.9.2); this repo
-// pins 5.9.3. So `assertCompiler` refuses every extraction and `surfaceOfPayload` reports
-// each subpath INDETERMINATE — which surfaces as a `surface-level2-indeterminate` ADVISORY
-// on every package and, because Level 2 is advisory, moves no exit code at all.
-//
-// That is the correct failure shape for this window, not a bug to work around: a drifted
-// compiler must fail LOUDLY rather than extract with the wrong one and cache wrong names
-// under a correctly-pinned key. Decision 0030 replaces the single-version guard with a
-// VERIFIED version SET ({5.9.2, 5.9.3, 6.0.3}, proven byte-identical) at EXTRACT_SPEC_VERSION
-// 2; re-vendoring `extract.mjs` + `export-extract-conformance.json` at v2 is what lights the
-// advisory up, with no change to the wiring, the rule, or the Level-1 verdict path.
+// THE TOOLCHAIN GUARD IS A VERIFIED SET, NOT A SINGLE VERSION (decision 0030). `typescript`
+// is pinned EXACTLY here — 5.9.3, no range — and the extractor admits exactly the members of
+// VERIFIED_TS_VERSIONS, which were measured to extract BYTE-IDENTICALLY over the whole
+// published corpus plus 9 adversarial cases. A set is not a loosening: it is still a closed
+// enumeration, membership is asserted on the RUNTIME extraction path (not only in the
+// conformance runner), and a range would readmit 7.x — the native port, which has no
+// `ts.createProgram` at all. What the set buys is that three repos on three different
+// verified patches no longer have to move in lockstep to stay conformant.
 //
 // THE RULE IS NOT DEFINED HERE. It is defined in atlas/contracts/export-surface/
 // reference.mjs and pinned by the 99 rule vectors + 39 extractor vectors vendored into
@@ -700,19 +698,24 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 export const SURFACE_SPEC_VERSION = 3
 
 /**
- * `EXTRACT_SPEC_VERSION` AND `EXPECTED_TS_VERSION` ARE RE-EXPORTED FROM THE VENDORED EXTRACTOR,
+ * `EXTRACT_SPEC_VERSION` AND `VERIFIED_TS_VERSIONS` ARE RE-EXPORTED FROM THE VENDORED EXTRACTOR,
  * NOT REDECLARED HERE.
  *
  * Every other contract number in this file is a local constant precisely so a divergence between
  * this engine and the fixture turns the suite red. These are the inverse: the extractor itself is
- * vendored byte-verbatim (see the import header), so the numbers that govern it live in the same
+ * vendored byte-verbatim (see the import header), so the values that govern it live in the same
  * bytes they describe. Redeclaring them would create a second place for them to be wrong, and the
- * runner's case-zero would then compare this file's opinion against the fixture rather than the
- * extractor's.
+ * runner's case-zeros would then compare this file's opinion against the fixture rather than the
+ * extractor's — which for `VERIFIED_TS_VERSIONS` is the difference between checking that the
+ * COMPILER ACTUALLY USED is admitted and checking that a local list agrees with a remote one.
  *
- * Deliberately INDEPENDENT of SURFACE_SPEC_VERSION: a `typescript` patch bump changes no rule.
+ * `VERIFIED_TS_VERSIONS` is a CLOSED, MEASURED enumeration (decision 0030) — every member proven
+ * to extract byte-identically — never a range. This repo pins ONE of them exactly (5.9.3) in
+ * package.json; the set is what the extractor will accept, not what this repo installs.
+ *
+ * Deliberately INDEPENDENT of SURFACE_SPEC_VERSION: a `typescript` set change changes no rule.
  */
-export { EXPECTED_TS_VERSION, EXTRACT_SPEC_VERSION }
+export { EXTRACT_SPEC_VERSION, VERIFIED_TS_VERSIONS }
 
 /**
  * The four ways a subpath's type surface can be classified (Level 2, atlas decision 0028 §2.2).
@@ -2995,7 +2998,7 @@ function report(result) {
 
   console.log(
     `\npackage payload drift — lane=${result.lane}, digest spec v${SPEC_VERSION}, export-surface spec v${SURFACE_SPEC_VERSION} ` +
-      `(Level 2 ADVISORY, extract spec v${EXTRACT_SPEC_VERSION}, typescript ${EXPECTED_TS_VERSION})\n`
+      `(Level 2 ADVISORY, extract spec v${EXTRACT_SPEC_VERSION}, typescript ${VERIFIED_TS_VERSIONS.join('/')})\n`
   )
   for (const row of evaluated) {
     const ref = row.referenceVersion ? ` ref=${row.referenceVersion}` : ''
@@ -3926,19 +3929,96 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     fs.rmSync(surfaceDir, {recursive: true, force: true})
     commitAll(root, 'remove the surface fixture package')
 
-    // ── S28 (LEVEL 2, ADVISORY) IS HELD FOR EXTRACT SPEC VERSION 2. ─────────────────────────────
+    // ── S28 — LEVEL 2, ADVISORY (atlas decision 0028 PR 3). ──────────────────────────────────────
     //
-    // The rungs that belong here drive a NAMED export removal end to end — every `exports` subpath
-    // byte-identical, only the names behind `.` moved — and assert the two halves of the advisory
-    // contract: the delta is REPORTED, and no exit code moves. They need the extractor to actually
-    // run, and the vendored extract.mjs (spec v1) admits only typescript 5.9.2 while this repo pins
-    // 5.9.3, so today they would assert the guard's refusal rather than the rule.
+    // THE BREAK CLASS LEVEL 1 CANNOT SEE, end to end: a NAMED export is removed while every
+    // `exports` subpath stays byte-identical. `@j0nathan-ll0yd/validation` 1.1.0 -> 2.0.0 dropped 5
+    // names and was caught only because it ALSO happened to major. S22b's shape does not reach it —
+    // the subpath key set never moves here, so the entire Level-1 rule is silent by construction.
     //
-    // They are HELD rather than weakened deliberately: rewriting them to expect
-    // `surface-level2-indeterminate` would pin the INTERIM behaviour as if it were the contract,
-    // and the rung that is supposed to prove Level 2 sees a named removal would instead prove it
-    // sees nothing. They land with the v2 re-vendor, together with the `level2enforcing`,
-    // `level2silent` and `level2noextract` mutants they are the only killers of.
+    // AND THE EXIT CODE MUST NOT MOVE. That is the whole content of PR 3, and this rung is what
+    // makes "advisory" testable rather than asserted: the declared 1.0.1 is a PATCH, which never
+    // covers a MAJOR-requiring name removal, so an ENFORCING Level 2 would read SURFACE_BREAK /
+    // exit 2 right here. It must read PENDING_PUBLISH / exit 0 with the finding in `advisories`.
+    // Three mutants (`level2enforcing`, `level2silent`, `level2noextract`) each break a different
+    // half of that sentence and are killed by this rung alone.
+    const namedDir = path.join(root, 'packages', 'named')
+    const setNamed = (version, declaration) => {
+      writeJson(path.join(namedDir, 'package.json'), {
+        name: '@toy/named',
+        version,
+        files: ['src'],
+        exports: {'.': './src/index.d.ts'},
+        publishConfig: {registry: registryUrl}
+      })
+      fs.writeFileSync(path.join(namedDir, 'src', 'index.d.ts'), declaration)
+    }
+    const namedRow = (evaluated) => row(evaluated, '@toy/named') ?? {}
+    fs.mkdirSync(path.join(namedDir, 'src'), {recursive: true})
+    setNamed('1.0.0', 'export declare const alpha: number\nexport declare const beta: string\n')
+    commitAll(root, 'add a package whose surface is its NAMES, not its subpaths')
+    registry.publish('@toy/named', '1.0.0', await packFixture(root, 'named'))
+
+    result = await gate({build: false})
+    expect('S28 an unchanged named surface is CLEAN', result, '@toy/named', 'CLEAN', 0)
+    check('S28 an unchanged named surface is QUIET — no advisory churn', !(namedRow(result).advisories ?? []).some((advisory) =>
+      advisory.startsWith('surface-')
+    ), `advisories=${JSON.stringify(namedRow(result).advisories)}`)
+    // Reporting continuity, NOT a detector — and the distinction is worth stating, because it is
+    // tempting to read it as one. On a CLEAN package an engine that never extracted and one that
+    // extracted and found no delta both report `level2: 'ok'`, so nothing asserted at this rung can
+    // tell them apart. `level2noextract` is killed at S28b, where there is a real removal to miss.
+    check('S28 the row records which rule and extractor produced its Level-2 comparison',
+      namedRow(result).level2 === 'ok' && namedRow(result).extractSpecVersion === EXTRACT_SPEC_VERSION,
+      `level2=${namedRow(result).level2} extractSpecVersion=${namedRow(result).extractSpecVersion}`)
+
+    // S28b — THE REGRESSION: drop `beta`, keep every subpath, ship it as a PATCH.
+    setNamed('1.0.1', 'export declare const alpha: number\n')
+    commitAll(root, 'remove a named export under a patch, subpaths untouched')
+    result = await gate({build: false})
+    // ── THIS ASSERTION IS DELIBERATELY COMPOUND, AND IT MUST STAY FIRST. ─────────────────────────
+    //
+    // `stopAfter` unwinds the ladder at the FIRST assertion whose id matches the scenario, so under
+    // a mutant run this is the ONLY S28b rung that executes — every check below it is baseline-only
+    // detail. All three Level-2 mutants are therefore keyed to S28b and all three have to die right
+    // here, which is exactly why it asserts both halves of the advisory contract at once:
+    //
+    //   REPORTED     `level2silent` empties the advisory list; `level2noextract` never produces the
+    //                names to report. Both leave this list without its two entries.
+    //   NOT ENFORCED `level2enforcing` feeds the names into the verdict call, turning this row into
+    //                SURFACE_BREAK / exit 2.
+    //
+    // Splitting them into two readable rungs would silently disarm whichever ended up second —
+    // MEASURED: with the advisory check placed second, `level2silent` and `level2noextract` both
+    // SURVIVED a run that reported the mutation as expected-to-fail.
+    check('S28b a removed NAME is REPORTED as an advisory and moves NO verdict',
+      (namedRow(result).advisories ?? []).includes('surface-named-delta:.:removed:beta') &&
+        (namedRow(result).advisories ?? []).includes('surface-named-break:major') &&
+        namedRow(result).verdict === 'PENDING_PUBLISH' && namedRow(result).exitClass === 0 && result.exitCode === 0,
+      `verdict=${namedRow(result).verdict} class=${namedRow(result).exitClass} exitCode=${result.exitCode} ` +
+        `advisories=${JSON.stringify(namedRow(result).advisories)}`)
+    check('S28b Level 1 is SILENT — no subpath moved, which is exactly why Level 2 exists',
+      (namedRow(result).removedSubpaths ?? []).length === 0 && (namedRow(result).addedSubpaths ?? []).length === 0 &&
+        namedRow(result).requiredBump === 'none', `removed=${JSON.stringify(namedRow(result).removedSubpaths)} required=${namedRow(result).requiredBump}`)
+    check('S28b the advisory carries the structured name refs, not only the strings',
+      JSON.stringify(namedRow(result).removedNames ?? []) === JSON.stringify([{subpath: '.', name: 'beta', kind: 'value'}]),
+      `removedNames=${JSON.stringify(namedRow(result).removedNames)}`)
+    expect('S28b a removed NAME does NOT move the verdict while Level 2 is advisory', result, '@toy/named', 'PENDING_PUBLISH', 0)
+    // ...in EVERY lane. Asserted on the VERDICT, not the exit class, and the difference is real:
+    // PENDING_PUBLISH is legitimately exit 2 in the post-publish lane (you declared a version and
+    // never published it) — the LANE changes severity, as it always has. What Level 2 must not do
+    // is change the verdict itself. `SURFACE_BREAK` here in any lane is the enforce-flip landing
+    // early, and that is what this catches.
+    for (const namedLane of LANES) {
+      const laneResult = await gate({build: false, lane: namedLane})
+      const laneRow = row(laneResult, '@toy/named') ?? {}
+      check(`S28b Level 2 does not change the VERDICT in the ${namedLane} lane`,
+        laneRow.verdict === 'PENDING_PUBLISH' && (laneRow.advisories ?? []).includes('surface-named-break:major'),
+        `verdict=${laneRow.verdict} class=${laneRow.exitClass} advisories=${JSON.stringify(laneRow.advisories)}`)
+    }
+
+    fs.rmSync(namedDir, {recursive: true, force: true})
+    commitAll(root, 'remove the named-surface fixture package')
 
     // S6 — a bump whose source edit never reaches the payload. `docs/notes.md` is
     // outside files[] and is not one of npm's injected root files, so the packed
@@ -4053,9 +4133,9 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     registry.publish('@toy/leaf', '1.0.2', await packFixture(root, 'leaf'))
     result = await gate({changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}})
     expect('S24 an inadequate changeset bump stays DRIFT', result, '@toy/leaf', 'DRIFT', 2)
-    check('S24 stamps changeset-inadequate on the denied excuse', (row(result, '@toy/leaf').advisories ?? []).some((a) =>
-      a.startsWith('changeset-inadequate:')
-    ), `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
+    check('S24 stamps changeset-inadequate on the denied excuse',
+      (row(result, '@toy/leaf').advisories ?? []).some((a) => a.startsWith('changeset-inadequate:')),
+      `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
 
     // S25 — A2b at the seam introduced to enforce it: a probe that ran and could not answer softens a
     // would-be DRIFT to INDETERMINATE (exit 3), never a pass. The scoping is deliberate — only a
@@ -4080,9 +4160,9 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     commitAll(cascadeRoot, 'bump csleaf on disk, drifting the dependent')
     result = await gate({repoRoot: cascadeRoot, build: false})
     expect('S26 the cascade closure excuses an unnamed dependent', result, '@toy/csdep', 'PENDING_CHANGESET', 0)
-    check('S26 the excuse names the cascade target the probe supplied', (row(result, '@toy/csdep').advisories ?? []).some((a) =>
-      a.startsWith('changeset-target:')
-    ), `advisories=${JSON.stringify(row(result, '@toy/csdep').advisories)}`)
+    check('S26 the excuse names the cascade target the probe supplied',
+      (row(result, '@toy/csdep').advisories ?? []).some((a) => a.startsWith('changeset-target:')),
+      `advisories=${JSON.stringify(row(result, '@toy/csdep').advisories)}`)
     fs.rmSync(cascadeRoot, {recursive: true, force: true})
 
     // S5 — THE SCENARIO THAT PROVED THE TRANSPORT CHOICE. Rehearsing it against an
@@ -4278,17 +4358,43 @@ const MUTATIONS = {
     anchor: 'isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)',
     replacement: 'bumpRank(projectedBump) > bumpRank(declaredBump)'
   },
-  // ── THE LEVEL-2 MUTANTS ARE HELD FOR EXTRACT SPEC VERSION 2, WITH THE S28 RUNGS. ───────────────
+  // ── LEVEL 2, ADVISORY (atlas decision 0028 PR 3). Three mutants, one rung (S28/S28b), and each
+  // breaks a DIFFERENT half of "the rule is computed and reported, and no exit code moves". The
+  // advisory phase is unusually easy to get wrong in a way nothing notices, because two of the
+  // three failure modes are SILENT: a rule that stopped looking and a rule that looked and said
+  // nothing both produce a green run that is indistinguishable from a correct one. ────────────────
   //
-  // `level2enforcing` (names fed into the verdict call), `level2silent` (the delta computed and
-  // never reported) and `level2noextract` (the extractor quietly stopped being called) are each
-  // killed by S28b and by nothing else, so they cannot be carried while that rung is held — a
-  // mutant with no scenario to break is a hard failure in this harness, by design.
-  //
-  // The advisory SEAM itself is not unpinned in the meantime: `surfaceselfref` still covers the
-  // verdict path, and the pure-rule half (level1View equivalence, the asymmetric-names A2b branch,
-  // max-rank composition, the cache guards) is pinned by check-package-drift.test.mjs, which needs
-  // no compiler at all.
+  // ADVISORY-ONLY IS THE WHOLE POINT OF PR 3. Feed the names into the VERDICT-sizing call and a
+  // Level-2 delta starts moving this repo's exit codes while mantle is still on spec v2 — the
+  // transient-desync window (0028 §4) turns from fail-SAFE into fail-BLOCKING, and every PR that
+  // legitimately renames an internal export starts failing pre-push. Killed by S28b, which expects
+  // a MAJOR-requiring name removal under a declared PATCH to stay PENDING_PUBLISH / exit 0.
+  level2enforcing: {
+    scenario: 'S28b',
+    anchor: 'reference: level1View(reference.surface),\n          candidate: level1View(candidateSurface),',
+    replacement: 'reference: reference.surface,\n          candidate: candidateSurface,'
+  },
+  // Compute the Level-2 delta and tell nobody. In the advisory phase the advisory IS the entire
+  // observable output — there is no exit code to notice — so a silent rule is indistinguishable
+  // from an absent one, and the enforce-flip (PR 4) would then be the FIRST time anyone saw the
+  // findings, which is precisely the rollout advisory-first exists to avoid. Killed by S28b.
+  level2silent: {
+    scenario: 'S28b',
+    anchor: '  return {advisories, level2: outcome.kind, removedNames, addedNames, level2Detail: null}',
+    replacement: '  return {advisories: [], level2: outcome.kind, removedNames, addedNames, level2Detail: null}'
+  },
+  // Stop extracting names, so both sides are names-less and the rule silently degrades to Level 1
+  // FOREVER. Nothing reds, nothing warns, and `surfaceDelta`'s two-names-less-sides branch is a
+  // legitimate spec-v2 comparison — so this is the "it still passes, it just stopped looking"
+  // failure, which is exactly how the estate arrived at needing this rule. Killed by S28b, not by
+  // S28: a CLEAN rung cannot see this at all, because an engine that never looked and one that
+  // looked and found nothing produce identical green rows. Only the rung with a real removal to
+  // report can tell them apart.
+  level2noextract: {
+    scenario: 'S28b',
+    anchor: '    return {...level1, names: extractSurfaceNames({files, manifestText}).names}',
+    replacement: '    return level1'
+  },
   // ── The PENDING_CHANGESET excuse (atlas decision 0022). A subset of mantle's ten mutants: the
   // guardrails whose defect this .mjs engine can express through a NAMED scenario. Mantle's
   // exit-mapping and OVERRIDABLE mutants are pinned by the shared verdict-conformance runner and the

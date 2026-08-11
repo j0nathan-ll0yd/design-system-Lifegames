@@ -29,12 +29,33 @@
  *
  * `npm i typescript` now installs **7.0.2** — the native Go port, which has NO JavaScript compiler
  * API: `ts.createProgram` is `undefined`. A `^5` or `~5` range is therefore not a pin, it is a
- * time bomb. `typescript` is pinned to a single EXACT patch in every repo that implements this
- * contract, and `assertCompiler` fires on the RUNTIME extraction path — not only in the conformance
- * runner. The distinction is load-bearing: a runner-only guard passes in CI on the pinned version
- * while a stale hoisted `typescript` is resolved at runtime, and the wrong compiler's names get
- * written into the reference cache UNDER THE CORRECTLY-PINNED KEY. That poisoned entry is
- * undetectable by the key, because the key trusts the pin the runtime bypassed.
+ * time bomb. Every repo implementing this contract pins `typescript` to a single EXACT patch, and
+ * `assertCompiler` fires on the RUNTIME extraction path — not only in the conformance runner. The
+ * distinction is load-bearing: a runner-only guard passes in CI on the pinned version while a stale
+ * hoisted `typescript` is resolved at runtime, and the wrong compiler's names get written into the
+ * reference cache UNDER THE CORRECTLY-PINNED KEY. That poisoned entry is undetectable by the key,
+ * because the key trusts the pin the runtime bypassed.
+ *
+ * ── WHY THE GUARD IS A SET AND NOT ONE VERSION (decision 0030) ──────────────────────────────────
+ *
+ * Each repo pins EXACTLY, but the three repos do not pin the SAME patch: mantle leads the estate's
+ * TypeScript floor (6.0.3), atlas trails it (5.9.2), design-system sits between (5.9.3). Decision
+ * 0028 required all three to converge on one patch, on the reasoning — sound, but ASSUMED — that two
+ * compilers could extract differently, each pass their own conformance, and disagree on a real
+ * verdict (findings X3/X7 applied to a dependency).
+ *
+ * Decision 0030 MEASURED it instead: the whole published corpus (22 packages, 252 subpaths, 1083
+ * compiler-decided names) plus 9 adversarial construct cases, extracted under all three compilers,
+ * produced BYTE-IDENTICAL output — one canonical digest, `3137083326c42a6b…`, for all of them. So
+ * the guard is a CLOSED ENUMERATION of versions that have been measured equivalent, and each engine
+ * uses its own native compiler.
+ *
+ * A SET IS NOT A RANGE, and the difference is the whole safety argument. A range admits versions
+ * nobody measured (and readmits 7.x). Membership in this list is a claim that someone RAN the
+ * evaluation. Adding a member means re-running `decisions/evidence/0030-ts-version-set/` and bumping
+ * `EXTRACT_SPEC_VERSION` — which is exactly why the runner checks the FIXTURE's list rather than
+ * this constant: a vendored copy that widens its own array on the quiet disagrees with the pinned
+ * fixture and fails conformance.
  */
 
 import defaultTs from 'typescript'
@@ -45,20 +66,32 @@ import {CLASSIFICATIONS, readExportTargets, SURFACE_SPEC_VERSION} from './refere
  * SAME NUMBER <=> IDENTICAL `{classification, names}` FOR EVERY FILE TREE.
  *
  * Bump if and only if extraction output changes for ANY input: the target resolution, the
- * classifier, the enumeration, the kind mapping, the sort, or the pinned `typescript` version. Do
+ * classifier, the enumeration, the kind mapping, the sort, or the accepted `typescript` versions. Do
  * NOT bump for the rule (that is `SURFACE_SPEC_VERSION`), reporting or plumbing. A bump is atomic
  * across the estate: regenerate `export-extract-conformance.json` + its sidecar and move every
  * vendored copy in the same change. `runner.mjs` asserts
  * `EXTRACT_SPEC_VERSION === fixture.extractSpecVersion` as case zero.
+ *
+ * VERSION 2 (decision 0030) widened the compiler guard from one exact version to a measured set.
+ * That IS an output change under this rule's own terms — an input that previously threw (a 6.0.3
+ * compiler) now extracts — so the number moved even though no name, kind or classification did.
  */
-export const EXTRACT_SPEC_VERSION = 1
+export const EXTRACT_SPEC_VERSION = 2
 
 /**
- * The EXACT `typescript` this contract is defined against. Not a range — see the header. Every
- * repo implementing the contract pins this same string in its `package.json`, and both the runner
- * and `assertCompiler` (the runtime path) assert it.
+ * The `typescript` versions this contract has been MEASURED equivalent across (decision 0030).
+ *
+ * A CLOSED ENUMERATION — never a range, never a semver check. Membership here is not "this ought to
+ * work"; it is "someone ran `decisions/evidence/0030-ts-version-set/` against the whole published
+ * corpus and the output was byte-identical". Widening it without re-running that evaluation is the
+ * one way this contract can rot silently, so two mutants guard it: widening the array must fail
+ * conformance (the runner compares this against the PINNED FIXTURE's list, not against itself), and
+ * deleting the membership test must fail the runtime probe.
+ *
+ * Each repo still pins `typescript` EXACTLY in its own `package.json` — to a member of this list.
+ * The set is what the CONTRACT accepts; an unpinned range in a repo is still forbidden.
  */
-export const EXPECTED_TS_VERSION = '5.9.2'
+export const VERIFIED_TS_VERSIONS = Object.freeze(['5.9.2', '5.9.3', '6.0.3'])
 
 /**
  * Targets that carry a type surface a compiler can enumerate. `.js`/`.mjs`/`.cjs` are included
@@ -404,16 +437,23 @@ export function assertCompiler(ts) {
   if (!ts || typeof ts !== 'object') {
     throw new Error('the named-export extractor requires the typescript compiler module')
   }
+  // FIRST, and deliberately so: 7.x has no `version`-independent tell, and a membership failure
+  // reported for the native port would send a maintainer looking for a patch to add to the set
+  // rather than telling them their compiler has no JavaScript API at all.
   if (typeof ts.createProgram !== 'function') {
     throw new Error(
       `typescript ${ts.version ?? '(unknown)'} exposes no createProgram — this is the native (7.x) port, which has no JavaScript compiler API. ` +
-        `Pin typescript to exactly ${EXPECTED_TS_VERSION}.`
+        `Pin typescript to exactly one of ${VERIFIED_TS_VERSIONS.join(', ')}.`
     )
   }
-  if (ts.version !== EXPECTED_TS_VERSION) {
+  // MEMBERSHIP, never a range comparison. `startsWith`, a semver satisfies(), or a major/minor
+  // compare would all admit an unmeasured patch — which is the set silently rotting back into the
+  // `^5` range this contract exists to refuse.
+  if (!VERIFIED_TS_VERSIONS.includes(ts.version)) {
     throw new Error(
-      `typescript ${ts.version} is resolved at runtime but this contract is defined against exactly ${EXPECTED_TS_VERSION}. ` +
-        'Two engines on different patches can extract different names, each pass their own conformance, and disagree on a real verdict.'
+      `typescript ${ts.version} is resolved at runtime but this contract is verified only against ${VERIFIED_TS_VERSIONS.join(', ')} (decision 0030). ` +
+        'Two engines on unmeasured versions can extract different names, each pass their own conformance, and disagree on a real verdict. ' +
+        'Adding a version requires re-running decisions/evidence/0030-ts-version-set and bumping EXTRACT_SPEC_VERSION.'
     )
   }
 }

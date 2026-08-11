@@ -248,6 +248,25 @@
       }
     },
     {
+      "id": "tgt-unsorted-keys-follow-the-SORTED-reader",
+      "why": "THE SUGAR-DIVERGENCE VECTOR. Every other tgt-* case ships its `exports` keys already in sorted order, so a readExportTargets that derives its OWN key set from the manifest — instead of deferring to readExportSurface's SORTED subpaths — produces an identical answer and passes all of them. That is a hole, not a property: the two readers are allowed to disagree and nothing goes red. Here the manifest order (./z, ./a, .) is the exact REVERSE of sorted order (., ./a, ./z), so a self-derived key set emits a differently-ORDERED targets object and the runner's JSON comparison catches it. Found by the mantle PR-2 agent, whose `sugardivergence` mutant survived all 99 vectors.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\"./z\":\"./z.js\",\"./a\":\"./a.js\",\".\":\"./i.js\"}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": "./i.js",
+          "./a": "./a.js",
+          "./z": "./z.js"
+        },
+        "subpaths": [
+          ".",
+          "./a",
+          "./z"
+        ]
+      }
+    },
+    {
       "id": "tgt-conditions-are-preserved-verbatim",
       "why": "The extractor resolves conditions itself, so the reader must hand them over untouched.",
       "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":{\"types\":\"./i.d.ts\",\"import\":\"./i.mjs\"}}}",

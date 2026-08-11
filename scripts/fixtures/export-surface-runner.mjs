@@ -22,7 +22,8 @@
  * TWO FIXTURES, TWO RUNNERS (decision 0028). `runSurfaceConformance` asserts the RULE against
  * `export-surface-conformance.json` (keyed by `SURFACE_SPEC_VERSION`); `runExtractConformance`
  * asserts the EXTRACTOR against `export-extract-conformance.json` (keyed by
- * `EXTRACT_SPEC_VERSION`, plus the exact `typescript` version). An implementation must run BOTH.
+ * `EXTRACT_SPEC_VERSION`, plus the measured `typescript` version SET — decision 0030). An
+ * implementation must run BOTH.
  * They are separate files so an extractor-only bump does not move the rule fixture's sha256 and
  * force a re-vendor of a rule that did not change.
  *
@@ -181,19 +182,35 @@ export function runSurfaceConformance({fixture, specVersion, readExportSurface, 
  * The EXTRACTOR conformance run (spec: `export-extract-conformance.json`, decision 0028).
  *
  * Separate from the rule run because the two are versioned separately and change at different
- * rates. Its three case-zero checks are the toolchain guard the estate has to carry now that
+ * rates. Its four case-zero checks are the toolchain guard the estate has to carry now that
  * `npm i typescript` installs the native 7.x port with NO `ts.createProgram`:
  *
  *   1. `EXTRACT_SPEC_VERSION === fixture.extractSpecVersion` — the usual "the code is the spec".
- *   2. `ts.version === fixture.expectedTypescriptVersion` — two engines on different 5.x patches
- *      can extract differently on a construct absent from these vectors, each pass their own
- *      conformance, and disagree on a REAL verdict. That is finding X3/X7 applied to a dependency.
- *   3. `typeof ts.createProgram === 'function'` — so a 7.x resolution fails with a sentence rather
- *      than a `TypeError` in the middle of a gate run.
+ *   2. `typeof ts.createProgram === 'function'` — so a 7.x resolution fails with a sentence rather
+ *      than a `TypeError` in the middle of a gate run. Checked BEFORE any version comparison,
+ *      because "your compiler has no JS API" and "your version is not in the set" send a maintainer
+ *      to two completely different places.
+ *   3. `verifiedTsVersions` deep-equals `fixture.verifiedTypescriptVersions` — THE GUARD ON THE
+ *      GUARD (decision 0030). The accepted-version list is measured evidence, so a vendored copy
+ *      must not be able to widen its own array and still pass: the comparison is against the
+ *      sha256-PINNED FIXTURE, never against the implementation's own constant. Without this, the set
+ *      rots into a range one quiet edit at a time.
+ *   4. `fixture.verifiedTypescriptVersions.includes(tsVersion)` — MEMBERSHIP, not a range. Two
+ *      engines on UNMEASURED versions can extract differently on a construct absent from these
+ *      vectors, each pass their own conformance, and disagree on a REAL verdict. That is finding
+ *      X3/X7 applied to a dependency; decision 0030 is the measurement that says which versions are
+ *      exempt from it.
+ *
+ * WHAT MAKES THE SET SELF-TESTING: the vector loop below re-runs `extractSurfaceNames` under the
+ * RESOLVED compiler and compares against expectations the fixture pinned. So every conformance run,
+ * in every repo, on whichever member that repo pinned, re-proves decision 0030's equivalence claim
+ * over these vectors. The claim does not decay after the evaluation — it is re-measured in CI, and
+ * the day a member stops agreeing, conformance goes red in the engine that resolved it.
  *
  * @param {object} options
  * @param {object} options.fixture parsed export-extract-conformance.json
  * @param {number} options.extractSpecVersion the implementation's EXTRACT_SPEC_VERSION constant
+ * @param {readonly string[]} options.verifiedTsVersions the implementation's VERIFIED_TS_VERSIONS
  * @param {string} options.tsVersion the RESOLVED `ts.version` (not the declared range)
  * @param {unknown} options.createProgram the resolved `ts.createProgram`, for the 7.x check
  * @param {Function} options.extractSurfaceNames ({files, manifestText, ts}) => {names}
@@ -201,7 +218,9 @@ export function runSurfaceConformance({fixture, specVersion, readExportSurface, 
  * @param {object} options.ts the compiler module handed to the extractor
  * @returns {string[]} failures
  */
-export function runExtractConformance({fixture, extractSpecVersion, tsVersion, createProgram, extractSurfaceNames, acceptsCachedSurface, ts}) {
+export function runExtractConformance(
+  {fixture, extractSpecVersion, verifiedTsVersions, tsVersion, createProgram, extractSurfaceNames, acceptsCachedSurface, ts}
+) {
   const failures = []
   const fail = (id, detail) => failures.push(`${id}: ${detail}`)
 
@@ -216,8 +235,20 @@ export function runExtractConformance({fixture, extractSpecVersion, tsVersion, c
       }) exposes no createProgram — this is the native 7.x port, which has no JavaScript compiler API`)
     return failures
   }
-  if (tsVersion !== fixture.expectedTypescriptVersion) {
-    fail('typescript', `resolved typescript is ${tsVersion}, the fixture was generated against exactly ${fixture.expectedTypescriptVersion}`)
+  // A fixture with no list at all is a PRE-0030 vendored copy. `eq` against `undefined` fails, which
+  // is the correct fail-closed answer: it must be re-vendored, not silently trusted.
+  if (!eq(verifiedTsVersions === undefined ? undefined : [...verifiedTsVersions], fixture.verifiedTypescriptVersions)) {
+    fail('VERIFIED_TS_VERSIONS',
+      `implementation accepts ${JSON.stringify(verifiedTsVersions ?? null)}, the pinned fixture accepts ${
+        JSON.stringify(fixture.verifiedTypescriptVersions ?? null)
+      } — the accepted-version set is measured evidence (decision 0030) and cannot be widened without re-running the evaluation and regenerating this fixture`)
+    return failures
+  }
+  if (!fixture.verifiedTypescriptVersions.includes(tsVersion)) {
+    fail('typescript',
+      `resolved typescript is ${tsVersion}, which is not among the versions this contract has been measured against (${
+        fixture.verifiedTypescriptVersions.join(', ')
+      })`)
     return failures
   }
 
