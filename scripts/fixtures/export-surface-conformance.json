@@ -1,6 +1,6 @@
 {
   "$schema": "https://lifegames.org/schemas/export-surface-conformance.v1.json",
-  "specVersion": 2,
+  "specVersion": 3,
   "generatedBy": "contracts/export-surface/build-fixture.mjs",
   "rule": {
     "manifestEntry": "package.json",
@@ -10,7 +10,15 @@
     "exportsMapToLegacyRequires": "minor",
     "bumpSizing": "caret-range semantics: crossing the minor field inside 0.x, or any field inside 0.0.x, counts as major",
     "unreadableSurface": "INDETERMINATE (exit 3) — never a pass (A2b)",
-    "changesetAwareness": "a MEASURED pendingRelease sizes the delta against the projected post-`changeset version` version, credited only when it is strictly ahead of declared AND carries a larger bump; not-measured/absent/indeterminate/absent-from-bump-set fall back to the declared version; adequacy is still the same rank comparison (decision 0024)"
+    "changesetAwareness": "a MEASURED pendingRelease sizes the delta against the projected post-`changeset version` version, credited only when it is strictly ahead of declared AND carries a larger bump; not-measured/absent/indeterminate/absent-from-bump-set fall back to the declared version; adequacy is still the same rank comparison (decision 0024)",
+    "removedNameRequires": "major (values AND type-only names alike — semver-ts.org / Ember RFC 0730)",
+    "addedNameRequires": "minor",
+    "typedToNoSurfaceRequires": "major",
+    "noSurfaceToTypedRequires": "minor",
+    "valueDegradedToTypeRequires": "major",
+    "levelComposition": "MAX RANK over the Level-1 subpath-key delta and every per-subpath Level-2 name delta; Level 2 can only raise, never relax (C147)",
+    "asymmetricNames": "exactly one side carrying a `names` field is INDETERMINATE, never a Level-1 fallback — a pre-Level-2 cache entry must never read as an empty name set (decision 0028 §2.4)",
+    "emptyNameSet": "an all-asset package is legitimately empty; the v3 marker is the presence of the `names` FIELD, never its contents"
   },
   "cases": [
     {
@@ -223,6 +231,147 @@
       }
     },
     {
+      "id": "tgt-subpath-object-form",
+      "why": "The ordinary case: each key maps to its own raw target value.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./a.js\",\"./b\":\"./b.js\"}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": "./a.js",
+          "./b": "./b.js"
+        },
+        "subpaths": [
+          ".",
+          "./b"
+        ]
+      }
+    },
+    {
+      "id": "tgt-conditions-are-preserved-verbatim",
+      "why": "The extractor resolves conditions itself, so the reader must hand them over untouched.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":{\"types\":\"./i.d.ts\",\"import\":\"./i.mjs\"}}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": {
+            "types": "./i.d.ts",
+            "import": "./i.mjs"
+          }
+        },
+        "subpaths": [
+          "."
+        ]
+      }
+    },
+    {
+      "id": "tgt-string-form-is-dot",
+      "why": "SUGAR AGREEMENT: \"exports\": \"./i.js\" yields the same single \".\" key readExportSurface reports.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":\"./i.js\"}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": "./i.js"
+        },
+        "subpaths": [
+          "."
+        ]
+      }
+    },
+    {
+      "id": "tgt-array-form-is-dot",
+      "why": "SUGAR AGREEMENT, the array form.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":[\"./i.js\",\"./j.js\"]}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": [
+            "./i.js",
+            "./j.js"
+          ]
+        },
+        "subpaths": [
+          "."
+        ]
+      }
+    },
+    {
+      "id": "tgt-conditions-form-is-dot",
+      "why": "SUGAR AGREEMENT: an all-conditions object is \".\" with conditions, and the WHOLE object is the target.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\"types\":\"./i.d.ts\",\"import\":\"./i.mjs\",\"require\":\"./i.cjs\"}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": {
+            "types": "./i.d.ts",
+            "import": "./i.mjs",
+            "require": "./i.cjs"
+          }
+        },
+        "subpaths": [
+          "."
+        ]
+      }
+    },
+    {
+      "id": "tgt-wildcard-key-is-kept-unexpanded",
+      "why": "Expansion needs the packed file set, which the reader does not have. It hands the pattern over.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\"./types/*\":\"./src/types/*.ts\"}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          "./types/*": "./src/types/*.ts"
+        },
+        "subpaths": [
+          "./types/*"
+        ]
+      }
+    },
+    {
+      "id": "tgt-null-target-is-preserved",
+      "why": "A null target BLOCKS a subpath — a real state the classifier reads as NO_SURFACE, not a missing key.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.js\",\"./blocked\":null}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "exports-map",
+        "targets": {
+          ".": "./i.js",
+          "./blocked": null
+        },
+        "subpaths": [
+          ".",
+          "./blocked"
+        ]
+      }
+    },
+    {
+      "id": "tgt-legacy-has-no-targets",
+      "why": "No exports field: nothing to resolve. Level 2 never speaks for a legacy package.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\"}",
+      "kind": "targets",
+      "expect": {
+        "kind": "legacy",
+        "targets": {},
+        "subpaths": []
+      }
+    },
+    {
+      "id": "tgt-unreadable-has-no-targets",
+      "why": "A2b. A shape Node rejects yields no targets, and the kind carries the refusal.",
+      "input": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i.mjs\",\"import\":\"./i.mjs\"}}",
+      "kind": "targets",
+      "expect": {
+        "kind": "unreadable",
+        "targets": {},
+        "subpaths": []
+      }
+    },
+    {
       "id": "dlt-web-types-wildcard-removed-requires-major",
       "why": "THE MEASURED CASE. web 1.0.0 -> 1.1.0 dropped ./types/*; a removal requires a MAJOR.",
       "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
@@ -233,7 +382,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -245,7 +396,9 @@
       "expect": {
         "required": "none",
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -259,7 +412,9 @@
         "removed": [],
         "added": [
           "./extra"
-        ]
+        ],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -275,7 +430,9 @@
         ],
         "added": [
           "./new"
-        ]
+        ],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -289,7 +446,9 @@
         "removed": [],
         "added": [
           "."
-        ]
+        ],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -301,7 +460,9 @@
       "expect": {
         "required": "minor",
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -313,7 +474,9 @@
       "expect": {
         "required": "none",
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -341,7 +504,9 @@
           "./widgets/other",
           "./widgets/reading"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -353,7 +518,9 @@
       "expect": {
         "required": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -365,7 +532,1568 @@
       "expect": {
         "required": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-removed-name-requires-major",
+      "why": "THE LEVEL-2 GAP. @j0nathan-ll0yd/validation dropped 5 names while keeping every subpath — invisible to Level 1, MAJOR here.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-added-name-requires-minor",
+      "why": "A new named export is a feature, not a break.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "minor",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nam-unchanged-names-impose-nothing",
+      "why": "The rule must be silent when nothing moved, or it is noise on every release.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-removed-TYPE-ONLY-name-requires-major",
+      "why": "BOTH KINDS BREAK ON REMOVAL (semver-ts.org / Ember RFC 0730). `kind` is reporting, not a loophole — dropping type-only names would make `export interface Options` deletable under a patch.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "Options",
+                "kind": "type"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "Options",
+            "kind": "type"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-value-degraded-to-type-requires-major",
+      "why": "The identifier survives but its VALUE binding is gone — a removal wearing a disguise.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "Widget",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "Widget",
+                "kind": "type"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "Widget",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-type-promoted-to-value-requires-minor",
+      "why": "The reverse is purely additive: a name that was type-only now also carries a value.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "Widget",
+                "kind": "type"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "Widget",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "minor",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": [
+          {
+            "subpath": ".",
+            "name": "Widget",
+            "kind": "value"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nam-unknown-kind-never-manufactures-a-regression",
+      "why": "An alias chain leaving the payload is `unknown`. Its PRESENCE is compared; its kind is not, or \"I could not resolve it\" would fabricate a break.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "re",
+                "kind": "unknown"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "re",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-max-rank-not-min-a-removal-dominates-an-addition",
+      "why": "MAX RANK. A removal in one subpath must not be laundered by an addition in another — the `minrank` inversion.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./x"
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "a",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          },
+          "./x": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "b",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./x"
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [],
+            "target": "./d.d.ts",
+            "detail": null
+          },
+          "./x": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "b",
+                "kind": "value"
+              },
+              {
+                "name": "c",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "a",
+            "kind": "value"
+          }
+        ],
+        "addedNames": [
+          {
+            "subpath": "./x",
+            "name": "c",
+            "kind": "value"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nam-typed-to-no-surface-requires-major",
+      "why": "A .d.ts swapped for a .json revokes the whole type surface behind that subpath.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./tokens"
+        ],
+        "detail": null,
+        "names": {
+          "./tokens": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "palette",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./tokens"
+        ],
+        "detail": null,
+        "names": {
+          "./tokens": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": "./tokens",
+            "name": "palette",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-no-surface-to-typed-requires-minor",
+      "why": "The additive direction: an asset subpath that gains a type surface.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./tokens"
+        ],
+        "detail": null,
+        "names": {
+          "./tokens": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./tokens"
+        ],
+        "detail": null,
+        "names": {
+          "./tokens": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "palette",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "minor",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": [
+          {
+            "subpath": "./tokens",
+            "name": "palette",
+            "kind": "value"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nam-asset-on-both-sides-imposes-nothing",
+      "why": "NO_SURFACE is DETERMINABLE, not unknown — 121 of the estate's 253 subpaths are assets and must stay quiet, not block.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./s"
+        ],
+        "detail": null,
+        "names": {
+          "./s": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./s"
+        ],
+        "detail": null,
+        "names": {
+          "./s": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-astro-default-preserved-imposes-nothing",
+      "why": "An .astro component publishes the synthetic {default}; unchanged, it imposes nothing.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./c.astro"
+        ],
+        "detail": null,
+        "names": {
+          "./c.astro": {
+            "classification": "SFC_ENTRY",
+            "names": [
+              {
+                "name": "default",
+                "kind": "value"
+              }
+            ],
+            "target": "./c.astro",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./c.astro"
+        ],
+        "detail": null,
+        "names": {
+          "./c.astro": {
+            "classification": "SFC_ENTRY",
+            "names": [
+              {
+                "name": "default",
+                "kind": "value"
+              }
+            ],
+            "target": "./c.astro",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-astro-to-asset-requires-major",
+      "why": "If the synthetic `default` disappears, the component entry point is gone.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./c.astro"
+        ],
+        "detail": null,
+        "names": {
+          "./c.astro": {
+            "classification": "SFC_ENTRY",
+            "names": [
+              {
+                "name": "default",
+                "kind": "value"
+              }
+            ],
+            "target": "./c.astro",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./c.astro"
+        ],
+        "detail": null,
+        "names": {
+          "./c.astro": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": "./c.astro",
+            "name": "default",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-indeterminate-candidate-has-no-requirement",
+      "why": "A2b. tokens@2.0.0 declares `.` -> ./dist/tokens.d.ts and ships neither file. required=null, which the caller escalates to exit 3.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "palette",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "INDETERMINATE",
+            "names": [],
+            "target": "./gone.d.ts",
+            "detail": "./dist/tokens.d.ts is declared as an export target but is absent from the payload"
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-indeterminate-reference-has-no-requirement",
+      "why": "A2b, the reference side: a historically-published broken .d.ts is just as unreadable.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "INDETERMINATE",
+            "names": [],
+            "target": "./gone.d.ts",
+            "detail": "./dist/tokens.d.ts is declared as an export target but is absent from the payload"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "palette",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-indeterminate-on-an-ADDED-subpath-still-has-no-requirement",
+      "why": "The fold is over the UNION: \"I could not read the surface of a subpath you added\" is not evidence that adding it was safe.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "a",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./new"
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "a",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          },
+          "./new": {
+            "classification": "INDETERMINATE",
+            "names": [],
+            "target": "./gone.d.ts",
+            "detail": "./new.d.ts is declared as an export target but is absent from the payload"
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": [
+          "./new"
+        ],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-level1-removal-still-majors-with-names-present",
+      "why": "Level 2 COMPOSES with Level 1, it does not replace it: a removed subpath key is still a MAJOR.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./gone"
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "a",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          },
+          "./gone": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "b",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "a",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [
+          "./gone"
+        ],
+        "added": [],
+        "removedNames": [
+          {
+            "subpath": "./gone",
+            "name": "b",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-STALE-CACHE-reference-without-names-has-no-requirement",
+      "why": "THE A2b HOLE 0028 WAS WRITTEN AROUND. A pre-Level-2 cache entry carries no `names` field. If asymmetry degraded to a Level-1 comparison, a real named removal would read GREEN off a stale cache. It is required=null instead — exit 3, never a pass.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-STALE-CACHE-candidate-without-names-has-no-requirement",
+      "why": "A2b, the other side: an engine that stopped extracting must not silently downgrade the whole rule to Level 1.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": null,
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-both-sides-without-names-is-a-LEVEL-1-comparison",
+      "why": "THE BACKWARD-COMPATIBILITY GUARANTEE. Two names-less sides are a genuine Level-1-only caller (no extractor), not a stale cache, and behave exactly as spec version 2 did — which is why every v2 vector still passes.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          ".",
+          "./gone"
+        ],
+        "detail": null
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "major",
+        "removed": [
+          "./gone"
+        ],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nam-EMPTY-name-set-on-both-sides-is-legitimate",
+      "why": "An all-asset package carries an empty name set BY DESIGN. Emptiness is not staleness — the v3 marker is the `names` FIELD, never its contents — so this must impose nothing, not block forever.",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./a.css",
+          "./b.json"
+        ],
+        "detail": null,
+        "names": {
+          "./a.css": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          },
+          "./b.json": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "./a.css",
+          "./b.json"
+        ],
+        "detail": null,
+        "names": {
+          "./a.css": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          },
+          "./b.json": {
+            "classification": "NO_SURFACE",
+            "names": [],
+            "target": "./s.css",
+            "detail": "asset, out of scope"
+          }
+        }
+      },
+      "kind": "named-delta",
+      "expect": {
+        "required": "none",
+        "removed": [],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nout-named-removal-under-minor-BREAKS",
+      "why": "THE LEVEL-2 REGRESSION END TO END: every subpath intact, one name deleted, shipped as a MINOR.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "minor",
+        "sizingBump": "minor",
+        "creditedVersion": null,
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nout-named-removal-under-major-PASSES",
+      "why": "THE NEGATIVE CONTROL. Without it the case above proves nothing about the version arithmetic.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "major",
+        "sizingBump": "major",
+        "creditedVersion": null,
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nout-named-addition-under-patch-BREAKS",
+      "why": "An added name requires at least a MINOR; a patch does not carry it.",
+      "declared": "1.0.1",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "break",
+        "required": "minor",
+        "declaredBump": "patch",
+        "sizingBump": "patch",
+        "creditedVersion": null,
+        "removedNames": [],
+        "addedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nout-changeset-covers-named-removal-projected-major-PASSES",
+      "why": "THE 0024 PROJECTION OVER A LEVEL-2 DELTA: an adequate pending MAJOR satisfies the rule for a named removal exactly as it does for a subpath removal.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "2.0.0"
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "ok",
+        "required": null,
+        "declaredBump": "minor",
+        "sizingBump": "major",
+        "creditedVersion": "2.0.0",
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nout-changeset-inadequate-for-named-removal-BREAKS",
+      "why": "MANDATORY ADEQUACY, on the Level-2 path. A projected MINOR does not cover a named removal — the excuse never excuses an inadequate bump.",
+      "declared": "1.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              },
+              {
+                "name": "schema",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "1.1.0"
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "none",
+        "sizingBump": "minor",
+        "creditedVersion": "1.1.0",
+        "removedNames": [
+          {
+            "subpath": ".",
+            "name": "schema",
+            "kind": "value"
+          }
+        ],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nout-indeterminate-names-is-INDETERMINATE-at-any-version",
+      "why": "A2b. A2b is not a version question: an unreadable name set is exit 3 even under a MAJOR.",
+      "declared": "2.0.0",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "palette",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "INDETERMINATE",
+            "names": [],
+            "target": "./gone.d.ts",
+            "detail": "./dist/tokens.d.ts is declared as an export target but is absent from the payload"
+          }
+        }
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "indeterminate",
+        "required": null,
+        "declaredBump": null,
+        "sizingBump": null,
+        "creditedVersion": null,
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "nout-STALE-CACHE-is-INDETERMINATE-not-green",
+      "why": "THE LOAD-BEARING VECTOR. A names-less (pre-Level-2) reference against a Level-2 candidate that DELETED a name must be INDETERMINATE — exit 3 — and must never read as \"no names removed\" = ok.",
+      "declared": "1.1.0",
+      "referenceVersion": "1.0.0",
+      "reference": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null
+      },
+      "candidate": {
+        "kind": "exports-map",
+        "subpaths": [
+          "."
+        ],
+        "detail": null,
+        "names": {
+          ".": {
+            "classification": "TYPED",
+            "names": [
+              {
+                "name": "parse",
+                "kind": "value"
+              }
+            ],
+            "target": "./d.d.ts",
+            "detail": null
+          }
+        }
+      },
+      "kind": "named-outcome",
+      "expect": {
+        "kind": "indeterminate",
+        "required": null,
+        "declaredBump": null,
+        "sizingBump": null,
+        "creditedVersion": null,
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -515,7 +2243,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -535,7 +2265,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -555,7 +2287,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -575,7 +2309,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -593,7 +2329,9 @@
         "sizingBump": "none",
         "creditedVersion": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -611,7 +2349,9 @@
         "sizingBump": "major",
         "creditedVersion": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -631,7 +2371,9 @@
         "removed": [],
         "added": [
           "./extra"
-        ]
+        ],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -651,7 +2393,9 @@
         "removed": [],
         "added": [
           "./extra"
-        ]
+        ],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -671,7 +2415,9 @@
         "removed": [
           "./gone"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -689,7 +2435,9 @@
         "sizingBump": null,
         "creditedVersion": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -707,7 +2455,9 @@
         "sizingBump": null,
         "creditedVersion": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -725,7 +2475,9 @@
         "sizingBump": null,
         "creditedVersion": null,
         "removed": [],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -749,7 +2501,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -773,7 +2527,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -797,7 +2553,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -821,7 +2579,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -845,7 +2605,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -869,7 +2631,9 @@
         "removed": [],
         "added": [
           "./extra"
-        ]
+        ],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -893,7 +2657,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -917,7 +2683,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -941,7 +2709,35 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "out-changeset-backward-ACROSS-A-MAJOR-not-credited-BREAKS",
+      "why": "THE VECTOR THAT ISOLATES isStrictlyAhead, found by the `creditlaunders` mutant (decision 0028). The other backward case (1.5.0 -> 1.2.0) is rejected by the RANK test alone, so it could not tell the direction guard from the adequacy guard. Here the projection is 0.9.0: `bumpBetween` reads 1.0.0 -> 0.9.0 as a MAJOR because the fields merely differ, and rank(major) > rank(minor), so WITHOUT the direction test a regression-shaped projection would be credited and excuse the removal outright.",
+      "declared": "1.5.0",
+      "referenceVersion": "1.0.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./types/*\":{\"types\":\"./src/types/*.ts\",\"import\":\"./src/types/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./src/index.ts\",\"./components\":\"./src/components/index.ts\",\"./components/OGImage.astro\":\"./src/components/OGImage.astro\",\"./widgets/github\":\"./src/widgets/github/index.ts\",\"./widgets/health\":\"./src/widgets/health/index.ts\",\"./widgets/identity\":\"./src/widgets/identity/index.ts\",\"./widgets/location\":\"./src/widgets/location/index.ts\",\"./widgets/other\":\"./src/widgets/other/index.ts\",\"./widgets/reading\":\"./src/widgets/reading/index.ts\",\"./runtime/*\":{\"types\":\"./src/runtime/*.ts\",\"import\":\"./src/runtime/*.ts\"},\"./islands/*\":\"./src/islands/*\",\"./styles/*\":\"./src/styles/*\",\"./production\":\"./src/production/index.ts\",\"./production/*\":\"./src/production/*\"}}",
+      "pendingRelease": {
+        "kind": "measured",
+        "newVersion": "0.9.0"
+      },
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "minor",
+        "sizingBump": "minor",
+        "creditedVersion": null,
+        "removed": [
+          "./types/*"
+        ],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -965,7 +2761,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     },
     {
@@ -985,7 +2783,9 @@
         "removed": [
           "./types/*"
         ],
-        "added": []
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
       }
     }
   ]

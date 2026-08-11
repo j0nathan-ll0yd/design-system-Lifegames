@@ -28,12 +28,26 @@
     "packages/schemas/.contract-lock.json",
     // Vendored VERBATIM from atlas/contracts/. Their bytes are pinned by a sha256 the
     // engine carries in its source (DRIFT_CONFORMANCE_SHA256 /
-    // EXPORT_SURFACE_CONFORMANCE_SHA256), so reformatting one would change its digest and
+    // EXPORT_SURFACE_CONFORMANCE_SHA256 / EXPORT_EXTRACT_CONFORMANCE_SHA256 /
+    // LADDER_CONFORMANCE_SHA256), so reformatting one would change its digest and
     // turn the conformance suite red for a reason that has nothing to do with the rule.
     // Re-vendor from the source of truth instead of editing — including whitespace.
+    //
+    // The RUNNERS carry no checksum of their own, but they are vendored under the same rule
+    // and for a stronger reason: a runner that has been reformatted can no longer be diffed
+    // byte-for-byte against atlas's, which is the only check that it is still the SAME runner
+    // all three engines are asserting against. `extract.mjs` is in this set for both reasons —
+    // it is the normative extractor, not a local implementation.
+    //
+    // NOT excluded, deliberately: scripts/fixtures/reference.mjs. That file is this repo's own
+    // three-line adapter, not a vendored artifact, so it is formatted like any other source.
     "scripts/fixtures/drift-conformance.json",
     "scripts/fixtures/drift-conformance-runner.mjs",
     "scripts/fixtures/export-surface-conformance.json",
-    "scripts/fixtures/export-surface-runner.mjs"
+    "scripts/fixtures/export-extract-conformance.json",
+    "scripts/fixtures/export-surface-runner.mjs",
+    "scripts/fixtures/extract.mjs",
+    "scripts/fixtures/verdict-conformance.json",
+    "scripts/fixtures/verdict-conformance-runner.mjs"
   ]
 }

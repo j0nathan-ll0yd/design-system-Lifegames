@@ -2,6 +2,28 @@ packages:
   - 'packages/*'
   - 'apps/*'
 
+# typescript is a CONTRACT VERSION here, not a preference (atlas decision 0028 §2.5).
+# The Level-2 named-export extractor vendored at scripts/fixtures/extract.mjs asserts
+# `ts.version === EXPECTED_TS_VERSION` ('5.9.2') on its RUNTIME path — not only in the
+# conformance runner — and the vendored export-extract-conformance.json vectors were
+# generated against exactly that patch. Two engines on two different 5.x patches can
+# extract different names, each pass their own conformance, and disagree on a real
+# verdict; worse, `npm i typescript` now resolves 7.x, the native Go port, which has NO
+# JavaScript compiler API at all (`ts.createProgram` is undefined).
+#
+# `overrides` is the enforcement, not the root devDependency: pnpm 11.13 IGNORES
+# `pnpm.overrides` in package.json, and an exact root pin alone cannot stop a transitive
+# `^`/`~` from resolving a different patch (or a 7.x) for some other workspace member.
+# packages/fixtures still DECLARES `^5.9.3` — deliberately untouched, because it is a
+# PUBLISHED package and rewriting its manifest would change its published payload for a
+# dev-only toolchain pin (C147). This override is what actually resolves it to 5.9.2.
+#
+# Moving this pin is estate-atomic: bump EXTRACT_SPEC_VERSION, regenerate
+# export-extract-conformance.json + its sidecar in atlas, and re-vendor into mantle and
+# design-system in the same change. Dependabot is configured to never propose it.
+overrides:
+  typescript: 5.9.2
+
 # pnpm 11's minimumReleaseAge defaults to 1440 min (24h) even though no repo
 # sets the key, and `pnpm config get minimumReleaseAge` reports `undefined`
 # (it never reports built-in defaults). A first publish has no older version to

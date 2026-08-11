@@ -110,6 +110,21 @@ import {fileURLToPath, pathToFileURL} from 'node:url'
 import zlib from 'node:zlib'
 
 /**
+ * THE NAMED-EXPORT EXTRACTOR IS VENDORED, NOT REIMPLEMENTED — and it is the one piece of the
+ * export-surface contract this file does NOT hand-write.
+ *
+ * Everywhere else in this engine the rule is reimplemented locally and held to the shared vectors,
+ * because three engines reproducing one rule is what the conformance fixtures exist to police. The
+ * extractor is the deliberate exception (atlas decision 0028, axis C): it is an order of magnitude
+ * more code than a subpath-key comparison AND it is the only part that depends on `typescript`, so
+ * three hand-written copies would repeat findings X3/X7 with far better odds. `scripts/fixtures/
+ * extract.mjs` is therefore byte-identical to `atlas/contracts/export-surface/extract.mjs`, and
+ * `scripts/fixtures/reference.mjs` is the three-line adapter that points its one relative import
+ * back at this file (see that file's header for why the cycle is safe).
+ */
+import {acceptsCachedSurface, EXPECTED_TS_VERSION, EXTRACT_SPEC_VERSION, extractSurfaceNames} from './fixtures/extract.mjs'
+
+/**
  * The digest scheme identifier. SAME NUMBER <=> BYTE-IDENTICAL NORMALIZATION, for every
  * input, across every implementation of this gate in the estate.
  *
@@ -143,7 +158,19 @@ export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924
  * independent spec versions and independent checksums. Re-vendor and update this constant
  * in the SAME change.
  */
-export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'd6499ed176c7c97e6bc82c6fad08104c0544bce7818d420f5dbd938d32c4e7d9'
+export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'ebeb8607c56384b0b489a1630797ac63210806b0f0005fc88579e3820c303eba'
+
+/**
+ * sha256 of scripts/fixtures/export-extract-conformance.json, vendored verbatim from
+ * atlas/contracts/export-surface/. TWO FIXTURES, TWO CHECKSUMS, TWO NUMBERS (atlas
+ * decision 0028 §D1). This one pins the EXTRACTOR — the volatile half that turns a packed
+ * file tree into a name set, and the only half that depends on `typescript`. It is
+ * separate from EXPORT_SURFACE_CONFORMANCE_SHA256 so a `typescript` patch bump or an
+ * extractor tweak regenerates only this fixture and leaves the RULE fixture's checksum
+ * untouched; a single monolithic fixture would force a full re-vendor of a rule that did
+ * not change. Re-vendor and update this constant in the SAME change.
+ */
+export const EXPORT_EXTRACT_CONFORMANCE_SHA256 = '5ad8995d752ccdbc92994869f2f7b074ef32d73c84de279fe5db3342dc5cdff5'
 
 /**
  * The verdict-ladder contract version this engine implements — the DECISION (`decideVerdict`) and
@@ -598,18 +625,25 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 //
 // SCOPE IS LEVEL 1 (subpath KEYS) AND THAT IS A MEASURED DECISION, not laziness.
 // Level 2 — enumerating the named exports behind each entry point — was probed
-// against all 24 published packages in the estate and is deterministic but not yet
-// gateable: 121 of the estate's 253 concrete subpaths are .css/.json/.md assets with
-// no export surface at all, and 28 are .astro components whose implicit `default`
-// a TypeScript parse reports as zero exports — a SILENTLY WRONG answer. Treating
-// those honestly puts 11.9% of subpaths at INDETERMINATE, which would block 5 of 24
-// packages permanently. See atlas decision 0020 and the reference's header.
+// against all 24 published packages in the estate before being adopted at spec v3
+// (atlas decision 0028). The probe found extraction deterministic and hermetic, but
+// found two classes that had to be CLASSIFIED before it could gate anything: 121 of
+// the estate's 253 concrete subpaths are .css/.json/.md assets with no export surface
+// at all, and 28 are .astro components whose implicit `default` a TypeScript parse
+// reports as zero exports — a SILENTLY WRONG answer. So the classifier is three-way
+// and total (NO_SURFACE / SFC_ENTRY / INDETERMINATE), which drops corpus INDETERMINATE
+// from 30/253 to 2/253 — and those 2 are genuinely broken targets that SHOULD be red.
+//
+// LEVEL 2 IS ADVISORY IN THIS REPO TODAY (0028 PR 3). The rule is computed and reported;
+// it moves no exit code. The enforce-flip is 0028 PR 4, after all three engines are on
+// spec v3. See `level1View`, and the `level2*` mutants in the MUTATION TABLE.
 //
 // THE RULE IS NOT DEFINED HERE. It is defined in atlas/contracts/export-surface/
-// reference.mjs and pinned by the 61 vectors vendored into scripts/fixtures/. This
-// is one of three implementations that must reproduce those vectors exactly; the
-// estate has already paid once for three hand-written copies of a shared rule
-// diverging silently (findings X3 and X7).
+// reference.mjs and pinned by the 99 rule vectors + 39 extractor vectors vendored into
+// scripts/fixtures/. This is one of three implementations that must reproduce those
+// vectors exactly; the estate has already paid once for three hand-written copies of a
+// shared rule diverging silently (findings X3 and X7). The one exception is the
+// EXTRACTOR, which is vendored rather than reimplemented — see the import header.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -633,8 +667,61 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
  * The change is fail-safe by construction: no measured changeset, an inadequate projection, or a
  * projection that is not a genuine forward move all fall back to the v1 declared-version
  * behaviour, and the mandatory-adequacy comparison is the SAME rank test as before.
+ *
+ * WHY 3 (atlas decision 0028). The rule became LEVEL-2 AWARE: `surfaceDelta` now folds the
+ * per-subpath NAMED-EXPORT delta into the SAME `required` (max rank with the Level-1 subpath
+ * delta), and the surface object gained a `names` field. The verdict moves for at least one
+ * input — a package that keeps every subpath but deletes a named export from one of them is now
+ * `break` where v2 said `ok` — so the number moves. `evaluateSurface`'s signature and its 0024
+ * projection ARITHMETIC are UNCHANGED, byte for byte: Level 2 only makes `delta.required`
+ * richer, so every spec-version-2 vector keeps passing.
+ *
+ * IN THIS REPO LEVEL 2 IS CURRENTLY ADVISORY (0028 PR 3). The rule below is fully v3 and the
+ * engine runs it — but the VERDICT path is handed `level1View`-stripped surfaces, so no exit
+ * code can move because of a named delta. See `level1View` and the Step 7b wiring.
  */
-export const SURFACE_SPEC_VERSION = 2
+export const SURFACE_SPEC_VERSION = 3
+
+/**
+ * `EXTRACT_SPEC_VERSION` AND `EXPECTED_TS_VERSION` ARE RE-EXPORTED FROM THE VENDORED EXTRACTOR,
+ * NOT REDECLARED HERE.
+ *
+ * Every other contract number in this file is a local constant precisely so a divergence between
+ * this engine and the fixture turns the suite red. These are the inverse: the extractor itself is
+ * vendored byte-verbatim (see the import header), so the numbers that govern it live in the same
+ * bytes they describe. Redeclaring them would create a second place for them to be wrong, and the
+ * runner's case-zero would then compare this file's opinion against the fixture rather than the
+ * extractor's.
+ *
+ * Deliberately INDEPENDENT of SURFACE_SPEC_VERSION: a `typescript` patch bump changes no rule.
+ */
+export { EXPECTED_TS_VERSION, EXTRACT_SPEC_VERSION }
+
+/**
+ * The four ways a subpath's type surface can be classified (Level 2, atlas decision 0028 §2.2).
+ *
+ * DECLARED HERE, IN THE RULE — not imported from the extractor, and the direction matters twice
+ * over. Conceptually, the rule is what COMPARES two classifications and the extractor is what
+ * PRODUCES them, so the vocabulary belongs to the comparer (this mirrors atlas exactly, where it
+ * lives in `reference.mjs`, and `extract.mjs` imports it). Mechanically, the vendored extractor
+ * re-exports this symbol back out, so importing it FROM there would close an indirect-export loop
+ * through `fixtures/reference.mjs` that Node rejects outright — "Detected cycle while resolving
+ * name 'CLASSIFICATIONS'", measured. One declaration, one direction, no cycle.
+ *
+ *   TYPED         a resolvable code target      -> its enumerated `{name, kind}` set
+ *   SFC_ENTRY     an `.astro` component         -> the synthetic `{default}`
+ *   NO_SURFACE    an asset, or a blocked target -> DETERMINABLY nothing; compared only vs NO_SURFACE
+ *   INDETERMINATE could not be read             -> `required: null`, which the caller escalates
+ *
+ * The three-way NO_SURFACE / INDETERMINATE / real-surface distinction IS A2b in both directions,
+ * and collapsing any pair of them is the failure this whole rule exists to prevent. The values are
+ * part of the contract: they are compared against the vendored extractor's output and appear
+ * verbatim in the vendored `export-extract-conformance.json` vectors.
+ */
+export const CLASSIFICATIONS = Object.freeze({TYPED: 'TYPED', SFC_ENTRY: 'SFC_ENTRY', NO_SURFACE: 'NO_SURFACE', INDETERMINATE: 'INDETERMINATE'})
+
+/** Classifications that carry an enumerated name set (as opposed to determinably none, or unknown). */
+const NAME_BEARING = new Set([CLASSIFICATIONS.TYPED, CLASSIFICATIONS.SFC_ENTRY])
 
 /** Ordered weakest to strongest. `BUMP_ORDER.indexOf` is the comparison. */
 export const BUMP_ORDER = Object.freeze(['none', 'patch', 'minor', 'major'])
@@ -722,17 +809,249 @@ export function readExportSurface(manifestText) {
 }
 
 /**
+ * The same manifest read, but yielding each subpath's RAW `exports` VALUE rather than just its
+ * key (spec version 3).
+ *
+ * The extractor needs the targets to resolve; `readExportSurface` deliberately does not expose
+ * them. Rather than let the extractor re-derive Node's sugar rules — a second, divergable copy of
+ * the one thing this rule exists to keep singular — the sugar handling stays in ONE place and this
+ * function reads through it. It returns EXACTLY the subpath keys `readExportSurface` returns for
+ * the same input, and the vendored `tgt-*` vectors assert that agreement directly: a SUGAR
+ * DISAGREEMENT between the two readers would mean the rule and the extractor disagree about what a
+ * subpath even is.
+ *
+ * @param {string|null|undefined} manifestText
+ * @returns {{kind: 'exports-map'|'legacy'|'unreadable', targets: Record<string, unknown>, detail: string|null}}
+ */
+export function readExportTargets(manifestText) {
+  const surface = readExportSurface(manifestText)
+  if (surface.kind !== 'exports-map') {
+    return {kind: surface.kind, targets: {}, detail: surface.detail}
+  }
+  // `readExportSurface` already proved the manifest parses and the shape is one Node accepts, so
+  // this re-parse cannot fail; it exists only to reach the values behind the keys it returned.
+  const parsed = JSON.parse(manifestText)
+  const exportsField = parsed.exports
+  if (surface.subpaths.length === 1 && surface.subpaths[0] === '.' && !(isPlainObject(exportsField) && '.' in exportsField)) {
+    // The three sugar forms — a string, an array, and an all-conditions object — are all `{".": v}`.
+    return {kind: 'exports-map', targets: {'.': exportsField}, detail: null}
+  }
+  const targets = {}
+  for (const subpath of surface.subpaths) {
+    targets[subpath] = isPlainObject(exportsField) ? exportsField[subpath] : undefined
+  }
+  return {kind: 'exports-map', targets, detail: null}
+}
+
+/** `{name, kind}[]` -> `Map<name, kind>`, tolerating an absent or malformed list (A2b: never throw). */
+function nameIndex(names) {
+  const out = new Map()
+  for (const record of Array.isArray(names) ? names : []) {
+    if (isPlainObject(record) && typeof record.name === 'string') {
+      out.set(record.name, typeof record.kind === 'string' ? record.kind : 'unknown')
+    }
+  }
+  return out
+}
+
+/**
+ * Codepoint order over `{subpath, name, kind}` — the SAME rule the vendored extractor sorts names
+ * by, and for the same reason: a locale-sensitive sort would make the reported delta depend on the
+ * ICU locale of whichever machine ran the gate, so two engines could report different orders for
+ * the same pair of trees. `localeCompare` is banned here as it is there. JavaScript's `<` compares
+ * UTF-16 code units, which also diverges from codepoint order above the BMP, so this walks
+ * codepoints explicitly.
+ *
+ * The field separator is U+0000 written as a backslash-u ESCAPE, never as a raw byte: a literal NUL
+ * makes `file(1)` classify this module as binary data and makes grep skip it SILENTLY (finding X9,
+ * and the same warning SPEC_FINGERPRINT carries in atlas). A separator is needed rather than a
+ * space because an export name is not always an identifier — `export {x as "hello world"}` is legal.
+ */
+function sortNameRefs(refs) {
+  const key = (ref) => `${ref.subpath}\u0000${ref.name}\u0000${ref.kind}`
+  return [...refs].sort((left, right) => {
+    const a = [...key(left)]
+    const b = [...key(right)]
+    const shared = Math.min(a.length, b.length)
+    for (let i = 0; i < shared; i++) {
+      const x = a[i].codePointAt(0)
+      const y = b[i].codePointAt(0)
+      if (x !== y) {
+        return x < y ? -1 : 1
+      }
+    }
+    return a.length === b.length ? 0 : a.length < b.length ? -1 : 1
+  })
+}
+
+/**
+ * The bump the per-subpath NAMED-EXPORT delta requires, for ONE subpath (Level 2).
+ *
+ *   a name removed              -> MAJOR       a name added                 -> MINOR
+ *   TYPED/SFC -> NO_SURFACE     -> MAJOR       NO_SURFACE -> TYPED/SFC      -> MINOR
+ *   a `value` became `type`     -> MAJOR       a `type` became `value`      -> MINOR
+ *
+ * BOTH KINDS BREAK ON REMOVAL. semver-ts.org (Ember RFC 0730) is normative that removing an
+ * exported value, interface, type OR namespace is breaking, so `kind` is REPORTING, not a loophole:
+ * dropping type-only names from the comparison would make `export interface Options` deletable
+ * under a patch. A `value` degrading to a `type` is the same removal wearing a disguise — the value
+ * binding is gone — so it majors; the reverse is purely additive.
+ *
+ * `unknown` (an alias chain that leaves the payload) participates in PRESENCE but never in the kind
+ * comparison: the name is right there in the syntax and its removal is a real break, but "I could
+ * not resolve what it is" must not manufacture a kind regression out of nothing.
+ *
+ * `required: null` means a side was INDETERMINATE. As everywhere in this rule that is NOT "no
+ * requirement" — the caller must escalate it.
+ */
+export function subpathNameDelta(subpath, reference, candidate) {
+  const referenceClass = reference?.classification
+  const candidateClass = candidate?.classification
+  if (referenceClass === CLASSIFICATIONS.INDETERMINATE || candidateClass === CLASSIFICATIONS.INDETERMINATE) {
+    const side = referenceClass === CLASSIFICATIONS.INDETERMINATE ? 'reference' : 'candidate'
+    const detail = (referenceClass === CLASSIFICATIONS.INDETERMINATE ? reference?.detail : candidate?.detail) ?? 'no detail'
+    return {required: null, removedNames: [], addedNames: [], detail: `${side} ${subpath}: ${detail}`}
+  }
+  if (!NAME_BEARING.has(referenceClass) && !NAME_BEARING.has(candidateClass)) {
+    return {required: 'none', removedNames: [], addedNames: [], detail: null}
+  }
+  if (NAME_BEARING.has(referenceClass) && !NAME_BEARING.has(candidateClass)) {
+    return {
+      required: 'major',
+      removedNames: (reference.names ?? []).map((record) => ({subpath, name: record.name, kind: record.kind})),
+      addedNames: [],
+      detail: `${subpath} no longer has a type surface (${referenceClass} -> ${candidateClass ?? 'absent'}), which revokes every name behind it`
+    }
+  }
+  if (!NAME_BEARING.has(referenceClass) && NAME_BEARING.has(candidateClass)) {
+    return {
+      required: 'minor',
+      removedNames: [],
+      addedNames: (candidate.names ?? []).map((record) => ({subpath, name: record.name, kind: record.kind})),
+      detail: `${subpath} gained a type surface (${referenceClass ?? 'absent'} -> ${candidateClass})`
+    }
+  }
+  const before = nameIndex(reference.names)
+  const after = nameIndex(candidate.names)
+  const removedNames = []
+  const addedNames = []
+  for (const [name, kind] of before) {
+    if (!after.has(name)) {
+      removedNames.push({subpath, name, kind})
+      continue
+    }
+    const now = after.get(name)
+    if (kind === 'value' && now === 'type') {
+      // The value binding is gone even though the identifier survives: a removal, not a rename.
+      removedNames.push({subpath, name, kind: 'value'})
+    } else if (kind === 'type' && now === 'value') {
+      addedNames.push({subpath, name, kind: 'value'})
+    }
+  }
+  for (const [name, kind] of after) {
+    if (!before.has(name)) {
+      addedNames.push({subpath, name, kind})
+    }
+  }
+  const required = removedNames.length > 0 ? 'major' : addedNames.length > 0 ? 'minor' : 'none'
+  return {required, removedNames: sortNameRefs(removedNames), addedNames: sortNameRefs(addedNames), detail: null}
+}
+
+/**
+ * Fold every per-subpath Level-2 delta into ONE requirement, over the UNION of both sides' subpaths.
+ *
+ * MAX RANK, never min: a MAJOR-requiring removal in one subpath is not softened by a MINOR-requiring
+ * addition in another. (That inversion is easy and catastrophic — it would let any breaking change
+ * be laundered by shipping an addition alongside it.)
+ *
+ * The union, not the intersection: a subpath present on only one side is already sized by Level 1,
+ * but an INDETERMINATE classification on it must STILL escalate, because "I could not read the
+ * surface of a subpath you added" is not evidence that adding it was safe.
+ */
+export function namesDelta(referenceNames, candidateNames) {
+  const subpaths = [...new Set([...Object.keys(referenceNames ?? {}), ...Object.keys(candidateNames ?? {})])].sort()
+  let required = 'none'
+  const removedNames = []
+  const addedNames = []
+  const details = []
+  for (const subpath of subpaths) {
+    const delta = subpathNameDelta(subpath, referenceNames?.[subpath], candidateNames?.[subpath])
+    if (delta.required === null) {
+      return {required: null, removedNames: [], addedNames: [], detail: delta.detail}
+    }
+    if (bumpRank(delta.required) > bumpRank(required)) {
+      required = delta.required
+    }
+    removedNames.push(...delta.removedNames)
+    addedNames.push(...delta.addedNames)
+    if (delta.detail) {
+      details.push(delta.detail)
+    }
+  }
+  return {required, removedNames: sortNameRefs(removedNames), addedNames: sortNameRefs(addedNames), detail: details.join('; ') || null}
+}
+
+/**
  * The export surface of a PACKED PAYLOAD — the adapter between this engine's tarball
- * representation (Map<path, Buffer>, from readTarball) and the shared rule, which is
- * defined over the manifest TEXT.
+ * representation (Map<path, Buffer>, from readTarball) and the shared rule.
+ *
+ * LEVEL 1 + LEVEL 2 (spec version 3, atlas decision 0028). The Level-1 half is the manifest read it
+ * always was; the Level-2 half runs the vendored extractor over the SAME entry map, which is why
+ * this takes the whole tree rather than just the manifest. Both callers already hold the tree —
+ * `headFiles` on the candidate side, `refFiles` on the reference side — so this costs no new I/O.
  *
  * A payload with no top-level `package.json` yields `unreadable`, not `legacy`: npm injects
  * the manifest at the package root unconditionally, so its absence means the tarball is not
  * what it claims to be, and that is a "could not tell", not "no exports map".
+ *
+ * AN EXTRACTOR THROW IS CAUGHT AND TURNED INTO AN ALL-INDETERMINATE NAMES MAP, never allowed to
+ * escape and never allowed to degrade into an absent `names` field. A2b applied to the newest
+ * dependency in the estate: a `typescript` that fails to load, or one that fails `assertCompiler`'s
+ * exact-version guard, must make this engine say "I could not tell" — never crash the whole run,
+ * and never fall through to an empty name set that reads as "nothing was removed".
  */
 export function surfaceOfPayload(files) {
   const bytes = files.get(MANIFEST_ENTRY)
-  return readExportSurface(bytes === undefined ? null : bytes.toString('utf8'))
+  const manifestText = bytes === undefined ? null : bytes.toString('utf8')
+  const level1 = readExportSurface(manifestText)
+  if (level1.kind === 'unreadable') {
+    // Nothing to enumerate behind a surface the reader already refused, and `surfaceDelta` treats
+    // `unreadable` as INDETERMINATE before it ever looks at names.
+    return level1
+  }
+  try {
+    return {...level1, names: extractSurfaceNames({files, manifestText}).names}
+  } catch (error) {
+    const detail = `the named-export extractor could not run: ${error?.message ?? error}`
+    return {
+      ...level1,
+      names: Object.fromEntries(
+        level1.subpaths.map((subpath) => [subpath, {classification: CLASSIFICATIONS.INDETERMINATE, names: [], target: null, detail}])
+      )
+    }
+  }
+}
+
+/**
+ * The Level-1 VIEW of a surface — the same object with its `names` field dropped.
+ *
+ * THIS FUNCTION IS THE ENTIRE ADVISORY SEAM (atlas decision 0028 PR 3). Level 2 is computed, folded
+ * and reported, and NO exit code moves — because the VERDICT path is handed these stripped views,
+ * which makes its evaluation byte-for-byte the spec-version-2 one. `surfaceDelta` treats two
+ * names-LESS sides as a genuine Level-1-only comparison, so the arithmetic is identical, not merely
+ * similar.
+ *
+ * "Advisory" is therefore a STRUCTURAL property here, not a promise in a comment: the Level-2
+ * outcome reaches only `advisories`, `level2`, `removedNames` and `addedNames`, and `computeExit`
+ * reads none of them — it reduces over `row.exitClass` alone.
+ *
+ * Flipping enforcement (0028 PR 4) is DELETING the two calls, not adding logic. That asymmetry is
+ * the point: the advisory phase has to be a strictly smaller change to undo than to keep.
+ */
+export function level1View(surface) {
+  const rest = {...surface}
+  delete rest.names
+  return rest
 }
 
 /**
@@ -750,6 +1069,22 @@ export function surfaceOfPayload(files) {
  *
  * `required: null` means a side was unreadable. It is NOT "no requirement" — the caller must
  * turn it into INDETERMINATE.
+ *
+ * ── LEVEL 2 COMPOSITION (spec version 3, atlas decision 0028) ────────────────────────────────
+ *
+ * When BOTH surfaces carry a `names` field, the per-subpath named-export delta is folded in at
+ * MAX RANK with the subpath-key delta above. Level 2 never REPLACES Level 1 and never softens it
+ * — it can only raise the requirement (C147: refine, never relax).
+ *
+ * WHEN EXACTLY ONE SIDE CARRIES `names`, THE ANSWER IS `required: null`, NOT A LEVEL-1
+ * COMPARISON. This is the A2b hole decision 0028 was written around. The reference surface is
+ * served from the digest cache, and an entry written before Level 2 existed carries no names at
+ * all; if an asymmetric pair quietly degraded to Level 1, a real named-export removal would read
+ * as "no names removed" = GREEN off a stale cache. So asymmetry is "I could not read the
+ * reference surface", which is exit 3. Two names-LESS sides are a different thing entirely — a
+ * genuine Level-1-only comparison — and behave exactly as spec version 2 did, which is both why
+ * every v2 vector still passes byte for byte AND what makes `level1View` a sufficient advisory
+ * seam rather than an approximation of one.
  */
 export function surfaceDelta(reference, candidate) {
   if (reference.kind === 'unreadable' || candidate.kind === 'unreadable') {
@@ -760,8 +1095,56 @@ export function surfaceDelta(reference, candidate) {
     if (candidate.kind === 'unreadable') {
       sides.push(`candidate: ${candidate.detail ?? 'unreadable'}`)
     }
-    return {required: null, removed: [], added: [], detail: sides.join('; ')}
+    return {required: null, removed: [], added: [], removedNames: [], addedNames: [], detail: sides.join('; ')}
   }
+  const level1 = level1Delta(reference, candidate)
+  // Level 2 speaks only when BOTH sides declare an `exports` map. A `legacy` side has no subpaths
+  // to enumerate names behind, and the two cross-kind cases are already decided at Level 1 by what
+  // a consumer can IMPORT (adding a map revokes deep imports: MAJOR; removing one restores them:
+  // MINOR). Letting a names comparison speak there would invert the second one.
+  if (reference.kind !== 'exports-map' || candidate.kind !== 'exports-map') {
+    return {...level1, removedNames: [], addedNames: []}
+  }
+  const referenceHasNames = isPlainObject(reference.names)
+  const candidateHasNames = isPlainObject(candidate.names)
+  if (!referenceHasNames && !candidateHasNames) {
+    return {...level1, removedNames: [], addedNames: []}
+  }
+  if (referenceHasNames !== candidateHasNames) {
+    const missing = referenceHasNames ? 'candidate' : 'reference'
+    return {
+      required: null,
+      removed: [],
+      added: [],
+      removedNames: [],
+      addedNames: [],
+      detail: `the ${missing} surface carries no Level-2 \`names\` field while the other does, so no named-export comparison is possible ` +
+        '(a pre-Level-2 cache entry must never read as an empty name set)'
+    }
+  }
+  const level2 = namesDelta(reference.names, candidate.names)
+  if (level1.required === null || level2.required === null) {
+    return {
+      required: null,
+      removed: level1.removed,
+      added: level1.added,
+      removedNames: [],
+      addedNames: [],
+      detail: [level1.detail, level2.detail].filter(Boolean).join('; ')
+    }
+  }
+  return {
+    required: bumpRank(level2.required) > bumpRank(level1.required) ? level2.required : level1.required,
+    removed: level1.removed,
+    added: level1.added,
+    removedNames: level2.removedNames,
+    addedNames: level2.addedNames,
+    detail: [level1.detail, level2.detail].filter(Boolean).join('; ') || null
+  }
+}
+
+/** The spec-version-1 and -2 rule, unchanged: subpath KEYS only. Level 2 composes on top of it. */
+function level1Delta(reference, candidate) {
   if (reference.kind === 'legacy' && candidate.kind === 'legacy') {
     return {required: 'none', removed: [], added: [], detail: null}
   }
@@ -953,6 +1336,52 @@ export function evaluateSurface({declared, referenceVersion, reference, candidat
     return {kind: 'ok', delta, declaredBump, sizingBump, creditedVersion}
   }
   return {kind: 'break', delta, declaredBump, sizingBump, creditedVersion, required: delta.required}
+}
+
+/**
+ * Turn a LEVEL-2 `evaluateSurface` outcome into advisory strings and reporting fields.
+ *
+ * AN ADVISORY IS AN OBSERVATION; A VERDICT IS A CLAIM. This mirrors, deliberately and exactly, the
+ * `changeset-pending:<v>` pattern atlas decisions 0022/0024 established for the other rule that had
+ * to land observed-before-enforced: the row gains strings, `row.verdict` is never touched, and no
+ * exit code moves. 0028 PR 4 is what turns `surface-named-break:major` into a real SURFACE_BREAK,
+ * once all three engines are on spec version 3.
+ *
+ *   surface-named-delta:<subpath>:removed:<names>   a name (or kind) vanished from a subpath
+ *   surface-named-delta:<subpath>:added:<names>     a name appeared
+ *   surface-named-break:<required>                  the delta would break under the declared bump
+ *   surface-level2-indeterminate                    the Level-2 surface could not be read at all
+ *
+ * The LAST of those is the one that matters most while this is advisory: it is how the A2b state
+ * stays VISIBLE in a phase where it cannot yet be exit 3. A Level-2 indeterminate that produced no
+ * string would be indistinguishable from a clean read, which is the collapse this whole rule exists
+ * to prevent — so `surfaceAdvisories` returns a string for it before it returns anything else.
+ *
+ * @param {{kind: string, delta?: object, required?: string, detail?: string}} outcome
+ * @returns {{advisories: string[], level2: string, removedNames: object[], addedNames: object[], level2Detail: string|null}}
+ */
+export function surfaceAdvisories(outcome) {
+  if (outcome.kind === 'indeterminate') {
+    return {advisories: ['surface-level2-indeterminate'], level2: 'indeterminate', removedNames: [], addedNames: [], level2Detail: outcome.detail ?? null}
+  }
+  const removedNames = outcome.delta?.removedNames ?? []
+  const addedNames = outcome.delta?.addedNames ?? []
+  const advisories = []
+  for (const [change, refs] of [['removed', removedNames], ['added', addedNames]]) {
+    const bySubpath = new Map()
+    for (const ref of refs) {
+      bySubpath.set(ref.subpath, [...(bySubpath.get(ref.subpath) ?? []), ref.name])
+    }
+    // Sort on the SUBPATH explicitly. `[...map].sort()` compares stringified [key, value] PAIRS, so
+    // the name list leaks into the ordering and a subpath containing a comma reorders the report.
+    for (const [subpath, names] of [...bySubpath].sort((left, right) => (left[0] < right[0] ? -1 : left[0] > right[0] ? 1 : 0))) {
+      advisories.push(`surface-named-delta:${subpath}:${change}:${names.join(',')}`)
+    }
+  }
+  if (outcome.kind === 'break') {
+    advisories.push(`surface-named-break:${outcome.required}`)
+  }
+  return {advisories, level2: outcome.kind, removedNames, addedNames, level2Detail: null}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1969,8 +2398,24 @@ export function exitClassFor(verdict, lane) {
 // Reference digest cache (immutable inputs only)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * THE SURFACE AND EXTRACT VERSIONS PARTICIPATE IN THE CACHE KEY (atlas decision 0028 §2.4b).
+ *
+ * The entry is ONE file holding BOTH the digest hashes and the surface, so moving the key on a
+ * `SURFACE_SPEC_VERSION` or `EXTRACT_SPEC_VERSION` bump invalidates the WHOLE combined entry — the
+ * digest portion included — and forces a full re-fetch, re-digest and re-extract of every package.
+ * That over-invalidation is ACCEPTED, not avoided: bumps are rare, the cost is one cold pass, and
+ * correctness dominates. There is no claim of selective digest preservation here.
+ *
+ * WHY THE KEY, WHEN `readCache` ALREADY CHECKS THE VERSION FIELDS. They answer different questions,
+ * and only together do they close the hole. The field check asks "is this the right SHAPE?"; the key
+ * asks "was this produced by the right RULE?". An entry written by a superseded extractor is
+ * SCHEMA-VALID — it carries a `names` field, so no shape check has any reason to reject it — while
+ * its names are simply wrong. Only the key catches that one.
+ */
 function cacheFile(repoRoot, name, version) {
-  return path.join(repoRoot, 'node_modules', '.cache', 'pkg-drift', `v${SPEC_VERSION}`, `${sha256(`${name}@${version}`)}.json`)
+  const scheme = `v${SPEC_VERSION}-s${SURFACE_SPEC_VERSION}-e${EXTRACT_SPEC_VERSION}`
+  return path.join(repoRoot, 'node_modules', '.cache', 'pkg-drift', scheme, `${sha256(`${name}@${version}`)}.json`)
 }
 
 /**
@@ -1992,17 +2437,38 @@ const cachedSurfaceIsUsable = (surface) => isPlainObject(surface) && typeof surf
 export function readCache(repoRoot, name, version) {
   try {
     const parsed = JSON.parse(fs.readFileSync(cacheFile(repoRoot, name, version), 'utf8'))
-    if (parsed.specVersion !== SPEC_VERSION || parsed.surfaceSpecVersion !== SURFACE_SPEC_VERSION) {
+    if (parsed.specVersion !== SPEC_VERSION || parsed.surfaceSpecVersion !== SURFACE_SPEC_VERSION || parsed.extractSpecVersion !== EXTRACT_SPEC_VERSION) {
       return null
     }
     if (!cachedSurfaceIsUsable(parsed.surface)) {
       return null
     }
-    // The per-file digests are Maps in memory and plain objects on disk.
+    // GUARD (a), atlas decision 0028 §2.4a — the second net behind the cache key, and the one that
+    // catches a hand-written or half-migrated entry that lands at a v3 key WITHOUT the v3 schema.
+    // `acceptsCachedSurface` is the vendored contract's own test and it keys off the PRESENCE of
+    // the `names` field, never its emptiness: a package whose every subpath is an asset carries a
+    // legitimately empty name set BY DESIGN, and rejecting on emptiness would send those packages
+    // back to the registry on every run, forever, for no signal.
+    //
+    // A rejected entry is a cache MISS, not a verdict. It costs one download and re-extract; it can
+    // never produce a wrong answer. The verdict-level fail-closed layer is `surfaceDelta`'s
+    // asymmetry branch, which fires only if that recovery cannot produce names either.
+    if (!acceptsCachedSurface(parsed.surface)) {
+      return null
+    }
+    // The per-file digests are Maps in memory and plain objects on disk. `names` is carried through
+    // VERBATIM — dropping it here is exactly the A2b hole 0028 was written around, because the
+    // reference side is served from this cache in steady state and a names-less reference would
+    // make a real named-export removal read as "no names removed".
     return {
       strictPerFile: new Map(Object.entries(parsed.strictPerFile)),
       effectivePerFile: new Map(Object.entries(parsed.effectivePerFile)),
-      surface: {kind: parsed.surface.kind, subpaths: [...parsed.surface.subpaths], detail: parsed.surface.detail ?? null}
+      surface: {
+        kind: parsed.surface.kind,
+        subpaths: [...parsed.surface.subpaths],
+        detail: parsed.surface.detail ?? null,
+        ...(isPlainObject(parsed.surface.names) ? {names: parsed.surface.names} : {})
+      }
     }
   } catch {
     return null
@@ -2017,6 +2483,7 @@ export function writeCache(repoRoot, name, version, {strictPerFile, effectivePer
       JSON.stringify({
         specVersion: SPEC_VERSION,
         surfaceSpecVersion: SURFACE_SPEC_VERSION,
+        extractSpecVersion: EXTRACT_SPEC_VERSION,
         name,
         version,
         strictPerFile: Object.fromEntries(strictPerFile),
@@ -2385,17 +2852,54 @@ export async function runGate({
       let addedSubpaths = []
       let requiredBump = null
       let declaredBump = null
+      let level2 = null
+      let level2Detail = null
+      let removedNames = []
+      let addedNames = []
       if (SURFACE_APPLICABLE_VERDICTS.has(decision.verdict)) {
+        const candidateSurface = surfaceOfPayload(headFiles)
+        // ── LEVEL 1 SIZES THE VERDICT (atlas decision 0028 PR 3 — ADVISORY FIRST) ────────────
+        //
+        // `level1View` strips `names` from BOTH sides, which makes this call byte-for-byte the
+        // spec-version-2 evaluation: `surfaceDelta` treats two names-less sides as a genuine
+        // Level-1-only comparison, not as a degraded Level-2 one. So no exit code in this engine
+        // can move because of a named delta while Level 2 is advisory — and the transient window
+        // where atlas is on v3 and mantle is still on v2 stays fail-SAFE rather than fail-blocking.
+        //
+        // 0028 PR 4 flips enforcement by DELETING the two `level1View` calls. Nothing else.
         const outcome = evaluateSurface({
           declared: member.version,
           referenceVersion: decision.referenceVersion,
-          reference: reference.surface,
-          candidate: surfaceOfPayload(headFiles),
+          reference: level1View(reference.surface),
+          candidate: level1View(candidateSurface),
           // The SAME measured pendingRelease the verdict ladder consumed (decision 0024): one source
           // of truth, never a re-derivation. An adequate projected bump credits the surface delta;
           // not-measured/absent/indeterminate/backward all fall back to the declared version.
           pendingRelease
         })
+        // ── LEVEL 2 IS OBSERVED, NOT ENFORCED ────────────────────────────────────────────────
+        //
+        // The SAME rule over the SAME two surfaces WITH their names, and the SAME `pendingRelease`
+        // the verdict path just used — so when enforcement flips, the number it flips to is the one
+        // that was being reported all along, not a differently-sized one. Its outcome reaches only
+        // `advisories`, `level2`, `removedNames` and `addedNames`. None of those is read by
+        // `exitClassFor`, `decideVerdict` or `computeExit` (which reduces over `row.exitClass`
+        // alone), which is what makes "advisory" a structural property here rather than a promise.
+        const level2Outcome = evaluateSurface({
+          declared: member.version,
+          referenceVersion: decision.referenceVersion,
+          reference: reference.surface,
+          candidate: candidateSurface,
+          pendingRelease
+        })
+        const level2Shape = surfaceAdvisories(level2Outcome)
+        level2 = level2Shape.level2
+        // An INDETERMINATE with no reason is unactionable, and while Level 2 is advisory the reason
+        // is the ONLY thing a maintainer gets — there is no exit code to investigate from.
+        level2Detail = level2Shape.level2Detail
+        removedNames = level2Shape.removedNames
+        addedNames = level2Shape.addedNames
+        advisories.push(...level2Shape.advisories)
         if (outcome.kind === 'indeterminate') {
           // A2b, one level below the digest: "I could not read the public surface" is exit
           // 3, NEVER a fall-through to whatever the payload comparison happened to say. A
@@ -2433,6 +2937,15 @@ export async function runGate({
         addedSubpaths,
         requiredBump,
         declaredBump,
+        // Level 2 (atlas decision 0028), REPORTING ONLY in this PR. `surfaceSpecVersion` and
+        // `extractSpecVersion` ride on the row so a consumer of `--json` can tell which rule and
+        // which extractor produced these names without inferring it from their shape.
+        surfaceSpecVersion: SURFACE_SPEC_VERSION,
+        extractSpecVersion: EXTRACT_SPEC_VERSION,
+        level2,
+        level2Detail,
+        removedNames,
+        addedNames,
         pendingNewVersion: pendingRelease.kind === 'measured' ? pendingRelease.newVersion : null,
         changesetProbe: probe.kind,
         strictDigest,
@@ -2463,7 +2976,10 @@ function report(result) {
   const evaluated = result.rows.filter((r) => r.verdict !== 'SKIPPED')
   const skipped = result.rows.filter((r) => r.verdict === 'SKIPPED')
 
-  console.log(`\npackage payload drift — lane=${result.lane}, digest spec v${SPEC_VERSION}, export-surface spec v${SURFACE_SPEC_VERSION}\n`)
+  console.log(
+    `\npackage payload drift — lane=${result.lane}, digest spec v${SPEC_VERSION}, export-surface spec v${SURFACE_SPEC_VERSION} ` +
+      `(Level 2 ADVISORY, extract spec v${EXTRACT_SPEC_VERSION}, typescript ${EXPECTED_TS_VERSION})\n`
+  )
   for (const row of evaluated) {
     const ref = row.referenceVersion ? ` ref=${row.referenceVersion}` : ''
     const adv = row.advisories?.length ? `  [${row.advisories.join(', ')}]` : ''
@@ -2488,6 +3004,18 @@ function report(result) {
     }
     if ((row.removedSubpaths?.length ?? 0) + (row.addedSubpaths?.length ?? 0) > 0) {
       console.log(`      surface bump: requires ${row.requiredBump}, declared ${row.declaredBump}`)
+    }
+    // Level 2, ADVISORY (atlas decision 0028 PR 3). Printed as OBSERVATIONS and labelled as such:
+    // none of these lines corresponds to anything in the exit code, and saying so in the output is
+    // what stops a reader treating an advisory as a verdict during the phase where it is not one.
+    for (const ref of row.removedNames ?? []) {
+      console.log(`      export NAME removed (advisory): ${ref.subpath} -> ${ref.name} (${ref.kind})`)
+    }
+    for (const ref of row.addedNames ?? []) {
+      console.log(`      export name added  (advisory): ${ref.subpath} -> ${ref.name} (${ref.kind})`)
+    }
+    if (row.level2 === 'indeterminate') {
+      console.log(`      level 2 INDETERMINATE (advisory — moves no exit code until 0028 PR 4): ${row.level2Detail ?? 'no detail'}`)
     }
     if (row.advisories?.includes('cosmetic-only')) {
       for (const file of row.cosmeticPaths ?? []) {
@@ -3381,6 +3909,97 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     fs.rmSync(surfaceDir, {recursive: true, force: true})
     commitAll(root, 'remove the surface fixture package')
 
+    // ── S28 — LEVEL 2, ADVISORY (atlas decision 0028 PR 3). ──────────────────────────────────────
+    //
+    // THE BREAK CLASS LEVEL 1 CANNOT SEE, end to end: a NAMED export is removed while every
+    // `exports` subpath stays byte-identical. `@j0nathan-ll0yd/validation` 1.1.0 -> 2.0.0 dropped 5
+    // names and was caught only because it ALSO happened to major. S22b's shape does not reach it —
+    // the subpath key set never moves here, so the entire Level-1 rule is silent by construction.
+    //
+    // AND THE EXIT CODE MUST NOT MOVE. That is the whole content of PR 3, and this rung is what
+    // makes "advisory" testable rather than asserted: the declared 1.0.1 is a PATCH, which never
+    // covers a MAJOR-requiring name removal, so an ENFORCING Level 2 would read SURFACE_BREAK /
+    // exit 2 right here. It must read PENDING_PUBLISH / exit 0 with the finding in `advisories`.
+    // Three mutants (`level2enforcing`, `level2silent`, `level2noextract`) each break exactly one
+    // half of that sentence and are killed by this rung alone.
+    const namedDir = path.join(root, 'packages', 'named')
+    const setNamed = (version, declaration) => {
+      writeJson(path.join(namedDir, 'package.json'), {
+        name: '@toy/named',
+        version,
+        files: ['src'],
+        exports: {'.': './src/index.d.ts'},
+        publishConfig: {registry: registryUrl}
+      })
+      fs.writeFileSync(path.join(namedDir, 'src', 'index.d.ts'), declaration)
+    }
+    const namedRow = (evaluated) => row(evaluated, '@toy/named') ?? {}
+    fs.mkdirSync(path.join(namedDir, 'src'), {recursive: true})
+    setNamed('1.0.0', 'export declare const alpha: number\nexport declare const beta: string\n')
+    commitAll(root, 'add a package whose surface is its NAMES, not its subpaths')
+    registry.publish('@toy/named', '1.0.0', await packFixture(root, 'named'))
+
+    result = await gate({build: false})
+    expect('S28 an unchanged named surface is CLEAN', result, '@toy/named', 'CLEAN', 0)
+    check('S28 an unchanged named surface is QUIET — no advisory churn', !(namedRow(result).advisories ?? []).some((advisory) =>
+      advisory.startsWith('surface-')
+    ), `advisories=${JSON.stringify(namedRow(result).advisories)}`)
+    // Reporting continuity, NOT a detector — and the distinction is worth stating, because it is
+    // tempting to read it as one. On a CLEAN package an engine that never extracted and one that
+    // extracted and found no delta both report `level2: 'ok'`, so nothing asserted at this rung can
+    // tell them apart. `level2noextract` is killed at S28b, where there is a real removal to miss.
+    check('S28 the row records which rule and extractor produced its Level-2 comparison',
+      namedRow(result).level2 === 'ok' && namedRow(result).extractSpecVersion === EXTRACT_SPEC_VERSION,
+      `level2=${namedRow(result).level2} extractSpecVersion=${namedRow(result).extractSpecVersion}`)
+
+    // S28b — THE REGRESSION: drop `beta`, keep every subpath, ship it as a PATCH.
+    setNamed('1.0.1', 'export declare const alpha: number\n')
+    commitAll(root, 'remove a named export under a patch, subpaths untouched')
+    result = await gate({build: false})
+    // ── THIS ASSERTION IS DELIBERATELY COMPOUND, AND IT MUST STAY FIRST. ─────────────────────────
+    //
+    // `stopAfter` unwinds the ladder at the FIRST assertion whose id matches the scenario, so under
+    // a mutant run this is the ONLY S28b rung that executes — every check below it is baseline-only
+    // detail. All three Level-2 mutants are therefore keyed to S28b and all three have to die right
+    // here, which is exactly why it asserts both halves of the advisory contract at once:
+    //
+    //   REPORTED     `level2silent` empties the advisory list; `level2noextract` never produces the
+    //                names to report. Both leave this list without its two entries.
+    //   NOT ENFORCED `level2enforcing` feeds the names into the verdict call, turning this row into
+    //                SURFACE_BREAK / exit 2.
+    //
+    // Splitting them into two readable rungs would silently disarm whichever ended up second —
+    // MEASURED: with the advisory check placed second, `level2silent` and `level2noextract` both
+    // SURVIVED a run that reported the mutation as expected-to-fail.
+    check('S28b a removed NAME is REPORTED as an advisory and moves NO verdict',
+      (namedRow(result).advisories ?? []).includes('surface-named-delta:.:removed:beta') &&
+        (namedRow(result).advisories ?? []).includes('surface-named-break:major') &&
+        namedRow(result).verdict === 'PENDING_PUBLISH' && namedRow(result).exitClass === 0 && result.exitCode === 0,
+      `verdict=${namedRow(result).verdict} class=${namedRow(result).exitClass} exitCode=${result.exitCode} ` +
+        `advisories=${JSON.stringify(namedRow(result).advisories)}`)
+    check('S28b Level 1 is SILENT — no subpath moved, which is exactly why Level 2 exists',
+      (namedRow(result).removedSubpaths ?? []).length === 0 && (namedRow(result).addedSubpaths ?? []).length === 0 &&
+        namedRow(result).requiredBump === 'none', `removed=${JSON.stringify(namedRow(result).removedSubpaths)} required=${namedRow(result).requiredBump}`)
+    check('S28b the advisory carries the structured name refs, not only the strings',
+      JSON.stringify(namedRow(result).removedNames ?? []) === JSON.stringify([{subpath: '.', name: 'beta', kind: 'value'}]),
+      `removedNames=${JSON.stringify(namedRow(result).removedNames)}`)
+    expect('S28b a removed NAME does NOT move the verdict while Level 2 is advisory', result, '@toy/named', 'PENDING_PUBLISH', 0)
+    // ...in EVERY lane. Asserted on the VERDICT, not the exit class, and the difference is real:
+    // PENDING_PUBLISH is legitimately exit 2 in the post-publish lane (you declared a version and
+    // never published it) — the LANE changes severity, as it always has. What Level 2 must not do
+    // is change the verdict itself. `SURFACE_BREAK` here in any lane is the enforce-flip landing
+    // early, and that is what this catches.
+    for (const namedLane of LANES) {
+      const laneResult = await gate({build: false, lane: namedLane})
+      const laneRow = row(laneResult, '@toy/named') ?? {}
+      check(`S28b Level 2 does not change the VERDICT in the ${namedLane} lane`,
+        laneRow.verdict === 'PENDING_PUBLISH' && (laneRow.advisories ?? []).includes('surface-named-break:major'),
+        `verdict=${laneRow.verdict} class=${laneRow.exitClass} advisories=${JSON.stringify(laneRow.advisories)}`)
+    }
+
+    fs.rmSync(namedDir, {recursive: true, force: true})
+    commitAll(root, 'remove the named-surface fixture package')
+
     // S6 — a bump whose source edit never reaches the payload. `docs/notes.md` is
     // outside files[] and is not one of npm's injected root files, so the packed
     // payload is byte-identical to the published 1.0.1: the bump would publish the
@@ -3494,9 +4113,9 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     registry.publish('@toy/leaf', '1.0.2', await packFixture(root, 'leaf'))
     result = await gate({changesetProbe: {kind: 'measured', bumps: new Map([['@toy/leaf', '1.0.2']])}})
     expect('S24 an inadequate changeset bump stays DRIFT', result, '@toy/leaf', 'DRIFT', 2)
-    check('S24 stamps changeset-inadequate on the denied excuse', (row(result, '@toy/leaf').advisories ?? []).some((a) =>
-      a.startsWith('changeset-inadequate:')
-    ), `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
+    check('S24 stamps changeset-inadequate on the denied excuse',
+      (row(result, '@toy/leaf').advisories ?? []).some((a) => a.startsWith('changeset-inadequate:')),
+      `advisories=${JSON.stringify(row(result, '@toy/leaf').advisories)}`)
 
     // S25 — A2b at the seam introduced to enforce it: a probe that ran and could not answer softens a
     // would-be DRIFT to INDETERMINATE (exit 3), never a pass. The scoping is deliberate — only a
@@ -3521,9 +4140,9 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     commitAll(cascadeRoot, 'bump csleaf on disk, drifting the dependent')
     result = await gate({repoRoot: cascadeRoot, build: false})
     expect('S26 the cascade closure excuses an unnamed dependent', result, '@toy/csdep', 'PENDING_CHANGESET', 0)
-    check('S26 the excuse names the cascade target the probe supplied', (row(result, '@toy/csdep').advisories ?? []).some((a) =>
-      a.startsWith('changeset-target:')
-    ), `advisories=${JSON.stringify(row(result, '@toy/csdep').advisories)}`)
+    check('S26 the excuse names the cascade target the probe supplied',
+      (row(result, '@toy/csdep').advisories ?? []).some((a) => a.startsWith('changeset-target:')),
+      `advisories=${JSON.stringify(row(result, '@toy/csdep').advisories)}`)
     fs.rmSync(cascadeRoot, {recursive: true, force: true})
 
     // S5 — THE SCENARIO THAT PROVED THE TRANSPORT CHOICE. Rehearsing it against an
@@ -3661,7 +4280,18 @@ const MUTATIONS = {
   // no-op that still prints, still reports fields and still looks wired in — the exact
   // shape of the `selfref` mutant one layer up, which is the mutation the PREVIOUS
   // generation of this gate could not see at all. Killed by S22b.
-  surfaceselfref: {scenario: 'S22b', anchor: 'reference: reference.surface,', replacement: 'reference: surfaceOfPayload(headFiles),'},
+  // RE-ANCHORED FOR LEVEL 2 (decision 0028 PR 3), and the reason is itself the hazard this table
+  // exists to catch: the old anchor `reference: reference.surface,` now matches the ADVISORY call
+  // as well as the verdict one, so left alone it would have patched the half that moves no exit
+  // code — a mutant that still applied cleanly, still reported, and could no longer be killed by
+  // S22b. It SURVIVED, measured. The anchor now names the `level1View` pair explicitly, so it can
+  // only ever target the verdict path, and the enforce-flip (PR 4) that deletes those calls will
+  // break this anchor loudly rather than silently disarming it again.
+  surfaceselfref: {
+    scenario: 'S22b',
+    anchor: 'reference: level1View(reference.surface),\n          candidate: level1View(candidateSurface),',
+    replacement: 'reference: level1View(candidateSurface),\n          candidate: level1View(candidateSurface),'
+  },
   // Turn "I could not read the public surface" back into a pass — A2b defeated one layer
   // below the digest. The row keeps whatever verdict the PAYLOAD comparison produced, so a
   // package whose exports map is unreadable sails through as CLEAN or PENDING_PUBLISH.
@@ -3707,6 +4337,43 @@ const MUTATIONS = {
     scenario: 'S22i',
     anchor: 'isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)',
     replacement: 'bumpRank(projectedBump) > bumpRank(declaredBump)'
+  },
+  // ── LEVEL 2, ADVISORY (atlas decision 0028 PR 3). Three mutants, one rung (S24/S24b), and each
+  // breaks a DIFFERENT half of "the rule is computed and reported, and no exit code moves". The
+  // advisory phase is unusually easy to get wrong in a way nothing notices, because two of the
+  // three failure modes are SILENT: a rule that stopped looking and a rule that looked and said
+  // nothing both produce a green run that is indistinguishable from a correct one. ────────────────
+  //
+  // ADVISORY-ONLY IS THE WHOLE POINT OF PR 3. Feed the names into the VERDICT-sizing call and a
+  // Level-2 delta starts moving this repo's exit codes while mantle is still on spec v2 — the
+  // transient-desync window (0028 §4) turns from fail-SAFE into fail-BLOCKING, and every PR that
+  // legitimately renames an internal export starts failing pre-push. Killed by S28b, which expects
+  // a MAJOR-requiring name removal under a declared PATCH to stay PENDING_PUBLISH / exit 0.
+  level2enforcing: {
+    scenario: 'S28b',
+    anchor: 'reference: level1View(reference.surface),\n          candidate: level1View(candidateSurface),',
+    replacement: 'reference: reference.surface,\n          candidate: candidateSurface,'
+  },
+  // Compute the Level-2 delta and tell nobody. In the advisory phase the advisory IS the entire
+  // observable output — there is no exit code to notice — so a silent rule is indistinguishable
+  // from an absent one, and the enforce-flip (PR 4) would then be the FIRST time anyone saw the
+  // findings, which is precisely the rollout advisory-first exists to avoid. Killed by S28b.
+  level2silent: {
+    scenario: 'S28b',
+    anchor: '  return {advisories, level2: outcome.kind, removedNames, addedNames, level2Detail: null}',
+    replacement: '  return {advisories: [], level2: outcome.kind, removedNames, addedNames, level2Detail: null}'
+  },
+  // Stop extracting names, so both sides are names-less and the rule silently degrades to Level 1
+  // FOREVER. Nothing reds, nothing warns, and `surfaceDelta`'s two-names-less-sides branch is a
+  // legitimate spec-v2 comparison — so this is the "it still passes, it just stopped looking"
+  // failure, which is exactly how the estate arrived at needing this rule. Killed by S28b, not by
+  // S28: a CLEAN rung cannot see this at all, because an engine that never looked and one that
+  // looked and found nothing produce identical green rows. Only the rung with a real removal to
+  // report can tell them apart.
+  level2noextract: {
+    scenario: 'S28b',
+    anchor: '    return {...level1, names: extractSurfaceNames({files, manifestText}).names}',
+    replacement: '    return level1'
   },
   // ── The PENDING_CHANGESET excuse (atlas decision 0022). A subset of mantle's ten mutants: the
   // guardrails whose defect this .mjs engine can express through a NAMED scenario. Mantle's
@@ -3785,8 +4452,34 @@ function writeMutatedScript(id, dir) {
     : before + table + after.replace(anchor, replacement)
   fs.mkdirSync(dir, {recursive: true})
   const file = path.join(dir, 'check-package-drift.mjs')
-  fs.writeFileSync(file, patched)
+  fs.writeFileSync(file, absolutizeRelativeImports(patched))
   return file
+}
+
+/**
+ * Rewrite this file's relative import specifiers to absolute file URLs before the mutant is written.
+ *
+ * The mutant lands in a TEMP directory so the patched text is loaded instead of the shipped module,
+ * which means `./fixtures/extract.mjs` would otherwise resolve against `/var/folders/...` and throw
+ * ERR_MODULE_NOT_FOUND. THAT THROW IS INDISTINGUISHABLE FROM "THE MUTANT WAS KILLED": every
+ * scenario would fail for a reason that has nothing to do with the mutation, the suite would report
+ * every mutant killed, and it would be testing nothing. That is the vacuous-pass class this whole
+ * harness exists to prevent, so the rewrite is not a convenience.
+ *
+ * Applied to `from '...'` specifiers only, and only to those starting `./` or `../`; bare and
+ * `node:` specifiers resolve fine from anywhere (the vendored extractor's own `import 'typescript'`
+ * is resolved from ITS real directory, which is inside this repo, so it is unaffected).
+ *
+ * KNOWN AND ACCEPTED ASYMMETRY: `fixtures/extract.mjs` imports `fixtures/reference.mjs`, which
+ * re-exports from the PRISTINE copy of this file — so a mutation to `readExportTargets`,
+ * `CLASSIFICATIONS` or `SURFACE_SPEC_VERSION` would not reach the extractor's view of them. No
+ * mutant in the table targets those three, and adding one that does would need this noted; the
+ * extractor's own behaviour is pinned by the 39 vendored extract vectors, not by this harness.
+ */
+function absolutizeRelativeImports(source) {
+  const engineDir = path.dirname(fileURLToPath(import.meta.url))
+  return source.replaceAll(/(\bfrom\s*)(['"])(\.\.?\/[^'"]+)\2/g,
+    (_match, prefix, quote, specifier) => `${prefix}${quote}${pathToFileURL(path.resolve(engineDir, specifier)).href}${quote}`)
 }
 
 async function selfTestCommand({mutation}) {
