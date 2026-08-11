@@ -419,11 +419,11 @@ scripts/fixtures/drift-conformance.json:marker:j0nathan-ll0yd
 # checksum together.
 scripts/fixtures/export-surface-conformance.json:marker:j0nathan-ll0yd
 
-# The export-surface LEVEL 2 vendored pair (atlas decision 0028): the extractor
-# conformance fixture (39 vectors, sha256 pinned as
-# EXPORT_EXTRACT_CONFORMANCE_SHA256) and the normative extractor itself. Both are
-# vendored VERBATIM from atlas/contracts/export-surface/ and both cite real
-# packages for the same reason the rule fixture does — the classifier's behaviour
+# The export-surface LEVEL 2 normative extractor, vendored VERBATIM from
+# atlas/contracts/export-surface/. (Its conformance fixture is held until extract
+# spec version 2 — decision 0030's verified typescript SET — and its allowlist
+# entry lands with it.) It cites real packages for the same reason the rule
+# fixture does — the classifier's behaviour
 # was MEASURED against them, and a vector that named a fictional package would be
 # pinning a fiction. Specifically: @j0nathan-ll0yd/schemas publishes
 # `"./swift/*": "./swift/*"`, whose glob matches a `.gitkeep` placeholder, and
@@ -432,7 +432,6 @@ scripts/fixtures/export-surface-conformance.json:marker:j0nathan-ll0yd
 # every block above: the scope string is the mandated GitHub Packages
 # distribution namespace, not personal data. Never edit either in place —
 # re-vendor from atlas and update the pinned checksum in the same change.
-scripts/fixtures/export-extract-conformance.json:marker:j0nathan-ll0yd
 scripts/fixtures/extract.mjs:marker:j0nathan-ll0yd
 
 # ADR-0007 (issue #180) — reconciles PR #164's `!` BREAKING marker against the

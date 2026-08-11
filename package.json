@@ -48,7 +48,7 @@
     "prettier-plugin-astro": "0.14.1",
     "style-dictionary": "^5.4.4",
     "turbo": "^2.9.16",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "dependencies": {
     "culori": "^4.0.2"

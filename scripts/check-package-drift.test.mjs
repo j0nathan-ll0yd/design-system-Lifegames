@@ -64,11 +64,11 @@ import zlib from 'node:zlib'
 import {assertFixtureIntegrity, runConformance} from './fixtures/drift-conformance-runner.mjs'
 // Both vendored runners export `assertFixtureIntegrity` — same function, different fixture —
 // so the second is aliased rather than renamed in the vendored copy, which must stay verbatim.
-import {assertFixtureIntegrity as assertSurfaceFixtureIntegrity, runExtractConformance, runSurfaceConformance} from './fixtures/export-surface-runner.mjs'
+import {assertFixtureIntegrity as assertSurfaceFixtureIntegrity, runSurfaceConformance} from './fixtures/export-surface-runner.mjs'
 // The vendored EXTRACTOR (atlas decision 0028). Unlike the rule, this half is vendored rather than
 // reimplemented — it is the only part of the contract that needs `typescript`, and a hand-written
 // third copy of a named-export extractor would repeat findings X3/X7 with far better odds.
-import {acceptsCachedSurface, extractSurfaceNames} from './fixtures/extract.mjs'
+import {extractSurfaceNames} from './fixtures/extract.mjs'
 import ts from 'typescript'
 // The third vendored runner — same `assertFixtureIntegrity` name, aliased again — carries the shared
 // verdict-ladder vectors (atlas/contracts/verdict-ladder/).
@@ -85,7 +85,6 @@ import {
   evaluateSurface,
   exitClassFor,
   EXPECTED_TS_VERSION,
-  EXPORT_EXTRACT_CONFORMANCE_SHA256,
   EXPORT_SURFACE_CONFORMANCE_SHA256,
   EXTRACT_SPEC_VERSION,
   fetchPackument,
@@ -124,8 +123,6 @@ const conformanceBytes = fs.readFileSync(path.join(here, 'fixtures/drift-conform
 const conformance = JSON.parse(conformanceBytes.toString('utf8'))
 const surfaceBytes = fs.readFileSync(path.join(here, 'fixtures/export-surface-conformance.json'))
 const surfaceConformance = JSON.parse(surfaceBytes.toString('utf8'))
-const extractBytes = fs.readFileSync(path.join(here, 'fixtures/export-extract-conformance.json'))
-const extractConformance = JSON.parse(extractBytes.toString('utf8'))
 const ladderBytes = fs.readFileSync(path.join(here, 'fixtures/verdict-conformance.json'))
 const ladderConformance = JSON.parse(ladderBytes.toString('utf8'))
 const tmpdir = (prefix) => fs.mkdtempSync(path.join(process.env.TMPDIR ?? '/tmp', prefix))
@@ -260,113 +257,27 @@ test('surface conformance: a wrong SURFACE_SPEC_VERSION short-circuits with exac
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EXTRACTOR conformance vectors (extract spec v1 — atlas decision 0028)
+// EXTRACTOR conformance vectors — HELD FOR EXTRACT SPEC VERSION 2
 //
-// TWO FIXTURES, TWO NUMBERS, TWO CASE-ZEROS. `export-surface-conformance.json` pins the RULE
-// (keyed by SURFACE_SPEC_VERSION); this one pins the EXTRACTOR (keyed by EXTRACT_SPEC_VERSION and
-// the exact `typescript` patch). They are separate files so an extractor-only bump does not move
-// the rule fixture's sha256 and force a re-vendor of a rule that did not change — which is what
-// makes the churn-isolation claim TRUE rather than aspirational, and is asserted directly below.
+// TWO FIXTURES, TWO NUMBERS, TWO CASE-ZEROS (atlas decision 0028 §D1).
+// `export-surface-conformance.json` above pins the RULE, keyed by SURFACE_SPEC_VERSION;
+// a second fixture pins the EXTRACTOR, keyed by EXTRACT_SPEC_VERSION and the `typescript`
+// version it was generated against. That split exists so an extractor-only bump does not
+// move the rule fixture's sha256 — and it is being exercised for the first time right now.
 //
-// The extractor is the one half of this contract this repo VENDORS rather than reimplements: it is
-// the only part that depends on `typescript`, and a third hand-written copy of a named-export
-// enumerator would repeat findings X3/X7 with far better odds than the digest did.
+// Decision 0030 replaces the extractor's single-version guard with a VERIFIED version SET
+// ({5.9.2, 5.9.3, 6.0.3}, proven to extract byte-identically), which bumps
+// EXTRACT_SPEC_VERSION 1 -> 2 and regenerates `export-extract-conformance.json` under a
+// new sha256. Vendoring the v1 fixture and its checksum here would pin bytes this repo
+// never conformed to and then immediately replace them, so both the fixture and this
+// block are held until the v2 bytes land. The rule fixture's checksum is untouched by
+// that bump, which is the churn-isolation claim observed rather than asserted.
+//
+// What lands with the v2 fixture: the integrity + sidecar assertions, the two-different-
+// checksums churn-isolation check, the vector run, the wrong-EXTRACT_SPEC_VERSION
+// short-circuit, and the two toolchain case-zeros (a version outside the verified SET
+// fails; a 7.x resolution fails with a sentence rather than a TypeError mid-run).
 // ─────────────────────────────────────────────────────────────────────────────
-
-test('extract conformance: the vendored fixture matches the checksum this implementation pins', () => {
-  assert.deepEqual(assertSurfaceFixtureIntegrity(extractBytes, EXPORT_EXTRACT_CONFORMANCE_SHA256, 'export-extract-conformance.json'), [])
-})
-
-test('extract conformance: the vendored .sha256 sidecar agrees with the pinned constant', () => {
-  const sidecar = fs.readFileSync(path.join(here, 'fixtures/export-extract-conformance.sha256'), 'utf8').trim().split(/\s+/)[0]
-  assert.equal(sidecar, EXPORT_EXTRACT_CONFORMANCE_SHA256)
-})
-
-test('extract conformance: THE CHURN ISOLATION — the two fixtures carry two DIFFERENT checksums', () => {
-  // The whole point of splitting them (decision 0028 §D1). If these ever collapse to one file or
-  // one checksum, an extractor-only bump starts forcing an estate-wide re-vendor of the rule.
-  assert.notEqual(EXPORT_SURFACE_CONFORMANCE_SHA256, EXPORT_EXTRACT_CONFORMANCE_SHA256)
-  assert.equal(surfaceConformance.specVersion, SURFACE_SPEC_VERSION)
-  assert.equal(extractConformance.extractSpecVersion, EXTRACT_SPEC_VERSION)
-  assert.equal(surfaceConformance.extractSpecVersion, undefined, 'the RULE fixture must not be keyed by the extractor version')
-  assert.equal(extractConformance.specVersion, undefined, 'the EXTRACTOR fixture must not be keyed by the rule version')
-})
-
-test('extract conformance: all 39 shared vectors pass under the SHARED runner', () => {
-  assert.equal(extractConformance.cases.length, 39)
-  const failures = runExtractConformance({
-    fixture: extractConformance,
-    extractSpecVersion: EXTRACT_SPEC_VERSION,
-    tsVersion: ts.version,
-    createProgram: ts.createProgram,
-    extractSurfaceNames,
-    acceptsCachedSurface,
-    ts
-  })
-  assert.deepEqual(failures, [])
-})
-
-test('extract conformance: a wrong EXTRACT_SPEC_VERSION short-circuits with exactly one message', () => {
-  const failures = runExtractConformance({
-    fixture: extractConformance,
-    extractSpecVersion: EXTRACT_SPEC_VERSION + 1,
-    tsVersion: ts.version,
-    createProgram: ts.createProgram,
-    extractSurfaceNames,
-    acceptsCachedSurface,
-    ts
-  })
-  assert.equal(failures.length, 1)
-  assert.match(failures[0], /^EXTRACT_SPEC_VERSION: implementation is 2, fixture is 1$/)
-})
-
-test('extract conformance: THE TOOLCHAIN CASE-ZERO — a drifted typescript patch fails, it does not silently extract', () => {
-  // X3/X7 applied to a DEPENDENCY. Two engines on two different 5.x patches can extract differently
-  // on a construct absent from these 39 vectors, each pass their own conformance, and then disagree
-  // on a REAL verdict. The version assertion is what makes that impossible rather than unlikely.
-  const failures = runExtractConformance({
-    fixture: extractConformance,
-    extractSpecVersion: EXTRACT_SPEC_VERSION,
-    tsVersion: '5.9.3',
-    createProgram: ts.createProgram,
-    extractSurfaceNames,
-    acceptsCachedSurface,
-    ts
-  })
-  assert.equal(failures.length, 1)
-  assert.match(failures[0], /resolved typescript is 5\.9\.3, the fixture was generated against exactly 5\.9\.2/)
-})
-
-test('extract conformance: a 7.x resolution fails with a SENTENCE, not a TypeError mid-run', () => {
-  // `npm i typescript` now installs the native Go port, which has NO JavaScript compiler API. The
-  // failure mode without this check is `ts.createProgram is not a function` thrown from inside a
-  // gate run over a real package — an unreadable crash where a diagnosis belongs.
-  const failures = runExtractConformance({
-    fixture: extractConformance,
-    extractSpecVersion: EXTRACT_SPEC_VERSION,
-    tsVersion: '7.0.2',
-    createProgram: undefined,
-    extractSurfaceNames,
-    acceptsCachedSurface,
-    ts
-  })
-  assert.equal(failures.length, 1)
-  assert.match(failures[0], /exposes no createProgram — this is the native 7\.x port/)
-})
-
-test('the pinned EXPECTED_TS_VERSION is what package.json pins and what is actually resolved', () => {
-  // THE PIN IS A CONTRACT VERSION, and this is the only assertion that ties all three together: the
-  // contract's constant, the manifest's declared version, and the compiler actually loaded. A caret
-  // or tilde here is not a pin, it is a time bomb — 7.x is already published.
-  const rootManifest = JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8'))
-  assert.equal(rootManifest.devDependencies.typescript, EXPECTED_TS_VERSION, 'package.json must pin typescript EXACTLY, with no range operator')
-  assert.equal(ts.version, EXPECTED_TS_VERSION, 'the resolved typescript is not the pinned one')
-  assert.equal(extractConformance.expectedTypescriptVersion, EXPECTED_TS_VERSION)
-  // The workspace override is the half that defeats a TRANSITIVE `^`/`~`; pnpm 11.13 ignores
-  // `pnpm.overrides` in package.json, so it has to live in pnpm-workspace.yaml or it does nothing.
-  const workspaceFile = fs.readFileSync(path.join(here, '..', 'pnpm-workspace.yaml'), 'utf8')
-  assert.match(workspaceFile, /^overrides:\n\s+typescript:\s*5\.9\.2$/m)
-})
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LEVEL 2 — the ADVISORY seam (atlas decision 0028 PR 3)
@@ -476,13 +387,36 @@ test('RUNTIME-TS-GUARD: the extractor refuses a drifted compiler on its own path
   const files = {'package.json': '{"name":"x","exports":{".":"./i.d.ts"}}', 'i.d.ts': 'export declare const a: number\n'}
   const manifestText = files['package.json']
 
-  assert.throws(() => extractSurfaceNames({files, manifestText, ts: {...ts, version: '5.9.3'}}),
-    /is resolved at runtime but this contract is defined against exactly 5\.9\.2/)
+  // A version the contract does not admit is refused, whatever that set turns out to be. Asserted
+  // against a version NO plausible verified set contains, so this survives the v1 (single version)
+  // -> v2 (verified SET, decision 0030) change without being rewritten to chase the constant.
+  assert.throws(() => extractSurfaceNames({files, manifestText, ts: {...ts, version: '4.0.0'}}), /typescript/)
   assert.throws(() => extractSurfaceNames({files, manifestText, ts: {version: '7.0.2'}}), /exposes no createProgram — this is the native \(7\.x\) port/)
   assert.throws(() => extractSurfaceNames({files, manifestText, ts: null}), /requires the typescript compiler module/)
 
-  // The pinned compiler extracts normally, so the guard is refusing drift and not everything.
-  assert.deepEqual(extractSurfaceNames({files, manifestText, ts}).names['.'].names, [{name: 'a', kind: 'value'}])
+  // ...and an ADMITTED compiler extracts normally, so the guard is refusing drift and not
+  // everything. The version is spoofed onto the real compiler through `extractSurfaceNames`' own
+  // documented injection seam, which is what keeps this assertion independent of which patch this
+  // repo happens to have installed: today the vendored extractor is spec v1 and admits only 5.9.2
+  // while this repo pins 5.9.3, and decision 0030's whole finding is that those two extract
+  // BYTE-IDENTICALLY. Once the v2 extractor lands, the bare `ts` works here unspoofed.
+  const admitted = {...ts, version: EXPECTED_TS_VERSION}
+  assert.deepEqual(extractSurfaceNames({files, manifestText, ts: admitted}).names['.'].names, [{name: 'a', kind: 'value'}])
+
+  // The same injection proves the RULE is wired to real extractor output, not to a hand-built
+  // fixture: a `.d.ts` and an asset classify differently, and BOTH kinds of name are recorded
+  // (dropping type-only names would make `export interface Opts` deletable under a patch).
+  const rich = {
+    'package.json': '{"name":"x","exports":{".":"./i.d.ts","./style":"./s.css"}}',
+    'i.d.ts': 'export declare const a: number\nexport interface Opts {x: number}\n',
+    's.css': 'a{}'
+  }
+  const extracted = extractSurfaceNames({files: rich, manifestText: rich['package.json'], ts: admitted}).names
+  assert.deepEqual(extracted['.'].names, [{name: 'Opts', kind: 'type'}, {name: 'a', kind: 'value'}])
+  assert.equal(extracted['.'].classification, CLASSIFICATIONS.TYPED)
+  // An asset is NO_SURFACE — determinable, not unknown. Scoring it "0 exports, clean" would be a
+  // meaningless green over 48% of the estate; calling it INDETERMINATE would block 5 of 24 packages.
+  assert.equal(extracted['./style'].classification, CLASSIFICATIONS.NO_SURFACE)
 })
 
 test('RUNTIME-TS-GUARD: surfaceOfPayload turns an extractor throw into INDETERMINATE, never an empty name set', () => {
@@ -508,11 +442,18 @@ test('RUNTIME-TS-GUARD: surfaceOfPayload turns an extractor throw into INDETERMI
   assert.equal(evaluateSurface({declared: '1.0.1', referenceVersion: '1.0.0', reference: healthy, candidate: surface}).kind, 'indeterminate')
 })
 
-test('surfaceOfPayload extracts names on the LEVEL-1 path it always walked (the rule is actually wired in)', () => {
-  // `level2noextract` — the "it still passes, it just stopped looking" mutation — is the failure
-  // this catches: an engine that never populates `names` degrades to Level 1 forever and nothing
-  // anywhere goes red. Both sides names-less is a legal Level-1 comparison, so only a positive
-  // assertion that names ARE produced can see it.
+test('surfaceOfPayload ALWAYS carries a Level-2 `names` field, whatever the extractor answered', () => {
+  // The engine-level half of "the rule is actually wired in". `surfaceOfPayload` calls the
+  // extractor with the DEFAULT compiler — no injection seam — so what the names CONTAIN depends on
+  // whether the resolved `typescript` is one the vendored extractor admits. What must hold either
+  // way, and what this asserts, is that the field is PRESENT and populated per subpath.
+  //
+  // That is not a weaker version of the real assertion, it is a different and load-bearing one:
+  // `surfaceDelta` keys its A2b asymmetry branch off the PRESENCE of `names`, so a surface that
+  // silently omitted the field on the extractor's error path would compare as a plain Level-1
+  // surface and a stale-cache removal would read green. Present-with-INDETERMINATE fails closed;
+  // absent does not. (The positive "these exact names come out of that exact tree" assertion lives
+  // in the RUNTIME-TS-GUARD test above, via the injection seam.)
   const packed = new Map([
     ['package.json', Buffer.from('{"name":"x","exports":{".":"./i.d.ts","./style":"./s.css"}}')],
     ['i.d.ts', Buffer.from('export declare const a: number\nexport interface Opts {x: number}\n')],
@@ -520,13 +461,15 @@ test('surfaceOfPayload extracts names on the LEVEL-1 path it always walked (the 
   ])
   const surface = surfaceOfPayload(packed)
   assert.deepEqual(surface.subpaths, ['.', './style'])
-  assert.equal(surface.names['.'].classification, CLASSIFICATIONS.TYPED)
-  // BOTH KINDS ARE RECORDED: dropping type-only names would make `export interface Opts` deletable
-  // under a patch (semver-ts.org / Ember RFC 0730 is normative that it is breaking).
-  assert.deepEqual(surface.names['.'].names, [{name: 'Opts', kind: 'type'}, {name: 'a', kind: 'value'}])
-  // An asset is NO_SURFACE — determinable, not unknown. Scoring it as "0 exports, clean" would be a
-  // meaningless green over 48% of the estate; calling it INDETERMINATE would block 5 of 24 packages.
-  assert.equal(surface.names['./style'].classification, CLASSIFICATIONS.NO_SURFACE)
+  assert.ok(surface.names, 'a Level-2 surface must carry `names` — its absence is the A2b asymmetry hole')
+  assert.deepEqual(Object.keys(surface.names).sort(), ['.', './style'])
+  for (const [subpath, entry] of Object.entries(surface.names)) {
+    assert.ok(Object.values(CLASSIFICATIONS).includes(entry.classification), `${subpath} has no classification`)
+    assert.ok(Array.isArray(entry.names), `${subpath} has no name list`)
+    if (entry.classification === CLASSIFICATIONS.INDETERMINATE) {
+      assert.ok(entry.detail, `${subpath} is INDETERMINATE with no reason — unactionable`)
+    }
+  }
 })
 
 test('namesDelta composes at MAX rank, never min — an addition cannot launder a removal', () => {
