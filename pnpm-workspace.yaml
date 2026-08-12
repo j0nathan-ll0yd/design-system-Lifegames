@@ -8,6 +8,9 @@ packages:
 # fall back to, so a freshly-published dep fails to resolve until it ages out.
 # Exclude by BARE package name (applies to all versions) — never `name@version`,
 # which re-breaks on every bump. See atlas decision 0015(d).
+# The key is set explicitly (rather than left to pnpm's built-in default) so the
+# supply-chain floor is legible and gate-checkable. See atlas decision 0032 item 5.
+minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@j0nathan-ll0yd/portal-contract'
 
