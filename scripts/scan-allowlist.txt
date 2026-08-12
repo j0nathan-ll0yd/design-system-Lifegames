@@ -178,6 +178,8 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 # scope, and doc/CHANGELOG references. Not personal data; it is the mandated
 # distribution namespace.
 .changeset/repo-wide-formatting.md:marker:j0nathan-ll0yd
+.changeset/schemas-drop-spurious-swift-export.md:marker:j0nathan-ll0yd
+.changeset/tokens-emit-declarations.md:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
 .husky/pre-commit:marker:j0nathan-ll0yd
 CHANGELOG.md:marker:j0nathan-ll0yd
