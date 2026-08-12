@@ -392,18 +392,21 @@ test('the typescript pin is EXACT, is a member of the verified set, and is what 
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LEVEL 2 — the ADVISORY seam (atlas decision 0028 PR 3)
+// LEVEL 2 — ENFORCED (atlas decision 0028 PR 4)
 //
-// This PR computes Level 2 and reports it, and moves NO exit code. Every test below exists to
-// pin one half of that sentence: the rule really does see the names (or it is a no-op nobody
-// would notice), and the verdict path really does not (or the estate's exit codes moved during
-// a transient window where two of three engines are still on spec v2).
+// The verdict path is handed both surfaces WHOLE, so a named-export delta sizes the verdict. Every
+// test below pins one half of that: the rule really does see the names (or it is a no-op nobody
+// would notice), and stripping them really does undo the enforcement (or the `level2advisory`
+// self-test mutant is reverting to something that was never the advisory behaviour).
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('ADVISORY-MUST-NOT-MOVE: level1View makes a named-only delta invisible to the verdict path', () => {
-  // The load-bearing property of this PR, asserted as an EQUALITY against the same call with no
-  // names at all — not merely as "it happens to be ok". A mutant that fed the names into the
-  // verdict call (the `level2enforcing` mutation) turns the first outcome into a `break`.
+test('ENFORCED: a named-only delta sizes the verdict, and level1View is the exact reversion that undoes it', () => {
+  // The load-bearing property of this PR asserted from both sides. The whole-surface call — what the
+  // verdict path now does — must `break`; the `level1View`-stripped call — what the `level2advisory`
+  // mutant reverts it to — must be `ok`, and must be `ok` as an EQUALITY against the same call with
+  // no names at all, not merely as "it happens to be ok". If the strip stopped landing in the
+  // spec-v2 path, the mutant would be reverting to an approximation of the advisory phase rather
+  // than to the advisory phase itself, and its survival would prove nothing.
   const reference = {
     kind: 'exports-map',
     subpaths: ['.'],
@@ -418,33 +421,35 @@ test('ADVISORY-MUST-NOT-MOVE: level1View makes a named-only delta invisible to t
   }
   const args = {declared: '1.0.1', referenceVersion: '1.0.0'}
 
-  // The verdict path: names stripped from BOTH sides, so this is the spec-v2 evaluation verbatim.
-  const verdictOutcome = evaluateSurface({...args, reference: level1View(reference), candidate: level1View(candidate)})
+  // THE VERDICT PATH, as of the enforce-flip: both surfaces passed WHOLE. A declared PATCH over a
+  // removed name is a `break`, and the reporting shape is derived from this same outcome — one
+  // evaluation sizes the verdict AND names what moved, so the two cannot disagree.
+  const verdictOutcome = evaluateSurface({...args, reference, candidate})
+  assert.equal(verdictOutcome.kind, 'break')
+  assert.equal(verdictOutcome.required, 'major')
+  assert.deepEqual(verdictOutcome.delta.removedNames, [{subpath: '.', name: 'gone', kind: 'value'}])
+  const shape = surfaceAdvisories(verdictOutcome)
+  assert.deepEqual(shape.advisories, ['surface-named-delta:.:removed:gone', 'surface-named-break:major'])
+  assert.equal(shape.level2, 'break')
+
+  // THE REVERSION the `level2advisory` mutant performs: strip both sides and the break disappears.
+  // Asserted as an EQUALITY against the names-less pair, which is what makes the strip the genuine
+  // spec-v2 evaluation rather than something merely adjacent to it.
+  const strippedOutcome = evaluateSurface({...args, reference: level1View(reference), candidate: level1View(candidate)})
   const spec2Equivalent = evaluateSurface({
     ...args,
     reference: {kind: 'exports-map', subpaths: ['.'], detail: null},
     candidate: {kind: 'exports-map', subpaths: ['.'], detail: null}
   })
-  assert.equal(verdictOutcome.kind, 'ok')
-  assert.deepEqual(verdictOutcome, spec2Equivalent, 'the level1View evaluation must be BYTE-IDENTICAL to the names-less one')
-
-  // The advisory path: the SAME rule over the SAME pair WITH names sees the removal and majors.
-  const level2Outcome = evaluateSurface({...args, reference, candidate})
-  assert.equal(level2Outcome.kind, 'break')
-  assert.equal(level2Outcome.required, 'major')
-  assert.deepEqual(level2Outcome.delta.removedNames, [{subpath: '.', name: 'gone', kind: 'value'}])
-
-  // ...and it is reported as an OBSERVATION, which is the entire output of the advisory phase.
-  const shape = surfaceAdvisories(level2Outcome)
-  assert.deepEqual(shape.advisories, ['surface-named-delta:.:removed:gone', 'surface-named-break:major'])
-  assert.equal(shape.level2, 'break')
+  assert.equal(strippedOutcome.kind, 'ok')
+  assert.deepEqual(strippedOutcome, spec2Equivalent, 'the level1View evaluation must be BYTE-IDENTICAL to the names-less one')
 })
 
 test('level1View strips ONLY `names`, and does not mutate the surface it is given', () => {
   const surface = {kind: 'exports-map', subpaths: ['.'], detail: null, names: {'.': {classification: CLASSIFICATIONS.TYPED, names: [], target: null}}}
   const view = level1View(surface)
   assert.deepEqual(view, {kind: 'exports-map', subpaths: ['.'], detail: null})
-  assert.ok('names' in surface, 'level1View must not mutate its input — the advisory path reads the same object afterwards')
+  assert.ok('names' in surface, 'level1View must not mutate its input')
 })
 
 test('INDETERMINATE-NEVER-GREEN: an asymmetric names field is exit-3 shaped, never a Level-1 pass', () => {
@@ -472,17 +477,20 @@ test('INDETERMINATE-NEVER-GREEN: an asymmetric names field is exit-3 shaped, nev
     assert.equal(outcome.kind, 'indeterminate')
   }
 
-  // ...and while Level 2 is advisory, the advisory string is the ONLY way that state is visible.
-  // A silent indeterminate is indistinguishable from a clean read, which is the collapse itself.
+  // ...and the advisory string is what makes that exit 3 actionable: it names WHICH side could not
+  // be read. A silent indeterminate is indistinguishable from a clean read, which is the collapse
+  // itself — the exit code says "investigate" without saying what.
   const shape = surfaceAdvisories(evaluateSurface({declared: '1.0.1', referenceVersion: '1.0.0', reference: staleLevel1Entry, candidate: withNames}))
   assert.deepEqual(shape.advisories, ['surface-level2-indeterminate'])
   assert.ok(shape.level2Detail, 'an INDETERMINATE with no reason is unactionable')
 })
 
 test('INDETERMINATE-NEVER-GREEN: two names-LESS sides are a genuine Level-1 comparison, not an asymmetry', () => {
-  // The other half, and why `level1View` is a SUFFICIENT advisory seam rather than an approximate
-  // one: stripping both sides must land in the spec-v2 path, not in the fail-closed branch. If this
-  // regressed, every row in the repo would read INDETERMINATE — exit 3 — the moment Level 2 landed.
+  // The other half: two names-LESS sides must land in the spec-v2 path, not in the fail-closed
+  // branch. If this regressed, every row whose reference predates Level 2 would read INDETERMINATE
+  // — exit 3 — rather than falling back to a legitimate Level-1 comparison. It is also what makes
+  // `level1View` an exact reversion rather than an approximate one, which the `level2advisory`
+  // self-test mutant depends on.
   const before = {kind: 'exports-map', subpaths: ['.', './t'], detail: null}
   const after = {kind: 'exports-map', subpaths: ['.'], detail: null}
   const delta = surfaceDelta(before, after)

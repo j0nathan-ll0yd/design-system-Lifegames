@@ -640,9 +640,10 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 // and total (NO_SURFACE / SFC_ENTRY / INDETERMINATE), which drops corpus INDETERMINATE
 // from 30/253 to 2/253 — and those 2 are genuinely broken targets that SHOULD be red.
 //
-// LEVEL 2 IS ADVISORY IN THIS REPO (0028 PR 3). The rule is computed and reported; it moves
-// no exit code. The enforce-flip is 0028 PR 4, after all three engines are on spec v3.
-// See `level1View`, and the `level2*` mutants in the MUTATION TABLE.
+// LEVEL 2 IS ENFORCED IN THIS REPO (0028 PR 4, landed once all three engines were on spec
+// v3). The named-export delta sizes the verdict alongside the subpath delta; there is no
+// longer a Level-1-only view in the verdict path. See `level1View` — retained as the exact
+// inverse of the flip — and the `level2*` mutants in the MUTATION TABLE.
 //
 // THE TOOLCHAIN GUARD IS A VERIFIED SET, NOT A SINGLE VERSION (decision 0030). `typescript`
 // is pinned EXACTLY here — 5.9.3, no range — and the extractor admits exactly the members of
@@ -691,9 +692,9 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
  * projection ARITHMETIC are UNCHANGED, byte for byte: Level 2 only makes `delta.required`
  * richer, so every spec-version-2 vector keeps passing.
  *
- * IN THIS REPO LEVEL 2 IS CURRENTLY ADVISORY (0028 PR 3). The rule below is fully v3 and the
- * engine runs it — but the VERDICT path is handed `level1View`-stripped surfaces, so no exit
- * code can move because of a named delta. See `level1View` and the Step 7b wiring.
+ * IN THIS REPO LEVEL 2 IS ENFORCED (0028 PR 4). The VERDICT path is handed both surfaces WHOLE,
+ * so a named-export removal without an adequate bump reds the row exactly as a removed subpath
+ * does. See `level1View` and the Step 7b wiring.
  */
 export const SURFACE_SPEC_VERSION = 3
 
@@ -1055,18 +1056,17 @@ export function surfaceOfPayload(files) {
 /**
  * The Level-1 VIEW of a surface — the same object with its `names` field dropped.
  *
- * THIS FUNCTION IS THE ENTIRE ADVISORY SEAM (atlas decision 0028 PR 3). Level 2 is computed, folded
- * and reported, and NO exit code moves — because the VERDICT path is handed these stripped views,
- * which makes its evaluation byte-for-byte the spec-version-2 one. `surfaceDelta` treats two
- * names-LESS sides as a genuine Level-1-only comparison, so the arithmetic is identical, not merely
- * similar.
+ * THIS WAS THE ENTIRE ADVISORY SEAM (atlas decision 0028 PR 3): the VERDICT path was handed these
+ * stripped views, which made its evaluation byte-for-byte the spec-version-2 one, so no exit code
+ * could move because of a named delta. `surfaceDelta` treats two names-LESS sides as a genuine
+ * Level-1-only comparison, so the arithmetic was identical, not merely similar.
  *
- * "Advisory" is therefore a STRUCTURAL property here, not a promise in a comment: the Level-2
- * outcome reaches only `advisories`, `level2`, `removedNames` and `addedNames`, and `computeExit`
- * reads none of them — it reduces over `row.exitClass` alone.
- *
- * Flipping enforcement (0028 PR 4) is DELETING the two calls, not adding logic. That asymmetry is
- * the point: the advisory phase has to be a strictly smaller change to undo than to keep.
+ * ENFORCEMENT IS NOW LIVE (0028 PR 4) and the verdict path no longer calls this. The function is
+ * RETAINED as the exact, documented INVERSE of the flip: the `level2advisory` self-test mutant
+ * re-wraps both surfaces in it to prove that a named-export break really does stop moving the exit
+ * code when the strip returns — which is what makes the enforcement load-bearing rather than
+ * incidental. Its unit tests assert the strip is still byte-for-byte the Level-1 shape it was in the
+ * advisory phase, so the mutant reverts to a REAL previous behaviour and not to an approximation.
  */
 export function level1View(surface) {
   const rest = {...surface}
@@ -2878,44 +2878,39 @@ export async function runGate({
       let addedNames = []
       if (SURFACE_APPLICABLE_VERDICTS.has(decision.verdict)) {
         const candidateSurface = surfaceOfPayload(headFiles)
-        // ── LEVEL 1 SIZES THE VERDICT (atlas decision 0028 PR 3 — ADVISORY FIRST) ────────────
+        // ── LEVEL 2 SIZES THE VERDICT (atlas decision 0028 PR 4 — ENFORCEMENT LIVE) ─────────
         //
-        // `level1View` strips `names` from BOTH sides, which makes this call byte-for-byte the
-        // spec-version-2 evaluation: `surfaceDelta` treats two names-less sides as a genuine
-        // Level-1-only comparison, not as a degraded Level-2 one. So no exit code in this engine
-        // can move because of a named delta while Level 2 is advisory — and the transient window
-        // where atlas is on v3 and mantle is still on v2 stays fail-SAFE rather than fail-blocking.
-        //
-        // 0028 PR 4 flips enforcement by DELETING the two `level1View` calls. Nothing else.
+        // All three engines are on SURFACE_SPEC_VERSION 3, which is the design's precondition, so
+        // the full named-export surface is passed WHOLE — no `level1View` strip — and a named-export
+        // removal without an adequate bump reds the verdict exactly as a subpath removal does. That
+        // is the entire flip: the two `level1View` wraps that made Level 2 advisory (0028 PR 3) are
+        // gone, and nothing was added in their place. `level1View` itself stays exported as the
+        // documented INVERSE of this flip — the `level2advisory` mutant re-wraps both sides in it to
+        // prove the enforcement here is load-bearing rather than incidental.
         const outcome = evaluateSurface({
-          declared: member.version,
-          referenceVersion: decision.referenceVersion,
-          reference: level1View(reference.surface),
-          candidate: level1View(candidateSurface),
-          // The SAME measured pendingRelease the verdict ladder consumed (decision 0024): one source
-          // of truth, never a re-derivation. An adequate projected bump credits the surface delta;
-          // not-measured/absent/indeterminate/backward all fall back to the declared version.
-          pendingRelease
-        })
-        // ── LEVEL 2 IS OBSERVED, NOT ENFORCED ────────────────────────────────────────────────
-        //
-        // The SAME rule over the SAME two surfaces WITH their names, and the SAME `pendingRelease`
-        // the verdict path just used — so when enforcement flips, the number it flips to is the one
-        // that was being reported all along, not a differently-sized one. Its outcome reaches only
-        // `advisories`, `level2`, `removedNames` and `addedNames`. None of those is read by
-        // `exitClassFor`, `decideVerdict` or `computeExit` (which reduces over `row.exitClass`
-        // alone), which is what makes "advisory" a structural property here rather than a promise.
-        const level2Outcome = evaluateSurface({
           declared: member.version,
           referenceVersion: decision.referenceVersion,
           reference: reference.surface,
           candidate: candidateSurface,
+          // The SAME measured pendingRelease the verdict ladder consumed (decision 0024): one source
+          // of truth, never a re-derivation. An adequate projected bump credits the surface delta;
+          // not-measured/absent/indeterminate/backward all fall back to the declared version. This is
+          // a LANE-GATE feature and is INDEPENDENT of Level-2 enforcement — the flip above changes
+          // WHAT the rule is allowed to see, never what is allowed to excuse it.
           pendingRelease
         })
-        const level2Shape = surfaceAdvisories(level2Outcome)
+        // ── THE NAME-LEVEL DELTA, READ FOR ITS REPORTING SHAPE ───────────────────────────────
+        //
+        // `advisories` here means "the per-name detail a maintainer reads" — NOT "observed but
+        // unenforced". That second sense of the word died with the flip, and the two must not be
+        // conflated: `outcome` above already ENFORCES this delta. Deriving the reporting fields from
+        // that SAME enforced outcome, rather than from a second separately-run evaluation over
+        // identical inputs, is what makes it impossible for the verdict and the report to disagree
+        // about which names moved.
+        const level2Shape = surfaceAdvisories(outcome)
         level2 = level2Shape.level2
-        // An INDETERMINATE with no reason is unactionable, and while Level 2 is advisory the reason
-        // is the ONLY thing a maintainer gets — there is no exit code to investigate from.
+        // An INDETERMINATE with no reason is unactionable: the row is exit 3 and the detail is the
+        // only thing pointing a maintainer at which side of the pair could not be read.
         level2Detail = level2Shape.level2Detail
         removedNames = level2Shape.removedNames
         addedNames = level2Shape.addedNames
@@ -2957,8 +2952,9 @@ export async function runGate({
         addedSubpaths,
         requiredBump,
         declaredBump,
-        // Level 2 (atlas decision 0028), REPORTING ONLY in this PR. `surfaceSpecVersion` and
-        // `extractSpecVersion` ride on the row so a consumer of `--json` can tell which rule and
+        // Level 2 (atlas decision 0028), ENFORCED as of PR 4 — these fields are the per-name detail
+        // behind a verdict the rule already sized, not a parallel observation. `surfaceSpecVersion`
+        // and `extractSpecVersion` ride on the row so a consumer of `--json` can tell which rule and
         // which extractor produced these names without inferring it from their shape.
         surfaceSpecVersion: SURFACE_SPEC_VERSION,
         extractSpecVersion: EXTRACT_SPEC_VERSION,
@@ -2998,7 +2994,7 @@ function report(result) {
 
   console.log(
     `\npackage payload drift — lane=${result.lane}, digest spec v${SPEC_VERSION}, export-surface spec v${SURFACE_SPEC_VERSION} ` +
-      `(Level 2 ADVISORY, extract spec v${EXTRACT_SPEC_VERSION}, typescript ${VERIFIED_TS_VERSIONS.join('/')})\n`
+      `(Level 2 ENFORCED, extract spec v${EXTRACT_SPEC_VERSION}, typescript ${VERIFIED_TS_VERSIONS.join('/')})\n`
   )
   for (const row of evaluated) {
     const ref = row.referenceVersion ? ` ref=${row.referenceVersion}` : ''
@@ -3929,19 +3925,19 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     fs.rmSync(surfaceDir, {recursive: true, force: true})
     commitAll(root, 'remove the surface fixture package')
 
-    // ── S28 — LEVEL 2, ADVISORY (atlas decision 0028 PR 3). ──────────────────────────────────────
+    // ── S28 — LEVEL 2, ENFORCED (atlas decision 0028 PR 4). ──────────────────────────────────────
     //
     // THE BREAK CLASS LEVEL 1 CANNOT SEE, end to end: a NAMED export is removed while every
     // `exports` subpath stays byte-identical. `@j0nathan-ll0yd/validation` 1.1.0 -> 2.0.0 dropped 5
     // names and was caught only because it ALSO happened to major. S22b's shape does not reach it —
     // the subpath key set never moves here, so the entire Level-1 rule is silent by construction.
     //
-    // AND THE EXIT CODE MUST NOT MOVE. That is the whole content of PR 3, and this rung is what
-    // makes "advisory" testable rather than asserted: the declared 1.0.1 is a PATCH, which never
-    // covers a MAJOR-requiring name removal, so an ENFORCING Level 2 would read SURFACE_BREAK /
-    // exit 2 right here. It must read PENDING_PUBLISH / exit 0 with the finding in `advisories`.
-    // Three mutants (`level2enforcing`, `level2silent`, `level2noextract`) each break a different
-    // half of that sentence and are killed by this rung alone.
+    // AND THE EXIT CODE MUST MOVE. That is the whole content of PR 4, and this rung is what makes
+    // enforcement testable rather than asserted: the declared 1.0.1 is a PATCH, which never covers a
+    // MAJOR-requiring name removal, so the row must read SURFACE_BREAK / exit 2 with the per-name
+    // finding in `advisories`. Under the advisory phase this same rung read PENDING_PUBLISH / exit 0.
+    // Three mutants (`level2advisory`, `level2silent`, `level2noextract`) each break a different half
+    // of that sentence and are killed by this rung alone.
     const namedDir = path.join(root, 'packages', 'named')
     const setNamed = (version, declaration) => {
       writeJson(path.join(namedDir, 'package.json'), {
@@ -3981,39 +3977,44 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
     // `stopAfter` unwinds the ladder at the FIRST assertion whose id matches the scenario, so under
     // a mutant run this is the ONLY S28b rung that executes — every check below it is baseline-only
     // detail. All three Level-2 mutants are therefore keyed to S28b and all three have to die right
-    // here, which is exactly why it asserts both halves of the advisory contract at once:
+    // here, which is exactly why it asserts both halves of the enforcement contract at once:
     //
-    //   REPORTED     `level2silent` empties the advisory list; `level2noextract` never produces the
-    //                names to report. Both leave this list without its two entries.
-    //   NOT ENFORCED `level2enforcing` feeds the names into the verdict call, turning this row into
-    //                SURFACE_BREAK / exit 2.
+    //   REPORTED  `level2silent` empties the advisory list; `level2noextract` never produces the
+    //             names to report. Both leave this list without its two entries.
+    //   ENFORCED  `level2advisory` re-wraps the verdict call in `level1View`, stripping the names
+    //             back out and dropping this row to PENDING_PUBLISH / exit 0.
     //
     // Splitting them into two readable rungs would silently disarm whichever ended up second —
     // MEASURED: with the advisory check placed second, `level2silent` and `level2noextract` both
     // SURVIVED a run that reported the mutation as expected-to-fail.
-    check('S28b a removed NAME is REPORTED as an advisory and moves NO verdict',
+    check('S28b a removed NAME REDS the verdict and is REPORTED per name',
       (namedRow(result).advisories ?? []).includes('surface-named-delta:.:removed:beta') &&
         (namedRow(result).advisories ?? []).includes('surface-named-break:major') &&
-        namedRow(result).verdict === 'PENDING_PUBLISH' && namedRow(result).exitClass === 0 && result.exitCode === 0,
+        namedRow(result).verdict === 'SURFACE_BREAK' && namedRow(result).exitClass === 2 && result.exitCode === 2,
       `verdict=${namedRow(result).verdict} class=${namedRow(result).exitClass} exitCode=${result.exitCode} ` +
         `advisories=${JSON.stringify(namedRow(result).advisories)}`)
-    check('S28b Level 1 is SILENT — no subpath moved, which is exactly why Level 2 exists',
+    // Level 1 is SILENT here — no subpath moved, which is exactly why Level 2 exists — and yet the
+    // requirement is MAJOR. That pairing is the enforce-flip stated as a single row: `requiredBump`
+    // is sourced ENTIRELY from the Level-2 fold, because the Level-1 subpath delta contributes
+    // `none` and `surfaceDelta` composes the two at max rank (C147: refine, never relax). Under the
+    // advisory phase this same row read `requiredBump: 'none'`, the names having been stripped
+    // before the verdict call ever saw them.
+    check('S28b no subpath moved, yet the requirement is MAJOR — the Level-2 fold is what sized it',
       (namedRow(result).removedSubpaths ?? []).length === 0 && (namedRow(result).addedSubpaths ?? []).length === 0 &&
-        namedRow(result).requiredBump === 'none', `removed=${JSON.stringify(namedRow(result).removedSubpaths)} required=${namedRow(result).requiredBump}`)
+        namedRow(result).requiredBump === 'major', `removed=${JSON.stringify(namedRow(result).removedSubpaths)} required=${namedRow(result).requiredBump}`)
     check('S28b the advisory carries the structured name refs, not only the strings',
       JSON.stringify(namedRow(result).removedNames ?? []) === JSON.stringify([{subpath: '.', name: 'beta', kind: 'value'}]),
       `removedNames=${JSON.stringify(namedRow(result).removedNames)}`)
-    expect('S28b a removed NAME does NOT move the verdict while Level 2 is advisory', result, '@toy/named', 'PENDING_PUBLISH', 0)
-    // ...in EVERY lane. Asserted on the VERDICT, not the exit class, and the difference is real:
-    // PENDING_PUBLISH is legitimately exit 2 in the post-publish lane (you declared a version and
-    // never published it) — the LANE changes severity, as it always has. What Level 2 must not do
-    // is change the verdict itself. `SURFACE_BREAK` here in any lane is the enforce-flip landing
-    // early, and that is what this catches.
+    expect('S28b a removed NAME moves the verdict now that Level 2 is enforced', result, '@toy/named', 'SURFACE_BREAK', 2)
+    // ...in EVERY lane. SURFACE_BREAK is exit 2 everywhere — a shrunk public surface is not a
+    // lane-dependent severity, and it was already true of a removed SUBPATH (S22b). The enforce-flip
+    // means a removed NAME reaches the same place, so what this rung catches is the flip being
+    // partially applied: a lane where the names still get stripped out of the verdict call.
     for (const namedLane of LANES) {
       const laneResult = await gate({build: false, lane: namedLane})
       const laneRow = row(laneResult, '@toy/named') ?? {}
-      check(`S28b Level 2 does not change the VERDICT in the ${namedLane} lane`,
-        laneRow.verdict === 'PENDING_PUBLISH' && (laneRow.advisories ?? []).includes('surface-named-break:major'),
+      check(`S28b Level 2 reds the VERDICT in the ${namedLane} lane`,
+        laneRow.verdict === 'SURFACE_BREAK' && laneRow.exitClass === 2 && (laneRow.advisories ?? []).includes('surface-named-break:major'),
         `verdict=${laneRow.verdict} class=${laneRow.exitClass} advisories=${JSON.stringify(laneRow.advisories)}`)
     }
 
@@ -4300,17 +4301,19 @@ const MUTATIONS = {
   // no-op that still prints, still reports fields and still looks wired in — the exact
   // shape of the `selfref` mutant one layer up, which is the mutation the PREVIOUS
   // generation of this gate could not see at all. Killed by S22b.
-  // RE-ANCHORED FOR LEVEL 2 (decision 0028 PR 3), and the reason is itself the hazard this table
-  // exists to catch: the old anchor `reference: reference.surface,` now matches the ADVISORY call
-  // as well as the verdict one, so left alone it would have patched the half that moves no exit
-  // code — a mutant that still applied cleanly, still reported, and could no longer be killed by
-  // S22b. It SURVIVED, measured. The anchor now names the `level1View` pair explicitly, so it can
-  // only ever target the verdict path, and the enforce-flip (PR 4) that deletes those calls will
-  // break this anchor loudly rather than silently disarming it again.
+  // RE-ANCHORED TWICE, and the history is itself the hazard this table exists to catch. Under the
+  // ADVISORY phase (decision 0028 PR 3) the bare anchor `reference: reference.surface,` matched the
+  // advisory call as well as the verdict one, so it patched the half that moves no exit code — a
+  // mutant that still applied cleanly, still reported, and could no longer be killed by S22b. It
+  // SURVIVED, measured. The `level1View` pair was then named explicitly to pin it to the verdict
+  // path. The enforce-flip (PR 4) deleted those calls, which broke that anchor LOUDLY — as designed
+  // — and it is re-anchored here to the un-wrapped text. The bare form is unambiguous again for the
+  // reason it was ambiguous before: there is now exactly ONE `evaluateSurface` call over these two
+  // surfaces, because the advisory duplicate was collapsed into the enforced one.
   surfaceselfref: {
     scenario: 'S22b',
-    anchor: 'reference: level1View(reference.surface),\n          candidate: level1View(candidateSurface),',
-    replacement: 'reference: level1View(candidateSurface),\n          candidate: level1View(candidateSurface),'
+    anchor: 'reference: reference.surface,\n          candidate: candidateSurface,',
+    replacement: 'reference: candidateSurface,\n          candidate: candidateSurface,'
   },
   // Turn "I could not read the public surface" back into a pass — A2b defeated one layer
   // below the digest. The row keeps whatever verdict the PAYLOAD comparison produced, so a
@@ -4358,26 +4361,28 @@ const MUTATIONS = {
     anchor: 'isStrictlyAhead(pending.newVersion, declared) && bumpRank(projectedBump) > bumpRank(declaredBump)',
     replacement: 'bumpRank(projectedBump) > bumpRank(declaredBump)'
   },
-  // ── LEVEL 2, ADVISORY (atlas decision 0028 PR 3). Three mutants, one rung (S28/S28b), and each
-  // breaks a DIFFERENT half of "the rule is computed and reported, and no exit code moves". The
-  // advisory phase is unusually easy to get wrong in a way nothing notices, because two of the
-  // three failure modes are SILENT: a rule that stopped looking and a rule that looked and said
-  // nothing both produce a green run that is indistinguishable from a correct one. ────────────────
+  // ── LEVEL 2, ENFORCED (atlas decision 0028 PR 4). Three mutants, one rung (S28/S28b), and each
+  // breaks a DIFFERENT half of "the rule is computed, enforced, and reported per name". Two of the
+  // three failure modes are still SILENT in the reporting sense — a rule that stopped looking and a
+  // rule that looked and said nothing both strip the per-name detail out of a run — which is why
+  // the S28b assertion stays compound rather than splitting into readable halves. ─────────────────
   //
-  // ADVISORY-ONLY IS THE WHOLE POINT OF PR 3. Feed the names into the VERDICT-sizing call and a
-  // Level-2 delta starts moving this repo's exit codes while mantle is still on spec v2 — the
-  // transient-desync window (0028 §4) turns from fail-SAFE into fail-BLOCKING, and every PR that
-  // legitimately renames an internal export starts failing pre-push. Killed by S28b, which expects
-  // a MAJOR-requiring name removal under a declared PATCH to stay PENDING_PUBLISH / exit 0.
-  level2enforcing: {
+  // ENFORCEMENT IS THE WHOLE POINT OF PR 4, now that all three engines are on SURFACE_SPEC_VERSION
+  // 3. Re-wrapping both surfaces in `level1View` strips the names back out of the VERDICT-sizing
+  // call, which is precisely the advisory (PR 3) behaviour — so a MAJOR-requiring name removal
+  // silently degrades to PENDING_PUBLISH / exit 0 and the `@j0nathan-ll0yd/validation` class of
+  // regression is invisible to the exit code again. That reversion is the regression this phase
+  // guards. Killed by S28b, which expects that removal under a declared PATCH to red to
+  // SURFACE_BREAK / exit 2.
+  level2advisory: {
     scenario: 'S28b',
-    anchor: 'reference: level1View(reference.surface),\n          candidate: level1View(candidateSurface),',
-    replacement: 'reference: reference.surface,\n          candidate: candidateSurface,'
+    anchor: 'reference: reference.surface,\n          candidate: candidateSurface,',
+    replacement: 'reference: level1View(reference.surface),\n          candidate: level1View(candidateSurface),'
   },
-  // Compute the Level-2 delta and tell nobody. In the advisory phase the advisory IS the entire
-  // observable output — there is no exit code to notice — so a silent rule is indistinguishable
-  // from an absent one, and the enforce-flip (PR 4) would then be the FIRST time anyone saw the
-  // findings, which is precisely the rollout advisory-first exists to avoid. Killed by S28b.
+  // Compute the Level-2 delta, enforce it, and tell nobody WHICH name moved. The exit code alone
+  // says "your public surface shrank" without saying where, which is an unactionable red — and it
+  // is also how the advisory phase would have failed silently, since the advisory was then the
+  // entire observable output. Killed by S28b.
   level2silent: {
     scenario: 'S28b',
     anchor: '  return {advisories, level2: outcome.kind, removedNames, addedNames, level2Detail: null}',
