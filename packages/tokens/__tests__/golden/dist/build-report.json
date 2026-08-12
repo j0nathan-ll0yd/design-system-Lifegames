@@ -14,6 +14,10 @@
       "bytes": 14077
     },
     {
+      "path": "tokens.d.ts",
+      "bytes": 17920
+    },
+    {
       "path": "tokens.json",
       "bytes": 14012
     },
@@ -34,6 +38,6 @@
       "bytes": 35010
     }
   ],
-  "totalBytes": 114331,
+  "totalBytes": 132251,
   "engine": "style-dictionary@5"
 }

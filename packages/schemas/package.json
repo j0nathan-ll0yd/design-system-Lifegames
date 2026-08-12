@@ -7,8 +7,7 @@
   "description": "Cross-language widget data schemas (LP-vendored + DS-authored). Source of truth for fixture validation and codegen.",
   "type": "module",
   "exports": {
-    ".": "./dist/types/index.ts",
-    "./swift/*": "./swift/*"
+    ".": "./dist/types/index.ts"
   },
   "files": [
     "dist",
