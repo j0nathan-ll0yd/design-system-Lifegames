@@ -72,6 +72,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
+      # The lock model decides whether .contract-lock.json churns: CI has no LP
+      # checkout, so the sha-preservation branch is the one that runs here every time.
+      # Its regression is invisible to check:schemas-freshness (which reads the lock,
+      # never regenerates it), so the unit suite runs in the same job as its subject.
+      - name: Contract-lock model unit suite
+        run: node --test packages/schemas/scripts/contract-lock.test.mjs
       - run: pnpm check:schemas-freshness
       - name: Verify schema contract
         if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"

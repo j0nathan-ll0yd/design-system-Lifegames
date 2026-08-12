@@ -5,14 +5,34 @@ import {execFileSync} from 'node:child_process'
 import {existsSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
+import {buildLock, type ContractLock, provenanceOrigin} from './contract-lock.mjs'
 import {RAW_SCHEMAS_DIR} from './portal-contract-source.mjs'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const PKG_ROOT = resolve(__dirname, '..')
 const LOCK_FILE = join(PKG_ROOT, '.contract-lock.json')
+const UPSTREAM_REPO = 'j0nathan-ll0yd/mantle-LifegamesPortal'
+const GENERATOR_VERSION = '1.0.0'
 
 function sha256(content: string): string {
   return createHash('sha256').update(content, 'utf-8').digest('hex')
+}
+
+/**
+ * The lock currently on disk, or null when there is none / it is unreadable.
+ * Its `generatedFrom.sha` is the provenance pin this run must not lose when the
+ * upstream checkout is unreachable (see buildLock).
+ */
+function readExistingLock(): ContractLock | null {
+  if (!existsSync(LOCK_FILE)) {
+    return null
+  }
+  try {
+    return JSON.parse(readFileSync(LOCK_FILE, 'utf-8'))
+  } catch {
+    console.warn(`[contract-lock] Existing ${LOCK_FILE} is not valid JSON — regenerating from scratch`)
+    return null
+  }
 }
 
 /**
@@ -28,8 +48,11 @@ function sha256(content: string): string {
  *   4. The monorepo hub sibling checkout (local dev only): both
  *      design-system-Lifegames and mantle-LifegamesPortal are symlinked
  *      siblings under ~/Repositories.
- * Returns null (never throws) if no candidate resolves — the lock file
- * remains generatable without a sha, matching prior behavior.
+ * Returns null (never throws) if no candidate resolves. null means "cannot
+ * re-derive the sha from here", NOT "there is no sha" — buildLock carries the
+ * existing lock's sha forward in that case, so running the generator from a
+ * checkout that cannot see LP (a worktree, CI, atlas orchestration) is a no-op
+ * on the provenance pin rather than a destructive null-write.
  */
 function resolveUpstreamSha(): string | null {
   const shaArgIndex = process.argv.indexOf('--sha')
@@ -69,15 +92,35 @@ for (const file of schemaFiles) {
 const combinedContent = schemaFiles.map((f) => readFileSync(join(RAW_SCHEMAS_DIR, f), 'utf-8')).join('')
 const aggregateChecksum = `sha256:${sha256(combinedContent)}`
 
-const lock = {
-  generatedFrom: {repo: 'j0nathan-ll0yd/mantle-LifegamesPortal', sha: resolveUpstreamSha(), checksum: aggregateChecksum},
-  generatedAt: new Date().toISOString(),
-  generatorVersion: '1.0.0',
-  files: checksums
+const existingLock = readExistingLock()
+const derivedSha = resolveUpstreamSha()
+
+const lock = buildLock({
+  previous: existingLock,
+  repo: UPSTREAM_REPO,
+  derivedSha,
+  checksum: aggregateChecksum,
+  files: checksums,
+  generatorVersion: GENERATOR_VERSION,
+  now: new Date().toISOString()
+})
+
+// Write only on a real change: an unchanged regeneration must not touch the file at all,
+// so `git status` stays clean and build caches keyed on mtime are not invalidated.
+const serialized = JSON.stringify(lock, null, 2) + '\n'
+const unchanged = existsSync(LOCK_FILE) && readFileSync(LOCK_FILE, 'utf-8') === serialized
+if (!unchanged) {
+  writeFileSync(LOCK_FILE, serialized)
 }
 
-writeFileSync(LOCK_FILE, JSON.stringify(lock, null, 2) + '\n')
-console.log(`[contract-lock] Generated ${LOCK_FILE}`)
-console.log(`  upstream: ${lock.generatedFrom.repo}@${lock.generatedFrom.sha?.slice(0, 8) ?? 'unknown'}`)
+const origin = provenanceOrigin(derivedSha, lock.generatedFrom.sha)
+const ORIGIN_NOTE = {
+  derived: 'derived from upstream checkout',
+  preserved: 'preserved — no upstream checkout reachable',
+  unknown: 'unknown — no upstream checkout reachable and no prior sha'
+} as const
+
+console.log(`[contract-lock] ${unchanged ? 'Unchanged' : 'Generated'} ${LOCK_FILE}`)
+console.log(`  upstream: ${lock.generatedFrom.repo}@${lock.generatedFrom.sha?.slice(0, 8) ?? 'unknown'} (${ORIGIN_NOTE[origin]})`)
 console.log(`  aggregate: ${aggregateChecksum}`)
 console.log(`  files: ${schemaFiles.length}`)
