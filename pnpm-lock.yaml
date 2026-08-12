@@ -68,7 +68,7 @@ importers:
         version: link:../../packages/fixtures
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.2
       '@j0nathan-ll0yd/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -192,7 +192,7 @@ importers:
     dependencies:
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.2
       '@j0nathan-ll0yd/schemas':
         specifier: workspace:*
         version: link:../schemas
@@ -232,7 +232,7 @@ importers:
     dependencies:
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.2
       ajv:
         specifier: ~8.20.0
         version: 8.20.0
@@ -287,7 +287,7 @@ importers:
         version: link:../copy
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.2
       '@j0nathan-ll0yd/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -1812,8 +1812,8 @@ packages:
     resolution: {integrity: sha512-+Sg6GCR/wy1oSmQDFq4LQDAhm3ETKnorxN+y5nbLULOR3P0c14f2Wurzj3/xqPXtasLFfHd5iRFQ7AJt4KH2cw==}
     engines: {node: '>=8'}
 
-  '@j0nathan-ll0yd/portal-contract@1.0.0':
-    resolution: {integrity: sha512-l3lbq5wkVlzmAimZSJHxMmZEyR1GTfCukeP6Jzwcr4Wp5xJdvWF0+pTJPbWU2LR8NZAoY+PQQOJLK+B8U3F6mw==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/portal-contract/1.0.0/a245ceb7e43fafe37f3963a2d3e40df86aec7f7d}
+  '@j0nathan-ll0yd/portal-contract@1.0.2':
+    resolution: {integrity: sha512-+Dv/8iQxp8OCv/lQmn6TvAhu7bmqgkKKDQvxs2kn6BFEf2ayJ6vHVSd7inIQ8yxIwZ10EN914cMzwBII6eX/RQ==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/portal-contract/1.0.2/0ed9363fb96ef1356a3176ca1e4642f8165492b5}
 
   '@jest/console@30.4.1':
     resolution: {integrity: sha512-v3bhyxUh9Hgmo5p6hAOXe14/R3ZxZDOsvHleh4B07z3m/x4/ngPUXEm9XwK4sF4u+f+P2ORb0Ge+MgpaqRMVDA==}
@@ -9348,7 +9348,7 @@ snapshots:
 
   '@istanbuljs/schema@0.1.6': {}
 
-  '@j0nathan-ll0yd/portal-contract@1.0.0': {}
+  '@j0nathan-ll0yd/portal-contract@1.0.2': {}
 
   '@jest/console@30.4.1':
     dependencies:
