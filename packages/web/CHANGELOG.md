@@ -1,5 +1,12 @@
 # @j0nathan-ll0yd/web
 
+## 2.0.3
+
+### Patch Changes
+
+- Updated dependencies [2506ac6]
+  - @j0nathan-ll0yd/tokens@2.2.0
+
 ## 2.0.2
 
 ### Patch Changes
