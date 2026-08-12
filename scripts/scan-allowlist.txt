@@ -66,6 +66,9 @@ scripts/widget-inventory.mjs:marker:j0nathan-ll0yd
 packages/schemas/.contract-lock.json:marker:j0nathan-ll0yd
 packages/schemas/scripts/baseline-validate.mjs:marker:j0nathan-ll0yd
 packages/schemas/scripts/generate-contract-lock.ts:marker:j0nathan-ll0yd
+# Same upstream repo slug as the generator above — the lock model's unit suite pins
+# the `generatedFrom.repo` value the generator writes.
+packages/schemas/scripts/contract-lock.test.mjs:marker:j0nathan-ll0yd
 
 # JSON Schema `examples` fields.
 packages/schemas/authored/profile.schema.json:marker:j0nathan-ll0yd

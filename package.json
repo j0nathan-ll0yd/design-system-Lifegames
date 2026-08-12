@@ -9,7 +9,7 @@
     "build:tokens": "turbo run build:tokens",
     "lint": "turbo run lint",
     "test": "turbo run test && pnpm test:scripts",
-    "test:scripts": "node --test scripts/*.test.mjs",
+    "test:scripts": "node --test scripts/*.test.mjs packages/schemas/scripts/*.test.mjs",
     "docs:build": "turbo run docs:build",
     "docs:dev": "turbo run docs:dev",
     "storybook:build": "turbo run storybook:build",
