@@ -1,5 +1,12 @@
 # @j0nathan-ll0yd/web
 
+## 2.0.4
+
+### Patch Changes
+
+- Updated dependencies [27dfe68]
+  - @j0nathan-ll0yd/copy@1.0.2
+
 ## 2.0.3
 
 ### Patch Changes
