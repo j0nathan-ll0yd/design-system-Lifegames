@@ -34,36 +34,36 @@
       }
     },
     "linkSite": {
-      "value": "- Site: {siteUrl}",
+      "value": "- [Site]({siteUrl})",
       "_meta": {
-        "description": "About-section Site link list item. ICU MF1; consumer substitutes the site URL.",
+        "description": "About-section Site link list item. ICU MF1; consumer substitutes the site URL. Markdown link form — llms.txt requires links, not bare URLs.",
         "usage": ["llms-txt.eta:9"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-08-13"
       }
     },
     "linkGithub": {
-      "value": "- GitHub: {profileGithub}",
+      "value": "- [GitHub]({profileGithub})",
       "_meta": {
-        "description": "About-section GitHub link list item. ICU MF1; consumer substitutes the GitHub URL.",
+        "description": "About-section GitHub link list item. ICU MF1; consumer substitutes the GitHub URL. Markdown link form — llms.txt requires links, not bare URLs.",
         "usage": ["llms-txt.eta:10"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-08-13"
       }
     },
     "linkLinkedin": {
-      "value": "- LinkedIn: {profileLinkedin}",
+      "value": "- [LinkedIn]({profileLinkedin})",
       "_meta": {
-        "description": "About-section LinkedIn link list item. ICU MF1; consumer substitutes the LinkedIn URL.",
+        "description": "About-section LinkedIn link list item. ICU MF1; consumer substitutes the LinkedIn URL. Markdown link form — llms.txt requires links, not bare URLs.",
         "usage": ["llms-txt.eta:11"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-08-13"
       }
     },
     "liveHeading": {
