@@ -183,6 +183,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/repo-wide-formatting.md:marker:j0nathan-ll0yd
 .changeset/schemas-drop-spurious-swift-export.md:marker:j0nathan-ll0yd
 .changeset/tokens-emit-declarations.md:marker:j0nathan-ll0yd
+.changeset/copy-llms-txt-about-markdown-links.md:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
 .husky/pre-commit:marker:j0nathan-ll0yd
 CHANGELOG.md:marker:j0nathan-ll0yd
