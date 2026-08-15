@@ -41,7 +41,7 @@ permissions:
 jobs:
   publish:
     # GitHub-hosted runner: hermetic, no dependency on the self-hosted fleet.
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6

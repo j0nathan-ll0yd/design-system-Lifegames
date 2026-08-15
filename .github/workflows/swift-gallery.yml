@@ -16,7 +16,7 @@ on:
 jobs:
   build:
     name: Build SwiftGallery (iOS Simulator)
-    runs-on: macos-latest
+    runs-on: [self-hosted, macOS, arm64, xcode-26]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
