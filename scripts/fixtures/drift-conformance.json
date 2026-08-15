@@ -249,6 +249,20 @@
       }
     },
     {
+      "id": "pay-non-map-source-like-metadata-is-kept",
+      "kind": "payload",
+      "why": "Only .map entries are source maps. Arbitrary JSON that happens to carry sources[] is payload and must stay effective.",
+      "files": {
+        "dist/i.mjs": "x",
+        "dist/metadata.json": "{\"version\":3,\"sources\":[\"../src/i.ts\"]}"
+      },
+      "expect": {
+        "strictDigest": "85b7baee672a44d9613ddec855efef90ab7b08ff24c25fd45bc1e48177fe31b7",
+        "effectiveDigest": "85b7baee672a44d9613ddec855efef90ab7b08ff24c25fd45bc1e48177fe31b7",
+        "deadMaps": []
+      }
+    },
+    {
       "id": "pay-excluded-entry-removed-entirely",
       "kind": "payload",
       "why": "Leak-screen hits leave the payload so a leak reports as LEAKED_ARTIFACT, not DRIFT — and they also leave packedPaths, which can revive a map.",

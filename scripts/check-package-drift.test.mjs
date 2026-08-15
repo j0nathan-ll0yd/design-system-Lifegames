@@ -151,8 +151,8 @@ test('conformance: the vendored fixture matches the checksum this implementation
   assert.deepEqual(assertFixtureIntegrity(conformanceBytes, DRIFT_CONFORMANCE_SHA256), [])
 })
 
-test('conformance: all 34 shared vectors pass under the SHARED runner', () => {
-  assert.equal(conformance.cases.length, 34)
+test('conformance: all 35 shared vectors pass under the SHARED runner', () => {
+  assert.equal(conformance.cases.length, 35)
   const failures = runConformance({
     fixture: conformance,
     specVersion: SPEC_VERSION,

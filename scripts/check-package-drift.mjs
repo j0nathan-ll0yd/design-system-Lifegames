@@ -149,7 +149,7 @@ export const SPEC_VERSION = 3
  * immediately — that is what makes vendoring safe rather than merely convenient.
  * Re-vendor and update this constant in the SAME change.
  */
-export const DRIFT_CONFORMANCE_SHA256 = '10ab1c19a2848a60e4e0d7f86d1a55467f9d924cc3f1eeda6fc2fd10c6fb88ce'
+export const DRIFT_CONFORMANCE_SHA256 = 'acca608e73d3a6fdd1ba3393b26ec9c3613c84f224a8f275ca8b50ea4f726bd8'
 
 /**
  * sha256 of scripts/fixtures/export-surface-conformance.json, vendored verbatim from
