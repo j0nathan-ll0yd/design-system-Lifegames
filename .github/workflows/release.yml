@@ -54,7 +54,7 @@ jobs:
   version:
     # GitHub-hosted runner: hermetic and independent of the self-hosted fleet,
     # matching the sibling release-plane workflow (publish-ds-packages.yml).
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       # Persist the PAT (not the default GITHUB_TOKEN) as the git credential:
       # changesets/action pushes the Version branch with whatever checkout

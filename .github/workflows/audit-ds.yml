@@ -96,7 +96,7 @@ jobs:
     name: Healthchecks.io dead-man's-switch ping
     needs: [audit]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, arm64, node]
     timeout-minutes: 2
     steps:
       - name: Ping Healthchecks.io
