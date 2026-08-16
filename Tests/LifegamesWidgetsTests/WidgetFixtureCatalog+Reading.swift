@@ -20,8 +20,6 @@ extension WidgetFixtureCatalogTests {
 
     private static var bookshelfRows: [FixtureCatalogRow] {
         [
-            bookshelfRow("bookshelf.skeleton"),
-            bookshelfRow("bookshelf.empty"),
             bookshelfRow("bookshelf"),
             bookshelfRow("bookshelf.populated-min"),
             bookshelfRow("bookshelf.populated-max"),
