@@ -16,7 +16,21 @@
  * asserts the implementation and the vectors agree on it, so a half-done bump reds immediately.
  */
 
-export const CATALOG_SPEC_VERSION = 1
+export const CATALOG_SPEC_VERSION = 2
+
+/**
+ * The recursion cap on the `props` tree, and the reason the gate stays finite.
+ *
+ * The grammar owns this number rather than the generator, so the two cannot disagree: `generate.mjs`
+ * imports it, stops descending at it, and marks the cut node `truncated: true`. A committed tree
+ * deeper than the cap could not have been generated, so the grammar rejects it here rather than
+ * letting a hand-edit smuggle in a shape the generator would never emit.
+ *
+ * 8 is chosen against the sources, not arbitrarily: the deepest pilot prop tree (bio-terminal's
+ * `profile.terminalLines[].text`) is 4 levels, so the cap is slack for real widget props and still
+ * bounds a self-referential type at a size a reader can hold.
+ */
+export const MAX_PROP_DEPTH = 8
 
 /**
  * The widget groups this design system recognises. Mirrors `CATEGORIES` in
@@ -41,7 +55,9 @@ const REQUIRED_KEYS = [
 /** `sources` records where the generator READ each axis from. Provenance, not contract. */
 const OPTIONAL_KEYS = ['sources']
 
-const PROP_KEYS = ['type', 'optional']
+const PROP_REQUIRED_KEYS = ['type', 'optional']
+/** `truncated`, `properties` and `items` are shape-dependent: legal only on the node kinds below. */
+const PROP_OPTIONAL_KEYS = ['truncated', 'properties', 'items']
 const A11Y_KEYS = ['voiceOverLabel', 'ref']
 const CONFORMANCE_KEYS = ['behavioralTest']
 
@@ -66,24 +82,98 @@ function checkKeys(errors, label, object, required, optional) {
   }
 }
 
+/**
+ * The type names a node declares, as a set, or `null` when `type` is malformed.
+ *
+ * Canonical form: a single type is a bare string, a union is an array of two or more UNIQUE names.
+ * A one-element array and a duplicated member are both rejected — the generator collapses a
+ * one-member union to a string and deduplicates, so either shape means the tree was hand-edited,
+ * and two spellings of one type would make `properties`/`items` legality depend on the spelling.
+ */
+function propTypeNames(errors, label, type) {
+  if (isNonEmptyString(type)) {
+    return new Set([type])
+  }
+  const malformed = `${label}.type: expected a non-empty string or an array of two or more unique type names, got ${show(type)}`
+  if (!Array.isArray(type)) {
+    errors.push(malformed)
+    return null
+  }
+  if (type.length < 2 || !type.every(isNonEmptyString) || new Set(type).size !== type.length) {
+    errors.push(malformed)
+    return null
+  }
+  return new Set(type)
+}
+
+/**
+ * Validate one node of the recursive `props` tree.
+ *
+ * A node is `{type, optional}` plus, by kind: `properties` (a map of nodes) when the type set holds
+ * `object`, `items` (one node) when it holds `array`, and `truncated: true` when the generator hit
+ * MAX_PROP_DEPTH and stopped. Every conditional key is checked BOTH ways — present-and-illegal and
+ * legal-but-malformed — because a `properties` map hanging off a `string` node is a shape a reader
+ * would take at face value.
+ *
+ * `truncated: false` is rejected on the same rule as `a11y.voiceOverLabel: false`: absence is the
+ * canonical way to say "not truncated", and a second spelling of the same fact is drift waiting to
+ * happen. A truncated node carries no children — it is the record of children NOT walked.
+ */
+function checkPropNode(errors, label, node, depth) {
+  if (!isPlainObject(node)) {
+    errors.push(`${label}: expected an object, got ${show(node)}`)
+    return
+  }
+  if (depth > MAX_PROP_DEPTH) {
+    errors.push(`${label}: exceeds the maximum prop depth of ${MAX_PROP_DEPTH} — the generator truncates at that depth, so this tree was not generated`)
+    return
+  }
+
+  checkKeys(errors, label, node, PROP_REQUIRED_KEYS, PROP_OPTIONAL_KEYS)
+
+  const types = Object.hasOwn(node, 'type') ? propTypeNames(errors, label, node.type) : null
+
+  if (Object.hasOwn(node, 'optional') && typeof node.optional !== 'boolean') {
+    errors.push(`${label}.optional: expected a boolean, got ${show(node.optional)}`)
+  }
+
+  const truncated = Object.hasOwn(node, 'truncated')
+  if (truncated && node.truncated !== true) {
+    errors.push(`${label}.truncated: expected true or the field to be absent, got ${show(node.truncated)}`)
+  }
+
+  if (Object.hasOwn(node, 'properties')) {
+    if (truncated) {
+      errors.push(`${label}: is truncated but carries \`properties\` — a truncated node records children that were NOT walked`)
+    } else if (types !== null && !types.has('object')) {
+      errors.push(`${label}: has \`properties\` but its type is ${show(node.type)} — only an \`object\` node has properties`)
+    } else if (!isPlainObject(node.properties)) {
+      errors.push(`${label}.properties: expected a map of prop nodes, got ${show(node.properties)}`)
+    } else {
+      for (const name of Object.keys(node.properties)) {
+        checkPropNode(errors, `${label}.properties.${name}`, node.properties[name], depth + 1)
+      }
+    }
+  }
+
+  if (Object.hasOwn(node, 'items')) {
+    if (truncated) {
+      errors.push(`${label}: is truncated but carries \`items\` — a truncated node records children that were NOT walked`)
+    } else if (types !== null && !types.has('array')) {
+      errors.push(`${label}: has \`items\` but its type is ${show(node.type)} — only an \`array\` node has items`)
+    } else {
+      checkPropNode(errors, `${label}.items`, node.items, depth + 1)
+    }
+  }
+}
+
 function checkProps(errors, props) {
   if (!isPlainObject(props)) {
     errors.push(`props: expected an object, got ${show(props)}`)
     return
   }
-  for (const [name, descriptor] of Object.entries(props)) {
-    const label = `props.${name}`
-    if (!isPlainObject(descriptor)) {
-      errors.push(`${label}: expected an object, got ${show(descriptor)}`)
-      continue
-    }
-    checkKeys(errors, label, descriptor, PROP_KEYS, [])
-    if (Object.hasOwn(descriptor, 'type') && !isNonEmptyString(descriptor.type)) {
-      errors.push(`${label}.type: expected a non-empty string, got ${show(descriptor.type)}`)
-    }
-    if (Object.hasOwn(descriptor, 'optional') && typeof descriptor.optional !== 'boolean') {
-      errors.push(`${label}.optional: expected a boolean, got ${show(descriptor.optional)}`)
-    }
+  for (const name of Object.keys(props)) {
+    checkPropNode(errors, `props.${name}`, props[name], 1)
   }
 }
 

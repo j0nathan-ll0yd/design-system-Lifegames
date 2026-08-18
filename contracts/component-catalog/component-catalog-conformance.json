@@ -1,13 +1,13 @@
 {
-  "$comment": "Conformance vectors for the component-contract catalog GRAMMAR (contracts/component-catalog/schema.mjs). DS-owned and DS-local: this repo is the single producer, so there is no cross-repo vendoring here. Hand-authored on purpose — generating the vectors from the implementation they check would make them tautological. Every case is spelled out in full rather than patched onto a base entry, so a reader can see exactly what one vector asserts. `expectErrorContains` pins WHICH rule must fire, not merely that something failed. Editing this file requires regenerating component-catalog-conformance.sha256 in the same change.",
-  "specVersion": 1,
+  "$comment": "Conformance vectors for the component-contract catalog GRAMMAR (contracts/component-catalog/schema.mjs). DS-owned and DS-local: this repo is the single producer, so there is no cross-repo vendoring here. Hand-authored on purpose — generating the vectors from the implementation they check would make them tautological. Every case is spelled out in full rather than patched onto a base entry, so a reader can see exactly what one vector asserts. `expectErrorContains` pins WHICH rule must fire, not merely that something failed. Editing this file requires regenerating component-catalog-conformance.sha256 in the same change. specVersion 2 made `props` a RECURSIVE tree: object nodes carry `properties`, array nodes carry `items`, unions carry an array of type names, and a node cut at MAX_PROP_DEPTH carries `truncated: true`. The v2 cases exercise every arm of that recursion in both verdicts, because a validator that only looks at the first level would pass every v1 vector unchanged.",
+  "specVersion": 2,
   "cases": [
     {
       "name": "valid-minimal-gap-entry",
       "why": "The honest baseline: a presentation-only widget with no VoiceOver label and no consumer render test. Both gaps are written as null, not omitted, and not faked as a pass. `sources` is absent — it is provenance, not contract.",
       "expectValid": true,
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -24,7 +24,7 @@
       "why": "The other end: a label exists and cites its line, a cross-repo behavioral test is referenced as a STRING, and `sources` records where each axis was read.",
       "expectValid": true,
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "heart-rate",
         "group": "health",
         "props": { "health": { "type": "object", "optional": false } },
@@ -43,15 +43,15 @@
     },
     {
       "name": "valid-optional-prop-and-union-type",
-      "why": "`optional: true` means the prop is absent from the source schema's `required[]`. A union type collapses to a single string; the grammar checks the string is non-empty, not its grammar.",
+      "why": "`optional: true` means the prop is absent from the source schema's `required[]`. A union type is an ARRAY of type names — v1 collapsed it to a `\"string | null\"` string, which no consumer could read without parsing prose.",
       "expectValid": true,
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "sync-status",
         "group": "other",
         "props": {
           "status": { "type": "string", "optional": false },
-          "lastSyncDate": { "type": "string | null", "optional": true }
+          "lastSyncDate": { "type": ["string", "null"], "optional": true }
         },
         "propsRef": "packages/web/src/widgets/other/SyncStatus.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Other/SyncStatusProps.swift",
@@ -66,7 +66,7 @@
       "why": "Four widgets in this repo take no props at all (dnd-overlay, focus-overlay, book-modal, coming-soon). An empty `props` object is legal; an empty `states` array is not.",
       "expectValid": true,
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "coming-soon",
         "group": "identity",
         "props": {},
@@ -79,10 +79,158 @@
       }
     },
     {
+      "name": "valid-nested-object-tree",
+      "why": "The v2 headline. `props` is a RECURSIVE tree, not a flat map: an `object` node carries `properties`, which is a map of nodes, and each of those may carry its own. This is the shape that makes the props axis carry signal — v1 recorded `{health: {type: object}}` for this widget and stopped, which said nothing a reader could check a consumer against.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 2,
+        "widget": "heart-rate",
+        "group": "health",
+        "props": {
+          "health": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "quantities": {
+                "type": "object",
+                "optional": false,
+                "properties": {
+                  "heartRate": {
+                    "type": "object",
+                    "optional": false,
+                    "properties": {
+                      "unit": { "type": "string", "optional": false },
+                      "value": { "type": "number", "optional": false }
+                    }
+                  },
+                  "restingHeartRate": {
+                    "type": ["object", "null"],
+                    "optional": true,
+                    "properties": {
+                      "unit": { "type": "string", "optional": false },
+                      "value": { "type": "number", "optional": false }
+                    }
+                  }
+                }
+              },
+              "watch": { "type": "unknown", "optional": true }
+            }
+          }
+        },
+        "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Health/HeartRateProps.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "valid-nullable-object-keeps-its-properties",
+      "why": "`restingHeartRate?: {value, unit}` reaches the generator as `anyOf: [<object>, null]`, so its type set is `[\"object\", \"null\"]`. `properties` is legal because the set CONTAINS `object` — requiring the bare string `\"object\"` would drop the nested shape of every optional object in the repo, which is most of them.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 2,
+        "widget": "heart-rate",
+        "group": "health",
+        "props": {
+          "resting": {
+            "type": ["object", "null"],
+            "optional": true,
+            "properties": { "value": { "type": "number", "optional": false } }
+          }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "valid-nested-array-of-objects",
+      "why": "The other recursion arm. An `array` node carries ONE `items` node, and that node may itself be an object with properties — `books[].title` is only checkable if the element shape survives into the catalog. `items.optional` is always false: an element is not a member of its parent object's `required[]`, so the field has no meaning for it and is written rather than left to a coin flip.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 2,
+        "widget": "bookshelf",
+        "group": "reading",
+        "props": {
+          "books": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "books": {
+                "type": "array",
+                "optional": false,
+                "items": {
+                  "type": "object",
+                  "optional": false,
+                  "properties": {
+                    "asin": { "type": "string", "optional": false },
+                    "genres": { "type": "array", "optional": true, "items": { "type": "string", "optional": false } },
+                    "rating": { "type": ["number", "null"], "optional": true }
+                  }
+                }
+              },
+              "bookMeta": { "type": "object", "optional": false }
+            }
+          }
+        },
+        "propsRef": "packages/web/src/widgets/reading/Bookshelf.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Reading/BookshelfProps.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts" },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "valid-object-node-without-properties",
+      "why": "`bookMeta` is a `Record<string, BookMeta>`, which reaches the generator as `additionalProperties` and has NO static properties. An object node with no `properties` key is therefore legal and means exactly that. It is not the same fact as `truncated`, which is why the two are spelled differently.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 2,
+        "widget": "bookshelf",
+        "group": "reading",
+        "props": { "bookMeta": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "valid-truncated-node",
+      "why": "The MAX_PROP_DEPTH escape hatch, written as data. A self-referential prop type would otherwise walk forever and the gate would never finish. `truncated: true` records that children exist and were NOT walked, so a reader knows the subtree is unrecorded rather than empty.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "properties": { "child": { "type": "object", "optional": true, "truncated": true } }
+          }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
       "name": "bad-spec-version-zero",
       "why": "Case zero of the whole scheme. An entry that does not declare THIS grammar version is not readable by THIS grammar.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 1, got 0",
+      "expectErrorContains": "specVersion: expected 2, got 0",
       "entry": {
         "specVersion": 0,
         "widget": "bio-terminal",
@@ -100,9 +248,9 @@
       "name": "bad-spec-version-next",
       "why": "The half-done bump: someone raised the number in the entries but not in the grammar, or the reverse. Both directions must red.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 1, got 2",
+      "expectErrorContains": "specVersion: expected 2, got 3",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -116,11 +264,11 @@
     },
     {
       "name": "bad-spec-version-stringified",
-      "why": "`\"1\"` is not `1`. A JSON round trip through a tool that stringifies numbers must not pass.",
+      "why": "`\"2\"` is not `2`. A JSON round trip through a tool that stringifies numbers must not pass.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 1, got \"1\"",
+      "expectErrorContains": "specVersion: expected 2, got \"2\"",
       "entry": {
-        "specVersion": "1",
+        "specVersion": "2",
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -155,7 +303,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: missing required field `optional`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object" } },
@@ -173,7 +321,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: missing required field `type`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "optional": false } },
@@ -191,7 +339,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": { "type": "object" }, "optional": false } },
@@ -209,7 +357,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "", "optional": false } },
@@ -227,7 +375,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.optional: expected a boolean",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": "false" } },
@@ -245,7 +393,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: unknown field `nullable`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false, "nullable": true } },
@@ -263,7 +411,7 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: expected an object",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": "object" },
@@ -281,10 +429,315 @@
       "expectValid": false,
       "expectErrorContains": "props: expected an object",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": [{ "type": "object", "optional": false }],
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "nested-prop-node-not-an-object",
+      "why": "The recursion must validate to the LEAF, not only at the top. A nested descriptor collapsed to a bare type string is the plausible hand-edit, and v1's validator never looked below the first level.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.properties.terminalLines: expected an object, got \"array\"",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": { "type": "object", "optional": false, "properties": { "terminalLines": "array" } }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "nested-prop-node-missing-optional",
+      "why": "Every rule that binds a top-level node binds a nested one. The error path names the full route to the offending node, so a deep tree stays actionable.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.properties.terminalLines: missing required field `optional`",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": { "type": "object", "optional": false, "properties": { "terminalLines": { "type": "array" } } }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "nested-prop-node-unknown-field",
+      "why": "Strict keys apply at every depth. `enum` is real JSON-schema vocabulary and means nothing to this grammar, so it must be rejected rather than carried along as unchecked payload.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.properties.name: unknown field `enum`",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "properties": { "name": { "type": "string", "optional": false, "enum": ["a", "b"] } }
+          }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "nested-items-node-malformed",
+      "why": "The array arm recurses too. An `items` that is not a node describes no element shape.",
+      "expectValid": false,
+      "expectErrorContains": "props.lines.items: expected an object, got \"object\"",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "lines": { "type": "array", "optional": false, "items": "object" } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "object-properties-not-a-map",
+      "why": "A props LIST loses the names at depth exactly as it does at the top. `properties` is a MAP of node, keyed by prop name, at every level.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.properties: expected a map of prop nodes",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": { "type": "object", "optional": false, "properties": [{ "type": "string", "optional": false }] }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "properties-on-a-non-object-node",
+      "why": "Kind and children must agree. A `string` node with `properties` hanging off it is a shape a reader would take at face value, and no source schema can produce it.",
+      "expectValid": false,
+      "expectErrorContains": "props.title: has `properties` but its type is \"string\" — only an `object` node has properties",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "title": { "type": "string", "optional": false, "properties": { "inner": { "type": "string", "optional": false } } }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "items-on-a-non-array-node",
+      "why": "The same coupling on the other arm. An object does not have elements.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile: has `items` but its type is \"object\" — only an `array` node has items",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": { "type": "object", "optional": false, "items": { "type": "string", "optional": false } }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "truncated-false",
+      "why": "Same rule as `a11y.voiceOverLabel: false`. Absence is the canonical way to say NOT truncated; a second spelling of one fact is drift waiting to happen, and the generator never emits it.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.truncated: expected true or the field to be absent, got false",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false, "truncated": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "truncated-node-carrying-children",
+      "why": "`truncated` records children that were NOT walked. A truncated node that also lists some of them claims both, and a reader cannot tell which part of the subtree is recorded.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile: is truncated but carries `properties`",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "truncated": true,
+            "properties": { "name": { "type": "string", "optional": false } }
+          }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-tree-deeper-than-max-depth",
+      "why": "The cap is a grammar rule, not only a generator behaviour. Nine levels cannot have been generated — the generator truncates at eight — so a tree this deep was hand-written, and accepting it would let a hand-edit smuggle in a shape no source produces. This is also what keeps the validator's own recursion finite.",
+      "expectValid": false,
+      "expectErrorContains": "exceeds the maximum prop depth of 8",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": {
+          "d1": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "d2": {
+                "type": "object",
+                "optional": false,
+                "properties": {
+                  "d3": {
+                    "type": "object",
+                    "optional": false,
+                    "properties": {
+                      "d4": {
+                        "type": "object",
+                        "optional": false,
+                        "properties": {
+                          "d5": {
+                            "type": "object",
+                            "optional": false,
+                            "properties": {
+                              "d6": {
+                                "type": "object",
+                                "optional": false,
+                                "properties": {
+                                  "d7": {
+                                    "type": "object",
+                                    "optional": false,
+                                    "properties": {
+                                      "d8": {
+                                        "type": "object",
+                                        "optional": false,
+                                        "properties": { "d9": { "type": "string", "optional": false } }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "union-type-array-with-one-member",
+      "why": "Canonical form. The generator collapses a one-member union to a bare string, so `[\"string\"]` is a second spelling of one type — and two spellings make `properties`/`items` legality depend on which one a writer picked.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.type: expected a non-empty string or an array of two or more unique type names, got [\"object\"]",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": ["object"], "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "union-type-array-with-a-duplicate-member",
+      "why": "The generator deduplicates, so a repeat means the array was assembled by hand or by a merge that did not.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.type: expected a non-empty string or an array of two or more unique type names",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": ["string", "null", "string"], "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "union-type-array-with-a-non-string-member",
+      "why": "A nested schema node inside the type array is the v1-to-v2 mistake: `type` names types, it never holds a shape. The shape lives in `properties`/`items`.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.type: expected a non-empty string or an array of two or more unique type names",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": ["object", { "type": "null" }], "optional": false } },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
@@ -299,7 +752,7 @@
       "expectValid": false,
       "expectErrorContains": "group: expected one of github, health, identity, location, other, reading, got \"coffee\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "coffee",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -317,7 +770,7 @@
       "expectValid": false,
       "expectErrorContains": "group: expected one of github, health, identity, location, other, reading, got \"Identity\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "Identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -335,7 +788,7 @@
       "expectValid": false,
       "expectErrorContains": "missing required field `group`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "props": { "profile": { "type": "object", "optional": false } },
         "propsRef": "a.types.ts",
@@ -352,7 +805,7 @@
       "expectValid": false,
       "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"BioTerminal\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "BioTerminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -370,7 +823,7 @@
       "expectValid": false,
       "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -388,7 +841,7 @@
       "expectValid": false,
       "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"heart-rate-\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "heart-rate-",
         "group": "health",
         "props": { "health": { "type": "object", "optional": false } },
@@ -406,7 +859,7 @@
       "expectValid": false,
       "expectErrorContains": "states: expected at least one state, got an empty array",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -424,7 +877,7 @@
       "expectValid": false,
       "expectErrorContains": "states: expected an array",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -442,7 +895,7 @@
       "expectValid": false,
       "expectErrorContains": "states: expected non-empty strings",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -460,7 +913,7 @@
       "expectValid": false,
       "expectErrorContains": "states: duplicate state `empty`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -478,7 +931,7 @@
       "expectValid": false,
       "expectErrorContains": "a11y.voiceOverLabel: expected true or null, got false",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -496,7 +949,7 @@
       "expectValid": false,
       "expectErrorContains": "a claimed label must cite <file>:<line>",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "heart-rate",
         "group": "health",
         "props": { "health": { "type": "object", "optional": false } },
@@ -514,7 +967,7 @@
       "expectValid": false,
       "expectErrorContains": "a gap cites nothing",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -532,7 +985,7 @@
       "expectValid": false,
       "expectErrorContains": "a11y: expected an object, got null",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -550,7 +1003,7 @@
       "expectValid": false,
       "expectErrorContains": "a11y: unknown field `dynamicType`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "heart-rate",
         "group": "health",
         "props": { "health": { "type": "object", "optional": false } },
@@ -568,7 +1021,7 @@
       "expectValid": false,
       "expectErrorContains": "conformance.behavioralTest: expected a non-empty string or null, got false",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -586,7 +1039,7 @@
       "expectValid": false,
       "expectErrorContains": "conformance.behavioralTest: expected a non-empty string or null, got \"\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -604,7 +1057,7 @@
       "expectValid": false,
       "expectErrorContains": "conformance: unknown field `visualBaseline`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bookshelf",
         "group": "reading",
         "props": { "books": { "type": "object", "optional": false } },
@@ -622,7 +1075,7 @@
       "expectValid": false,
       "expectErrorContains": "conformance: expected an object",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bookshelf",
         "group": "reading",
         "props": { "books": { "type": "object", "optional": false } },
@@ -640,7 +1093,7 @@
       "expectValid": false,
       "expectErrorContains": "propsRef: expected a non-empty string, got \"\"",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -658,7 +1111,7 @@
       "expectValid": false,
       "expectErrorContains": "missing required field `swiftPropsRef`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -675,7 +1128,7 @@
       "expectValid": false,
       "expectErrorContains": "missing required field `generatedBy`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -692,7 +1145,7 @@
       "expectValid": false,
       "expectErrorContains": "entry: unknown field `notes`",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -717,7 +1170,7 @@
       "why": "A double-encoded JSON payload parses to a string, and a validator that coerces would pass it.",
       "expectValid": false,
       "expectErrorContains": "entry: expected an object",
-      "entry": "{\"specVersion\":1}"
+      "entry": "{\"specVersion\":2}"
     },
     {
       "name": "entry-is-null",
@@ -732,7 +1185,7 @@
       "expectValid": false,
       "expectErrorContains": "sources.props: expected non-empty path strings",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -751,7 +1204,7 @@
       "expectValid": false,
       "expectErrorContains": "sources.states: expected at least one path",
       "entry": {
-        "specVersion": 1,
+        "specVersion": 2,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -768,7 +1221,7 @@
       "name": "many-violations-are-all-reported",
       "why": "The validator returns EVERY violation, not the first. A gate that reports one error per run turns a ten-error entry into ten runs.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 1, got 7",
+      "expectErrorContains": "specVersion: expected 2, got 7",
       "entry": {
         "specVersion": 7,
         "widget": "Bio_Terminal",

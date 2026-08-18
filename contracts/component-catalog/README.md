@@ -8,7 +8,8 @@ catalog closes that gap for the presentation layer, and it is built to resist AI
 changes a widget cannot leave a stale claim behind, because every claim is generated and every
 generation is diffed by a gate.
 
-Atlas decision 0060. Increment 0 pilots three widgets.
+Atlas decision 0060. Increment 0 pilots three widgets. `CATALOG_SPEC_VERSION` is **2**: `props` is a
+recursive tree.
 
 ## Schema versus spec
 
@@ -28,34 +29,86 @@ must not fail for a reason unrelated to the contract.
 
 ## Files
 
-| File                                   | Role                                                                    |
-| -------------------------------------- | ----------------------------------------------------------------------- |
-| `schema.mjs`                           | The grammar. Exports `CATALOG_SPEC_VERSION` and `validateEntry(entry)`. |
-| `generate.mjs`                         | The generator. Reads the sources, writes `catalog/*.contract.json`.     |
-| `catalog/*.contract.json`              | The spec. Generated. Prettier-formatted for byte stability.             |
-| `component-catalog-conformance.json`   | Grammar conformance vectors. Hand-authored.                             |
-| `component-catalog-conformance.sha256` | Digest pin on the vectors.                                              |
-| `runner.mjs`                           | Runs the vectors against the grammar.                                   |
-| `check.mjs`                            | The gate. Four checks.                                                  |
-| `schema.test.mjs`                      | Unit tests. Runs under `pnpm test:scripts`.                             |
+| File                                   | Role                                                                                      |
+| -------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `schema.mjs`                           | The grammar. Exports `CATALOG_SPEC_VERSION`, `MAX_PROP_DEPTH` and `validateEntry(entry)`. |
+| `generate.mjs`                         | The generator. Reads the sources, writes `catalog/*.contract.json`.                       |
+| `catalog/*.contract.json`              | The spec. Generated. Prettier-formatted for byte stability.                               |
+| `component-catalog-conformance.json`   | Grammar conformance vectors. Hand-authored.                                               |
+| `component-catalog-conformance.sha256` | Digest pin on the vectors.                                                                |
+| `runner.mjs`                           | Runs the vectors against the grammar.                                                     |
+| `check.mjs`                            | The gate. Four checks.                                                                    |
+| `schema.test.mjs`                      | Unit tests. Runs under `pnpm test:scripts`.                                               |
 
 ## Sources
 
 One source per axis. Nothing is restated.
 
-| Axis                         | Read from                                                                                                                                                                                                                              |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `props`                      | `packages/schemas/generated/widgets/<widget>.schema.json` — top-level `properties`, with `optional` = the prop is absent from `required[]`. That schema is itself generated from `packages/web/src/widgets/<group>/<Widget>.types.ts`. |
-| `states`                     | `Sources/LifegamesWidgets/Resources/widgets/<group>/<widget>.<state>.json` filenames, UNION `apps/storybook/__snapshots__/production-<group>-<widget>--<state>.png`. `<widget>.json` with no infix is `default`.                       |
-| `a11y`                       | The first `.accessibilityLabel(` in `Sources/LifegamesWidgets/<Group>/<Widget>View.swift`.                                                                                                                                             |
-| `swiftPropsRef`              | `Sources/LifegamesWidgets/<Group>/<Widget>Props.swift`.                                                                                                                                                                                |
-| `conformance.behavioralTest` | The `PILOT` table in `generate.mjs`. Cross-repo, so it cannot be discovered from here. It is a reference STRING; this repo never runs it.                                                                                              |
+| Axis                         | Read from                                                                                                                                                                                                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `props`                      | `packages/schemas/generated/widgets/<widget>.schema.json` — the WHOLE nested shape, with `optional` = the prop is absent from its parent object's `required[]`. That schema is itself generated from `packages/web/src/widgets/<group>/<Widget>.types.ts`, with `$ref` already resolved. |
+| `states`                     | `Sources/LifegamesWidgets/Resources/widgets/<group>/<widget>.<state>.json` filenames, UNION `apps/storybook/__snapshots__/production-<group>-<widget>--<state>.png`. `<widget>.json` with no infix is `default`.                                                                         |
+| `a11y`                       | The first `.accessibilityLabel(` in `Sources/LifegamesWidgets/<Group>/<Widget>View.swift`.                                                                                                                                                                                               |
+| `swiftPropsRef`              | `Sources/LifegamesWidgets/<Group>/<Widget>Props.swift`.                                                                                                                                                                                                                                  |
+| `conformance.behavioralTest` | The `PILOT` table in `generate.mjs`. Cross-repo, so it cannot be discovered from here. It is a reference STRING; this repo never runs it.                                                                                                                                                |
 
 `group` is discovered, not declared: it is whichever category directory holds the widget's
 `.types.ts`. `sources` on each entry records where the generator read each axis.
 
-Props are TOP-LEVEL ONLY in Increment 0. Depth is the obvious next increment. A shallow catalog that
-is generated beats a deep one that is typed by hand.
+## The props tree
+
+`props` is a map of prop name to NODE, and a node may hold further nodes. Every node:
+
+```jsonc
+{
+  "type": "object", // a JSON-schema type name, or an array of names for a union
+  "optional": false, // the prop is absent from its parent object's `required[]`
+  "truncated": true, // ONLY when the walk hit MAX_PROP_DEPTH and stopped. Never written as false.
+  "properties": {}, // ONLY when the type set contains `object`. A map of nodes.
+  "items": {}, // ONLY when the type set contains `array`. One node, the element shape.
+}
+```
+
+`type` and `optional` are always present. The other three are shape-dependent, and the grammar
+rejects a node that carries one it has no business carrying — a `string` node with `properties`
+hanging off it is a shape no source schema can produce and a reader would take at face value.
+
+Rules the grammar enforces, each with a conformance vector:
+
+- **A union is an array, not a sentence.** `["string", "null"]`, never `"string | null"`. The array
+  holds two or more UNIQUE names; a one-member union collapses to a bare string. Two spellings of one
+  type would make `properties`/`items` legality depend on which one a writer picked.
+- **A nullable object keeps its shape.** The widget-schema generator rewrites every optional prop to
+  `anyOf: [T, null]`, so an optional object arrives as the type set `["object", "null"]`. Children
+  are legal because the set CONTAINS `object`. Requiring the bare string would drop the nested shape
+  of most optional props in the repo.
+- **Order is fixed.** Property keys are sorted at every level, so regeneration is byte-stable.
+- **`items.optional` is always `false`.** An array element is not a member of its parent object's
+  `required[]`, so the field has no meaning for it and is written rather than left to a coin flip.
+- **A union of two object shapes requires a key only where every member that declares it requires
+  it.** A key a consumer cannot rely on across both arms is not required.
+
+### MAX_PROP_DEPTH and `truncated`
+
+The walk stops at **8** levels. The cap lives in `schema.mjs`, not in the generator, so the two
+cannot disagree: `generate.mjs` imports it, and the grammar rejects a committed tree deeper than it —
+such a tree could not have been generated, so it was hand-written.
+
+When the walk stops on a node that really has children, that node gets `truncated: true` and no
+`properties`/`items`. The marker is the record of children NOT walked, which is a different fact from
+an object that has no static properties, and the two must not read alike. `truncated: false` is
+rejected on the same rule as `a11y.voiceOverLabel: false`: absence is the canonical way to say "not
+truncated", and a second spelling of one fact is drift waiting to happen.
+
+Without the cap a self-referential prop type would make the gate non-terminating instead of reporting
+a gap. 8 is measured against the sources, not guessed: the deepest pilot tree
+(`bio-terminal.profile.terminalLines[].text`) is 4 levels.
+
+### What the tree does not capture
+
+A `Record<string, T>` (`bookshelf.books.bookMeta`) reaches the generator as `additionalProperties`
+and has no static `properties`, so its node records the `object` type and stops. That is a written
+gap in the same spirit as the others: the catalog says what it read, and it read no static keys.
 
 ## Gaps are written, never faked
 
@@ -120,6 +173,27 @@ Bumping the version is one change, not three:
 5. `pnpm format && pnpm check:component-catalog`
 
 Any subset of those leaves the gate red.
+
+### v1 → v2: prop depth
+
+**What changed.** `props` went from a flat map of top-level props to a recursive tree. `type` on a
+union went from a `" | "`-joined string to an array of names.
+
+**Why.** Every pilot widget takes exactly ONE top-level prop — `bio-terminal` was
+`{profile: {type: "object", optional: false}}` and that was the entire props axis. It recorded that a
+widget takes an object, which no consumer can be held to. The nested shape is where the checkable
+content is: `books[].title`, `quantities.restingHeartRate.value`. The source schema already carried
+all of it; v1 simply stopped at the first level. Depth was deferred in Increment 0 on the reasoning
+that a shallow generated catalog beats a deep hand-typed one — true, and it stopped being the choice
+on offer once the walk was written.
+
+**Compatibility.** A v1 entry is not a v2 entry: `specVersion` alone rejects it, before any shape
+rule runs. There is no migration path and none is needed — every entry under `catalog/` is generated,
+so the upgrade is a regeneration. The Atlas portal reads these files as JSON and does not validate
+the grammar, so it is unaffected by the bump.
+
+**Landed as one change**, per the discipline above: `CATALOG_SPEC_VERSION`, the grammar, the vectors,
+the sha256 sidecar, the regenerated catalog and the tests.
 
 ## Adding a widget
 

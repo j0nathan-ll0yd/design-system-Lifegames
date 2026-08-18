@@ -1,11 +1,83 @@
 {
-  "specVersion": 1,
+  "specVersion": 2,
   "widget": "bookshelf",
   "group": "reading",
   "props": {
     "books": {
       "type": "object",
-      "optional": false
+      "optional": false,
+      "properties": {
+        "bookMeta": {
+          "type": "object",
+          "optional": false
+        },
+        "books": {
+          "type": "array",
+          "optional": false,
+          "items": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "asin": {
+                "type": "string",
+                "optional": false
+              },
+              "author": {
+                "type": "string",
+                "optional": false
+              },
+              "coverAvif": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "coverCardAvif": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "coverThumbAvif": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "finishedAt": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "isbn": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "notes": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "progress": {
+                "type": ["number", "null"],
+                "optional": true
+              },
+              "rating": {
+                "type": ["number", "null"],
+                "optional": true
+              },
+              "startedAt": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "status": {
+                "type": "string",
+                "optional": false
+              },
+              "title": {
+                "type": "string",
+                "optional": false
+              }
+            }
+          }
+        },
+        "statusLabels": {
+          "type": "object",
+          "optional": false
+        }
+      }
     }
   },
   "propsRef": "packages/web/src/widgets/reading/Bookshelf.types.ts",

@@ -16,13 +16,57 @@ import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import test from 'node:test'
 
-import {buildEntry, generateAll, PILOT_WIDGETS, REPO_ROOT} from './generate.mjs'
+import {buildEntry, buildPropNode, buildPropTree, generateAll, PILOT_WIDGETS, REPO_ROOT} from './generate.mjs'
 import {assertVectorIntegrity, runCatalogConformance, runFromDisk, SIDECAR_PATH, VECTORS_PATH} from './runner.mjs'
-import {CATALOG_SPEC_VERSION, KNOWN_GROUPS, validateEntry} from './schema.mjs'
+import {CATALOG_SPEC_VERSION, KNOWN_GROUPS, MAX_PROP_DEPTH, validateEntry} from './schema.mjs'
 
 const vectorBytes = readFileSync(VECTORS_PATH)
 const vectors = JSON.parse(vectorBytes.toString('utf8'))
 const scratch = () => mkdtempSync(join(tmpdir(), 'component-catalog-test-'))
+
+const contractOf = (widget) => JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
+
+/** Every node of a prop tree, paired with its depth and its path, so an invariant can be asserted over all of them. */
+function walkPropTree(props, depth = 1, path = 'props') {
+  const found = []
+  for (const [name, node] of Object.entries(props)) {
+    const here = `${path}.${name}`
+    found.push({node, depth, path: here})
+    if (node.properties) {
+      found.push(...walkPropTree(node.properties, depth + 1, `${here}.properties`))
+    }
+    if (node.items) {
+      found.push({node: node.items, depth: depth + 1, path: `${here}.items`})
+      if (node.items.properties) {
+        found.push(...walkPropTree(node.items.properties, depth + 2, `${here}.items.properties`))
+      }
+    }
+  }
+  return found
+}
+
+/** A wrapper entry so a bare prop tree can be run through the real `validateEntry`. */
+const entryWithProps = (props) => ({
+  specVersion: CATALOG_SPEC_VERSION,
+  widget: 'bio-terminal',
+  group: 'identity',
+  props,
+  propsRef: 'a.types.ts',
+  swiftPropsRef: 'a.swift',
+  states: ['default'],
+  a11y: {voiceOverLabel: null, ref: null},
+  conformance: {behavioralTest: null},
+  generatedBy: 'g'
+})
+
+/** A synthetic schema nesting one object inside another `levels` deep. Nothing in the repo is this deep on purpose. */
+function nestedSchema(levels) {
+  let node = {type: 'string'}
+  for (let i = 0; i < levels; i += 1) {
+    node = {type: 'object', properties: {inner: node}, required: ['inner']}
+  }
+  return node
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Conformance vectors
@@ -111,11 +155,76 @@ test('grammar: valid and errors never disagree', () => {
 
 test('grammar: every committed contract is valid and declares a known group', () => {
   for (const widget of PILOT_WIDGETS) {
-    const entry = JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
+    const entry = contractOf(widget)
     assert.deepEqual(validateEntry(entry), {valid: true, errors: []}, widget)
     assert.ok(KNOWN_GROUPS.includes(entry.group), `${widget} group ${entry.group}`)
     assert.equal(entry.specVersion, CATALOG_SPEC_VERSION)
   }
+})
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Grammar: the recursive props tree (specVersion 2)
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('grammar: a deep tree validates through every arm of the recursion', () => {
+  // Object properties, array items, an object INSIDE array items, a union type array, and a
+  // truncated leaf — one entry that exercises each arm at once.
+  const {valid, errors} = validateEntry(
+    entryWithProps({
+      profile: {
+        type: 'object',
+        optional: false,
+        properties: {
+          lines: {
+            type: 'array',
+            optional: false,
+            items: {
+              type: 'object',
+              optional: false,
+              properties: {text: {type: ['string', 'null'], optional: true}, meta: {type: 'object', optional: true, truncated: true}}
+            }
+          }
+        }
+      }
+    })
+  )
+  assert.deepEqual(errors, [])
+  assert.ok(valid)
+})
+
+test('grammar: a malformed node is rejected at DEPTH, not only at the top level', () => {
+  // The v1-validator regression: a validator that only inspects the first level accepts every one
+  // of these, because the top-level node is well formed in all four.
+  const cases = [
+    [{type: 'object', optional: false, properties: {inner: {type: 'string'}}}, 'props.p.properties.inner: missing required field `optional`'],
+    [{type: 'object', optional: false, properties: {inner: 'string'}}, 'props.p.properties.inner: expected an object, got "string"'],
+    [{type: 'array', optional: false, items: {optional: false}}, 'props.p.items: missing required field `type`'],
+    [
+      {type: 'object', optional: false, properties: {inner: {type: 'string', optional: false, items: {type: 'string', optional: false}}}},
+      'props.p.properties.inner: has `items` but its type is "string" — only an `array` node has items'
+    ]
+  ]
+  for (const [node, expected] of cases) {
+    const {valid, errors} = validateEntry(entryWithProps({p: node}))
+    assert.equal(valid, false, expected)
+    assert.ok(errors.includes(expected), `expected ${JSON.stringify(expected)}, got ${JSON.stringify(errors)}`)
+  }
+})
+
+test('grammar: a tree deeper than MAX_PROP_DEPTH is rejected', () => {
+  // Built programmatically so the assertion tracks the constant rather than a copy of it.
+  const deepest = (levels) => {
+    let node = {type: 'string', optional: false}
+    for (let i = 0; i < levels - 1; i += 1) {
+      node = {type: 'object', optional: false, properties: {inner: node}}
+    }
+    return node
+  }
+  assert.deepEqual(validateEntry(entryWithProps({p: deepest(MAX_PROP_DEPTH)})).errors, [], 'exactly at the cap must be accepted')
+
+  const {valid, errors} = validateEntry(entryWithProps({p: deepest(MAX_PROP_DEPTH + 1)}))
+  assert.equal(valid, false)
+  assert.ok(errors.some((message) => message.includes(`exceeds the maximum prop depth of ${MAX_PROP_DEPTH}`)), `got ${JSON.stringify(errors)}`)
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -190,7 +299,7 @@ test('generator: the props of a contract match the source schema it cites', () =
   // The anti-drift assertion. Read the generated widget schema independently and compare the prop
   // NAMES and optionality the catalog claims. Nothing here is typed by hand.
   for (const widget of PILOT_WIDGETS) {
-    const entry = JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
+    const entry = contractOf(widget)
     const schema = JSON.parse(readFileSync(join(REPO_ROOT, entry.sources.props), 'utf8'))
     const required = new Set(schema.required ?? [])
     assert.deepEqual(Object.keys(entry.props), Object.keys(schema.properties ?? {}).sort(), `${widget} prop names`)
@@ -198,6 +307,105 @@ test('generator: the props of a contract match the source schema it cites', () =
       assert.equal(descriptor.optional, !required.has(name), `${widget}.${name} optionality`)
     }
   }
+})
+
+test('generator: the NESTED prop names of a contract match the source schema it cites', () => {
+  // The v2 half of the anti-drift assertion, one level below the top. The source node is resolved
+  // by a deliberately independent three-line reading of the schema — a nullable object arrives as
+  // `anyOf: [<object>, null]`, so the null member is dropped and the object member's `properties`
+  // is the expected key set. If the generator's walk regressed to top-level-only, `properties`
+  // would be absent here and this reds.
+  const objectMemberOf = (node) => (Array.isArray(node.anyOf) ? node.anyOf : [node]).find((member) => member?.properties)
+
+  for (const widget of PILOT_WIDGETS) {
+    const entry = contractOf(widget)
+    const schema = JSON.parse(readFileSync(join(REPO_ROOT, entry.sources.props), 'utf8'))
+    for (const [name, node] of Object.entries(entry.props)) {
+      const source = objectMemberOf(schema.properties[name])
+      if (source === undefined) {
+        assert.equal(node.properties, undefined, `${widget}.${name}: source has no properties, so the catalog must claim none`)
+        continue
+      }
+      assert.deepEqual(Object.keys(node.properties ?? {}), Object.keys(source.properties).sort(), `${widget}.${name} nested prop names`)
+    }
+  }
+})
+
+test('generator: the committed trees really are deep, and every node is canonical', () => {
+  // The regression guard on the whole increment: if the generator reverted to a flat map, every
+  // pilot tree would be one level and the depth assertion below reds. The invariants are asserted
+  // over EVERY node, so a bug that only bites below the second level cannot hide.
+  let deepest = 0
+  for (const widget of PILOT_WIDGETS) {
+    const nodes = walkPropTree(contractOf(widget).props)
+    assert.ok(nodes.length > 0, widget)
+    for (const {node, depth, path} of nodes) {
+      deepest = Math.max(deepest, depth)
+      assert.ok(depth <= MAX_PROP_DEPTH, `${widget} ${path} is at depth ${depth}, past the cap of ${MAX_PROP_DEPTH}`)
+      assert.equal(typeof node.optional, 'boolean', `${widget} ${path} optional`)
+      if (Array.isArray(node.type)) {
+        assert.ok(node.type.length >= 2, `${widget} ${path}: a one-member union must collapse to a string`)
+        assert.equal(new Set(node.type).size, node.type.length, `${widget} ${path}: union members must be unique`)
+      } else {
+        assert.ok(typeof node.type === 'string' && node.type.length > 0, `${widget} ${path} type`)
+      }
+      if (node.properties) {
+        const names = Object.keys(node.properties)
+        assert.deepEqual(names, [...names].sort(), `${widget} ${path}: properties must be sorted`)
+      }
+      if (node.truncated !== undefined) {
+        assert.equal(node.truncated, true, `${widget} ${path}`)
+        assert.equal(node.properties, undefined, `${widget} ${path}: a truncated node carries no children`)
+        assert.equal(node.items, undefined, `${widget} ${path}: a truncated node carries no children`)
+      }
+    }
+  }
+  assert.ok(deepest >= 3, `the pilot set must exercise real depth; deepest node is at ${deepest}`)
+})
+
+test('generator: the depth cap truncates rather than recursing forever', () => {
+  // Fed a schema deeper than the cap, the generator must stop AT the cap and say so. Without this
+  // a self-referential prop type would make the gate non-terminating instead of reporting a gap.
+  const tree = buildPropTree({type: 'object', properties: {root: nestedSchema(MAX_PROP_DEPTH + 4)}, required: ['root']})
+  const nodes = walkPropTree(tree)
+  const truncated = nodes.filter(({node}) => node.truncated === true)
+
+  assert.equal(Math.max(...nodes.map(({depth}) => depth)), MAX_PROP_DEPTH, 'nothing may be emitted below the cap')
+  assert.equal(truncated.length, 1)
+  assert.equal(truncated[0].depth, MAX_PROP_DEPTH)
+  assert.equal(truncated[0].node.properties, undefined, 'a truncated node records children NOT walked')
+  assert.deepEqual(validateEntry(entryWithProps(tree)).errors, [], 'a truncated tree must satisfy the grammar')
+})
+
+test('generator: a leaf sitting exactly at the cap is not mislabelled as truncated', () => {
+  // `truncated` means children were dropped. A tree that fits exactly must carry no marker at all,
+  // or every deep-but-complete widget would read as partially recorded.
+  const tree = buildPropTree({type: 'object', properties: {root: nestedSchema(MAX_PROP_DEPTH - 1)}, required: ['root']})
+  assert.ok(walkPropTree(tree).every(({node}) => node.truncated === undefined), 'no node may claim truncation')
+})
+
+test('generator: a nullable object keeps its nested shape instead of collapsing to a type name', () => {
+  // `makeOptionalsNullable` in the schema generator rewrites every optional prop to
+  // `anyOf: [T, null]`, so failing to walk unions would drop the shape of most optional props.
+  const node = buildPropNode({anyOf: [{type: 'object', properties: {value: {type: 'number'}}, required: ['value']}, {type: 'null'}]}, true, 1)
+  assert.deepEqual(node, {type: ['object', 'null'], optional: true, properties: {value: {type: 'number', optional: false}}})
+})
+
+test('generator: a union of two object shapes marks a key optional unless every member requires it', () => {
+  // A key a consumer cannot rely on across both arms of a union is not required, whatever either
+  // arm says on its own.
+  const node = buildPropNode({
+    anyOf: [
+      {type: 'object', properties: {a: {type: 'string'}, b: {type: 'string'}}, required: ['a', 'b']},
+      {type: 'object', properties: {a: {type: 'string'}}, required: []}
+    ]
+  }, false, 1)
+  assert.equal(node.properties.a.optional, true, 'required in one member only')
+  assert.equal(node.properties.b.optional, false, 'declared by one member, which requires it')
+})
+
+test('generator: a schema node with no type is recorded as unknown, never guessed', () => {
+  assert.deepEqual(buildPropNode({}, true, 1), {type: 'unknown', optional: true})
 })
 
 test('generator: states are sorted, unique and non-empty', () => {

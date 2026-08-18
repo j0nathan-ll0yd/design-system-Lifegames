@@ -1,11 +1,93 @@
 {
-  "specVersion": 1,
+  "specVersion": 2,
   "widget": "heart-rate",
   "group": "health",
   "props": {
     "health": {
       "type": "object",
-      "optional": false
+      "optional": false,
+      "properties": {
+        "quantities": {
+          "type": "object",
+          "optional": false,
+          "properties": {
+            "heartRate": {
+              "type": "object",
+              "optional": false,
+              "properties": {
+                "unit": {
+                  "type": "string",
+                  "optional": false
+                },
+                "value": {
+                  "type": "number",
+                  "optional": false
+                }
+              }
+            },
+            "hrvSDNN": {
+              "type": "object",
+              "optional": false,
+              "properties": {
+                "unit": {
+                  "type": "string",
+                  "optional": false
+                },
+                "value": {
+                  "type": "number",
+                  "optional": false
+                }
+              }
+            },
+            "respiratoryRate": {
+              "type": ["object", "null"],
+              "optional": true,
+              "properties": {
+                "unit": {
+                  "type": "string",
+                  "optional": false
+                },
+                "value": {
+                  "type": "number",
+                  "optional": false
+                }
+              }
+            },
+            "restingHeartRate": {
+              "type": ["object", "null"],
+              "optional": true,
+              "properties": {
+                "unit": {
+                  "type": "string",
+                  "optional": false
+                },
+                "value": {
+                  "type": "number",
+                  "optional": false
+                }
+              }
+            },
+            "wristTemperatureDelta": {
+              "type": ["object", "null"],
+              "optional": true,
+              "properties": {
+                "unit": {
+                  "type": "string",
+                  "optional": false
+                },
+                "value": {
+                  "type": "number",
+                  "optional": false
+                }
+              }
+            }
+          }
+        },
+        "watch": {
+          "type": "unknown",
+          "optional": true
+        }
+      }
     }
   },
   "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
