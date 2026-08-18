@@ -65,6 +65,20 @@ All use Vite 7 (unified from prior Vite 6/7 split).
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
 
+## Component-Contract Catalog (`contracts/component-catalog/`)
+
+Machine-checkable record of what each widget presents: props, states, a11y surface, and whether a
+consumer render test holds it to that. Closes the presentation-layer spec-coverage gap (atlas
+decision 0060). **Schema vs spec:** `schema.mjs` is the hand-written normative grammar (zero-dep,
+`CATALOG_SPEC_VERSION`); `catalog/*.contract.json` is **generated** by `generate.mjs` — never
+hand-edit an entry, and never hand-write a prop shape. Sources: props ← the generated widget schema
+in `packages/schemas/generated/widgets/`, states ← fixture + Storybook-snapshot filenames, a11y ←
+`.accessibilityLabel(` in the Swift view. Gaps are written as `null`, never faked as a pass. Gate:
+`pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
+idempotence) — wired into `.husky/pre-push`; unit tests run under `pnpm test:scripts`. Bumping
+`CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
+change. See `contracts/component-catalog/README.md`.
+
 ## lp-audit (Audit System — D domain)
 
 This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the monorepo hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.

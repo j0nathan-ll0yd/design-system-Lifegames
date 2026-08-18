@@ -1,0 +1,45 @@
+{
+  "specVersion": 1,
+  "widget": "heart-rate",
+  "group": "health",
+  "props": {
+    "health": {
+      "type": "object",
+      "optional": false
+    }
+  },
+  "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Health/HeartRateProps.swift",
+  "states": [
+    "bradycardia",
+    "cardio",
+    "default",
+    "empty",
+    "fat-burn",
+    "max",
+    "normal",
+    "paused",
+    "paused-charging",
+    "peak",
+    "populated-max",
+    "populated-min",
+    "resting",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": true,
+    "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:315"
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/heart-rate.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate[.<state>].json",
+      "apps/storybook/__snapshots__/production-health-heart-rate--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Health/HeartRateView.swift"
+  }
+}
