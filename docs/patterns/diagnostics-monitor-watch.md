@@ -60,4 +60,4 @@ No animations. No scanline overlay (intentionally cut from v1 to stay under the 
 
 - Fixture: [`Sources/LifegamesWidgets/Resources/widgets/other/diagnostics-monitor.json`](../../Sources/LifegamesWidgets/Resources/widgets/other/diagnostics-monitor.json)
 - Snapshot tests: [`Tests/LifegamesWidgetsTests/WatchSyncDiagnosticsSnapshotTests.swift`](../../Tests/LifegamesWidgetsTests/WatchSyncDiagnosticsSnapshotTests.swift)
-- Plan: [`monorepo-LifegamesPortal/.omc/plans/watch-redesign-sync-and-diagnostics.md`](../../../monorepo-LifegamesPortal/.omc/plans/watch-redesign-sync-and-diagnostics.md)
+- Plan: [`atlas/.omc/plans/watch-redesign-sync-and-diagnostics.md`](../../../atlas/.omc/plans/watch-redesign-sync-and-diagnostics.md)

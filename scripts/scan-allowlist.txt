@@ -46,6 +46,7 @@ packages/web/src/widgets/identity/ComingSoon.astro:marker:j0nathan-ll0yd
 
 # Docs/comments/config referencing the consumer repo (j0nathan-ll0yd.github.io)
 # or this repo's own public GitHub URL by name.
+AGENTS.md:marker:j0nathan-ll0yd
 CLAUDE.md:marker:j0nathan-ll0yd
 apps/docs/astro.config.mjs:marker:j0nathan-ll0yd
 apps/docs/src/content/docs/brand/voice.mdx:marker:j0nathan-ll0yd

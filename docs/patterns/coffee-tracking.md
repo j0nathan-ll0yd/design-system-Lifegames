@@ -101,7 +101,7 @@ Caffeine density constants (`Beverage.caffeineMgPerGram`): drip 0.40 mg/g · esp
 - Props unit tests: [`Tests/LifegamesComponentsCoreTests/CoffeeTrackingPropsTests.swift`](../../Tests/LifegamesComponentsCoreTests/CoffeeTrackingPropsTests.swift)
 - Gallery switcher: `apps/swift-gallery/SwiftGallery/Screens/Directions/Coffee/CoffeeStateSwitcher.swift`
 - Fixtures: `Sources/LifegamesWidgets/Resources/widgets/coffee/`
-- Plan: [`monorepo-LifegamesPortal/.omc/plans/coffee-acaia-ui.md`](../../../monorepo-LifegamesPortal/.omc/plans/coffee-acaia-ui.md)
+- Plan: [`atlas/.omc/plans/coffee-acaia-ui.md`](../../../atlas/.omc/plans/coffee-acaia-ui.md)
 
 ## 9. Follow-ups
 

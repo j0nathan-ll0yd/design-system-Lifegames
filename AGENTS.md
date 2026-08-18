@@ -16,7 +16,7 @@
 2. Fixtures in `Sources/LifegamesWidgets/Resources/widgets/` — SPM `Bundle.module` requirement
 3. Web accesses fixtures via Vite `@fixtures` alias
 4. All neon colors MUST resolve to identical hex values across web and iOS
-5. No `git push` in Phase 1 — everything stays local
+5. Changes land on `main` and ship as versioned `@j0nathan-ll0yd/*` packages to GitHub Packages (yalc retired — atlas#1 / decision 0015). The historical "Phase 1, everything local, no `git push`" rule no longer applies.
 
 ## Token Pipeline
 
