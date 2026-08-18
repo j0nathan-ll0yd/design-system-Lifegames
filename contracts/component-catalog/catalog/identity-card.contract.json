@@ -1,0 +1,84 @@
+{
+  "specVersion": 3,
+  "widget": "identity-card",
+  "group": "identity",
+  "platforms": ["swift", "web"],
+  "props": {
+    "compact": {
+      "type": ["boolean", "null"],
+      "optional": true
+    },
+    "profile": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "bio": {
+          "type": "string",
+          "optional": false
+        },
+        "bluesky": {
+          "type": ["string", "null"],
+          "optional": true
+        },
+        "github": {
+          "type": "string",
+          "optional": false
+        },
+        "linkedin": {
+          "type": "string",
+          "optional": false
+        },
+        "mastodon": {
+          "type": ["string", "null"],
+          "optional": true
+        },
+        "name": {
+          "type": "string",
+          "optional": false
+        },
+        "site": {
+          "type": ["string", "null"],
+          "optional": true
+        },
+        "tagline": {
+          "type": ["string", "null"],
+          "optional": true
+        },
+        "title": {
+          "type": "string",
+          "optional": false
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/identity/IdentityCard.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Identity/IdentityCardProps.swift",
+  "states": [
+    "creator",
+    "dark",
+    "default",
+    "empty",
+    "engineer-lead",
+    "long-bio",
+    "minimal",
+    "populated-max",
+    "populated-min",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/identity-card.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/identity/identity-card[.<state>].json",
+      "apps/storybook/__snapshots__/production-identity-identitycard--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Identity/IdentityCardView.swift"
+  }
+}

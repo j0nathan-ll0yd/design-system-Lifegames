@@ -7,28 +7,35 @@
  * copy of a prop shape drifts from the first one silently, and a catalog that drifts is worse than
  * no catalog, because it reads as verified.
  *
+ * v3 covers the UNION of the two widget sets rather than a hand-listed pilot. The set of widgets is
+ * itself DISCOVERED — see `unionWidgets` below — so a widget added to either tree appears in the
+ * catalog on the next regeneration, and a widget that exists on only one side gets a PARTIAL entry
+ * with the absent side written as `null`.
+ *
  * Sources, one per axis:
  *   props   <- packages/schemas/generated/widgets/<widget>.schema.json  (the WHOLE nested shape:
  *              `properties` + `required` walked recursively through object properties and array
  *              items, capped at MAX_PROP_DEPTH. Emitted by
  *              packages/schemas/scripts/generate-widget-schemas.mjs from
- *              packages/web/src/widgets/<group>/<Widget>.types.ts, with $ref already resolved)
- *   states  <- Sources/LifegamesWidgets/Resources/widgets/<group>/<widget>.<state>.json filenames
- *              UNION apps/storybook/__snapshots__/production-<group>-<widget>--<state>.png
- *   a11y    <- the first `.accessibilityLabel(` in Sources/LifegamesWidgets/<Group>/<Widget>View.swift
- *   conformance <- PILOT below. Cross-repo, so it cannot be discovered from here; it is a reference
- *              STRING, never executed by this repo.
+ *              packages/web/src/widgets/<group>/<Widget>.types.ts, with $ref already resolved).
+ *              `null` when no schema exists for the widget.
+ *   states  <- Sources/LifegamesWidgets/Resources/widgets/<group>/<fixtureBase>.<state>.json filenames
+ *              UNION apps/storybook/__snapshots__/production-<group>-<pascal lowercased>--<state>.png
+ *   a11y    <- the first `.accessibilityLabel(` in the widget's Swift view. `null` when the widget
+ *              has no Swift view at all, and `null` when it has one with no label.
+ *   conformance <- BEHAVIORAL_TESTS below. Cross-repo, so it cannot be discovered from here; it is a
+ *              reference STRING, never executed by this repo.
  *
  * Determinism: every directory read is sorted and every emitted object has a fixed key order, so
  * running this twice produces a zero-byte diff. `check.mjs` proves that on every run.
  */
 
 import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
-import {join, resolve} from 'node:path'
+import {basename, dirname, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import * as prettier from 'prettier'
 
-import {CATALOG_SPEC_VERSION, MAX_PROP_DEPTH} from './schema.mjs'
+import {CATALOG_SPEC_VERSION, KNOWN_PLATFORMS, MAX_PROP_DEPTH} from './schema.mjs'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 export const REPO_ROOT = resolve(HERE, '../..')
@@ -36,25 +43,33 @@ export const CATALOG_DIR = join(HERE, 'catalog')
 export const GENERATED_BY = 'contracts/component-catalog/generate.mjs'
 
 /**
- * The pilot set. Each entry declares only what CANNOT be discovered from this repo: the widget slug
- * and its cross-repo behavioral render test. Group, props, states, a11y and both file refs are all
- * derived and existence-checked below.
+ * The ONE axis that cannot be discovered from this repo: which widgets a CONSUMER holds to a
+ * behavioral render test. The tests live in the web consumer's repository, so there is nothing here
+ * to read; the value is a reference string and this repo never runs it.
  *
- * The three span the difficulty axis deliberately:
- *   bio-terminal — presentation-only, no consumer render test, so conformance is honestly null.
- *   bookshelf    — has a consumer behavioral render test, so the conformance ref is populated.
- *   heart-rate   — has a VoiceOver label in its Swift view, so the a11y axis is populated. It is
- *                  the exception: most widgets in this repo have no label, and their entries say so.
+ * Two widgets have one today. Every other widget's `conformance.behavioralTest` is `null`, which is a
+ * written GAP, not a pass — the catalog's whole job on this axis is to make the other 31 gaps
+ * countable instead of invisible.
+ *
+ * Adding one: land the consumer test, then add its path here. Keep the map keyed by canonical widget
+ * id; an entry naming an id outside the union throws below rather than being silently ignored.
  */
-const PILOT = [
-  {widget: 'bio-terminal', behavioralTest: null},
-  {widget: 'bookshelf', behavioralTest: 'j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts'},
-  {widget: 'heart-rate', behavioralTest: null}
-]
+const BEHAVIORAL_TESTS = {
+  bookshelf: 'j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts',
+  'theatre-reviews': 'j0nathan-ll0yd.github.io/tests/behavioral/theatre-reviews-matrix.test.ts'
+}
 
 const WEB_WIDGETS = 'packages/web/src/widgets'
 const SWIFT_WIDGETS = 'Sources/LifegamesWidgets'
+/**
+ * The watchOS widget target. It is a FLAT directory with no group sub-directories, and it holds two
+ * widgets that exist on no other surface. Reading only `Sources/LifegamesWidgets` would leave both
+ * out of the union while their generated schemas sat in the tree — the catalog would report 31
+ * widgets and be silently wrong about the other two.
+ */
+const SWIFT_WATCH_WIDGETS = 'Sources/LifegamesWidgetsWatch'
 const FIXTURE_ROOT = 'Sources/LifegamesWidgets/Resources/widgets'
+const WIDGET_MANIFEST = 'Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'
 const SNAPSHOT_DIR = 'apps/storybook/__snapshots__'
 const SCHEMA_DIR = 'packages/schemas/generated/widgets'
 
@@ -62,32 +77,209 @@ const SCHEMA_DIR = 'packages/schemas/generated/widgets'
 const CATEGORIES = ['github', 'health', 'identity', 'location', 'other', 'reading']
 
 const sortedDir = (dir) => readdirSync(dir).sort()
+const sortedFiles = (dir) => (existsSync(dir) ? sortedDir(dir) : [])
 
-/** `bio-terminal` -> `BioTerminal`. The inverse of `toKebab` in the schema generator. */
-function toPascal(slug) {
-  return slug.split('-').map((word) => word[0].toUpperCase() + word.slice(1)).join('')
+/**
+ * Mirrors `toKebab` in packages/schemas/scripts/generate-widget-schemas.mjs, which is where the
+ * generated schema FILENAMES come from. Copied rather than imported because that script runs its
+ * whole codegen at import time; a gate that has to generate every widget schema to read one function
+ * is a gate that fails for reasons unrelated to the contract.
+ *
+ * It is the FALLBACK normalizer, not the primary one. The schema generator also carries a table of
+ * hand-written schemas keyed by an id `toKebab` does not produce — `OGImageProps` kebabs to `ogimage`
+ * while the committed file is `og-image.schema.json` — so deriving ids from this function alone would
+ * mis-pair that widget. `schemaIndex` below reads the real filenames and their `title` instead, and
+ * `toKebab` is used only for a web types file that has no generated schema to be indexed from.
+ */
+export function toKebab(name) {
+  return name.replace(/Props$/, '').replace(/V(\d+)$/, '-v$1').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
 /**
- * The Swift group directory is PascalCase but not mechanically so (`github` -> `GitHub`), so resolve
- * it by matching the real directory listing rather than transforming the string.
+ * The canonical id index, read from the generated widget schemas.
+ *
+ * The FILENAME is the canonical kebab id and the `title` is the PascalCase props type both other
+ * trees name their files after, so the schema directory is the one place where the two spellings sit
+ * side by side. Pairing through it is exact: nothing is transformed, so nothing can be mis-transformed.
+ *
+ * @returns {{byId: Map<string, {id: string, pascal: string, ref: string}>, byPascal: Map<string, string>}}
  */
-function swiftGroupDir(repoRoot, group) {
-  const found = sortedDir(join(repoRoot, SWIFT_WIDGETS)).find((name) => name.toLowerCase() === group)
-  if (!found) {
-    throw new Error(`no Swift group directory matches \`${group}\` under ${SWIFT_WIDGETS}`)
+export function schemaIndex(repoRoot) {
+  const byId = new Map()
+  const byPascal = new Map()
+  for (const file of sortedFiles(join(repoRoot, SCHEMA_DIR))) {
+    if (!file.endsWith('.schema.json')) {
+      continue
+    }
+    const id = file.slice(0, -'.schema.json'.length)
+    const ref = `${SCHEMA_DIR}/${file}`
+    const {title} = JSON.parse(readFileSync(join(repoRoot, ref), 'utf8'))
+    if (typeof title !== 'string' || !title.endsWith('Props')) {
+      throw new Error(
+        `${ref}: expected a \`title\` ending in \`Props\`, got ${
+          JSON.stringify(title)
+        } — the title is how this schema is paired with its web and Swift files`
+      )
+    }
+    const pascal = title.slice(0, -'Props'.length)
+    const clash = byPascal.get(pascal)
+    if (clash !== undefined) {
+      throw new Error(`two generated schemas declare the title \`${title}\`: ${clash}.schema.json and ${file} — the pairing would be ambiguous`)
+    }
+    byPascal.set(pascal, id)
+    byId.set(id, {id, pascal, ref})
+  }
+  if (byId.size === 0) {
+    throw new Error(`no generated widget schemas under ${SCHEMA_DIR} — run \`pnpm -F @j0nathan-ll0yd/schemas codegen\` first`)
+  }
+  return {byId, byPascal}
+}
+
+/** Every `<Widget>.types.ts` under the six web group directories. */
+function webWidgets(repoRoot, byPascal) {
+  const found = new Map()
+  for (const group of CATEGORIES) {
+    for (const file of sortedFiles(join(repoRoot, WEB_WIDGETS, group))) {
+      if (!file.endsWith('.types.ts')) {
+        continue
+      }
+      const pascal = file.slice(0, -'.types.ts'.length)
+      // A types file with a generated schema takes the schema's id; one without has no props axis to
+      // pair against, so `toKebab` is the only available reading and the entry's `props` is null.
+      const id = byPascal.get(pascal) ?? toKebab(`${pascal}Props`)
+      found.set(id, {id, pascal, group, ref: `${WEB_WIDGETS}/${group}/${file}`})
+    }
   }
   return found
 }
 
-/** The group is wherever the web types file lives — discovered, not declared. */
-function resolveGroup(repoRoot, widget) {
-  const typesFile = `${toPascal(widget)}.types.ts`
-  const hits = CATEGORIES.filter((category) => existsSync(join(repoRoot, WEB_WIDGETS, category, typesFile)))
-  if (hits.length !== 1) {
-    throw new Error(`expected exactly one group to contain ${typesFile}, found ${hits.length === 0 ? 'none' : hits.join(', ')}`)
+/**
+ * Resolve a Swift view's PascalCase name to a canonical widget id, or throw.
+ *
+ * Two rules, in order, and NO third guess:
+ *   1. A generated schema declares `<Pascal>Props` — an exact pairing.
+ *   2. Exactly one schema declares `<Pascal>V<n>Props`. The web type carries a version suffix the
+ *      Swift view never took (`ExplorationOdometerView` against `ExplorationOdometerV3Props`), and
+ *      the schema filename is the props source, so the versioned id wins and the Swift file is
+ *      recorded through `swiftPropsRef` instead.
+ *
+ * Anything else throws by name. A wrong pairing writes one widget's prop tree under another widget's
+ * slug, which is a contract that reads as verified and is not — strictly worse than a missing entry.
+ */
+function resolveSwiftId(pascal, byPascal, ref) {
+  const direct = byPascal.get(pascal)
+  if (direct !== undefined) {
+    return direct
   }
-  return hits[0]
+  const versioned = [...byPascal.keys()].filter((name) => name.startsWith(`${pascal}V`) && /^\d+$/.test(name.slice(pascal.length + 1)))
+  if (versioned.length === 1) {
+    return byPascal.get(versioned[0])
+  }
+  throw new Error(
+    `cannot map the Swift widget \`${pascal}\` (${ref}) to a canonical widget id: no generated schema declares the title \`${pascal}Props\`, and ${
+      versioned.length === 0 ? 'none declares' : `${versioned.length} declare`
+    } a versioned \`${pascal}V<n>Props\`${versioned.length > 1 ? ` (${versioned.join(', ')})` : ''}. ` +
+      'Add the widget to packages/web/src/widgets (which generates its schema) or to MANUAL_SCHEMAS in packages/schemas/scripts/generate-widget-schemas.mjs. ' +
+      'This generator will not guess a pairing.'
+  )
+}
+
+/**
+ * Every `<Widget>View.swift`, across the grouped iOS target and the flat watchOS target.
+ *
+ * The view file — not the props file — is what makes a widget Swift-present: five widgets in this
+ * repo have a view and no dedicated `<Widget>Props.swift` because they share a props type
+ * (`DevActivityEvent`, `LocationProps`). Keying on the props file would drop all five from the Swift
+ * side of the union and write them up as web-only, which is false.
+ */
+function swiftWidgets(repoRoot, byPascal) {
+  const found = new Map()
+  const record = (dir, file, group) => {
+    if (!file.endsWith('View.swift')) {
+      return
+    }
+    const pascal = file.slice(0, -'View.swift'.length)
+    const viewRef = `${dir}/${file}`
+    const id = resolveSwiftId(pascal, byPascal, viewRef)
+    const propsRel = `${dir}/${pascal}Props.swift`
+    const clash = found.get(id)
+    if (clash !== undefined) {
+      throw new Error(`two Swift views resolve to the widget id \`${id}\`: ${clash.viewRef} and ${viewRef}`)
+    }
+    found.set(id, {id, pascal, group, viewRef, propsRef: existsSync(join(repoRoot, propsRel)) ? propsRel : null})
+  }
+
+  for (const dir of sortedFiles(join(repoRoot, SWIFT_WIDGETS))) {
+    const group = dir.toLowerCase()
+    if (!CATEGORIES.includes(group)) {
+      continue
+    }
+    for (const file of sortedFiles(join(repoRoot, SWIFT_WIDGETS, dir))) {
+      record(`${SWIFT_WIDGETS}/${dir}`, file, group)
+    }
+  }
+  // The watch target has no group directory, so its widgets take their group from the manifest below.
+  for (const file of sortedFiles(join(repoRoot, SWIFT_WATCH_WIDGETS))) {
+    record(SWIFT_WATCH_WIDGETS, file, null)
+  }
+  return found
+}
+
+/**
+ * `widget-manifest.json`, keyed by the PascalCase widget name.
+ *
+ * It supplies two facts nothing else can: the fixture BASENAME, which is not always the canonical id
+ * (`GitHubHeatmap` -> `other/github-heatmap.json` against the schema's `git-hub-heatmap`), and the
+ * category of a watch widget, which has no group directory to be read from.
+ */
+function manifestIndex(repoRoot) {
+  const {widgets} = JSON.parse(readFileSync(join(repoRoot, WIDGET_MANIFEST), 'utf8'))
+  return new Map(widgets.map((widget) => [widget.name, widget]))
+}
+
+/**
+ * The UNION of the two widget sets, keyed by canonical id and sorted.
+ *
+ * This is the set the catalog must cover exactly: every member gets one entry, and no entry exists
+ * for a non-member. Discovered on every run, so the two trees cannot drift out of the catalog by
+ * someone forgetting to add a line to a list.
+ *
+ * @returns {Array<{id, group, pascal, web: object | null, swift: object | null, schema: object | null, manifest: object | null}>}
+ */
+export function unionWidgets(repoRoot = REPO_ROOT) {
+  const {byId, byPascal} = schemaIndex(repoRoot)
+  const web = webWidgets(repoRoot, byPascal)
+  const swift = swiftWidgets(repoRoot, byPascal)
+  const manifest = manifestIndex(repoRoot)
+
+  const ids = [...new Set([...web.keys(), ...swift.keys()])].sort()
+  return ids.map((id) => {
+    const webSide = web.get(id) ?? null
+    const swiftSide = swift.get(id) ?? null
+    const schema = byId.get(id) ?? null
+    // The canonical PascalCase name: the schema title where there is one (it is what the web tree and
+    // the Storybook story titles are named after), otherwise whichever tree holds the widget.
+    const pascal = schema?.pascal ?? webSide?.pascal ?? swiftSide?.pascal
+
+    // The manifest is keyed by the Swift widget name, which for a versioned widget differs from the
+    // canonical one, so both spellings are tried.
+    const record = manifest.get(pascal) ?? (swiftSide === null ? undefined : manifest.get(swiftSide.pascal)) ?? null
+
+    const groups = [webSide?.group, swiftSide?.group, record?.category].filter((group) => group !== null && group !== undefined)
+    const distinct = [...new Set(groups)]
+    if (distinct.length === 0) {
+      throw new Error(`widget \`${id}\`: no group could be resolved from the web tree, the Swift tree or the widget manifest`)
+    }
+    if (distinct.length > 1) {
+      throw new Error(`widget \`${id}\`: sources disagree on its group (${distinct.join(', ')})`)
+    }
+    const [group] = distinct
+    if (!CATEGORIES.includes(group)) {
+      throw new Error(`widget \`${id}\`: group \`${group}\` is not one of ${CATEGORIES.join(', ')}`)
+    }
+
+    return {id, group, pascal, web: webSide, swift: swiftSide, schema, manifest: record}
+  })
 }
 
 const isSchemaObject = (node) => typeof node === 'object' && node !== null && !Array.isArray(node)
@@ -222,44 +414,50 @@ export function buildPropTree(schema) {
   return props
 }
 
-function readProps(repoRoot, widget) {
-  const rel = `${SCHEMA_DIR}/${widget}.schema.json`
-  const abs = join(repoRoot, rel)
-  if (!existsSync(abs)) {
-    throw new Error(`no generated widget schema at ${rel} — run \`pnpm -F @j0nathan-ll0yd/schemas codegen\` first`)
-  }
-  return {props: buildPropTree(JSON.parse(readFileSync(abs, 'utf8'))), ref: rel}
-}
-
-/** Fixture filenames. `<widget>.json` with no infix is the default state. */
-function fixtureStates(repoRoot, group, widget) {
-  const dir = join(repoRoot, FIXTURE_ROOT, group)
+/**
+ * Fixture filenames. `<base>.json` with no infix is the default state.
+ *
+ * The base is the manifest's fixture basename, not the canonical id: `GitHubHeatmap`'s fixtures are
+ * `other/github-heatmap.*.json` while its schema — and so its id — is `git-hub-heatmap`. Deriving the
+ * base from the id would silently report that widget as having no states at all.
+ */
+function fixtureStates(repoRoot, fixtureDir, base) {
   const states = []
-  for (const file of sortedDir(dir)) {
+  for (const file of sortedFiles(join(repoRoot, FIXTURE_ROOT, fixtureDir))) {
     if (!file.endsWith('.json')) {
       continue
     }
-    const base = file.slice(0, -'.json'.length)
-    if (base === widget) {
+    const stem = file.slice(0, -'.json'.length)
+    if (stem === base) {
       states.push('default')
       continue
     }
-    if (base.startsWith(`${widget}.`)) {
-      states.push(base.slice(widget.length + 1))
+    if (stem.startsWith(`${base}.`)) {
+      states.push(stem.slice(base.length + 1))
     }
   }
   return states
 }
 
+/**
+ * The Storybook visual-baseline prefix for a widget.
+ *
+ * Storybook derives a story id by lowercasing its title path and collapsing punctuation, so
+ * `Production/Health/HeartRate` becomes `production-health-heartrate` — the PascalCase name
+ * LOWERCASED, with no separators. It is NOT the kebab id: v2 built the prefix from the slug, so
+ * `production-health-heart-rate--` matched nothing and every multi-word widget silently reported
+ * zero snapshot states. `schema.test.mjs` asserts that every `production-*` baseline on disk is
+ * claimed by exactly one entry, which is what keeps this derivation honest.
+ */
+function snapshotPrefix(group, pascal) {
+  return `production-${group}-${pascal.toLowerCase()}--`
+}
+
 /** Storybook visual-baseline filenames. Absent for most widgets; absence is not an error. */
-function snapshotStates(repoRoot, group, widget) {
-  const dir = join(repoRoot, SNAPSHOT_DIR)
-  if (!existsSync(dir)) {
-    return []
-  }
-  const prefix = `production-${group}-${widget}--`
+function snapshotStates(repoRoot, group, pascal) {
+  const prefix = snapshotPrefix(group, pascal)
   const states = []
-  for (const file of sortedDir(dir)) {
+  for (const file of sortedFiles(join(repoRoot, SNAPSHOT_DIR))) {
     if (file.startsWith(prefix) && file.endsWith('.png')) {
       states.push(file.slice(prefix.length, -'.png'.length))
     }
@@ -268,99 +466,123 @@ function snapshotStates(repoRoot, group, widget) {
 }
 
 /**
- * `voiceOverLabel` is `true` with a `<file>:<line>` ref, or `null`. `null` is a written GAP: roughly
- * 26 of this repo's widgets have no label, and the catalog records that rather than implying a pass.
+ * `voiceOverLabel` is `true` with a `<file>:<line>` ref, or `null`. `null` is a written GAP, and it
+ * covers two different facts that both mean "no label was found": the widget has a Swift view with no
+ * `.accessibilityLabel(` in it, or the widget has no Swift view to read. The second case also writes
+ * no `sources.a11y`, so the two are told apart by provenance rather than by a second null.
  */
-function readA11y(repoRoot, group, widget) {
-  const rel = `${SWIFT_WIDGETS}/${swiftGroupDir(repoRoot, group)}/${toPascal(widget)}View.swift`
-  const abs = join(repoRoot, rel)
-  if (!existsSync(abs)) {
-    throw new Error(`no Swift view at ${rel}`)
+function readA11y(repoRoot, viewRef) {
+  if (viewRef === null) {
+    return {a11y: {voiceOverLabel: null, ref: null}, source: null}
   }
-  const lines = readFileSync(abs, 'utf8').split('\n')
+  const lines = readFileSync(join(repoRoot, viewRef), 'utf8').split('\n')
   const index = lines.findIndex((line) => line.includes('.accessibilityLabel('))
   if (index === -1) {
-    return {a11y: {voiceOverLabel: null, ref: null}, source: rel}
+    return {a11y: {voiceOverLabel: null, ref: null}, source: viewRef}
   }
-  return {a11y: {voiceOverLabel: true, ref: `${rel}:${index + 1}`}, source: rel}
-}
-
-function swiftPropsRef(repoRoot, group, widget) {
-  const rel = `${SWIFT_WIDGETS}/${swiftGroupDir(repoRoot, group)}/${toPascal(widget)}Props.swift`
-  if (!existsSync(join(repoRoot, rel))) {
-    throw new Error(`no Swift Props file at ${rel}`)
-  }
-  return rel
+  return {a11y: {voiceOverLabel: true, ref: `${viewRef}:${index + 1}`}, source: viewRef}
 }
 
 /**
  * Build one entry. Key order here IS the emitted key order — do not reorder casually, it changes
  * every contract file's bytes.
  *
- * @param {string} repoRoot
- * @param {{widget: string, behavioralTest: string | null}} pilot
+ * A PARTIAL entry — one platform present, the other written `null` — is the point of v3. Nothing is
+ * faked to fill a gap: no props tree is invented for a widget with no schema, no Swift props path is
+ * written for a widget that has none, and `states` is left empty rather than given a default that was
+ * never on disk.
+ *
+ * @param {ReturnType<typeof unionWidgets>[number]} widget
  */
-export function buildEntry(repoRoot, pilot) {
-  const {widget, behavioralTest} = pilot
-  const group = resolveGroup(repoRoot, widget)
-  const {props, ref: propsSchemaRef} = readProps(repoRoot, widget)
-  const {a11y, source: a11ySource} = readA11y(repoRoot, group, widget)
-  const states = [...new Set([...fixtureStates(repoRoot, group, widget), ...snapshotStates(repoRoot, group, widget)])].sort()
+export function buildEntry(repoRoot, widget) {
+  const {id, group, pascal, web, swift, schema, manifest} = widget
 
-  if (states.length === 0) {
-    throw new Error(`no fixtures or snapshots found for ${widget} in group ${group}`)
+  const fixtureRel = manifest?.fixturePath ?? `${group}/${id}.json`
+  const fixtureDir = dirname(fixtureRel)
+  const fixtureBase = basename(fixtureRel, '.json')
+
+  const {a11y, source: a11ySource} = readA11y(repoRoot, swift?.viewRef ?? null)
+  const states = [...new Set([...fixtureStates(repoRoot, fixtureDir, fixtureBase), ...snapshotStates(repoRoot, group, pascal)])].sort()
+  const platforms = KNOWN_PLATFORMS.filter((platform) => (platform === 'web' ? web !== null : swift !== null))
+
+  const sources = {}
+  if (schema !== null) {
+    sources.props = schema.ref
+  }
+  sources.states = [`${FIXTURE_ROOT}/${fixtureDir}/${fixtureBase}[.<state>].json`, `${SNAPSHOT_DIR}/${snapshotPrefix(group, pascal)}<state>.png`]
+  if (a11ySource !== null) {
+    sources.a11y = a11ySource
   }
 
   return {
     specVersion: CATALOG_SPEC_VERSION,
-    widget,
+    widget: id,
     group,
-    props,
-    propsRef: `${WEB_WIDGETS}/${group}/${toPascal(widget)}.types.ts`,
-    swiftPropsRef: swiftPropsRef(repoRoot, group, widget),
+    platforms,
+    props: schema === null ? null : buildPropTree(JSON.parse(readFileSync(join(repoRoot, schema.ref), 'utf8'))),
+    propsRef: web?.ref ?? null,
+    swiftPropsRef: swift?.propsRef ?? null,
     states,
     a11y,
-    conformance: {behavioralTest},
+    conformance: {behavioralTest: BEHAVIORAL_TESTS[id] ?? null},
     generatedBy: GENERATED_BY,
-    sources: {
-      props: propsSchemaRef,
-      states: [`${FIXTURE_ROOT}/${group}/${widget}[.<state>].json`, `${SNAPSHOT_DIR}/production-${group}-${widget}--<state>.png`],
-      a11y: a11ySource
-    }
+    sources
   }
 }
 
 /**
- * Format emitted JSON through Prettier (root .prettierrc.mjs) so the bytes are stable for
- * `format:check`. Mirrors `writeJson` in packages/schemas/scripts/generate-widget-schemas.mjs — the
- * repo's established rule for generated JSON.
+ * Format emitted JSON through Prettier (root .prettierrc.mjs) so the bytes are stable.
+ * Mirrors `writeJson` in packages/schemas/scripts/generate-widget-schemas.mjs — the repo's
+ * established rule for generated JSON.
+ *
+ * The config is resolved from the file's place in the REAL catalog directory, never from the
+ * directory being written to. `check.mjs` regenerates into a temp directory and compares bytes;
+ * resolving from that path finds no `.prettierrc.mjs` at all, so the temp run formatted at Prettier's
+ * default printWidth of 80 while the committed bytes were written at the repo's 100. Every emitted
+ * line between those two widths then differed, and the idempotence check reported drift that was
+ * purely an artifact of where the check happened to write. The bytes are the subject of the
+ * comparison; the output directory is an implementation detail of the checker and must not reach the
+ * formatter.
+ *
+ * @param {string} file the contract's BASENAME, e.g. `heart-rate.contract.json`
  */
-export async function formatJson(outPath, data) {
-  const cfg = await prettier.resolveConfig(outPath)
-  return prettier.format(JSON.stringify(data, null, 2), {...cfg, parser: 'json', filepath: outPath})
+export async function formatJson(file, data) {
+  const referencePath = join(CATALOG_DIR, file)
+  const cfg = await prettier.resolveConfig(referencePath)
+  return prettier.format(JSON.stringify(data, null, 2), {...cfg, parser: 'json', filepath: referencePath})
 }
 
 /**
- * Generate every pilot contract into `outDir`.
+ * Generate a contract for every widget in the union into `outDir`.
  *
  * @param {{repoRoot?: string, outDir?: string}} [options]
  * @returns {Promise<Array<{widget: string, file: string, bytes: string}>>}
  */
 export async function generateAll({repoRoot = REPO_ROOT, outDir = CATALOG_DIR} = {}) {
+  const widgets = unionWidgets(repoRoot)
+  const ids = new Set(widgets.map(({id}) => id))
+  // A curated map keyed by a widget that is not in the union is a stale reference nobody would notice
+  // otherwise: the test it names would simply never be attached to anything.
+  for (const id of Object.keys(BEHAVIORAL_TESTS)) {
+    if (!ids.has(id)) {
+      throw new Error(`BEHAVIORAL_TESTS names \`${id}\`, which is not a widget in the union`)
+    }
+  }
+
   mkdirSync(outDir, {recursive: true})
   const written = []
-  for (const pilot of [...PILOT].sort((a, b) => (a.widget < b.widget ? -1 : 1))) {
-    const entry = buildEntry(repoRoot, pilot)
+  for (const widget of widgets) {
+    const entry = buildEntry(repoRoot, widget)
     const file = `${entry.widget}.contract.json`
-    const outPath = join(outDir, file)
-    const bytes = await formatJson(outPath, entry)
-    writeFileSync(outPath, bytes)
+    const bytes = await formatJson(file, entry)
+    writeFileSync(join(outDir, file), bytes)
     written.push({widget: entry.widget, file, bytes})
   }
   return written
 }
 
-export const PILOT_WIDGETS = PILOT.map((pilot) => pilot.widget).sort()
+/** The canonical widget id set the catalog must cover exactly. */
+export const catalogWidgets = (repoRoot = REPO_ROOT) => unionWidgets(repoRoot).map(({id}) => id)
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const written = await generateAll()

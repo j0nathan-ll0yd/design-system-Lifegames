@@ -1,0 +1,30 @@
+{
+  "specVersion": 3,
+  "widget": "not-found",
+  "group": "identity",
+  "platforms": ["web"],
+  "props": {
+    "regionLabel": {
+      "type": ["string", "null"],
+      "optional": true
+    }
+  },
+  "propsRef": "packages/web/src/widgets/identity/NotFound.types.ts",
+  "swiftPropsRef": null,
+  "states": ["default"],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/not-found.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/identity/not-found[.<state>].json",
+      "apps/storybook/__snapshots__/production-identity-notfound--<state>.png"
+    ]
+  }
+}

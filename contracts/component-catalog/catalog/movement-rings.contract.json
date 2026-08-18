@@ -1,0 +1,126 @@
+{
+  "specVersion": 3,
+  "widget": "movement-rings",
+  "group": "health",
+  "platforms": ["swift", "web"],
+  "props": {
+    "health": {
+      "type": "object",
+      "optional": true,
+      "properties": {
+        "movement": {
+          "type": "object",
+          "optional": false,
+          "properties": {
+            "basalKcal": {
+              "type": "number",
+              "optional": true
+            },
+            "daylightMin": {
+              "type": "number",
+              "optional": true
+            },
+            "distanceMeters": {
+              "type": "number",
+              "optional": false
+            },
+            "exerciseMin": {
+              "type": "number",
+              "optional": false
+            },
+            "flights": {
+              "type": "number",
+              "optional": false
+            },
+            "goals": {
+              "type": "object",
+              "optional": true,
+              "properties": {
+                "daylightMin": {
+                  "type": "number",
+                  "optional": false
+                },
+                "exerciseMin": {
+                  "type": "number",
+                  "optional": false
+                },
+                "moveKcal": {
+                  "type": "number",
+                  "optional": false
+                },
+                "standHr": {
+                  "type": "number",
+                  "optional": false
+                }
+              }
+            },
+            "moveKcal": {
+              "type": "number",
+              "optional": false
+            },
+            "restingHeartRate": {
+              "type": "number",
+              "optional": true
+            },
+            "solar": {
+              "type": "object",
+              "optional": true,
+              "properties": {
+                "currentProgressPct": {
+                  "type": "number",
+                  "optional": false
+                },
+                "sunriseHHmm": {
+                  "type": "string",
+                  "optional": false
+                },
+                "sunsetHHmm": {
+                  "type": "string",
+                  "optional": false
+                }
+              }
+            },
+            "standHr": {
+              "type": "number",
+              "optional": false
+            },
+            "steps": {
+              "type": "number",
+              "optional": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/health/MovementRings.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Health/MovementRingsProps.swift",
+  "states": [
+    "all-rings-closed",
+    "dark",
+    "default",
+    "empty",
+    "paused",
+    "paused-charging",
+    "populated-max",
+    "populated-min",
+    "skeleton",
+    "stand-only"
+  ],
+  "a11y": {
+    "voiceOverLabel": true,
+    "ref": "Sources/LifegamesWidgets/Health/MovementRingsView.swift:545"
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/movement-rings.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings[.<state>].json",
+      "apps/storybook/__snapshots__/production-health-movementrings--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Health/MovementRingsView.swift"
+  }
+}

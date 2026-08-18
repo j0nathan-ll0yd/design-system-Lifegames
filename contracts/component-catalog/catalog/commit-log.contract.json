@@ -1,0 +1,70 @@
+{
+  "specVersion": 3,
+  "widget": "commit-log",
+  "group": "github",
+  "platforms": ["swift", "web"],
+  "props": {
+    "commits": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "additions": {
+            "type": "number",
+            "optional": false
+          },
+          "date": {
+            "type": "string",
+            "optional": false
+          },
+          "deletions": {
+            "type": "number",
+            "optional": false
+          },
+          "hash": {
+            "type": "string",
+            "optional": false
+          },
+          "message": {
+            "type": "string",
+            "optional": false
+          },
+          "repo": {
+            "type": "string",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/github/CommitLog.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/GitHub/CommitLogProps.swift",
+  "states": [
+    "conventional-discipline",
+    "default",
+    "empty",
+    "messy-history",
+    "populated-max",
+    "populated-min",
+    "refactor-sprint",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/commit-log.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/github/commit-log[.<state>].json",
+      "apps/storybook/__snapshots__/production-github-commitlog--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/GitHub/CommitLogView.swift"
+  }
+}

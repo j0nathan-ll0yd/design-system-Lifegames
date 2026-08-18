@@ -1,0 +1,26 @@
+{
+  "specVersion": 3,
+  "widget": "dnd-overlay",
+  "group": "other",
+  "platforms": ["swift", "web"],
+  "props": {},
+  "propsRef": "packages/web/src/widgets/other/DndOverlay.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Other/DndOverlayProps.swift",
+  "states": ["dark", "default", "empty", "populated-max", "populated-min", "skeleton"],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/dnd-overlay.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/other/dnd-overlay[.<state>].json",
+      "apps/storybook/__snapshots__/production-other-dndoverlay--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Other/DndOverlayView.swift"
+  }
+}

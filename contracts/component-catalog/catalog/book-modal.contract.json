@@ -1,0 +1,38 @@
+{
+  "specVersion": 3,
+  "widget": "book-modal",
+  "group": "reading",
+  "platforms": ["swift", "web"],
+  "props": {},
+  "propsRef": "packages/web/src/widgets/reading/BookModal.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Reading/BookModalProps.swift",
+  "states": [
+    "completed-with-rating",
+    "currently-reading",
+    "dark",
+    "default",
+    "empty",
+    "loading",
+    "populated-max",
+    "populated-min",
+    "series-book",
+    "skeleton",
+    "wishlist"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/book-modal.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/reading/book-modal[.<state>].json",
+      "apps/storybook/__snapshots__/production-reading-bookmodal--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Reading/BookModalView.swift"
+  }
+}

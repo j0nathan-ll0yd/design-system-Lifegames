@@ -1,7 +1,8 @@
 {
-  "specVersion": 2,
+  "specVersion": 3,
   "widget": "bio-terminal",
   "group": "identity",
+  "platforms": ["swift", "web"],
   "props": {
     "profile": {
       "type": "object",
@@ -31,9 +32,11 @@
   "propsRef": "packages/web/src/widgets/identity/BioTerminal.types.ts",
   "swiftPropsRef": "Sources/LifegamesWidgets/Identity/BioTerminalProps.swift",
   "states": [
+    "dark",
     "default",
     "dense",
     "empty",
+    "loading",
     "minimal",
     "populated-max",
     "populated-min",
@@ -53,7 +56,7 @@
     "props": "packages/schemas/generated/widgets/bio-terminal.schema.json",
     "states": [
       "Sources/LifegamesWidgets/Resources/widgets/identity/bio-terminal[.<state>].json",
-      "apps/storybook/__snapshots__/production-identity-bio-terminal--<state>.png"
+      "apps/storybook/__snapshots__/production-identity-bioterminal--<state>.png"
     ],
     "a11y": "Sources/LifegamesWidgets/Identity/BioTerminalView.swift"
   }

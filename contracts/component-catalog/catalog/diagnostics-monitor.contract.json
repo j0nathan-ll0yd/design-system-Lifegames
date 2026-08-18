@@ -1,0 +1,91 @@
+{
+  "specVersion": 3,
+  "widget": "diagnostics-monitor",
+  "group": "other",
+  "platforms": ["swift"],
+  "props": {
+    "counts": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "category": {
+            "type": "string",
+            "optional": false
+          },
+          "count": {
+            "type": "number",
+            "optional": false
+          }
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "category": {
+            "type": "string",
+            "optional": false
+          },
+          "id": {
+            "type": "string",
+            "optional": false
+          },
+          "level": {
+            "type": "string",
+            "optional": true
+          },
+          "message": {
+            "type": "string",
+            "optional": false
+          },
+          "timestamp": {
+            "type": "string",
+            "optional": false
+          }
+        }
+      }
+    },
+    "fileSizeBytes": {
+      "type": "number",
+      "optional": false
+    },
+    "referenceDate": {
+      "type": "string",
+      "optional": false
+    },
+    "totalEventCount": {
+      "type": "number",
+      "optional": false
+    },
+    "transferStatus": {
+      "type": "string",
+      "optional": false
+    }
+  },
+  "propsRef": null,
+  "swiftPropsRef": "Sources/LifegamesWidgetsWatch/DiagnosticsMonitorProps.swift",
+  "states": ["default"],
+  "a11y": {
+    "voiceOverLabel": true,
+    "ref": "Sources/LifegamesWidgetsWatch/DiagnosticsMonitorView.swift:55"
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/diagnostics-monitor.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/other/diagnostics-monitor[.<state>].json",
+      "apps/storybook/__snapshots__/production-other-diagnosticsmonitor--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgetsWatch/DiagnosticsMonitorView.swift"
+  }
+}

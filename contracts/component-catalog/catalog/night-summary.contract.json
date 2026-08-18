@@ -1,0 +1,92 @@
+{
+  "specVersion": 3,
+  "widget": "night-summary",
+  "group": "health",
+  "platforms": ["swift", "web"],
+  "props": {
+    "health": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "derived": {
+          "type": "object",
+          "optional": false,
+          "properties": {
+            "deepPct": {
+              "type": "number",
+              "optional": false
+            },
+            "remPct": {
+              "type": "number",
+              "optional": false
+            }
+          }
+        },
+        "sleepDurationFormatted": {
+          "type": "string",
+          "optional": false
+        },
+        "sleepPhaseFormatted": {
+          "type": "object",
+          "optional": false,
+          "properties": {
+            "awake": {
+              "type": "string",
+              "optional": false
+            },
+            "core": {
+              "type": "string",
+              "optional": false
+            },
+            "deep": {
+              "type": "string",
+              "optional": false
+            },
+            "rem": {
+              "type": "string",
+              "optional": false
+            }
+          }
+        },
+        "sleepScore": {
+          "type": "number",
+          "optional": false
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/health/NightSummary.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Health/NightSummaryProps.swift",
+  "states": [
+    "dark",
+    "default",
+    "empty",
+    "excellent",
+    "fair",
+    "good",
+    "loading",
+    "nap",
+    "oversleep",
+    "poor",
+    "populated-max",
+    "populated-min",
+    "restless",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/night-summary.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/health/night-summary[.<state>].json",
+      "apps/storybook/__snapshots__/production-health-nightsummary--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Health/NightSummaryView.swift"
+  }
+}

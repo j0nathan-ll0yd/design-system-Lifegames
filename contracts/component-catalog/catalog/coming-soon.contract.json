@@ -1,0 +1,36 @@
+{
+  "specVersion": 3,
+  "widget": "coming-soon",
+  "group": "identity",
+  "platforms": ["swift", "web"],
+  "props": {},
+  "propsRef": "packages/web/src/widgets/identity/ComingSoon.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Identity/ComingSoonProps.swift",
+  "states": [
+    "dark",
+    "default",
+    "empty",
+    "populated-max",
+    "populated-min",
+    "skeleton",
+    "variation-a",
+    "variation-b",
+    "variation-c"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/coming-soon.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/identity/coming-soon[.<state>].json",
+      "apps/storybook/__snapshots__/production-identity-comingsoon--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Identity/ComingSoonView.swift"
+  }
+}

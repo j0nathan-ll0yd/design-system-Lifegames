@@ -1,0 +1,58 @@
+{
+  "specVersion": 3,
+  "widget": "language-stack",
+  "group": "github",
+  "platforms": ["swift", "web"],
+  "props": {
+    "languages": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "color": {
+            "type": "string",
+            "optional": false
+          },
+          "name": {
+            "type": "string",
+            "optional": false
+          },
+          "pct": {
+            "type": "number",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/github/LanguageStack.types.ts",
+  "swiftPropsRef": null,
+  "states": [
+    "default",
+    "empty",
+    "populated-max",
+    "populated-min",
+    "skeleton",
+    "variation-a",
+    "variation-b",
+    "variation-c"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/language-stack.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/github/language-stack[.<state>].json",
+      "apps/storybook/__snapshots__/production-github-languagestack--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/GitHub/LanguageStackView.swift"
+  }
+}

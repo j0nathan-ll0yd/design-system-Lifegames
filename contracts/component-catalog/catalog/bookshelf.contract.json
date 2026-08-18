@@ -1,7 +1,8 @@
 {
-  "specVersion": 2,
+  "specVersion": 3,
   "widget": "bookshelf",
   "group": "reading",
+  "platforms": ["swift", "web"],
   "props": {
     "books": {
       "type": "object",

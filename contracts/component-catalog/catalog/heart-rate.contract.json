@@ -1,7 +1,8 @@
 {
-  "specVersion": 2,
+  "specVersion": 3,
   "widget": "heart-rate",
   "group": "health",
+  "platforms": ["swift", "web"],
   "props": {
     "health": {
       "type": "object",
@@ -95,9 +96,11 @@
   "states": [
     "bradycardia",
     "cardio",
+    "dark",
     "default",
     "empty",
     "fat-burn",
+    "loading",
     "max",
     "normal",
     "paused",
@@ -120,7 +123,7 @@
     "props": "packages/schemas/generated/widgets/heart-rate.schema.json",
     "states": [
       "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate[.<state>].json",
-      "apps/storybook/__snapshots__/production-health-heart-rate--<state>.png"
+      "apps/storybook/__snapshots__/production-health-heartrate--<state>.png"
     ],
     "a11y": "Sources/LifegamesWidgets/Health/HeartRateView.swift"
   }

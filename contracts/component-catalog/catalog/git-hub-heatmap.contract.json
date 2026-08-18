@@ -1,0 +1,74 @@
+{
+  "specVersion": 3,
+  "widget": "git-hub-heatmap",
+  "group": "other",
+  "platforms": ["swift", "web"],
+  "props": {
+    "github": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "contributions": {
+          "type": "array",
+          "optional": false,
+          "items": {
+            "type": "array",
+            "optional": false,
+            "items": {
+              "type": "number",
+              "optional": false
+            }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "optional": false,
+          "properties": {
+            "contributions": {
+              "type": "number",
+              "optional": false
+            },
+            "repos": {
+              "type": "number",
+              "optional": false
+            },
+            "stars": {
+              "type": "number",
+              "optional": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/other/GitHubHeatmap.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Other/GitHubHeatmapProps.swift",
+  "states": [
+    "burst-driven",
+    "consistent-contributor",
+    "default",
+    "empty",
+    "populated-max",
+    "populated-min",
+    "seasonal-surge",
+    "skeleton",
+    "sparse-year",
+    "weekend-warrior"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/git-hub-heatmap.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/other/github-heatmap[.<state>].json",
+      "apps/storybook/__snapshots__/production-other-githubheatmap--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Other/GitHubHeatmapView.swift"
+  }
+}

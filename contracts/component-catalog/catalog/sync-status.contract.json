@@ -1,0 +1,47 @@
+{
+  "specVersion": 3,
+  "widget": "sync-status",
+  "group": "other",
+  "platforms": ["swift"],
+  "props": {
+    "errorMessage": {
+      "type": ["string", "null"],
+      "optional": false
+    },
+    "lastSyncDate": {
+      "type": ["string", "null"],
+      "optional": false
+    },
+    "primaryActionLabel": {
+      "type": "string",
+      "optional": false
+    },
+    "referenceDate": {
+      "type": "string",
+      "optional": false
+    },
+    "status": {
+      "type": "string",
+      "optional": false
+    }
+  },
+  "propsRef": null,
+  "swiftPropsRef": "Sources/LifegamesWidgetsWatch/SyncStatusProps.swift",
+  "states": ["aging", "default", "fresh", "never-synced", "stale"],
+  "a11y": {
+    "voiceOverLabel": true,
+    "ref": "Sources/LifegamesWidgetsWatch/SyncStatusView.swift:50"
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/sync-status.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/other/sync-status[.<state>].json",
+      "apps/storybook/__snapshots__/production-other-syncstatus--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgetsWatch/SyncStatusView.swift"
+  }
+}

@@ -1,21 +1,32 @@
 {
-  "$comment": "Conformance vectors for the component-contract catalog GRAMMAR (contracts/component-catalog/schema.mjs). DS-owned and DS-local: this repo is the single producer, so there is no cross-repo vendoring here. Hand-authored on purpose — generating the vectors from the implementation they check would make them tautological. Every case is spelled out in full rather than patched onto a base entry, so a reader can see exactly what one vector asserts. `expectErrorContains` pins WHICH rule must fire, not merely that something failed. Editing this file requires regenerating component-catalog-conformance.sha256 in the same change. specVersion 2 made `props` a RECURSIVE tree: object nodes carry `properties`, array nodes carry `items`, unions carry an array of type names, and a node cut at MAX_PROP_DEPTH carries `truncated: true`. The v2 cases exercise every arm of that recursion in both verdicts, because a validator that only looks at the first level would pass every v1 vector unchanged.",
-  "specVersion": 2,
+  "$comment": "Conformance vectors for the component-contract catalog GRAMMAR (contracts/component-catalog/schema.mjs). DS-owned and DS-local: this repo is the single producer, so there is no cross-repo vendoring here. Hand-authored on purpose — generating the vectors from the implementation they check would make them tautological. Every case is spelled out in full rather than patched onto a base entry, so a reader can see exactly what one vector asserts. `expectErrorContains` pins WHICH rule must fire, not merely that something failed. Editing this file requires regenerating component-catalog-conformance.sha256 in the same change. specVersion 2 made `props` a RECURSIVE tree: object nodes carry `properties`, array nodes carry `items`, unions carry an array of type names, and a node cut at MAX_PROP_DEPTH carries `truncated: true`. The v2 cases exercise every arm of that recursion in both verdicts, because a validator that only looks at the first level would pass every v1 vector unchanged. specVersion 3 admits a PARTIAL entry so the catalog can cover the whole widget set rather than only the widgets that happen to exist on both platforms: `platforms` names the sides the widget is on, `props`, `propsRef` and `swiftPropsRef` may each be a written `null`, and `states` may be empty. The v3 cases pin the floor under that — an entry with neither a prop tree nor a Swift props file records no contract and must red — and pin `platforms` to the refs, because an uncoupled platform claim is decoration nothing can contradict.",
+  "specVersion": 3,
   "cases": [
     {
       "name": "valid-minimal-gap-entry",
       "why": "The honest baseline: a presentation-only widget with no VoiceOver label and no consumer render test. Both gaps are written as null, not omitted, and not faked as a pass. `sources` is absent — it is provenance, not contract.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "packages/web/src/widgets/identity/BioTerminal.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Identity/BioTerminalProps.swift",
         "states": ["default", "empty"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "contracts/component-catalog/generate.mjs"
       }
     },
@@ -24,15 +35,26 @@
       "why": "The other end: a label exists and cites its line, a cross-repo behavioral test is referenced as a STRING, and `sources` records where each axis was read.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "heart-rate",
         "group": "health",
-        "props": { "health": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "health": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Health/HeartRateProps.swift",
         "states": ["default", "paused", "skeleton"],
-        "a11y": { "voiceOverLabel": true, "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:315" },
-        "conformance": { "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts" },
+        "a11y": {
+          "voiceOverLabel": true,
+          "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:315"
+        },
+        "conformance": {
+          "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts"
+        },
         "generatedBy": "contracts/component-catalog/generate.mjs",
         "sources": {
           "props": "packages/schemas/generated/widgets/heart-rate.schema.json",
@@ -46,18 +68,30 @@
       "why": "`optional: true` means the prop is absent from the source schema's `required[]`. A union type is an ARRAY of type names — v1 collapsed it to a `\"string | null\"` string, which no consumer could read without parsing prose.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "sync-status",
         "group": "other",
+        "platforms": ["swift", "web"],
         "props": {
-          "status": { "type": "string", "optional": false },
-          "lastSyncDate": { "type": ["string", "null"], "optional": true }
+          "status": {
+            "type": "string",
+            "optional": false
+          },
+          "lastSyncDate": {
+            "type": ["string", "null"],
+            "optional": true
+          }
         },
         "propsRef": "packages/web/src/widgets/other/SyncStatus.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Other/SyncStatusProps.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "contracts/component-catalog/generate.mjs"
       }
     },
@@ -66,15 +100,21 @@
       "why": "Four widgets in this repo take no props at all (dnd-overlay, focus-overlay, book-modal, coming-soon). An empty `props` object is legal; an empty `states` array is not.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "coming-soon",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {},
         "propsRef": "packages/web/src/widgets/identity/ComingSoon.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Identity/ComingSoonProps.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "contracts/component-catalog/generate.mjs"
       }
     },
@@ -83,9 +123,10 @@
       "why": "The v2 headline. `props` is a RECURSIVE tree, not a flat map: an `object` node carries `properties`, which is a map of nodes, and each of those may carry its own. This is the shape that makes the props axis carry signal — v1 recorded `{health: {type: object}}` for this widget and stopped, which said nothing a reader could check a consumer against.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "heart-rate",
         "group": "health",
+        "platforms": ["swift", "web"],
         "props": {
           "health": {
             "type": "object",
@@ -99,29 +140,49 @@
                     "type": "object",
                     "optional": false,
                     "properties": {
-                      "unit": { "type": "string", "optional": false },
-                      "value": { "type": "number", "optional": false }
+                      "unit": {
+                        "type": "string",
+                        "optional": false
+                      },
+                      "value": {
+                        "type": "number",
+                        "optional": false
+                      }
                     }
                   },
                   "restingHeartRate": {
                     "type": ["object", "null"],
                     "optional": true,
                     "properties": {
-                      "unit": { "type": "string", "optional": false },
-                      "value": { "type": "number", "optional": false }
+                      "unit": {
+                        "type": "string",
+                        "optional": false
+                      },
+                      "value": {
+                        "type": "number",
+                        "optional": false
+                      }
                     }
                   }
                 }
               },
-              "watch": { "type": "unknown", "optional": true }
+              "watch": {
+                "type": "unknown",
+                "optional": true
+              }
             }
           }
         },
         "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Health/HeartRateProps.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "contracts/component-catalog/generate.mjs"
       }
     },
@@ -130,21 +191,32 @@
       "why": "`restingHeartRate?: {value, unit}` reaches the generator as `anyOf: [<object>, null]`, so its type set is `[\"object\", \"null\"]`. `properties` is legal because the set CONTAINS `object` — requiring the bare string `\"object\"` would drop the nested shape of every optional object in the repo, which is most of them.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "heart-rate",
         "group": "health",
+        "platforms": ["swift", "web"],
         "props": {
           "resting": {
             "type": ["object", "null"],
             "optional": true,
-            "properties": { "value": { "type": "number", "optional": false } }
+            "properties": {
+              "value": {
+                "type": "number",
+                "optional": false
+              }
+            }
           }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -153,9 +225,10 @@
       "why": "The other recursion arm. An `array` node carries ONE `items` node, and that node may itself be an object with properties — `books[].title` is only checkable if the element shape survives into the catalog. `items.optional` is always false: an element is not a member of its parent object's `required[]`, so the field has no meaning for it and is written rather than left to a coin flip.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bookshelf",
         "group": "reading",
+        "platforms": ["swift", "web"],
         "props": {
           "books": {
             "type": "object",
@@ -168,21 +241,42 @@
                   "type": "object",
                   "optional": false,
                   "properties": {
-                    "asin": { "type": "string", "optional": false },
-                    "genres": { "type": "array", "optional": true, "items": { "type": "string", "optional": false } },
-                    "rating": { "type": ["number", "null"], "optional": true }
+                    "asin": {
+                      "type": "string",
+                      "optional": false
+                    },
+                    "genres": {
+                      "type": "array",
+                      "optional": true,
+                      "items": {
+                        "type": "string",
+                        "optional": false
+                      }
+                    },
+                    "rating": {
+                      "type": ["number", "null"],
+                      "optional": true
+                    }
                   }
                 }
               },
-              "bookMeta": { "type": "object", "optional": false }
+              "bookMeta": {
+                "type": "object",
+                "optional": false
+              }
             }
           }
         },
         "propsRef": "packages/web/src/widgets/reading/Bookshelf.types.ts",
         "swiftPropsRef": "Sources/LifegamesWidgets/Reading/BookshelfProps.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts" },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts"
+        },
         "generatedBy": "contracts/component-catalog/generate.mjs"
       }
     },
@@ -191,15 +285,26 @@
       "why": "`bookMeta` is a `Record<string, BookMeta>`, which reaches the generator as `additionalProperties` and has NO static properties. An object node with no `properties` key is therefore legal and means exactly that. It is not the same fact as `truncated`, which is why the two are spelled differently.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bookshelf",
         "group": "reading",
-        "props": { "bookMeta": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "bookMeta": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -208,21 +313,33 @@
       "why": "The MAX_PROP_DEPTH escape hatch, written as data. A self-referential prop type would otherwise walk forever and the gate would never finish. `truncated: true` records that children exist and were NOT walked, so a reader knows the subtree is unrecorded rather than empty.",
       "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
           "profile": {
             "type": "object",
             "optional": false,
-            "properties": { "child": { "type": "object", "optional": true, "truncated": true } }
+            "properties": {
+              "child": {
+                "type": "object",
+                "optional": true,
+                "truncated": true
+              }
+            }
           }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -230,17 +347,28 @@
       "name": "bad-spec-version-zero",
       "why": "Case zero of the whole scheme. An entry that does not declare THIS grammar version is not readable by THIS grammar.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 2, got 0",
+      "expectErrorContains": "specVersion: expected 3, got 0",
       "entry": {
         "specVersion": 0,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -248,17 +376,28 @@
       "name": "bad-spec-version-next",
       "why": "The half-done bump: someone raised the number in the entries but not in the grammar, or the reverse. Both directions must red.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 2, got 3",
+      "expectErrorContains": "specVersion: expected 3, got 4",
       "entry": {
-        "specVersion": 3,
+        "specVersion": 4,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -266,17 +405,28 @@
       "name": "bad-spec-version-stringified",
       "why": "`\"2\"` is not `2`. A JSON round trip through a tool that stringifies numbers must not pass.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 2, got \"2\"",
+      "expectErrorContains": "specVersion: expected 3, got \"3\"",
       "entry": {
-        "specVersion": "2",
+        "specVersion": "3",
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -288,12 +438,23 @@
       "entry": {
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -303,15 +464,25 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: missing required field `optional`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object" } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object"
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -321,15 +492,25 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: missing required field `type`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -339,15 +520,28 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": { "type": "object" }, "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": {
+              "type": "object"
+            },
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -357,15 +551,26 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -375,15 +580,26 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.optional: expected a boolean",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": "false" } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": "false"
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -393,15 +609,27 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: unknown field `nullable`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false, "nullable": true } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "nullable": true
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -411,15 +639,23 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: expected an object",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": "object" },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": "object"
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -429,15 +665,26 @@
       "expectValid": false,
       "expectErrorContains": "props: expected an object",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": [{ "type": "object", "optional": false }],
+        "platforms": ["swift", "web"],
+        "props": [
+          {
+            "type": "object",
+            "optional": false
+          }
+        ],
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -447,17 +694,29 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.properties.terminalLines: expected an object, got \"array\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
-          "profile": { "type": "object", "optional": false, "properties": { "terminalLines": "array" } }
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "terminalLines": "array"
+            }
+          }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -467,17 +726,31 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.properties.terminalLines: missing required field `optional`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
-          "profile": { "type": "object", "optional": false, "properties": { "terminalLines": { "type": "array" } } }
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "terminalLines": {
+                "type": "array"
+              }
+            }
+          }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -487,21 +760,33 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.properties.name: unknown field `enum`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
           "profile": {
             "type": "object",
             "optional": false,
-            "properties": { "name": { "type": "string", "optional": false, "enum": ["a", "b"] } }
+            "properties": {
+              "name": {
+                "type": "string",
+                "optional": false,
+                "enum": ["a", "b"]
+              }
+            }
           }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -511,15 +796,27 @@
       "expectValid": false,
       "expectErrorContains": "props.lines.items: expected an object, got \"object\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "lines": { "type": "array", "optional": false, "items": "object" } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "lines": {
+            "type": "array",
+            "optional": false,
+            "items": "object"
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -529,17 +826,32 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.properties: expected a map of prop nodes",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
-          "profile": { "type": "object", "optional": false, "properties": [{ "type": "string", "optional": false }] }
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "properties": [
+              {
+                "type": "string",
+                "optional": false
+              }
+            ]
+          }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -549,17 +861,32 @@
       "expectValid": false,
       "expectErrorContains": "props.title: has `properties` but its type is \"string\" — only an `object` node has properties",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
-          "title": { "type": "string", "optional": false, "properties": { "inner": { "type": "string", "optional": false } } }
+          "title": {
+            "type": "string",
+            "optional": false,
+            "properties": {
+              "inner": {
+                "type": "string",
+                "optional": false
+              }
+            }
+          }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -569,17 +896,30 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: has `items` but its type is \"object\" — only an `array` node has items",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
-          "profile": { "type": "object", "optional": false, "items": { "type": "string", "optional": false } }
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "items": {
+              "type": "string",
+              "optional": false
+            }
+          }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -589,15 +929,27 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.truncated: expected true or the field to be absent, got false",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false, "truncated": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false,
+            "truncated": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -607,22 +959,33 @@
       "expectValid": false,
       "expectErrorContains": "props.profile: is truncated but carries `properties`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
           "profile": {
             "type": "object",
             "optional": false,
             "truncated": true,
-            "properties": { "name": { "type": "string", "optional": false } }
+            "properties": {
+              "name": {
+                "type": "string",
+                "optional": false
+              }
+            }
           }
         },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -632,9 +995,10 @@
       "expectValid": false,
       "expectErrorContains": "exceeds the maximum prop depth of 8",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
+        "platforms": ["swift", "web"],
         "props": {
           "d1": {
             "type": "object",
@@ -667,7 +1031,12 @@
                                       "d8": {
                                         "type": "object",
                                         "optional": false,
-                                        "properties": { "d9": { "type": "string", "optional": false } }
+                                        "properties": {
+                                          "d9": {
+                                            "type": "string",
+                                            "optional": false
+                                          }
+                                        }
                                       }
                                     }
                                   }
@@ -687,8 +1056,13 @@
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -698,15 +1072,26 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string or an array of two or more unique type names, got [\"object\"]",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": ["object"], "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": ["object"],
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -716,15 +1101,26 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string or an array of two or more unique type names",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": ["string", "null", "string"], "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": ["string", "null", "string"],
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -734,15 +1130,31 @@
       "expectValid": false,
       "expectErrorContains": "props.profile.type: expected a non-empty string or an array of two or more unique type names",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": ["object", { "type": "null" }], "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": [
+              "object",
+              {
+                "type": "null"
+              }
+            ],
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -752,15 +1164,26 @@
       "expectValid": false,
       "expectErrorContains": "group: expected one of github, health, identity, location, other, reading, got \"coffee\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "coffee",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -770,15 +1193,26 @@
       "expectValid": false,
       "expectErrorContains": "group: expected one of github, health, identity, location, other, reading, got \"Identity\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "Identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -788,14 +1222,25 @@
       "expectValid": false,
       "expectErrorContains": "missing required field `group`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -805,15 +1250,26 @@
       "expectValid": false,
       "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"BioTerminal\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "BioTerminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -823,15 +1279,26 @@
       "expectValid": false,
       "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -841,33 +1308,54 @@
       "expectValid": false,
       "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"heart-rate-\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "heart-rate-",
         "group": "health",
-        "props": { "health": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "health": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
     {
-      "name": "states-empty-array",
-      "why": "A widget with no states has no renderable surface to hold to a contract. Empty is the drift shape a broken directory read produces, so it must never pass.",
-      "expectValid": false,
-      "expectErrorContains": "states: expected at least one state, got an empty array",
+      "name": "valid-empty-states-array",
+      "why": "v3 ACCEPTS an empty `states`, which v2 rejected. v2's rule held while the catalog covered three widgets that all had fixtures; across the full union it would force the generator to either throw on a widget with no fixture and no snapshot, or invent a state name that is on no disk. An empty array is the honest third answer, and it is the same written-gap discipline as a null a11y ref.",
+      "expectValid": true,
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": [],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -877,15 +1365,26 @@
       "expectValid": false,
       "expectErrorContains": "states: expected an array",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": "default,empty",
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -895,15 +1394,26 @@
       "expectValid": false,
       "expectErrorContains": "states: expected non-empty strings",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default", ""],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -913,15 +1423,26 @@
       "expectValid": false,
       "expectErrorContains": "states: duplicate state `empty`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default", "empty", "empty"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -931,15 +1452,26 @@
       "expectValid": false,
       "expectErrorContains": "a11y.voiceOverLabel: expected true or null, got false",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": false, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": false,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -949,15 +1481,26 @@
       "expectValid": false,
       "expectErrorContains": "a claimed label must cite <file>:<line>",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "heart-rate",
         "group": "health",
-        "props": { "health": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "health": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": true, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": true,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -967,15 +1510,26 @@
       "expectValid": false,
       "expectErrorContains": "a gap cites nothing",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": "Sources/LifegamesWidgets/Identity/BioTerminalView.swift:1" },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": "Sources/LifegamesWidgets/Identity/BioTerminalView.swift:1"
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -985,15 +1539,23 @@
       "expectValid": false,
       "expectErrorContains": "a11y: expected an object, got null",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
         "a11y": null,
-        "conformance": { "behavioralTest": null },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -1003,15 +1565,27 @@
       "expectValid": false,
       "expectErrorContains": "a11y: unknown field `dynamicType`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "heart-rate",
         "group": "health",
-        "props": { "health": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "health": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": true, "ref": "x.swift:1", "dynamicType": true },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": true,
+          "ref": "x.swift:1",
+          "dynamicType": true
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -1021,15 +1595,26 @@
       "expectValid": false,
       "expectErrorContains": "conformance.behavioralTest: expected a non-empty string or null, got false",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": false },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": false
+        },
         "generatedBy": "g"
       }
     },
@@ -1039,15 +1624,26 @@
       "expectValid": false,
       "expectErrorContains": "conformance.behavioralTest: expected a non-empty string or null, got \"\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": "" },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": ""
+        },
         "generatedBy": "g"
       }
     },
@@ -1057,15 +1653,27 @@
       "expectValid": false,
       "expectErrorContains": "conformance: unknown field `visualBaseline`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bookshelf",
         "group": "reading",
-        "props": { "books": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "books": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null, "visualBaseline": true },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null,
+          "visualBaseline": true
+        },
         "generatedBy": "g"
       }
     },
@@ -1075,50 +1683,81 @@
       "expectValid": false,
       "expectErrorContains": "conformance: expected an object",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bookshelf",
         "group": "reading",
-        "props": { "books": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "books": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
         "conformance": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts",
         "generatedBy": "g"
       }
     },
     {
       "name": "props-ref-empty-string",
-      "why": "The two refs are what make an entry auditable against real files. An empty one is unauditable.",
+      "why": "The two refs are what make an entry auditable against real files. Either may be a written `null` at v3, but an EMPTY STRING is neither a path nor a gap: it reads as populated and resolves to nothing.",
       "expectValid": false,
-      "expectErrorContains": "propsRef: expected a non-empty string, got \"\"",
+      "expectErrorContains": "propsRef: expected a non-empty string or null, got \"\"",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
     {
       "name": "swift-props-ref-missing",
-      "why": "The Swift half of the cross-platform contract is not optional. A web-only entry silently drops iOS from the catalog.",
+      "why": "v3 lets `swiftPropsRef` be `null` — a written gap — but not ABSENT. A missing key is indistinguishable from a generator that never looked, while a written null is a claim someone made. Strict keys keep the two apart.",
       "expectValid": false,
       "expectErrorContains": "missing required field `swiftPropsRef`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g"
       }
     },
@@ -1128,15 +1767,26 @@
       "expectValid": false,
       "expectErrorContains": "missing required field `generatedBy`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null }
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        }
       }
     },
     {
@@ -1145,15 +1795,26 @@
       "expectValid": false,
       "expectErrorContains": "entry: unknown field `notes`",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g",
         "notes": "looks fine to me"
       }
@@ -1185,17 +1846,30 @@
       "expectValid": false,
       "expectErrorContains": "sources.props: expected non-empty path strings",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
-        "props": { "profile": { "type": "object", "optional": false } },
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
         "propsRef": "a.types.ts",
         "swiftPropsRef": "a.swift",
         "states": ["default"],
-        "a11y": { "voiceOverLabel": null, "ref": null },
-        "conformance": { "behavioralTest": null },
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
         "generatedBy": "g",
-        "sources": { "props": 42 }
+        "sources": {
+          "props": 42
+        }
       }
     },
     {
@@ -1204,7 +1878,254 @@
       "expectValid": false,
       "expectErrorContains": "sources.states: expected at least one path",
       "entry": {
-        "specVersion": 2,
+        "specVersion": 3,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "platforms": ["swift", "web"],
+        "props": {
+          "profile": {
+            "type": "object",
+            "optional": false
+          }
+        },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": {
+          "voiceOverLabel": null,
+          "ref": null
+        },
+        "conformance": {
+          "behavioralTest": null
+        },
+        "generatedBy": "g",
+        "sources": {
+          "states": []
+        }
+      }
+    },
+    {
+      "name": "many-violations-are-all-reported",
+      "why": "The validator returns EVERY violation, not the first. A gate that reports one error per run turns a ten-error entry into ten runs.",
+      "expectValid": false,
+      "expectErrorContains": "specVersion: expected 3, got 7",
+      "entry": {
+        "specVersion": 7,
+        "widget": "Bio_Terminal",
+        "group": "coffee",
+        "platforms": [],
+        "props": {
+          "profile": {
+            "type": 1
+          }
+        },
+        "propsRef": "",
+        "swiftPropsRef": "",
+        "states": [],
+        "a11y": {
+          "voiceOverLabel": false
+        },
+        "conformance": {},
+        "generatedBy": ""
+      }
+    },
+    {
+      "name": "valid-web-only-partial-entry",
+      "why": "The v3 headline, first arm. `not-found` ships on the web and has no Swift view at all, so `swiftPropsRef` is a written null and `platforms` says `[\"web\"]`. Before v3 this widget could not be in the catalog, and an absent widget reads as no gap — which is exactly backwards.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 3,
+        "widget": "not-found",
+        "group": "identity",
+        "platforms": ["web"],
+        "props": { "regionLabel": { "type": ["string", "null"], "optional": true } },
+        "propsRef": "packages/web/src/widgets/identity/NotFound.types.ts",
+        "swiftPropsRef": null,
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "valid-swift-only-partial-entry",
+      "why": "The other arm. `og-image` has a Swift view and a hand-written schema but no `.types.ts`, so `propsRef` is null while `props` is populated — the two are separate axes, and collapsing them would lose a prop tree that really was read.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 3,
+        "widget": "og-image",
+        "group": "other",
+        "platforms": ["swift"],
+        "props": { "name": { "type": "string", "optional": false } },
+        "propsRef": null,
+        "swiftPropsRef": "Sources/LifegamesWidgets/Other/OGImageProps.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "valid-swift-only-entry-with-no-generated-schema",
+      "why": "`props` is `null` when no generated widget schema exists to read one from. The entry still holds a contract, because `swiftPropsRef` resolves to the props type. No widget in the repo is in this state today — every one of the 33 has a schema, including the three whose schemas are hand-written rather than derived from a `.types.ts` — so this vector is the only thing exercising the null-props branch, and it is here so the branch is not dead grammar.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 3,
+        "widget": "sync-status",
+        "group": "other",
+        "platforms": ["swift"],
+        "props": null,
+        "propsRef": null,
+        "swiftPropsRef": "Sources/LifegamesWidgetsWatch/SyncStatusProps.swift",
+        "states": ["default", "stale"],
+        "a11y": {
+          "voiceOverLabel": true,
+          "ref": "Sources/LifegamesWidgetsWatch/SyncStatusView.swift:1"
+        },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "entry-with-neither-props-nor-a-swift-props-ref",
+      "why": "The floor under partial entries. Admitting one-sided entries is what makes the catalog cover the whole set; it is also the shape a broken source read produces. An entry recording neither a prop tree nor a Swift props file holds nothing anyone could be held to, and would sit in the catalog reading as covered.",
+      "expectValid": false,
+      "expectErrorContains": "props is null and swiftPropsRef is null",
+      "entry": {
+        "specVersion": 3,
+        "widget": "og-image",
+        "group": "other",
+        "platforms": ["swift"],
+        "props": null,
+        "propsRef": null,
+        "swiftPropsRef": null,
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "props-is-a-number",
+      "why": "`null` is the only non-object `props` the grammar accepts. Anything else is a malformed read, not a gap.",
+      "expectValid": false,
+      "expectErrorContains": "props: expected an object or null, got 0",
+      "entry": {
+        "specVersion": 3,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "platforms": ["swift", "web"],
+        "props": 0,
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-empty-array",
+      "why": "A widget on neither platform is not a widget. Empty is what a filter over a mistyped platform name produces, so it must red rather than read as an unremarkable partial entry.",
+      "expectValid": false,
+      "expectErrorContains": "platforms: expected at least one of swift, web",
+      "entry": {
+        "specVersion": 3,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "platforms": [],
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-unknown-member",
+      "why": "`watchos` is a real target in this repo, and its widgets are recorded under `swift` because they are read from Swift sources. A third value here would split the platform axis without a grammar change and a version bump.",
+      "expectValid": false,
+      "expectErrorContains": "platforms: expected a subset of swift, web",
+      "entry": {
+        "specVersion": 3,
+        "widget": "sync-status",
+        "group": "other",
+        "platforms": ["swift", "watchos"],
+        "props": { "status": { "type": "string", "optional": false } },
+        "propsRef": null,
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-unsorted",
+      "why": "`platforms` is a SET written as an array, so two orders spell one claim and the committed bytes would depend on read order rather than on the widget. Sorted is the canonical form, the same rule that sorts prop keys at every level.",
+      "expectValid": false,
+      "expectErrorContains": "platforms: expected [\"swift\",\"web\"], got [\"web\",\"swift\"]",
+      "entry": {
+        "specVersion": 3,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "platforms": ["web", "swift"],
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-duplicate-member",
+      "why": "A repeat is what a merge of two partial reads produces, and it inflates nothing a reader can see — the set still looks like one platform until they count.",
+      "expectValid": false,
+      "expectErrorContains": "platforms: duplicate entry in [\"swift\",\"swift\"]",
+      "entry": {
+        "specVersion": 3,
+        "widget": "og-image",
+        "group": "other",
+        "platforms": ["swift", "swift"],
+        "props": { "name": { "type": "string", "optional": false } },
+        "propsRef": null,
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-not-an-array",
+      "why": "A single-platform entry written as a bare string is the plausible hand-edit, and it loses the ability to express both.",
+      "expectValid": false,
+      "expectErrorContains": "platforms: expected an array, got \"web\"",
+      "entry": {
+        "specVersion": 3,
+        "widget": "not-found",
+        "group": "identity",
+        "platforms": "web",
+        "props": { "regionLabel": { "type": "string", "optional": true } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": null,
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-missing",
+      "why": "The axis that says which halves of the contract are present cannot itself be absent.",
+      "expectValid": false,
+      "expectErrorContains": "missing required field `platforms`",
+      "entry": {
+        "specVersion": 3,
         "widget": "bio-terminal",
         "group": "identity",
         "props": { "profile": { "type": "object", "optional": false } },
@@ -1213,26 +2134,88 @@
         "states": ["default"],
         "a11y": { "voiceOverLabel": null, "ref": null },
         "conformance": { "behavioralTest": null },
-        "generatedBy": "g",
-        "sources": { "states": [] }
+        "generatedBy": "g"
       }
     },
     {
-      "name": "many-violations-are-all-reported",
-      "why": "The validator returns EVERY violation, not the first. A gate that reports one error per run turns a ten-error entry into ten runs.",
+      "name": "platforms-claims-web-without-a-props-ref",
+      "why": "`propsRef` IS the web types file, so `web` in `platforms` and a null `propsRef` contradict each other. Without this coupling `platforms` is decoration: nothing else in the entry could contradict a wrong value, and a partial entry could claim coverage it does not have.",
       "expectValid": false,
-      "expectErrorContains": "specVersion: expected 2, got 7",
+      "expectErrorContains": "propsRef is null but platforms is [\"swift\",\"web\"]",
       "entry": {
-        "specVersion": 7,
-        "widget": "Bio_Terminal",
-        "group": "coffee",
-        "props": { "profile": { "type": 1 } },
-        "propsRef": "",
-        "swiftPropsRef": "",
-        "states": [],
-        "a11y": { "voiceOverLabel": false },
-        "conformance": {},
-        "generatedBy": ""
+        "specVersion": 3,
+        "widget": "og-image",
+        "group": "other",
+        "platforms": ["swift", "web"],
+        "props": { "name": { "type": "string", "optional": false } },
+        "propsRef": null,
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-omits-web-despite-a-props-ref",
+      "why": "The same coupling read the other way. An entry citing a web types file while claiming the widget is Swift-only is a partial entry that is partial about the wrong half.",
+      "expectValid": false,
+      "expectErrorContains": "but platforms is [\"swift\"] — propsRef IS the web types file",
+      "entry": {
+        "specVersion": 3,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "platforms": ["swift"],
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "packages/web/src/widgets/identity/BioTerminal.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "platforms-omits-swift-despite-a-swift-props-ref",
+      "why": "One-way on purpose: a Swift props file implies a Swift platform, but the converse does not hold — five widgets in this repo have a Swift view and no dedicated Props file because they share a props type, and their entries are legitimately `[\"swift\", \"web\"]` with a null `swiftPropsRef`.",
+      "expectValid": false,
+      "expectErrorContains": "a Swift props file means a Swift platform",
+      "entry": {
+        "specVersion": 3,
+        "widget": "not-found",
+        "group": "identity",
+        "platforms": ["web"],
+        "props": { "regionLabel": { "type": "string", "optional": true } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Identity/NotFoundProps.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "valid-shared-swift-props-type",
+      "why": "The case the one-way coupling above exists for. `place-leaderboard-v3` has `PlaceLeaderboardView.swift` and no `PlaceLeaderboardProps.swift` — its props live in the shared `LocationProps.swift`. The entry is on BOTH platforms with a null `swiftPropsRef`, and naming the shared file would be a guess this generator does not make.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 3,
+        "widget": "place-leaderboard-v3",
+        "group": "location",
+        "platforms": ["swift", "web"],
+        "props": {
+          "places": {
+            "type": "array",
+            "optional": false,
+            "items": { "type": "string", "optional": false }
+          }
+        },
+        "propsRef": "packages/web/src/widgets/location/PlaceLeaderboardV3.types.ts",
+        "swiftPropsRef": null,
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
       }
     }
   ]

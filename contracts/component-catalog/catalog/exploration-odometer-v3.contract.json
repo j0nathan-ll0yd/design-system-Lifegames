@@ -1,0 +1,74 @@
+{
+  "specVersion": 3,
+  "widget": "exploration-odometer-v3",
+  "group": "location",
+  "platforms": ["swift", "web"],
+  "props": {
+    "citiesVisited": {
+      "type": "number",
+      "optional": false
+    },
+    "explorationStats": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "totalCities": {
+          "type": "number",
+          "optional": false
+        },
+        "totalNeighborhoods": {
+          "type": "number",
+          "optional": false
+        },
+        "totalStates": {
+          "type": "number",
+          "optional": false
+        }
+      }
+    },
+    "totalDurationHours": {
+      "type": "number",
+      "optional": false
+    },
+    "totalPlaces": {
+      "type": "number",
+      "optional": false
+    },
+    "totalVisits": {
+      "type": "number",
+      "optional": false
+    }
+  },
+  "propsRef": "packages/web/src/widgets/location/ExplorationOdometerV3.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Location/ExplorationOdometerProps.swift",
+  "states": [
+    "dark",
+    "default",
+    "empty",
+    "homebody",
+    "loading",
+    "new-city-week",
+    "passport-week",
+    "populated-max",
+    "populated-min",
+    "roadtripper",
+    "skeleton",
+    "weekend-warrior"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/exploration-odometer-v3.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/location/exploration-odometer-v3[.<state>].json",
+      "apps/storybook/__snapshots__/production-location-explorationodometerv3--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Location/ExplorationOdometerView.swift"
+  }
+}

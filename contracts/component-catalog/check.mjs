@@ -10,8 +10,9 @@
  *      CATALOG_SPEC_VERSION matches the vectors' specVersion, every vector holds. Without this the
  *      other three checks are running an unverified validator.
  *   2. VALIDITY — every `catalog/*.contract.json` satisfies the grammar.
- *   3. COMPLETENESS — every pilot widget has an entry, and every entry resolves to files that exist.
- *      A contract naming a deleted view is worse than a missing contract: it reads as covered.
+ *   3. COMPLETENESS — every widget in the UNION of the Swift and web widget trees has exactly one
+ *      entry, no entry exists outside that union, and every non-null ref resolves to a file that
+ *      exists. A contract naming a deleted view is worse than a missing contract: it reads as covered.
  *   4. IDEMPOTENCE — regenerate into a temp directory and compare bytes against what is committed.
  *      This is the check that makes the catalog a SPEC rather than a document: a hand-edit to a
  *      committed contract, or a source change nobody regenerated for, reds here.
@@ -26,7 +27,7 @@ import {tmpdir} from 'node:os'
 import {basename, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {CATALOG_DIR, generateAll, PILOT_WIDGETS, REPO_ROOT} from './generate.mjs'
+import {CATALOG_DIR, catalogWidgets, generateAll, REPO_ROOT} from './generate.mjs'
 import {runFromDisk} from './runner.mjs'
 import {CATALOG_SPEC_VERSION, validateEntry} from './schema.mjs'
 
@@ -87,19 +88,39 @@ for (const file of contractFiles) {
 record(`entry validity (${contractFiles.length} contract file(s))`, validityFailures)
 
 // ── 3. Completeness ──────────────────────────────────────────────────────────
+//
+// At v3 the covered set is the UNION of the Swift widget tree and the web widget tree, discovered on
+// every run rather than hand-listed. Both directions are checked: a union widget with no entry is an
+// uncovered widget, and an entry outside the union is a PHANTOM — a contract for something that no
+// longer exists, which reads as coverage and is the more dangerous of the two.
 const completenessFailures = []
+const union = catalogWidgets()
+const unionSet = new Set(union)
 
-for (const widget of PILOT_WIDGETS) {
+for (const widget of union) {
   if (!entries.has(widget)) {
-    completenessFailures.push(`pilot widget \`${widget}\` has no entry — expected catalog/${widget}${SUFFIX}`)
+    completenessFailures.push(`widget \`${widget}\` is in the Swift/web union but has no entry — expected catalog/${widget}${SUFFIX}`)
   }
 }
 
 for (const [widget, entry] of [...entries].sort()) {
-  // Every ref must resolve to a real file. `sources` values may be glob-shaped placeholders
-  // (`<state>`, `[.<state>]`, `*`) which describe a filename family rather than one file, so only
-  // the literal paths are stat-ed.
-  const refs = [['propsRef', entry.propsRef], ['swiftPropsRef', entry.swiftPropsRef]]
+  if (!unionSet.has(widget)) {
+    completenessFailures.push(`${widget}: has an entry but is in neither the Swift nor the web widget tree — remove the phantom contract`)
+    continue
+  }
+
+  // Every ref must resolve to a real file. A `null` ref is a WRITTEN GAP (a partial entry: no web
+  // types file, or no dedicated Swift props file) and is skipped rather than treated as a miss.
+  // `sources` values may be glob-shaped placeholders (`<state>`, `[.<state>]`, `*`) which describe a
+  // filename family rather than one file, so only the literal paths are stat-ed.
+  const refs = [['propsRef', entry.propsRef], ['swiftPropsRef', entry.swiftPropsRef]].filter(([, value]) => value !== null)
+
+  // A partial entry still has to point at something real on the platform it claims. An entry whose
+  // every file ref is null describes a widget nobody can locate.
+  if (refs.length === 0) {
+    completenessFailures.push(`${widget}: both propsRef and swiftPropsRef are null — the entry resolves to no widget on either platform`)
+  }
+
   if (entry.a11y.ref !== null) {
     refs.push(['a11y.ref', entry.a11y.ref.replace(/:\d+$/, '')])
   }
@@ -116,7 +137,7 @@ for (const [widget, entry] of [...entries].sort()) {
     }
   }
 }
-record(`completeness (${PILOT_WIDGETS.length} pilot widgets, ${entries.size} entries)`, completenessFailures)
+record(`completeness (${union.length} widgets in the Swift/web union, ${entries.size} entries)`, completenessFailures)
 
 // ── 4. Idempotence ───────────────────────────────────────────────────────────
 const idempotenceFailures = []
@@ -138,7 +159,7 @@ try {
   }
   for (const file of contractFiles) {
     if (!expected.has(file)) {
-      idempotenceFailures.push(`${file}: committed, but the generator does not produce it — remove it or add the widget to PILOT in generate.mjs`)
+      idempotenceFailures.push(`${file}: committed, but the generator does not produce it — the widget left the union, so remove the contract`)
     }
   }
 } finally {
