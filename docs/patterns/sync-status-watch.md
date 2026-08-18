@@ -62,4 +62,4 @@ None planned in v1.
 
 - Fixture: [`Sources/LifegamesWidgets/Resources/widgets/other/sync-status.json`](../../Sources/LifegamesWidgets/Resources/widgets/other/sync-status.json)
 - Snapshot tests: [`Tests/LifegamesWidgetsTests/WatchSyncDiagnosticsSnapshotTests.swift`](../../Tests/LifegamesWidgetsTests/WatchSyncDiagnosticsSnapshotTests.swift)
-- Plan: [`monorepo-LifegamesPortal/.omc/plans/watch-redesign-sync-and-diagnostics.md`](../../../monorepo-LifegamesPortal/.omc/plans/watch-redesign-sync-and-diagnostics.md)
+- Plan: [`atlas/.omc/plans/watch-redesign-sync-and-diagnostics.md`](../../../atlas/.omc/plans/watch-redesign-sync-and-diagnostics.md)
