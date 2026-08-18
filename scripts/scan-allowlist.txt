@@ -456,10 +456,15 @@ docs/adr/0007-tokens-style-dictionary-removal-semver-tier.md:marker:j0nathan-ll0
 # `conformance.behavioralTest` is a cross-repo reference to that repo's
 # behavioral render test — the one axis the generator cannot discover locally.
 # A fictional or elided path would make the reference unfollowable, which is the
-# fabricated-pass failure the catalog exists to prevent. The three hits are the
-# PILOT table that declares it, the generated bookshelf contract that carries it,
-# and the conformance vector whose fully-populated case exercises it. A public
-# GitHub handle / repo slug, not personal data.
+# fabricated-pass failure the catalog exists to prevent. The hits are the
+# BEHAVIORAL_TESTS map that declares them, the generated contract of each widget
+# that carries one, and the conformance vector whose fully-populated case
+# exercises the field. A public GitHub handle / repo slug, not personal data.
+#
+# One line per widget rather than a directory glob: the catalog holds 33 generated
+# contracts and only two cite a consumer test, so a glob would silently cover the
+# other 31 as well and this scan would stop being a gate on them.
 contracts/component-catalog/generate.mjs:marker:j0nathan-ll0yd
 contracts/component-catalog/catalog/bookshelf.contract.json:marker:j0nathan-ll0yd
+contracts/component-catalog/catalog/theatre-reviews.contract.json:marker:j0nathan-ll0yd
 contracts/component-catalog/component-catalog-conformance.json:marker:j0nathan-ll0yd

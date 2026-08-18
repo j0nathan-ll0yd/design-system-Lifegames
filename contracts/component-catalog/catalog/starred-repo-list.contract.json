@@ -1,0 +1,74 @@
+{
+  "specVersion": 3,
+  "widget": "starred-repo-list",
+  "group": "github",
+  "platforms": ["swift", "web"],
+  "props": {
+    "repos": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "language": {
+            "type": "string",
+            "optional": false
+          },
+          "languageColor": {
+            "type": "string",
+            "optional": false
+          },
+          "name": {
+            "type": "string",
+            "optional": false
+          },
+          "owner": {
+            "type": "string",
+            "optional": false
+          },
+          "starredAt": {
+            "type": "string",
+            "optional": false
+          },
+          "stars": {
+            "type": "number",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/github/StarredRepoList.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/GitHub/StarredRepoListProps.swift",
+  "states": [
+    "archived-mix",
+    "dark",
+    "default",
+    "empty",
+    "freshly-starred",
+    "loading",
+    "one-language",
+    "org-starred",
+    "polyglot",
+    "populated-max",
+    "populated-min",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/starred-repo-list.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list[.<state>].json",
+      "apps/storybook/__snapshots__/production-github-starredrepolist--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/GitHub/StarredRepoListView.swift"
+  }
+}

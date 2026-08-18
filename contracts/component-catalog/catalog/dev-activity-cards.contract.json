@@ -1,0 +1,78 @@
+{
+  "specVersion": 3,
+  "widget": "dev-activity-cards",
+  "group": "github",
+  "platforms": ["swift", "web"],
+  "props": {
+    "events": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "additions": {
+            "type": "number",
+            "optional": true
+          },
+          "date": {
+            "type": "string",
+            "optional": false
+          },
+          "deletions": {
+            "type": "number",
+            "optional": true
+          },
+          "hash": {
+            "type": "string",
+            "optional": true
+          },
+          "number": {
+            "type": "number",
+            "optional": true
+          },
+          "repo": {
+            "type": "string",
+            "optional": false
+          },
+          "title": {
+            "type": "string",
+            "optional": false
+          },
+          "type": {
+            "type": "string",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/github/DevActivityCards.types.ts",
+  "swiftPropsRef": null,
+  "states": [
+    "default",
+    "empty",
+    "populated-max",
+    "populated-min",
+    "skeleton",
+    "variation-a",
+    "variation-b",
+    "variation-c"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/dev-activity-cards.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-cards[.<state>].json",
+      "apps/storybook/__snapshots__/production-github-devactivitycards--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/GitHub/DevActivityCardsView.swift"
+  }
+}

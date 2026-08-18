@@ -11,20 +11,25 @@
  */
 
 import assert from 'node:assert/strict'
-import {mkdtempSync, readFileSync, rmSync} from 'node:fs'
+import {existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
-import {join} from 'node:path'
+import {dirname, join} from 'node:path'
 import test from 'node:test'
 
-import {buildEntry, buildPropNode, buildPropTree, generateAll, PILOT_WIDGETS, REPO_ROOT} from './generate.mjs'
+import {buildPropNode, buildPropTree, catalogWidgets, generateAll, REPO_ROOT, schemaIndex, toKebab, unionWidgets} from './generate.mjs'
 import {assertVectorIntegrity, runCatalogConformance, runFromDisk, SIDECAR_PATH, VECTORS_PATH} from './runner.mjs'
-import {CATALOG_SPEC_VERSION, KNOWN_GROUPS, MAX_PROP_DEPTH, validateEntry} from './schema.mjs'
+import {CATALOG_SPEC_VERSION, KNOWN_GROUPS, KNOWN_PLATFORMS, MAX_PROP_DEPTH, validateEntry} from './schema.mjs'
 
 const vectorBytes = readFileSync(VECTORS_PATH)
 const vectors = JSON.parse(vectorBytes.toString('utf8'))
 const scratch = () => mkdtempSync(join(tmpdir(), 'component-catalog-test-'))
 
+/** The covered set: the union of the Swift and web widget trees, discovered the same way the gate does. */
+const WIDGETS = catalogWidgets()
+const UNION = unionWidgets()
+
 const contractOf = (widget) => JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
+const entriesOf = () => WIDGETS.map(contractOf)
 
 /** Every node of a prop tree, paired with its depth and its path, so an invariant can be asserted over all of them. */
 function walkPropTree(props, depth = 1, path = 'props') {
@@ -50,6 +55,7 @@ const entryWithProps = (props) => ({
   specVersion: CATALOG_SPEC_VERSION,
   widget: 'bio-terminal',
   group: 'identity',
+  platforms: ['swift', 'web'],
   props,
   propsRef: 'a.types.ts',
   swiftPropsRef: 'a.swift',
@@ -154,7 +160,7 @@ test('grammar: valid and errors never disagree', () => {
 })
 
 test('grammar: every committed contract is valid and declares a known group', () => {
-  for (const widget of PILOT_WIDGETS) {
+  for (const widget of WIDGETS) {
     const entry = contractOf(widget)
     assert.deepEqual(validateEntry(entry), {valid: true, errors: []}, widget)
     assert.ok(KNOWN_GROUPS.includes(entry.group), `${widget} group ${entry.group}`)
@@ -252,13 +258,15 @@ test('generator: every derived ref resolves to a real file', async () => {
   const dir = scratch()
   try {
     await generateAll({outDir: dir})
-    for (const widget of PILOT_WIDGETS) {
+    for (const widget of WIDGETS) {
       const entry = JSON.parse(readFileSync(join(dir, `${widget}.contract.json`), 'utf8'))
-      // readFileSync throws if the path is wrong, which is the assertion.
-      readFileSync(join(REPO_ROOT, entry.propsRef))
-      readFileSync(join(REPO_ROOT, entry.swiftPropsRef))
-      readFileSync(join(REPO_ROOT, entry.sources.props))
-      readFileSync(join(REPO_ROOT, entry.sources.a11y))
+      // readFileSync throws if the path is wrong, which is the assertion. A `null` ref is a written
+      // gap on a partial entry and has no file to resolve, which is a different claim from a wrong one.
+      for (const ref of [entry.propsRef, entry.swiftPropsRef, entry.sources.props, entry.sources.a11y]) {
+        if (ref !== null && ref !== undefined) {
+          readFileSync(join(REPO_ROOT, ref))
+        }
+      }
     }
   } finally {
     rmSync(dir, {recursive: true, force: true})
@@ -268,11 +276,9 @@ test('generator: every derived ref resolves to a real file', async () => {
 test('generator: a populated a11y ref cites a line that really holds the label', () => {
   // The one axis a reader is most likely to take on trust. Resolve the <file>:<line> and read it
   // back: if the view is edited and nobody regenerates, this line no longer holds the call.
-  const populated = PILOT_WIDGETS.map((widget) =>
-    JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
-  ).filter((entry) => entry.a11y.voiceOverLabel === true)
+  const populated = entriesOf().filter((entry) => entry.a11y.voiceOverLabel === true)
 
-  assert.ok(populated.length > 0, 'the pilot set must include at least one widget with a VoiceOver label')
+  assert.ok(populated.length > 0, 'the catalog must include at least one widget with a VoiceOver label')
 
   for (const entry of populated) {
     const [path, line] = [entry.a11y.ref.replace(/:\d+$/, ''), Number(entry.a11y.ref.match(/:(\d+)$/)[1])]
@@ -282,14 +288,19 @@ test('generator: a populated a11y ref cites a line that really holds the label',
 })
 
 test('generator: an unpopulated a11y axis is a written gap, and its source really has no label', () => {
-  const gaps = PILOT_WIDGETS.map((widget) =>
-    JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
-  ).filter((entry) => entry.a11y.voiceOverLabel === null)
+  // Two ways to be a gap, and they are told apart by PROVENANCE rather than by a second null: the
+  // widget has a Swift view with no label in it (`sources.a11y` is written), or it has no Swift view
+  // to read at all (`sources.a11y` is absent). Only the first is checkable against a file.
+  const gaps = entriesOf().filter((entry) => entry.a11y.voiceOverLabel === null)
 
-  assert.ok(gaps.length > 0, 'the pilot set must include at least one widget without a VoiceOver label')
+  assert.ok(gaps.length > 0, 'the catalog must include at least one widget without a VoiceOver label')
 
   for (const entry of gaps) {
     assert.equal(entry.a11y.ref, null, entry.widget)
+    if (entry.sources.a11y === undefined) {
+      assert.ok(!entry.platforms.includes('swift'), `${entry.widget}: no a11y source was read, so the widget must not claim the swift platform`)
+      continue
+    }
     const source = readFileSync(join(REPO_ROOT, entry.sources.a11y), 'utf8')
     assert.ok(!source.includes('.accessibilityLabel('), `${entry.widget}: ${entry.sources.a11y} has a label the catalog records as absent`)
   }
@@ -298,7 +309,7 @@ test('generator: an unpopulated a11y axis is a written gap, and its source reall
 test('generator: the props of a contract match the source schema it cites', () => {
   // The anti-drift assertion. Read the generated widget schema independently and compare the prop
   // NAMES and optionality the catalog claims. Nothing here is typed by hand.
-  for (const widget of PILOT_WIDGETS) {
+  for (const widget of WIDGETS.filter((slug) => contractOf(slug).props !== null)) {
     const entry = contractOf(widget)
     const schema = JSON.parse(readFileSync(join(REPO_ROOT, entry.sources.props), 'utf8'))
     const required = new Set(schema.required ?? [])
@@ -317,7 +328,7 @@ test('generator: the NESTED prop names of a contract match the source schema it 
   // would be absent here and this reds.
   const objectMemberOf = (node) => (Array.isArray(node.anyOf) ? node.anyOf : [node]).find((member) => member?.properties)
 
-  for (const widget of PILOT_WIDGETS) {
+  for (const widget of WIDGETS.filter((slug) => contractOf(slug).props !== null)) {
     const entry = contractOf(widget)
     const schema = JSON.parse(readFileSync(join(REPO_ROOT, entry.sources.props), 'utf8'))
     for (const [name, node] of Object.entries(entry.props)) {
@@ -333,12 +344,13 @@ test('generator: the NESTED prop names of a contract match the source schema it 
 
 test('generator: the committed trees really are deep, and every node is canonical', () => {
   // The regression guard on the whole increment: if the generator reverted to a flat map, every
-  // pilot tree would be one level and the depth assertion below reds. The invariants are asserted
-  // over EVERY node, so a bug that only bites below the second level cannot hide.
+  // tree would be one level and the depth assertion below reds. The invariants are asserted over
+  // EVERY node, so a bug that only bites below the second level cannot hide.
   let deepest = 0
-  for (const widget of PILOT_WIDGETS) {
+  // Four widgets in this repo really take no props, so an empty tree is legal here; `props: null` is
+  // the separate case of no schema to read at all.
+  for (const widget of WIDGETS.filter((slug) => contractOf(slug).props !== null)) {
     const nodes = walkPropTree(contractOf(widget).props)
-    assert.ok(nodes.length > 0, widget)
     for (const {node, depth, path} of nodes) {
       deepest = Math.max(deepest, depth)
       assert.ok(depth <= MAX_PROP_DEPTH, `${widget} ${path} is at depth ${depth}, past the cap of ${MAX_PROP_DEPTH}`)
@@ -360,7 +372,7 @@ test('generator: the committed trees really are deep, and every node is canonica
       }
     }
   }
-  assert.ok(deepest >= 3, `the pilot set must exercise real depth; deepest node is at ${deepest}`)
+  assert.ok(deepest >= 3, `the catalog must exercise real depth; deepest node is at ${deepest}`)
 })
 
 test('generator: the depth cap truncates rather than recursing forever', () => {
@@ -408,16 +420,170 @@ test('generator: a schema node with no type is recorded as unknown, never guesse
   assert.deepEqual(buildPropNode({}, true, 1), {type: 'unknown', optional: true})
 })
 
-test('generator: states are sorted, unique and non-empty', () => {
-  for (const widget of PILOT_WIDGETS) {
-    const {states} = JSON.parse(readFileSync(join(REPO_ROOT, `contracts/component-catalog/catalog/${widget}.contract.json`), 'utf8'))
-    assert.ok(states.length > 0, widget)
-    assert.deepEqual(states, [...new Set(states)].sort(), `${widget} states must be sorted and deduplicated`)
+test('generator: states are sorted and unique', () => {
+  // Empty is legal at v3 — it means neither a fixture nor a snapshot was found, which is an honest
+  // answer rather than a reason to invent a state name. At least one widget must have some, or the
+  // states axis would be silently reading nothing at all.
+  for (const entry of entriesOf()) {
+    assert.deepEqual(entry.states, [...new Set(entry.states)].sort(), `${entry.widget} states must be sorted and deduplicated`)
+  }
+  assert.ok(entriesOf().some((entry) => entry.states.length > 0), 'no widget has any state; the states axis is reading nothing')
+})
+
+test('generator: the emitted bytes do not depend on where they are written', async () => {
+  // The regression that made the idempotence check lie in both directions. `formatJson` resolves
+  // Prettier's config from the file's place in the REAL catalog directory; resolving it from the
+  // output directory instead found no `.prettierrc.mjs` under a temp path and silently reformatted at
+  // Prettier's default printWidth of 80, so a temp-dir regeneration differed from the committed bytes
+  // on every line between 80 and the repo's 100 columns.
+  const dir = scratch()
+  try {
+    await generateAll({outDir: dir})
+    for (const widget of WIDGETS) {
+      const file = `${widget}.contract.json`
+      assert.equal(readFileSync(join(dir, file), 'utf8'), readFileSync(join(REPO_ROOT, 'contracts/component-catalog/catalog', file), 'utf8'),
+        `${file}: a temp-directory generation must be byte-identical to the committed one`)
+    }
+  } finally {
+    rmSync(dir, {recursive: true, force: true})
   }
 })
 
-test('generator: an unknown widget slug throws rather than emitting an empty entry', () => {
-  // The failure mode that would otherwise produce a contract full of nulls that reads as coverage.
-  assert.throws(() => buildEntry(REPO_ROOT, {widget: 'no-such-widget', behavioralTest: null}),
-    /expected exactly one group to contain NoSuchWidget\.types\.ts, found none/)
+// ─────────────────────────────────────────────────────────────────────────────
+// The union set and partial entries (specVersion 3)
+// ─────────────────────────────────────────────────────────────────────────────
+
+test('union: the catalog covers the Swift/web union exactly, with no phantom entries', () => {
+  const committed = readdirSync(join(REPO_ROOT, 'contracts/component-catalog/catalog')).filter((file) => file.endsWith('.contract.json')).map((file) =>
+    file.slice(0, -'.contract.json'.length)
+  ).sort()
+  assert.deepEqual(committed, [...WIDGETS].sort(), 'every union widget has exactly one contract, and no contract exists outside the union')
+})
+
+test('union: it holds both partial arms, and each one is partial about the right half', () => {
+  // The point of v3. If either arm were empty the grammar's null branches would be unexercised by any
+  // real widget, and the catalog would be back to covering only the complete ones.
+  const webOnly = UNION.filter(({web, swift}) => web !== null && swift === null)
+  const swiftOnly = UNION.filter(({web, swift}) => web === null && swift !== null)
+
+  assert.ok(webOnly.length > 0, 'no web-only widget; the partial-entry path is untested by any real widget')
+  assert.ok(swiftOnly.length > 0, 'no Swift-only widget; the partial-entry path is untested by any real widget')
+
+  for (const {id} of webOnly) {
+    const entry = contractOf(id)
+    assert.deepEqual(entry.platforms, ['web'], id)
+    assert.equal(entry.swiftPropsRef, null, `${id}: a web-only widget cites no Swift props file`)
+    assert.equal(entry.a11y.voiceOverLabel, null, `${id}: a11y is read from a Swift view, which this widget does not have`)
+  }
+  for (const {id} of swiftOnly) {
+    const entry = contractOf(id)
+    assert.deepEqual(entry.platforms, ['swift'], id)
+    assert.equal(entry.propsRef, null, `${id}: a Swift-only widget cites no web types file`)
+  }
+})
+
+test('union: every entry platform claim is backed by a file on disk', () => {
+  // `platforms` is the one axis a reader cannot check by opening a single cited file, because it is a
+  // claim about ABSENCE on the other side. Resolve both sides independently here.
+  for (const {id, web, swift} of UNION) {
+    const entry = contractOf(id)
+    assert.deepEqual(entry.platforms, KNOWN_PLATFORMS.filter((p) => (p === 'web' ? web !== null : swift !== null)), `${id} platforms`)
+    if (web !== null) {
+      assert.ok(existsSync(join(REPO_ROOT, web.ref)), `${id}: claims web but ${web.ref} does not exist`)
+      assert.equal(entry.propsRef, web.ref, id)
+    }
+    if (swift !== null) {
+      assert.ok(existsSync(join(REPO_ROOT, swift.viewRef)), `${id}: claims swift but ${swift.viewRef} does not exist`)
+    }
+  }
+})
+
+test('union: a Swift widget with no dedicated Props file is recorded as a null, not as web-only', () => {
+  // Five widgets share a props type (`DevActivityEvent`, `LocationProps`). Keying Swift presence on
+  // the Props file instead of the View file would write all five up as web-only, which is false, and
+  // naming the shared file would be a guess. The null is the honest third answer.
+  const shared = UNION.filter(({swift}) => swift !== null && swift.propsRef === null)
+  assert.ok(shared.length > 0, 'no widget exercises the shared-props-type path')
+  for (const {id} of shared) {
+    const entry = contractOf(id)
+    assert.equal(entry.swiftPropsRef, null, id)
+    assert.ok(entry.platforms.includes('swift'), `${id}: has a Swift view, so it is on the swift platform`)
+    assert.notEqual(entry.props, null, `${id}: with no Swift props file, the prop tree is the only contract left`)
+  }
+})
+
+test('union: every widget id pairs a schema, and the id is the schema filename verbatim', () => {
+  // The normalization rule, asserted rather than described. `toKebab` alone would mis-pair `OGImage`
+  // (it kebabs to `ogimage` while the committed schema is `og-image.schema.json`), which is why the
+  // canonical id comes from the schema FILENAME and the pairing from its `title`.
+  const {byId, byPascal} = schemaIndex(REPO_ROOT)
+  const exceptions = []
+  for (const [pascal, id] of byPascal) {
+    if (toKebab(`${pascal}Props`) !== id) {
+      exceptions.push(`${pascal} -> ${id}`)
+    }
+  }
+  assert.deepEqual(exceptions, ['OGImage -> og-image'], 'a new toKebab exception means the id normalization needs re-checking, not silencing')
+
+  for (const {id, schema} of UNION) {
+    if (schema === null) {
+      continue
+    }
+    assert.equal(schema.ref, `packages/schemas/generated/widgets/${id}.schema.json`, id)
+    assert.ok(byId.has(id), id)
+  }
+})
+
+test('union: the -v3 suffix mismatch resolves to the schema id, with the Swift file recorded beside it', () => {
+  // `ExplorationOdometerView.swift` against `exploration-odometer-v3.schema.json`. The versioned id
+  // wins because the schema is the props source; the unversioned Swift view is not lost, it is
+  // recorded through the Swift side of the entry.
+  const versioned = UNION.filter(({id, swift}) => swift !== null && /-v\d+$/.test(id))
+  assert.ok(versioned.length > 0, 'no versioned widget; the suffix-mismatch path is untested')
+  for (const {id, swift} of versioned) {
+    // The Swift view really does carry the UNVERSIONED name — otherwise this widget would not be
+    // exercising the mismatch at all, and the rule that resolves it would be dead code.
+    assert.equal(toKebab(`${swift.pascal}Props`), id.replace(/-v\d+$/, ''), `${id}: expected an unversioned Swift view name`)
+    assert.ok(existsSync(join(REPO_ROOT, swift.viewRef)), `${id}: ${swift.viewRef}`)
+    assert.ok(contractOf(id).platforms.includes('swift'), id)
+  }
+})
+
+test('union: every production visual baseline is claimed by exactly one entry', () => {
+  // The falsifier on the snapshot-prefix derivation. Storybook ids are the PascalCase name
+  // LOWERCASED with no separators, not the kebab slug — v2 built the prefix from the slug, so every
+  // multi-word widget silently reported zero snapshot states. A baseline nothing claims means the
+  // derivation is wrong again.
+  const baselines = readdirSync(join(REPO_ROOT, 'apps/storybook/__snapshots__')).filter((file) => file.startsWith('production-') && file.endsWith('.png'))
+  assert.ok(baselines.length > 0, 'no production baselines on disk; this test is asserting nothing')
+
+  const prefixes = UNION.map(({id, group, pascal}) => ({id, prefix: `production-${group}-${pascal.toLowerCase()}--`}))
+  for (const file of baselines) {
+    const claimants = prefixes.filter(({prefix}) => file.startsWith(prefix))
+    assert.equal(claimants.length, 1, `${file} is claimed by ${claimants.length} entries (${claimants.map((c) => c.id).join(', ') || 'none'})`)
+    const state = file.slice(claimants[0].prefix.length, -'.png'.length)
+    assert.ok(contractOf(claimants[0].id).states.includes(state), `${claimants[0].id}: baseline state \`${state}\` is missing from the entry`)
+  }
+})
+
+test('union: an unmappable Swift view stops the generator rather than being paired by guesswork', () => {
+  // The STOP requirement. A wrong pairing writes one widget's prop tree under another widget's slug,
+  // which is a contract that reads as verified and is not — strictly worse than a missing entry.
+  const root = scratch()
+  const write = (rel, body) => {
+    mkdirSync(dirname(join(root, rel)), {recursive: true})
+    writeFileSync(join(root, rel), body)
+  }
+  try {
+    write('packages/schemas/generated/widgets/known.schema.json', JSON.stringify({title: 'KnownProps', type: 'object'}))
+    write('packages/web/src/widgets/other/Known.types.ts', 'export interface KnownProps {}\n')
+    write('Sources/LifegamesWidgets/Other/KnownView.swift', '// view\n')
+    write('Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json', JSON.stringify({widgets: []}))
+    assert.deepEqual(unionWidgets(root).map(({id}) => id), ['known'], 'the control case must resolve')
+
+    write('Sources/LifegamesWidgets/Other/StrangerView.swift', '// view\n')
+    assert.throws(() => unionWidgets(root), /cannot map the Swift widget `Stranger`[\s\S]*will not guess a pairing/)
+  } finally {
+    rmSync(root, {recursive: true, force: true})
+  }
 })

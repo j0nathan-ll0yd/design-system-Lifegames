@@ -69,11 +69,16 @@ All use Vite 7 (unified from prior Vite 6/7 split).
 
 Machine-checkable record of what each widget presents: props, states, a11y surface, and whether a
 consumer render test holds it to that. Closes the presentation-layer spec-coverage gap (atlas
-decision 0060). **Schema vs spec:** `schema.mjs` is the hand-written normative grammar (zero-dep,
-`CATALOG_SPEC_VERSION`); `catalog/*.contract.json` is **generated** by `generate.mjs` — never
-hand-edit an entry, and never hand-write a prop shape. Sources: props ← the generated widget schema
-in `packages/schemas/generated/widgets/`, states ← fixture + Storybook-snapshot filenames, a11y ←
-`.accessibilityLabel(` in the Swift view. Gaps are written as `null`, never faked as a pass. Gate:
+decision 0060). **Scope:** the UNION of the Swift and web widget trees — 33 widgets at
+`CATALOG_SPEC_VERSION` 3, DISCOVERED on every run, never hand-listed. A widget on one platform only
+gets a PARTIAL entry (`platforms` names the sides; the absent side is `null`). **Schema vs spec:**
+`schema.mjs` is the hand-written normative grammar (zero-dep, `CATALOG_SPEC_VERSION`);
+`catalog/*.contract.json` is **generated** by `generate.mjs` — never hand-edit an entry, and never
+hand-write a prop shape. Sources: props ← the generated widget schema in
+`packages/schemas/generated/widgets/`, states ← fixture + Storybook-snapshot filenames, a11y ←
+`.accessibilityLabel(` in the Swift view. The canonical widget id is the generated schema FILENAME,
+paired via that schema's `title`; an unmappable Swift view throws rather than being paired by
+guesswork. Gaps are written as `null`, never faked as a pass. Gate:
 `pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
 idempotence) — wired into `.husky/pre-push`; unit tests run under `pnpm test:scripts`. Bumping
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE

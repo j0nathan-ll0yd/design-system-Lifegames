@@ -1,0 +1,76 @@
+{
+  "specVersion": 3,
+  "widget": "system-status",
+  "group": "other",
+  "platforms": ["swift", "web"],
+  "props": {
+    "compact": {
+      "type": ["boolean", "null"],
+      "optional": true
+    },
+    "system": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "lines": {
+          "type": "array",
+          "optional": false,
+          "items": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "dotClass": {
+                "type": "string",
+                "optional": false
+              },
+              "key": {
+                "type": "string",
+                "optional": false
+              },
+              "valClass": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "value": {
+                "type": "string",
+                "optional": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/other/SystemStatus.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Other/SystemStatusProps.swift",
+  "states": [
+    "all-green",
+    "bootstrap",
+    "dark",
+    "default",
+    "degraded",
+    "empty",
+    "loading",
+    "mixed",
+    "one-stale",
+    "populated-max",
+    "populated-min",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/system-status.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/other/system-status[.<state>].json",
+      "apps/storybook/__snapshots__/production-other-systemstatus--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Other/SystemStatusView.swift"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "specVersion": 3,
+  "widget": "hydration",
+  "group": "health",
+  "platforms": ["swift", "web"],
+  "props": {
+    "health": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "hydration": {
+          "type": "object",
+          "optional": false,
+          "properties": {
+            "caffeineMax": {
+              "type": ["number", "null"],
+              "optional": false
+            },
+            "caffeineMg": {
+              "type": ["number", "null"],
+              "optional": false
+            },
+            "caffeineRangeHi": {
+              "type": ["number", "null"],
+              "optional": false
+            },
+            "caffeineRangeLo": {
+              "type": ["number", "null"],
+              "optional": false
+            },
+            "waterMax": {
+              "type": "number",
+              "optional": false
+            },
+            "waterOz": {
+              "type": "number",
+              "optional": false
+            },
+            "waterRangeHi": {
+              "type": "number",
+              "optional": false
+            },
+            "waterRangeLo": {
+              "type": "number",
+              "optional": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/health/Hydration.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Health/HydrationProps.swift",
+  "states": [
+    "caffeine-crash",
+    "dark",
+    "default",
+    "dehydrated",
+    "empty",
+    "hydrated",
+    "loading",
+    "low",
+    "morning-coffee",
+    "normal",
+    "overhydrated",
+    "populated-max",
+    "populated-min",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/hydration.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/health/hydration[.<state>].json",
+      "apps/storybook/__snapshots__/production-health-hydration--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Health/HydrationView.swift"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "specVersion": 3,
+  "widget": "reading-feed",
+  "group": "reading",
+  "platforms": ["swift", "web"],
+  "props": {
+    "reading": {
+      "type": "object",
+      "optional": false,
+      "properties": {
+        "articles": {
+          "type": "array",
+          "optional": false,
+          "items": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "date": {
+                "type": "string",
+                "optional": false
+              },
+              "source": {
+                "type": "string",
+                "optional": false
+              },
+              "title": {
+                "type": "string",
+                "optional": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/reading/ReadingFeed.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Reading/ReadingFeedProps.swift",
+  "states": [
+    "binge-week",
+    "dark",
+    "default",
+    "empty",
+    "loading",
+    "mixed-types",
+    "populated-max",
+    "populated-min",
+    "quiet-week",
+    "recent-burst",
+    "single-entry",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/reading-feed.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed[.<state>].json",
+      "apps/storybook/__snapshots__/production-reading-readingfeed--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Reading/ReadingFeedView.swift"
+  }
+}

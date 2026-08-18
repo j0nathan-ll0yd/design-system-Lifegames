@@ -1,0 +1,58 @@
+{
+  "specVersion": 3,
+  "widget": "weekly-pulse",
+  "group": "github",
+  "platforms": ["swift", "web"],
+  "props": {
+    "maxWeek": {
+      "type": "number",
+      "optional": false
+    },
+    "weeks": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "label": {
+            "type": "string",
+            "optional": false
+          },
+          "total": {
+            "type": "number",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/github/WeeklyPulse.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/GitHub/WeeklyPulseProps.swift",
+  "states": [
+    "default",
+    "empty",
+    "populated-max",
+    "populated-min",
+    "skeleton",
+    "variation-a",
+    "variation-b",
+    "variation-c"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/weekly-pulse.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse[.<state>].json",
+      "apps/storybook/__snapshots__/production-github-weeklypulse--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/GitHub/WeeklyPulseView.swift"
+  }
+}

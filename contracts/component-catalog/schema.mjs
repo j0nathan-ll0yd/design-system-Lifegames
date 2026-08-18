@@ -16,7 +16,7 @@
  * asserts the implementation and the vectors agree on it, so a half-done bump reds immediately.
  */
 
-export const CATALOG_SPEC_VERSION = 2
+export const CATALOG_SPEC_VERSION = 3
 
 /**
  * The recursion cap on the `props` tree, and the reason the gate stays finite.
@@ -39,10 +39,20 @@ export const MAX_PROP_DEPTH = 8
  */
 export const KNOWN_GROUPS = ['github', 'health', 'identity', 'location', 'other', 'reading']
 
+/**
+ * The two platforms this design system ships a widget to, in the order `platforms` must be sorted in.
+ *
+ * v3 admits a PARTIAL entry: a widget that exists on only one side. Before v3 every entry asserted
+ * both, which is why the catalog could only hold the widgets that happened to be complete — the
+ * web-only and Swift-only widgets were simply absent, and an absent widget reads as no gap at all.
+ */
+export const KNOWN_PLATFORMS = ['swift', 'web']
+
 const REQUIRED_KEYS = [
   'specVersion',
   'widget',
   'group',
+  'platforms',
   'props',
   'propsRef',
   'swiftPropsRef',
@@ -167,9 +177,20 @@ function checkPropNode(errors, label, node, depth) {
   }
 }
 
+/**
+ * `props` is the recursive tree, or `null` for a widget with no generated web schema.
+ *
+ * v3 admits the null. The props axis is read from `packages/schemas/generated/widgets/*.schema.json`,
+ * which is itself generated from the WEB types, so a widget that ships only on Swift may have no
+ * schema to read. `null` is the written gap; an empty `{}` would claim "this widget takes no props",
+ * which is a different and checkable fact (four widgets in this repo really do take none).
+ */
 function checkProps(errors, props) {
+  if (props === null) {
+    return
+  }
   if (!isPlainObject(props)) {
-    errors.push(`props: expected an object, got ${show(props)}`)
+    errors.push(`props: expected an object or null, got ${show(props)}`)
     return
   }
   for (const name of Object.keys(props)) {
@@ -177,13 +198,48 @@ function checkProps(errors, props) {
   }
 }
 
+/**
+ * The platform set: a non-empty, sorted, duplicate-free subset of KNOWN_PLATFORMS.
+ *
+ * Sortedness is a grammar rule rather than a generator habit because the field is a SET written as an
+ * array — `["web","swift"]` and `["swift","web"]` are the same claim, and two spellings of one fact
+ * make the committed bytes depend on iteration order instead of on the widget.
+ */
+function checkPlatforms(errors, platforms) {
+  if (!Array.isArray(platforms)) {
+    errors.push(`platforms: expected an array, got ${show(platforms)}`)
+    return
+  }
+  if (platforms.length === 0) {
+    errors.push('platforms: expected at least one of swift, web — a widget on neither platform is not a widget')
+    return
+  }
+  const unknown = platforms.filter((platform) => !KNOWN_PLATFORMS.includes(platform))
+  if (unknown.length > 0) {
+    errors.push(`platforms: expected a subset of ${KNOWN_PLATFORMS.join(', ')}, got ${show(platforms)}`)
+    return
+  }
+  if (new Set(platforms).size !== platforms.length) {
+    errors.push(`platforms: duplicate entry in ${show(platforms)}`)
+    return
+  }
+  const sorted = [...platforms].sort()
+  if (platforms.some((platform, index) => platform !== sorted[index])) {
+    errors.push(`platforms: expected ${show(sorted)}, got ${show(platforms)} — the set is written sorted so the bytes do not depend on read order`)
+  }
+}
+
+/**
+ * `states` may be EMPTY at v3.
+ *
+ * v2 rejected an empty array on the reasoning that a widget with no states has no renderable surface.
+ * That held while the catalog covered three widgets that all had fixtures. Across the full set it
+ * would force the generator to either throw on a widget with no fixture and no snapshot, or invent a
+ * state name. An empty array is the honest third answer: nothing was found, and the catalog says so.
+ */
 function checkStates(errors, states) {
   if (!Array.isArray(states)) {
     errors.push(`states: expected an array, got ${show(states)}`)
-    return
-  }
-  if (states.length === 0) {
-    errors.push('states: expected at least one state, got an empty array')
     return
   }
   const seen = new Set()
@@ -282,17 +338,49 @@ export function validateEntry(entry) {
     errors.push(`group: expected one of ${KNOWN_GROUPS.join(', ')}, got ${show(entry.group)}`)
   }
 
+  checkPlatforms(errors, entry.platforms)
   checkProps(errors, entry.props)
 
-  for (const key of ['propsRef', 'swiftPropsRef', 'generatedBy']) {
-    if (!isNonEmptyString(entry[key])) {
-      errors.push(`${key}: expected a non-empty string, got ${show(entry[key])}`)
+  // The two refs are the auditable half of the contract, and either may be a written `null` at v3:
+  // no web types file for a Swift-only widget, no dedicated Swift Props file for a widget that shares
+  // one (five widgets in this repo do). An EMPTY STRING is still rejected — it reads as populated and
+  // resolves to nothing.
+  for (const key of ['propsRef', 'swiftPropsRef']) {
+    if (entry[key] !== null && !isNonEmptyString(entry[key])) {
+      errors.push(`${key}: expected a non-empty string or null, got ${show(entry[key])}`)
     }
+  }
+
+  if (!isNonEmptyString(entry.generatedBy)) {
+    errors.push(`generatedBy: expected a non-empty string, got ${show(entry.generatedBy)}`)
   }
 
   checkStates(errors, entry.states)
   checkA11y(errors, entry.a11y)
   checkConformance(errors, entry.conformance)
+
+  // ── v3 invariants: a partial entry must still be a CONTRACT ────────────────
+  //
+  // Admitting one-sided entries is what makes the catalog cover the whole widget set. It is also the
+  // shape a broken source read produces, so the grammar pins the floor: an entry that records neither
+  // a prop tree nor a Swift props file has nothing anyone could be held to, and would sit in the
+  // catalog reading as covered. That is the exact failure this catalog exists to prevent.
+  if (entry.props === null && entry.swiftPropsRef === null) {
+    errors.push('entry: props is null and swiftPropsRef is null — an entry with neither a prop tree nor a Swift props file records no contract')
+  }
+
+  // `platforms` is a claim about which trees hold this widget, so it must agree with the refs read
+  // from those trees. Without this coupling the field is decoration: nothing else in the entry
+  // contradicts a wrong value.
+  const platforms = Array.isArray(entry.platforms) ? entry.platforms : []
+  if (isNonEmptyString(entry.propsRef) !== platforms.includes('web')) {
+    errors.push(
+      `entry: propsRef is ${show(entry.propsRef)} but platforms is ${show(entry.platforms)} — propsRef IS the web types file, so the two must agree`
+    )
+  }
+  if (isNonEmptyString(entry.swiftPropsRef) && !platforms.includes('swift')) {
+    errors.push(`entry: swiftPropsRef is ${show(entry.swiftPropsRef)} but platforms is ${show(entry.platforms)} — a Swift props file means a Swift platform`)
+  }
 
   if (Object.hasOwn(entry, 'sources')) {
     checkSources(errors, entry.sources)

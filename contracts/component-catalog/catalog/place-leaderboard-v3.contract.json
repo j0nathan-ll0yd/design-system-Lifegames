@@ -1,0 +1,70 @@
+{
+  "specVersion": 3,
+  "widget": "place-leaderboard-v3",
+  "group": "location",
+  "platforms": ["swift", "web"],
+  "props": {
+    "topPlaces": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "category": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "lastVisitAt": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "name": {
+            "type": "string",
+            "optional": false
+          },
+          "totalDurationMinutes": {
+            "type": "number",
+            "optional": false
+          },
+          "visitCount": {
+            "type": "number",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/location/PlaceLeaderboardV3.types.ts",
+  "swiftPropsRef": null,
+  "states": [
+    "cafe-loyal",
+    "dark",
+    "default",
+    "empty",
+    "even-spread",
+    "gym-loyal",
+    "gym-vs-cafe",
+    "loading",
+    "populated-max",
+    "populated-min",
+    "skeleton",
+    "tourist-week"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/place-leaderboard-v3.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/location/place-leaderboard-v3[.<state>].json",
+      "apps/storybook/__snapshots__/production-location-placeleaderboardv3--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Location/PlaceLeaderboardView.swift"
+  }
+}

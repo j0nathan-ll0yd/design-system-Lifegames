@@ -1,0 +1,110 @@
+{
+  "specVersion": 3,
+  "widget": "theatre-reviews",
+  "group": "reading",
+  "platforms": ["swift", "web"],
+  "props": {
+    "reviews": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "author": {
+            "type": "string",
+            "optional": false
+          },
+          "excerpt": {
+            "type": "string",
+            "optional": false
+          },
+          "imageHeight": {
+            "type": ["number", "null"],
+            "optional": false
+          },
+          "imageUrl": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "imageUrlAvif": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "imageUrlCard": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "imageUrlCardAvif": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "imageWidth": {
+            "type": ["number", "null"],
+            "optional": false
+          },
+          "publishedAt": {
+            "type": "string",
+            "optional": false
+          },
+          "rating": {
+            "type": ["string", "null"],
+            "optional": false
+          },
+          "ratingNumeric": {
+            "type": ["number", "null"],
+            "optional": false
+          },
+          "slug": {
+            "type": "string",
+            "optional": false
+          },
+          "title": {
+            "type": "string",
+            "optional": false
+          },
+          "url": {
+            "type": "string",
+            "optional": false
+          }
+        }
+      }
+    },
+    "totalReviews": {
+      "type": "number",
+      "optional": false
+    }
+  },
+  "propsRef": "packages/web/src/widgets/reading/TheatreReviews.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Reading/TheatreReviewsProps.swift",
+  "states": [
+    "dark",
+    "default",
+    "empty",
+    "loading",
+    "mixed-ratings",
+    "populated-max",
+    "populated-min",
+    "regional-tour",
+    "single-show",
+    "skeleton",
+    "subscription-season",
+    "west-end-season"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/theatre-reviews-matrix.test.ts"
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/theatre-reviews.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews[.<state>].json",
+      "apps/storybook/__snapshots__/production-reading-theatrereviews--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift"
+  }
+}

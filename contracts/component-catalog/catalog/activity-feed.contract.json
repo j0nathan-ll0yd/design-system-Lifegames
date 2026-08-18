@@ -1,0 +1,66 @@
+{
+  "specVersion": 3,
+  "widget": "activity-feed",
+  "group": "github",
+  "platforms": ["swift", "web"],
+  "props": {
+    "events": {
+      "type": "array",
+      "optional": false,
+      "items": {
+        "type": "object",
+        "optional": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "optional": false
+          },
+          "detail": {
+            "type": "string",
+            "optional": false
+          },
+          "repo": {
+            "type": "string",
+            "optional": false
+          },
+          "title": {
+            "type": "string",
+            "optional": false
+          },
+          "type": {
+            "type": "string",
+            "optional": false
+          }
+        }
+      }
+    }
+  },
+  "propsRef": "packages/web/src/widgets/github/ActivityFeed.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/GitHub/ActivityFeedProps.swift",
+  "states": [
+    "burst-week",
+    "default",
+    "empty",
+    "new-contributor",
+    "populated-max",
+    "populated-min",
+    "review-heavy-month",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/activity-feed.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed[.<state>].json",
+      "apps/storybook/__snapshots__/production-github-activityfeed--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/GitHub/ActivityFeedView.swift"
+  }
+}

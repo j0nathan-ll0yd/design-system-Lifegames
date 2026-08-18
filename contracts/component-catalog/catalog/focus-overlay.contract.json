@@ -1,0 +1,26 @@
+{
+  "specVersion": 3,
+  "widget": "focus-overlay",
+  "group": "other",
+  "platforms": ["swift", "web"],
+  "props": {},
+  "propsRef": "packages/web/src/widgets/other/FocusOverlay.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Other/FocusOverlayProps.swift",
+  "states": ["dark", "default", "empty", "populated-max", "populated-min", "skeleton"],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": null
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/focus-overlay.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/other/focus-overlay[.<state>].json",
+      "apps/storybook/__snapshots__/production-other-focusoverlay--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Other/FocusOverlayView.swift"
+  }
+}
