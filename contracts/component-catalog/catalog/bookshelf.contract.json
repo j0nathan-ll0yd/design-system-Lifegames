@@ -1,0 +1,43 @@
+{
+  "specVersion": 1,
+  "widget": "bookshelf",
+  "group": "reading",
+  "props": {
+    "books": {
+      "type": "object",
+      "optional": false
+    }
+  },
+  "propsRef": "packages/web/src/widgets/reading/Bookshelf.types.ts",
+  "swiftPropsRef": "Sources/LifegamesWidgets/Reading/BookshelfProps.swift",
+  "states": [
+    "all-completed",
+    "all-in-progress",
+    "dark",
+    "default",
+    "dense-shelf",
+    "empty",
+    "loading",
+    "mixed",
+    "mostly-empty",
+    "populated-max",
+    "populated-min",
+    "skeleton"
+  ],
+  "a11y": {
+    "voiceOverLabel": null,
+    "ref": null
+  },
+  "conformance": {
+    "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts"
+  },
+  "generatedBy": "contracts/component-catalog/generate.mjs",
+  "sources": {
+    "props": "packages/schemas/generated/widgets/bookshelf.schema.json",
+    "states": [
+      "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf[.<state>].json",
+      "apps/storybook/__snapshots__/production-reading-bookshelf--<state>.png"
+    ],
+    "a11y": "Sources/LifegamesWidgets/Reading/BookshelfView.swift"
+  }
+}

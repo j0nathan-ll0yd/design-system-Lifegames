@@ -449,3 +449,17 @@ scripts/fixtures/extract.mjs:marker:j0nathan-ll0yd
 # the verdict) throughout. The mandated GitHub Packages distribution namespace and
 # a public GitHub handle — not personal data.
 docs/adr/0007-tokens-style-dictionary-removal-semver-tier.md:marker:j0nathan-ll0yd
+
+# The component-contract catalog (atlas decision 0060). Same rationale as the
+# docs/adr/0005 and 0007 entries above: the marker is the CONSUMER REPO NAME
+# (j0nathan-ll0yd.github.io), which the catalog must cite verbatim because
+# `conformance.behavioralTest` is a cross-repo reference to that repo's
+# behavioral render test — the one axis the generator cannot discover locally.
+# A fictional or elided path would make the reference unfollowable, which is the
+# fabricated-pass failure the catalog exists to prevent. The three hits are the
+# PILOT table that declares it, the generated bookshelf contract that carries it,
+# and the conformance vector whose fully-populated case exercises it. A public
+# GitHub handle / repo slug, not personal data.
+contracts/component-catalog/generate.mjs:marker:j0nathan-ll0yd
+contracts/component-catalog/catalog/bookshelf.contract.json:marker:j0nathan-ll0yd
+contracts/component-catalog/component-catalog-conformance.json:marker:j0nathan-ll0yd

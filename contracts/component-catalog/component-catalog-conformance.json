@@ -1,0 +1,786 @@
+{
+  "$comment": "Conformance vectors for the component-contract catalog GRAMMAR (contracts/component-catalog/schema.mjs). DS-owned and DS-local: this repo is the single producer, so there is no cross-repo vendoring here. Hand-authored on purpose — generating the vectors from the implementation they check would make them tautological. Every case is spelled out in full rather than patched onto a base entry, so a reader can see exactly what one vector asserts. `expectErrorContains` pins WHICH rule must fire, not merely that something failed. Editing this file requires regenerating component-catalog-conformance.sha256 in the same change.",
+  "specVersion": 1,
+  "cases": [
+    {
+      "name": "valid-minimal-gap-entry",
+      "why": "The honest baseline: a presentation-only widget with no VoiceOver label and no consumer render test. Both gaps are written as null, not omitted, and not faked as a pass. `sources` is absent — it is provenance, not contract.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "packages/web/src/widgets/identity/BioTerminal.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Identity/BioTerminalProps.swift",
+        "states": ["default", "empty"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "valid-fully-populated-entry",
+      "why": "The other end: a label exists and cites its line, a cross-repo behavioral test is referenced as a STRING, and `sources` records where each axis was read.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 1,
+        "widget": "heart-rate",
+        "group": "health",
+        "props": { "health": { "type": "object", "optional": false } },
+        "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Health/HeartRateProps.swift",
+        "states": ["default", "paused", "skeleton"],
+        "a11y": { "voiceOverLabel": true, "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:315" },
+        "conformance": { "behavioralTest": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts" },
+        "generatedBy": "contracts/component-catalog/generate.mjs",
+        "sources": {
+          "props": "packages/schemas/generated/widgets/heart-rate.schema.json",
+          "states": ["Sources/LifegamesWidgets/Resources/widgets/health/heart-rate[.<state>].json"],
+          "a11y": "Sources/LifegamesWidgets/Health/HeartRateView.swift"
+        }
+      }
+    },
+    {
+      "name": "valid-optional-prop-and-union-type",
+      "why": "`optional: true` means the prop is absent from the source schema's `required[]`. A union type collapses to a single string; the grammar checks the string is non-empty, not its grammar.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 1,
+        "widget": "sync-status",
+        "group": "other",
+        "props": {
+          "status": { "type": "string", "optional": false },
+          "lastSyncDate": { "type": "string | null", "optional": true }
+        },
+        "propsRef": "packages/web/src/widgets/other/SyncStatus.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Other/SyncStatusProps.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "valid-empty-props-object",
+      "why": "Four widgets in this repo take no props at all (dnd-overlay, focus-overlay, book-modal, coming-soon). An empty `props` object is legal; an empty `states` array is not.",
+      "expectValid": true,
+      "entry": {
+        "specVersion": 1,
+        "widget": "coming-soon",
+        "group": "identity",
+        "props": {},
+        "propsRef": "packages/web/src/widgets/identity/ComingSoon.types.ts",
+        "swiftPropsRef": "Sources/LifegamesWidgets/Identity/ComingSoonProps.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "contracts/component-catalog/generate.mjs"
+      }
+    },
+    {
+      "name": "bad-spec-version-zero",
+      "why": "Case zero of the whole scheme. An entry that does not declare THIS grammar version is not readable by THIS grammar.",
+      "expectValid": false,
+      "expectErrorContains": "specVersion: expected 1, got 0",
+      "entry": {
+        "specVersion": 0,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "bad-spec-version-next",
+      "why": "The half-done bump: someone raised the number in the entries but not in the grammar, or the reverse. Both directions must red.",
+      "expectValid": false,
+      "expectErrorContains": "specVersion: expected 1, got 2",
+      "entry": {
+        "specVersion": 2,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "bad-spec-version-stringified",
+      "why": "`\"1\"` is not `1`. A JSON round trip through a tool that stringifies numbers must not pass.",
+      "expectValid": false,
+      "expectErrorContains": "specVersion: expected 1, got \"1\"",
+      "entry": {
+        "specVersion": "1",
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "bad-spec-version-missing",
+      "why": "Absence is not a pass. A missing version is reported as missing AND as a mismatch.",
+      "expectValid": false,
+      "expectErrorContains": "missing required field `specVersion`",
+      "entry": {
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-missing-optional-field",
+      "why": "A prop descriptor without `optional` cannot answer the only question the catalog exists to answer about it.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile: missing required field `optional`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object" } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-missing-type-field",
+      "why": "Same rule, other field.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile: missing required field `type`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-type-not-a-string",
+      "why": "`type` is the collapsed source-schema type as a string, never a nested schema node.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.type: expected a non-empty string",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": { "type": "object" }, "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-type-empty-string",
+      "why": "An empty type string reads as a known type and is not one.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.type: expected a non-empty string",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-optional-not-a-boolean",
+      "why": "`\"false\"` is truthy. A string here would invert the meaning of the field under any naive read.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile.optional: expected a boolean",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": "false" } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-descriptor-unknown-field",
+      "why": "Strict keys. `nullable` looks meaningful and means nothing to this grammar, so it must be rejected rather than ignored.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile: unknown field `nullable`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false, "nullable": true } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "prop-descriptor-not-an-object",
+      "why": "The shorthand `\"profile\": \"object\"` is a plausible hand-edit and is not the shape.",
+      "expectValid": false,
+      "expectErrorContains": "props.profile: expected an object",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": "object" },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "props-is-an-array",
+      "why": "A props LIST loses the names, which are half the contract.",
+      "expectValid": false,
+      "expectErrorContains": "props: expected an object",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": [{ "type": "object", "optional": false }],
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "group-not-in-known-set",
+      "why": "`coffee` is a real fixture directory in this repo but NOT a web widget group, so a catalog entry claiming it means the generator read a directory the schema generator does not know about.",
+      "expectValid": false,
+      "expectErrorContains": "group: expected one of github, health, identity, location, other, reading, got \"coffee\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "coffee",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "group-wrong-case",
+      "why": "The Swift directory is `Identity` and the group is `identity`. Mixing them up must red, not silently resolve.",
+      "expectValid": false,
+      "expectErrorContains": "group: expected one of github, health, identity, location, other, reading, got \"Identity\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "Identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "group-missing",
+      "why": "Reported as both missing and out-of-set.",
+      "expectValid": false,
+      "expectErrorContains": "missing required field `group`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "widget-not-kebab-case",
+      "why": "The slug keys the fixture filenames, the snapshot filenames and the schema filename. PascalCase would resolve none of them.",
+      "expectValid": false,
+      "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"BioTerminal\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "BioTerminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "widget-empty-string",
+      "why": "An empty slug would resolve to every fixture in the group.",
+      "expectValid": false,
+      "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "widget-trailing-hyphen",
+      "why": "`heart-rate-` is not kebab-case. The regex anchors both ends so a stray separator cannot pass.",
+      "expectValid": false,
+      "expectErrorContains": "widget: expected a non-empty kebab-case string, got \"heart-rate-\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "heart-rate-",
+        "group": "health",
+        "props": { "health": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "states-empty-array",
+      "why": "A widget with no states has no renderable surface to hold to a contract. Empty is the drift shape a broken directory read produces, so it must never pass.",
+      "expectValid": false,
+      "expectErrorContains": "states: expected at least one state, got an empty array",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": [],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "states-not-an-array",
+      "why": "A comma-joined string is a plausible hand-edit and is not the shape.",
+      "expectValid": false,
+      "expectErrorContains": "states: expected an array",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": "default,empty",
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "states-contains-empty-string",
+      "why": "An empty state name is what a filename-slicing bug emits, and it names nothing.",
+      "expectValid": false,
+      "expectErrorContains": "states: expected non-empty strings",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default", ""],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "states-duplicate",
+      "why": "The state set is a UNION of two sources (fixtures and snapshots). A duplicate means the union was not deduplicated, which inflates the apparent coverage.",
+      "expectValid": false,
+      "expectErrorContains": "states: duplicate state `empty`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default", "empty", "empty"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "a11y-voice-over-label-false",
+      "why": "`false` is deliberately NOT accepted. An absent label is unknown-until-audited, which is `null`; `false` would assert a finding this generator never made.",
+      "expectValid": false,
+      "expectErrorContains": "a11y.voiceOverLabel: expected true or null, got false",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": false, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "a11y-claimed-without-ref",
+      "why": "A claimed label must cite <file>:<line>. An uncitable claim is the fabricated pass this catalog is built to prevent.",
+      "expectValid": false,
+      "expectErrorContains": "a claimed label must cite <file>:<line>",
+      "entry": {
+        "specVersion": 1,
+        "widget": "heart-rate",
+        "group": "health",
+        "props": { "health": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": true, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "a11y-gap-with-a-ref",
+      "why": "The inverse coupling. A gap cites nothing; a ref beside a null label means the two fields disagree.",
+      "expectValid": false,
+      "expectErrorContains": "a gap cites nothing",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": "Sources/LifegamesWidgets/Identity/BioTerminalView.swift:1" },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "a11y-is-null",
+      "why": "The axis is an object with two written fields, never an omitted-by-null block.",
+      "expectValid": false,
+      "expectErrorContains": "a11y: expected an object, got null",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": null,
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "a11y-unknown-field",
+      "why": "Strict keys. A new a11y axis is a grammar change and a version bump, not a field someone adds to one entry.",
+      "expectValid": false,
+      "expectErrorContains": "a11y: unknown field `dynamicType`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "heart-rate",
+        "group": "health",
+        "props": { "health": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": true, "ref": "x.swift:1", "dynamicType": true },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "conformance-behavioral-test-is-false",
+      "why": "Same rule as the a11y axis: the absence of a consumer render test is `null`, a written gap. A boolean here is an unsourced verdict.",
+      "expectValid": false,
+      "expectErrorContains": "conformance.behavioralTest: expected a non-empty string or null, got false",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": false },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "conformance-behavioral-test-empty-string",
+      "why": "An empty ref reads as populated and points nowhere.",
+      "expectValid": false,
+      "expectErrorContains": "conformance.behavioralTest: expected a non-empty string or null, got \"\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": "" },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "conformance-unknown-field",
+      "why": "Strict keys, and the field name matters: `visualBaseline` would imply a self-blessed screenshot counts as conformance evidence. It does not, and adding the axis is a version bump.",
+      "expectValid": false,
+      "expectErrorContains": "conformance: unknown field `visualBaseline`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bookshelf",
+        "group": "reading",
+        "props": { "books": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null, "visualBaseline": true },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "conformance-is-a-bare-string",
+      "why": "Collapsing the axis to a string loses the distinction between a populated ref and a written gap.",
+      "expectValid": false,
+      "expectErrorContains": "conformance: expected an object",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bookshelf",
+        "group": "reading",
+        "props": { "books": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": "j0nathan-ll0yd.github.io/tests/behavioral/bookshelf-matrix.test.ts",
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "props-ref-empty-string",
+      "why": "The two refs are what make an entry auditable against real files. An empty one is unauditable.",
+      "expectValid": false,
+      "expectErrorContains": "propsRef: expected a non-empty string, got \"\"",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "swift-props-ref-missing",
+      "why": "The Swift half of the cross-platform contract is not optional. A web-only entry silently drops iOS from the catalog.",
+      "expectValid": false,
+      "expectErrorContains": "missing required field `swiftPropsRef`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g"
+      }
+    },
+    {
+      "name": "generated-by-missing",
+      "why": "`generatedBy` is how a reader knows the entry was produced, not typed. An entry without it may be hand-written, which is the anti-pattern.",
+      "expectValid": false,
+      "expectErrorContains": "missing required field `generatedBy`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null }
+      }
+    },
+    {
+      "name": "entry-unknown-field",
+      "why": "Strict keys at the top level too. `notes` is where a hand-written prose claim would land, and prose is not checkable.",
+      "expectValid": false,
+      "expectErrorContains": "entry: unknown field `notes`",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g",
+        "notes": "looks fine to me"
+      }
+    },
+    {
+      "name": "entry-is-an-array",
+      "why": "A contract file holds ONE entry. An array is the shape a naive merge of two files produces.",
+      "expectValid": false,
+      "expectErrorContains": "entry: expected an object",
+      "entry": []
+    },
+    {
+      "name": "entry-is-a-string",
+      "why": "A double-encoded JSON payload parses to a string, and a validator that coerces would pass it.",
+      "expectValid": false,
+      "expectErrorContains": "entry: expected an object",
+      "entry": "{\"specVersion\":1}"
+    },
+    {
+      "name": "entry-is-null",
+      "why": "`JSON.parse(\"null\")` succeeds. A null entry must be a validation failure, not a crash.",
+      "expectValid": false,
+      "expectErrorContains": "entry: expected an object, got null",
+      "entry": null
+    },
+    {
+      "name": "sources-value-not-a-string",
+      "why": "`sources` is optional but not unchecked. A number cannot be resolved to a path anyone can read.",
+      "expectValid": false,
+      "expectErrorContains": "sources.props: expected non-empty path strings",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g",
+        "sources": { "props": 42 }
+      }
+    },
+    {
+      "name": "sources-empty-array",
+      "why": "An axis listed with no paths claims provenance it does not have.",
+      "expectValid": false,
+      "expectErrorContains": "sources.states: expected at least one path",
+      "entry": {
+        "specVersion": 1,
+        "widget": "bio-terminal",
+        "group": "identity",
+        "props": { "profile": { "type": "object", "optional": false } },
+        "propsRef": "a.types.ts",
+        "swiftPropsRef": "a.swift",
+        "states": ["default"],
+        "a11y": { "voiceOverLabel": null, "ref": null },
+        "conformance": { "behavioralTest": null },
+        "generatedBy": "g",
+        "sources": { "states": [] }
+      }
+    },
+    {
+      "name": "many-violations-are-all-reported",
+      "why": "The validator returns EVERY violation, not the first. A gate that reports one error per run turns a ten-error entry into ten runs.",
+      "expectValid": false,
+      "expectErrorContains": "specVersion: expected 1, got 7",
+      "entry": {
+        "specVersion": 7,
+        "widget": "Bio_Terminal",
+        "group": "coffee",
+        "props": { "profile": { "type": 1 } },
+        "propsRef": "",
+        "swiftPropsRef": "",
+        "states": [],
+        "a11y": { "voiceOverLabel": false },
+        "conformance": {},
+        "generatedBy": ""
+      }
+    }
+  ]
+}
