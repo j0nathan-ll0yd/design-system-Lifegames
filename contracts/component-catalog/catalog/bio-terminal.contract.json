@@ -1,11 +1,31 @@
 {
-  "specVersion": 1,
+  "specVersion": 2,
   "widget": "bio-terminal",
   "group": "identity",
   "props": {
     "profile": {
       "type": "object",
-      "optional": false
+      "optional": false,
+      "properties": {
+        "terminalLines": {
+          "type": "array",
+          "optional": false,
+          "items": {
+            "type": "object",
+            "optional": false,
+            "properties": {
+              "text": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "type": {
+                "type": "string",
+                "optional": false
+              }
+            }
+          }
+        }
+      }
     }
   },
   "propsRef": "packages/web/src/widgets/identity/BioTerminal.types.ts",

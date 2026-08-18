@@ -8,9 +8,11 @@
  * no catalog, because it reads as verified.
  *
  * Sources, one per axis:
- *   props   <- packages/schemas/generated/widgets/<widget>.schema.json  (top-level `properties` +
- *              `required`, emitted by packages/schemas/scripts/generate-widget-schemas.mjs from
- *              packages/web/src/widgets/<group>/<Widget>.types.ts)
+ *   props   <- packages/schemas/generated/widgets/<widget>.schema.json  (the WHOLE nested shape:
+ *              `properties` + `required` walked recursively through object properties and array
+ *              items, capped at MAX_PROP_DEPTH. Emitted by
+ *              packages/schemas/scripts/generate-widget-schemas.mjs from
+ *              packages/web/src/widgets/<group>/<Widget>.types.ts, with $ref already resolved)
  *   states  <- Sources/LifegamesWidgets/Resources/widgets/<group>/<widget>.<state>.json filenames
  *              UNION apps/storybook/__snapshots__/production-<group>-<widget>--<state>.png
  *   a11y    <- the first `.accessibilityLabel(` in Sources/LifegamesWidgets/<Group>/<Widget>View.swift
@@ -26,7 +28,7 @@ import {join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import * as prettier from 'prettier'
 
-import {CATALOG_SPEC_VERSION} from './schema.mjs'
+import {CATALOG_SPEC_VERSION, MAX_PROP_DEPTH} from './schema.mjs'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 export const REPO_ROOT = resolve(HERE, '../..')
@@ -88,50 +90,145 @@ function resolveGroup(repoRoot, widget) {
   return hits[0]
 }
 
+const isSchemaObject = (node) => typeof node === 'object' && node !== null && !Array.isArray(node)
+
 /**
- * Collapse a JSON-schema node to a single type string. Declaration order is preserved: the schema
- * file's bytes are already fixed, so preserving order is both deterministic and faithful.
+ * Flatten a JSON-schema node to the concrete member schemas it stands for.
+ *
+ * `anyOf`/`oneOf` are the shape `generate-widget-schemas.mjs` emits for a union, and the shape it
+ * emits for EVERY optional prop (`makeOptionalsNullable` rewrites `T` to `anyOf: [T, null]`). So a
+ * nullable object arrives as a union, and walking the union is what keeps the nested shape of
+ * `restingHeartRate?: {value, unit}` in the tree instead of collapsing it to a bare type name.
+ * Declaration order is preserved: the schema file's bytes are fixed, so order is deterministic.
  */
-function schemaType(node) {
-  if (typeof node !== 'object' || node === null || Array.isArray(node)) {
-    return 'unknown'
+function schemaMembers(node) {
+  if (!isSchemaObject(node)) {
+    return []
   }
-  if (typeof node.type === 'string') {
-    return node.type
+  for (const keyword of ['anyOf', 'oneOf']) {
+    if (Array.isArray(node[keyword])) {
+      return node[keyword].flatMap(schemaMembers)
+    }
   }
-  const union = (members) => [...new Set(members.map(schemaType))].join(' | ')
-  if (Array.isArray(node.type)) {
-    return [...new Set(node.type)].join(' | ')
+  return [node]
+}
+
+/** The concrete JSON-schema type names one member contributes. `unknown` is honest, not a guess. */
+function memberTypes(member) {
+  if (typeof member.type === 'string') {
+    return [member.type]
   }
-  if (Array.isArray(node.anyOf)) {
-    return union(node.anyOf)
+  if (Array.isArray(member.type)) {
+    return member.type
   }
-  if (Array.isArray(node.oneOf)) {
-    return union(node.oneOf)
+  if (Array.isArray(member.enum)) {
+    return member.enum.map((value) => (value === null ? 'null' : typeof value))
   }
-  if (Array.isArray(node.enum)) {
-    return [...new Set(node.enum.map((value) => typeof value))].join(' | ')
+  if (isSchemaObject(member.properties)) {
+    return ['object']
   }
-  return 'unknown'
+  if (member.items !== undefined) {
+    return ['array']
+  }
+  return ['unknown']
 }
 
 /**
- * Top-level props only for Increment 0. Depth is the obvious next increment; a shallow catalog that
- * is generated beats a deep one that is typed by hand.
+ * Merge the `properties` of every object member into one map of child nodes.
+ *
+ * A key is REQUIRED only where every member that declares it marks it required — a union of two
+ * object shapes where one omits the key from `required[]` means a consumer cannot rely on it, so
+ * `optional: true` is the truthful reading. Keys are sorted, which is what makes the tree
+ * deterministic at every level rather than only at the top.
  */
+function mergeProperties(objectMembers, depth) {
+  const declared = new Map()
+  for (const member of objectMembers) {
+    const required = new Set(Array.isArray(member.required) ? member.required : [])
+    for (const [name, child] of Object.entries(member.properties)) {
+      const seen = declared.get(name)
+      if (seen === undefined) {
+        declared.set(name, {child, required: required.has(name)})
+      } else {
+        seen.required = seen.required && required.has(name)
+      }
+    }
+  }
+  const properties = {}
+  for (const name of [...declared.keys()].sort()) {
+    const {child, required} = declared.get(name)
+    properties[name] = buildPropNode(child, !required, depth)
+  }
+  return properties
+}
+
+/**
+ * Build one node of the recursive prop tree.
+ *
+ * Key order here IS the emitted key order — `type`, `optional`, `truncated`, `properties`, `items`.
+ * Do not reorder casually; it changes every contract file's bytes.
+ *
+ * The MAX_PROP_DEPTH cut is deliberately narrow: it fires only when there really are children being
+ * dropped, so a leaf that happens to sit at the cap is not mislabelled as truncated. `truncated` is
+ * written, never inferred from a missing `properties` — an object with no static properties (a
+ * `Record<string, T>`, which arrives as `additionalProperties`) legitimately has none, and the two
+ * cases must not read alike.
+ *
+ * @param {unknown} node a resolved JSON-schema node from the generated widget schema
+ * @param {boolean} optional the prop is absent from its parent object's `required[]`
+ * @param {number} depth 1 for a top-level prop
+ */
+export function buildPropNode(node, optional, depth) {
+  const members = schemaMembers(node)
+  const names = [...new Set(members.flatMap(memberTypes))]
+  const types = names.length === 0 ? ['unknown'] : names
+
+  const built = {type: types.length === 1 ? types[0] : types, optional}
+
+  const objectMembers = members.filter((member) => isSchemaObject(member.properties))
+  const arrayMember = members.find((member) => isSchemaObject(member.items))
+
+  if (objectMembers.length === 0 && arrayMember === undefined) {
+    return built
+  }
+  if (depth >= MAX_PROP_DEPTH) {
+    built.truncated = true
+    return built
+  }
+  if (objectMembers.length > 0) {
+    built.properties = mergeProperties(objectMembers, depth + 1)
+  }
+  if (arrayMember !== undefined) {
+    // An element is not a member of its parent's `required[]`, so `optional` is meaningless for it
+    // and is written `false` rather than left to a coin flip.
+    built.items = buildPropNode(arrayMember.items, false, depth + 1)
+  }
+  return built
+}
+
+/**
+ * The full nested prop shape, read from the widget's generated JSON schema.
+ *
+ * v2 walks the whole tree. v1 recorded top-level props only, which on this repo's widgets meant a
+ * single `{profile: object}`-shaped entry per widget — a props axis that carried almost no signal.
+ */
+export function buildPropTree(schema) {
+  const required = new Set(Array.isArray(schema.required) ? schema.required : [])
+  const properties = isSchemaObject(schema.properties) ? schema.properties : {}
+  const props = {}
+  for (const name of Object.keys(properties).sort()) {
+    props[name] = buildPropNode(properties[name], !required.has(name), 1)
+  }
+  return props
+}
+
 function readProps(repoRoot, widget) {
   const rel = `${SCHEMA_DIR}/${widget}.schema.json`
   const abs = join(repoRoot, rel)
   if (!existsSync(abs)) {
     throw new Error(`no generated widget schema at ${rel} — run \`pnpm -F @j0nathan-ll0yd/schemas codegen\` first`)
   }
-  const schema = JSON.parse(readFileSync(abs, 'utf8'))
-  const required = new Set(Array.isArray(schema.required) ? schema.required : [])
-  const props = {}
-  for (const name of Object.keys(schema.properties ?? {}).sort()) {
-    props[name] = {type: schemaType(schema.properties[name]), optional: !required.has(name)}
-  }
-  return {props, ref: rel}
+  return {props: buildPropTree(JSON.parse(readFileSync(abs, 'utf8'))), ref: rel}
 }
 
 /** Fixture filenames. `<widget>.json` with no infix is the default state. */
