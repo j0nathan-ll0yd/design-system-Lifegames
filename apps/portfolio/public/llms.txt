@@ -14,7 +14,6 @@ Jonathan Lloyd is an engineering director and backend engineer based in San Fran
 
 Auto-composed by the backend whenever source data changes. These files are always fresher than this static discovery index. Body metrics use 7-day aggregates only; GitHub, books, reading, and theatre use full granularity.
 
-- [llms-small.txt (~5 KB)](https://d1pfm520aduift.cloudfront.net/llms-small.txt) -- Current-state snapshot: profile, body aggregates, last 7 days of coding and reading activity, current book
 - [llms-full.txt (~20 KB)](https://d1pfm520aduift.cloudfront.net/llms-full.txt) -- Complete data dump: all domains as structured markdown with tables and source citations
 - [index.md](https://d1pfm520aduift.cloudfront.net/index.md) -- Markdown alias of llms-full.txt for agents expecting .md extensions
 
