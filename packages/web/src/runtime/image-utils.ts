@@ -1,4 +1,5 @@
 import {CLOUDFRONT_BASE} from './constants'
+import {esc} from './html-utils'
 
 const CF_IMAGE_PREFIX = `${CLOUDFRONT_BASE}/images/`
 
@@ -14,15 +15,30 @@ export function localizeImageUrl(url: string | null): string | null {
 }
 
 /**
- * Returns an onerror handler attribute for graceful fallback to CloudFront.
- * If the local image 404s, swaps src to the original CloudFront URL.
- * onerror=null prevents infinite loops if the fallback also fails.
+ * Returns the inert data attribute used by the CSP-safe runtime fallback.
+ * Event listeners are attached separately by installImageFallbacks so rendered
+ * markup remains valid under a `script-src 'self'` policy.
  */
 export function imgFallbackAttrs(localSrc: string | null, originalUrl: string | null): string {
   if (!originalUrl || !localSrc || localSrc === originalUrl) {
     return ''
   }
-  return ` data-fallback="${originalUrl}" onerror="this.srcset='';this.src=this.dataset.fallback;this.onerror=null"`
+  return ` data-fallback="${esc(originalUrl)}"`
+}
+
+/** Attach one-shot image fallback behavior without inline event attributes. */
+export function installImageFallbacks(root: ParentNode): void {
+  const images = root.querySelectorAll<HTMLImageElement>('img[data-fallback]')
+  images.forEach((img) => {
+    img.onerror = (): void => {
+      const fallback = img.dataset.fallback
+      img.onerror = null
+      if (fallback) {
+        img.srcset = ''
+        img.src = fallback
+      }
+    }
+  })
 }
 
 /** Build <picture> markup for an image with AVIF + WebP sources.

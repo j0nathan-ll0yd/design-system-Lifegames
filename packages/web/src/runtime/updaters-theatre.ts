@@ -1,6 +1,6 @@
 import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
-import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
@@ -73,9 +73,7 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
           esc(cardUrl) +
           ' 1x, ' +
           esc(localSrc ?? r.imageUrl) +
-          ' 2x" width="95" height="143" alt="' +
-          esc(r.title) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+          ' 2x" width="95" height="143" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
           fallback +
           '>'
         html += avifSrc ? '<picture>' + avifSrc + imgTag + '</picture>' : imgTag
@@ -85,9 +83,7 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
           : ''
         var imgTag = '<img src="' +
           esc(localSrc ?? r.imageUrl) +
-          '" width="95" height="143" alt="' +
-          esc(r.title) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+          '" width="95" height="143" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
           fallback +
           '>'
         html += avifSrc ? '<picture>' + avifSrc + imgTag + '</picture>' : imgTag
@@ -102,5 +98,6 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
   })
 
   row.innerHTML = html
+  installImageFallbacks(row)
   card.classList.remove('is-loading')
 }

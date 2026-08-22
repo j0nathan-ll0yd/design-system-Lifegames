@@ -1,5 +1,6 @@
+// @vitest-environment jsdom
 import {describe, expect, it} from 'vitest'
-import {imgFallbackAttrs, localizeImageUrl} from '../../src/runtime/image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl} from '../../src/runtime/image-utils'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
 
 const CF_PREFIX = `${CLOUDFRONT_BASE}/images/`
@@ -40,11 +41,11 @@ describe('localizeImageUrl', () => {
 })
 
 describe('imgFallbackAttrs', () => {
-  it('returns onerror attribute when both src and originalUrl differ', () => {
+  it('returns only an inert fallback attribute when the URLs differ', () => {
     const local = '/images/books/B0001234.webp'
     const original = CF_PREFIX + 'books/B0001234.webp'
     const result = imgFallbackAttrs(local, original)
-    expect(result).toContain('onerror=')
+    expect(result).not.toContain('onerror=')
     expect(result).toContain(`data-fallback="${original}"`)
   })
 
@@ -61,18 +62,25 @@ describe('imgFallbackAttrs', () => {
     expect(imgFallbackAttrs(url, url)).toBe('')
   })
 
-  it('onerror sets this.onerror=null to prevent infinite loops', () => {
-    const result = imgFallbackAttrs('/images/foo.webp', CF_PREFIX + 'foo.webp')
-    expect(result).toContain('this.onerror=null')
-  })
-
-  it('onerror clears srcset before swapping src', () => {
-    const result = imgFallbackAttrs('/images/foo.webp', CF_PREFIX + 'foo.webp')
-    expect(result).toContain("this.srcset=''")
-  })
-
   it('result starts with a space (for safe HTML attribute concatenation)', () => {
     const result = imgFallbackAttrs('/images/foo.webp', CF_PREFIX + 'foo.webp')
     expect(result.startsWith(' ')).toBe(true)
+  })
+})
+
+describe('installImageFallbacks', () => {
+  it('swaps to the fallback at runtime without an inline handler attribute', () => {
+    document.body.innerHTML =
+      '<div id="root"><img src="/images/foo-card.webp" srcset="/images/foo-card.webp 1x" data-fallback="https://cdn.example/foo.webp"></div>'
+    const root = document.getElementById('root')!
+    const img = root.querySelector('img')!
+
+    installImageFallbacks(root)
+
+    expect(img.outerHTML).not.toContain('onerror=')
+    img.dispatchEvent(new Event('error'))
+    expect(img.srcset).toBe('')
+    expect(img.src).toBe('https://cdn.example/foo.webp')
+    expect(img.onerror).toBeNull()
   })
 })

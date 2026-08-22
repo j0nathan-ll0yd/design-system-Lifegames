@@ -119,6 +119,39 @@ describe('updateTheatreReviews', () => {
     expect(img.src).toContain('/images/theatre/cf-show.webp')
   })
 
+  it('keeps poster images decorative and installs a CSP-safe fallback listener', () => {
+    const original = `${CLOUDFRONT_BASE}/images/theatre/cf-show.webp`
+    const reviews = [
+      {
+        title: 'CF Show',
+        slug: 'cf-show',
+        url: 'https://example.com/cf',
+        author: 'Jonathan',
+        publishedAt: '2026-01-01',
+        rating: 'A',
+        ratingNumeric: 4,
+        excerpt: 'Good',
+        imageUrl: original,
+        imageUrlAvif: null,
+        imageUrlCard: `${CLOUDFRONT_BASE}/images/theatre/cf-show-card.webp`,
+        imageUrlCardAvif: null,
+        imageWidth: 95,
+        imageHeight: 143
+      }
+    ]
+
+    updateTheatreReviews(makeExport(reviews))
+    const img = document.querySelector('#theatreRow img') as HTMLImageElement
+    expect(img.alt).toBe('')
+    expect(img.outerHTML).not.toContain('onerror=')
+    expect(img.dataset.fallback).toBe(original)
+
+    img.dispatchEvent(new Event('error'))
+    expect(img.srcset).toBe('')
+    expect(img.src).toBe(original)
+    expect(img.onerror).toBeNull()
+  })
+
   it('removes is-loading after rendering reviews', () => {
     const reviews = [
       {

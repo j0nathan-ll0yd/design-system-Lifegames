@@ -1,5 +1,5 @@
 import {esc} from './html-utils'
-import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl} from './image-utils'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 const GRADE_COLORS: Record<string, string> = {
@@ -58,9 +58,7 @@ export function initTheatreReviews(container: HTMLElement, fixtureData: {reviews
           esc(cardUrl) +
           ' 1x, ' +
           esc(localSrc ?? r.imageUrl) +
-          ' 2x" width="95" height="143" alt="' +
-          esc(r.title) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+          ' 2x" width="95" height="143" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
           fallback +
           '>'
         html += avifSrc ? '<picture>' + avifSrc + imgTag + '</picture>' : imgTag
@@ -70,9 +68,7 @@ export function initTheatreReviews(container: HTMLElement, fixtureData: {reviews
           : ''
         const imgTag = '<img src="' +
           esc(localSrc ?? r.imageUrl) +
-          '" width="95" height="143" alt="' +
-          esc(r.title) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+          '" width="95" height="143" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
           fallback +
           '>'
         html += avifSrc ? '<picture>' + avifSrc + imgTag + '</picture>' : imgTag
@@ -87,6 +83,7 @@ export function initTheatreReviews(container: HTMLElement, fixtureData: {reviews
   })
 
   row.innerHTML = html
+  installImageFallbacks(row)
 
   const card = container.querySelector<HTMLElement>('.tri-card')
   if (card) {

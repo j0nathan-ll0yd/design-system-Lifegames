@@ -175,11 +175,11 @@ const FLUID_SPACING = {
 }
 
 const FLUID_TYPOGRAPHY = {
-  caption2: 'clamp(0.625rem, 0.58rem + 0.12vw, 0.72rem)',
-  caption: 'clamp(0.7rem, 0.64rem + 0.14vw, 0.78rem)',
-  footnote: 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
-  body: 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
-  callout: 'clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)',
+  caption2: 'clamp(0.75rem, 0.70rem + 0.10vw, 0.78rem)',
+  caption: 'clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)',
+  footnote: 'clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)',
+  body: 'clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)',
+  callout: 'clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)',
   subhead: 'clamp(0.88rem, 0.75rem + 0.34vw, 1.05rem)',
   headline: 'clamp(1.20rem, 0.98rem + 0.60vw, 1.50rem)',
   title3: 'clamp(1.60rem, 1.30rem + 0.80vw, 2.00rem)',

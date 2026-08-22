@@ -117,11 +117,6 @@ function hasLocalImage(asin: string): boolean {
                       loading="lazy"
                       decoding="async"
                       data-fallback={fallbackAttr}
-                      onerror={
-                        fallbackAttr
-                          ? "this.srcset='';this.src=this.dataset.fallback;this.onerror=null"
-                          : undefined
-                      }
                     />
                   </picture>
                 ) : (
@@ -134,11 +129,6 @@ function hasLocalImage(asin: string): boolean {
                     loading="lazy"
                     decoding="async"
                     data-fallback={fallbackAttr}
-                    onerror={
-                      fallbackAttr
-                        ? "this.srcset='';this.src=this.dataset.fallback;this.onerror=null"
-                        : undefined
-                    }
                   />
                 )}
               </div>
