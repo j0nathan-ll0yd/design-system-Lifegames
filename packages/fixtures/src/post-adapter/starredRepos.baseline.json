@@ -36,12 +36,12 @@
     "starredAt": "2 weeks ago"
   },
   {
-    "owner": "zindexai",
-    "name": "zindex",
-    "url": "https://github.com/zindexai/zindex",
-    "stars": 5,
-    "language": "Unknown",
-    "languageColor": "#8b949e",
+    "owner": "modelcontextprotocol",
+    "name": "typescript-sdk",
+    "url": "https://github.com/modelcontextprotocol/typescript-sdk",
+    "stars": 13228,
+    "language": "TypeScript",
+    "languageColor": "#3178c6",
     "starredAt": "3 weeks ago"
   }
 ]
