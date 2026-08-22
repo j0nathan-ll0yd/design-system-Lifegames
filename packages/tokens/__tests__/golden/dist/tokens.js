@@ -646,25 +646,25 @@ export default {
     "body": {
       "fontFamily": "Space Grotesk",
       "fontWeight": 400,
-      "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+      "fontSize": "clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)",
       "lineHeight": 1.5
     },
     "label": {
       "fontFamily": "Space Grotesk",
       "fontWeight": 500,
-      "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+      "fontSize": "clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)",
       "lineHeight": 1.4
     },
     "caption": {
       "fontFamily": "Space Grotesk",
       "fontWeight": 400,
-      "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+      "fontSize": "clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)",
       "lineHeight": 1.3
     },
     "code": {
       "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace",
       "fontWeight": 400,
-      "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+      "fontSize": "clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)",
       "lineHeight": 1.6
     }
   }

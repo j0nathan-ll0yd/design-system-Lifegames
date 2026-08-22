@@ -910,6 +910,19 @@ describe('updateBookshelf', () => {
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('Test Author')
   })
 
+  it('renders list items as the direct children of the bookshelf list', () => {
+    document.body.innerHTML = `
+      <div id="cardBooks" class="is-loading">
+        <div class="widget-body">
+          <ul class="shelf-row" id="dashShelfRow" role="list"></ul>
+        </div>
+      </div>
+    `
+    updateBookshelf(makeBooks())
+    const row = document.getElementById('dashShelfRow')!
+    expect(Array.from(row.children).map((child) => child.tagName)).toEqual(['LI'])
+  })
+
   it('renders the reading status badge (natural-case source, CSS uppercases to READING)', () => {
     updateBookshelf(makeBooks())
     // The badge text is sourced from @j0nathan-ll0yd/copy (widgets.bookshelf.statusReading,
@@ -969,12 +982,12 @@ describe('updateBookshelf', () => {
   it('updates in-place when existing book count matches', () => {
     // Pre-populate with same count of .shelf-book elements
     document.getElementById('dashShelfRow')!.innerHTML = `
-      <div class="shelf-book" data-book='{}'>
+      <li class="shelf-book" data-book='{}'>
         <img src="" alt="">
         <div class="shelf-book-title"><span>Old Title</span></div>
         <div class="shelf-book-author">Old Author</div>
         <div class="shelf-book-status shelf-status-upNext">Up Next</div>
-      </div>
+      </li>
     `
     updateBookshelf(makeBooks())
     expect(document.querySelector('.shelf-book-title span')!.textContent).toBe('Test Book')

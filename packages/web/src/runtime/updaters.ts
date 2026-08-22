@@ -5,7 +5,7 @@ import {withViewTransition} from './view-transition'
 import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, AdaptedSleep, AdaptedStarredRepo, BookMeta, WorkoutEntry} from './adapters'
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
-import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -760,13 +760,9 @@ export function updateBookshelf(data: AdaptedBooks): void {
         }
         img.alt = b.title
         if (b.cover && coverSrc !== b.cover) {
-          const fallbackUrl = b.cover
-          img.dataset.fallback = fallbackUrl
-          img.onerror = function() {
-            ;(this as HTMLImageElement).srcset = ''
-            ;(this as HTMLImageElement).src = fallbackUrl
-            this.onerror = null
-          }
+          img.dataset.fallback = b.cover
+        } else {
+          delete img.dataset.fallback
         }
       }
 
@@ -903,7 +899,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc
       const displayCardSrc = localCardSrc || null
       const displayCoverSrc = localCoverSrc ?? coverSrc
-      html += '<div class="shelf-book' +
+      html += '<li class="shelf-book' +
         activeClass +
         '" style="animation-delay: ' +
         i * 0.08 +
@@ -954,10 +950,12 @@ export function updateBookshelf(data: AdaptedBooks): void {
       if (b.status === 'finished' && b.finishedAt) {
         html += '<div class="shelf-book-finished-date">' + esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt))) + '</div>'
       }
-      html += '</div>'
+      html += '</li>'
     })
     shelfRow.innerHTML = html
   }
+
+  installImageFallbacks(shelfRow)
 
   document.getElementById('cardBooks')?.classList.remove('is-loading')
 }
