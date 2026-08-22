@@ -1,7 +1,8 @@
 name: Audit DS
 
-# lp-audit Phase 4 — DS hygiene audits: widget completeness matrix (D1)
-# and baseline-age advisory (D2).
+# lp-audit Phase 4 — DS hygiene audits: widget completeness matrix (D1),
+# baseline-age advisory (D2), and the blocking full-tree personal-data scan
+# (D6).
 #
 # Report-only: D1 and D2 run in default (non---check) mode and cannot fail
 # this job by design — see each script's own report-only framing. It does not
@@ -87,6 +88,31 @@ jobs:
           path: audit-ds-report.txt
           retention-days: 30
 
+  # D6 is separate from the report-only D1/D2 job so its status and blocking
+  # semantics are visible to Atlas and in the GitHub Actions job list.
+  d6-personal-data-full-tree:
+    name: D6 full-tree personal-data scan (blocking)
+    runs-on: [self-hosted, linux, arm64, node]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # Keep the scheduled audit on a complete checkout. The scanner
+          # currently reads every tracked path at HEAD; full history keeps this
+          # lane correct if its tracked-file scope grows to inspect revisions.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: D6 known-answer regression (committed, not staged)
+        run: node --test scripts/scan-personal-data.test.mjs
+
+      - name: D6 scan every tracked file (blocking)
+        shell: bash
+        run: bash scripts/scan-personal-data.sh --full-tree
+
   # Separate hosted-runner job (first-cycle finding #14, 2026-07-17): the ping
   # curl timed out (exit 28) from the self-hosted fleet containers while
   # hc-ping.com is reachable from the host — and a ping that rides the audit
@@ -94,7 +120,7 @@ jobs:
   # must still report. Mirrors audit-backend.yml's structure.
   healthcheck-ping:
     name: Healthchecks.io dead-man's-switch ping
-    needs: [audit]
+    needs: [audit, d6-personal-data-full-tree]
     if: always()
     runs-on: [self-hosted, linux, arm64, node]
     timeout-minutes: 2
@@ -103,6 +129,7 @@ jobs:
         env:
           HC_PING_URL: ${{ secrets.HC_PING_AUDIT_DS }}
           AUDIT_RESULT: ${{ needs.audit.result }}
+          D6_RESULT: ${{ needs.d6-personal-data-full-tree.result }}
         run: |
           if [ -z "${HC_PING_URL:-}" ]; then
             echo "::warning::HC_PING_AUDIT_DS secret is not set — skipping Healthchecks.io ping. This check has not been provisioned in Healthchecks.io yet (plan Phase 0); the dead-man's-switch is not yet monitoring this workflow."
@@ -114,5 +141,5 @@ jobs:
           # the job summary, report artifact, and post-bake issues). Pinging /fail on
           # findings marks the tile DOWN — indistinguishable from a wedged/never-ran
           # job. Same convention as audit-web.yml and the hub launchd run-*.sh.
-          echo "audit job result=$AUDIT_RESULT — pinging run-completion."
+          echo "audit job result=$AUDIT_RESULT; D6 result=$D6_RESULT — pinging run-completion."
           curl -fsS -m 10 --retry 3 "$HC_PING_URL"
