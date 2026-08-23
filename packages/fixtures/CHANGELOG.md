@@ -1,5 +1,13 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.0.8
+
+### Patch Changes
+
+- 743885c: Replace fabricated and private GitHub fixture links with verified public targets, and enforce URL integrity across raw and post-adapter fixtures.
+- Updated dependencies [f61cdf1]
+  - @j0nathan-ll0yd/web@2.1.0
+
 ## 1.0.7
 
 ### Patch Changes
