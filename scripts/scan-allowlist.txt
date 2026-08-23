@@ -83,6 +83,8 @@ packages/copy/pnpm-lock.yaml:email
 # realistic-looking synthetic test data.
 packages/fixtures/src/factories/github-events.ts:marker:j0nathan-ll0yd
 packages/fixtures/src/factories/starred-repos.ts:marker:j0nathan-ll0yd
+# Public, anonymously verified GitHub targets used to prevent fabricated fixture URLs.
+packages/fixtures/src/github-references.ts:marker:j0nathan-ll0yd
 packages/fixtures/src/generated/github-events/baseline.json:marker:j0nathan-ll0yd
 packages/fixtures/src/generated/github-events/commitsOnly.json:marker:j0nathan-ll0yd
 packages/fixtures/src/generated/github-events/full.json:marker:j0nathan-ll0yd
@@ -186,6 +188,8 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/tokens-emit-declarations.md:marker:j0nathan-ll0yd
 .changeset/copy-llms-txt-about-markdown-links.md:marker:j0nathan-ll0yd
 .changeset/bright-books-readably.md:marker:j0nathan-ll0yd
+# Changesets must name the scoped public package they release.
+.changeset/honest-github-fixtures.md:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
 .husky/pre-commit:marker:j0nathan-ll0yd
 CHANGELOG.md:marker:j0nathan-ll0yd
