@@ -179,43 +179,20 @@ export function runSurfaceConformance({fixture, specVersion, readExportSurface, 
 }
 
 /**
- * The EXTRACTOR conformance run (spec: `export-extract-conformance.json`, decision 0028).
- *
- * Separate from the rule run because the two are versioned separately and change at different
- * rates. Its four case-zero checks are the toolchain guard the estate has to carry now that
- * `npm i typescript` installs the native 7.x port with NO `ts.createProgram`:
- *
- *   1. `EXTRACT_SPEC_VERSION === fixture.extractSpecVersion` — the usual "the code is the spec".
- *   2. `typeof ts.createProgram === 'function'` — so a 7.x resolution fails with a sentence rather
- *      than a `TypeError` in the middle of a gate run. Checked BEFORE any version comparison,
- *      because "your compiler has no JS API" and "your version is not in the set" send a maintainer
- *      to two completely different places.
- *   3. `verifiedTsVersions` deep-equals `fixture.verifiedTypescriptVersions` — THE GUARD ON THE
- *      GUARD (decision 0030). The accepted-version list is measured evidence, so a vendored copy
- *      must not be able to widen its own array and still pass: the comparison is against the
- *      sha256-PINNED FIXTURE, never against the implementation's own constant. Without this, the set
- *      rots into a range one quiet edit at a time.
- *   4. `fixture.verifiedTypescriptVersions.includes(tsVersion)` — MEMBERSHIP, not a range. Two
- *      engines on UNMEASURED versions can extract differently on a construct absent from these
- *      vectors, each pass their own conformance, and disagree on a REAL verdict. That is finding
- *      X3/X7 applied to a dependency; decision 0030 is the measurement that says which versions are
- *      exempt from it.
- *
- * WHAT MAKES THE SET SELF-TESTING: the vector loop below re-runs `extractSurfaceNames` under the
- * RESOLVED compiler and compares against expectations the fixture pinned. So every conformance run,
- * in every repo, on whichever member that repo pinned, re-proves decision 0030's equivalence claim
- * over these vectors. The claim does not decay after the evaluation — it is re-measured in CI, and
- * the day a member stops agreeing, conformance goes red in the engine that resolved it.
+ * Runs extractor conformance separately from rule conformance because their versions evolve
+ * independently. Before vectors run, it verifies the extractor version, the compiler API,
+ * the fixture-owned closed TypeScript version set, and membership of the resolved compiler.
+ * These checks prevent a locally widened allowlist or API-incompatible compiler from passing.
  *
  * @param {object} options
- * @param {object} options.fixture parsed export-extract-conformance.json
- * @param {number} options.extractSpecVersion the implementation's EXTRACT_SPEC_VERSION constant
- * @param {readonly string[]} options.verifiedTsVersions the implementation's VERIFIED_TS_VERSIONS
- * @param {string} options.tsVersion the RESOLVED `ts.version` (not the declared range)
- * @param {unknown} options.createProgram the resolved `ts.createProgram`, for the 7.x check
- * @param {Function} options.extractSurfaceNames ({files, manifestText, ts}) => {names}
- * @param {Function} options.acceptsCachedSurface (surface) => boolean
- * @param {object} options.ts the compiler module handed to the extractor
+ * @param {object} options.fixture
+ * @param {number} options.extractSpecVersion
+ * @param {readonly string[]} options.verifiedTsVersions
+ * @param {string} options.tsVersion
+ * @param {unknown} options.createProgram
+ * @param {Function} options.extractSurfaceNames
+ * @param {Function} options.acceptsCachedSurface
+ * @param {object} options.ts
  * @returns {string[]} failures
  */
 export function runExtractConformance(

@@ -1,102 +1,9 @@
 #!/usr/bin/env node
-// mantle-cli-output: package payload-drift report for stdout
 /**
- * Published-package payload drift gate — CONTENT-BASED.
- *
- * THE ONE-SENTENCE RULE
- * For every publishable workspace package, ask: does the payload we would publish
- * from THIS checkout differ from the payload already published under the version
- * this checkout declares? The reference is the REGISTRY, never a historical commit.
- *
- * WHY THIS REPLACED THE PATH-BASED GATE
- * The previous implementation answered "did any file matching files[] change since
- * the commit that set the declared version". That question has three blind spots the
- * registry-comparison question does not:
- *
- *   1. The workspace-dependency cascade. `pnpm publish` rewrites `workspace:*` to a
- *      concrete version, so bumping @j0nathan-ll0yd/schemas changes the PUBLISHED
- *      manifest of @j0nathan-ll0yd/fixtures even though no file under packages/fixtures
- *      changed. A path-based gate cannot see it. This is live in this repo today.
- *   2. "Version bumped but never published". The declared version being absent from the
- *      registry is invisible to any git-only check; consumers on a caret range keep
- *      resolving the stale tarball while CI is green.
- *   3. A truncated history. A shallow graft boundary is byte-identical to a real root
- *      commit, so the version-setting-commit resolver could not tell "this commit
- *      introduced the version" from "history is simply cut here" — a silent total pass.
- *      There is no history walk left, so no amount of truncation can change a verdict.
- *
- * WHAT SURVIVES OF GIT: exactly one `git ls-files` per package, for the leak screen.
- * It is depth-independent and behaves identically in a `--depth=1` clone.
- *
- * TRANSPORT: direct fetch(), NEVER `npm view` / `npm pack <spec>`.
- * MEASURED, not assumed: against a local toy registry, a gate built on `npm view` +
- * `npm pack` reported CLEAN / exit 0 with the registry PROCESS KILLED, because npm's
- * stale-if-error path serves ~/.npm/_cacache. Adding --prefer-online to both did NOT
- * fix it — still CLEAN, still exit 0. That is a silent total pass on an unreachable
- * registry. fetch() throws ECONNREFUSED and has no HTTP cache. Do not "simplify" this
- * by shelling npm; the `swallow` self-test mutant exists to catch that regression.
- * Requests are RETRIED (4 attempts, 500ms/1.5s/4s) on the statuses that mean "ask again",
- * because GitHub Packages answers 403 when it throttles — see REQUEST_ATTEMPTS. That can
- * only remove a flake; an exhausted retry reports exactly what it reported before.
- *
- * CANONICALISATION IS MANDATORY — raw tarball bytes are unusable.
- * MEASURED: three consecutive `pnpm pack` runs of one unedited package produced three
- * different tarball sha256 values and one identical canonical digest. pnpm resolves
- * workspace specifiers concurrently and reinserts the dependency keys in COMPLETION
- * ORDER, so dist.integrity / dist.shasum comparison is structurally impossible: the
- * registry's sha512 hashes bytes the producer cannot reproduce twice in a row. The
- * integrity hash is still used, correctly, to verify the DOWNLOAD. The `rawbytes`
- * mutant pins this.
- *
- * WHY SIX SCRIPTS — MEASURED 2026-08-03, NOT ASSUMED.
- * The two sides of the comparison are produced by DIFFERENT TOOLS, and this estate
- * publishes BOTH ways: `pnpm changeset publish` for copy|tokens|schemas|web|fixtures, and
- * `npm publish` for packages/config (.github/workflows/publish-config.yml). Measured on a
- * synthetic package carrying all 20 lifecycle hooks, npm 11.13.0 / pnpm 11.13.0:
- *   npm pack  applies NO manifest transform whatsoever — all 20 scripts survive.
- *   pnpm pack DELETES exactly six — postpack, postpublish, prepack, prepare,
- *             prepublishOnly, publish — and KEEPS legacy `prepublish`.
- * Ground truth from real registry bytes: the published @j0nathan-ll0yd/portal-contract@1.0.0
- * manifest is BYTE-IDENTICAL to its source, `prepublishOnly` included, while `pnpm pack` of
- * that same unmodified source drops it. So an engine that normalizes NOTHING — which is what
- * this file did before spec v3 — reports DRIFT on a package whose HEAD is exactly what is
- * published. That is finding X3, and it was live.
- * Dropping these six hides nothing consumer-visible: npm NEVER runs them from an installed
- * registry dependency, and whatever they produce lands in the built files, which ARE hashed.
- * Scripts a consumer DOES run — preinstall, install, postinstall — are deliberately excluded.
- * Legacy `prepublish` is excluded because NEITHER tool strips it, so both sides carry it
- * identically; stripping it would buy no agreement and only blind the gate to a real edit.
- * publishConfig hoisting and workspace:/catalog: rewriting are the same class of tool
- * asymmetry but are deliberately NOT normalized — normalizing them would destroy the
- * workspace-cascade signal this gate exists for. The full rationale, the normative
- * implementation and the 34 conformance vectors live in
- * atlas/contracts/package-digest/ (reference.mjs is the spec).
- *
- * A2b: NO STATE MEANS "could not tell, so pass". Registry unreachable, missing auth,
- * integrity mismatch and pack failure are all INDETERMINATE / exit 3 in every lane.
- *
- * THE SECOND QUESTION: DID THE PUBLIC SURFACE SHRINK?
- * The payload comparison above cannot see a removed entry point — a shrunk `exports`
- * map is a legitimate payload difference under a legitimate version bump, which is
- * PENDING_PUBLISH / exit 0. @j0nathan-ll0yd/web@1.1.0, a package of this repo, removed
- * the `./types/*` subpath and shipped as a MINOR with every gate green. The
- * export-surface rule (spec v2, see the SURFACE_SPEC_VERSION block) compares the
- * `exports` subpath KEYS of the packed payload against the same published reference the
- * digest uses, sizes the declared bump with CARET-RANGE semantics, and reports
- * SURFACE_BREAK — exit 2 in EVERY lane — when the declared bump is too small. It is
- * defined by atlas/contracts/export-surface/reference.mjs and pinned by the 61 vendored
- * vectors in scripts/fixtures/, not by this file.
- *
- * Usage:
- *   node scripts/check-package-drift.mjs [--lane=branch|pre-push|post-publish]
- *                                        [--json] [--strict-maps] [--no-cache]
- *                                        [--no-build]
- *                                        [--repo-root=<dir>] [--registry=<url>]
- *                                        [--scope=<@scope>]
- *   node scripts/check-package-drift.mjs --self-test [--mutation=<id>]
- *
- * --json writes the JSON document to STDOUT AND NOTHING ELSE; all progress and build
- * output goes to stderr, so `check-package-drift.mjs --json | jq` works.
+ * Compares each packed workspace payload with the registry artifact for its declared version.
+ * Registry, authentication, and build uncertainty is indeterminate (exit 3), never clean.
+ * Canonicalization follows Atlas package-digest; public-surface compatibility follows
+ * Atlas export-surface. Direct fetch avoids npm's stale cache.
  */
 
 import {createHash} from 'node:crypto'
@@ -605,96 +512,13 @@ export function compareSemver(a, b) {
 
 export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Export-surface compatibility (spec v2)
-//
-// THE GAP THIS CLOSES — MEASURED 2026-08-04, NOT HYPOTHESISED. Everything above
-// answers ONE question: "does the payload we would publish differ from the payload
-// already published?" It never asks "did the PUBLIC SURFACE shrink?", so a removed
-// export ships green under ANY version bump.
-//
-// `@j0nathan-ll0yd/web@1.1.0` — a package of THIS repo — removed the `./types/*`
-// subpath from its `exports` map and shipped as a MINOR. Every gate in the estate
-// passed, and correctly so by its own rules: the payload legitimately differed and
-// the version was legitimately ahead of the registry, which is PENDING_PUBLISH —
-// exit 0 on a branch. Nothing anywhere was red. A consumer on `^1.0.0` picked up
-// 1.1.0 on its next install and lost an entry point.
-//
-// PROVENANCE, since the motivating artifact is gone: 1.1.0 was DELETED from the
-// registry on 2026-08-04 and republished as `2.0.0` — content-identical, carrying the
-// major the removal always warranted. `npm pack @j0nathan-ll0yd/web@1.1.0` now 404s.
-// The same delta is still reproducible from real artifacts: `1.0.0`'s `exports` map
-// contains `"./types/*"` and `2.0.0`'s does not. Nothing here depends on that, and
-// deliberately so — the conformance vectors are self-contained literals, because a
-// test that reads a mutable registry to establish a fixed historical fact is a test
-// that breaks when someone tidies the registry.
-//
-// SCOPE IS LEVEL 1 (subpath KEYS) AND THAT IS A MEASURED DECISION, not laziness.
-// Level 2 — enumerating the named exports behind each entry point — was probed
-// against all 24 published packages in the estate before being adopted at spec v3
-// (atlas decision 0028). The probe found extraction deterministic and hermetic, but
-// found two classes that had to be CLASSIFIED before it could gate anything: 121 of
-// the estate's 253 concrete subpaths are .css/.json/.md assets with no export surface
-// at all, and 28 are .astro components whose implicit `default` a TypeScript parse
-// reports as zero exports — a SILENTLY WRONG answer. So the classifier is three-way
-// and total (NO_SURFACE / SFC_ENTRY / INDETERMINATE), which drops corpus INDETERMINATE
-// from 30/253 to 2/253 — and those 2 are genuinely broken targets that SHOULD be red.
-//
-// LEVEL 2 IS ENFORCED IN THIS REPO (0028 PR 4, landed once all three engines were on spec
-// v3). The named-export delta sizes the verdict alongside the subpath delta; there is no
-// longer a Level-1-only view in the verdict path. See `level1View` — retained as the exact
-// inverse of the flip — and the `level2*` mutants in the MUTATION TABLE.
-//
-// THE TOOLCHAIN GUARD IS A VERIFIED SET, NOT A SINGLE VERSION (decision 0030). `typescript`
-// is pinned EXACTLY here — 5.9.3, no range — and the extractor admits exactly the members of
-// VERIFIED_TS_VERSIONS, which were measured to extract BYTE-IDENTICALLY over the whole
-// published corpus plus 9 adversarial cases. A set is not a loosening: it is still a closed
-// enumeration, membership is asserted on the RUNTIME extraction path (not only in the
-// conformance runner), and a range would readmit 7.x — the native port, which has no
-// `ts.createProgram` at all. What the set buys is that three repos on three different
-// verified patches no longer have to move in lockstep to stay conformant.
-//
-// THE RULE IS NOT DEFINED HERE. It is defined in atlas/contracts/export-surface/
-// reference.mjs and pinned by the 99 rule vectors + 39 extractor vectors vendored into
-// scripts/fixtures/. This is one of three implementations that must reproduce those
-// vectors exactly; the estate has already paid once for three hand-written copies of a
-// shared rule diverging silently (findings X3 and X7). The one exception is the
-// EXTRACTOR, which is vendored rather than reimplemented — see the import header.
-// ─────────────────────────────────────────────────────────────────────────────
+// A valid payload/version change cannot reveal whether a public export was removed.
+// Level-2 export-surface comparison supplies that compatibility verdict using Atlas's
+// canonical vectors. TypeScript must exactly match VERIFIED_TS_VERSIONS (decisions 0028/0030).
 
 /**
- * SAME NUMBER <=> IDENTICAL VERDICTS, for every input.
- *
- * Bump if and only if the surface or bump classification changes for ANY input: the
- * surface kinds, the cross-kind reconciliation, the delta rule, or the bump sizing. Do NOT
- * bump for reporting, plumbing or caching. A bump is atomic across the estate: regenerate
- * the fixture in atlas, re-vendor it here and into mantle, and move all three numbers in
- * the same change. The vendored runner asserts `specVersion === fixture.specVersion` as
- * case zero, so a rule change without a bump cannot pass conformance anywhere.
- *
- * Deliberately INDEPENDENT of SPEC_VERSION above: the two schemes change for different
- * reasons, and coupling them would force reference-cache invalidation for unrelated edits.
- *
- * WHY 2 (atlas decision 0024). `evaluateSurface` became changeset-aware: it now sizes the
- * surface delta against the PROJECTED post-`changeset version` version when a changeset is
- * measured, so an adequate pending bump satisfies the rule (the DS #164 class of PR, forced to
- * manual-bump under v1). The verdict moves for at least one input — a removed subpath under a
- * declared MINOR with a pending MAJOR is now `ok` where v1 said `break` — so the number moves.
- * The change is fail-safe by construction: no measured changeset, an inadequate projection, or a
- * projection that is not a genuine forward move all fall back to the v1 declared-version
- * behaviour, and the mandatory-adequacy comparison is the SAME rank test as before.
- *
- * WHY 3 (atlas decision 0028). The rule became LEVEL-2 AWARE: `surfaceDelta` now folds the
- * per-subpath NAMED-EXPORT delta into the SAME `required` (max rank with the Level-1 subpath
- * delta), and the surface object gained a `names` field. The verdict moves for at least one
- * input — a package that keeps every subpath but deletes a named export from one of them is now
- * `break` where v2 said `ok` — so the number moves. `evaluateSurface`'s signature and its 0024
- * projection ARITHMETIC are UNCHANGED, byte for byte: Level 2 only makes `delta.required`
- * richer, so every spec-version-2 vector keeps passing.
- *
- * IN THIS REPO LEVEL 2 IS ENFORCED (0028 PR 4). The VERDICT path is handed both surfaces WHOLE,
- * so a named-export removal without an adequate bump reds the row exactly as a removed subpath
- * does. See `level1View` and the Step 7b wiring.
+ * Bump only when surface verdict semantics change. Version 2 added changeset projections;
+ * version 3 added named exports. This is independent of payload-digest and extractor versions.
  */
 export const SURFACE_SPEC_VERSION = 3
 
@@ -1075,36 +899,9 @@ export function level1View(surface) {
 }
 
 /**
- * The bump the delta between two surfaces REQUIRES.
- *
- *   removed subpath -> MAJOR      added subpath -> MINOR      neither -> nothing imposed
- *
- * The two cross-kind cases are deterministic rather than guesses, and both follow from what
- * a consumer can actually import:
- *
- *   legacy -> exports-map   introducing an `exports` map REVOKES deep-import access to every
- *                           file that is not listed. That is a removal: MAJOR. (It is the
- *                           most commonly shipped accidental breaking change on npm.)
- *   exports-map -> legacy   removing the map restores unbounded access. Additive: MINOR.
- *
- * `required: null` means a side was unreadable. It is NOT "no requirement" — the caller must
- * turn it into INDETERMINATE.
- *
- * ── LEVEL 2 COMPOSITION (spec version 3, atlas decision 0028) ────────────────────────────────
- *
- * When BOTH surfaces carry a `names` field, the per-subpath named-export delta is folded in at
- * MAX RANK with the subpath-key delta above. Level 2 never REPLACES Level 1 and never softens it
- * — it can only raise the requirement (C147: refine, never relax).
- *
- * WHEN EXACTLY ONE SIDE CARRIES `names`, THE ANSWER IS `required: null`, NOT A LEVEL-1
- * COMPARISON. This is the A2b hole decision 0028 was written around. The reference surface is
- * served from the digest cache, and an entry written before Level 2 existed carries no names at
- * all; if an asymmetric pair quietly degraded to Level 1, a real named-export removal would read
- * as "no names removed" = GREEN off a stale cache. So asymmetry is "I could not read the
- * reference surface", which is exit 3. Two names-LESS sides are a different thing entirely — a
- * genuine Level-1-only comparison — and behave exactly as spec version 2 did, which is both why
- * every v2 vector still passes byte for byte AND what makes `level1View` a sufficient advisory
- * seam rather than an approximation of one.
+ * Classifies API-shape drift: removals and legacy-to-map changes are major; additions and
+ * map-to-legacy changes are minor. Two absent name sets are valid Level 1; one-sided names are
+ * indeterminate. When both sides expose names, the strongest name-level delta wins.
  */
 export function surfaceDelta(reference, candidate) {
   if (reference.kind === 'unreadable' || candidate.kind === 'unreadable') {
@@ -1296,40 +1093,10 @@ function isStrictlyAhead(candidate, baseline) {
 }
 
 /**
- * Decide whether the surface change against `referenceVersion` is covered by a bump.
+ * Sizes the surface delta against the declared version, or a measured pending release only
+ * when it is forward and larger. Missing, invalid, or inadequate projections receive no credit.
  *
- * `referenceVersion` is the version whose PUBLISHED tarball the surface was read from — the
- * same reference the payload digest is compared against, so both halves of a row describe
- * the same pair of artifacts. When the declared version is itself already published the two
- * strings are equal, the declared bump is `none`, and ANY surface change breaks: moving the
- * surface of a version already in the registry is a breaking change with no bump at all.
- *
- * ── CHANGESET-AWARENESS (atlas decision 0024, spec version 2) ────────────────────────────────
- *
- * The bump sized here defaults to `referenceVersion -> declared` — the on-disk version, exactly as
- * spec version 1 did. But `changeset version` has not run yet on a PR that defers its bump to a
- * `.changeset/*.md`, so `declared` understates the version that will actually publish. When the
- * caller passes a MEASURED `pendingRelease` (the SAME projected post-`changeset version` version the
- * verdict ladder used — reuse the measured value, never re-derive), the rule sizes against that
- * PROJECTED version instead, under three mandatory safety rules, each with its own conformance
- * vector in the vendored fixture:
- *
- *   1. MANDATORY ADEQUACY. The projection is sized by the SAME `bumpBetween` + `bumpRank` comparison
- *      as the declared version; a projected bump that does not cover the delta still `break`s.
- *   2. NOT-MEASURED / ABSENT / INDETERMINATE FALL BACK. No measured changeset, a package not in the
- *      bump set (`newVersion: null`), or an indeterminate probe all size against `declared` —
- *      byte-for-byte spec-version-1 behaviour.
- *   3. CREDIT ONLY RAISES, NEVER LAUNDERS. Credited only when the projection is BOTH strictly ahead
- *      of `declared` (`isStrictlyAhead`) AND carries a strictly larger bump, so it can only ADD
- *      headroom — never weaken an adequate declared bump, never let a backward projection excuse a
- *      break. VERSION_REGRESSION / LEAKED_ARTIFACT never reach this rule (SURFACE_APPLICABLE_VERDICTS).
- *
- * `declaredBump` in the result is ALWAYS `referenceVersion -> declared` (for reporting continuity);
- * `sizingBump` is the bump actually compared against `delta.required`; `creditedVersion` is the
- * projected version that was credited, or null.
- *
- * @returns {{kind: 'ok'|'break', delta: object, declaredBump: string, sizingBump: string,
- *   creditedVersion: string|null, required?: string} | {kind: 'indeterminate', detail: string}}
+ * @returns {{ effectiveDeclaredVersion: string, source: "package" | "changeset", projection: object | null, projectionReason: string | null }}
  */
 export function evaluateSurface({declared, referenceVersion, reference, candidate, pendingRelease}) {
   const delta = surfaceDelta(reference, candidate)
@@ -1409,36 +1176,9 @@ export function surfaceAdvisories(outcome) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * WHY THIS IS NOT `pnpm list -r --depth -1 --json` ANY MORE (finding D1/X1).
- *
- * That call was this file's ONLY enumeration source, and its doc comment called it "the
- * authoritative workspace enumeration". It is not authoritative — it is the package
- * manager's opinion of DECLARED MEMBERSHIP, and a package the workspace config does not
- * name is invisible to it.
- *
- * MEASURED, on the real mantle-LifegamesPortal: that repo's `pnpm-workspace.yaml` is
- * settings-only and carries no `packages:` key at all, so `pnpm list -r --depth -1
- * --json` returns the PRIVATE ROOT ALONE. Its `packages/portal-contract` — a real,
- * published `@j0nathan-ll0yd/*` package — was therefore never inventoried, and this gate
- * printed "0 publishable package(s): nothing evaluated / exit 0". A gate that reports a
- * silent total pass on a repo it is meant to protect is worse than no gate.
- *
- * The fix is to UNION two independent sources so neither can narrow the inventory:
- *
- *   1. the workspace globs DECLARED by whichever package manager this repo uses
- *      (`declaredWorkspaceGlobs`), and
- *   2. a plain directory scan for every `package.json` in the tree
- *      (`manifestDirectories`), which does not care about workspace config at all.
- *
- * Git-ignored candidates are then removed (`gitIgnoredPaths`) and the survivors reduced
- * to the directories that name a package in their own right (`selectPackageDirectories`).
- * A manifest that exists but cannot be read becomes a RECORDED ERROR that raises the exit
- * floor — never a silent drop.
- *
- * M6 (inventory discovered from the working tree while evaluating another ref) remains
- * fixed BY CONSTRUCTION: there is exactly one tree. Discovery, build and pack all read
- * `repoRoot`. `--head` / `--base` do not exist — evaluating an arbitrary ref is not
- * meaningful when the payload requires a build and a build requires a materialised tree.
+ * Builds one package inventory from workspace globs plus a direct package.json tree scan. The
+ * second source catches packages omitted from workspace config; ignored trees stay excluded.
+ * Unreadable or malformed manifests fail rather than silently shrinking the estate.
  */
 
 /**

@@ -20,11 +20,10 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <meta name="description" content={description}>
   <meta name="robots" content={robots}>
   <meta name="keywords" content="backend engineer portfolio, software engineer portfolio, data visualization dashboard, living data dashboard, human datastream, engineering director, personal dashboard, biometrics dashboard, GitHub activity visualization, Astro static site">
-  <!-- Security: CSP + Referrer-Policy served via HTTP headers (functions/_middleware.ts) -->
+  {/* CSP and Referrer-Policy are response headers, so no equivalent meta tags belong here. */}
   <meta name="author" content="Jonathan Lloyd">
   <meta property="og:locale" content="en_US">
   <link rel="canonical" href={canonicalURL}>
-  <!-- LLM-friendly alternate versions (backend-composed live on CloudFront) -->
   <link rel="alternate" type="text/markdown" href={`${CLOUDFRONT_BASE}${LLM_CONTENT_PATHS.llmsFull}`} title="LLM-friendly complete content">
   <link rel="alternate" type="text/markdown" href="https://jonathanlloyd.me/llms.txt" title="LLM discovery index">
   <title>{title}</title>
@@ -33,7 +32,6 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="sitemap" href="/sitemap-index.xml">
 
-  <!-- OpenGraph -->
   <meta property="og:title" content={title}>
   <meta property="og:description" content={ogDescription}>
   <meta property="og:type" content="profile">
@@ -46,14 +44,12 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <meta property="profile:first_name" content="Jonathan">
   <meta property="profile:last_name" content="Lloyd">
 
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content={title}>
   <meta name="twitter:description" content={ogDescription}>
   <meta name="twitter:image" content={ogImage}>
   <meta name="twitter:image:alt" content="Jonathan Lloyd — Human Datastream dashboard">
 
-  <!-- JSON-LD Structured Data -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
@@ -209,11 +205,10 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
     ]
   })} />
 
-  <!-- Font preload (critical for swap timing) -->
+  {/* Preloading the primary font avoids a swap-induced layout shift. */}
   <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" as="image" type="image/webp" href="/assets/avatar.webp">
 
-  <!-- DNS prefetch fallbacks + preconnect hints -->
   <link rel="preconnect" href={CLOUDFRONT_BASE} crossorigin>
   {import.meta.env.PROD && (
     <>
@@ -439,7 +434,6 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <slot />
   {import.meta.env.DEV && <script is:inline src="/vendor/leaflet/leaflet.js" defer></script>}
-  <!-- Service Worker -->
   <script is:inline>
   if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     window.addEventListener('load', function() {
@@ -447,7 +441,6 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
     });
   }
   </script>
-  <!-- WebMCP: expose site tools to AI agents via browser (W3C Community Draft) -->
   <script is:inline>
   (function() {
     if (typeof navigator !== 'undefined' && navigator.modelContext && navigator.modelContext.provideContext) {

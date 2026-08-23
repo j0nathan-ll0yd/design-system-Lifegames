@@ -194,8 +194,4 @@ const { profile, compact = false } = Astro.props;
   }
 </style>
 
-<!-- IdentityCard ships scriptless. Consumers attach social-click tracking via a
-     delegated handler at the page level (on `.id-links a`); see
-     production/IdentityCard.astro's comment and the consumer's
-     public/js/social-click-track.js. CSP `script-src 'self'` rejects inline
-     script bodies, so analytics wiring lives in an external file, never here. -->
+{/* Attach analytics in the consumer because the site CSP rejects inline scripts here. */}
