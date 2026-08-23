@@ -1,5 +1,21 @@
 # @j0nathan-ll0yd/web
 
+## 2.1.0
+
+### Minor Changes
+
+- f61cdf1: Fix portfolio Lighthouse regressions in the production reading widgets: keep
+  bookshelf children semantic list items, mark linked theatre posters decorative,
+  and attach image fallbacks at runtime without CSP-blocked inline handlers.
+
+  Raise the web caption, metadata, and body typography floors to 0.75rem (12px)
+  while retaining fluid clamps and the existing upper bounds.
+
+### Patch Changes
+
+- Updated dependencies [f61cdf1]
+  - @j0nathan-ll0yd/tokens@2.2.1
+
 ## 2.0.4
 
 ### Patch Changes
