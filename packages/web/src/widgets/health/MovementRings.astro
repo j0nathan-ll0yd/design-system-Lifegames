@@ -145,8 +145,7 @@ function offset(circ: number, pct: number): number {
         </div>
       )
     }
-    <!-- Paused block: always in DOM (hidden by default); shown when .is-paused via CSS.
-         Replaces the data content entirely — no stale ring/step numbers are visible when the watch is off. -->
+    {/* Both states stay mounted so live updates can switch without exposing stale values. */}
     <div class="mv-paused" role="status" aria-live="polite" id="mvPaused">
       <svg
         class="mv-paused-icon"
@@ -186,8 +185,6 @@ function offset(circ: number, pct: number): number {
         }
       </span>
     </div>
-    <!-- Data content: always in DOM; hidden by .is-paused so stale ring/step numbers are never shown
-         when the watch is off. -->
     {
       !isEmpty && (
         <div class="mv-data">
@@ -200,11 +197,9 @@ function offset(circ: number, pct: number): number {
                 .replace('{stand}', String(Math.round(standPct * 100)))}
             >
               <svg viewBox="0 0 144 144" role="img">
-                {/* tracks */}
                 <circle class="mv-ring-track mv-ring-track-move" cx="72" cy="72" r="60" />
                 <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" />
                 <circle class="mv-ring-track mv-ring-track-stand" cx="72" cy="72" r="28" />
-                {/* progress (animated by updater) */}
                 <circle
                   class="mv-ring-progress mv-ring-move"
                   id="ringMove"

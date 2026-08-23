@@ -1,57 +1,6 @@
-// mantle-cli-output: test file, not a CLI script (marker satisfies scripts/-dir convention scan)
-/**
- * Unit + conformance suite for scripts/check-package-drift.mjs. Collected
- * automatically by the root `test:scripts` script (`node --test scripts/*.test.mjs`),
- * which pre-push runs as "audit script tests".
- *
- * SCOPE, STATED HONESTLY. This file covers the PURE layer: canonicalisation, the
- * digest, the verdict matrix, the lane→exitClass mapping, the leak screen, the tar
- * reader and auth resolution — plus ONE observation-layer slice, the registry
- * transport's retry behaviour, which is driven against a real loopback HTTP server
- * at the bottom of this file (fetch() is exercised for real there, and nowhere
- * else). It deliberately does NOT claim to cover the rest of the observation layer
- * (pnpm pack, git ls-files, the workspace build) — a previous generation of this
- * gate had 51 green unit tests and a passing --self-test while a one-line mutation
- * to its git observation made it report "17 clean" on a tree with two real drifts
- * (finding H1). Pure-function tests cannot see that class of defect, and pretending
- * otherwise is worse than not claiming the coverage.
- *
- * The observation layer is covered by `node scripts/check-package-drift.mjs
- * --self-test`, which stands up a throwaway git repo and an offline registry, runs
- * the SHIPPED pipeline end to end against them, and then re-runs it under every entry
- * in that file's MUTATION TABLE — deliberate SOURCE-TEXT mutations of the real
- * evaluator, each naming the scenario it must break — failing if any survives. The
- * count is deliberately not quoted here; it grows whenever the table does.
- *
- * THIS FILE RUNS IN CI (finding D4). It carries the 34 shared digest vectors and the 61
- * shared export-surface vectors (spec v2, changeset-aware — atlas decision 0024), plus the
- * fixture-checksum assertion that makes vendoring each of them safe, and until now it was
- * reachable only through `pnpm test:scripts` —
- * present in .husky/pre-push and in no workflow — so this repo could diverge from the
- * estate's canonical rules with every CI check green. It is now a step in the
- * `package-version-drift` job.
- *
- * THE EXPORT-SURFACE RULE IS COVERED IN BOTH PLACES, and the split is the same one.
- * Its 61 vectors define the rule and are asserted here; the WIRING — which verdicts it is
- * applied over, that an unreadable surface reaches exit 3, that the reference it compares
- * against is the published tarball and not the local one — is asserted end to end by the
- * --self-test S22 rungs, and by three source mutations (`surfaceselfref`,
- * `surfaceindetpass`, `surfacealwaysmajor`) that each break exactly one of them. S22c is
- * the NEGATIVE CONTROL: the same export removal under a MAJOR must pass and leave the run
- * at exit 0, so a gate that simply blocked everything cannot masquerade as this rule.
- *
- * THE PROCESS-EXIT BOUNDARY IS NOT COVERED HERE, DELIBERATELY. Nothing in this file
- * spawns the script, so `process.exitCode = code` could be changed to `= 0` and every
- * test here would stay green while the gate exited 0 on real drift (finding X2). That
- * boundary is covered by four --self-test rungs that spawn the script as a real OS
- * process and read its actual status: S13 (a known drift -> 2), S17 (a clean tree -> 0),
- * S18 (a dead registry -> 3) and S19 (nothing publishable -> 3). All four are needed,
- * because one rung asserting only DRIFT -> 2 could not see any exit-mapping edit that
- * PRESERVED 2 — MEASURED (finding D3): rewriting that line to launder exit 3 into exit 0
- * left the previous suite reporting "self-test passed, all 9 mutations killed" while
- * every "could not tell" silently became a pass. The `exitcode`, `exitalways2` and
- * `exitlaunder3` mutations prove each direction can fail.
- */
+// Pure/unit and shared-conformance coverage lives here. Observation and process-exit
+// boundaries are exercised by the real `--self-test` pipeline with source mutants; this
+// file deliberately does not claim those paths. CI runs both layers.
 
 import assert from 'node:assert/strict'
 import fs from 'node:fs'

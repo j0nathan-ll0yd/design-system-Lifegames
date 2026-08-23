@@ -1,33 +1,8 @@
 #!/usr/bin/env node
 /**
- * THE GENERATOR for the component-contract catalog.
- *
- * Every axis is READ from a source that already exists in this repo. Nothing here restates a prop
- * shape, a state name, or an accessibility label. That is the whole design: a hand-written second
- * copy of a prop shape drifts from the first one silently, and a catalog that drifts is worse than
- * no catalog, because it reads as verified.
- *
- * v3 covers the UNION of the two widget sets rather than a hand-listed pilot. The set of widgets is
- * itself DISCOVERED — see `unionWidgets` below — so a widget added to either tree appears in the
- * catalog on the next regeneration, and a widget that exists on only one side gets a PARTIAL entry
- * with the absent side written as `null`.
- *
- * Sources, one per axis:
- *   props   <- packages/schemas/generated/widgets/<widget>.schema.json  (the WHOLE nested shape:
- *              `properties` + `required` walked recursively through object properties and array
- *              items, capped at MAX_PROP_DEPTH. Emitted by
- *              packages/schemas/scripts/generate-widget-schemas.mjs from
- *              packages/web/src/widgets/<group>/<Widget>.types.ts, with $ref already resolved).
- *              `null` when no schema exists for the widget.
- *   states  <- Sources/LifegamesWidgets/Resources/widgets/<group>/<fixtureBase>.<state>.json filenames
- *              UNION apps/storybook/__snapshots__/production-<group>-<pascal lowercased>--<state>.png
- *   a11y    <- the first `.accessibilityLabel(` in the widget's Swift view. `null` when the widget
- *              has no Swift view at all, and `null` when it has one with no label.
- *   conformance <- BEHAVIORAL_TESTS below. Cross-repo, so it cannot be discovered from here; it is a
- *              reference STRING, never executed by this repo.
- *
- * Determinism: every directory read is sorted and every emitted object has a fixed key order, so
- * running this twice produces a zero-byte diff. `check.mjs` proves that on every run.
+ * Generates the catalog union from existing component sources. Recursive normalization preserves
+ * props, states, accessibility, and conformance metadata; missing values become null. Sorted
+ * output keeps regeneration deterministic.
  */
 
 import {existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'

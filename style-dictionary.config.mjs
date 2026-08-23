@@ -1,49 +1,6 @@
-// Style Dictionary v5 build driver for Lifegames Design System.
-//
-// Architecture:
-//   - StyleDictionary v5 (5.4.x) is the engine. We instantiate it, register
-//     custom formats, declare three platforms (web/css, ios/xcassets, ios/swift),
-//     and call buildAllPlatforms() to orchestrate output emission.
-//   - DTCG token loading still uses our group-$type-aware flattener because
-//     SD v5's stock DTCG parser does not propagate $type inheritance from group
-//     nodes down to leaf tokens. This remains necessary until a future SD
-//     version ships native group-$type inheritance.
-//   - Each emitter is registered as a custom SD format. SD orchestrates write
-//     order, deterministic build hashing, and the file output API.
-//   - All build artifacts are gated by golden file tests
-//     (packages/tokens/__tests__/build-output.spec.ts).
-//
-// Format audit (SD v5.4 — 2026-06-06; format 17 added 2026-08-11):
-//   17 custom formats registered. SD v5 built-in formats (css/variables,
-//   javascript/module, json/nested, ios-swift/enum.swift, etc.) cannot
-//   replace any of them because:
-//
-//   RETAINED (product-specific shape SD doesn't model):
-//     1. tokens.css — fluid clamp() spacing, composite typography shorthand,
-//        shadow multi-layer, reduced-motion @media block, custom --lg- prefix
-//     2. tokens-layered.css — @layer wrapper around tokens.css
-//     3. tokens.js — flat resolved tree (SD's js/module adds wrapper)
-//     4. tokens.json — flat resolved tree
-//     5. DESIGN.md — rich markdown documentation with widget catalog
-//     6. shadcn.css — OKLCH conversion via culori + shadcn alias mapping
-//     7. deprecated-tokens.json — deprecation metadata extraction
-//     8. tokens.dtcg.json — normalised DTCG output for conformance tooling
-//     9. build-report.json — per-build provenance (sizes, file list)
-//    10. xcassets-root — sidecar-writes N colorset dirs (SD writes one file)
-//    11. Color+Tokens.swift — LGColor enum with asset catalog references
-//    12. Spacing.swift — CGFloat enum with numeric extraction
-//    13. Font+Tokens.swift — Font.custom with relativeTo + $extensions
-//    14. Shadow+Tokens.swift — ViewModifier structs with multi-layer shadows
-//    15. ReducedMotion.swift — static utility enum (no token data)
-//    16. AISurfaces.swift — filtered color subset for AI client surfaces
-//    17. tokens.d.ts — literal-typed declarations for tokens.js (SD has no
-//        d.ts format at all; the `.` export's `types` target must exist or the
-//        export-surface Level-2 gate reads the subpath as INDETERMINATE)
-//
-//   DEFERRED (require future SD native DTCG group-$type inheritance):
-//     - flattenTokens() / resolveAllTokens() custom loader
-//     - Potential replacement of tokens.css color section with css/variables
-//       (blocked by custom --lg- prefix and fluid spacing interleaving)
+// Style Dictionary v5 driver. Custom DTCG loading preserves inherited group `$type`;
+// custom formats remain because built-ins cannot emit the product-specific CSS, docs, assets,
+// Swift, provenance, and declaration outputs. Golden tests pin every generated artifact.
 
 import {existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync} from 'node:fs'
 import {fileURLToPath} from 'node:url'

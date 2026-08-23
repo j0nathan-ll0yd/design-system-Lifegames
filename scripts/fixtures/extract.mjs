@@ -1,61 +1,10 @@
 /**
- * THE NORMATIVE NAMED-EXPORT EXTRACTOR — "Level 2" of the export-surface rule, extract spec
- * version 1 (atlas decision 0028).
+ * Normative named-export extractor for export-surface Level 2. It is separate from the
+ * dependency-free rule because extraction alone requires TypeScript, and it carries an
+ * independent spec version so rule and extractor caches can evolve separately.
  *
- * `reference.mjs` owns the RULE (what a surface delta requires). This file owns the far more
- * volatile half: turning a packed payload's file tree into the set of NAMES each `exports` subpath
- * actually publishes. It is a separate module for one structural reason — it is the only part of
- * the contract that depends on `typescript`, and `reference.mjs` must stay a dependency-free pure
- * reader so a Level-1-only consumer (and every existing spec-version-2 vector) keeps working with
- * no compiler in the picture at all.
- *
- * ── WHY EXTRACTION IS NORMATIVE, NOT PER-ENGINE ─────────────────────────────────────────────────
- *
- * Three hand-written copies of the payload DIGEST diverged silently and cost this estate a live
- * false positive (findings X3/X7). A named-export extractor is an order of magnitude more code than
- * a subpath-key comparison, so three hand-written copies of THIS would repeat that failure with
- * better odds. So the extractor is pinned by generated vectors
- * (`export-extract-conformance.json`) exactly as the rule is, under its OWN number.
- *
- * ── WHY `EXTRACT_SPEC_VERSION` IS SEPARATE FROM `SURFACE_SPEC_VERSION` ──────────────────────────
- *
- * A `typescript` patch bump or an extractor tweak changes no rule. Folding both into one number
- * would force an estate-wide re-vendor of the RULE fixture for a change that touched no rule —
- * exactly the coupling the digest/surface split already avoided. Two numbers, two fixtures, two
- * sha256 sidecars, two case-zeros; both compose into the reference-cache key so either bump
- * invalidates a stale cached entry.
- *
- * ── THE TOOLCHAIN HAZARD THIS FILE GUARDS (measured 2026-08-11) ─────────────────────────────────
- *
- * `npm i typescript` now installs **7.0.2** — the native Go port, which has NO JavaScript compiler
- * API: `ts.createProgram` is `undefined`. A `^5` or `~5` range is therefore not a pin, it is a
- * time bomb. Every repo implementing this contract pins `typescript` to a single EXACT patch, and
- * `assertCompiler` fires on the RUNTIME extraction path — not only in the conformance runner. The
- * distinction is load-bearing: a runner-only guard passes in CI on the pinned version while a stale
- * hoisted `typescript` is resolved at runtime, and the wrong compiler's names get written into the
- * reference cache UNDER THE CORRECTLY-PINNED KEY. That poisoned entry is undetectable by the key,
- * because the key trusts the pin the runtime bypassed.
- *
- * ── WHY THE GUARD IS A SET AND NOT ONE VERSION (decision 0030) ──────────────────────────────────
- *
- * Each repo pins EXACTLY, but the three repos do not pin the SAME patch: mantle leads the estate's
- * TypeScript floor (6.0.3), atlas trails it (5.9.2), design-system sits between (5.9.3). Decision
- * 0028 required all three to converge on one patch, on the reasoning — sound, but ASSUMED — that two
- * compilers could extract differently, each pass their own conformance, and disagree on a real
- * verdict (findings X3/X7 applied to a dependency).
- *
- * Decision 0030 MEASURED it instead: the whole published corpus (22 packages, 252 subpaths, 1083
- * compiler-decided names) plus 9 adversarial construct cases, extracted under all three compilers,
- * produced BYTE-IDENTICAL output — one canonical digest, `3137083326c42a6b…`, for all of them. So
- * the guard is a CLOSED ENUMERATION of versions that have been measured equivalent, and each engine
- * uses its own native compiler.
- *
- * A SET IS NOT A RANGE, and the difference is the whole safety argument. A range admits versions
- * nobody measured (and readmits 7.x). Membership in this list is a claim that someone RAN the
- * evaluation. Adding a member means re-running `decisions/evidence/0030-ts-version-set/` and bumping
- * `EXTRACT_SPEC_VERSION` — which is exactly why the runner checks the FIXTURE's list rather than
- * this constant: a vendored copy that widens its own array on the quiet disagrees with the pinned
- * fixture and fails conformance.
+ * Accepted TypeScript versions form a closed, fixture-verified set, never a range. The runtime
+ * assertion prevents an unmeasured compiler from poisoning a cache under a trusted key.
  */
 
 import defaultTs from 'typescript'
@@ -319,30 +268,9 @@ export function normalizeRel(path) {
 }
 
 /**
- * Expand ONE wildcard subpath against the packed file set.
- *
- * `"./types/*": "./src/types/*.ts"` is not one subpath, it is one per matching file, and the estate
- * has 9 of them. They glob deterministically (probe, decision 0020) because the file set is the
- * tarball's, not the filesystem's. The `*` is greedy across `/`, exactly as Node's own subpath-
- * pattern matching is.
- *
- * ── MEASURED AGAINST NODE 24, NOT INFERRED FROM THE SPEC PROSE ──────────────────────────────────
- *
- * Only the KEY decides whether anything is a pattern. `{"./x": "./d/*.js"}` — a star in the target
- * and none in the key — is NOT a pattern to Node: it loads the LITERAL path `d/*.js` and throws
- * ERR_MODULE_NOT_FOUND. Expanding it here produced N candidate subpaths that all collapsed onto the
- * one key `./x`, so the map kept whichever the file order happened to put last — an arbitrary
- * answer that would read a change when a sibling file was added. The caller therefore only ever
- * calls this for a starred key; a starless key classifies its target literally, which is exactly
- * Node's answer.
- *
- * Node replaces EVERY `*` in the target, not just the first. A key `./z/*` whose target is
- * `./d/` STAR `/` STAR `.js` (spelt out because a literal star-slash would close this comment)
- * resolves `pkg/z/sub` to `d/sub/sub.js`. That makes reverse-deriving the capture from a file path
- * AMBIGUOUS for a multi-star target — the file `d/sub/sub.js` yields capture `sub/sub`, which
- * forward-substitutes to `d/sub/sub/sub/sub.js`, a different file — so a multi-star target is
- * INDETERMINATE rather than answered by a glob that does not round-trip. Single-star targets
- * round-trip by construction, and every wildcard in the estate is single-star.
+ * Expands wildcard export keys against packed files. Only a starred key activates substitution;
+ * a star in the target alone is literal in Node. Multi-star targets are indeterminate because
+ * reverse capture is ambiguous; single-star targets must round-trip.
  *
  * @returns {{ok: true, entries: Array<{subpath: string, target: string}>} | {ok: false, detail: string}}
  */

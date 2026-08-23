@@ -86,52 +86,9 @@ jobs:
           CONTRACT_CHECK_MODE: blocking
 
   package-version-drift:
-    # C147. Catches "a published package's payload changed but nobody bumped that
-    # package's version". No other gate sees it: typecheck, lint and tests all
-    # pass, and `changeset publish` SILENTLY SKIPS any version already on the
-    # registry and exits 0 — so consumers just never receive the change.
-    #
-    # THE STATUS CONTEXT REQUIRED IN BRANCH PROTECTION IS `package-version-drift`
-    # (the job id, identical in mantle/LP/OMD so one set of gh commands covers the
-    # estate). It is a REQUIRED context on `main` as of 2026-08-04: a red gate now
-    # blocks merge, and the transport retries a throttled 403 (REQUEST_ATTEMPTS in
-    # check-package-drift.mjs) so a momentary registry throttle cannot make it flake.
-    #
-    # No fetch-depth: 0. The previous generation walked each manifest's own commit
-    # history to find the version-setting commit, so it needed the full history
-    # (and a shallow graft boundary looked exactly like a real root commit — a
-    # silent total pass). The check is now CONTENT-BASED: it compares the payload
-    # this checkout would publish against the payload already published under the
-    # declared version. The only git it does is one `git ls-files` per package for
-    # the leak screen, which is depth-independent.
-    #
-    # It DOES now need an install and a build (the payload includes dist/), and a
-    # registry token — GitHub Packages returns E401 even for public packages, so
-    # there is no anonymous fallback and a missing token is INDETERMINATE/exit 3,
-    # never a pass.
-    #
-    # FORK PRs (finding D12). This job deliberately carries NO job-level `if:`, unlike its
-    # thirteen siblings in this file. They may skip; a gate intended to be a REQUIRED
-    # status context may not, because GITHUB REPORTS A SKIPPED JOB AS SATISFYING A REQUIRED
-    # CHECK. Requiring `package-version-drift` while it skips on fork PRs would therefore
-    # buy nothing on exactly the pull requests a maintainer has least reason to trust: the
-    # context would go green having measured nothing. That is the "I could not tell, so
-    # pass" laundering the engine itself refuses to do at the verdict layer (a dead
-    # registry, a missing token or an empty inventory are all exit 3, never 0), and it must
-    # not be reintroduced at the workflow layer.
-    #
-    # It genuinely CANNOT measure fork-PR code: it runs on SELF-HOSTED runners and its
-    # measurement is `pnpm install` + a real workspace build + `pnpm pack`, i.e. arbitrary
-    # execution of the pull request's code on this estate's own hardware with a GitHub
-    # Packages token in the environment. So it runs and fails LOUDLY instead. The refusal
-    # is the FIRST step and precedes `actions/checkout`, so no fork-controlled byte is ever
-    # fetched, let alone executed — for a `pull_request` event the workflow definition
-    # itself comes from the base branch, so the self-hosted runner only ever echoes.
-    #
-    # A maintainer clears it by pushing the branch to this repository, which is what they
-    # must do to land it in any case. If that trade is ever judged wrong, the one-line
-    # revert is to restore the sibling `if:` — but then this context MUST NOT be added to
-    # branch protection, because a required-and-skippable check is worse than no check.
+  # Required content-drift gate: registry authentication and a real build are part of the check.
+  # Fork PRs fail before checkout because skipped required checks pass, while running fork code
+  # on self-hosted hardware is unsafe. Push the branch to this repository to measure it.
     runs-on: [self-hosted, linux, arm64, node-highmem]
     steps:
       - name: Refuse to measure fork-PR code on a self-hosted runner
@@ -194,30 +151,9 @@ jobs:
       # agrees with the estate makes every verdict below meaningless.
       - name: Digest conformance + unit suite (34 shared vectors, fixture checksum)
         run: node --test scripts/check-package-drift.test.mjs
-      # A2b — a gate that can never fail is as dangerous as one that never runs.
-      # --self-test stands up a throwaway git repo and an offline registry, runs
-      # the SHIPPED pipeline end to end against them, and then re-runs it under
-      # thirteen deliberate SOURCE-TEXT mutations, failing if any survives.
-      #
-      # Four of those thirteen cross the PROCESS boundary, and that number is the
-      # point (finding D3). Every in-process assertion reads the pipeline's return
-      # value, so the exit site itself was untested and a one-line change there kept
-      # the whole suite green while the gate exited 0 on real drift (finding X2).
-      # One spawned rung was not enough either: it asserted only DRIFT -> 2, so any
-      # edit that PRESERVED 2 stayed invisible. S13/S17/S18/S19 now spawn the script
-      # as a real OS process at a drift, a clean tree, a dead registry and an empty
-      # inventory, pinning exits 2/0/3/3 — MEASURED: with `process.exitCode` rewritten
-      # to launder exit 3 into 0, the previous suite reported "self-test passed, all
-      # 9 mutations killed" while every "could not tell" became a pass.
-      #
-      # It requires npm on PATH as well as pnpm — S14 seeds the toy registry with
-      # `npm pack` to reproduce the npm-publish/pnpm-pack manifest asymmetry
-      # (finding X3) end to end.
-      # Gated to engine/contract changes (see the paths-filter above). On a PR that
-      # does not touch the drift engine this step is SKIPPED — a skipped step does
-      # not fail the job, and the two always-on steps still report the required
-      # `package-version-drift` context. The nightly workflow re-runs the full
-      # self-test against main so nothing that skipped here goes unvalidated.
+# Exercise the real package-drift pipeline plus source mutants, including wrapper exit semantics.
+# Paths gate pull-request cost; the nightly run always executes. npm remains installed to test
+# npm/pnpm asymmetry.
       - name: Known-answer self-test (must prove it can fail)
         if: steps.drift-engine-changes.outputs.engine == 'true'
         run: node scripts/check-package-drift.mjs --self-test
