@@ -6,14 +6,16 @@ name: Drift self-test (nightly, full)
 # WHY THIS EXISTS
 # On pull requests the self-test step in ci.yml is gated to engine/contract
 # changes (dorny/paths-filter over scripts/check-package-drift.{mjs,test.mjs} and
-# scripts/fixtures/**), because running that ~14-minute, memory-heavy step on
+# pnpm-lock.yaml, which is where the contract now moves since atlas decision 0079
+# item 4 wave 2 replaced scripts/fixtures/** with the published
+# @j0nathan-ll0yd/estate-contracts), because running that memory-heavy step on
 # EVERY PR across the shared self-hosted arm64 fleet let two unrelated PRs exhaust
 # a physical host's RAM and get a runner VM OOM-reaped mid-step (`BlobNotFound`),
 # reddening the required gate on PRs that never touched the drift engine. Gating
 # the step removes that load — but it also means a PR that skipped the self-test
 # could, in principle, land a regression that only the self-test would catch (e.g.
 # a change to shared tooling the mutations exercise indirectly). This workflow
-# closes that gap: it re-runs the FULL self-test — baseline + all 13 source
+# closes that gap: it re-runs the FULL self-test — baseline + all 31 source
 # mutations, no skipping — against main every night, and on demand.
 #
 # WHY self-hosted linux arm64 node
@@ -56,6 +58,6 @@ jobs:
       # @changesets/get-release-plan probe against it.
       - run: pnpm install --frozen-lockfile
       # FULL run — no --mutation filter, no path gate. Fails loudly (exit 1) if the
-      # baseline goes red or any of the 13 mutations survives.
-      - name: Known-answer self-test (full — baseline + all 13 mutations)
+      # baseline goes red or any of the 31 mutations survives.
+      - name: Known-answer self-test (full — baseline + all 31 mutations)
         run: node scripts/check-package-drift.mjs --self-test

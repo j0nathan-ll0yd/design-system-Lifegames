@@ -6,9 +6,9 @@
  *
  *   1. INTEGRITY — the vectors file matches `component-catalog-conformance.sha256`. Editing the
  *      vectors without regenerating the sidecar reds here. This is the estate contracts/ discipline
- *      (see scripts/fixtures/drift-conformance-runner.mjs and its sha256 sidecar), applied to a
- *      DS-local contract: the digest is what makes "the vectors did not change" a checkable claim
- *      rather than a promise.
+ *      (see `@j0nathan-ll0yd/estate-contracts/package-digest/runner` and its sha256 sidecar),
+ *      applied to a DS-local contract: the digest is what makes "the vectors did not change" a
+ *      checkable claim rather than a promise.
  *   2. CASE ZERO — `CATALOG_SPEC_VERSION` equals the vectors' `specVersion`. This is the whole point
  *      of the number: the grammar this file loads must be the grammar the vectors describe. A
  *      mismatch aborts before any case runs, because the cases would be asserting a different

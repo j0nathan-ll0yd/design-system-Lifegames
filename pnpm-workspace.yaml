@@ -13,6 +13,7 @@ packages:
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@j0nathan-ll0yd/portal-contract'
+  - '@j0nathan-ll0yd/estate-contracts'
 
 # pnpm 11 no longer reads pnpm settings from .npmrc; carried over from there.
 # Root-level build drivers (style-dictionary.config.mjs) resolve workspace-package

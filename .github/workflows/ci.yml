@@ -99,7 +99,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       # RUNNER-DEATH ROOT CAUSE (this filter is the remedy). The "Known-answer
       # self-test" step below stands up throwaway repos + an offline registry and
-      # re-runs the shipped pipeline under 13 source mutations — a ~14-minute,
+      # re-runs the shipped pipeline under 31 source mutations (the count was 13
+      # when this comment was written; the mutants fan out across cores, so the
+      # step measured 380.6s on the self-hosted fleet in run 32785190011) — a
       # memory-and-IO-heavy step. Run on EVERY pull request across the shared
       # self-hosted arm64 fleet, two unrelated PRs land on the same physical host
       # and the host exhausts memory; the OOM killer reaps a runner VM mid-step, so
@@ -120,14 +122,20 @@ jobs:
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: drift-engine-changes
         with:
-          # scripts/fixtures/** is exactly the vendored contract (the conformance
-          # JSON/sha256 vectors and the three shared runner .mjs files); the two
-          # check-package-drift files are the engine and its unit/self-test suite.
+          # The two check-package-drift files are the engine and its unit/self-test
+          # suite. The contract itself used to live in scripts/fixtures/**; since
+          # atlas decision 0079 item 4 wave 2 it arrives as
+          # @j0nathan-ll0yd/estate-contracts, so the lockfile is now the file that
+          # changes when the vectors, the runners or the extractor change. Watching
+          # pnpm-lock.yaml is deliberately WIDER than the retired path (any dependency
+          # bump trips it) — the self-test is memory-heavy, so the cost is real, but a
+          # contract change that skipped the self-test is the failure this gate exists
+          # to prevent. Wider and correct beats narrower and blind.
           filters: |
             engine:
               - 'scripts/check-package-drift.mjs'
               - 'scripts/check-package-drift.test.mjs'
-              - 'scripts/fixtures/**'
+              - 'pnpm-lock.yaml'
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -139,17 +147,17 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # D4 — THE SHARED DIGEST CONTRACT, AND IT RAN IN NO WORKFLOW AT ALL.
-      # scripts/check-package-drift.test.mjs carries the 34 cross-implementation
-      # conformance vectors vendored from atlas/contracts/package-digest/, AND the
-      # Layer-1 assertion that the vendored fixture still hashes to
-      # DRIFT_CONFORMANCE_SHA256 — the check that makes vendoring safe rather than
-      # merely convenient. It was reachable only through `pnpm test:scripts`, which
+      # scripts/check-package-drift.test.mjs runs the 35 cross-implementation
+      # conformance vectors from @j0nathan-ll0yd/estate-contracts/package-digest,
+      # AND the assertion that the resolved fixture still hashes to
+      # DRIFT_CONFORMANCE_SHA256 — the pin that keeps a vector change visible in
+      # this repo's diff. It was reachable only through `pnpm test:scripts`, which
       # appears in .husky/pre-push and in no workflow on any event, so this repo
       # could diverge from the canonical normalization rule with all 20 CI checks
       # green and only a local pre-push hook standing between that and a merge.
-      # It is 52 assertions in ~70 ms and runs FIRST: a digest rule that no longer
-      # agrees with the estate makes every verdict below meaningless.
-      - name: Digest conformance + unit suite (34 shared vectors, fixture checksum)
+      # It runs FIRST: a digest rule that no longer agrees with the estate makes
+      # every verdict below meaningless.
+      - name: Digest conformance + unit suite (35 shared vectors, fixture checksum)
         run: node --test scripts/check-package-drift.test.mjs
 # Exercise the real package-drift pipeline plus source mutants, including wrapper exit semantics.
 # Paths gate pull-request cost; the nightly run always executes. npm remains installed to test
