@@ -6,7 +6,9 @@ name: Drift self-test (nightly, full)
 # WHY THIS EXISTS
 # On pull requests the self-test step in ci.yml is gated to engine/contract
 # changes (dorny/paths-filter over scripts/check-package-drift.{mjs,test.mjs} and
-# scripts/fixtures/**), because running that ~14-minute, memory-heavy step on
+# pnpm-lock.yaml, which is where the contract now moves since atlas decision 0079
+# item 4 wave 2 replaced scripts/fixtures/** with the published
+# @j0nathan-ll0yd/estate-contracts), because running that ~14-minute, memory-heavy step on
 # EVERY PR across the shared self-hosted arm64 fleet let two unrelated PRs exhaust
 # a physical host's RAM and get a runner VM OOM-reaped mid-step (`BlobNotFound`),
 # reddening the required gate on PRs that never touched the drift engine. Gating

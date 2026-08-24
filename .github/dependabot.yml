@@ -98,9 +98,9 @@ updates:
         update-types: [version-update:semver-major]
       # typescript is PINNED EXACTLY (5.9.2) as a CONTRACT VERSION, not as a
       # preference -- atlas decision 0028 sec 2.5. The export-surface Level-2
-      # extractor vendored at scripts/fixtures/extract.mjs asserts
-      # `ts.version === EXPECTED_TS_VERSION` on its RUNTIME path, and the
-      # vendored export-extract-conformance.json vectors were generated against
+      # extractor at @j0nathan-ll0yd/estate-contracts/export-surface/extract asserts
+      # `ts.version === EXPECTED_TS_VERSION` on its RUNTIME path, and the shared
+      # export-extract-conformance.json vectors were generated against
       # exactly that patch. Two engines on two different 5.x patches can extract
       # different names, each pass their own conformance, and disagree on a real
       # verdict. Worse, `npm i typescript` now resolves 7.x -- the native Go port,
@@ -108,8 +108,9 @@ updates:
       #
       # So EVERY update type is ignored here, majors included: moving this pin is
       # an estate-atomic operation (bump EXTRACT_SPEC_VERSION, regenerate
-      # export-extract-conformance.json + its sha256 in atlas, re-vendor into
-      # mantle and design-system together), never a single-repo Dependabot PR.
+      # export-extract-conformance.json + its sha256 in atlas, release
+      # estate-contracts, then move the dependency and the pinned constant in
+      # each consumer), never a single-repo Dependabot PR.
       # The pnpm-workspace.yaml `overrides` entry is the second half of this:
       # it defeats a transitive `^`/`~` that could otherwise resolve 7.x.
       - dependency-name: typescript

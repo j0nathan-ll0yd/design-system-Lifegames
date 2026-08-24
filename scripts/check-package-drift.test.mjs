@@ -10,18 +10,27 @@ import test from 'node:test'
 import {fileURLToPath} from 'node:url'
 import zlib from 'node:zlib'
 
-import {assertFixtureIntegrity, runConformance} from './fixtures/drift-conformance-runner.mjs'
-// Both vendored runners export `assertFixtureIntegrity` — same function, different fixture —
-// so the second is aliased rather than renamed in the vendored copy, which must stay verbatim.
-import {assertFixtureIntegrity as assertSurfaceFixtureIntegrity, runExtractConformance, runSurfaceConformance} from './fixtures/export-surface-runner.mjs'
-// The vendored EXTRACTOR (atlas decision 0028). Unlike the rule, this half is vendored rather than
+// THE CONTRACT ARRIVES FROM THE LOCKFILE, NOT FROM A COPY IN THIS REPO.
+//
+// Runners, vectors and sidecars used to be vendored byte-verbatim under `scripts/fixtures/`. Atlas
+// decision 0080 published them as `@j0nathan-ll0yd/estate-contracts`; 0079 item 4 wave 2 deleted the
+// copies. What the copies bought — every implementation asserting the SAME things in the SAME order
+// against the SAME bytes — is now a resolved dependency, and the pinned `*_CONFORMANCE_SHA256`
+// constants beside the engine still make a vector change visible in this repo's diff.
+import {assertFixtureIntegrity, runConformance} from '@j0nathan-ll0yd/estate-contracts/package-digest/runner'
+// All three runners export `assertFixtureIntegrity` — same function, different fixture — so the
+// second and third are aliased at the import site.
+import {
+  assertFixtureIntegrity as assertSurfaceFixtureIntegrity,
+  runExtractConformance,
+  runSurfaceConformance
+} from '@j0nathan-ll0yd/estate-contracts/export-surface/runner'
+// The packaged EXTRACTOR (atlas decision 0028). Unlike the rule, this half is consumed rather than
 // reimplemented — it is the only part of the contract that needs `typescript`, and a hand-written
 // third copy of a named-export extractor would repeat findings X3/X7 with far better odds.
-import {acceptsCachedSurface, extractSurfaceNames} from './fixtures/extract.mjs'
+import {acceptsCachedSurface, extractSurfaceNames} from '@j0nathan-ll0yd/estate-contracts/export-surface/extract'
 import ts from 'typescript'
-// The third vendored runner — same `assertFixtureIntegrity` name, aliased again — carries the shared
-// verdict-ladder vectors (atlas/contracts/verdict-ladder/).
-import {assertFixtureIntegrity as assertLadderFixtureIntegrity, runLadderConformance} from './fixtures/verdict-conformance-runner.mjs'
+import {assertFixtureIntegrity as assertLadderFixtureIntegrity, runLadderConformance} from '@j0nathan-ll0yd/estate-contracts/verdict-ladder/runner'
 import {
   assertBuildOutputs,
   bumpBetween,
@@ -69,35 +78,52 @@ import {
 } from './check-package-drift.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
-const conformanceBytes = fs.readFileSync(path.join(here, 'fixtures/drift-conformance.json'))
+
+/** Raw bytes of a fixture subpath — the integrity check hashes bytes, not a re-serialized object. */
+const fixtureBytes = (subpath) => fs.readFileSync(new URL(import.meta.resolve(`@j0nathan-ll0yd/estate-contracts/${subpath}`)))
+
+/**
+ * A `.sha256` sidecar, located the ONLY way the package supports: relative to its tier's reference
+ * module. None of the seven is an `exports` subpath, deliberately — `.sha256` is neither a code nor
+ * an asset extension, so declaring one makes the extractor classify it INDETERMINATE and poisons the
+ * whole-package surface verdict permanently, even against itself (decision 0080, measured).
+ *
+ * The format is `<sha256>  <filename>`: two fields, not a bare hash. Take the FIRST field. An
+ * `awk '{print $1}'` one-liner once rewrote a sidecar to the bare hash and silently broke it.
+ */
+const sidecarSha = (tier, filename) =>
+  fs.readFileSync(new URL(filename, new URL(import.meta.resolve(`@j0nathan-ll0yd/estate-contracts/${tier}`))), 'utf8').trim().split(/\s+/)[0]
+
+const conformanceBytes = fixtureBytes('package-digest/fixture.json')
 const conformance = JSON.parse(conformanceBytes.toString('utf8'))
-const surfaceBytes = fs.readFileSync(path.join(here, 'fixtures/export-surface-conformance.json'))
+const surfaceBytes = fixtureBytes('export-surface/fixture.json')
 const surfaceConformance = JSON.parse(surfaceBytes.toString('utf8'))
-const extractBytes = fs.readFileSync(path.join(here, 'fixtures/export-extract-conformance.json'))
+const extractBytes = fixtureBytes('export-surface/extract-fixture.json')
 const extractConformance = JSON.parse(extractBytes.toString('utf8'))
-const ladderBytes = fs.readFileSync(path.join(here, 'fixtures/verdict-conformance.json'))
+const ladderBytes = fixtureBytes('verdict-ladder/fixture.json')
 const ladderConformance = JSON.parse(ladderBytes.toString('utf8'))
 const tmpdir = (prefix) => fs.mkdtempSync(path.join(process.env.TMPDIR ?? '/tmp', prefix))
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Cross-implementation conformance vectors
 //
-// THE FIXTURE AND THE RUNNER ARE VENDORED VERBATIM from the single source of truth,
-// atlas/contracts/package-digest/. There used to be three files called
-// drift-conformance.json in this estate — atlas (25 cases, specVersion 1),
-// design-system (21 cases, specVersion 1) and mantle (20 cases, specVersion 2) — no
-// two of which shared content OR a spec version, so nothing could detect that the three
-// engines had silently diverged on what a package.json hashes to (findings X5 and X7).
+// THE FIXTURE AND THE RUNNER COME FROM `@j0nathan-ll0yd/estate-contracts/package-digest`, the single
+// source of truth. There used to be three files called drift-conformance.json in this estate —
+// atlas (25 cases, specVersion 1), design-system (21 cases, specVersion 1) and mantle (20 cases,
+// specVersion 2) — no two of which shared content OR a spec version, so nothing could detect that
+// the three engines had silently diverged on what a package.json hashes to (findings X5 and X7).
 // One fixture, one runner, one number: same specVersion <=> byte-identical normalization.
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('conformance: the vendored fixture matches the checksum this implementation pins', () => {
-  // Layer 1 of three. Editing the vendored fixture without editing
-  // DRIFT_CONFORMANCE_SHA256 beside the engine turns this red immediately — which is
-  // what makes vendoring safe rather than merely convenient. (Layer 2 is the atlas host
-  // audit that re-hashes every repo's vendored copy against the SoT; layer 3 is
-  // `build-fixture.mjs --check` in atlas CI.)
+test('conformance: the resolved fixture matches the checksum this implementation pins', () => {
+  // A lockfile makes the BYTES right. This constant makes a vector change VISIBLE: bumping the
+  // dependency without moving DRIFT_CONFORMANCE_SHA256 beside the engine turns this red
+  // immediately, so nobody adopts new vectors without the diff saying so.
   assert.deepEqual(assertFixtureIntegrity(conformanceBytes, DRIFT_CONFORMANCE_SHA256), [])
+})
+
+test('conformance: the shipped .sha256 sidecar agrees with the pinned constant', () => {
+  assert.equal(sidecarSha('package-digest', 'drift-conformance.sha256'), DRIFT_CONFORMANCE_SHA256)
 })
 
 test('conformance: all 35 shared vectors pass under the SHARED runner', () => {
@@ -163,21 +189,35 @@ test('conformance: the relations the shared vectors exist to pin', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 // Export-surface conformance vectors (spec v2 — changeset-aware, atlas decision 0024)
 //
-// SAME DISCIPLINE, SECOND RULE. The fixture and runner are vendored VERBATIM from
-// atlas/contracts/export-surface/ and the checksum is pinned beside the engine, so
-// editing either without editing the other turns this red. The rule is defined THERE,
-// not here: the estate has already paid once for three hand-written copies of a shared
-// rule diverging silently (findings X5 and X7), and birthing a second cross-repo rule
-// as three independent copies would repeat exactly that.
+// SAME DISCIPLINE, SECOND RULE. The fixture and runner come from
+// `@j0nathan-ll0yd/estate-contracts/export-surface` and the checksum is pinned beside the engine, so
+// adopting new vectors without moving the constant turns this red. The rule is defined THERE, not
+// here: the estate has already paid once for three hand-written copies of a shared rule diverging
+// silently (findings X5 and X7), and birthing a second cross-repo rule as three independent copies
+// would repeat exactly that.
+//
+// THE CARET-0.x PAIR, AND WHY IT IS NAMED. Atlas #165 replaced the inverted vector
+// `out-zerox-removal-under-minor-BREAKS` with the corrected pair below: under `0.x` the MINOR field
+// is the breaking bump, so a removal covered by a minor bump IS adequately covered. The vendored
+// copy sat a week behind on that correction and was re-vendored to 101 vectors in #217, one merge
+// before this change deleted the copy entirely. That week is the coordination tax decision 0080
+// measures — and it is the reason the ids are asserted by name here rather than only counted.
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('surface conformance: the vendored fixture matches the checksum this implementation pins', () => {
+test('surface conformance: the resolved fixture matches the checksum this implementation pins', () => {
   assert.deepEqual(assertSurfaceFixtureIntegrity(surfaceBytes, EXPORT_SURFACE_CONFORMANCE_SHA256), [])
 })
 
-test('surface conformance: the vendored .sha256 sidecar agrees with the pinned constant', () => {
-  const sidecar = fs.readFileSync(path.join(here, 'fixtures/export-surface-conformance.sha256'), 'utf8').trim().split(/\s+/)[0]
-  assert.equal(sidecar, EXPORT_SURFACE_CONFORMANCE_SHA256)
+test('surface conformance: the shipped .sha256 sidecar agrees with the pinned constant', () => {
+  assert.equal(sidecarSha('export-surface', 'export-surface-conformance.sha256'), EXPORT_SURFACE_CONFORMANCE_SHA256)
+})
+
+test('surface conformance: the corrected caret-0.x pair is the one this engine is held to', () => {
+  // Named explicitly so a regression cannot quietly reintroduce the inverted vector.
+  const ids = new Set(surfaceConformance.cases.map((c) => c.id))
+  assert.ok(ids.has('out-zerox-removal-under-minor-bump-is-major-PASSES'))
+  assert.ok(ids.has('out-zerox-removal-under-patch-BREAKS'))
+  assert.equal(ids.has('out-zerox-removal-under-minor-BREAKS'), false)
 })
 
 test('surface conformance: all 101 shared vectors pass under the SHARED runner', () => {
@@ -215,25 +255,24 @@ test('surface conformance: a wrong SURFACE_SPEC_VERSION short-circuits with exac
 // the RULE, keyed by SURFACE_SPEC_VERSION; this one pins the EXTRACTOR, keyed by
 // EXTRACT_SPEC_VERSION and by the SET of `typescript` versions it was generated against.
 //
-// The extractor is the one half of this contract this repo VENDORS rather than reimplements:
-// it is the only part that depends on `typescript`, and a third hand-written copy of a
-// named-export enumerator would repeat findings X3/X7 with far better odds than the digest did.
+// The extractor is the one half of this contract this repo CONSUMES rather than reimplements: it is
+// the only part that depends on `typescript`, and a third hand-written copy of a named-export
+// enumerator would repeat findings X3/X7 with far better odds than the digest did.
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('extract conformance: the vendored fixture matches the checksum this implementation pins', () => {
+test('extract conformance: the resolved fixture matches the checksum this implementation pins', () => {
   assert.deepEqual(assertSurfaceFixtureIntegrity(extractBytes, EXPORT_EXTRACT_CONFORMANCE_SHA256, 'export-extract-conformance.json'), [])
 })
 
-test('extract conformance: the vendored .sha256 sidecar agrees with the pinned constant', () => {
-  const sidecar = fs.readFileSync(path.join(here, 'fixtures/export-extract-conformance.sha256'), 'utf8').trim().split(/\s+/)[0]
-  assert.equal(sidecar, EXPORT_EXTRACT_CONFORMANCE_SHA256)
+test('extract conformance: the shipped .sha256 sidecar agrees with the pinned constant', () => {
+  assert.equal(sidecarSha('export-surface', 'export-extract-conformance.sha256'), EXPORT_EXTRACT_CONFORMANCE_SHA256)
 })
 
 test('extract conformance: THE CHURN ISOLATION — the two fixtures carry two INDEPENDENT checksums', () => {
   // The whole point of splitting them (decision 0028 §D1), and it has now been exercised for
   // real: decision 0030 bumped EXTRACT_SPEC_VERSION 1 -> 2 and regenerated only the extractor
   // fixture. If these ever collapse to one file or one checksum, an extractor-only bump starts
-  // forcing an estate-wide re-vendor of a rule nobody touched.
+  // forcing every consumer to adopt new vectors for a rule nobody touched.
   assert.notEqual(EXPORT_SURFACE_CONFORMANCE_SHA256, EXPORT_EXTRACT_CONFORMANCE_SHA256)
   assert.equal(surfaceConformance.specVersion, SURFACE_SPEC_VERSION)
   assert.equal(extractConformance.extractSpecVersion, EXTRACT_SPEC_VERSION)
@@ -618,7 +657,7 @@ test('readExportTargets returns EXACTLY the subpath keys readExportSurface repor
 // ─────────────────────────────────────────────────────────────────────────────
 // Cross-implementation VERDICT-LADDER conformance vectors
 //
-// THE FIXTURE AND THE RUNNER ARE VENDORED VERBATIM from atlas/contracts/verdict-ladder/. The ladder
+// THE FIXTURE AND THE RUNNER COME FROM `@j0nathan-ll0yd/estate-contracts/verdict-ladder`. The ladder
 // (decideVerdict + exitClassFor) was triplicated across mantle, this script and atlas with ZERO
 // cross-implementation vectors — strictly worse than the pre-contract digest, and the three even
 // disagreed on the most dangerous axis (what an UNKNOWN verdict does: compile error / throw / silent
@@ -626,13 +665,12 @@ test('readExportTargets returns EXACTLY the subpath keys readExportSurface repor
 // cases assert exitClassFor THROWS rather than passing an unclassified verdict. See atlas 0022.
 // ─────────────────────────────────────────────────────────────────────────────
 
-test('ladder conformance: the vendored fixture matches the checksum this implementation pins', () => {
+test('ladder conformance: the resolved fixture matches the checksum this implementation pins', () => {
   assert.deepEqual(assertLadderFixtureIntegrity(ladderBytes, LADDER_CONFORMANCE_SHA256), [])
 })
 
-test('ladder conformance: the vendored .sha256 sidecar agrees with the pinned constant', () => {
-  const sidecar = fs.readFileSync(path.join(here, 'fixtures/verdict-conformance.sha256'), 'utf8').trim().split(/\s+/)[0]
-  assert.equal(sidecar, LADDER_CONFORMANCE_SHA256)
+test('ladder conformance: the shipped .sha256 sidecar agrees with the pinned constant', () => {
+  assert.equal(sidecarSha('verdict-ladder', 'verdict-conformance.sha256'), LADDER_CONFORMANCE_SHA256)
 })
 
 test('ladder conformance: every vector passes under the SHARED runner', () => {

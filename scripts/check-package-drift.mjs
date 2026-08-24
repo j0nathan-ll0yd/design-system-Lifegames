@@ -17,19 +17,28 @@ import {fileURLToPath, pathToFileURL} from 'node:url'
 import zlib from 'node:zlib'
 
 /**
- * THE NAMED-EXPORT EXTRACTOR IS VENDORED, NOT REIMPLEMENTED — and it is the one piece of the
- * export-surface contract this file does NOT hand-write.
+ * THE NAMED-EXPORT EXTRACTOR IS RESOLVED FROM THE LOCKFILE, NOT REIMPLEMENTED — and it is the one
+ * piece of the export-surface contract this file does NOT hand-write.
  *
  * Everywhere else in this engine the rule is reimplemented locally and held to the shared vectors,
  * because three engines reproducing one rule is what the conformance fixtures exist to police. The
  * extractor is the deliberate exception (atlas decision 0028, axis C): it is an order of magnitude
  * more code than a subpath-key comparison AND it is the only part that depends on `typescript`, so
- * three hand-written copies would repeat findings X3/X7 with far better odds. `scripts/fixtures/
- * extract.mjs` is therefore byte-identical to `atlas/contracts/export-surface/extract.mjs`, and
- * `scripts/fixtures/reference.mjs` is the three-line adapter that points its one relative import
- * back at this file (see that file's header for why the cycle is safe).
+ * three hand-written copies would repeat findings X3/X7 with far better odds.
+ *
+ * It used to arrive as a byte-verbatim copy under `scripts/fixtures/`, paired with a local adapter
+ * that redirected the copy's one relative import back at this file. Atlas decision 0080 published
+ * the contracts as `@j0nathan-ll0yd/estate-contracts`, and 0079 item 4 wave 2 retired the copies:
+ * the extractor now resolves through `node_modules`, beside the reference implementation it was
+ * generated against. The adapter and its deliberate import cycle went with the copies — the
+ * extractor reads `CLASSIFICATIONS`, `readExportTargets` and `SURFACE_SPEC_VERSION` from the
+ * package's own `reference.mjs`, which is the normative rule this engine is held to by the vectors.
+ *
+ * `typescript` is an OPTIONAL peer of that package. This repo pins one member of
+ * `VERIFIED_TS_VERSIONS` exactly, so the static `import 'typescript'` inside the extractor resolves;
+ * with no compiler installed this import would fail at module load with ERR_MODULE_NOT_FOUND.
  */
-import {acceptsCachedSurface, EXTRACT_SPEC_VERSION, extractSurfaceNames, VERIFIED_TS_VERSIONS} from './fixtures/extract.mjs'
+import {acceptsCachedSurface, EXTRACT_SPEC_VERSION, extractSurfaceNames, VERIFIED_TS_VERSIONS} from '@j0nathan-ll0yd/estate-contracts/export-surface/extract'
 
 /**
  * The digest scheme identifier. SAME NUMBER <=> BYTE-IDENTICAL NORMALIZATION, for every
@@ -50,29 +59,37 @@ import {acceptsCachedSurface, EXTRACT_SPEC_VERSION, extractSurfaceNames, VERIFIE
 export const SPEC_VERSION = 3
 
 /**
- * sha256 of scripts/fixtures/drift-conformance.json, vendored verbatim from
- * atlas/contracts/package-digest/. Pinned HERE, beside the implementation, so that
- * editing the vendored fixture without editing this constant turns the suite red
- * immediately — that is what makes vendoring safe rather than merely convenient.
- * Re-vendor and update this constant in the SAME change.
+ * sha256 of `@j0nathan-ll0yd/estate-contracts/package-digest/fixture.json`. Pinned HERE, beside the
+ * implementation, so that a package version whose vectors moved cannot land silently: the suite
+ * hashes the resolved fixture against this constant AND compares this constant against the sidecar
+ * the package ships. Bump the dependency and this constant in the SAME change.
+ *
+ * The pin survived the migration off vendored copies (atlas decision 0079 item 4 wave 2) on
+ * purpose. A lockfile makes the BYTES right; only a number beside the engine makes a vector change
+ * VISIBLE in the diff of the repo that has to keep passing them.
  */
 export const DRIFT_CONFORMANCE_SHA256 = 'acca608e73d3a6fdd1ba3393b26ec9c3613c84f224a8f275ca8b50ea4f726bd8'
 
 /**
- * sha256 of scripts/fixtures/export-surface-conformance.json, vendored verbatim from
- * atlas/contracts/export-surface/. Same discipline, same reason, DIFFERENT NUMBER: the
- * export-surface rule and the payload digest change for different reasons, so they carry
- * independent spec versions and independent checksums. Re-vendor and update this constant
- * in the SAME change.
+ * sha256 of `@j0nathan-ll0yd/estate-contracts/export-surface/fixture.json`. Same discipline, same
+ * reason, DIFFERENT NUMBER: the export-surface rule and the payload digest change for different
+ * reasons, so they carry independent spec versions and independent checksums. Bump the dependency
+ * and this constant in the SAME change.
+ *
+ * THIS NUMBER IS UNCHANGED BY THE MIGRATION, AND THE REASON IS THE ARGUMENT FOR IT. Atlas #165
+ * corrected the caret-0.x vectors; the vendored copy sat a week behind and had to be re-vendored by
+ * hand in #217, one merge before this change deleted the copy. Consuming the package makes that
+ * hand step — and the week it can go missing — structurally impossible. The constant stays because
+ * a lockfile makes the BYTES right while only a number beside the engine makes a vector change
+ * VISIBLE in the diff of the repo that has to keep passing them.
  */
 export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'c4a3d37b54c93626a60decbf878d66246db27a45c54e22cbab7417e022b02b29'
 
 /**
- * sha256 of scripts/fixtures/export-extract-conformance.json, vendored verbatim from
- * atlas/contracts/export-surface/. TWO FIXTURES, TWO CHECKSUMS, TWO NUMBERS (atlas
- * decision 0028 §D1). This one pins the EXTRACTOR — the volatile half that turns a packed
- * file tree into a name set, and the only half that depends on `typescript`. Re-vendor and
- * update this constant in the SAME change.
+ * sha256 of `@j0nathan-ll0yd/estate-contracts/export-surface/extract-fixture.json`. TWO FIXTURES,
+ * TWO CHECKSUMS, TWO NUMBERS (atlas decision 0028 §D1). This one pins the EXTRACTOR — the volatile
+ * half that turns a packed file tree into a name set, and the only half that depends on
+ * `typescript`. Bump the dependency and this constant in the SAME change.
  *
  * THE CHURN-ISOLATION CLAIM IS NOW MEASURED, NOT ARGUED. Decision 0030 bumped
  * EXTRACT_SPEC_VERSION 1 -> 2 (the single-version toolchain guard became a verified version
@@ -90,18 +107,18 @@ export const EXPORT_EXTRACT_CONFORMANCE_SHA256 = '09ff0fe255c3e139ba9df1012be55d
  * the lane→exitClass mapping (`exitClassFor`), NOT the digest and NOT the export surface. Same
  * number <=> identical verdicts and exit classes for every input, across mantle's CLI, this script,
  * and atlas's pkg-drift engine. Deliberately INDEPENDENT of SPEC_VERSION and SURFACE_SPEC_VERSION:
- * the three schemes change for different reasons. Bump it (and re-vendor verdict-conformance.json)
- * only when the verdict SET or an exit mapping changes — never for the probe, discovery, reporting
- * or CLI flags. See atlas decision 0022.
+ * the three schemes change for different reasons. Bump it (and the pinned ladder fixture) only when
+ * the verdict SET or an exit mapping changes — never for the probe, discovery, reporting or CLI
+ * flags. See atlas decision 0022.
  */
 export const LADDER_SPEC_VERSION = 1
 
 /**
- * sha256 of scripts/fixtures/verdict-conformance.json, vendored verbatim from
- * atlas/contracts/verdict-ladder/. Same discipline as DRIFT_CONFORMANCE_SHA256 and
- * EXPORT_SURFACE_CONFORMANCE_SHA256, DIFFERENT NUMBER: the ladder, the payload digest and the
- * export-surface rule change for different reasons, so they carry independent spec versions and
- * independent checksums. Re-vendor and update this constant in the SAME change.
+ * sha256 of `@j0nathan-ll0yd/estate-contracts/verdict-ladder/fixture.json`. Same discipline as
+ * DRIFT_CONFORMANCE_SHA256 and EXPORT_SURFACE_CONFORMANCE_SHA256, DIFFERENT NUMBER: the ladder, the
+ * payload digest and the export-surface rule change for different reasons, so they carry
+ * independent spec versions and independent checksums. Bump the dependency and this constant in the
+ * SAME change.
  */
 export const LADDER_CONFORMANCE_SHA256 = '2dd86a7865b58e02d9b7a6d9a015efd97c5194c6d2a09aab600f564d6bbf507e'
 
@@ -523,16 +540,17 @@ export const semverMax = (versions) => [...versions].sort(compareSemver).at(-1)
 export const SURFACE_SPEC_VERSION = 3
 
 /**
- * `EXTRACT_SPEC_VERSION` AND `VERIFIED_TS_VERSIONS` ARE RE-EXPORTED FROM THE VENDORED EXTRACTOR,
+ * `EXTRACT_SPEC_VERSION` AND `VERIFIED_TS_VERSIONS` ARE RE-EXPORTED FROM THE PACKAGED EXTRACTOR,
  * NOT REDECLARED HERE.
  *
  * Every other contract number in this file is a local constant precisely so a divergence between
- * this engine and the fixture turns the suite red. These are the inverse: the extractor itself is
- * vendored byte-verbatim (see the import header), so the values that govern it live in the same
- * bytes they describe. Redeclaring them would create a second place for them to be wrong, and the
- * runner's case-zeros would then compare this file's opinion against the fixture rather than the
- * extractor's — which for `VERIFIED_TS_VERSIONS` is the difference between checking that the
- * COMPILER ACTUALLY USED is admitted and checking that a local list agrees with a remote one.
+ * this engine and the fixture turns the suite red. These are the inverse: the extractor is the
+ * contract's own artifact, resolved from the lockfile (see the import header), so the values that
+ * govern it live in the same bytes they describe. Redeclaring them would create a second place for
+ * them to be wrong, and the runner's case-zeros would then compare this file's opinion against the
+ * fixture rather than the extractor's — which for `VERIFIED_TS_VERSIONS` is the difference between
+ * checking that the COMPILER ACTUALLY USED is admitted and checking that a local list agrees with a
+ * remote one.
  *
  * `VERIFIED_TS_VERSIONS` is a CLOSED, MEASURED enumeration (decision 0030) — every member proven
  * to extract byte-identically — never a range. This repo pins ONE of them exactly (5.9.3) in
@@ -545,13 +563,13 @@ export { EXTRACT_SPEC_VERSION, VERIFIED_TS_VERSIONS }
 /**
  * The four ways a subpath's type surface can be classified (Level 2, atlas decision 0028 §2.2).
  *
- * DECLARED HERE, IN THE RULE — not imported from the extractor, and the direction matters twice
- * over. Conceptually, the rule is what COMPARES two classifications and the extractor is what
- * PRODUCES them, so the vocabulary belongs to the comparer (this mirrors atlas exactly, where it
- * lives in `reference.mjs`, and `extract.mjs` imports it). Mechanically, the vendored extractor
- * re-exports this symbol back out, so importing it FROM there would close an indirect-export loop
- * through `fixtures/reference.mjs` that Node rejects outright — "Detected cycle while resolving
- * name 'CLASSIFICATIONS'", measured. One declaration, one direction, no cycle.
+ * DECLARED HERE, IN THE RULE — not imported from the extractor, and the direction matters.
+ * Conceptually, the rule is what COMPARES two classifications and the extractor is what PRODUCES
+ * them, so the vocabulary belongs to the comparer (this mirrors atlas exactly, where it lives in
+ * `reference.mjs`, and `extract.mjs` imports it). The values are part of the contract: they are
+ * compared against the packaged extractor's output and appear verbatim in the shared
+ * `export-extract-conformance.json` vectors, so a divergence is a conformance failure, not a
+ * runtime surprise.
  *
  *   TYPED         a resolvable code target      -> its enumerated `{name, kind}` set
  *   SFC_ENTRY     an `.astro` component         -> the synthetic `{default}`
@@ -4217,34 +4235,50 @@ function writeMutatedScript(id, dir) {
     : before + table + after.replace(anchor, replacement)
   fs.mkdirSync(dir, {recursive: true})
   const file = path.join(dir, 'check-package-drift.mjs')
-  fs.writeFileSync(file, absolutizeRelativeImports(patched))
+  fs.writeFileSync(file, absolutizeOwnImports(patched))
   return file
 }
 
 /**
- * Rewrite this file's relative import specifiers to absolute file URLs before the mutant is written.
+ * Rewrite this file's own import specifiers to absolute file URLs before the mutant is written.
  *
  * The mutant lands in a TEMP directory so the patched text is loaded instead of the shipped module,
- * which means `./fixtures/extract.mjs` would otherwise resolve against `/var/folders/...` and throw
- * ERR_MODULE_NOT_FOUND. THAT THROW IS INDISTINGUISHABLE FROM "THE MUTANT WAS KILLED": every
- * scenario would fail for a reason that has nothing to do with the mutation, the suite would report
- * every mutant killed, and it would be testing nothing. That is the vacuous-pass class this whole
- * harness exists to prevent, so the rewrite is not a convenience.
+ * which means an unrewritten specifier resolves against `/var/folders/...` and throws
+ * ERR_MODULE_NOT_FOUND. Without the rewrite the harness does not run at all: the `await import` at
+ * the top of `runSelfTest` is uncaught, so the `--mutation=<id>` child dies at module load, its exit
+ * status is not 0, and the parent scores that as SURVIVED. Every mutation, every run.
  *
- * Applied to `from '...'` specifiers only, and only to those starting `./` or `../`; bare and
- * `node:` specifiers resolve fine from anywhere (the vendored extractor's own `import 'typescript'`
- * is resolved from ITS real directory, which is inside this repo, so it is unaffected).
+ * TWO KINDS OF SPECIFIER NEED IT, AND THE SECOND IS EASY TO MISS. Relative specifiers resolve
+ * against the mutant's own directory. So does a BARE FIRST-PARTY one: node walks `node_modules` up
+ * from `/var/folders/...` and never reaches this repo's tree, so
+ * `@j0nathan-ll0yd/estate-contracts/*` — the packaged extractor, formerly the vendored copy under
+ * `scripts/fixtures/` — fails exactly the same way. MEASURED, by deleting the second `replaceAll`
+ * below and running `--self-test --mutation=selfref`: `ERR_MODULE_NOT_FOUND: Cannot find package
+ * '@j0nathan-ll0yd/estate-contracts' imported from /var/folders/.../check-package-drift.mjs`, exit
+ * 1. It is resolved here with `import.meta.resolve`, from THIS module's location, which is the
+ * installed copy the un-mutated engine would have loaded. Third-party bare specifiers are
+ * deliberately left alone: the extractor's own `import 'typescript'` is resolved from ITS real
+ * directory inside `node_modules`, so it is unaffected.
  *
- * KNOWN AND ACCEPTED ASYMMETRY: `fixtures/extract.mjs` imports `fixtures/reference.mjs`, which
- * re-exports from the PRISTINE copy of this file — so a mutation to `readExportTargets`,
- * `CLASSIFICATIONS` or `SURFACE_SPEC_VERSION` would not reach the extractor's view of them. No
- * mutant in the table targets those three, and adding one that does would need this noted; the
- * extractor's own behaviour is pinned by the 39 vendored extract vectors, not by this harness.
+ * The relative branch currently rewrites nothing — after the migration this engine imports one
+ * first-party package and nothing else local. It stays because it costs one pass over a string and
+ * the day someone adds a `./lib/…` import it is the difference between a working harness and a
+ * self-test that cannot start.
+ *
+ * KNOWN AND ACCEPTED ASYMMETRY: the packaged extractor reads `readExportTargets`, `CLASSIFICATIONS`
+ * and `SURFACE_SPEC_VERSION` from the contract package's own `reference.mjs`, never from this file
+ * — so a mutation to any of those three would not reach the extractor's view of them. (Before the
+ * migration off vendored copies the same asymmetry held for a different reason: the copy's adapter
+ * re-exported from the PRISTINE engine.) No mutant in the table targets those three, and adding one
+ * that does would need this noted; the extractor's own behaviour is pinned by the 39 shared extract
+ * vectors, not by this harness.
  */
-function absolutizeRelativeImports(source) {
+function absolutizeOwnImports(source) {
   const engineDir = path.dirname(fileURLToPath(import.meta.url))
-  return source.replaceAll(/(\bfrom\s*)(['"])(\.\.?\/[^'"]+)\2/g,
+  const localResolved = source.replaceAll(/(\bfrom\s*)(['"])(\.\.?\/[^'"]+)\2/g,
     (_match, prefix, quote, specifier) => `${prefix}${quote}${pathToFileURL(path.resolve(engineDir, specifier)).href}${quote}`)
+  return localResolved.replaceAll(/(\bfrom\s*)(['"])(@j0nathan-ll0yd\/[^'"]+)\2/g,
+    (_match, prefix, quote, specifier) => `${prefix}${quote}${import.meta.resolve(specifier)}${quote}`)
 }
 
 async function selfTestCommand({mutation}) {
