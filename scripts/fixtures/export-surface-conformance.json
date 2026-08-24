@@ -2418,8 +2418,8 @@
       }
     },
     {
-      "id": "out-zerox-removal-under-minor-BREAKS",
-      "why": "CARET SEMANTICS end to end: 0.1.0 -> 0.2.0 does NOT cover a removal.",
+      "id": "out-zerox-removal-under-minor-bump-is-major-PASSES",
+      "why": "CARET SEMANTICS, THE ADEQUATE SIDE. `^0.1.0` resolves `>=0.1.0 <0.2.0`, so 0.1.0 -> 0.2.0 sits OUTSIDE the range every consumer already accepted: decision 0020 sub-decision 1 sizes it as a MAJOR because it \"breaks a consumer exactly as hard as 1.0.0 -> 2.0.0\". A major-grade bump covers a removal, so this passes. Read with out-zerox-removal-under-patch-BREAKS, which is the same removal under the one 0.1.x bump that does NOT escape the range.",
       "declared": "0.2.0",
       "referenceVersion": "0.1.0",
       "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\",\"./gone\":\"./g\"}}",
@@ -2430,6 +2430,28 @@
         "required": null,
         "declaredBump": "major",
         "sizingBump": "major",
+        "creditedVersion": null,
+        "removed": [
+          "./gone"
+        ],
+        "added": [],
+        "removedNames": [],
+        "addedNames": []
+      }
+    },
+    {
+      "id": "out-zerox-removal-under-patch-BREAKS",
+      "why": "CARET SEMANTICS, THE INADEQUATE SIDE, and the case the corpus was missing. 0.1.0 -> 0.1.1 stays INSIDE `^0.1.0` (`>=0.1.0 <0.2.0`), so every consumer on that range picks it up on the next install and loses ./gone. A patch does not carry a removal at 0.x any more than it does at 1.x. Without this vector the 0.x half of the caret rule had only a PASSING case, so an engine that sized every 0.x bump as MAJOR — over-strict, never blocking — would satisfy the whole corpus.",
+      "declared": "0.1.1",
+      "referenceVersion": "0.1.0",
+      "reference": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\",\"./gone\":\"./g\"}}",
+      "candidate": "{\"name\":\"p\",\"version\":\"1.0.0\",\"exports\":{\".\":\"./i\"}}",
+      "kind": "outcome",
+      "expect": {
+        "kind": "break",
+        "required": "major",
+        "declaredBump": "patch",
+        "sizingBump": "patch",
         "creditedVersion": null,
         "removed": [
           "./gone"
