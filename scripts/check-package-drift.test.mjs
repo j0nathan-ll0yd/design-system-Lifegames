@@ -180,8 +180,8 @@ test('surface conformance: the vendored .sha256 sidecar agrees with the pinned c
   assert.equal(sidecar, EXPORT_SURFACE_CONFORMANCE_SHA256)
 })
 
-test('surface conformance: all 100 shared vectors pass under the SHARED runner', () => {
-  assert.equal(surfaceConformance.cases.length, 100)
+test('surface conformance: all 101 shared vectors pass under the SHARED runner', () => {
+  assert.equal(surfaceConformance.cases.length, 101)
   const failures = runSurfaceConformance({
     fixture: surfaceConformance,
     specVersion: SURFACE_SPEC_VERSION,

@@ -65,7 +65,7 @@ export const DRIFT_CONFORMANCE_SHA256 = 'acca608e73d3a6fdd1ba3393b26ec9c3613c84f
  * independent spec versions and independent checksums. Re-vendor and update this constant
  * in the SAME change.
  */
-export const EXPORT_SURFACE_CONFORMANCE_SHA256 = '61acdd91e1cf356f265380b6dc822d78072d852797e2c9ea9c832e3e900e2ae5'
+export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'c4a3d37b54c93626a60decbf878d66246db27a45c54e22cbab7417e022b02b29'
 
 /**
  * sha256 of scripts/fixtures/export-extract-conformance.json, vendored verbatim from
