@@ -99,7 +99,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       # RUNNER-DEATH ROOT CAUSE (this filter is the remedy). The "Known-answer
       # self-test" step below stands up throwaway repos + an offline registry and
-      # re-runs the shipped pipeline under 13 source mutations — a ~14-minute,
+      # re-runs the shipped pipeline under 31 source mutations (the count was 13
+      # when this comment was written; the mutants fan out across cores, so the
+      # step measured 380.6s on the self-hosted fleet in run 32785190011) — a
       # memory-and-IO-heavy step. Run on EVERY pull request across the shared
       # self-hosted arm64 fleet, two unrelated PRs land on the same physical host
       # and the host exhausts memory; the OOM killer reaps a runner VM mid-step, so

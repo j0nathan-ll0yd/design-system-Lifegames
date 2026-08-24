@@ -19,7 +19,7 @@ importers:
         specifier: workspace:*
         version: link:packages/config
       '@j0nathan-ll0yd/estate-contracts':
-        specifier: ^0.1.0
+        specifier: 0.1.0
         version: 0.1.0(typescript@5.9.3)
       '@playwright/test':
         specifier: ^1.60.0
