@@ -3,10 +3,10 @@
 // portal-contract-source.d.mts).
 
 export interface ContractLock {
-  generatedFrom: {repo: string; sha: string | null; checksum: string}
-  generatedAt: string
-  generatorVersion: string
-  files: Record<string, string>
+      generatedFrom: {repo: string; sha: string | null; checksum: string}
+      generatedAt: string
+      generatorVersion: string
+      files: Record<string, string>
 }
 
 export interface BuildLockInput {
