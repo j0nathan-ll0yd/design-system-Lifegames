@@ -33,7 +33,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # format:check runs dprint (TS/JS/JSON) + prettier (astro/md/mdx/css).
-      - run: pnpm format:check
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: format
+        run: pnpm format:check
 
   typecheck:
     # tsc --noEmit across the packages that extend @j0nathan-ll0yd/config's
@@ -53,7 +55,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: typecheck
+        run: pnpm typecheck
 
   schemas-freshness:
     # Verifies vendored LP schemas + generated TS/Swift artifacts are not stale.
@@ -165,7 +169,8 @@ jobs:
       - name: Known-answer self-test (must prove it can fail)
         if: steps.drift-engine-changes.outputs.engine == 'true'
         run: node scripts/check-package-drift.mjs --self-test
-      - name: Package payload drift
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: package-version-drift
         run: node scripts/check-package-drift.mjs --lane=branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -361,7 +366,9 @@ jobs:
           swift --version
       # Also enforces the cross-platform fixture contract (LifegamesWidgetsTests/ContractTests).
       # Do not add --filter — that would silently drop contract coverage.
-      - run: swift test
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: test-swift
+        run: swift test
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: failure()
         with:
@@ -394,7 +401,8 @@ jobs:
       # The step that used to sit here (pnpm --filter @j0nathan-ll0yd/web tsc) was a
       # silent no-op — no tsconfig meant tsc printed help and exited 0 via
       # pnpm<=9's implicit exec fallback. See #110.
-      - name: Web unit tests (updaters/adapters Props contract)
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: contract-ts
         run: pnpm --filter @j0nathan-ll0yd/web test
 
   governance-gates:
@@ -418,24 +426,31 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
-      - name: Widget inventory drift (P5)
-        run: pnpm widget:inventory -- --check
-      - name: P1 token parity (web/Swift accent hex)
-        run: node scripts/check-token-parity.mjs --check
-      - name: WCAG-AA contrast gate
-        run: node scripts/check-contrast.mjs
-      - name: P3 Swift widget purity
-        run: node scripts/check-swift-widget-purity.mjs --check
-      - name: Watch exclusions (F-014)
-        run: node scripts/check-watch-exclusions.mjs --check
-      - name: P4/P7 promotion gate
-        run: node scripts/check-promotion.mjs --check
-      - name: P2 widget compliance (registry ↔ Astro/fixture/manifest)
-        run: node scripts/widget-compliance.mjs
-      - name: Style Dictionary golden-file characterization (F-005)
-        run: pnpm --filter @j0nathan-ll0yd/tokens test
-      - name: S22 preview scheme audit
-        run: bash scripts/check-preview-scheme.sh
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      # The nine gate probes are folded into ONE step whose name is the required-check
+      # context, so the merge gate binds to a step that runs the decisive commands.
+      # Per-probe granularity in the Actions UI is the accepted trade; the default
+      # `bash -e` shell means this step's exit code is the first failing probe's.
+      - name: governance-gates
+        run: |
+          # Widget inventory drift (P5)
+          pnpm widget:inventory -- --check
+          # P1 token parity (web/Swift accent hex)
+          node scripts/check-token-parity.mjs --check
+          # WCAG-AA contrast gate
+          node scripts/check-contrast.mjs
+          # P3 Swift widget purity
+          node scripts/check-swift-widget-purity.mjs --check
+          # Watch exclusions (F-014)
+          node scripts/check-watch-exclusions.mjs --check
+          # P4/P7 promotion gate
+          node scripts/check-promotion.mjs --check
+          # P2 widget compliance (registry ↔ Astro/fixture/manifest)
+          node scripts/widget-compliance.mjs
+          # Style Dictionary golden-file characterization (F-005)
+          pnpm --filter @j0nathan-ll0yd/tokens test
+          # S22 preview scheme audit
+          bash scripts/check-preview-scheme.sh
 
   docs-build:
     needs: build-tokens
