@@ -214,7 +214,7 @@ export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | n
     date: healthData.date,
     quantities: q,
     derived: {totalCalories, deepPct, remPct, corePct},
-    sleepScore,
+    sleepScore: 'ninety-two',
     sleepDurationFormatted,
     sleepPhaseFormatted,
     hydration,
