@@ -1,5 +1,11 @@
 # @j0nathan-ll0yd/web
 
+## 2.1.1
+
+### Patch Changes
+
+- 6828871: Audit comment discipline in published web sources.
+
 ## 2.1.0
 
 ### Minor Changes
