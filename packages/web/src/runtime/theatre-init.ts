@@ -47,10 +47,13 @@ export function initTheatreReviews(container: HTMLElement, fixtureData: {reviews
     if (r.imageUrl) {
       const localSrc = localizeImageUrl(r.imageUrl)
       const cardUrl = localizeImageUrl(r.imageUrlCard ?? null)
-      const fallback = imgFallbackAttrs(cardUrl || localSrc, r.imageUrl)
+      const fallback = imgFallbackAttrs(cardUrl || localSrc)
       if (cardUrl) {
+        // The 2x entry is emitted only when a real AVIF exists for it — a
+        // non-AVIF URL inside type="image/avif" is chosen by the browser and
+        // then fails to decode, with no <picture> fallback to recover it.
         const avifSrc = r.imageUrlCardAvif
-          ? '<source srcset="' + esc(r.imageUrlCardAvif) + ' 1x, ' + esc(r.imageUrlAvif ?? r.imageUrl) + ' 2x" type="image/avif">'
+          ? '<source srcset="' + esc(r.imageUrlCardAvif) + ' 1x' + (r.imageUrlAvif ? ', ' + esc(r.imageUrlAvif) + ' 2x' : '') + '" type="image/avif">'
           : ''
         const imgTag = '<img src="' +
           esc(cardUrl) +

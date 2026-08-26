@@ -191,6 +191,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 # Changesets must name the scoped public package they release.
 .changeset/honest-github-fixtures.md:marker:j0nathan-ll0yd
 .changeset/audit-web-comment-discipline.md:marker:j0nathan-ll0yd
+.changeset/first-party-book-covers.md:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
 .husky/pre-commit:marker:j0nathan-ll0yd
 CHANGELOG.md:marker:j0nathan-ll0yd

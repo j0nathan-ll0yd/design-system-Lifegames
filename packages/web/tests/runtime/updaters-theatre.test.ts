@@ -2,6 +2,7 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
+import {PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
 import {widgets} from '@j0nathan-ll0yd/copy'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
@@ -144,11 +145,11 @@ describe('updateTheatreReviews', () => {
     const img = document.querySelector('#theatreRow img') as HTMLImageElement
     expect(img.alt).toBe('')
     expect(img.outerHTML).not.toContain('onerror=')
-    expect(img.dataset.fallback).toBe(original)
+    expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
 
     img.dispatchEvent(new Event('error'))
     expect(img.srcset).toBe('')
-    expect(img.src).toBe(original)
+    expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
     expect(img.onerror).toBeNull()
   })
 

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import {describe, expect, it} from 'vitest'
-import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl} from '../../src/runtime/image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
 
 const CF_PREFIX = `${CLOUDFRONT_BASE}/images/`
@@ -41,37 +41,36 @@ describe('localizeImageUrl', () => {
 })
 
 describe('imgFallbackAttrs', () => {
-  it('returns only an inert fallback attribute when the URLs differ', () => {
-    const local = '/images/books/B0001234.webp'
-    const original = CF_PREFIX + 'books/B0001234.webp'
-    const result = imgFallbackAttrs(local, original)
+  it('targets the first-party placeholder, never the source URL', () => {
+    const result = imgFallbackAttrs('/images/books/B0001234.webp')
     expect(result).not.toContain('onerror=')
-    expect(result).toContain(`data-fallback="${original}"`)
+    expect(result).toContain(`data-fallback="${PLACEHOLDER_IMAGE_SRC}"`)
   })
 
-  it('returns empty string when originalUrl is null', () => {
-    expect(imgFallbackAttrs('/images/foo.webp', null)).toBe('')
+  it('targets the placeholder for a CloudFront src too (no third-party host anywhere)', () => {
+    const result = imgFallbackAttrs(CF_PREFIX + 'books/B0001234.webp')
+    expect(result).toContain(`data-fallback="${PLACEHOLDER_IMAGE_SRC}"`)
+    expect(result).not.toContain('m.media-amazon.com')
+    expect(result).not.toContain('squarespace')
   })
 
-  it('returns empty string when localSrc is null', () => {
-    expect(imgFallbackAttrs(null, CF_PREFIX + 'foo.webp')).toBe('')
+  it('returns empty string when src is null', () => {
+    expect(imgFallbackAttrs(null)).toBe('')
   })
 
-  it('returns empty string when localSrc === originalUrl (same src, no fallback needed)', () => {
-    const url = 'https://example.com/img.jpg'
-    expect(imgFallbackAttrs(url, url)).toBe('')
+  it('returns empty string when the src is already the placeholder', () => {
+    expect(imgFallbackAttrs(PLACEHOLDER_IMAGE_SRC)).toBe('')
   })
 
   it('result starts with a space (for safe HTML attribute concatenation)', () => {
-    const result = imgFallbackAttrs('/images/foo.webp', CF_PREFIX + 'foo.webp')
-    expect(result.startsWith(' ')).toBe(true)
+    expect(imgFallbackAttrs('/images/foo.webp').startsWith(' ')).toBe(true)
   })
 })
 
 describe('installImageFallbacks', () => {
-  it('swaps to the fallback at runtime without an inline handler attribute', () => {
+  it('swaps to the placeholder at runtime without an inline handler attribute', () => {
     document.body.innerHTML =
-      '<div id="root"><img src="/images/foo-card.webp" srcset="/images/foo-card.webp 1x" data-fallback="https://cdn.example/foo.webp"></div>'
+      `<div id="root"><img src="/images/foo-card.webp" srcset="/images/foo-card.webp 1x" data-fallback="${PLACEHOLDER_IMAGE_SRC}"></div>`
     const root = document.getElementById('root')!
     const img = root.querySelector('img')!
 
@@ -80,7 +79,21 @@ describe('installImageFallbacks', () => {
     expect(img.outerHTML).not.toContain('onerror=')
     img.dispatchEvent(new Event('error'))
     expect(img.srcset).toBe('')
-    expect(img.src).toBe('https://cdn.example/foo.webp')
+    expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
     expect(img.onerror).toBeNull()
+  })
+
+  it('refuses a third-party data-fallback and uses the placeholder instead', () => {
+    // Stale SSR markup from an older consumer build can still carry a
+    // third-party fallback; the invariant is enforced at the point of use.
+    document.body.innerHTML = '<div id="root"><img src="/images/foo-card.webp" data-fallback="https://m.media-amazon.com/images/P/B0001234.jpg"></div>'
+    const root = document.getElementById('root')!
+    const img = root.querySelector('img')!
+
+    installImageFallbacks(root)
+    img.dispatchEvent(new Event('error'))
+
+    expect(img.src).not.toContain('m.media-amazon.com')
+    expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
   })
 })

@@ -45,6 +45,30 @@ export interface DashboardBooks {
      * ISO-8601 timestamp when the book was finished, or null if not yet finished.
      */
     finishedAt?: string | null;
+    /**
+     * Full-size cover image URL from the books export (first-party CloudFront), or null when the export has no cover.
+     */
+    mainImage?: string | null;
+    /**
+     * Thumbnail (2x shelf) cover URL from the books export, or null.
+     */
+    mainImageThumb?: string | null;
+    /**
+     * Card (1x shelf) cover URL from the books export, or null.
+     */
+    mainImageCard?: string | null;
+    /**
+     * AVIF encoding of mainImage, or null when no AVIF was produced.
+     */
+    mainImageAvif?: string | null;
+    /**
+     * AVIF encoding of mainImageThumb, or null.
+     */
+    mainImageThumbAvif?: string | null;
+    /**
+     * AVIF encoding of mainImageCard, or null.
+     */
+    mainImageCardAvif?: string | null;
   }[];
   /**
    * Supplementary metadata keyed by isbn (or ASIN for Kindle-only titles). Provides series, genre, page count, year, and description for each book in the books array.

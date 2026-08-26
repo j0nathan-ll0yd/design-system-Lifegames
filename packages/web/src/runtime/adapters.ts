@@ -104,12 +104,16 @@ export interface AdaptedBookEntry {
   rating: number | null
   progress: number | undefined
   link: string
-  cover: string | null
-  coverThumb: string | null
-  coverCard: string | null
-  coverAvif: string | null
-  coverThumbAvif: string | null
-  coverCardAvif: string | null
+  // Image fields keep the export contract's own names (books.json emits
+  // `mainImage*`). An adapter-local rename to `cover*` was how the widgets
+  // silently drifted off the contract — a renamed field reads as present in
+  // the widget while the real one goes unread (atlas decision 0086).
+  mainImage: string | null
+  mainImageThumb: string | null
+  mainImageCard: string | null
+  mainImageAvif: string | null
+  mainImageThumbAvif: string | null
+  mainImageCardAvif: string | null
   notes: string | null
   finishedAt: string | null
   startedAt: string | null
@@ -328,12 +332,12 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       // dashboard was last built (e.g. a new book the backend just synced)
       // would 404 on the local path, and Cloudflare Pages caches that 404 for
       // 30 days. Defaulting to CloudFront avoids the entire bug class.
-      cover: b.mainImage ?? null,
-      coverThumb: b.mainImageThumb ?? null,
-      coverCard: b.mainImageCard ?? null,
-      coverAvif: b.mainImageAvif ?? null,
-      coverThumbAvif: b.mainImageThumbAvif ?? null,
-      coverCardAvif: b.mainImageCardAvif ?? null,
+      mainImage: b.mainImage ?? null,
+      mainImageThumb: b.mainImageThumb ?? null,
+      mainImageCard: b.mainImageCard ?? null,
+      mainImageAvif: b.mainImageAvif ?? null,
+      mainImageThumbAvif: b.mainImageThumbAvif ?? null,
+      mainImageCardAvif: b.mainImageCardAvif ?? null,
       notes: b.notes ?? null,
       finishedAt: b.finishedAt ?? null,
       startedAt: b.startedAt ?? null

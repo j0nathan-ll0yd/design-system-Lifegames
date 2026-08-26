@@ -27,23 +27,35 @@
                 "type": "string",
                 "optional": false
               },
-              "coverAvif": {
-                "type": ["string", "null"],
-                "optional": true
-              },
-              "coverCardAvif": {
-                "type": ["string", "null"],
-                "optional": true
-              },
-              "coverThumbAvif": {
-                "type": ["string", "null"],
-                "optional": true
-              },
               "finishedAt": {
                 "type": ["string", "null"],
                 "optional": true
               },
               "isbn": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "mainImage": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "mainImageAvif": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "mainImageCard": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "mainImageCardAvif": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "mainImageThumb": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "mainImageThumbAvif": {
                 "type": ["string", "null"],
                 "optional": true
               },

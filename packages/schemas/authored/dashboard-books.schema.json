@@ -5,7 +5,12 @@
   "description": "Books dashboard data consumed by the books widget. The books array is a simplified display projection of LP books-export data with DS-added fields (isbn, link, progress). bookMeta, statusLabels, and stats are DS-owned additions with no LP equivalent.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["books", "bookMeta", "statusLabels", "stats"],
+  "required": [
+    "books",
+    "bookMeta",
+    "statusLabels",
+    "stats"
+  ],
   "properties": {
     "books": {
       "type": "array",
@@ -13,52 +18,182 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["title", "author", "asin", "status"],
+        "required": [
+          "title",
+          "author",
+          "asin",
+          "status"
+        ],
         "properties": {
           "title": {
             "type": "string",
             "description": "Book title.",
-            "examples": ["Foundryside"]
+            "examples": [
+              "Foundryside"
+            ]
           },
           "author": {
             "type": "string",
             "description": "Author full name.",
-            "examples": ["Robert Jackson Bennett"]
+            "examples": [
+              "Robert Jackson Bennett"
+            ]
           },
           "isbn": {
             "type": "string",
             "description": "ISBN-13 (or Kindle ASIN when no ISBN exists) used as a stable key into bookMeta.",
-            "examples": ["9780525573844", "B0FBRJY116"]
+            "examples": [
+              "9780525573844",
+              "B0FBRJY116"
+            ]
           },
           "asin": {
             "type": "string",
             "description": "Amazon ASIN used for affiliate link construction and as an alternate key into bookMeta.",
-            "examples": ["0525573844"]
+            "examples": [
+              "0525573844"
+            ]
           },
           "link": {
             "type": "string",
             "description": "Affiliate or direct purchase URL.",
-            "examples": ["https://amzn.to/3Mr9KEO"]
+            "examples": [
+              "https://amzn.to/3Mr9KEO"
+            ]
           },
           "status": {
             "type": "string",
             "description": "Reading status key. Must match a key in statusLabels.",
-            "enum": ["pending", "reading", "upNext", "finished"]
+            "enum": [
+              "pending",
+              "reading",
+              "upNext",
+              "finished"
+            ]
           },
           "rating": {
-            "anyOf": [{ "type": "integer", "minimum": 1, "maximum": 5 }, { "type": "null" }],
-            "description": "User rating 1–5 stars, or null if unrated."
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "User rating 1\u20135 stars, or null if unrated."
           },
           "progress": {
             "type": "integer",
             "minimum": 0,
             "maximum": 100,
-            "description": "Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished."
+            "description": "Reading progress as a percentage (0\u2013100). 0 for unstarted, 100 for finished."
           },
           "finishedAt": {
-            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "description": "ISO-8601 timestamp when the book was finished, or null if not yet finished.",
-            "examples": ["2024-03-15T00:00:00Z"]
+            "examples": [
+              "2024-03-15T00:00:00Z"
+            ]
+          },
+          "mainImage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Full-size cover image URL from the books export (first-party CloudFront), or null when the export has no cover.",
+            "examples": [
+              "https://d1pfm520aduift.cloudfront.net/images/books/0525573844.webp"
+            ]
+          },
+          "mainImageThumb": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Thumbnail (2x shelf) cover URL from the books export, or null.",
+            "examples": [
+              "https://d1pfm520aduift.cloudfront.net/images/books/0525573844-thumb.webp"
+            ]
+          },
+          "mainImageCard": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Card (1x shelf) cover URL from the books export, or null.",
+            "examples": [
+              "https://d1pfm520aduift.cloudfront.net/images/books/0525573844-card.webp"
+            ]
+          },
+          "mainImageAvif": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "AVIF encoding of mainImage, or null when no AVIF was produced.",
+            "examples": [
+              "https://d1pfm520aduift.cloudfront.net/images/books/0525573844.avif"
+            ]
+          },
+          "mainImageThumbAvif": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "AVIF encoding of mainImageThumb, or null.",
+            "examples": [
+              "https://d1pfm520aduift.cloudfront.net/images/books/0525573844-thumb.avif"
+            ]
+          },
+          "mainImageCardAvif": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "AVIF encoding of mainImageCard, or null.",
+            "examples": [
+              "https://d1pfm520aduift.cloudfront.net/images/books/0525573844-card.avif"
+            ]
           }
         }
       }
@@ -69,19 +204,49 @@
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["pages", "genres", "year", "desc"],
+        "required": [
+          "pages",
+          "genres",
+          "year",
+          "desc"
+        ],
         "properties": {
           "seriesName": {
-            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "description": "Series name if part of a series, null otherwise.",
-            "examples": ["The Founders Trilogy"]
+            "examples": [
+              "The Founders Trilogy"
+            ]
           },
           "seriesNumber": {
-            "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
             "description": "Position within the series, null if standalone."
           },
           "seriesTotal": {
-            "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }],
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
             "description": "Total number of books in the series, null if standalone or unknown."
           },
           "pages": {
@@ -91,14 +256,23 @@
           },
           "genres": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "Genre tags.",
-            "examples": [["Fantasy", "Mystery"]]
+            "examples": [
+              [
+                "Fantasy",
+                "Mystery"
+              ]
+            ]
           },
           "year": {
             "type": "integer",
             "description": "Publication year.",
-            "examples": [2024]
+            "examples": [
+              2024
+            ]
           },
           "desc": {
             "type": "string",
@@ -111,27 +285,40 @@
       "type": "object",
       "description": "Human-readable display labels keyed by status value. Maps status enum values to UI strings.",
       "additionalProperties": false,
-      "required": ["pending", "reading", "upNext", "finished"],
+      "required": [
+        "pending",
+        "reading",
+        "upNext",
+        "finished"
+      ],
       "properties": {
         "pending": {
           "type": "string",
           "description": "Label for books not yet started.",
-          "examples": ["Pending"]
+          "examples": [
+            "Pending"
+          ]
         },
         "reading": {
           "type": "string",
           "description": "Label for the book currently being read.",
-          "examples": ["Reading"]
+          "examples": [
+            "Reading"
+          ]
         },
         "upNext": {
           "type": "string",
           "description": "Label for books queued to read next.",
-          "examples": ["Up Next"]
+          "examples": [
+            "Up Next"
+          ]
         },
         "finished": {
           "type": "string",
           "description": "Label for finished books.",
-          "examples": ["Finished"]
+          "examples": [
+            "Finished"
+          ]
         }
       }
     },
@@ -139,36 +326,52 @@
       "type": "object",
       "description": "Aggregate reading statistics computed by the DS pipeline.",
       "additionalProperties": false,
-      "required": ["totalRead", "currentlyReading", "upNext", "avgRating", "booksThisYear"],
+      "required": [
+        "totalRead",
+        "currentlyReading",
+        "upNext",
+        "avgRating",
+        "booksThisYear"
+      ],
       "properties": {
         "totalRead": {
           "type": "integer",
           "minimum": 0,
           "description": "Total number of books with completed status.",
-          "examples": [3]
+          "examples": [
+            3
+          ]
         },
         "currentlyReading": {
           "type": "integer",
           "minimum": 0,
           "description": "Number of books currently in-progress.",
-          "examples": [1]
+          "examples": [
+            1
+          ]
         },
         "upNext": {
           "type": "integer",
           "minimum": 0,
           "description": "Number of books queued with next status.",
-          "examples": [1]
+          "examples": [
+            1
+          ]
         },
         "avgRating": {
           "type": "number",
           "description": "Average star rating across all rated books.",
-          "examples": [4.3]
+          "examples": [
+            4.3
+          ]
         },
         "booksThisYear": {
           "type": "integer",
           "minimum": 0,
           "description": "Total books started or completed in the current calendar year.",
-          "examples": [4]
+          "examples": [
+            4
+          ]
         }
       }
     }
