@@ -25,6 +25,8 @@ import type {
   WorkoutEntry
 } from '../../src/runtime/adapters'
 import type {LocationExport} from '../../src/runtime/location-types'
+import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
+import {PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
 import {widgets} from '@j0nathan-ll0yd/copy'
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -874,12 +876,12 @@ describe('updateBookshelf', () => {
           rating: null,
           progress: 42,
           link: 'https://amazon.com/dp/B001TEST',
-          cover: null,
-          coverThumb: null,
-          coverCard: null,
-          coverAvif: null,
-          coverThumbAvif: null,
-          coverCardAvif: null,
+          mainImage: null,
+          mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           notes: null,
           finishedAt: null,
           startedAt: null
@@ -903,6 +905,86 @@ describe('updateBookshelf', () => {
   it('renders book title', () => {
     updateBookshelf(makeBooks())
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('Test Book')
+  })
+
+  // ── First-party image contract (atlas decision 0086) ────────────────────
+  describe('cover images are first-party only', () => {
+    function makeBookWithCovers(): AdaptedBooks {
+      const base = makeBooks()
+      return {
+        ...base,
+        books: [{
+          ...base.books[0]!,
+          mainImage: `${CLOUDFRONT_BASE}/images/books/B001TEST.webp`,
+          mainImageThumb: `${CLOUDFRONT_BASE}/images/books/B001TEST-thumb.webp`,
+          mainImageCard: `${CLOUDFRONT_BASE}/images/books/B001TEST-card.webp`,
+          mainImageAvif: `${CLOUDFRONT_BASE}/images/books/B001TEST.avif`,
+          mainImageThumbAvif: `${CLOUDFRONT_BASE}/images/books/B001TEST-thumb.avif`,
+          mainImageCardAvif: `${CLOUDFRONT_BASE}/images/books/B001TEST-card.avif`
+        }]
+      }
+    }
+
+    it('resolves the cover src from the mainImageCard contract field', () => {
+      updateBookshelf(makeBookWithCovers())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(`${CLOUDFRONT_BASE}/images/books/B001TEST-card.webp`)
+    })
+
+    it('renders the AVIF source from the mainImage*Avif contract fields', () => {
+      updateBookshelf(makeBookWithCovers())
+      const source = document.querySelector('#dashShelfRow source') as HTMLSourceElement
+      expect(source.getAttribute('type')).toBe('image/avif')
+      expect(source.getAttribute('srcset')).toContain('B001TEST-card.avif')
+    })
+
+    it('falls back to the first-party placeholder when the export has no cover', () => {
+      updateBookshelf(makeBooks())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('points the onerror fallback at the placeholder, not the source URL', () => {
+      updateBookshelf(makeBookWithCovers())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
+
+      img.dispatchEvent(new Event('error'))
+      expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('emits no third-party image host in the rendered shelf', () => {
+      updateBookshelf(makeBookWithCovers())
+      const html = document.getElementById('dashShelfRow')!.innerHTML
+      expect(html).not.toContain('m.media-amazon.com')
+      expect(html).not.toContain('squarespace')
+      // Every image URL is same-origin or the first-party CloudFront distribution.
+      const srcs = Array.from(document.querySelectorAll('#dashShelfRow img')).map((el) => el.getAttribute('src') ?? '')
+      expect(srcs.length).toBeGreaterThan(0)
+      srcs.forEach((src) => {
+        expect(src.startsWith('/images/') || src.startsWith(`${CLOUDFRONT_BASE}/images/`)).toBe(true)
+      })
+    })
+
+    it('keeps the src first-party on the in-place DOM update path', () => {
+      // Second call with matching child count takes the mutate-existing branch.
+      // The first render put this ASIN into the SSR set, so the CloudFront URL
+      // is localized to the same-origin copy — still first-party either way.
+      updateBookshelf(makeBookWithCovers())
+      updateBookshelf(makeBookWithCovers())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe('/images/books/B001TEST-card.webp')
+      expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('uses the placeholder on the in-place path when the cover disappears', () => {
+      updateBookshelf(makeBookWithCovers())
+      updateBookshelf(makeBooks())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(PLACEHOLDER_IMAGE_SRC)
+      expect(img.hasAttribute('srcset')).toBe(false)
+      expect(img.dataset.fallback).toBeUndefined()
+    })
   })
 
   it('renders book author', () => {
@@ -963,12 +1045,12 @@ describe('updateBookshelf', () => {
           rating: 4,
           progress: undefined,
           link: 'https://amazon.com/dp/B002TEST',
-          cover: null,
-          coverThumb: null,
-          coverCard: null,
-          coverAvif: null,
-          coverThumbAvif: null,
-          coverCardAvif: null,
+          mainImage: null,
+          mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           notes: null,
           finishedAt: null,
           startedAt: null

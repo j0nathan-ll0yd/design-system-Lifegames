@@ -5,7 +5,7 @@ import {withViewTransition} from './view-transition'
 import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, AdaptedSleep, AdaptedStarredRepo, BookMeta, WorkoutEntry} from './adapters'
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
-import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -714,12 +714,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
         return
       }
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      const coverSrc = b.coverThumb
-        ? b.coverThumb
-        : b.cover
-        ? b.cover.replace(/_SY\d+_SX\d+/, '_SY180_SX130')
-        : 'https://m.media-amazon.com/images/P/' + b.asin + '.01._SCLZZZZZZZ_SX200_.jpg'
-      const cardSrc = b.coverCard || null
+      const coverSrc = b.mainImageThumb ?? b.mainImage
+      const cardSrc = b.mainImageCard || null
 
       el.setAttribute('data-book',
         JSON.stringify({
@@ -731,7 +727,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
           rating: b.rating,
           progress: b.progress,
           link: b.link,
-          cover: b.cover,
+          mainImage: b.mainImage,
+          mainImageAvif: b.mainImageAvif,
           series: meta.seriesName || null,
           seriesNumber: meta.seriesNumber || null,
           seriesTotal: meta.seriesTotal || null,
@@ -751,18 +748,18 @@ export function updateBookshelf(data: AdaptedBooks): void {
         const shouldLocalize = ssrAsins.has(b.asin)
         const localCardSrc = shouldLocalize ? localizeImageUrl(cardSrc) : cardSrc
         const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc
-        if (localCardSrc) {
-          img.src = localCardSrc
-          img.srcset = localCardSrc + ' 1x, ' + (localCoverSrc ?? coverSrc) + ' 2x'
+        const displaySrc = localCardSrc ?? localCoverSrc ?? PLACEHOLDER_IMAGE_SRC
+        img.src = displaySrc
+        if (localCardSrc && localCoverSrc) {
+          img.srcset = localCardSrc + ' 1x, ' + localCoverSrc + ' 2x'
         } else {
-          img.src = localCoverSrc ?? coverSrc
           img.removeAttribute('srcset')
         }
         img.alt = b.title
-        if (b.cover && coverSrc !== b.cover) {
-          img.dataset.fallback = b.cover
-        } else {
+        if (displaySrc === PLACEHOLDER_IMAGE_SRC) {
           delete img.dataset.fallback
+        } else {
+          img.dataset.fallback = PLACEHOLDER_IMAGE_SRC
         }
       }
 
@@ -866,12 +863,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
     let html = ''
     displayBooks.forEach((b, i: number) => {
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      const coverSrc = b.coverThumb
-        ? b.coverThumb
-        : b.cover
-        ? b.cover.replace(/_SY\d+_SX\d+/, '_SY180_SX130')
-        : 'https://m.media-amazon.com/images/P/' + b.asin + '.01._SCLZZZZZZZ_SX200_.jpg'
-      const cardSrc = b.coverCard || null
+      const coverSrc = b.mainImageThumb ?? b.mainImage
+      const cardSrc = b.mainImageCard || null
       const bookData = JSON.stringify({
         title: b.title,
         author: b.author,
@@ -881,7 +874,8 @@ export function updateBookshelf(data: AdaptedBooks): void {
         rating: b.rating,
         progress: b.progress,
         link: b.link,
-        cover: b.cover,
+        mainImage: b.mainImage,
+        mainImageAvif: b.mainImageAvif,
         series: meta.seriesName || null,
         seriesNumber: meta.seriesNumber || null,
         seriesTotal: meta.seriesTotal || null,
@@ -898,7 +892,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
       const localCardSrc = shouldLocalize ? localizeImageUrl(cardSrc) : cardSrc
       const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc
       const displayCardSrc = localCardSrc || null
-      const displayCoverSrc = localCoverSrc ?? coverSrc
+      const displayCoverSrc = localCoverSrc ?? PLACEHOLDER_IMAGE_SRC
       html += '<li class="shelf-book' +
         activeClass +
         '" style="animation-delay: ' +
@@ -913,17 +907,18 @@ export function updateBookshelf(data: AdaptedBooks): void {
         ? ' srcset="' + esc(displayCardSrc) + ' 1x, ' + esc(displayCoverSrc) + ' 2x"'
         : ''
       var avifSrcset = ''
-      if (b.coverCardAvif && b.coverThumbAvif) {
-        avifSrcset = ' srcset="' + esc(b.coverCardAvif) + ' 1x, ' + esc(b.coverThumbAvif) + ' 2x" type="image/avif"'
+      if (b.mainImageCardAvif && b.mainImageThumbAvif) {
+        avifSrcset = ' srcset="' + esc(b.mainImageCardAvif) + ' 1x, ' + esc(b.mainImageThumbAvif) + ' 2x" type="image/avif"'
       }
+      var displaySrc = displayCardSrc || displayCoverSrc
       var imgAttrs = 'src="' +
-        esc(displayCardSrc || displayCoverSrc) +
+        esc(displaySrc) +
         '"' +
         srcsetAttr +
         ' width="80" height="120" alt="' +
         esc(b.title) +
         '" loading="lazy" decoding="async"' +
-        imgFallbackAttrs(displayCardSrc || displayCoverSrc, b.cover)
+        imgFallbackAttrs(displaySrc)
       if (avifSrcset) {
         html += '<picture><source' + avifSrcset + '><img ' + imgAttrs + '></picture>'
       } else {

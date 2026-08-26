@@ -11,9 +11,16 @@ export interface BookEntry {
   rating?: number;
   progress?: number;
   notes?: string;
-  coverAvif?: string;
-  coverCardAvif?: string;
-  coverThumbAvif?: string;
+  // Image field names come straight from the books export contract
+  // (`mainImage*`). These previously read `cover*`, which no export has ever
+  // emitted — so every AVIF source here was dead and the widget fell through
+  // to a hard-coded Amazon URL (atlas decision 0086).
+  mainImage?: string | null;
+  mainImageThumb?: string | null;
+  mainImageCard?: string | null;
+  mainImageAvif?: string | null;
+  mainImageThumbAvif?: string | null;
+  mainImageCardAvif?: string | null;
   finishedAt?: string | null;
   startedAt?: string | null;
 }

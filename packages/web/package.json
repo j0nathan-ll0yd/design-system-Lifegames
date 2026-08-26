@@ -26,6 +26,7 @@
     },
     "./islands/*": "./src/islands/*",
     "./styles/*": "./src/styles/*",
+    "./assets/*": "./src/assets/*",
     "./production": "./src/production/index.ts",
     "./production/*": "./src/production/*"
   },

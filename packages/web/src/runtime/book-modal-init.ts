@@ -9,12 +9,15 @@
 
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
+import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC} from './image-utils'
 import {formatFinishedDate} from './updaters'
 
 interface BookData {
   asin?: string
-  cover?: string
-  coverAvif?: string
+  // Export contract field names (books.json emits `mainImage*`) — the
+  // `data-book` payload the Bookshelf writes uses the same names.
+  mainImage?: string
+  mainImageAvif?: string
   title?: string
   series?: string
   seriesNumber?: number
@@ -57,13 +60,14 @@ function normalizeGenres(g: BookData['genres']): string[] {
 }
 
 function renderModalHtml(b: BookData): string {
-  const asin = b.asin || ''
-  const cover = b.cover || `https://m.media-amazon.com/images/P/${asin}.01._SCLZZZZZZZ_SX160_.jpg`
+  // No cover in the export → the first-party placeholder. Never a synthesized
+  // third-party URL (atlas decision 0086).
+  const cover = b.mainImage || PLACEHOLDER_IMAGE_SRC
   let html = '<div class="book-modal-header">'
   // data-fallback is a data attribute (CSP-safe); the error listener is wired
   // externally in openModal() after innerHTML assignment (D3 — no inline onerror).
-  const fallbackAttr = b.cover && cover !== b.cover ? ` data-fallback="${esc(b.cover)}"` : ''
-  const avifSrc = b.coverAvif ? `<source srcset="${esc(b.coverAvif)}" type="image/avif">` : ''
+  const fallbackAttr = imgFallbackAttrs(cover)
+  const avifSrc = b.mainImageAvif ? `<source srcset="${esc(b.mainImageAvif)}" type="image/avif">` : ''
   const imgTag = `<img class="book-modal-cover" src="${esc(cover)}" width="140" height="210" alt="${
     esc(b.title || '')
   } cover" decoding="async"${fallbackAttr}>`
@@ -161,15 +165,9 @@ export function initBookModal(): void {
     modal!.innerHTML = renderModalHtml(b)
 
     // Wire image-cover fallback via external listener (CSP-safe; replaces
-    // inline onerror — D3). The cover element carries data-fallback when the
-    // computed Amazon URL differs from the stored custom cover.
-    const cover = modal!.querySelector<HTMLImageElement>('.book-modal-cover')
-    if (cover && cover.dataset.fallback) {
-      cover.addEventListener('error', function onErr() {
-        cover.src = cover.dataset.fallback!
-        cover.removeEventListener('error', onErr)
-      })
-    }
+    // inline onerror — D3). Shared with the Bookshelf so the fallback target
+    // is the first-party placeholder in exactly one place.
+    installImageFallbacks(modal!)
 
     // Open the dialog and fire analytics only on an ACTUAL open — never on a
     // content-swap while already open (which would double-count book_open).

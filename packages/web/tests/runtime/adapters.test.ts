@@ -611,19 +611,19 @@ describe('adaptBooks', () => {
     const cfImage = `${CLOUDFRONT_BASE}/images/books/B0TEST.webp`
     const books = makeBooks([{mainImage: cfImage}])
     const result = adaptBooks(books)
-    expect(result.books[0].cover).toBe(cfImage)
+    expect(result.books[0].mainImage).toBe(cfImage)
   })
 
   it('preserves non-CloudFront mainImage URLs unchanged', () => {
     const books = makeBooks([{mainImage: 'https://amazon.com/images/B0TEST.jpg'}])
     const result = adaptBooks(books)
-    expect(result.books[0].cover).toBe('https://amazon.com/images/B0TEST.jpg')
+    expect(result.books[0].mainImage).toBe('https://amazon.com/images/B0TEST.jpg')
   })
 
-  it('returns null cover when mainImage is null', () => {
+  it('returns null mainImage when mainImage is null', () => {
     const books = makeBooks([{mainImage: null}])
     const result = adaptBooks(books)
-    expect(result.books[0].cover).toBeNull()
+    expect(result.books[0].mainImage).toBeNull()
   })
 
   it('splits category on " > " for genres', () => {

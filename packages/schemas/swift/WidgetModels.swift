@@ -3217,6 +3217,19 @@ struct DashboardBooksBook: Codable {
     let isbn: String?
     /// Affiliate or direct purchase URL.
     let link: String?
+    /// Full-size cover image URL from the books export (first-party CloudFront), or null when
+    /// the export has no cover.
+    let mainImage: String?
+    /// AVIF encoding of mainImage, or null when no AVIF was produced.
+    let mainImageAvif: String?
+    /// Card (1x shelf) cover URL from the books export, or null.
+    let mainImageCard: String?
+    /// AVIF encoding of mainImageCard, or null.
+    let mainImageCardAvif: String?
+    /// Thumbnail (2x shelf) cover URL from the books export, or null.
+    let mainImageThumb: String?
+    /// AVIF encoding of mainImageThumb, or null.
+    let mainImageThumbAvif: String?
     /// Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished.
     let progress: Int?
     /// User rating 1–5 stars, or null if unrated.
@@ -3251,6 +3264,12 @@ extension DashboardBooksBook {
         finishedAt: Date?? = nil,
         isbn: String?? = nil,
         link: String?? = nil,
+        mainImage: String?? = nil,
+        mainImageAvif: String?? = nil,
+        mainImageCard: String?? = nil,
+        mainImageCardAvif: String?? = nil,
+        mainImageThumb: String?? = nil,
+        mainImageThumbAvif: String?? = nil,
         progress: Int?? = nil,
         rating: Int?? = nil,
         status: Status? = nil,
@@ -3262,6 +3281,12 @@ extension DashboardBooksBook {
             finishedAt: finishedAt ?? self.finishedAt,
             isbn: isbn ?? self.isbn,
             link: link ?? self.link,
+            mainImage: mainImage ?? self.mainImage,
+            mainImageAvif: mainImageAvif ?? self.mainImageAvif,
+            mainImageCard: mainImageCard ?? self.mainImageCard,
+            mainImageCardAvif: mainImageCardAvif ?? self.mainImageCardAvif,
+            mainImageThumb: mainImageThumb ?? self.mainImageThumb,
+            mainImageThumbAvif: mainImageThumbAvif ?? self.mainImageThumbAvif,
             progress: progress ?? self.progress,
             rating: rating ?? self.rating,
             status: status ?? self.status,
