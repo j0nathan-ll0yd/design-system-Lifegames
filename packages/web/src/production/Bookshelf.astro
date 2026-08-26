@@ -6,6 +6,10 @@
 // src/lib/updaters.ts + live-data.ts. Bundling initBookshelf here would
 // double-bind click handlers.
 //
+// The SSR covers still get their image fallback: the widget itself bundles a
+// fallback-only init (initImageFallbacks), which binds no click or keyboard
+// handler and so cannot collide with the consumer's updaters.
+//
 // The showcase use case loads initBookshelf via BookshelfIsland.astro.
 import Bookshelf from '../widgets/reading/Bookshelf.astro';
 import type { BookshelfProps } from '../widgets/reading/Bookshelf.types';

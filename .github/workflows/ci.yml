@@ -475,6 +475,16 @@ jobs:
           node scripts/check-promotion.mjs --check
           # P2 widget compliance (registry ↔ Astro/fixture/manifest)
           node scripts/widget-compliance.mjs
+          # SSR image-fallback gate: every .astro that server-renders a
+          # data-fallback cover must bundle the load-time initImageFallbacks()
+          # call. Mirrors the digest-conformance precedent above
+          # (package-version-drift's `node --test scripts/check-package-drift.test.mjs`):
+          # reachable only through `pnpm test:scripts` it would live in
+          # .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough
+          # to merge a widget whose SSR covers can never fall back. It runs HERE
+          # rather than in lint-web because governance-gates is a required status
+          # context and lint-web is not — a gate that cannot block is not a gate.
+          node --test scripts/check-ssr-image-fallback.test.mjs
           # Style Dictionary golden-file characterization (F-005)
           pnpm --filter @j0nathan-ll0yd/tokens test
           # S22 preview scheme audit
