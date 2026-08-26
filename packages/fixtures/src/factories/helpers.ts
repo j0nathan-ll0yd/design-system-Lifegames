@@ -12,7 +12,7 @@
  * re-runs the adapter), so a fixed absolute timestamp here is correct.
  */
 
-/** Stable anchor shared with post-adapter/starredRepos.ts for cross-domain consistency. */
+/** Stable anchor shared with post-adapter/starredRepos.ts for cross-domain determinism. */
 const DEFAULT_REFERENCE_NOW = '2026-03-18T12:00:00.000Z'
 
 function referenceNow(): Date {
