@@ -96,4 +96,77 @@ describe('installImageFallbacks', () => {
     expect(img.src).not.toContain('m.media-amazon.com')
     expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
   })
+
+  // Regression: every case above uses a BARE <img>, but pictureWithAvif() emits
+  // <picture><source><img>, which is what the Bookshelf actually renders. Inside
+  // a <picture> the browser resolves from the first matching <source> and only
+  // falls to <img src> when none matched, so setting img.src while a dead
+  // <source> remains leaves the broken glyph on screen -- and jsdom, which does
+  // no source selection, reported the placeholder either way. That combination
+  // is why 3.0.0 shipped a fallback that never fired. Assert the sources are
+  // gone; the paint itself is asserted in image-fallback.browser.test.ts.
+  describe('inside a <picture> (the shape pictureWithAvif emits)', () => {
+    function renderPicture(): {root: HTMLElement; img: HTMLImageElement} {
+      document.body.innerHTML = `<div id="root"><picture>` +
+        `<source srcset="/images/foo-card.avif 1x, /images/foo-thumb.avif 2x" type="image/avif">` +
+        `<img src="/images/foo-card.webp" srcset="/images/foo-card.webp 1x" data-fallback="${PLACEHOLDER_IMAGE_SRC}">` +
+        `</picture></div>`
+      const root = document.getElementById('root')!
+      return {root, img: root.querySelector('img')!}
+    }
+
+    it('removes every <source> candidate so the placeholder cannot be overridden', () => {
+      const {root, img} = renderPicture()
+      installImageFallbacks(root)
+
+      expect(root.querySelectorAll('source')).toHaveLength(1)
+      img.dispatchEvent(new Event('error'))
+
+      expect(root.querySelectorAll('source')).toHaveLength(0)
+      expect(img.srcset).toBe('')
+      expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('leaves no reference to the failed source anywhere in the markup', () => {
+      const {root, img} = renderPicture()
+      installImageFallbacks(root)
+      img.dispatchEvent(new Event('error'))
+
+      expect(root.innerHTML).not.toContain('.avif')
+      expect(root.querySelector('picture')).not.toBeNull()
+    })
+
+    it('keeps the same-origin refusal inside a <picture>', () => {
+      document.body.innerHTML = '<div id="root"><picture>' +
+        '<source srcset="https://m.media-amazon.com/images/P/B0001234.jpg 1x" type="image/jpeg">' +
+        '<img src="/images/foo-card.webp" data-fallback="https://m.media-amazon.com/images/P/B0001234.jpg">' +
+        '</picture></div>'
+      const root = document.getElementById('root')!
+      const img = root.querySelector('img')!
+
+      installImageFallbacks(root)
+      img.dispatchEvent(new Event('error'))
+
+      // data-fallback itself is left alone -- the refusal is enforced where the
+      // value is used, not by rewriting markup. What must not survive is a
+      // third-party candidate the browser could still resolve.
+      expect(root.querySelectorAll('source')).toHaveLength(0)
+      expect(img.src).not.toContain('m.media-amazon.com')
+      expect(img.srcset).toBe('')
+      expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('does not disturb a sibling <picture> that has not failed', () => {
+      document.body.innerHTML = `<div id="root">` +
+        `<picture id="a"><source srcset="/images/a.avif" type="image/avif"><img src="/images/a.webp" data-fallback="${PLACEHOLDER_IMAGE_SRC}"></picture>` +
+        `<picture id="b"><source srcset="/images/b.avif" type="image/avif"><img src="/images/b.webp" data-fallback="${PLACEHOLDER_IMAGE_SRC}"></picture>` +
+        `</div>`
+      const root = document.getElementById('root')!
+      installImageFallbacks(root)
+      root.querySelector<HTMLImageElement>('#a img')!.dispatchEvent(new Event('error'))
+
+      expect(root.querySelectorAll('#a source')).toHaveLength(0)
+      expect(root.querySelectorAll('#b source')).toHaveLength(1)
+    })
+  })
 })

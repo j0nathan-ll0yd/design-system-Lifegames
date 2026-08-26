@@ -48,6 +48,24 @@ export function imgFallbackAttrs(src: string | null): string {
 }
 
 /**
+ * Drop the `<source>` candidates of an enclosing `<picture>`, if there is one.
+ *
+ * Setting `img.src` is NOT enough inside a `<picture>`: the browser resolves the
+ * image from the first matching `<source>`, and an `<img src>` only applies when
+ * no source matched. pictureWithAvif() below emits exactly that shape, so a
+ * cover whose AVIF source 404s kept re-resolving to the dead source and painted
+ * a broken glyph while `img.src` silently held the placeholder. Removing the
+ * candidates makes the `<img>` authoritative again.
+ */
+function dropPictureSources(img: HTMLImageElement): void {
+  const parent = img.parentElement
+  if (!parent || parent.tagName !== 'PICTURE') {
+    return
+  }
+  parent.querySelectorAll('source').forEach((source) => source.remove())
+}
+
+/**
  * Attach one-shot image fallback behavior without inline event attributes.
  *
  * A `data-fallback` naming a third-party host is REFUSED and replaced with the
@@ -61,6 +79,7 @@ export function installImageFallbacks(root: ParentNode): void {
     img.onerror = (): void => {
       const fallback = img.dataset.fallback
       img.onerror = null
+      dropPictureSources(img)
       img.srcset = ''
       img.src = fallback && isSameOriginPath(fallback) ? fallback : PLACEHOLDER_IMAGE_SRC
     }
