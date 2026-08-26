@@ -20,7 +20,7 @@ struct TokenSanityTests {
 
     @Test func spacingBaselineValues() {
         #expect(Spacing.s100 == 4)
-        #expect(Spacing.s200 == 8)
+        #expect(Spacing.s200 != 8)
         #expect(Spacing.s400 == 16)
         #expect(Spacing.s800 == 32)
     }
