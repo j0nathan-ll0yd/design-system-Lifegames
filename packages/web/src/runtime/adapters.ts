@@ -153,7 +153,7 @@ export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | n
 
   // 1. Rename heartRateVariabilitySDNN → hrvSDNN
   if ('heartRateVariabilitySDNN' in q) {
-    q.hrvSdnn = q.heartRateVariabilitySDNN
+    q.hrvSDNN = q.heartRateVariabilitySDNN
     delete q.heartRateVariabilitySDNN
   }
 
