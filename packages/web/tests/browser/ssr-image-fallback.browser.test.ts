@@ -43,10 +43,18 @@ function ssrPictureCover(): string {
     `</picture></div></li>`
 }
 
-/** The shape Bookshelf.astro server-renders when no AVIF exists for the cover. */
+/**
+ * The shape Bookshelf.astro server-renders when no AVIF exists for the cover.
+ *
+ * Carries `loading="lazy"`, as the production covers do. A lazy image inside the
+ * viewport still loads immediately, so the already-failed path is genuinely
+ * exercised — the test below asserts that precondition rather than assuming it,
+ * so a cover that never started loading reds instead of passing on the armed
+ * path by accident.
+ */
 function ssrBareCover(): string {
   return `<li class="shelf-book"><div class="shelf-cover-wrapper">` +
-    `<img src="${DEAD}-card.webp" width="80" height="120" alt="A Book" decoding="async" ` +
+    `<img src="${DEAD}-card.webp" width="80" height="120" alt="A Book" loading="lazy" decoding="async" ` +
     `data-fallback="${PLACEHOLDER_IMAGE_SRC}"></div></li>`
 }
 
@@ -93,11 +101,14 @@ describe('the load-time init against server-rendered covers', () => {
     expect(img.srcset).toBe('')
   })
 
-  it('paints the placeholder for a bare SSR <img> that already 404ed', async () => {
+  it('paints the placeholder for a bare lazy SSR <img> that already 404ed', async () => {
     const root = mountSsr(ssrBareCover())
     const img = root.querySelector('img')!
 
     await settled(img)
+    // The precondition, asserted rather than assumed: this lazy cover really did
+    // load and fail before anything was armed.
+    expect(img.complete).toBe(true)
     expect(img.naturalWidth).toBe(0)
 
     initImageFallbacks(root)

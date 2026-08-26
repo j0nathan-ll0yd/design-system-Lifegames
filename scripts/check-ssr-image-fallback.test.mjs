@@ -1,7 +1,7 @@
 // Every server-rendered cover that carries `data-fallback` must also ship a
 // load-time init that binds a handler to it (atlas decision 0086 follow-up).
 //
-// The attribute alone does nothing: it is inert markup, and until 3.0.2 the only
+// The attribute alone does nothing: it is inert markup, and until 3.1.0 the only
 // code that turned it into behaviour was the live-data path (updateBookshelf /
 // initBookshelf / initTheatreReviews). A widget that server-renders covers and
 // bundles no init therefore shows blank covers on the offline shell, on a slow
