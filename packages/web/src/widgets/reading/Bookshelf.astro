@@ -197,3 +197,20 @@ function hasLocalImage(asin: string, ext: string): boolean {
     </ul>
   </div>
 </div>
+
+<script>
+  // The covers above are SERVER-RENDERED and already loading before any script
+  // runs, so the `data-fallback` attribute they carry needs a handler bound at
+  // load time. Until this existed the only thing that installed one was the
+  // live-data swap (updateBookshelf / initBookshelf), which leaves the offline
+  // shell — and any slow or failed books.json — showing blank covers with no
+  // placeholder.
+  //
+  // Fallback wiring only: no click or keyboard binding, so this does not
+  // double-bind the consumer's own page-level handlers. Bundled (not
+  // `is:inline`), so it stays inside `script-src 'self'`, and idempotent, so the
+  // island and production wrappers may each run their own init as well.
+  import { initImageFallbacks } from '../../runtime/image-utils';
+
+  initImageFallbacks();
+</script>
