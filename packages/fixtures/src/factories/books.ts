@@ -1,3 +1,13 @@
+// Raw (pre-adapter) books-export factories.
+//
+// The `example-*` cover keys below are DELIBERATE placeholders and have no backing
+// object on the distribution — every one of them 403s. That is safe here and only
+// here: raw fixtures reach a browser solely through the consumer's Playwright
+// `page.route(`${CLOUDFRONT_BASE}/**`)` interception, so the URLs are replaced
+// before any request leaves the sandbox, and scripts/check-full-coverage.ts
+// requires them to stay non-null in the `full` variation. Do NOT copy these keys
+// into a post-adapter fixture — that tree is server-rendered with no interception
+// in front of it and is gated by tests/cover-integrity.test.ts (atlas 0086 issue #2).
 import type {BooksExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoTimestamp, placeholderText} from './helpers'
 

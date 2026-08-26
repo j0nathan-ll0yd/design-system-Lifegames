@@ -5,9 +5,20 @@
 // from adaptBooks() (which feeds the runtime updater). The SSR shell reads this
 // authored display shape. Authored against `@j0nathan-ll0yd/schemas` `DashboardBooks`
 // (authored/dashboard-books.schema.json). All values absolute — deterministic.
+//
+// COVER RULE: a non-null cover URL here must name an ASIN in COVERED_ASINS —
+// an object the real books pipeline actually produced. The SSR shell renders
+// these covers verbatim into `<img src>`, with no route interception in front of
+// them, so a URL without a backing object is a guaranteed 403 on every page load
+// (atlas 0086 issue #2). Books outside COVERED_ASINS carry null covers and the
+// consumer paints the same-origin placeholder instead. `pnpm -F
+// @j0nathan-ll0yd/fixtures test` enforces this.
 import type {DashboardBooks} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
+// The four ASINs below are fixture-only stand-ins that the pipeline never
+// processed: every /images/books/<asin>.{webp,avif} key 403s. Their covers are
+// null so the SSR shell requests nothing for them.
 export const baseline = authored<DashboardBooks>({
   books: [
     {
@@ -15,12 +26,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'David Thomas',
       isbn: '9780135957059',
       asin: '0135957052',
-      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/0135957052.webp',
-      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/0135957052-thumb.webp',
-      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/0135957052-card.webp',
-      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0135957052.avif',
-      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0135957052-thumb.avif',
-      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0135957052-card.avif',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example1',
       status: 'reading',
       rating: null,
@@ -31,12 +42,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'Robert C. Martin',
       isbn: '9780132350884',
       asin: '0132350882',
-      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/0132350882.webp',
-      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/0132350882-thumb.webp',
-      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/0132350882-card.webp',
-      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0132350882.avif',
-      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0132350882-thumb.avif',
-      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0132350882-card.avif',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example2',
       status: 'finished',
       rating: 4,
@@ -48,12 +59,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'Martin Kleppmann',
       isbn: '9781449373320',
       asin: '1449373321',
-      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321.webp',
-      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-thumb.webp',
-      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-card.webp',
-      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321.avif',
-      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-thumb.avif',
-      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-card.avif',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example3',
       status: 'finished',
       rating: 5,
@@ -65,12 +76,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'John Ousterhout',
       isbn: '9781732102200',
       asin: '173210220X',
-      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/173210220X.webp',
-      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/173210220X-thumb.webp',
-      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/173210220X-card.webp',
-      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/173210220X.avif',
-      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/173210220X-thumb.avif',
-      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/173210220X-card.avif',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example4',
       status: 'upNext',
       rating: null,
@@ -131,6 +142,13 @@ export const empty = authored<DashboardBooks>({
 // Maximally populated: many books across all statuses, all bookMeta populated with
 // non-null series info, all stats at high realistic values, all nullable fields
 // (rating, seriesName, seriesNumber, seriesTotal, finishedAt) set to non-null values.
+//
+// Covers are the ONE exception to "every nullable field non-null": the last book
+// (1449373321) is outside COVERED_ASINS, so its covers are null under the COVER
+// RULE above. The other five carry real CloudFront objects, so this variation
+// still exercises a rendered cover AND the placeholder in one shelf. The raw
+// full-variation oracle (scripts/check-full-coverage.ts) walks generated/**, not
+// this post-adapter tree, so it is unaffected.
 export const full = authored<DashboardBooks>({
   books: [
     {
@@ -221,12 +239,12 @@ export const full = authored<DashboardBooks>({
       author: 'Martin Kleppmann',
       isbn: '9781449373320',
       asin: '1449373321',
-      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321.webp',
-      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-thumb.webp',
-      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-card.webp',
-      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321.avif',
-      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-thumb.avif',
-      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1449373321-card.avif',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/ddia',
       status: 'finished',
       rating: 5,
