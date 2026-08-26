@@ -347,7 +347,7 @@ export const Default: Story = {
     distanceM: 6200,
     flights: 14,
     daylightMin: 48,
-    goalMoveKcal: 500,
+    goalMoveKcal: '500',
     goalExerciseMin: 30,
     goalStandHr: 12,
     sunriseHHmm: '06:30',
