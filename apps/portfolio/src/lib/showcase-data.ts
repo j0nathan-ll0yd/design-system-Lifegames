@@ -18,5 +18,5 @@ export interface ShowcaseData {
 
 /** The representative (`baseline`) dashboard payload for the showcase. */
 export function getShowcaseData(): ShowcaseData {
-        return {dashboard: getDashboardFixture('baseline'), theatre: rawFixtures.theatreReviews.baseline, focus: null}
+  return {dashboard: getDashboardFixture('baseline'), theatre: rawFixtures.theatreReviews.baseline, focus: null}
 }
