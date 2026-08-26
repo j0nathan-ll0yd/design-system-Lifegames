@@ -192,6 +192,9 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/honest-github-fixtures.md:marker:j0nathan-ll0yd
 .changeset/audit-web-comment-discipline.md:marker:j0nathan-ll0yd
 .changeset/first-party-book-covers.md:marker:j0nathan-ll0yd
+.changeset/heavy-crabs-repeat.md:marker:j0nathan-ll0yd
+# Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
+packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
 .husky/pre-commit:marker:j0nathan-ll0yd
 CHANGELOG.md:marker:j0nathan-ll0yd

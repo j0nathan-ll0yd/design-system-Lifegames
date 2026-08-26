@@ -405,6 +405,34 @@ jobs:
       - name: contract-ts
         run: pnpm --filter @j0nathan-ll0yd/web test
 
+  # Real-browser half of the web runtime suite. Separate from contract-ts because
+  # that job runs on a node-labelled runner with no browser binaries, and separate
+  # from visual-regression because this asserts behavior, not pixels.
+  #
+  # It exists because jsdom structurally cannot answer the question it asks. jsdom
+  # performs no <picture> source selection, so a dead <source> and a live one look
+  # identical to it -- which is how 3.0.0 shipped an image fallback that set
+  # img.src correctly and still painted a broken glyph in every real browser.
+  web-browser-runtime:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, playwright]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: web-browser-runtime
+        run: pnpm --filter @j0nathan-ll0yd/web test:browser
+
   governance-gates:
     name: governance-gates
     needs: build-tokens
