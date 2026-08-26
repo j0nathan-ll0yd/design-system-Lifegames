@@ -2,7 +2,7 @@
   "color": {
     "$type": "color",
     "pink": {
-      "500": { "$value": "#ff007e", "$description": "Neon pink (web --neon-pink, iOS neonPink)" },
+      "500": { "$value": "#ff006e", "$description": "Neon pink (web --neon-pink, iOS neonPink)" },
       "400": { "$value": "#ff69b4", "$description": "High-contrast pink (WCAG AAA on dark)" }
     },
     "blue": {
