@@ -9,7 +9,7 @@ import {installImageFallbacks, pictureWithAvif, PLACEHOLDER_IMAGE_SRC} from '../
 // placeholder and passes, while a real browser keeps resolving the dead source
 // and paints a broken glyph. Every assertion here is on naturalWidth and
 // currentSrc, which only a real engine produces.
-const DEAD = 'https://images.invalid.test/missing'
+const DEAD = '/__image-failure/404'
 
 /**
  * Build the markup detached, install the handler, and only then set the src.

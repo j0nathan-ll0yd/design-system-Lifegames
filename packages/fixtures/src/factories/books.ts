@@ -1,13 +1,9 @@
 // Raw (pre-adapter) books-export factories.
 //
-// The `example-*` cover keys below are DELIBERATE placeholders and have no backing
-// object on the distribution — every one of them 403s. That is safe here and only
-// here: raw fixtures reach a browser solely through the consumer's Playwright
-// `page.route(`${CLOUDFRONT_BASE}/**`)` interception, so the URLs are replaced
-// before any request leaves the sandbox, and scripts/check-full-coverage.ts
-// requires them to stay non-null in the `full` variation. Do NOT copy these keys
-// into a post-adapter fixture — that tree is server-rendered with no interception
-// in front of it and is gated by tests/cover-integrity.test.ts (atlas 0086 issue #2).
+// The `example-*` cover keys below use the reserved `.invalid` TLD. They preserve
+// the non-null raw export shape without pretending nonexistent objects live on the
+// public CloudFront distribution. Playwright may still intercept them, but an
+// accidental fetch cannot become first-party 403 noise.
 import type {BooksExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoTimestamp, placeholderText} from './helpers'
 
@@ -27,8 +23,8 @@ export function createBook(overrides: Partial<BookEntry> = {}): BookEntry {
     isbn10: '1984820710',
     isbn13: null,
     pageCount: 432,
-    mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/example-tainted-cup.webp',
-    mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/example-tainted-cup-thumb.webp',
+    mainImage: 'https://fixtures.invalid/images/books/example-tainted-cup.webp',
+    mainImageThumb: 'https://fixtures.invalid/images/books/example-tainted-cup-thumb.webp',
     mainImageCard: null,
     mainImageAvif: null,
     mainImageThumbAvif: null,
@@ -61,8 +57,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2024-02-06',
         publishedYear: 2024,
         pageCount: 432,
-        mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/example-tainted-cup.webp',
-        mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/example-tainted-cup-thumb.webp',
+        mainImage: 'https://fixtures.invalid/images/books/example-tainted-cup.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-tainted-cup-thumb.webp',
         averageRating: '4.5',
         category: 'Fantasy, Mystery, Thriller',
         status: 'finished',
@@ -81,8 +77,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2025-02-04',
         publishedYear: 2025,
         pageCount: 480,
-        mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/example-drop-of-corruption.webp',
-        mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/example-drop-of-corruption-thumb.webp',
+        mainImage: 'https://fixtures.invalid/images/books/example-drop-of-corruption.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-drop-of-corruption-thumb.webp',
         averageRating: '4.6',
         category: 'Fantasy, Mystery, Thriller',
         status: 'finished',
@@ -101,8 +97,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2018-08-21',
         publishedYear: 2018,
         pageCount: 512,
-        mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/example-foundryside.webp',
-        mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/example-foundryside-thumb.webp',
+        mainImage: 'https://fixtures.invalid/images/books/example-foundryside.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-foundryside-thumb.webp',
         averageRating: '4.3',
         category: 'Fantasy',
         status: 'finished',
@@ -121,8 +117,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2020-04-21',
         publishedYear: 2020,
         pageCount: null,
-        mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/example-shorefall.webp',
-        mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/example-shorefall-thumb.webp',
+        mainImage: 'https://fixtures.invalid/images/books/example-shorefall.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-shorefall-thumb.webp',
         averageRating: '4.2',
         category: 'Fantasy',
         status: 'reading',
@@ -141,8 +137,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2024-09-01',
         publishedYear: 2024,
         pageCount: 307,
-        mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/example-crafting-eng-strategy.webp',
-        mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/example-crafting-eng-strategy-thumb.webp',
+        mainImage: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy-thumb.webp',
         averageRating: '4.7',
         category: 'Technology, Business',
         status: 'upNext',

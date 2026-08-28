@@ -195,6 +195,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/heavy-crabs-repeat.md:marker:j0nathan-ll0yd
 .changeset/heavy-pandas-tickle.md:marker:j0nathan-ll0yd
 .changeset/quiet-books-shed-covers.md:marker:j0nathan-ll0yd
+.changeset/harden-cover-render-chain.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
@@ -395,6 +396,10 @@ packages/web/tests/runtime/updaters-focus.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-movement.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-theatre.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters.test.ts:marker:j0nathan-ll0yd
+# These gates name the scoped package/import they exercise. The marker is the
+# mandated GitHub Packages namespace described for this block above.
+packages/web/tests/browser/render-chain-fallback.browser.test.ts:marker:j0nathan-ll0yd
+scripts/check-web-package-assets.test.mjs:marker:j0nathan-ll0yd
 scripts/generate-widget-docs.mjs:marker:j0nathan-ll0yd
 scripts/scaffold-alternate-page.mjs:marker:j0nathan-ll0yd
 style-dictionary.config.mjs:marker:j0nathan-ll0yd

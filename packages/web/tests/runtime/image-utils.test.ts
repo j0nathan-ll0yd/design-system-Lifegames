@@ -1,6 +1,13 @@
 // @vitest-environment jsdom
 import {describe, expect, it} from 'vitest'
-import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
+import {
+  imgFallbackAttrs,
+  installImageFallbacks,
+  localizeImageUrl,
+  pictureWithAvif,
+  PLACEHOLDER_IMAGE_SRC,
+  sanitizeImageUrl
+} from '../../src/runtime/image-utils'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
 
 const CF_PREFIX = `${CLOUDFRONT_BASE}/images/`
@@ -16,27 +23,58 @@ describe('localizeImageUrl', () => {
     expect(localizeImageUrl(url)).toBe('/images/theatre/my-show-slug.webp')
   })
 
-  it('passes through non-CloudFront URLs unchanged', () => {
+  it('replaces a third-party URL with the placeholder', () => {
     const amazon = 'https://m.media-amazon.com/images/P/B0001234.jpg'
-    expect(localizeImageUrl(amazon)).toBe(amazon)
+    expect(localizeImageUrl(amazon)).toBe(PLACEHOLDER_IMAGE_SRC)
   })
 
-  it('passes through a Squarespace URL unchanged', () => {
+  it('replaces another CDN URL with the placeholder', () => {
     const sq = 'https://images.squarespace-cdn.com/content/image.jpg'
-    expect(localizeImageUrl(sq)).toBe(sq)
+    expect(localizeImageUrl(sq)).toBe(PLACEHOLDER_IMAGE_SRC)
   })
 
   it('returns null for null input', () => {
     expect(localizeImageUrl(null)).toBeNull()
   })
 
-  it('returns empty string for empty string input', () => {
-    expect(localizeImageUrl('')).toBe('')
+  it('replaces an empty candidate with the placeholder', () => {
+    expect(localizeImageUrl('')).toBe(PLACEHOLDER_IMAGE_SRC)
   })
 
   it('does not double-convert an already-local path', () => {
     const local = '/images/books/B01234.webp'
     expect(localizeImageUrl(local)).toBe(local)
+  })
+})
+
+describe('sanitizeImageUrl', () => {
+  const baseUrl = 'https://dashboard.example.test/books'
+
+  it.each([
+    `${CF_PREFIX}books/B01234-v17.webp`,
+    '/images/books/B01234-v17.webp',
+    'images/books/B01234-v17.webp',
+    'https://dashboard.example.test/images/books/B01234-v17.webp',
+    'data:image/png;base64,iVBORw0KGgo='
+  ])('allows an approved image candidate: %s', (candidate) => {
+    expect(sanitizeImageUrl(candidate, {baseUrl})).toBe(candidate)
+  })
+
+  it.each([
+    '//d1pfm520aduift.cloudfront.net/images/books/B01234.webp',
+    'http://d1pfm520aduift.cloudfront.net/images/books/B01234.webp',
+    'https://d1pfm520aduift.cloudfront.net.evil.test/images/books/B01234.webp',
+    'https://evil.test/d1pfm520aduift.cloudfront.net/images/books/B01234.webp',
+    'https://d1pfm520aduift.cloudfront.net/not-images/B01234.webp',
+    'https://dashboard.example.test.evil.test/images/books/B01234.webp',
+    'javascript:alert(1)',
+    'data:text/html,<svg></svg>'
+  ])('rejects a non-approved image candidate: %s', (candidate) => {
+    expect(sanitizeImageUrl(candidate, {baseUrl})).toBe(PLACEHOLDER_IMAGE_SRC)
+  })
+
+  it('omits a rejected source candidate when requested', () => {
+    expect(sanitizeImageUrl('https://evil.test/cover.avif', {baseUrl, onReject: 'omit'})).toBeNull()
   })
 })
 
@@ -62,8 +100,19 @@ describe('imgFallbackAttrs', () => {
     expect(imgFallbackAttrs(PLACEHOLDER_IMAGE_SRC)).toBe('')
   })
 
+  it('arms a placeholder img when a picture source can override it', () => {
+    expect(imgFallbackAttrs(PLACEHOLDER_IMAGE_SRC, true)).toContain(`data-fallback="${PLACEHOLDER_IMAGE_SRC}"`)
+  })
+
   it('result starts with a space (for safe HTML attribute concatenation)', () => {
     expect(imgFallbackAttrs('/images/foo.webp').startsWith(' ')).toBe(true)
+  })
+})
+
+describe('pictureWithAvif', () => {
+  it('omits a rejected AVIF source candidate', () => {
+    const html = pictureWithAvif({avifSrcset: 'https://evil.test/cover.avif 1x', imgAttrs: `src="${PLACEHOLDER_IMAGE_SRC}"`})
+    expect(html).toBe(`<img src="${PLACEHOLDER_IMAGE_SRC}">`)
   })
 })
 
