@@ -603,10 +603,7 @@ describe('adaptBooks', () => {
     expect(result.books[0].link).toContain('lifegames04-20')
   })
 
-  // CloudFront URLs pass through the adapter unchanged. The downstream updater
-  // (updaters.ts) conditionally rewrites to a same-origin /images/ path only
-  // for ASINs that were in the SSR fixture. See the comment in adapters.ts
-  // for the bug-class rationale (Cloudflare Pages caches 404s for 30 days).
+  // Approved first-party candidates preserve their content-versioned keys.
   it('passes CloudFront mainImage through unchanged', () => {
     const cfImage = `${CLOUDFRONT_BASE}/images/books/B0TEST.webp`
     const books = makeBooks([{mainImage: cfImage}])
@@ -614,10 +611,16 @@ describe('adaptBooks', () => {
     expect(result.books[0].mainImage).toBe(cfImage)
   })
 
-  it('preserves non-CloudFront mainImage URLs unchanged', () => {
+  it('replaces non-approved mainImage URLs with the placeholder', () => {
     const books = makeBooks([{mainImage: 'https://amazon.com/images/B0TEST.jpg'}])
     const result = adaptBooks(books)
-    expect(result.books[0].mainImage).toBe('https://amazon.com/images/B0TEST.jpg')
+    expect(result.books[0].mainImage).toBe('/images/no-cover.svg')
+  })
+
+  it('omits rejected AVIF source candidates', () => {
+    const books = makeBooks([{mainImageAvif: 'https://amazon.com/images/B0TEST.avif'}])
+    const result = adaptBooks(books)
+    expect(result.books[0].mainImageAvif).toBeNull()
   })
 
   it('returns null mainImage when mainImage is null', () => {

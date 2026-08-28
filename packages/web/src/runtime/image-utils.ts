@@ -1,7 +1,13 @@
 import {CLOUDFRONT_BASE} from './constants'
 import {esc} from './html-utils'
+import {sanitizeImageUrl} from './image-sanitizer'
+import type {ImageSanitizerOptions} from './image-sanitizer'
+
+export { sanitizeImageUrl } from './image-sanitizer'
+export type { ImageSanitizerOptions } from './image-sanitizer'
 
 const CF_IMAGE_PREFIX = `${CLOUDFRONT_BASE}/images/`
+const CF_IMAGE_HOST = new URL(CF_IMAGE_PREFIX).host
 
 /**
  * Same-origin "no image" placeholder. Every image fallback in this package
@@ -15,20 +21,25 @@ const CF_IMAGE_PREFIX = `${CLOUDFRONT_BASE}/images/`
  */
 export const PLACEHOLDER_IMAGE_SRC = '/images/no-cover.svg'
 
-/** True for same-origin paths only — the invariant the fallback path enforces. */
-function isSameOriginPath(url: string): boolean {
-  return url.startsWith('/') && !url.startsWith('//')
-}
-
 /**
- * Converts a CloudFront image URL to a local path for same-origin serving.
- * Non-CloudFront URLs pass through unchanged.
+ * Sanitizes an image URL, then converts an exact CloudFront /images/ URL to its
+ * same-origin path. Rejected URLs become the placeholder unless a source caller
+ * explicitly requests omission.
  */
-export function localizeImageUrl(url: string | null): string | null {
-  if (!url || !url.startsWith(CF_IMAGE_PREFIX)) {
-    return url
+export function localizeImageUrl(url: string | null | undefined, options: ImageSanitizerOptions = {}): string | null {
+  const sanitized = sanitizeImageUrl(url, options)
+  if (!sanitized) {
+    return sanitized
   }
-  return '/images/' + url.slice(CF_IMAGE_PREFIX.length)
+  try {
+    const parsed = new URL(sanitized)
+    if (parsed.protocol === 'https:' && parsed.host === CF_IMAGE_HOST && parsed.pathname.startsWith('/images/')) {
+      return parsed.pathname + parsed.search + parsed.hash
+    }
+  } catch {
+    // Relative and data URLs are already safe and already local where relevant.
+  }
+  return sanitized
 }
 
 /**
@@ -40,8 +51,8 @@ export function localizeImageUrl(url: string | null): string | null {
  * source URL the image was built from. Callers pass only the src they render
  * so an image already showing the placeholder gets no redundant attribute.
  */
-export function imgFallbackAttrs(src: string | null): string {
-  if (!src || src === PLACEHOLDER_IMAGE_SRC) {
+export function imgFallbackAttrs(src: string | null, hasSource = false): string {
+  if ((!src || src === PLACEHOLDER_IMAGE_SRC) && !hasSource) {
     return ''
   }
   return ` data-fallback="${esc(PLACEHOLDER_IMAGE_SRC)}"`
@@ -75,7 +86,7 @@ function dropPictureSources(img: HTMLImageElement): void {
  */
 function fallbackTarget(img: HTMLImageElement): string {
   const fallback = img.dataset.fallback
-  return fallback && isSameOriginPath(fallback) ? fallback : PLACEHOLDER_IMAGE_SRC
+  return fallback && sanitizeImageUrl(fallback, {onReject: 'omit'}) ? fallback : PLACEHOLDER_IMAGE_SRC
 }
 
 /** Swap this image to the placeholder, once. */
@@ -154,9 +165,14 @@ export function initImageFallbacks(root: ParentNode = document): void {
 /** Build <picture> markup for an image with AVIF + WebP sources.
  *  Returns HTML string suitable for both Astro templates and ES5 inline scripts. */
 export function pictureWithAvif(opts: {avifSrcset: string | null; imgAttrs: string}): string {
-  if (opts.avifSrcset) {
+  const avifSrcset = opts.avifSrcset?.split(/,\s+/).map((entry) => {
+    const match = entry.trim().match(/^(.*?)(?:\s+([0-9.]+[wx]))?$/)
+    const candidate = sanitizeImageUrl(match?.[1], {onReject: 'omit'})
+    return candidate ? esc(candidate) + (match?.[2] ? ' ' + match[2] : '') : ''
+  }).filter(Boolean).join(', ')
+  if (avifSrcset) {
     return (
-      '<picture><source srcset="' + opts.avifSrcset + '" type="image/avif">' + '<img ' + opts.imgAttrs + '></picture>'
+      '<picture><source srcset="' + avifSrcset + '" type="image/avif">' + '<img ' + opts.imgAttrs + '></picture>'
     )
   }
   return '<img ' + opts.imgAttrs + '>'

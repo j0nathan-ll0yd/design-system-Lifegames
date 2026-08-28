@@ -5,9 +5,8 @@
 // server-rendered straight into `<img src>` with no route interception in front of
 // them. A cover URL naming an object the books pipeline never produced is therefore
 // a guaranteed 403 on every page load — the ORB console noise reported as atlas 0086
-// issue #2. Raw (pre-adapter) fixtures are exempt: they reach a browser only through
-// the consumer's Playwright `page.route(`${CLOUDFRONT_BASE}/**`)` interception, so
-// their `example-*` keys are deliberate placeholders that never leave the sandbox.
+// issue #2. Raw (pre-adapter) fixtures use the reserved fixtures.invalid host and
+// therefore cannot be mistaken for objects verified on this distribution.
 
 export const COVER_ORIGIN = 'https://d1pfm520aduift.cloudfront.net/images/books/'
 

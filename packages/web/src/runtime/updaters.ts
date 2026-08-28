@@ -5,7 +5,7 @@ import {withViewTransition} from './view-transition'
 import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, AdaptedSleep, AdaptedStarredRepo, BookMeta, WorkoutEntry} from './adapters'
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
-import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -653,11 +653,83 @@ export function formatRelativeTime(isoString: string): string {
   return minutesAgo + 'm ago'
 }
 
+const buildTimeLocalCoverCandidates = new WeakMap<Element, ReadonlySet<string>>()
+
+/** Capture the exact URLs with committed files before live updates mutate SSR. */
+function localCoverCandidates(card: Element): ReadonlySet<string> {
+  const captured = buildTimeLocalCoverCandidates.get(card)
+  if (captured) {
+    return captured
+  }
+
+  const candidates = new Set<string>()
+  card.querySelectorAll<HTMLElement>('.shelf-book[data-local-cover]').forEach((book) => {
+    try {
+      const values: unknown = JSON.parse(book.dataset.localCover || '[]')
+      if (!Array.isArray(values)) {
+        return
+      }
+      values.forEach((value) => {
+        if (typeof value !== 'string') {
+          return
+        }
+        const sanitized = sanitizeImageUrl(value, {onReject: 'omit'})
+        if (sanitized) {
+          candidates.add(sanitized)
+        }
+      })
+    } catch {
+      // Malformed availability metadata means no candidate is assumed local.
+    }
+  })
+  buildTimeLocalCoverCandidates.set(card, candidates)
+  return candidates
+}
+
+function displayCoverCandidate(candidate: string | null | undefined, localCandidates: ReadonlySet<string>): string | null {
+  const sanitized = sanitizeImageUrl(candidate, {onReject: 'omit'})
+  if (!sanitized) {
+    return null
+  }
+  return localCandidates.has(sanitized)
+    ? localizeImageUrl(sanitized, {onReject: 'omit'})
+    : sanitized
+}
+
+/** One complete cover node, used by both updater branches for atomic swaps. */
+function bookshelfCoverHtml(book: AdaptedBooks['books'][number], localCandidates: ReadonlySet<string>): string {
+  const cardSrc = displayCoverCandidate(book.mainImageCard ?? book.mainImage, localCandidates)
+  const thumbSrc = displayCoverCandidate(book.mainImageThumb ?? book.mainImage, localCandidates)
+  const displaySrc = cardSrc ?? thumbSrc ?? PLACEHOLDER_IMAGE_SRC
+  const rasterSrcset = cardSrc && thumbSrc
+    ? cardSrc + ' 1x, ' + thumbSrc + ' 2x'
+    : null
+
+  const avifCard = displayCoverCandidate(book.mainImageCardAvif ?? book.mainImageAvif, localCandidates)
+  const avifThumb = displayCoverCandidate(book.mainImageThumbAvif ?? book.mainImageAvif, localCandidates)
+  const avifCandidates = [avifCard ? esc(avifCard) + ' 1x' : '', avifThumb ? esc(avifThumb) + ' 2x' : ''].filter(Boolean)
+  const avifSrcset = avifCandidates.join(', ')
+
+  const imgAttrs = 'src="' +
+    esc(displaySrc) +
+    '"' +
+    (rasterSrcset ? ' srcset="' + esc(rasterSrcset) + '"' : '') +
+    ' width="80" height="120" alt="' +
+    esc(book.title) +
+    '" loading="lazy" decoding="async"' +
+    imgFallbackAttrs(displaySrc, avifSrcset.length > 0)
+  const img = '<img ' + imgAttrs + '>'
+  return avifSrcset
+    ? '<picture><source srcset="' + avifSrcset + '" type="image/avif">' + img + '</picture>'
+    : img
+}
+
 export function updateBookshelf(data: AdaptedBooks): void {
   const card = document.getElementById('cardBooks')
   if (!card) {
     return
   }
+  const localCandidates = localCoverCandidates(card)
 
   // Empty state: render the shared two-line placeholder. This replaces
   // `.widget-body` (destroying #dashShelfRow), so the populated path below
@@ -682,20 +754,6 @@ export function updateBookshelf(data: AdaptedBooks): void {
     return
   }
 
-  // Collect ASINs that have local images (present at SSR build time)
-  const ssrBookEls = document.querySelectorAll('#dashShelfRow .shelf-book')
-  const ssrAsins = new Set<string>()
-  ssrBookEls.forEach((el) => {
-    try {
-      const data = JSON.parse(el.getAttribute('data-book') || '{}')
-      if (data.asin) {
-        ssrAsins.add(data.asin)
-      }
-    } catch {
-      /* ignore parse errors */
-    }
-  })
-
   const statusLabels = data.statusLabels
   const bookMeta = data.bookMeta
   const statusOrder: Record<string, number> = {reading: 0, upNext: 1, finished: 2}
@@ -714,9 +772,6 @@ export function updateBookshelf(data: AdaptedBooks): void {
         return
       }
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      const coverSrc = b.mainImageThumb ?? b.mainImage
-      const cardSrc = b.mainImageCard || null
-
       el.setAttribute('data-book',
         JSON.stringify({
           title: b.title,
@@ -743,24 +798,10 @@ export function updateBookshelf(data: AdaptedBooks): void {
 
       el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
 
-      const img = el.querySelector('img') as HTMLImageElement | null
-      if (img) {
-        const shouldLocalize = ssrAsins.has(b.asin)
-        const localCardSrc = shouldLocalize ? localizeImageUrl(cardSrc) : cardSrc
-        const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc
-        const displaySrc = localCardSrc ?? localCoverSrc ?? PLACEHOLDER_IMAGE_SRC
-        img.src = displaySrc
-        if (localCardSrc && localCoverSrc) {
-          img.srcset = localCardSrc + ' 1x, ' + localCoverSrc + ' 2x'
-        } else {
-          img.removeAttribute('srcset')
-        }
-        img.alt = b.title
-        if (displaySrc === PLACEHOLDER_IMAGE_SRC) {
-          delete img.dataset.fallback
-        } else {
-          img.dataset.fallback = PLACEHOLDER_IMAGE_SRC
-        }
+      const coverWrapper = el.querySelector<HTMLElement>('.shelf-cover-wrapper')
+      if (coverWrapper) {
+        coverWrapper.innerHTML = bookshelfCoverHtml(b, localCandidates)
+        installImageFallbacks(coverWrapper)
       }
 
       const title = el.querySelector('.shelf-book-title span')
@@ -863,8 +904,6 @@ export function updateBookshelf(data: AdaptedBooks): void {
     let html = ''
     displayBooks.forEach((b, i: number) => {
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      const coverSrc = b.mainImageThumb ?? b.mainImage
-      const cardSrc = b.mainImageCard || null
       const bookData = JSON.stringify({
         title: b.title,
         author: b.author,
@@ -888,11 +927,6 @@ export function updateBookshelf(data: AdaptedBooks): void {
         startedAt: b.startedAt || null
       })
       var activeClass = b.status === 'reading' ? ' shelf-book-active' : ''
-      const shouldLocalize = ssrAsins.has(b.asin)
-      const localCardSrc = shouldLocalize ? localizeImageUrl(cardSrc) : cardSrc
-      const localCoverSrc = shouldLocalize ? localizeImageUrl(coverSrc) : coverSrc
-      const displayCardSrc = localCardSrc || null
-      const displayCoverSrc = localCoverSrc ?? PLACEHOLDER_IMAGE_SRC
       html += '<li class="shelf-book' +
         activeClass +
         '" style="animation-delay: ' +
@@ -903,27 +937,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
         a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) +
         '">'
       html += '<div class="shelf-cover-wrapper">'
-      const srcsetAttr = displayCardSrc
-        ? ' srcset="' + esc(displayCardSrc) + ' 1x, ' + esc(displayCoverSrc) + ' 2x"'
-        : ''
-      var avifSrcset = ''
-      if (b.mainImageCardAvif && b.mainImageThumbAvif) {
-        avifSrcset = ' srcset="' + esc(b.mainImageCardAvif) + ' 1x, ' + esc(b.mainImageThumbAvif) + ' 2x" type="image/avif"'
-      }
-      var displaySrc = displayCardSrc || displayCoverSrc
-      var imgAttrs = 'src="' +
-        esc(displaySrc) +
-        '"' +
-        srcsetAttr +
-        ' width="80" height="120" alt="' +
-        esc(b.title) +
-        '" loading="lazy" decoding="async"' +
-        imgFallbackAttrs(displaySrc)
-      if (avifSrcset) {
-        html += '<picture><source' + avifSrcset + '><img ' + imgAttrs + '></picture>'
-      } else {
-        html += '<img ' + imgAttrs + '>'
-      }
+      html += bookshelfCoverHtml(b, localCandidates)
       html += '</div>'
       html += '<div class="shelf-book-title"><span>' + esc(b.title) + '</span></div>'
       html += '<div class="shelf-book-author">' + esc(b.author) + '</div>'

@@ -1,5 +1,5 @@
 import {describe, expect, it} from 'vitest'
-import {fixtures} from '../src/index'
+import {fixtures, rawFixtures} from '../src/index'
 import {COVER_ORIGIN, COVER_SUFFIXES, coverAsin, COVERED_ASINS} from '../src/cover-inventory'
 
 // The SSR shell server-renders post-adapter covers straight into `<img src>` with
@@ -70,6 +70,24 @@ describe('post-adapter book covers only name objects that exist', () => {
     expect(rendered.length, 'no post-adapter book renders a real cover — cover-render coverage was destroyed').toBeGreaterThan(0)
     for (const {book} of rendered) {
       expect(COVERED_ASINS).toContain(book.asin)
+    }
+  })
+})
+
+describe('raw book covers are visibly non-routable fixtures', () => {
+  it('never encodes an example key on the public CloudFront distribution', () => {
+    for (const [variation, fixture] of Object.entries(rawFixtures.books)) {
+      for (const [index, book] of fixture.books.entries()) {
+        for (const field of [...COVER_FIELDS, 'images'] as const) {
+          const url = book[field]
+          if (url == null) {
+            continue
+          }
+          const where = `raw books.${variation}[${index}] (${book.asin}) ${field}`
+          expect(new URL(url).hostname, where).toBe('fixtures.invalid')
+          expect(url, where).not.toContain(COVER_ORIGIN)
+        }
+      }
     }
   })
 })

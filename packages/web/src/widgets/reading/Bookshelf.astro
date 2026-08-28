@@ -2,7 +2,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { widgets, a11y } from '@j0nathan-ll0yd/copy';
-import { PLACEHOLDER_IMAGE_SRC } from '../../runtime/image-utils';
+import {
+  localizeImageUrl,
+  PLACEHOLDER_IMAGE_SRC,
+  sanitizeImageUrl,
+} from '../../runtime/image-utils';
 
 const { books } = Astro.props;
 const bookList = books.books;
@@ -20,12 +24,21 @@ const sortedBooks = bookList.slice().sort((a: any, b: any) => {
 });
 const displayBooks = sortedBooks.slice(0, 5);
 
-const booksDir = path.join(process.cwd(), 'public', 'images', 'books');
-function hasLocalImage(asin: string, ext: string): boolean {
+const publicDir = path.join(process.cwd(), 'public');
+const sanitizerOptions = { baseUrl: Astro.url, onReject: 'omit' as const };
+
+function localImageUrl(candidate: string | null): string | null {
+  if (!candidate) return null;
+  const localized = localizeImageUrl(candidate, sanitizerOptions);
+  if (!localized) return null;
   try {
-    return fs.existsSync(path.join(booksDir, `${asin}-card.${ext}`));
+    const pathname = decodeURIComponent(new URL(localized, Astro.url).pathname);
+    if (!pathname.startsWith('/images/')) return null;
+    const file = path.resolve(publicDir, `.${pathname}`);
+    if (!file.startsWith(`${publicDir}${path.sep}`) || !fs.existsSync(file)) return null;
+    return localized;
   } catch {
-    return false;
+    return null;
   }
 }
 ---
@@ -65,26 +78,45 @@ function hasLocalImage(asin: string, ext: string): boolean {
           // Prefer the committed same-origin copy; otherwise the export's own
           // first-party CloudFront URL; otherwise the placeholder. No branch
           // here may reach a third-party host (atlas decision 0086).
-          const hasLocal = hasLocalImage(asin, 'webp');
-          const hasLocalAvif = hasLocalImage(asin, 'avif');
-          const localCard = `/images/books/${asin}-card.webp`;
-          const localThumb = `/images/books/${asin}-thumb.webp`;
-          const contractCard = b.mainImageCard || b.mainImage || null;
-          const contractThumb = b.mainImageThumb || b.mainImage || null;
-          const imgSrc = hasLocal ? localCard : contractCard || PLACEHOLDER_IMAGE_SRC;
-          const imgSrcset = hasLocal
-            ? `${localCard} 1x, ${localThumb} 2x`
-            : contractCard && contractThumb
-              ? `${contractCard} 1x, ${contractThumb} 2x`
-              : undefined;
-          const fallbackAttr = imgSrc === PLACEHOLDER_IMAGE_SRC ? undefined : PLACEHOLDER_IMAGE_SRC;
-          // AVIF sources track whichever origin the <img> uses, so the picture
-          // never pairs a local raster with a remote AVIF (or vice versa).
-          const avifSrcset = hasLocalAvif
-            ? `/images/books/${asin}-card.avif 1x, /images/books/${asin}-thumb.avif 2x`
-            : b.mainImageCardAvif && b.mainImageThumbAvif
-              ? `${b.mainImageCardAvif} 1x, ${b.mainImageThumbAvif} 2x`
-              : null;
+          const contractCard = sanitizeImageUrl(b.mainImageCard || b.mainImage, sanitizerOptions);
+          const contractThumb = sanitizeImageUrl(b.mainImageThumb || b.mainImage, sanitizerOptions);
+          const contractAvifCard = sanitizeImageUrl(
+            b.mainImageCardAvif || b.mainImageAvif,
+            sanitizerOptions,
+          );
+          const contractAvifThumb = sanitizeImageUrl(
+            b.mainImageThumbAvif || b.mainImageAvif,
+            sanitizerOptions,
+          );
+          const localCard = localImageUrl(contractCard);
+          const localThumb = localImageUrl(contractThumb);
+          const localAvifCard = localImageUrl(contractAvifCard);
+          const localAvifThumb = localImageUrl(contractAvifThumb);
+          const displayCard = localCard || contractCard;
+          const displayThumb = localThumb || contractThumb;
+          const imgSrc = displayCard || displayThumb || PLACEHOLDER_IMAGE_SRC;
+          const imgSrcset =
+            displayCard && displayThumb ? `${displayCard} 1x, ${displayThumb} 2x` : undefined;
+          const displayAvifCard = localAvifCard || contractAvifCard;
+          const displayAvifThumb = localAvifThumb || contractAvifThumb;
+          const avifSrcset =
+            [
+              displayAvifCard ? `${displayAvifCard} 1x` : null,
+              displayAvifThumb ? `${displayAvifThumb} 2x` : null,
+            ]
+              .filter(Boolean)
+              .join(', ') || null;
+          // Capture exact candidates with committed files. URL identity, not an
+          // ASIN or inferred filename, determines whether a later live refresh
+          // may localize the candidate.
+          const localCoverCandidates = [
+            localCard ? contractCard : null,
+            localThumb ? contractThumb : null,
+            localAvifCard ? contractAvifCard : null,
+            localAvifThumb ? contractAvifThumb : null,
+          ].filter(Boolean);
+          const fallbackAttr =
+            imgSrc !== PLACEHOLDER_IMAGE_SRC || avifSrcset ? PLACEHOLDER_IMAGE_SRC : undefined;
           const meta = bookMeta[asin] || {};
           const bookData = JSON.stringify({
             title: b.title,
@@ -107,14 +139,15 @@ function hasLocalImage(asin: string, ext: string): boolean {
             desc: meta.desc || null,
             genres: meta.genres || [],
             // Contract field names — BookModal reads `mainImage*` from here.
-            mainImage: b.mainImage || null,
-            mainImageAvif: b.mainImageAvif || null,
+            mainImage: sanitizeImageUrl(b.mainImage, { baseUrl: Astro.url }),
+            mainImageAvif: sanitizeImageUrl(b.mainImageAvif, sanitizerOptions),
           });
           return (
             <li
               class={`shelf-book${b.status === 'reading' ? ' shelf-book-active' : ''}`}
               style={`animation-delay: ${i * 0.08}s`}
               data-book={bookData}
+              data-local-cover={JSON.stringify(localCoverCandidates)}
               tabindex="0"
               aria-label={a11y.bookshelf.bookItem
                 .replace('{title}', b.title)

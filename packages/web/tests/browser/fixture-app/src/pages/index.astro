@@ -1,0 +1,32 @@
+---
+import Bookshelf from '../../../../../src/widgets/reading/Bookshelf.astro';
+
+const books = {
+  books: [
+    {
+      asin: 'SSR-PICTURE',
+      title: 'SSR Picture Failure',
+      author: 'Fixture',
+      status: 'reading',
+      progress: 25,
+      mainImage: '/__image-failure/403.webp',
+      mainImageThumb: '/__image-failure/404-thumb.webp',
+      mainImageCard: '/__image-failure/403-card.webp',
+      mainImageAvif: '/__image-failure/404.avif',
+      mainImageThumbAvif: '/__image-failure/403-thumb.avif',
+      mainImageCardAvif: '/__image-failure/404-card.avif',
+    },
+    {
+      asin: 'SSR-BARE',
+      title: 'SSR Bare Failure',
+      author: 'Fixture',
+      status: 'upNext',
+      mainImage: '/__image-failure/404-bare.webp',
+    },
+  ],
+  bookMeta: {},
+  statusLabels: { reading: 'Reading', upNext: 'Up Next', finished: 'Finished' },
+};
+---
+
+<Bookshelf books={books} />

@@ -9,7 +9,7 @@
 
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
-import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
 import {formatFinishedDate} from './updaters'
 
 interface BookData {
@@ -62,12 +62,13 @@ function normalizeGenres(g: BookData['genres']): string[] {
 function renderModalHtml(b: BookData): string {
   // No cover in the export → the first-party placeholder. Never a synthesized
   // third-party URL (atlas decision 0086).
-  const cover = b.mainImage || PLACEHOLDER_IMAGE_SRC
+  const cover = sanitizeImageUrl(b.mainImage) || PLACEHOLDER_IMAGE_SRC
+  const avif = sanitizeImageUrl(b.mainImageAvif, {onReject: 'omit'})
   let html = '<div class="book-modal-header">'
   // data-fallback is a data attribute (CSP-safe); the error listener is wired
   // externally in openModal() after innerHTML assignment (D3 — no inline onerror).
-  const fallbackAttr = imgFallbackAttrs(cover)
-  const avifSrc = b.mainImageAvif ? `<source srcset="${esc(b.mainImageAvif)}" type="image/avif">` : ''
+  const fallbackAttr = imgFallbackAttrs(cover, avif !== null)
+  const avifSrc = avif ? `<source srcset="${esc(avif)}" type="image/avif">` : ''
   const imgTag = `<img class="book-modal-cover" src="${esc(cover)}" width="140" height="210" alt="${
     esc(b.title || '')
   } cover" decoding="async"${fallbackAttr}>`

@@ -89,7 +89,7 @@ public struct BookCover: View {
         // Image mode (remote URL — will show placeholder until loaded)
         BookCover(
             title: "Dune",
-            imageURL: URL(string: "https://m.media-amazon.com/images/I/71aG+xDKSYL._AC_UF1000,1000_QL80_.jpg"),
+            imageURL: URL(string: "https://d1pfm520aduift.cloudfront.net/images/books/1984820710.webp"),
             width: 80,
             height: 120,
             accent: LGColor.accentGreen
