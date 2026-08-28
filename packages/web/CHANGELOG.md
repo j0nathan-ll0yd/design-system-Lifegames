@@ -1,5 +1,13 @@
 # @j0nathan-ll0yd/web
 
+## 3.2.0
+
+### Minor Changes
+
+- dc34fa3: Harden first-party cover rendering with exact URL sanitization, immutable local availability, atomic picture updates, and deterministic fallbacks.
+
+  Move raw book-cover fixtures to a reserved non-routable host so placeholder keys cannot look like missing public CloudFront objects.
+
 ## 3.1.0
 
 ### Minor Changes
