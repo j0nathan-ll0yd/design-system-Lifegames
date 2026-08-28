@@ -126,8 +126,8 @@ public extension DatastreamHomeData {
         standProgress: 0.917, standValue: "11/12",
         restingHR: 58,
         caffeineMg: 165, caffeineTarget: 400, cups: 2, lastBeverage: "Espresso",
-        // Gallery/preview fixture URL — not an API endpoint (exception: S27)
-        bookCoverURL: URL(string: "https://m.media-amazon.com/images/P/0135957052.01._SCLZZZZZZZ_SX200_.jpg"),
+        // Gallery/preview fixture URL — first-party CloudFront cover, not an API endpoint (exception: S27)
+        bookCoverURL: URL(string: "https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K.webp"),
         bookProgress: 0.68,
         latitude: 37.7955, longitude: -122.3937,
         placeName: "Blue Bottle Coffee",

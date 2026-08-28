@@ -116,7 +116,7 @@ public struct BookCoverTile: View {
 #if os(iOS)
     #Preview("Book Cover Tile — With Cover") {
         BookCoverTile(
-            coverURL: URL(string: "https://m.media-amazon.com/images/P/0135957052.01._SCLZZZZZZZ_SX200_.jpg"),
+            coverURL: URL(string: "https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K.webp"),
             progress: 0.68
         )
         .frame(width: 120, height: 160)
