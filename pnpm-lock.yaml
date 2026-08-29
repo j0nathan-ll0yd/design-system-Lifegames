@@ -19,8 +19,8 @@ importers:
         specifier: workspace:*
         version: link:packages/config
       '@j0nathan-ll0yd/estate-contracts':
-        specifier: 0.1.0
-        version: 0.1.0(typescript@5.9.3)
+        specifier: 0.2.0
+        version: 0.2.0(typescript@5.9.3)
       '@playwright/test':
         specifier: ^1.60.0
         version: 1.60.0
@@ -1827,8 +1827,8 @@ packages:
     resolution: {integrity: sha512-+Sg6GCR/wy1oSmQDFq4LQDAhm3ETKnorxN+y5nbLULOR3P0c14f2Wurzj3/xqPXtasLFfHd5iRFQ7AJt4KH2cw==}
     engines: {node: '>=8'}
 
-  '@j0nathan-ll0yd/estate-contracts@0.1.0':
-    resolution: {integrity: sha512-1XiFeTMsBkotrSF0nDypgXwahwd7EwTkW6kZ3b0wQRYyskzmlGbk58FzOkCOmFgSZ1kX6xYixx0dCj6tDQ0o4A==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/estate-contracts/0.1.0/23ec510bf03264854b0c8318bee366f08d518544}
+  '@j0nathan-ll0yd/estate-contracts@0.2.0':
+    resolution: {integrity: sha512-Nv7GuLoL/hPivbUtqKYPL1ywO7IYcqIglGaphmnNAQc9mCc5LAAP51Cs8zLEgZPGxfxYfDjNp4O8I1FcrT32zg==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/estate-contracts/0.2.0/ca11383f2515813d7750d4fad4aa42a8c6c01115}
     peerDependencies:
       typescript: 5.9.2 || 5.9.3 || 6.0.3
 
@@ -9369,7 +9369,7 @@ snapshots:
 
   '@istanbuljs/schema@0.1.6': {}
 
-  '@j0nathan-ll0yd/estate-contracts@0.1.0(typescript@5.9.3)':
+  '@j0nathan-ll0yd/estate-contracts@0.2.0(typescript@5.9.3)':
     dependencies:
       typescript: 5.9.3
 
