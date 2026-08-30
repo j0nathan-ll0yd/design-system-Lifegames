@@ -29,7 +29,7 @@
     "lint": "eslint \"scripts/**/*.{ts,mjs}\""
   },
   "dependencies": {
-    "@j0nathan-ll0yd/portal-contract": "^1.0.0",
+    "@j0nathan-ll0yd/portal-contract": "^2.0.0",
     "ajv": "~8.20.0",
     "ajv-formats": "~3.0.1"
   },

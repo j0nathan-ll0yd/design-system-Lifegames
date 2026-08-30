@@ -86,6 +86,34 @@ export function placeholderText(words: number): string {
   return result.join(' ')
 }
 
+const FNV_OFFSET_BASIS = 0x811c9dc5
+const FNV_PRIME = 0x01000193
+
+/** 32-bit FNV-1a over `input`, with `round` perturbing the offset basis. */
+function fnv1a(input: string, round: number): number {
+  let hash = (FNV_OFFSET_BASIS ^ round) >>> 0
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash ^ input.charCodeAt(i)) >>> 0
+    hash = Math.imul(hash, FNV_PRIME) >>> 0
+  }
+  return hash >>> 0
+}
+
+/**
+ * Deterministic 24-hex-character stand-in for the producer's image `contentVersion`
+ * (LP `IMAGE_VERSION_HEX_LENGTH = 24` — the leading hex of a SHA-256 content hash).
+ *
+ * Keyed on the entry's stable identity (a book asin, a review slug), never on image
+ * bytes we do not have, so `pnpm -F @j0nathan-ll0yd/fixtures generate` stays
+ * byte-reproducible. Three FNV-1a rounds give the 24 characters.
+ *
+ * Producer invariant this upholds: a null version means no optimized derivatives, so
+ * only entries whose optimized variant URLs are non-null carry a version.
+ */
+export function imageVersion(seed: string): string {
+  return [0, 1, 2].map((round) => fnv1a(seed, round).toString(16).padStart(8, '0')).join('')
+}
+
 export interface Last90DaysEntry {
   date: string
   count: number

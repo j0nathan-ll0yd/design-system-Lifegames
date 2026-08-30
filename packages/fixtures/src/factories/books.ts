@@ -23,6 +23,10 @@ export function createBook(overrides: Partial<BookEntry> = {}): BookEntry {
     isbn10: '1984820710',
     isbn13: null,
     pageCount: 432,
+    // Cover content version (LP #250). Null by default, which is what the producer
+    // emits when a cover has no optimized derivatives — it keeps this entry coherent
+    // with mainImageCard/mainImage*Avif/images all being null below.
+    mainImageVersion: null,
     mainImage: 'https://fixtures.invalid/images/books/example-tainted-cup.webp',
     mainImageThumb: 'https://fixtures.invalid/images/books/example-tainted-cup-thumb.webp',
     mainImageCard: null,

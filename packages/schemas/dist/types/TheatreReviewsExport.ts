@@ -14,6 +14,7 @@ export interface TheatreReviewsExport {
     rating: string | null;
     ratingNumeric: number | null;
     excerpt: string;
+    imageVersion: string | null;
     imageUrl: string | null;
     imageWidth: number | null;
     imageHeight: number | null;
