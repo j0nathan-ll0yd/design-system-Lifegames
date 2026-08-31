@@ -25,12 +25,12 @@ export const noDistance: WorkoutsExport = createWorkoutsFixture({workouts: [crea
 // non-null values (duration, energyBurned, distance), max-count array.
 export const full: WorkoutsExport = createWorkoutsFixture({
   workouts: [
-    createWorkout({activityType: 'Running', duration: 3600, energyBurned: 680, distance: 10500, source: "Jonathan's Apple Watch"}),
-    createWorkout({activityType: 'Cycling', duration: 5400, energyBurned: 520, distance: 25000, source: "Jonathan's Apple Watch"}),
-    createWorkout({activityType: 'Walking', duration: 2700, energyBurned: 185, distance: 3200, source: "Jonathan's Apple Watch"}),
-    createWorkout({activityType: 'Swimming', duration: 2400, energyBurned: 420, distance: 1800, source: "Jonathan's Apple Watch"}),
-    createWorkout({activityType: 'Strength Training', duration: 3000, energyBurned: 350, distance: 0, source: "Jonathan's Apple Watch"}),
-    createWorkout({activityType: 'Yoga', duration: 3600, energyBurned: 180, distance: 0, source: "Jonathan's Apple Watch"})
+    createWorkout({activityType: 'Running', duration: 3600, energyBurned: 680, distance: 10500, source: 'Apple Watch'}),
+    createWorkout({activityType: 'Cycling', duration: 5400, energyBurned: 520, distance: 25000, source: 'Apple Watch'}),
+    createWorkout({activityType: 'Walking', duration: 2700, energyBurned: 185, distance: 3200, source: 'Apple Watch'}),
+    createWorkout({activityType: 'Swimming', duration: 2400, energyBurned: 420, distance: 1800, source: 'Apple Watch'}),
+    createWorkout({activityType: 'Strength Training', duration: 3000, energyBurned: 350, distance: 0, source: 'Apple Watch'}),
+    createWorkout({activityType: 'Yoga', duration: 3600, energyBurned: 180, distance: 0, source: 'Apple Watch'})
   ]
 })
 
