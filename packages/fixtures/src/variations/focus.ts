@@ -1,5 +1,6 @@
 import type {FocusExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createFocusFixture} from '../factories/focus'
+import {isoTimestamp} from '../factories/helpers'
 
 export const focusVariations: Record<string, FocusExport> = {
   baseline: createFocusFixture({currentFocus: 'Work'}),
@@ -10,8 +11,9 @@ export const focusVariations: Record<string, FocusExport> = {
 
   personal: createFocusFixture({currentFocus: 'Personal'}),
 
-  // `full` intentionally equals `dnd` — FocusExport is a scalar single-field
-  // domain (generatedAt + currentFocus, both required non-nullable), so the
-  // maximally-populated case is the longest valid Focus Mode string.
-  full: createFocusFixture({currentFocus: 'Do Not Disturb'})
+  // `full` is `dnd` plus the optional `hidingSince` (portal-contract 2.x): the
+  // producer emits that key only while the current focus is a hiding mode, and
+  // 'Do Not Disturb' is one, so the maximally-populated case is a hiding mode that
+  // started before `generatedAt`.
+  full: createFocusFixture({currentFocus: 'Do Not Disturb', hidingSince: isoTimestamp(2)})
 }

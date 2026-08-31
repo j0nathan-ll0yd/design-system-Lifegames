@@ -30,7 +30,7 @@
     "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.{ts,tsx,js,jsx,mjs,cjs}\" \"scripts/**/*.{ts,mjs}\""
   },
   "dependencies": {
-    "@j0nathan-ll0yd/portal-contract": "^1.0.0",
+    "@j0nathan-ll0yd/portal-contract": "^2.0.0",
     "@j0nathan-ll0yd/schemas": "workspace:*",
     "@j0nathan-ll0yd/web": "workspace:*"
   },

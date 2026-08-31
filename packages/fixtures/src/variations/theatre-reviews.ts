@@ -1,6 +1,6 @@
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createReview, createTheatreReviewsFixture} from '../factories/theatre-reviews'
-import {isoDate} from '../factories/helpers'
+import {imageVersion, isoDate} from '../factories/helpers'
 
 export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
   baseline: createTheatreReviewsFixture(),
@@ -140,8 +140,8 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
   })(),
 
   // Maximally populated: max reviews, ALL nullable item fields set to non-null
-  // values (rating, ratingNumeric, imageUrl, imageWidth, imageHeight), all grades
-  // represented, longest realistic excerpts.
+  // values (rating, ratingNumeric, imageVersion, imageUrl, imageWidth, imageHeight),
+  // all grades represented, longest realistic excerpts.
   full: (() => {
     const reviews = [
       createReview({
@@ -258,10 +258,13 @@ export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
       })
     ]
     // full promises ALL nullable item fields non-null (the full-coverage walker
-    // enforces it): derive the optimized-image variants (LP #145) from each
-    // entry's imageUrl instead of hand-maintaining 3 URLs x 8 entries.
+    // enforces it): derive the optimized-image variants (LP #145) and the poster
+    // content version (LP #250) from each entry instead of hand-maintaining
+    // 4 values x 8 entries. Version and variants are set together, which is the
+    // producer's own invariant — a null version means no derivatives exist.
     const withImageVariants = (r: (typeof reviews)[number]): (typeof reviews)[number] => ({
       ...r,
+      imageVersion: r.imageUrl ? imageVersion(r.slug) : null,
       imageUrlAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '.avif') : null,
       imageUrlCard: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.jpg') : null,
       imageUrlCardAvif: r.imageUrl ? r.imageUrl.replace(/\.jpg$/, '-card.avif') : null

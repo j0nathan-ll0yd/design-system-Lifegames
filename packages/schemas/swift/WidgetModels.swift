@@ -239,7 +239,7 @@ struct Book: Codable {
     let finishedAt: String?
     let images, isbn10, isbn13, mainImage: String?
     let mainImageAvif, mainImageCard, mainImageCardAvif, mainImageThumb: String?
-    let mainImageThumbAvif, notes: String?
+    let mainImageThumbAvif, mainImageVersion, notes: String?
     let pageCount: Double?
     let publicationDate: String?
     let publishedYear, rating: Double?
@@ -287,6 +287,7 @@ extension Book {
         mainImageCardAvif: String?? = nil,
         mainImageThumb: String?? = nil,
         mainImageThumbAvif: String?? = nil,
+        mainImageVersion: String?? = nil,
         notes: String?? = nil,
         pageCount: Double?? = nil,
         publicationDate: String?? = nil,
@@ -318,6 +319,7 @@ extension Book {
             mainImageCardAvif: mainImageCardAvif ?? self.mainImageCardAvif,
             mainImageThumb: mainImageThumb ?? self.mainImageThumb,
             mainImageThumbAvif: mainImageThumbAvif ?? self.mainImageThumbAvif,
+            mainImageVersion: mainImageVersion ?? self.mainImageVersion,
             notes: notes ?? self.notes,
             pageCount: pageCount ?? self.pageCount,
             publicationDate: publicationDate ?? self.publicationDate,
@@ -350,6 +352,7 @@ extension Book {
 // MARK: - FocusExport
 struct FocusExport: Codable {
     let currentFocus, generatedAt: String
+    let hidingSince: String?
 }
 
 // MARK: FocusExport convenience initializers and mutators
@@ -372,11 +375,13 @@ extension FocusExport {
 
     func with(
         currentFocus: String? = nil,
-        generatedAt: String? = nil
+        generatedAt: String? = nil,
+        hidingSince: String?? = nil
     ) -> FocusExport {
         return FocusExport(
             currentFocus: currentFocus ?? self.currentFocus,
-            generatedAt: generatedAt ?? self.generatedAt
+            generatedAt: generatedAt ?? self.generatedAt,
+            hidingSince: hidingSince ?? self.hidingSince
         )
     }
 
@@ -1200,6 +1205,7 @@ struct Review: Codable {
     let author, excerpt: String
     let imageHeight: Double?
     let imageURL, imageURLAvif, imageURLCard, imageURLCardAvif: String?
+    let imageVersion: String?
     let imageWidth: Double?
     let publishedAt: String
     let rating: String?
@@ -1212,7 +1218,7 @@ struct Review: Codable {
         case imageURLAvif = "imageUrlAvif"
         case imageURLCard = "imageUrlCard"
         case imageURLCardAvif = "imageUrlCardAvif"
-        case imageWidth, publishedAt, rating, ratingNumeric, slug, title, url
+        case imageVersion, imageWidth, publishedAt, rating, ratingNumeric, slug, title, url
     }
 }
 
@@ -1242,6 +1248,7 @@ extension Review {
         imageURLAvif: String?? = nil,
         imageURLCard: String?? = nil,
         imageURLCardAvif: String?? = nil,
+        imageVersion: String?? = nil,
         imageWidth: Double?? = nil,
         publishedAt: String? = nil,
         rating: String?? = nil,
@@ -1258,6 +1265,7 @@ extension Review {
             imageURLAvif: imageURLAvif ?? self.imageURLAvif,
             imageURLCard: imageURLCard ?? self.imageURLCard,
             imageURLCardAvif: imageURLCardAvif ?? self.imageURLCardAvif,
+            imageVersion: imageVersion ?? self.imageVersion,
             imageWidth: imageWidth ?? self.imageWidth,
             publishedAt: publishedAt ?? self.publishedAt,
             rating: rating ?? self.rating,

@@ -1,6 +1,6 @@
 import type {BooksExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createBook, createBooksFixture} from '../factories/books'
-import {placeholderText} from '../factories/helpers'
+import {imageVersion, placeholderText} from '../factories/helpers'
 
 /** Baseline: default 5-book fixture */
 export const baseline: BooksExport = createBooksFixture()
@@ -125,8 +125,8 @@ export const allFields: BooksExport = createBooksFixture({
 
 // Maximally populated: 6 books with ALL nullable fields set to non-null values
 // (series, seriesNumber, seriesTotal, description, publicationDate, publishedYear,
-// isbn10, isbn13, pageCount, mainImage, mainImageThumb, mainImageCard,
-// mainImageAvif, mainImageThumbAvif, mainImageCardAvif, images, averageRating,
+// isbn10, isbn13, pageCount, mainImageVersion, mainImage, mainImageThumb,
+// mainImageCard, mainImageAvif, mainImageThumbAvif, mainImageCardAvif, images, averageRating,
 // category, status, currentPage, totalPages, rating, notes, finishedAt, startedAt).
 export const full: BooksExport = createBooksFixture({
   books: [
@@ -143,6 +143,7 @@ export const full: BooksExport = createBooksFixture({
       isbn10: '1984820710',
       isbn13: '9781984820716',
       pageCount: 432,
+      mainImageVersion: imageVersion('1984820710'),
       mainImage: 'https://fixtures.invalid/images/books/example-tainted-cup.webp',
       mainImageThumb: 'https://fixtures.invalid/images/books/example-tainted-cup-thumb.webp',
       mainImageCard: 'https://fixtures.invalid/images/books/example-tainted-cup-card.webp',
@@ -173,6 +174,7 @@ export const full: BooksExport = createBooksFixture({
       isbn10: '0593723848',
       isbn13: '9780593723845',
       pageCount: 480,
+      mainImageVersion: imageVersion('0593723848'),
       mainImage: 'https://fixtures.invalid/images/books/example-drop-of-corruption.webp',
       mainImageThumb: 'https://fixtures.invalid/images/books/example-drop-of-corruption-thumb.webp',
       mainImageCard: 'https://fixtures.invalid/images/books/example-drop-of-corruption-card.webp',
@@ -203,6 +205,7 @@ export const full: BooksExport = createBooksFixture({
       isbn10: '0525573844',
       isbn13: '9780525573845',
       pageCount: 512,
+      mainImageVersion: imageVersion('0525573844'),
       mainImage: 'https://fixtures.invalid/images/books/example-foundryside.webp',
       mainImageThumb: 'https://fixtures.invalid/images/books/example-foundryside-thumb.webp',
       mainImageCard: 'https://fixtures.invalid/images/books/example-foundryside-card.webp',
@@ -233,6 +236,7 @@ export const full: BooksExport = createBooksFixture({
       isbn10: '0593723813',
       isbn13: '9780593723814',
       pageCount: 496,
+      mainImageVersion: imageVersion('B07QVH2Q2K'),
       mainImage: 'https://fixtures.invalid/images/books/example-shorefall.webp',
       mainImageThumb: 'https://fixtures.invalid/images/books/example-shorefall-thumb.webp',
       mainImageCard: 'https://fixtures.invalid/images/books/example-shorefall-card.webp',
@@ -263,6 +267,7 @@ export const full: BooksExport = createBooksFixture({
       isbn10: '0593723856',
       isbn13: '9780593723857',
       pageCount: 307,
+      mainImageVersion: imageVersion('B0FBRJY116'),
       mainImage: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy.webp',
       mainImageThumb: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy-thumb.webp',
       mainImageCard: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy-card.webp',
@@ -293,6 +298,7 @@ export const full: BooksExport = createBooksFixture({
       isbn10: '0596517742',
       isbn13: '9780596517748',
       pageCount: 176,
+      mainImageVersion: imageVersion('0596517742'),
       mainImage: 'https://fixtures.invalid/images/books/example-js-good-parts.webp',
       mainImageThumb: 'https://fixtures.invalid/images/books/example-js-good-parts-thumb.webp',
       mainImageCard: 'https://fixtures.invalid/images/books/example-js-good-parts-card.webp',

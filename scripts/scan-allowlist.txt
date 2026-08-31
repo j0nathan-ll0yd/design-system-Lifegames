@@ -196,6 +196,9 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/heavy-pandas-tickle.md:marker:j0nathan-ll0yd
 .changeset/quiet-books-shed-covers.md:marker:j0nathan-ll0yd
 .changeset/harden-cover-render-chain.md:marker:j0nathan-ll0yd
+.changeset/portal-contract-2x-schemas.md:marker:j0nathan-ll0yd
+.changeset/portal-contract-2x-fixtures.md:marker:j0nathan-ll0yd
+.changeset/portal-contract-2x-web.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd

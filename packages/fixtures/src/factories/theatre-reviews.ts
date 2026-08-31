@@ -13,6 +13,9 @@ export function createReview(overrides?: Partial<TheatreReviewEntry>): TheatreRe
     rating: 'A',
     ratingNumeric: 4.0,
     excerpt: 'A luminous revival that honors the original while finding fresh emotional resonance.',
+    // Poster content version (LP #250). The producer emits null exactly when the
+    // poster has no optimized derivatives, so this tracks the three variants below.
+    imageVersion: null,
     imageUrl: 'https://coasttocoastreviews.com/images/the-glass-menagerie.jpg',
     imageWidth: 800,
     imageHeight: 450,
