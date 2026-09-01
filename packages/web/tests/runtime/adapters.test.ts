@@ -3,6 +3,8 @@ import {adaptArticles, adaptBooks, adaptGithubEvents, adaptHealth, adaptSleep, a
 import {CLOUDFRONT_BASE, HYDRATION, STATUS_LABELS} from '../../src/runtime/constants'
 import type {ArticlesExport, BooksExport, GithubEventsExport, HealthExport, SleepExport, WorkoutsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
+// covers: widget-contract#A backend export payload adapts into widget Props without losing or inventing a field
+
 // ── Fixture factories ─────────────────────────────────────────────
 
 function makeHealth(overrides: Partial<HealthExport['quantities']> = {}): HealthExport {

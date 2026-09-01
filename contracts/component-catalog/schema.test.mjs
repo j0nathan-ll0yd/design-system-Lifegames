@@ -78,6 +78,7 @@ function nestedSchema(levels) {
 // Conformance vectors
 // ─────────────────────────────────────────────────────────────────────────────
 
+// covers: widget-contract#The component-contract catalog is generated from source, never hand-authored
 test('conformance: the vectors match the sha256 sidecar', () => {
   assert.deepEqual(assertVectorIntegrity(vectorBytes, readFileSync(SIDECAR_PATH, 'utf8')), [])
 })

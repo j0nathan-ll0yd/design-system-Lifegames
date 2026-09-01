@@ -465,3 +465,18 @@ contracts/component-catalog/generate.mjs:marker:j0nathan-ll0yd
 contracts/component-catalog/catalog/bookshelf.contract.json:marker:j0nathan-ll0yd
 contracts/component-catalog/catalog/theatre-reviews.contract.json:marker:j0nathan-ll0yd
 contracts/component-catalog/component-catalog-conformance.json:marker:j0nathan-ll0yd
+
+# The openspec tree and its covers gate (atlas decision 0102 ranked move 5). Same
+# rationale as every scope block above, twice over. The GATE imports the rule from
+# `@j0nathan-ll0yd/estate-contracts/openspec-covers` and its header explains the
+# exact pin and the sidecar layout, so the mandated GitHub Packages namespace is
+# unavoidable in both the import and the prose that justifies it. The CAPABILITY
+# names the packages its requirements are ABOUT — a Props type must extend a type
+# from `@j0nathan-ll0yd/schemas` (the W16 rule) and a widget may import
+# `@j0nathan-ll0yd/tokens` (the P3 allowed-import case) — and a requirement that
+# elided the package name would not be checkable against the lint rule it restates.
+# A public GitHub handle used as a distribution scope, not personal data.
+openspec/README.md:marker:j0nathan-ll0yd
+openspec/specs/widget-contract/spec.md:marker:j0nathan-ll0yd
+scripts/openspec-covers.mjs:marker:j0nathan-ll0yd
+scripts/openspec-covers.test.mjs:marker:j0nathan-ll0yd

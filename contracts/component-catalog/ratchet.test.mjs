@@ -65,6 +65,7 @@ const baselineOf = ({behavioralGap = [], a11yGap = []} = {}) => ({behavioralGap:
 
 const matching = (failures, needle) => failures.filter((message) => message.includes(needle))
 
+// covers: widget-contract#A widget conformance gap is grandfathered by identity and the grandfathered set cannot grow unjustified
 test('a NEW widget with neither axis covered FAILS on both, and names the widget', () => {
   const {failures, prunable} = evaluateRatchet({entries: [uncovered('brand-new-widget')], baseline: baselineOf()})
   assert.equal(failures.length, 2, `expected one failure per axis, got ${JSON.stringify(failures)}`)

@@ -3,6 +3,7 @@ import SwiftUI
 import Testing
 @testable import LifegamesWidgets
 
+// covers: widget-contract#Every manifest widget has a fixture on disk and instantiates without crashing
 @Suite("Render Smoke Tests — All manifest widgets instantiate without crash")
 struct RenderSmokeTests {
     private struct ManifestEntry: Decodable {

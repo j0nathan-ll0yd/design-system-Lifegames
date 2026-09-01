@@ -64,6 +64,21 @@ step "schemas freshness"       pnpm check:schemas-freshness
 # locally — run `git fetch origin main` if it says it cannot resolve a base.
 step "component-catalog gate"  env CATALOG_BASELINE_FROZEN=1 pnpm check:component-catalog
 
+# openspec-covers (atlas decision 0102 ranked move 5). Reconciles every
+# `### Requirement:` in openspec/specs/** against the `// covers:` tethers in this
+# repo's test corpus, both directions, blocking. Offline apart from the install
+# that already happened, and ~0.3s, so it sits beside the catalog gate.
+#
+# It ALSO runs in the CI governance-gates step, which is where it BINDS — this line
+# is the CI-parity tier (B9): a tether someone else broke should block locally too.
+#
+# Three requirements are grandfathered by identity in openspec/covers-baseline.json:
+# they describe rules this repo enforces with a blocking gate that has no
+# known-answer test. Re-record with `pnpm covers:update-baseline`; never hand-edit an
+# id. A baseline id naming no live requirement FAILS, and a graduated requirement's
+# stale id is reported prunable and must be pruned in the same change.
+step "openspec-covers gate"    pnpm check:covers
+
 # C147 — published-package payload drift: a published package's payload changed
 # but nobody bumped that package's version, so `changeset publish` silently skips
 # it and consumers never receive the change. Content-based: it compares the

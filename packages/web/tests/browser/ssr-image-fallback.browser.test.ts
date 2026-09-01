@@ -12,6 +12,7 @@ import {initImageFallbacks, installImageFallbacks, PLACEHOLDER_IMAGE_SRC} from '
 // produces, and every case runs ONLY the load-time init. updateBookshelf and
 // initBookshelf are deliberately never called: this suite fails if the load-time
 // init is absent, no matter what the updaters do.
+// covers: widget-contract#Every component that server-renders a data-fallback cover bundles the load-time initializer
 const DEAD = '/__image-failure/404'
 
 const roots: HTMLElement[] = []

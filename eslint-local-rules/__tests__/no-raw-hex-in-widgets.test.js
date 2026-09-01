@@ -12,6 +12,7 @@ const outsideFile = '/tmp/elsewhere/Foo.ts'
 
 const tester = new RuleTester({languageOptions: {ecmaVersion: 2020, sourceType: 'module'}})
 
+// covers: widget-contract#A web widget source holds no raw hex outside a token fallback argument
 tester.run('no-raw-hex-in-widgets', rule, {
   valid: [
     // File outside scope — no warns even with raw hex
