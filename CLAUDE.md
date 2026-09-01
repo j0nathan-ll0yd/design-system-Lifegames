@@ -78,9 +78,16 @@ hand-write a prop shape. Sources: props ← the generated widget schema in
 `packages/schemas/generated/widgets/`, states ← fixture + Storybook-snapshot filenames, a11y ←
 `.accessibilityLabel(` in the Swift view. The canonical widget id is the generated schema FILENAME,
 paired via that schema's `title`; an unmappable Swift view throws rather than being paired by
-guesswork. Gaps are written as `null`, never faked as a pass. Gate:
-`pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
-idempotence) — wired into `.husky/pre-push`; unit tests run under `pnpm test:scripts`. Bumping
+guesswork. Gaps are written as `null`, never faked as a pass. **Conformance ratchet:**
+`conformance-baseline.json` grandfathers the 31 widgets with no behavioral test and the 29 with no
+a11y label; a null field whose id is NOT in the matching list FAILS, so a new widget with neither and
+a regression that drops either both red. A baseline id naming no widget also FAILS; a graduated
+widget's stale id is reported PRUNABLE and must be pruned in the same PR. Missing or unparseable
+baseline is a hard RED. Re-record with `node contracts/component-catalog/check.mjs
+--update-baseline` — never hand-edit an id. Gate: `pnpm check:component-catalog` (grammar
+conformance + sidecar digest, validity, completeness, conformance ratchet, idempotence) — wired into
+BOTH the CI `governance-gates` step (required status context) and `.husky/pre-push`; unit tests run
+under `pnpm test:scripts`. Bumping
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
 change. See `contracts/component-catalog/README.md`.
 

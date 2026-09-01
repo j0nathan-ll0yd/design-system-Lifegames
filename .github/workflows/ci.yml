@@ -475,6 +475,15 @@ jobs:
           node scripts/check-promotion.mjs --check
           # P2 widget compliance (registry ↔ Astro/fixture/manifest)
           node scripts/widget-compliance.mjs
+          # Component-contract catalog + conformance ratchet (atlas decision 0060;
+          # Phoenix eval GAP 2). Five checks: grammar conformance, entry validity,
+          # completeness, the CONFORMANCE RATCHET, and idempotence. It ran ONLY in
+          # .husky/pre-push, so DS_SKIP_PREPUSH=1 was enough to merge a hand-edited
+          # contract, an unregenerated source change, or a new widget carrying
+          # neither a behavioral test nor an a11y label. governance-gates is a
+          # required status context; a gate that cannot block is not a gate.
+          # Offline and ~0.4s, so it costs this step nothing.
+          pnpm check:component-catalog
           # SSR image-fallback gate: every .astro that server-renders a
           # data-fallback cover must bundle the load-time initImageFallbacks()
           # call. Mirrors the digest-conformance precedent above
