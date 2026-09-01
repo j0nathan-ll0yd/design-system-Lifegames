@@ -40,12 +40,20 @@ step "lint"                    pnpm lint
 step "typecheck"               pnpm typecheck
 step "schemas freshness"       pnpm check:schemas-freshness
 
-# Component-contract catalog (atlas decision 0060). Offline, zero-dep and fast, so
-# it runs before the network-dependent drift gate. Four checks: grammar conformance
-# vectors + sidecar digest, entry validity, completeness, and IDEMPOTENCE — the
-# catalog is regenerated into a temp dir and diffed against what is committed, so a
-# hand-edited contract or an unregenerated source change reds here rather than
-# shipping a claim that reads as verified. See contracts/component-catalog/README.md.
+# Component-contract catalog (atlas decision 0060). Offline and fast, so it runs
+# before the network-dependent drift gate. Five checks: grammar conformance vectors
+# + sidecar digest, entry validity, completeness, the CONFORMANCE RATCHET (a widget
+# with a null behavioral test or a null a11y label must be grandfathered in
+# conformance-baseline.json, so a new widget with neither and a regression that
+# drops either both red), and IDEMPOTENCE — the catalog is regenerated into a temp
+# dir and diffed against what is committed, so a hand-edited contract or an
+# unregenerated source change reds here rather than shipping a claim that reads as
+# verified. See contracts/component-catalog/README.md.
+#
+# It ALSO runs in the CI governance-gates step (Phoenix eval GAP 2). This line stays
+# because pre-push is DS's declared CI-parity tier and a drift someone else landed
+# should block locally too (B9) — but CI is now where it BINDS, since
+# DS_SKIP_PREPUSH=1 skips everything below.
 step "component-catalog gate"  pnpm check:component-catalog
 
 # C147 — published-package payload drift: a published package's payload changed

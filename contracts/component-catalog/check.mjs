@@ -2,23 +2,32 @@
 /**
  * THE GATE.
  *
- *   node contracts/component-catalog/check.mjs [--check]
+ *   node contracts/component-catalog/check.mjs [--check | --update-baseline]
  *
- * Four checks, in cost order. Each one is a distinct failure the others cannot see:
+ * Five checks, in cost order. Each one is a distinct failure the others cannot see:
  *
  *   1. GRAMMAR CONFORMANCE — `runner.mjs`: the sha256 sidecar matches the vectors, the grammar's
  *      CATALOG_SPEC_VERSION matches the vectors' specVersion, every vector holds. Without this the
- *      other three checks are running an unverified validator.
+ *      other four checks are running an unverified validator.
  *   2. VALIDITY — every `catalog/*.contract.json` satisfies the grammar.
  *   3. COMPLETENESS — every widget in the UNION of the Swift and web widget trees has exactly one
  *      entry, no entry exists outside that union, and every non-null ref resolves to a file that
  *      exists. A contract naming a deleted view is worse than a missing contract: it reads as covered.
- *   4. IDEMPOTENCE — regenerate into a temp directory and compare bytes against what is committed.
+ *   4. CONFORMANCE RATCHET — `ratchet.mjs`: a widget with a null `conformance.behavioralTest` or a
+ *      null `a11y.voiceOverLabel` must be grandfathered in `conformance-baseline.json`. Checks 1–3
+ *      prove the catalog WRITES its gaps; this one is what stops the pile from growing. It runs
+ *      after validity so it never reads an entry that failed the grammar, and before idempotence
+ *      because it is far cheaper.
+ *   5. IDEMPOTENCE — regenerate into a temp directory and compare bytes against what is committed.
  *      This is the check that makes the catalog a SPEC rather than a document: a hand-edit to a
  *      committed contract, or a source change nobody regenerated for, reds here.
  *
  * `--check` is accepted for parity with the sibling gates (`check-promotion.mjs --check`,
- * `check-swift-widget-purity.mjs --check`) and is a no-op: this gate never writes.
+ * `check-swift-widget-purity.mjs --check`) and is a no-op: in check mode this gate never writes.
+ *
+ * `--update-baseline` is the ONE writing mode: it re-records `conformance-baseline.json` from the
+ * current catalog. It runs checks 1–3 first and refuses to write if any of them fails, because a
+ * baseline recorded from an invalid or incomplete catalog grandfathers garbage.
  */
 
 import {existsSync, mkdtempSync, readFileSync, rmSync} from 'node:fs'
@@ -28,17 +37,28 @@ import {basename, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {CATALOG_DIR, catalogWidgets, generateAll, REPO_ROOT} from './generate.mjs'
+import {BASELINE_REL, BaselineError, evaluateRatchet, readBaseline, writeBaseline} from './ratchet.mjs'
 import {runFromDisk} from './runner.mjs'
 import {CATALOG_SPEC_VERSION, validateEntry} from './schema.mjs'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 const SUFFIX = '.contract.json'
+const USAGE = 'Usage: node contracts/component-catalog/check.mjs [--check | --update-baseline]'
 
+let updateBaseline = false
 for (const arg of process.argv.slice(2)) {
-  if (arg !== '--check') {
-    process.stderr.write(`[component-catalog] unknown argument \`${arg}\`. Usage: node contracts/component-catalog/check.mjs [--check]\n`)
+  if (arg === '--update-baseline') {
+    updateBaseline = true
+  } else if (arg !== '--check') {
+    process.stderr.write(`[component-catalog] unknown argument \`${arg}\`. ${USAGE}\n`)
     process.exit(2)
   }
+}
+
+/** Fatal, RED, immediately. A baseline nobody can read must never resolve to "nothing to report". */
+function abortRed(message) {
+  process.stderr.write(`\n[component-catalog] ABORT RED — ${message}\n`)
+  process.exit(1)
 }
 
 const results = []
@@ -139,7 +159,57 @@ for (const [widget, entry] of [...entries].sort()) {
 }
 record(`completeness (${union.length} widgets in the Swift/web union, ${entries.size} entries)`, completenessFailures)
 
-// ── 4. Idempotence ───────────────────────────────────────────────────────────
+const catalogEntries = [...entries.values()]
+
+// ── `--update-baseline` ──────────────────────────────────────────────────────
+//
+// The only writing path. It re-records the baseline from the catalog on disk — but ONLY once checks
+// 1-3 are green. Recording from an invalid catalog would grandfather ids the grammar rejects; from
+// an incomplete one it would silently omit a widget whose entry is missing, which the ratchet would
+// then never ask about again.
+if (updateBaseline) {
+  const blocking = results.filter(({failures}) => failures.length > 0)
+  if (blocking.length > 0) {
+    for (const {name, failures} of blocking) {
+      process.stderr.write(` FAIL  ${name}\n`)
+      for (const failure of failures) {
+        process.stderr.write(`        x ${failure}\n`)
+      }
+    }
+    abortRed('refusing to record a baseline from a catalog that fails grammar, validity or completeness. Fix the above, then re-run.')
+  }
+  const {behavioralGap, a11yGap} = await writeBaseline(catalogEntries)
+  process.stdout.write(
+    `[component-catalog] Wrote ${BASELINE_REL} grandfathering ${behavioralGap.length} widget(s) with no behavioral ` +
+      `conformance test and ${a11yGap.length} with no recorded a11y label, out of ${catalogEntries.length} total.\n`
+  )
+  process.exit(0)
+}
+
+// ── 4. Conformance ratchet ───────────────────────────────────────────────────
+//
+// Checks 1-3 prove the catalog WRITES its conformance gaps. That made the debt countable and
+// permanent. This check is the ratchet: a null field is tolerated only while its id sits in the
+// committed baseline, so a NEW widget with no coverage and a REGRESSION that drops coverage both
+// red, while the 31/29 already-known gaps stay quiet until someone graduates them.
+const ratchetFailures = []
+let prunable = []
+let baselineSizes = '0/0'
+try {
+  const baseline = readBaseline()
+  baselineSizes = `${baseline.behavioralGap.size}/${baseline.a11yGap.size}`
+  const outcome = evaluateRatchet({entries: catalogEntries, baseline})
+  ratchetFailures.push(...outcome.failures)
+  prunable = outcome.prunable
+} catch (error) {
+  if (error instanceof BaselineError) {
+    abortRed(error.message)
+  }
+  throw error
+}
+record(`conformance ratchet (${baselineSizes} grandfathered behavioral/a11y gaps in ${BASELINE_REL})`, ratchetFailures)
+
+// ── 5. Idempotence ───────────────────────────────────────────────────────────
 const idempotenceFailures = []
 const scratch = mkdtempSync(join(tmpdir(), 'component-catalog-'))
 try {
@@ -189,6 +259,13 @@ for (const {name, failures} of results) {
   for (const failure of failures) {
     process.stdout.write(`        x ${failure}\n`)
   }
+}
+
+// Non-blocking on its own: a field went from null to populated, so its grandfathering is now dead
+// weight. Blocking it would red the very PR that closes a gap. Reporting it is what makes "prune in
+// the same PR" an instruction someone actually receives.
+for (const notice of prunable) {
+  process.stdout.write(`  note  ${notice}\n`)
 }
 
 if (failed.length > 0) {
