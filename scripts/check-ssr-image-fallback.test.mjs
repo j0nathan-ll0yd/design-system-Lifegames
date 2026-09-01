@@ -46,6 +46,7 @@ function ssrFallbackComponents() {
   return walk(WEB_SRC).filter((file) => /data-fallback\s*=/.test(readFileSync(file, 'utf8')))
 }
 
+// covers: widget-contract#Every component that server-renders a data-fallback cover bundles the load-time initializer
 test('the runtime exports a load-time init for server-rendered covers', () => {
   const source = readFileSync(path.join(WEB_SRC, 'runtime/image-utils.ts'), 'utf8')
   assert.match(source, new RegExp(`export function ${INIT_FN}\\b`), `${INIT_FN} is the SSR entry point; it must stay exported`)

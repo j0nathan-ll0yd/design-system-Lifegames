@@ -502,6 +502,24 @@ jobs:
           # `pnpm test:scripts`, this suite would run in .husky/pre-push and no workflow, so
           # DS_SKIP_PREPUSH=1 would be enough to merge a broken ratchet. ~2s.
           node --test contracts/component-catalog/ratchet.test.mjs
+          # openspec-covers (atlas decision 0102 ranked move 5). design-system had 0
+          # capabilities and no openspec/ tree at all; it now has one — widget-contract —
+          # and this is the gate that keeps it honest in BOTH directions: a requirement
+          # that loses its covering test reds, and a `// covers:` tether naming no
+          # requirement reds. The rule is not in this repo: it resolves from the
+          # exact-pinned @j0nathan-ll0yd/estate-contracts, and the wrapper verifies the
+          # shipped bytes against the sidecar shipped beside them before it runs. No
+          # `|| true` — blocking is the point, and governance-gates is the required
+          # status context, so this is where it binds.
+          pnpm check:covers
+          # The gate's own known-answer suite, including the CAN-FAIL PROOF: dropping the
+          # tether on a real requirement must block, a stale baseline id must fail, and an
+          # unparseable baseline must throw rather than degrade to an empty set that
+          # passes. Same argument as ratchet.test.mjs above and check-package-drift.test.mjs
+          # in package-version-drift: reachable only through `pnpm test:scripts`, it would
+          # run in .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to
+          # merge a gate that no longer gates. ~0.3s.
+          node --test scripts/openspec-covers.test.mjs
           # SSR image-fallback gate: every .astro that server-renders a
           # data-fallback cover must bundle the load-time initImageFallbacks()
           # call. Mirrors the digest-conformance precedent above

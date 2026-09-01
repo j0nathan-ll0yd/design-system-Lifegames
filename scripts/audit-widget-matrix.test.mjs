@@ -3,6 +3,7 @@ import {describe, test} from 'node:test'
 import assert from 'node:assert/strict'
 import {buildMatrix, canonicalize, sortFindings} from './audit-widget-matrix.mjs'
 
+// covers: widget-contract#The widget registries reconcile with each other and with the filesystem
 describe('canonicalize', () => {
   test('strips a trailing V<digits> suffix', () => {
     assert.equal(canonicalize('PlaceLeaderboardV3'), 'PlaceLeaderboard')

@@ -21,6 +21,8 @@
     "check:schemas-freshness": "bash packages/schemas/scripts/check-freshness.sh",
     "check:package-drift": "node scripts/check-package-drift.mjs",
     "check:component-catalog": "node contracts/component-catalog/check.mjs",
+    "check:covers": "node scripts/openspec-covers.mjs --blocking",
+    "covers:update-baseline": "node scripts/openspec-covers.mjs --update-baseline",
     "baseline:age": "node scripts/check-baseline-age.mjs",
     "widget:inventory": "node scripts/widget-inventory.mjs",
     "dtcg:validate": "node scripts/validate-dtcg.mjs",

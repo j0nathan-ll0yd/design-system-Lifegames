@@ -98,6 +98,34 @@ conformance ratchet, baseline freeze, idempotence) — wired into BOTH the CI `g
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
 change. See `contracts/component-catalog/README.md`.
 
+## OpenSpec capabilities (`openspec/`)
+
+Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
+`openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
+today: `widget-contract`** (13 requirements / 32 scenarios), which restates the widget contract already
+enforced by `governance-gates`, `test-swift`, `contract-ts` and `lint-web` — P3/F-015 purity, the
+fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
+and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
+promotion bar. **Describe what is already enforced**; a requirement with no gate behind it is a wish
+with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
+`@j0nathan-ll0yd/estate-contracts@0.6.0`; `scripts/openspec-covers.mjs` is a wrapper that verifies the
+shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins
+`EXPECTED_COVERS_SPEC_VERSION` (4). **Binding:** a line-leading `// covers:` comment naming the
+capability, then `#`, then the requirement name verbatim; a trailing comment is a reported near-miss,
+not a tether. There are deliberately **no `Verified by` citations** — a hand-typed line number drifts
+and the tether already holds the file and the line. **Scan surface:** the contract's three default
+languages plus `**/*.test.mjs` and `**/*.test.js` (this repo's `node --test` and ESLint `RuleTester`
+suites), passed through the documented `languages` option — a scan-surface choice, not a rule change,
+with disjointness asserted at startup. **Baseline:** `openspec/covers-baseline.json` grandfathers the
+3 requirements whose enforcing gate has no known-answer test (`check-swift-widget-purity.mjs`,
+`check-watch-exclusions.mjs`, `check-promotion.mjs`). Only `uncovered-requirement` is eligible; every
+other finding type blocks unconditionally; a baseline id naming no live requirement FAILS; a graduated
+id is reported PRUNABLE and must be pruned in the same PR; an unparseable baseline is a hard RED; an
+absent one grandfathers nothing (stricter, never a pass). Re-record with `pnpm covers:update-baseline`
+— never hand-edit an id. Gate: `pnpm check:covers` — wired into BOTH the CI `governance-gates` step
+(required status context) and `.husky/pre-push`; `scripts/openspec-covers.test.mjs` also runs directly
+in `governance-gates` as the can-fail proof. See `openspec/README.md`.
+
 ## lp-audit (Audit System — D domain)
 
 This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
