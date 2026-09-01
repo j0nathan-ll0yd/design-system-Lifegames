@@ -15,13 +15,31 @@
  */
 
 import assert from 'node:assert/strict'
-import {mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
-import {join} from 'node:path'
+import {dirname, join} from 'node:path'
 import test from 'node:test'
 
 import {catalogWidgets, REPO_ROOT} from './generate.mjs'
-import {AXES, BASELINE_PATH, BaselineError, evaluateRatchet, gapsFromEntries, readBaseline, writeBaseline} from './ratchet.mjs'
+import {
+  AXES,
+  BASELINE_PATH,
+  BASELINE_REL,
+  BaselineError,
+  collectRaises,
+  evaluateFreeze,
+  evaluateRatchet,
+  FREEZE_ENV,
+  FreezeError,
+  gapsFromEntries,
+  git,
+  isFrozen,
+  parseRaiseValue,
+  RAISE_KEY,
+  readBaseline,
+  runFreezeCheck,
+  writeBaseline
+} from './ratchet.mjs'
 
 const scratch = () => mkdtempSync(join(tmpdir(), 'conformance-ratchet-test-'))
 
@@ -212,4 +230,307 @@ test('the real catalog passes the ratchet, and reds the moment one widget loses 
   const {failures} = evaluateRatchet({entries: mutant, baseline})
   assert.equal(failures.length, 1)
   assert.match(failures[0], new RegExp(`^${graduated.widget}: no behavioral conformance test`))
+})
+
+// ── THE FREEZE ───────────────────────────────────────────────────────────────
+//
+// The three arms above all read the CATALOG against the baseline, so every one of them is satisfied
+// by whatever the baseline happens to list. That was the hole (atlas decision 0102 move 1b): add an
+// untested widget, run `--update-baseline`, and the new gap is absorbed into the grandfathering with
+// every check green. These tests hold the fourth arm to the three answers that matter — an absorb
+// REDS, a genuine closure PASSES, and a named justified raise PASSES — and they drive it through a
+// REAL throwaway git repository rather than a stub, because the arm's whole job is reading a prior
+// revision out of git and half of what can go wrong lives in that read.
+
+/**
+ * A throwaway repository with a `main` branch, isolated from the user's hooks and signing config.
+ *
+ * Driven through the ratchet's OWN `git()` rather than a private `spawnSync`, which makes these
+ * tests the exercise for its `GIT_DIR` stripping: git exports `GIT_DIR` to every hook it runs, and
+ * `pnpm test:scripts` runs from `.husky/pre-push`, so an unstripped helper silently operates on the
+ * real repository here no matter what `cwd` says. That is exactly how this suite first went red.
+ */
+const gitRepo = () => {
+  const dir = mkdtempSync(join(tmpdir(), 'conformance-freeze-test-'))
+  const run = (...args) => {
+    const result = git(args, dir)
+    assert.ok(result.ok, `git ${args.join(' ')} failed — ${result.stderr}`)
+    return result.stdout
+  }
+  run('init', '--quiet', '--initial-branch=main')
+  // INTERLOCK, before anything destructive. These tests commit, branch and `branch -D`, so a helper
+  // that ever addressed the wrong repository would rewrite a real one — which is precisely what
+  // happened before `git()` stripped GIT_DIR. Prove ownership first: the git directory this repo
+  // resolves to must live under the temp directory we just made, or nothing else runs.
+  const owned = run('rev-parse', '--absolute-git-dir')
+  assert.ok(owned.startsWith(realpathSync(dir)), `fixture resolved to ${owned}, which is outside its own temp dir ${dir}`)
+  run('config', 'user.email', 'gate@example.invalid')
+  run('config', 'user.name', 'Conformance Gate Test')
+  // A globally configured hooks path (husky) or commit signing would make these commits fail for
+  // reasons that have nothing to do with the ratchet.
+  run('config', 'core.hooksPath', join(dir, 'no-hooks'))
+  run('config', 'commit.gpgsign', 'false')
+  run('commit', '--quiet', '--allow-empty', '-m', 'root')
+  mkdirSync(dirname(join(dir, BASELINE_REL)), {recursive: true})
+  return {dir, run}
+}
+
+/**
+ * Record a baseline from `entries` through the REAL writer and commit it. Using `writeBaseline` and
+ * not a hand-written JSON literal is the point of these tests: the absorb they have to catch is
+ * exactly what `check.mjs --update-baseline` writes.
+ */
+const commitBaseline = async ({dir, run}, entries, message) => {
+  await writeBaseline(entries, join(dir, BASELINE_REL))
+  run('add', BASELINE_REL)
+  run('commit', '--quiet', '-m', message)
+  return run('rev-parse', 'HEAD')
+}
+
+/** The freeze as `check.mjs` runs it, against a throwaway repo, with an env that leaks nothing. */
+const freezeIn = ({dir}, env = {}) => runFreezeCheck({baseline: readBaseline(join(dir, BASELINE_REL)), env: {[FREEZE_ENV.frozen]: '1', ...env}, cwd: dir})
+
+const withRepo = async (body) => {
+  const repo = gitRepo()
+  try {
+    await body(repo)
+  } finally {
+    rmSync(repo.dir, {recursive: true, force: true})
+  }
+}
+
+/** The state the real repo is in: two widgets carrying debt, one covered. */
+const BASE_CATALOG = [uncovered('alpha'), uncovered('beta'), covered('gamma')]
+
+test('PROOF OF FAIL — `--update-baseline` absorbing a NEW widget REDS while frozen', async () => {
+  await withRepo(async (repo) => {
+    const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+
+    // The exact attack: a new widget lands with neither axis covered, and the author silences check 4
+    // by re-recording. Check 4 goes green — the id it complained about is now grandfathered.
+    const absorbed = [...BASE_CATALOG, uncovered('delta')]
+    await commitBaseline(repo, absorbed, 'feat: add the delta widget')
+    assert.deepEqual(evaluateRatchet({entries: absorbed, baseline: readBaseline(join(repo.dir, BASELINE_REL))}).failures, [],
+      'the absorb must genuinely satisfy check 4 — otherwise this test proves nothing about the freeze')
+
+    const {frozen, failures} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    assert.equal(frozen, true)
+    assert.equal(failures.length, 2, `expected one failure per axis, got ${JSON.stringify(failures)}`)
+    for (const message of failures) {
+      assert.match(message, /`delta` is grandfathered here but was NOT at/)
+      assert.match(message, /cannot absorb a new/)
+      assert.match(message, new RegExp(`${RAISE_KEY}: (behavioralGap|a11yGap):delta <reason>`))
+    }
+    assert.equal(failures.filter((message) => message.includes('`behavioralGap` grew')).length, 1)
+    assert.equal(failures.filter((message) => message.includes('`a11yGap` grew')).length, 1)
+  })
+})
+
+test('a genuine gap CLOSURE shrinks the set and PASSES — the freeze never blocks progress', async () => {
+  await withRepo(async (repo) => {
+    const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    await commitBaseline(repo, [uncovered('alpha'), covered('beta'), covered('gamma')], 'test: cover the beta widget')
+
+    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    assert.deepEqual(failures, [], 'closing a gap must never red the PR that closes it')
+    assert.equal(notes.filter((note) => note.includes('shrank by 1') && note.includes('beta')).length, 2)
+  })
+})
+
+test('an explicit justified raise in a commit trailer PASSES, and the reason is reported', async () => {
+  await withRepo(async (repo) => {
+    const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    const reason = 'the consumer render test needs a device runner that does not exist yet'
+    await writeBaseline([...BASE_CATALOG, uncovered('delta')], join(repo.dir, BASELINE_REL))
+    repo.run('add', BASELINE_REL)
+    repo.run('commit', '--quiet', '-m', `feat: add the delta widget\n\n${RAISE_KEY}: behavioralGap:delta ${reason}\n${RAISE_KEY}: a11yGap:delta ${reason}`)
+
+    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    assert.deepEqual(failures, [], `a named, justified raise must pass, got ${JSON.stringify(failures)}`)
+    assert.equal(notes.length, 2)
+    for (const note of notes) {
+      assert.match(note, new RegExp(`raised via ${RAISE_KEY} trailer`))
+      assert.ok(note.includes(reason), `the reason must reach the log so a reviewer reads it — got ${note}`)
+    }
+  })
+})
+
+test('a raise naming the wrong axis or the wrong widget does NOT unlock the growth it does not name', async () => {
+  await withRepo(async (repo) => {
+    const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    await writeBaseline([...BASE_CATALOG, uncovered('delta')], join(repo.dir, BASELINE_REL))
+    repo.run('add', BASELINE_REL)
+    repo.run('commit', '--quiet', '-m',
+      `feat: add delta\n\n${RAISE_KEY}: behavioralGap:epsilon wrong widget\n${RAISE_KEY}: a11yGap:delta genuinely unavoidable`)
+
+    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    assert.equal(failures.length, 1, `only the unnamed behavioral growth should fail, got ${JSON.stringify(failures)}`)
+    assert.match(failures[0], /`behavioralGap` grew: `delta`/)
+    assert.equal(notes.filter((note) => note.includes('matches no new gap')).length, 1, 'the misdirected raise must be reported as dead weight')
+  })
+})
+
+test('a raise with no reason is REJECTED, and the growth it tried to cover still FAILS', async () => {
+  await withRepo(async (repo) => {
+    const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    await writeBaseline([...BASE_CATALOG, uncovered('delta')], join(repo.dir, BASELINE_REL))
+    repo.run('add', BASELINE_REL)
+    repo.run('commit', '--quiet', '-m', `feat: add delta\n\n${RAISE_KEY}: behavioralGap:delta\n${RAISE_KEY}: a11yGap:delta`)
+
+    const {failures} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    assert.equal(failures.filter((message) => message.includes('with no reason')).length, 2)
+    assert.equal(failures.filter((message) => message.includes('grew: `delta`')).length, 2)
+  })
+})
+
+test('the env carrier raises the same way the trailer does — the local loop is not a second grammar', async () => {
+  await withRepo(async (repo) => {
+    const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    await commitBaseline(repo, [...BASE_CATALOG, uncovered('delta')], 'feat: add delta')
+
+    const env = {[FREEZE_ENV.base]: base, [FREEZE_ENV.raise]: 'behavioralGap:delta needs a device runner\na11yGap:delta shares a props type'}
+    assert.deepEqual(freezeIn(repo, env).failures, [])
+    // And the bare-value form and the full-trailer form are the same value.
+    const prefixed = {...env, [FREEZE_ENV.raise]: `${RAISE_KEY}: behavioralGap:delta reason one;${RAISE_KEY}: a11yGap:delta reason two`}
+    assert.deepEqual(freezeIn(repo, prefixed).failures, [])
+  })
+})
+
+test('an unnamed ref is resolved through merge-base, so a branch is judged only on what IT added', async () => {
+  await withRepo(async (repo) => {
+    await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    repo.run('checkout', '--quiet', '-b', 'feature')
+    await commitBaseline(repo, [...BASE_CATALOG, uncovered('delta')], 'feat: add delta')
+
+    // `main` moves on AFTER the fork with a raise of its own. Comparing against the tip would blame
+    // this branch for `epsilon`; comparing against the merge base does not.
+    repo.run('checkout', '--quiet', 'main')
+    await commitBaseline(repo, [...BASE_CATALOG, uncovered('epsilon')], 'feat: add epsilon on main')
+    repo.run('checkout', '--quiet', 'feature')
+
+    const {describe, failures} = freezeIn(repo)
+    assert.match(describe, /the merge base with main/)
+    assert.equal(failures.length, 2, `only delta is this branch's growth, got ${JSON.stringify(failures)}`)
+    for (const message of failures) {
+      assert.match(message, /grew: `delta`/)
+    }
+  })
+})
+
+test('a base that cannot be resolved is a FreezeError, never a silent skip', async () => {
+  await withRepo(async (repo) => {
+    await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    assert.throws(() => freezeIn(repo, {[FREEZE_ENV.base]: 'no-such-revision'}), (error) => {
+      assert.ok(error instanceof FreezeError)
+      assert.match(error.message, /does not resolve to a commit/)
+      return true
+    })
+
+    // No override, and no candidate branch either — the arm must say so rather than pass.
+    repo.run('checkout', '--quiet', '-b', 'orphan')
+    repo.run('branch', '--quiet', '-D', 'main')
+    assert.throws(() => freezeIn(repo), (error) => {
+      assert.ok(error instanceof FreezeError)
+      assert.match(error.message, /no base revision could be resolved/)
+      assert.match(error.message, /fetch-depth: 0/)
+      return true
+    })
+  })
+})
+
+test('a baseline absent at the base makes every id a raise, rather than an empty set that passes', async () => {
+  await withRepo(async (repo) => {
+    const base = repo.run('rev-parse', 'HEAD') // the root commit, before any baseline exists
+    await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+
+    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    assert.equal(failures.length, 4, `alpha and beta on both axes, got ${JSON.stringify(failures)}`)
+    assert.match(notes[0], /does not exist at/)
+  })
+})
+
+test('git() reads the repository at cwd even when GIT_DIR points somewhere else', async () => {
+  // REGRESSION. Git exports GIT_DIR to every hook it runs, and `.husky/pre-push` runs both the gate
+  // and `pnpm test:scripts` — so the inherited value outranked `cwd` and every throwaway repo below
+  // silently resolved to THIS repository. The gate still passed under the hook, which is the part
+  // that made it dangerous: it was reading the right repo by luck, not by construction.
+  await withRepo(async (repo) => {
+    const head = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    const previous = process.env.GIT_DIR
+    process.env.GIT_DIR = join(REPO_ROOT, '.git')
+    try {
+      assert.equal(git(['rev-parse', 'HEAD'], repo.dir).stdout, head, 'cwd must decide which repository git reads')
+      assert.deepEqual(freezeIn(repo, {[FREEZE_ENV.base]: head}).failures, [])
+    } finally {
+      if (previous === undefined) {
+        delete process.env.GIT_DIR
+      } else {
+        process.env.GIT_DIR = previous
+      }
+    }
+  })
+})
+
+test('the freeze is OFF by default and ON under CI — the merge gate is where it has to bind', () => {
+  assert.equal(isFrozen({}), false)
+  assert.equal(isFrozen({CI: ''}), false)
+  assert.equal(isFrozen({CI: '0'}), false)
+  assert.equal(isFrozen({CI: 'false'}), false)
+  assert.equal(isFrozen({CI: 'true'}), true)
+  assert.equal(isFrozen({CI: '1'}), true)
+  assert.equal(isFrozen({[FREEZE_ENV.frozen]: '1'}), true)
+  // There is deliberately no thaw: a value that turns the freeze off would be the bypass it exists
+  // to remove.
+  assert.equal(isFrozen({CI: '1', [FREEZE_ENV.frozen]: '0'}), true)
+})
+
+test('an unfrozen run reports itself as unfrozen instead of quietly reporting a pass', () => {
+  const outcome = runFreezeCheck({baseline: {behavioralGap: new Set(), a11yGap: new Set()}, env: {}, cwd: REPO_ROOT})
+  assert.equal(outcome.frozen, false)
+  assert.match(outcome.describe, /not frozen/)
+  assert.deepEqual(outcome.failures, [])
+})
+
+test('parseRaiseValue holds the raise grammar — axis, id, and a reason that is not optional', () => {
+  assert.deepEqual(parseRaiseValue('behavioralGap:delta needs a device runner'), {axis: 'behavioralGap', id: 'delta', reason: 'needs a device runner'})
+  assert.deepEqual(parseRaiseValue('a11yGap:place-leaderboard-v3 — shares a props type'), {
+    axis: 'a11yGap',
+    id: 'place-leaderboard-v3',
+    reason: 'shares a props type'
+  })
+  assert.match(parseRaiseValue('').error, /empty raise/)
+  assert.match(parseRaiseValue('behavioralGap:delta').error, /with no reason/)
+  assert.match(parseRaiseValue('behavioralGap:delta   ').error, /with no reason/)
+  assert.match(parseRaiseValue('everything:delta all of it').error, /which is not one of/)
+  assert.match(parseRaiseValue('behavioralGap').error, /is not a raise/)
+})
+
+test('collectRaises reads trailers out of a whole commit range and names the carrier of each', () => {
+  const messages = [
+    'feat: add delta',
+    '',
+    `${RAISE_KEY}: behavioralGap:delta no device runner`,
+    '',
+    'chore: unrelated commit that mentions Baseline-Raise in prose but not as a trailer',
+    '',
+    `  ${RAISE_KEY} : a11yGap:delta shares a props type  `
+  ].join('\n')
+  const {raises, errors} = collectRaises({env: {}, messages})
+  assert.deepEqual(errors, [])
+  assert.deepEqual(raises.map(({axis, id, carrier}) => `${carrier}|${axis}:${id}`), [
+    `${RAISE_KEY} trailer|behavioralGap:delta`,
+    `${RAISE_KEY} trailer|a11yGap:delta`
+  ])
+  assert.equal(collectRaises({env: {[FREEZE_ENV.raise]: 'a11yGap:delta a reason'}, messages: ''}).raises[0].carrier, FREEZE_ENV.raise)
+})
+
+test('evaluateFreeze compares by IDENTITY, so a swap that keeps the count reds', () => {
+  // A numeric budget passes this: one gap closed, one opened, total unchanged. That re-seeding is
+  // betterer's known defect and the reason the estate's baselines are identity-keyed.
+  const base = {behavioralGap: new Set(['alpha']), a11yGap: new Set()}
+  const baseline = {behavioralGap: new Set(['beta']), a11yGap: new Set()}
+  const {failures, notes} = evaluateFreeze({baseline, base})
+  assert.equal(failures.length, 1)
+  assert.match(failures[0], /grew: `beta`/)
+  assert.equal(notes.filter((note) => note.includes('shrank by 1')).length, 1)
 })

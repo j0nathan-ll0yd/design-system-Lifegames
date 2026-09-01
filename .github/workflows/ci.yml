@@ -440,6 +440,15 @@ jobs:
     runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # The conformance BASELINE FREEZE (atlas decision 0102 move 1b) compares
+          # contracts/component-catalog/conformance-baseline.json against its own copy at the
+          # merge base with the target branch. The default depth-1 checkout fetches only the
+          # ref under test, so `origin/main` does not exist and there is no shared ancestor to
+          # resolve — and the freeze treats an unresolvable base as RED, never as a skip. Full
+          # history is what makes it resolvable. GitHub Actions sets CI, which is what arms the
+          # freeze; there is deliberately no env var here to remove.
+          fetch-depth: 0
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -484,6 +493,15 @@ jobs:
           # required status context; a gate that cannot block is not a gate.
           # Offline and ~0.4s, so it costs this step nothing.
           pnpm check:component-catalog
+          # The ratchet's own known-answer suite, including the CAN-FAIL PROOF for the
+          # baseline freeze: a widget added with a new gap plus `--update-baseline` must red,
+          # a genuine closure must pass, and a named justified raise must pass. The gate above
+          # cannot prove any of that — a freeze arm that silently stopped comparing would leave
+          # it green forever. Same argument, same precedent as check-package-drift.test.mjs
+          # above and check-ssr-image-fallback.test.mjs below: reachable only through
+          # `pnpm test:scripts`, this suite would run in .husky/pre-push and no workflow, so
+          # DS_SKIP_PREPUSH=1 would be enough to merge a broken ratchet. ~2s.
+          node --test contracts/component-catalog/ratchet.test.mjs
           # SSR image-fallback gate: every .astro that server-renders a
           # data-fallback cover must bundle the load-time initImageFallbacks()
           # call. Mirrors the digest-conformance precedent above
