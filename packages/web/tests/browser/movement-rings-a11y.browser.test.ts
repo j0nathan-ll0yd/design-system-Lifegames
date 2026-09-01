@@ -1,5 +1,7 @@
 import axe from 'axe-core'
 import {afterEach, describe, expect, it} from 'vitest'
+import {updateMovementRings} from '../../src/runtime/updaters-movement'
+import type {AdaptedHealth} from '../../src/runtime/adapters'
 
 // The gap the served-site axe scan exposed (atlas decision 0102 move 5).
 //
@@ -100,6 +102,105 @@ describe('MovementRings accessible naming, as the component actually renders it'
     expect(passed.get('svg-img-alt')).toBeGreaterThan(0)
     expect(passed.get('role-img-alt')).toBeGreaterThan(0)
     expect(results.incomplete.map((rule) => rule.id)).not.toContain('svg-img-alt')
+  })
+
+  // ── the name has to stay true, not just exist ───────────────────────────────
+  //
+  // Naming the group fixed "no name". It did not fix "wrong name". The consuming
+  // site is `output: 'static'`, so the SSR label above is frozen at BUILD time,
+  // while `updateMovementRings` repaints the rings on every poll. The updater
+  // rewrote the three rings and the centre `%` and left `aria-label` alone, so a
+  // screen reader announced build-time percentages over live rings — a
+  // confidently-wrong announcement, which is worse than the silence #247 fixed.
+
+  /** The label the fixture server-renders: 380/500, 32/30, 9/12. */
+  const SSR_LABEL = 'Calories 76%, Exercise 107%, Stand 75%'
+
+  /**
+   * The slice of `AdaptedHealth` `updateMovementRings` reads. Every other field
+   * belongs to a sibling widget and is inert here, present only to satisfy the type.
+   */
+  function poll(quantities: Record<string, {value: number; unit: string}>): AdaptedHealth {
+    return {
+      date: '2026-01-01',
+      quantities,
+      derived: {totalCalories: 0, deepPct: 0, remPct: 0, corePct: 0},
+      sleepScore: 0,
+      sleepDurationFormatted: '',
+      sleepPhaseFormatted: {},
+      hydration: {waterOz: 0, caffeineMg: 0, waterMax: 0, caffeineMax: 0, waterRangeLo: 0, waterRangeHi: 0, caffeineRangeLo: 0, caffeineRangeHi: 0}
+    }
+  }
+
+  /** Against the default goals (500 kcal / 30 min / 12 hr): 42%, 20%, 25%. */
+  const LIVE_QUANTITIES = {
+    activeEnergyBurned: {value: 210, unit: 'kcal'},
+    exerciseTime: {value: 6, unit: 'min'},
+    standHours: {value: 3, unit: 'count'},
+    stepCount: {value: 1200, unit: 'count'},
+    distanceWalkingRunning: {value: 900, unit: 'm'},
+    flightsClimbed: {value: 2, unit: 'count'}
+  }
+
+  it('rewrites the ring-group name on a live poll, so the announced value tracks the rings', async () => {
+    const root = await renderedWidget()
+    const svg = root.querySelector('.mv-rings svg[role="img"]')!
+
+    // The staleness premise, pinned: the build-time name is a DIFFERENT string from
+    // the one the poll must produce. Without this the assertion below could pass on
+    // markup the updater never touched.
+    expect(svg.getAttribute('aria-label')).toBe(SSR_LABEL)
+
+    updateMovementRings(poll(LIVE_QUANTITIES))
+
+    // The rings moved, so the name must have moved with them. Reverting the
+    // `setAttribute('aria-label', …)` in updaters-movement.ts reds exactly here,
+    // reporting the frozen SSR string.
+    expect(svg.getAttribute('aria-label')).toBe('Calories 42%, Exercise 20%, Stand 25%')
+
+    // ...and it is the same element that carries the role — the invariant #247
+    // established, re-checked after the client has written to the node.
+    expect(svg.getAttribute('role')).toBe('img')
+    expect(root.querySelector('.mv-rings')!.hasAttribute('aria-label')).toBe(false)
+  })
+
+  it('announces over-goal rings unclamped, exactly as the SSR label does', async () => {
+    // The centre readout clamps to 100% because a ring cannot overdraw. The
+    // announced value must NOT — the SSR label ships "Exercise 107%", and a
+    // clamp here would quietly under-report a closed-and-then-some ring.
+    const root = await renderedWidget()
+
+    updateMovementRings(poll({...LIVE_QUANTITIES, exerciseTime: {value: 45, unit: 'min'}}))
+
+    expect(root.querySelector('.mv-rings svg[role="img"]')!.getAttribute('aria-label')).toBe('Calories 42%, Exercise 150%, Stand 25%')
+    expect(root.querySelector('#ringCenterPct')!.textContent).toBe('42%')
+  })
+
+  it('reports no naming violations after a live poll', async () => {
+    // The updated name must still BE a valid accessible name. An empty string or a
+    // dropped attribute would re-open `svg-img-alt` — this is the axe gate above,
+    // re-run against the post-poll DOM rather than only the build-time DOM.
+    const root = await renderedWidget()
+    updateMovementRings(poll(LIVE_QUANTITIES))
+
+    const results = await auditNaming(root)
+    expect(describeViolations(results)).toEqual([])
+    expect(results.passes.find((rule) => rule.id === 'svg-img-alt')?.nodes.length).toBeGreaterThan(0)
+  })
+
+  it('control: the pre-fix updater leaves the build-time name on live rings', async () => {
+    // Proves the assertions above are not vacuous, the same way the 3.2.0 control
+    // below does for the element-move. This is the shape that shipped — rings
+    // repainted, name untouched — and it must still read as stale, or the
+    // live-update assertion would pass no matter what the updater does.
+    const root = await renderedWidget()
+    const svg = root.querySelector('.mv-rings svg[role="img"]')!
+
+    // Everything the pre-fix updater did to the ring group: geometry only.
+    root.querySelector('#ringMove')!.setAttribute('stroke-dashoffset', '218.65')
+
+    expect(svg.getAttribute('aria-label')).toBe(SSR_LABEL)
+    expect(svg.getAttribute('aria-label')).not.toBe('Calories 42%, Exercise 20%, Stand 25%')
   })
 
   it('control: the 3.2.0 split-element markup still fails svg-img-alt', async () => {

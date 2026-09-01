@@ -201,6 +201,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/portal-contract-2x-web.md:marker:j0nathan-ll0yd
 .changeset/coarsen-workout-device-source.md:marker:j0nathan-ll0yd
 .changeset/movement-rings-svg-img-alt.md:marker:j0nathan-ll0yd
+.changeset/movement-rings-live-aria-label.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd

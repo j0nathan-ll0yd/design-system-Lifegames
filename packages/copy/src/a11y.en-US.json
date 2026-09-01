@@ -5,7 +5,8 @@
       "_meta": {
         "description": "Movement Rings activity-rings progress summary, read by screen readers. ICU MF1 template; the consumer substitutes the three integer ring percentages at the call site (D2-A).",
         "usage": [
-          "web:packages/web/src/widgets/health/MovementRings.astro:202 (.mv-rings svg[role=img] aria-label, composed 'Calories ${movePct}%, Exercise ${exercisePct}%, Stand ${standPct}%')"
+          "web:packages/web/src/widgets/health/MovementRings.astro:202 (.mv-rings svg[role=img] aria-label, composed 'Calories ${movePct}%, Exercise ${exercisePct}%, Stand ${standPct}%')",
+          "web:packages/web/src/runtime/updaters-movement.ts:47 (ringsLabel(), recomposed on every live poll and set on the same svg[role=img] — the SSR label is frozen at build time on a static consumer)"
         ],
         "register": "label",
         "audience": "human",
