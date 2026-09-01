@@ -189,14 +189,21 @@ function offset(circ: number, pct: number): number {
       !isEmpty && (
         <div class="mv-data">
           <div class="mv-layout">
-            <div
-              class="mv-rings"
-              aria-label={a11y.movement.rings
-                .replace('{calories}', String(Math.round(movePct * 100)))
-                .replace('{exercise}', String(Math.round(exercisePct * 100)))
-                .replace('{stand}', String(Math.round(standPct * 100)))}
-            >
-              <svg viewBox="0 0 144 144" role="img">
+            <div class="mv-rings">
+              {/* The name belongs on the element carrying role="img", not on the
+                  wrapper: an accessible name is computed for the role-bearing
+                  element only, and aria-label is prohibited on a bare div
+                  (implicit role=generic) — so a label on .mv-rings left the ring
+                  group unnamed (axe svg-img-alt, SERIOUS). Same-element pairing
+                  matches .mv-sun-track below. */}
+              <svg
+                viewBox="0 0 144 144"
+                role="img"
+                aria-label={a11y.movement.rings
+                  .replace('{calories}', String(Math.round(movePct * 100)))
+                  .replace('{exercise}', String(Math.round(exercisePct * 100)))
+                  .replace('{stand}', String(Math.round(standPct * 100)))}
+              >
                 <circle class="mv-ring-track mv-ring-track-move" cx="72" cy="72" r="60" />
                 <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" />
                 <circle class="mv-ring-track mv-ring-track-stand" cx="72" cy="72" r="28" />

@@ -17,6 +17,7 @@ import {fileURLToPath} from 'node:url'
 const PLACEHOLDER_PATH = '/images/no-cover.svg'
 const placeholderFile = fileURLToPath(new URL('./src/assets/no-cover.svg', import.meta.url))
 const bookshelfFixtureFile = fileURLToPath(new URL('./tests/browser/fixture-app/dist/index.html', import.meta.url))
+const movementFixtureFile = fileURLToPath(new URL('./tests/browser/fixture-app/dist/movement/index.html', import.meta.url))
 
 // The fallback target is a bare same-origin path that a consumer serves from
 // its static root. Serving the real asset here is what makes "did it actually
@@ -38,6 +39,11 @@ function serveImageTestAssets() {
         if (pathname === '/__ssr-bookshelf') {
           res.setHeader('Content-Type', 'text/html; charset=utf-8')
           res.end(readFileSync(bookshelfFixtureFile))
+          return
+        }
+        if (pathname === '/__ssr-movement') {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8')
+          res.end(readFileSync(movementFixtureFile))
           return
         }
         if (pathname.startsWith('/__image-failure/')) {
