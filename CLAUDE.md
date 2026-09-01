@@ -84,10 +84,17 @@ a11y label; a null field whose id is NOT in the matching list FAILS, so a new wi
 a regression that drops either both red. A baseline id naming no widget also FAILS; a graduated
 widget's stale id is reported PRUNABLE and must be pruned in the same PR. Missing or unparseable
 baseline is a hard RED. Re-record with `node contracts/component-catalog/check.mjs
---update-baseline` — never hand-edit an id. Gate: `pnpm check:component-catalog` (grammar
-conformance + sidecar digest, validity, completeness, conformance ratchet, idempotence) — wired into
-BOTH the CI `governance-gates` step (required status context) and `.husky/pre-push`; unit tests run
-under `pnpm test:scripts`. Bumping
+--update-baseline` — never hand-edit an id. **Baseline freeze** (atlas decision 0102 move 1b): the
+baseline is also compared against its own copy at the MERGE BASE, so `--update-baseline` cannot
+silently absorb a new gap. Any id ADDED to a gap list FAILS unless a `Baseline-Raise:
+<axis>:<widget-id> <reason>` trailer on a commit in the branch (or `CATALOG_BASELINE_RAISE`) names
+that exact axis and id and gives a reason; a shrunk set always passes. Identity-keyed, never a count.
+Armed by `CI=1` or `CATALOG_BASELINE_FROZEN=1` (`.husky/pre-push` sets it); an unresolvable base is
+RED, which is why the CI `governance-gates` checkout uses `fetch-depth: 0`. There is no thaw switch.
+Gate: `pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
+conformance ratchet, baseline freeze, idempotence) — wired into BOTH the CI `governance-gates` step
+(required status context) and `.husky/pre-push`; unit tests run under `pnpm test:scripts`, and
+`ratchet.test.mjs` also runs directly in `governance-gates` as the freeze's can-fail proof. Bumping
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
 change. See `contracts/component-catalog/README.md`.
 

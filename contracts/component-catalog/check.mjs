@@ -4,7 +4,7 @@
  *
  *   node contracts/component-catalog/check.mjs [--check | --update-baseline]
  *
- * Five checks, in cost order. Each one is a distinct failure the others cannot see:
+ * Six checks, in cost order. Each one is a distinct failure the others cannot see:
  *
  *   1. GRAMMAR CONFORMANCE — `runner.mjs`: the sha256 sidecar matches the vectors, the grammar's
  *      CATALOG_SPEC_VERSION matches the vectors' specVersion, every vector holds. Without this the
@@ -18,7 +18,13 @@
  *      prove the catalog WRITES its gaps; this one is what stops the pile from growing. It runs
  *      after validity so it never reads an entry that failed the grammar, and before idempotence
  *      because it is far cheaper.
- *   5. IDEMPOTENCE — regenerate into a temp directory and compare bytes against what is committed.
+ *   5. BASELINE FREEZE — `ratchet.mjs` again, but reading the baseline against ITS OWN prior state
+ *      rather than against the catalog. Check 4 is satisfied by anything the baseline lists, so a PR
+ *      that added an untested widget and ran `--update-baseline` passed it: the new gap was absorbed
+ *      and the pile grew, green. Under CI (or `CATALOG_BASELINE_FROZEN=1`) this check compares the
+ *      committed baseline with the one at the merge base and FAILS on any id that was added, unless
+ *      a `Baseline-Raise:` trailer names that exact axis and id and says why.
+ *   6. IDEMPOTENCE — regenerate into a temp directory and compare bytes against what is committed.
  *      This is the check that makes the catalog a SPEC rather than a document: a hand-edit to a
  *      committed contract, or a source change nobody regenerated for, reds here.
  *
@@ -27,7 +33,9 @@
  *
  * `--update-baseline` is the ONE writing mode: it re-records `conformance-baseline.json` from the
  * current catalog. It runs checks 1–3 first and refuses to write if any of them fails, because a
- * baseline recorded from an invalid or incomplete catalog grandfathers garbage.
+ * baseline recorded from an invalid or incomplete catalog grandfathers garbage. It stays available
+ * while frozen on purpose — check 5 judges the RESULT, so it catches a hand-edit and a re-record
+ * alike, and it catches them in CI rather than only on the machine that ran the writer.
  */
 
 import {existsSync, mkdtempSync, readFileSync, rmSync} from 'node:fs'
@@ -37,7 +45,7 @@ import {basename, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {CATALOG_DIR, catalogWidgets, generateAll, REPO_ROOT} from './generate.mjs'
-import {BASELINE_REL, BaselineError, evaluateRatchet, readBaseline, writeBaseline} from './ratchet.mjs'
+import {BASELINE_REL, BaselineError, evaluateRatchet, FreezeError, RAISE_KEY, readBaseline, runFreezeCheck, writeBaseline} from './ratchet.mjs'
 import {runFromDisk} from './runner.mjs'
 import {CATALOG_SPEC_VERSION, validateEntry} from './schema.mjs'
 
@@ -181,7 +189,10 @@ if (updateBaseline) {
   const {behavioralGap, a11yGap} = await writeBaseline(catalogEntries)
   process.stdout.write(
     `[component-catalog] Wrote ${BASELINE_REL} grandfathering ${behavioralGap.length} widget(s) with no behavioral ` +
-      `conformance test and ${a11yGap.length} with no recorded a11y label, out of ${catalogEntries.length} total.\n`
+      `conformance test and ${a11yGap.length} with no recorded a11y label, out of ${catalogEntries.length} total.\n` +
+      `[component-catalog] The baseline is FROZEN. If this re-record ADDED an id, check 5 will block it in CI until a ` +
+      `\`${RAISE_KEY}: <axis>:<widget-id> <reason>\` trailer on a commit in this branch justifies the raise. ` +
+      'Pruning ids, which is what closing a gap does, needs nothing.\n'
   )
   process.exit(0)
 }
@@ -195,8 +206,9 @@ if (updateBaseline) {
 const ratchetFailures = []
 let prunable = []
 let baselineSizes = '0/0'
+let baseline
 try {
-  const baseline = readBaseline()
+  baseline = readBaseline()
   baselineSizes = `${baseline.behavioralGap.size}/${baseline.a11yGap.size}`
   const outcome = evaluateRatchet({entries: catalogEntries, baseline})
   ratchetFailures.push(...outcome.failures)
@@ -209,7 +221,26 @@ try {
 }
 record(`conformance ratchet (${baselineSizes} grandfathered behavioral/a11y gaps in ${BASELINE_REL})`, ratchetFailures)
 
-// ── 5. Idempotence ───────────────────────────────────────────────────────────
+// ── 5. Baseline freeze ───────────────────────────────────────────────────────
+//
+// Check 4 asks whether the catalog's gaps are grandfathered. It cannot ask whether the
+// GRANDFATHERING itself grew, so `--update-baseline` could absorb a new gap and leave every check
+// green — the hole atlas decision 0102 move 1b closes. This check compares the committed baseline
+// against the one at the merge base and blocks an id that was added without a named, justified
+// raise. It runs only when frozen (CI, or CATALOG_BASELINE_FROZEN=1), because off a branch point
+// there is nothing to compare against.
+let freeze
+try {
+  freeze = runFreezeCheck({baseline})
+} catch (error) {
+  if (error instanceof FreezeError || error instanceof BaselineError) {
+    abortRed(error.message)
+  }
+  throw error
+}
+record(`baseline freeze (${freeze.describe})`, freeze.failures)
+
+// ── 6. Idempotence ───────────────────────────────────────────────────────────
 const idempotenceFailures = []
 const scratch = mkdtempSync(join(tmpdir(), 'component-catalog-'))
 try {
@@ -264,7 +295,10 @@ for (const {name, failures} of results) {
 // Non-blocking on its own: a field went from null to populated, so its grandfathering is now dead
 // weight. Blocking it would red the very PR that closes a gap. Reporting it is what makes "prune in
 // the same PR" an instruction someone actually receives.
-for (const notice of prunable) {
+// The freeze's notes are the same kind of thing from the other side: a justified raise that was
+// honoured, a gap set that shrank, a trailer left behind after the gap it justified was closed.
+// None of them blocks, and all of them belong in the log the reviewer reads.
+for (const notice of [...prunable, ...freeze.notes]) {
   process.stdout.write(`  note  ${notice}\n`)
 }
 

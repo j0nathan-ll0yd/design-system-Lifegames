@@ -54,7 +54,15 @@ step "schemas freshness"       pnpm check:schemas-freshness
 # because pre-push is DS's declared CI-parity tier and a drift someone else landed
 # should block locally too (B9) — but CI is now where it BINDS, since
 # DS_SKIP_PREPUSH=1 skips everything below.
-step "component-catalog gate"  pnpm check:component-catalog
+#
+# CATALOG_BASELINE_FROZEN=1 arms the sixth check, the BASELINE FREEZE (atlas decision
+# 0102 move 1b): the committed conformance-baseline.json is compared against its copy
+# at the merge base with origin/main, and an id that was ADDED reds unless a
+# `Baseline-Raise: <axis>:<widget-id> <reason>` trailer on a commit in this branch
+# justifies it. CI sets the flag implicitly through CI=1; setting it here is what makes
+# an absorbed gap red BEFORE the push rather than after. It needs origin/main to exist
+# locally — run `git fetch origin main` if it says it cannot resolve a base.
+step "component-catalog gate"  env CATALOG_BASELINE_FROZEN=1 pnpm check:component-catalog
 
 # C147 — published-package payload drift: a published package's payload changed
 # but nobody bumped that package's version, so `changeset publish` silently skips
