@@ -9,8 +9,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@j0nathan-ll0yd/portal-contract": "^2.0.0",
     "@j0nathan-ll0yd/fixtures": "workspace:*",
+    "@j0nathan-ll0yd/portal-contract": "^2.5.0",
     "@j0nathan-ll0yd/tokens": "workspace:*",
     "@j0nathan-ll0yd/web": "workspace:*",
     "astro": "^6.4.4"
