@@ -1,5 +1,61 @@
 # @j0nathan-ll0yd/web
 
+## 3.2.1
+
+### Patch Changes
+
+- 3b24b3a: Keep the MovementRings ring-group name true on live data, not merely present.
+
+  `updateMovementRings` repaints the three rings and the centre `%` on every poll but never
+  rewrote the `aria-label` that names them. The consuming site is `output: 'static'`, so that name
+  is frozen at BUILD time while the rings underneath it are live — a screen reader announced
+  build-time percentages over current rings. That is a confidently-wrong announcement, and worse
+  than the missing name it replaced.
+
+  The poll path now recomposes the `a11y.movement.rings` template from the same three percentages
+  the rings draw, and sets it on the same `svg[role="img"]` element the name moved to. Rounding is
+  unclamped to match the SSR composition exactly: the centre readout clamps to 100% because a ring
+  cannot overdraw, but the announced value must stay truthful at 107%.
+
+  Completes the fix started in the previous release. That one gave the ring group a name; this one
+  keeps the name tracking the visual. No prop, copy, or export-surface change.
+
+- 6af4f5f: Give the MovementRings ring group an accessible name (axe `svg-img-alt`, SERIOUS).
+
+  `MovementRings.astro` carried `aria-label` on the `.mv-rings` wrapper while `role="img"` sat on the
+  child `<svg>`. An accessible name is computed for the element that carries the role, and `aria-label`
+  is prohibited on a bare `div` (implicit `role=generic`), so the rings shipped with no accessible name
+  at all — a screen reader announced nothing for the widget's primary graphic. Both attributes now sit
+  on the `<svg>`, matching the `.mv-sun-track` pairing in the same file.
+
+  Rendered markup only. No prop, export-surface, or runtime change: `updateMovementRings` never read or
+  wrote the label.
+
+- f3e5abf: Widen the `@j0nathan-ll0yd/portal-contract` dependency range from `^1.0.0` to `^2.0.0`.
+
+  Published `package.json` payload only — no source, export-surface, or rendering change. The
+  widget runtime reads the `mainImage*` / `imageUrl*` URLs directly and ignores the new
+  `mainImageVersion` / `imageVersion` fields.
+
+- 1cd66ca: Make the web widget-purity lint blocking, and scan the two extensions it claimed but never received.
+
+  `lint` now runs `eslint "src/**/*.{ts,tsx,js,jsx,astro,css}" --max-warnings 0`. Previously it was
+  `{ts,tsx,js,jsx,astro}` with no `--max-warnings`, and both `no-app-module-imports` (P3) and
+  `widget-props-extends-schema` (W16) were configured `warn` — so a widget importing `axios` beside a
+  `.types.ts` with no schema import printed `2 problems (0 errors, 2 warnings)` and exited 0.
+
+  Three scope gaps closed alongside the severity raise, because raising one without the others would
+  have gated only part of the tree:
+  - `no-app-module-imports` now matches `.astro`. A module-scope `fetch` and a data-layer import in an
+    `.astro` widget's frontmatter previously produced no diagnostic at all.
+  - `no-raw-hex-in-widgets` now actually receives `.css`. Its file pattern always admitted `.css` and
+    its scan always read raw source text, but no config block matched a stylesheet, so ESLint never
+    handed it one.
+  - Both P3 and W16 are `error`.
+
+  No behavioural change to any shipped component. Measured blast radius of the raise across the whole
+  widget tree: zero existing violations.
+
 ## 3.2.0
 
 ### Minor Changes
