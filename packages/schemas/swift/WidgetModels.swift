@@ -57,7 +57,8 @@ struct Article: Codable {
     let articleAuthor, articleBoards, articleCategories, articleEngagement: String?
     let articleEngagementRate, articleFirstComment, articleFirstHighlight, articleFirstImageURL: String?
     let articlePublishedAt: String?
-    let articleTitle, articleURL: String
+    let articleTitle: String
+    let articleURL: String
     let notes: [Note]
     let savedAt: String
     let sourceDomain, sourceFeedURL, sourceTitle, sourceURL: String?
@@ -232,7 +233,8 @@ extension BooksExport {
 
 // MARK: - Book
 struct Book: Codable {
-    let asin, author: String
+    let asin: String
+    let author: String
     let averageRating, category: String?
     let currentPage: Double?
     let description: String?
@@ -448,7 +450,8 @@ struct Event: Codable {
     let deletions: Double?
     let hash: String?
     let number: Double?
-    let repo, title, type: String
+    let repo: String
+    let title, type: String
 }
 
 // MARK: Event convenience initializers and mutators
@@ -556,7 +559,8 @@ struct Repo: Codable {
     let licenseKey, licenseName, licenseSpdxID: String?
     let name: String
     let openIssuesCount: Double
-    let ownerHTMLURL, ownerLogin: String
+    let ownerHTMLURL: String
+    let ownerLogin: String
     let size, stargazersCount: Double
     let starredAt: String
     let topics: [String]
@@ -1210,7 +1214,9 @@ struct Review: Codable {
     let publishedAt: String
     let rating: String?
     let ratingNumeric: Double?
-    let slug, title, url: String
+    let slug: String
+    let title: String
+    let url: String
 
     enum CodingKeys: String, CodingKey {
         case author, excerpt, imageHeight
