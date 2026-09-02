@@ -1,5 +1,45 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.3.0
+
+### Minor Changes
+
+- 272d203: Coarsen the workout `source` field to the generic device class `Apple Watch`.
+
+  The LP health export now coarsens the HealthKit device name before serving public
+  `workouts.json` (mantle-LifegamesPortal #270, decision 0096 HF8). The DS workout
+  fixtures hardcoded the owner's personal device name, which no longer matches what
+  the export serves.
+
+  Changed at the generator source — `DEFAULT_WORKOUT` in `src/factories/workouts.ts`
+  and the explicit per-entry overrides in the `full` variation — then regenerated
+  `src/generated/workouts/*.json`. The field stays a required string, so the contract
+  schema and the full-coverage walker are unaffected.
+
+- f3e5abf: Regenerate raw fixtures against `@j0nathan-ll0yd/portal-contract` 2.x (`^1.0.0` → `^2.0.0`).
+
+  Books entries now carry `mainImageVersion` and theatre-review entries `imageVersion`, both
+  required-nullable in the 2.x contract. They follow the producer's own invariant: a version
+  is non-null exactly when the entry's optimized derivative URLs are non-null, so the `full`
+  variations carry one and the default factories do not. Focus `full` gains the optional
+  `hidingSince`, and the `focus` full-coverage walker exception is removed — its rationale
+  ("all properties required and non-nullable") stopped being true once 2.x added that key.
+
+  New export from `./raw`: `imageVersion(seed)`, a deterministic 24-hex-character stand-in for
+  the producer's image `contentVersion`, so generated fixtures stay byte-reproducible.
+
+  Post-adapter (display-shape) fixtures are unchanged — the new fields are pre-adapter only.
+
+### Patch Changes
+
+- Updated dependencies [3b24b3a]
+- Updated dependencies [6af4f5f]
+- Updated dependencies [f3e5abf]
+- Updated dependencies [f3e5abf]
+- Updated dependencies [1cd66ca]
+  - @j0nathan-ll0yd/web@3.2.1
+  - @j0nathan-ll0yd/schemas@2.2.0
+
 ## 1.2.0
 
 ### Minor Changes
