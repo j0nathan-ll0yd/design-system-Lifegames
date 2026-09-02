@@ -64,6 +64,7 @@ All use Vite 8 (unified from prior Vite 6/7 split).
 - **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
+- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the non-required `lint-web` job. `scripts/check-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they are now in `test:scripts` and in `governance-gates`.
 
 ## Component-Contract Catalog (`contracts/component-catalog/`)
 
@@ -90,7 +91,12 @@ silently absorb a new gap. Any id ADDED to a gap list FAILS unless a `Baseline-R
 <axis>:<widget-id> <reason>` trailer on a commit in the branch (or `CATALOG_BASELINE_RAISE`) names
 that exact axis and id and gives a reason; a shrunk set always passes. Identity-keyed, never a count.
 Armed by `CI=1` or `CATALOG_BASELINE_FROZEN=1` (`.husky/pre-push` sets it); an unresolvable base is
-RED, which is why the CI `governance-gates` checkout uses `fetch-depth: 0`. There is no thaw switch.
+RED, which is why the CI `governance-gates` checkout uses `fetch-depth: 0`. There is no thaw switch:
+`CATALOG_BASELINE_BASE` skips the merge base, so it REJECTS any value resolving to HEAD or a
+descendant of HEAD — `=HEAD` used to compare the baseline against itself and print `ok` while checking
+nothing. Tests inject their base through `runFreezeCheck({base})`, not the env var. On the **push**
+lane `origin/main` IS the pushed commit, so the merge base is HEAD and the freeze was vacuous; CI now
+passes `github.event.before` there.
 Gate: `pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
 conformance ratchet, baseline freeze, idempotence) — wired into BOTH the CI `governance-gates` step
 (required status context) and `.husky/pre-push`; unit tests run under `pnpm test:scripts`, and
@@ -117,8 +123,9 @@ and the tether already holds the file and the line. **Scan surface:** the contra
 languages plus `**/*.test.mjs` and `**/*.test.js` (this repo's `node --test` and ESLint `RuleTester`
 suites), passed through the documented `languages` option — a scan-surface choice, not a rule change,
 with disjointness asserted at startup. **Baseline:** `openspec/covers-baseline.json` grandfathers the
-3 requirements whose enforcing gate has no known-answer test (`check-swift-widget-purity.mjs`,
-`check-watch-exclusions.mjs`, `check-promotion.mjs`). Only `uncovered-requirement` is eligible; every
+2 requirements whose enforcing gate has no known-answer test (`check-watch-exclusions.mjs`,
+`check-promotion.mjs`). It was 3; `check-swift-widget-purity.mjs` gained
+`scripts/check-swift-widget-purity.test.mjs` and its id was pruned in the same change. Only `uncovered-requirement` is eligible; every
 other finding type blocks unconditionally; a baseline id naming no live requirement FAILS; a graduated
 id is reported PRUNABLE and must be pruned in the same PR; an unparseable baseline is a hard RED; an
 absent one grandfathers nothing (stricter, never a pass). Re-record with `pnpm covers:update-baseline`
