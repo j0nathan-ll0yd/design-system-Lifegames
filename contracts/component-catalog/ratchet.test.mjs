@@ -289,7 +289,13 @@ const commitBaseline = async ({dir, run}, entries, message) => {
 }
 
 /** The freeze as `check.mjs` runs it, against a throwaway repo, with an env that leaks nothing. */
-const freezeIn = ({dir}, env = {}) => runFreezeCheck({baseline: readBaseline(join(dir, BASELINE_REL)), env: {[FREEZE_ENV.frozen]: '1', ...env}, cwd: dir})
+// The base is passed as an EXPLICIT OPTION, never through CATALOG_BASELINE_BASE. That env var was a
+// reachable thaw switch: it takes a verbatim commit-ish with no merge-base, so pointing it at HEAD
+// compared the baseline against itself and the freeze printed `ok` while checking nothing. It now
+// rejects HEAD and any descendant of it, and the suite injects through the option instead — a
+// test-only escape hatch that ships in the shipped code is not test-only.
+const freezeIn = ({dir}, {base = null, ...env} = {}) =>
+  runFreezeCheck({baseline: readBaseline(join(dir, BASELINE_REL)), env: {[FREEZE_ENV.frozen]: '1', ...env}, cwd: dir, base})
 
 const withRepo = async (body) => {
   const repo = gitRepo()
@@ -314,7 +320,7 @@ test('PROOF OF FAIL — `--update-baseline` absorbing a NEW widget REDS while fr
     assert.deepEqual(evaluateRatchet({entries: absorbed, baseline: readBaseline(join(repo.dir, BASELINE_REL))}).failures, [],
       'the absorb must genuinely satisfy check 4 — otherwise this test proves nothing about the freeze')
 
-    const {frozen, failures} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    const {frozen, failures} = freezeIn(repo, {base})
     assert.equal(frozen, true)
     assert.equal(failures.length, 2, `expected one failure per axis, got ${JSON.stringify(failures)}`)
     for (const message of failures) {
@@ -332,7 +338,7 @@ test('a genuine gap CLOSURE shrinks the set and PASSES — the freeze never bloc
     const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
     await commitBaseline(repo, [uncovered('alpha'), covered('beta'), covered('gamma')], 'test: cover the beta widget')
 
-    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    const {failures, notes} = freezeIn(repo, {base})
     assert.deepEqual(failures, [], 'closing a gap must never red the PR that closes it')
     assert.equal(notes.filter((note) => note.includes('shrank by 1') && note.includes('beta')).length, 2)
   })
@@ -346,7 +352,7 @@ test('an explicit justified raise in a commit trailer PASSES, and the reason is 
     repo.run('add', BASELINE_REL)
     repo.run('commit', '--quiet', '-m', `feat: add the delta widget\n\n${RAISE_KEY}: behavioralGap:delta ${reason}\n${RAISE_KEY}: a11yGap:delta ${reason}`)
 
-    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    const {failures, notes} = freezeIn(repo, {base})
     assert.deepEqual(failures, [], `a named, justified raise must pass, got ${JSON.stringify(failures)}`)
     assert.equal(notes.length, 2)
     for (const note of notes) {
@@ -364,7 +370,7 @@ test('a raise naming the wrong axis or the wrong widget does NOT unlock the grow
     repo.run('commit', '--quiet', '-m',
       `feat: add delta\n\n${RAISE_KEY}: behavioralGap:epsilon wrong widget\n${RAISE_KEY}: a11yGap:delta genuinely unavoidable`)
 
-    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    const {failures, notes} = freezeIn(repo, {base})
     assert.equal(failures.length, 1, `only the unnamed behavioral growth should fail, got ${JSON.stringify(failures)}`)
     assert.match(failures[0], /`behavioralGap` grew: `delta`/)
     assert.equal(notes.filter((note) => note.includes('matches no new gap')).length, 1, 'the misdirected raise must be reported as dead weight')
@@ -378,7 +384,7 @@ test('a raise with no reason is REJECTED, and the growth it tried to cover still
     repo.run('add', BASELINE_REL)
     repo.run('commit', '--quiet', '-m', `feat: add delta\n\n${RAISE_KEY}: behavioralGap:delta\n${RAISE_KEY}: a11yGap:delta`)
 
-    const {failures} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    const {failures} = freezeIn(repo, {base})
     assert.equal(failures.filter((message) => message.includes('with no reason')).length, 2)
     assert.equal(failures.filter((message) => message.includes('grew: `delta`')).length, 2)
   })
@@ -389,7 +395,7 @@ test('the env carrier raises the same way the trailer does — the local loop is
     const base = await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
     await commitBaseline(repo, [...BASE_CATALOG, uncovered('delta')], 'feat: add delta')
 
-    const env = {[FREEZE_ENV.base]: base, [FREEZE_ENV.raise]: 'behavioralGap:delta needs a device runner\na11yGap:delta shares a props type'}
+    const env = {base, [FREEZE_ENV.raise]: 'behavioralGap:delta needs a device runner\na11yGap:delta shares a props type'}
     assert.deepEqual(freezeIn(repo, env).failures, [])
     // And the bare-value form and the full-trailer form are the same value.
     const prefixed = {...env, [FREEZE_ENV.raise]: `${RAISE_KEY}: behavioralGap:delta reason one;${RAISE_KEY}: a11yGap:delta reason two`}
@@ -418,10 +424,54 @@ test('an unnamed ref is resolved through merge-base, so a branch is judged only 
   })
 })
 
+test('CATALOG_BASELINE_BASE cannot be pointed at HEAD to green a growth — the one reachable thaw switch', async () => {
+  // REGRESSION. `CATALOG_BASELINE_BASE` takes a VERBATIM commit-ish with no merge-base, so setting
+  // it to HEAD compared the baseline against itself: every growth set came out empty and the check
+  // printed `ok baseline freeze (frozen against CATALOG_BASELINE_BASE HEAD (…))`. Measured on a
+  // branch that reds without it, the whole gate went PASS 6/6 exit 0. The switch reported itself as
+  // frozen while being a thaw, which is the worst version of this bug: the run LOOKS gated.
+  await withRepo(async (repo) => {
+    await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
+    repo.run('checkout', '--quiet', '-b', 'feature')
+    await commitBaseline(repo, [...BASE_CATALOG, uncovered('delta')], 'feat: add delta with neither test nor label')
+
+    // The growth is real: with the base resolved honestly, the freeze reds.
+    assert.ok(freezeIn(repo).failures.length > 0, 'precondition: this branch grows the baseline and must red')
+
+    // And the switch can no longer make it green. HEAD, and a descendant of HEAD, both throw.
+    for (const override of ['HEAD', repo.run('rev-parse', 'HEAD')]) {
+      assert.throws(
+        () =>
+          runFreezeCheck({
+            baseline: readBaseline(join(repo.dir, BASELINE_REL)),
+            env: {[FREEZE_ENV.frozen]: '1', [FREEZE_ENV.base]: override},
+            cwd: repo.dir
+          }),
+        (error) => {
+          assert.ok(error instanceof FreezeError)
+          assert.match(error.message, /HEAD or a descendant of it/)
+          return true
+        },
+        `${FREEZE_ENV.base}=${override} must be rejected, not honoured`
+      )
+    }
+
+    // A genuine ancestor is still accepted — the rejection is aimed at the vacuous comparison, not
+    // at the CI provider that hands over a real base sha.
+    const ancestor = repo.run('rev-parse', 'HEAD~1')
+    const honoured = runFreezeCheck({
+      baseline: readBaseline(join(repo.dir, BASELINE_REL)),
+      env: {[FREEZE_ENV.frozen]: '1', [FREEZE_ENV.base]: ancestor},
+      cwd: repo.dir
+    })
+    assert.ok(honoured.failures.length > 0, 'a real ancestor base must still see the growth and red')
+  })
+})
+
 test('a base that cannot be resolved is a FreezeError, never a silent skip', async () => {
   await withRepo(async (repo) => {
     await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
-    assert.throws(() => freezeIn(repo, {[FREEZE_ENV.base]: 'no-such-revision'}), (error) => {
+    assert.throws(() => freezeIn(repo, {base: 'no-such-revision'}), (error) => {
       assert.ok(error instanceof FreezeError)
       assert.match(error.message, /does not resolve to a commit/)
       return true
@@ -444,7 +494,7 @@ test('a baseline absent at the base makes every id a raise, rather than an empty
     const base = repo.run('rev-parse', 'HEAD') // the root commit, before any baseline exists
     await commitBaseline(repo, BASE_CATALOG, 'chore: seed the baseline')
 
-    const {failures, notes} = freezeIn(repo, {[FREEZE_ENV.base]: base})
+    const {failures, notes} = freezeIn(repo, {base})
     assert.equal(failures.length, 4, `alpha and beta on both axes, got ${JSON.stringify(failures)}`)
     assert.match(notes[0], /does not exist at/)
   })
@@ -461,7 +511,7 @@ test('git() reads the repository at cwd even when GIT_DIR points somewhere else'
     process.env.GIT_DIR = join(REPO_ROOT, '.git')
     try {
       assert.equal(git(['rev-parse', 'HEAD'], repo.dir).stdout, head, 'cwd must decide which repository git reads')
-      assert.deepEqual(freezeIn(repo, {[FREEZE_ENV.base]: head}).failures, [])
+      assert.deepEqual(freezeIn(repo, {base: head}).failures, [])
     } finally {
       if (previous === undefined) {
         delete process.env.GIT_DIR

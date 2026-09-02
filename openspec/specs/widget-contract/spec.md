@@ -16,12 +16,17 @@ does not hold application state, it does not reach for a platform sensor, and it
 color the token tier has not already named. Its props shape is generated, its fixture is real, and
 its claim to be tested is checked rather than asserted.
 
-That paragraph is the ambition. Several requirements below are **narrower than the ambition**, because
-their gate is: a scan that covers one tree and not its neighbour, a rule that checks an import is
-present rather than that a type derives from it, a suite half of which is compiled out on the lane that
-gates. Each such requirement states the narrower truth and carries a `**Follow-up (gate widening…)**`
-note naming the tightening that would let it claim more. The note is a record of a known gap, not a
-commitment; widening a gate is its own change, and the requirement moves only when the gate does.
+That paragraph is the ambition. Where a requirement below is **narrower than the ambition**, it states
+the narrower truth. The rule for resolving the difference is: **raise the gate, do not shrink the
+requirement.** A gap in a scan is a defect in the scan, not a discovery about what the contract means.
+
+Several gaps that this file previously recorded as `**Follow-up**` notes have since been closed by
+widening the gate rather than by narrowing the prose — the Swift forbidden-import scan now covers the
+component trees the constitution always named, the web purity rules block instead of warning, the
+lint glob reaches `.css` and `.astro`, the exemption `reason` is parsed, and the Swift instantiation
+pass runs on the gating lane. What remains narrow is narrow because widening it needs infrastructure
+this repo does not have (a UIKit test destination) or a corpus that does not exist yet, and each such
+requirement says which.
 
 ### How a requirement is bound to its proof
 
@@ -43,10 +48,13 @@ copy of the same fact would only be a new way to be wrong.
 
 ### Known gaps
 
-Three requirements below describe rules this repo enforces with a **blocking gate that has no
+Two requirements below describe rules this repo enforces with a **blocking gate that has no
 known-answer test**. They are recorded, by identity, in `openspec/covers-baseline.json`. They are
 gaps, not passes: the moment one of them gains a test, its id must be pruned from the baseline in the
-same change, and a fourth untethered requirement cannot be added without appearing in that file.
+same change, and a third untethered requirement cannot be added without appearing in that file.
+
+It was three. The Swift purity gate has since gained `scripts/check-swift-widget-purity.test.mjs`,
+and its id was pruned in the same change — which is the discipline working, not an exception to it.
 
 ## Requirements
 
@@ -78,23 +86,37 @@ that fixture SHALL parse as JSON, and the manifest SHALL be decodable as a whole
 register the render smoke pass walks; an entry with no fixture is a widget nothing can render. This
 half holds for **every** manifest entry and runs on the gating lane.
 
-The **instantiation** half is narrower than the heading reads, on two axes, and this requirement
-claims only what the suite actually does:
+The **instantiation** half SHALL run on the gating lane and SHALL be reconciled against the manifest.
+Every manifest widget whose view is built by the `LifegamesWidgets` target — 30 of the 32 — SHALL be
+constructed from props by a case in the render smoke suite, and the set of widgets those cases cover
+SHALL be compared against the manifest in both directions: a manifest widget with no case FAILS, and a
+name covered here that the manifest does not carry FAILS as a stale claim to coverage.
 
-- **Coverage.** The instantiation cases hand-list their widgets rather than reading the manifest. Four
-  cases exist — health, reading, identity and other — and each names a subset of its category, so the
-  listed categories are not covered exhaustively and the `github` and `location` categories are not
-  instantiated at all. A widget added to the manifest is held to the fixture and JSON halves, and is
-  not instantiated by this suite unless it is added to a case by hand.
-- **Platform.** The instantiation cases are compiled under `#if canImport(UIKit)`. The gating CI lane
-  runs `swift test` on macOS (`.github/workflows/ci.yml` `test-swift`, host `macOS/arm64`; the package
-  declares `.macOS(.v14)`), where UIKit is not importable — so on that lane the instantiation cases
-  are **compiled out and do not run**. They build and run only on a UIKit platform.
+Two manifest widgets, `DiagnosticsMonitor` and `SyncStatus`, SHALL be named as excluded with their
+reason rather than being silently absent: their views live in `Sources/LifegamesWidgetsWatch/`, a
+separate SPM target this suite does not import, so covering them needs a watch test target rather than
+another case in this file. The reconciliation counts a named exclusion, so the two cannot grow to
+three without someone writing down why.
 
-**Follow-up (gate widening, not described here):** running the instantiation pass on the CI lane —
-by building it for a UIKit destination or by rewriting the cases to be platform-agnostic — and driving
-it from the manifest rather than a hand-listed subset would let this requirement claim instantiation
-for every manifest widget. Until then it does not.
+**What "instantiates without crashing" means here, exactly.** It means each `init(props:)` runs without
+trapping. It is **not** a render proof: SwiftUI does not evaluate `body` at construction, so a view
+whose `body` calls `fatalError` constructs successfully, and every `init(props:)` in this target is
+assignment plus a ternary. The requirement claims a construction-time contract check — each Props
+initializer still accepts what the suite hands it — and a trap guard, and claims nothing about pixels.
+
+This half previously claimed less and delivered less still. The cases sat under `#if canImport(UIKit)`
+while the gating lane runs `swift test` on macOS (`.github/workflows/ci.yml` `test-swift`; the package
+declares `.macOS(.v14)`), so **100% of them were compiled out** — `swift test list --filter RenderSmoke`
+returned five identifiers, none of them an instantiation case — and the hand-listed cases covered 16 of
+32 with `github` and `location` absent entirely. Nothing in them needed UIKit; deleting the guard made
+the suite run on macOS in 0.010s with no simulator and no destination change.
+
+#### Scenario: A manifest widget has no instantiation case
+
+- **GIVEN** a widget added to `widget-manifest.json` whose view the widgets target builds
+- **WHEN** the render smoke suite reconciles its covered set against the manifest
+- **THEN** the suite SHALL fail naming that widget, rather than holding it to the fixture halves alone
+  and leaving instantiation silently uncovered
 
 #### Scenario: A manifest entry names a fixture that is not on disk
 
@@ -117,26 +139,41 @@ for every manifest widget. Until then it does not.
 
 #### Scenario: The suite runs on the macOS gating lane
 
-- **GIVEN** the instantiation cases compiled under `#if canImport(UIKit)`
-- **WHEN** the gating lane runs `swift test` on macOS, where UIKit is not importable
-- **THEN** the fixture-existence and JSON-validity cases SHALL run over every manifest entry, and the
-  instantiation cases SHALL be compiled out — so a crash-on-init reachable only through those cases is
-  NOT caught by this lane
+- **GIVEN** the render smoke suite and a CI lane that runs `swift test` on macOS
+- **WHEN** that lane runs
+- **THEN** the fixture-existence and JSON-validity cases SHALL run over every manifest entry AND the
+  instantiation cases SHALL run, because none of them requires UIKit — so a crash-on-init is caught on
+  the lane that gates rather than only on a platform CI never builds for
 
 ### Requirement: A web widget module imports no data layer and performs no module-scope fetch
 
-A `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs` or `.cjs` module under `packages/web/src/widgets/` SHALL NOT
-import an application data layer, an API client, an application store, or a third-party HTTP or
-data-fetching library, and SHALL NOT call `fetch` outside a function body. Both `import` and
+An `.astro`, `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs` or `.cjs` module under `packages/web/src/widgets/`
+SHALL NOT import an application data layer, an API client, an application store, or a third-party HTTP
+or data-fetching library, and SHALL NOT call `fetch` outside a function body. Both `import` and
 `require()` forms are matched. The rule matches import **specifiers** against a small, closed,
 case-insensitive substring list, not identifiers, so a pure presentational helper import stays legal.
 
-`.astro` files under the same tree are **not** scanned by this rule, so an `.astro` widget that
-imports a data module is not flagged today. This is the one extension gap in the web-purity pair: the
-raw-hex rule below does scan `.astro`, this one does not.
+This is a **blocking** rule. It is configured `error`, the lint script carries `--max-warnings 0`, and
+it runs in the required `governance-gates` status context as well as in `lint-web`.
 
-**Follow-up (gate widening, not described here):** adding `.astro` to this rule's file pattern would
-close the gap. It is left out of this capability until the rule scans that extension.
+Two things had to be true at once for it to gate, and neither was. The rule was configured `warn` and
+`pnpm lint` carried no `--max-warnings`, so a widget importing `axios` printed
+`1 problem (0 errors, 1 warning)` and exited 0; and the rule's file pattern omitted `.astro`, so a
+module-scope `fetch` in an `.astro` widget's frontmatter produced no diagnostic at all. Raising the
+severity without adding the extension would have gated half the tree, and adding the extension without
+raising the severity would have gated nothing — so both landed together. Measured blast radius of the
+raise across the whole widget tree: zero existing violations.
+
+`astro-eslint-parser` exposes the `---` frontmatter as ESTree nodes, so the same `ImportDeclaration`
+and `CallExpression` visitors reach it; no second implementation exists for `.astro`.
+
+#### Scenario: An `.astro` widget fetches in its frontmatter
+
+- **GIVEN** an `.astro` file under `packages/web/src/widgets/` whose frontmatter imports a data module
+  and calls `fetch` at module scope
+- **WHEN** lint runs over it
+- **THEN** both SHALL be reported as errors and the lint SHALL exit non-zero, because a warning that
+  cannot fail a build is a note, not a boundary
 
 #### Scenario: A widget reaches for the application data layer
 
@@ -160,28 +197,47 @@ close the gap. It is left out of this capability until the rule scans that exten
 
 ### Requirement: A Swift widget or component source holds no unreviewed raw color literal
 
-The two halves of this requirement carry **different scopes**, because the gate scans two different
-corpora.
+Both halves carry the **same scope**: the union of `Sources/LifegamesWidgets/`,
+`Sources/LifegamesComponents/` and `Sources/LifegamesComponentsCore/`.
 
-The **color and co-import half** covers all three trees: a source under `Sources/LifegamesWidgets/`,
-`Sources/LifegamesComponents/` or `Sources/LifegamesComponentsCore/` SHALL NOT contain `Color(hex:)`
-or `Color(red:green:blue:)`, and SHALL NOT import `UIKit` alongside `SwiftUI`.
+A source in that union SHALL NOT contain `Color(hex:)` or `Color(red:green:blue:)`, SHALL NOT import
+`UIKit` alongside `SwiftUI`, and SHALL NOT import `ComposableArchitecture`, `HealthKit`,
+`CoreLocation`, `APIClient` or `SharedModels`.
 
-The **forbidden-import half** covers the widget tree only: a source under `Sources/LifegamesWidgets/`
-SHALL NOT import `ComposableArchitecture`, `HealthKit`, `CoreLocation`, `APIClient` or `SharedModels`.
-A component under `Sources/LifegamesComponents/` or `Sources/LifegamesComponentsCore/` is **not**
-scanned for those imports, and a component that imports one of them passes the gate today.
+The forbidden-import half previously covered the widget tree only, so a component could import
+`HealthKit` and the gate exited 0. `GOVERNANCE.md` §5 draws the ban around "a DS component", not around
+the widget tree, and the gate already walked all three trees for the color detections — the import loop
+simply did not use that corpus. Widening it was one loop; measured across the 34 component files at the
+time, zero hits, so the wider gate went green on the same commit that widened it.
 
 A `Color(hex:)` site whose value arrives as runtime data MAY be exempted by an entry in
-`widget-purity-exceptions.json`. The gate keys an exemption on the file and the line; the `reason`
-field is a review convention the exceptions file requires of its authors and the gate does not parse,
-so an exemption is a recorded decision rather than a checked one.
+`widget-purity-exceptions.json`. The gate keys an exemption on the file and the line, and the `reason`
+field is **required and parsed**: an entry whose `reason` is missing, empty or not a string exempts
+nothing AND is itself a blocking finding, so the exempted site is reported twice rather than suppressed
+once. The exceptions file has always told its authors "Reason MUST explain why the raw color is
+required"; that sentence is now enforced rather than hoped for. An unparseable exceptions file is a
+blocking finding, never an empty allow-list that quietly passes.
 
-**Follow-up (gate widening, not described here):** extending the forbidden-import ban to
-`Sources/LifegamesComponents/` and `Sources/LifegamesComponentsCore/` is a plausible tightening, as is
-requiring the exemption `reason` field the exceptions file already asks its authors for. Until the
-gate scans that corpus, this requirement stays at the widget tree, because a requirement wider than
-its gate is a wish with a heading.
+**Still narrow, deliberately:** the gate matches `import <Module>` per line. A component that reaches
+the same data through a transitive dependency, or that names an app-only _type_ without importing its
+module, is not matched. Closing that needs a Swift dependency graph rather than a line scan, which is a
+different tool, not a wider regex.
+
+#### Scenario: A component reaches for a sensor or state framework
+
+- **GIVEN** a source under `Sources/LifegamesComponents/` or `Sources/LifegamesComponentsCore/`
+- **WHEN** it imports `HealthKit`, `CoreLocation`, `ComposableArchitecture`, `APIClient` or
+  `SharedModels`
+- **THEN** the purity gate SHALL block, because P3 bans the app-only import for a DS component and not
+  merely for a widget
+
+#### Scenario: An exemption is recorded without a reason
+
+- **GIVEN** an entry in `widget-purity-exceptions.json` naming a real `file:line` with no non-empty
+  `reason`
+- **WHEN** the purity gate loads the allow-list
+- **THEN** the entry SHALL exempt nothing and SHALL itself be reported as a blocking finding, because
+  an unexplained exemption is a suppression wearing a record's clothes
 
 #### Scenario: A widget names a color the token tier has not named
 
@@ -204,6 +260,13 @@ its gate is a wish with a heading.
   `SharedModels`
 - **THEN** the purity gate SHALL block, because the data dependency belongs to the app layer
 
+#### Scenario: A runtime-data color is exempted with no stated reason
+
+- **GIVEN** the same allow-list entry, this time carrying a non-empty `reason`
+- **WHEN** the purity gate loads it
+- **THEN** the site SHALL be reported as exempt and SHALL NOT block, because the exemption is now a
+  reviewed record the gate has actually read
+
 ### Requirement: A web widget source holds no raw hex outside a token fallback argument
 
 An `.astro`, `.css`, `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs` or `.cjs` file under
@@ -214,6 +277,13 @@ source text **and** at string and template-literal nodes, deduplicated by positi
 anchors to the node. The second argument of `var(--lg-*, FALLBACK)` is exempt, because that form is a
 token reference with a declared fallback rather than a hardcoded color. An HTML numeric character
 entity is not a color and SHALL NOT be reported.
+
+The `.css` half is real rather than nominal. The rule's file pattern had always admitted `.css` and its
+`Program` handler had always scanned raw text, but the lint glob was `{ts,tsx,js,jsx,astro}` and no
+config block matched a stylesheet, so ESLint never handed it one — an injected `#ff006e` in
+`packages/web/src/widgets/identity/NotFound.css` produced zero diagnostics. Closing it took the
+extension in the glob plus a config block with a raw-text parser, because CSS has no ESTree grammar and
+this rule does not need one.
 
 #### Scenario: A widget hardcodes a hex color
 
@@ -244,15 +314,22 @@ its Props type alongside passes. Single authorship of the prop shape is the inte
 for, and no gate holds it — `typecheck` checks whatever shape a file declares, and does not require
 that shape to descend from a schema type. Derivation rests on review.
 
+This is a **blocking** rule. It is configured `error` and the lint script carries `--max-warnings 0`.
+It was `warn` with no `--max-warnings`, so a `.types.ts` with no schema import printed
+`1 problem (0 errors, 1 warning)` and the lint exited 0 — the requirement said "lint SHALL report it"
+and lint did report it, into a stream nothing read. Measured blast radius of the raise: zero existing
+violations across the 30 `.types.ts` files in the tree.
+
 A widget with no schema yet MAY opt out with a `// schema-exempt:` marker that is the **first comment
 in the file**; a marker appearing after any other comment does not exempt. The gate requires only the
 `schema-exempt:` text — it does not check that a reason follows, so the reason is a review convention
 rather than a parsed field. Per `CONTRACT.md`, changing that marker is a minor bump on
 `@j0nathan-ll0yd/web`.
 
-**Follow-up (gate widening, not described here):** checking that the exported Props type actually
-extends or intersects an imported schema type, and requiring non-empty reason text after the marker,
-would let this requirement claim derivation instead of import presence.
+**Still narrow, deliberately:** what the gate checks remains import PRESENCE, not derivation. Checking
+that the exported Props type extends or intersects an imported schema type needs type information the
+rule does not have — a typed lint pass, not a stricter severity — so derivation still rests on review.
+Requiring reason text after `schema-exempt:` is a smaller tightening and is not done here.
 
 #### Scenario: A Props type is authored independently of the schema
 
@@ -343,6 +420,35 @@ merge base so `--update-baseline` cannot silently absorb a new gap. Growth SHALL
 `Baseline-Raise: <axis>:<widget-id> <reason>` trailer naming that exact axis and id. A baseline id
 naming no widget SHALL fail; a graduated widget's stale id SHALL be reported as prunable and SHALL NOT
 block.
+
+**The base SHALL be a real ancestor, and there SHALL be no way to make the comparison vacuous.** The
+freeze resolves its base as the merge base with the target branch. Two paths made that base equal HEAD,
+and a base equal to HEAD compares the baseline against itself: every growth set is empty and the check
+prints `ok`, reporting itself as frozen while checking nothing.
+
+- `CATALOG_BASELINE_BASE` took a verbatim commit-ish with no merge base, so `=HEAD` greened a branch
+  that reds without it — measured, PASS 6/6, exit 0. An override resolving to HEAD or to a **descendant**
+  of HEAD is now rejected outright. The known-answer suite injects its base through an explicit function
+  ARGUMENT instead, because a test-only escape hatch that ships in the shipped code is not test-only.
+- On the **push** lane `origin/main` IS the pushed commit, so `merge-base(origin/main, HEAD) == HEAD` and
+  the freeze was vacuous for every direct push — measured, a gap absorbed straight onto main gave zero
+  failures. CI now hands the freeze `github.event.before` on that lane, which is a real ancestor.
+
+There is still no thaw switch. Growth is unlocked only by naming the axis and the id and giving a reason.
+
+#### Scenario: The freeze is asked to compare the baseline against itself
+
+- **GIVEN** a branch that adds a gap and re-records the baseline
+- **WHEN** the freeze base is pointed at HEAD, or at a commit that descends from HEAD
+- **THEN** the gate SHALL fail with an error naming the vacuous comparison, and SHALL NOT report `ok`,
+  because a base that cannot contain a change this branch has not already made is not a comparison
+
+#### Scenario: A gap is absorbed by a direct push to the target branch
+
+- **GIVEN** a commit pushed to `main` that adds an id to a grandfathered list
+- **WHEN** the push lane runs the freeze
+- **THEN** the base SHALL be the commit that preceded the push rather than the pushed commit itself, so
+  the added id SHALL red exactly as it would on a pull request
 
 #### Scenario: A new widget arrives with neither a behavioral test nor an accessibility label
 
@@ -436,13 +542,28 @@ preview and watch-stub importers do not count as product surfaces is enforced **
 product surfaces per the census. The gate does not classify a consumer, so a registry that recorded a
 showcase importer as a consumer would be counted as a surface here.
 
-Two non-blocking states are reported and SHALL NOT fail the gate: a widget with no consumer and no
-planned surface is `incubating` — a valid state, reported at information level — and a widget with
-exactly one consumer and no planned surface is reported as an advisory note.
+Two non-blocking states are reported and SHALL NOT fail the gate **provided the entry's status is not
+`Stable`**: a widget with no consumer and no planned surface is `incubating` — a valid state, reported
+at information level — and a widget with exactly one consumer and no planned surface is reported as an
+advisory note.
 
-**Follow-up (gate widening, not described here):** having the gate classify consumer entries itself,
-rather than trusting registry curation, would move the showcase/preview/watch-stub exclusion into the
-gate. Refreshing the stale "advisory" wording in the script header is a docs fix on the same file.
+That guard is load-bearing and the prose used to omit it. The two reported states and the blocking arm
+are evaluated independently, so an entry with one consumer, no `plannedSurface` and status `Stable`
+lands in the advisory list AND in the blocking list, and the blocking list decides the exit code.
+Executed: flipping `IdentityCard` to `Stable` exits 1 while still being printed as a one-surface
+advisory. The scenarios below always carried the "not `Stable`" guard; the prose above them now does
+too. The registry holds zero `Stable` entries today, so the blocking arm has no live subjects.
+
+**Considered and declined — having the gate classify consumers itself.** The exclusion of showcase,
+preview and watch-stub importers is enforced upstream in how the registries are curated, and moving it
+into the gate was evaluated against the actual corpus rather than in principle. Across both registries
+there are 75 entries and **four distinct consumer strings**: `index.astro` (29), `HealthFeatureView`
+(2), `404.astro` (1). Every one is a real product surface; there is no showcase or preview importer
+recorded anywhere to classify. All 75 entries are `Experimental`, so the only arm a classifier could
+change has zero subjects. A classifier built now would be a filename heuristic with no corpus to
+validate against, guessing at a shape that has never occurred — which is how a gate acquires false
+confidence rather than reach. The exclusion stays where it is enforced, and this requirement says so
+rather than promising a tightening nobody can currently test.
 
 #### Scenario: A widget is promoted to Stable on one surface
 

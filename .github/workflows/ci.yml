@@ -469,15 +469,43 @@ jobs:
       # Per-probe granularity in the Actions UI is the accepted trade; the default
       # `bash -e` shell means this step's exit code is the first failing probe's.
       - name: governance-gates
+        env:
+          # The baseline freeze resolves its base as the MERGE BASE with origin/main. On the
+          # pull_request lane that is the fork point and the comparison is real. On the PUSH lane it
+          # is VACUOUS: origin/main IS the pushed commit, so merge-base(origin/main, HEAD) == HEAD,
+          # the baseline is compared against itself, every growth set is empty and the freeze passes.
+          # Measured: a gap absorbed directly on main gave `failures: 0`. So on a push, hand the
+          # freeze the commit that was there BEFORE it — that is a real ancestor and a real
+          # comparison. Empty on pull_request, where merge-base is already correct.
+          #
+          # Skipped when it is the null sha (branch creation, no prior commit to compare against) —
+          # the merge-base path then applies as before. `CATALOG_BASELINE_BASE` rejects HEAD and any
+          # descendant of it, so this cannot be turned into a self-comparison.
+          CATALOG_FREEZE_PUSH_BASE: ${{ github.event_name == 'push' && github.event.before || '' }}
         run: |
+          if [ -n "$CATALOG_FREEZE_PUSH_BASE" ] && [ "$CATALOG_FREEZE_PUSH_BASE" != "0000000000000000000000000000000000000000" ]; then
+            export CATALOG_BASELINE_BASE="$CATALOG_FREEZE_PUSH_BASE"
+            echo "[freeze] push lane — comparing the baseline against $CATALOG_BASELINE_BASE"
+          fi
           # Widget inventory drift (P5)
           pnpm widget:inventory -- --check
           # P1 token parity (web/Swift accent hex)
           node scripts/check-token-parity.mjs --check
           # WCAG-AA contrast gate
           node scripts/check-contrast.mjs
-          # P3 Swift widget purity
+          # P3 Swift widget purity — widgets AND components. GOVERNANCE.md §5 bans the app-only
+          # imports for "a DS component"; the scan covered only Sources/LifegamesWidgets/, so a
+          # component importing HealthKit exited 0. Measured across the 34 component files at the
+          # time of widening: zero hits, so the wider gate went green immediately.
           node scripts/check-swift-widget-purity.mjs --check
+          # That gate's own known-answer suite — it had NONE, which is why it was one of the three
+          # requirements grandfathered in openspec/covers-baseline.json. Two defects lived in the
+          # blind spot: the widget-only import scan above, and an exemption in
+          # widget-purity-exceptions.json that suppressed a Color(hex:) finding while stating no
+          # reason, against the file's own "Reason MUST explain why". Same argument as the suites
+          # below: reachable only through `pnpm test:scripts`, it would run in .husky/pre-push and no
+          # workflow, so DS_SKIP_PREPUSH=1 would be enough to merge a gate that stopped gating.
+          node --test scripts/check-swift-widget-purity.test.mjs
           # Watch exclusions (F-014)
           node scripts/check-watch-exclusions.mjs --check
           # P4/P7 promotion gate
@@ -530,6 +558,26 @@ jobs:
           # rather than in lint-web because governance-gates is a required status
           # context and lint-web is not — a gate that cannot block is not a gate.
           node --test scripts/check-ssr-image-fallback.test.mjs
+          # Web widget-purity lint (P1 raw hex, P3 forbidden imports / module-scope fetch, W16
+          # props-extend-schema). It runs HERE and not only in lint-web for the reason stated on the
+          # SSR gate above: governance-gates is a required status context and lint-web is not.
+          # `pnpm lint` alone was not a gate either way — both P3 and W16 were configured 'warn' and
+          # the script carried no --max-warnings, so a widget importing axios beside a .types.ts with
+          # no schema import printed `2 problems (0 errors, 2 warnings)` and exited 0. They are
+          # 'error' now, the glob covers .css and .astro, and --max-warnings 0 closes the rest.
+          # Measured blast radius of the raise across the whole tree: zero existing violations.
+          pnpm -F @j0nathan-ll0yd/web lint
+          # The configuration's own known-answer suite. A RuleTester case passes identically whether
+          # its rule is 'warn' or 'error' and never sees the CLI glob, so it cannot prove either of
+          # the two things that were actually broken. This asserts the resolved SEVERITY through the
+          # real eslint.config.js and that the lint script still scans every extension its rules
+          # claim — a regression to 'warn' or a dropped extension reds here.
+          node --test scripts/check-web-lint-severity.test.mjs
+          # The local ESLint rules' RuleTester suites. They ran in NO workflow and NO hook — not
+          # turbo, not `pnpm test:scripts` (whose globs are scripts/, packages/schemas/scripts/ and
+          # contracts/component-catalog/ only) — so every rule above was one silent edit away from
+          # reporting nothing, with its `// covers:` tether still satisfying check:covers.
+          node --test eslint-local-rules/__tests__/*.test.js
           # Style Dictionary golden-file characterization (F-005)
           pnpm --filter @j0nathan-ll0yd/tokens test
           # S22 preview scheme audit

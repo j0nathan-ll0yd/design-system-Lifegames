@@ -275,8 +275,27 @@ only on the machine that ran the writer.
 
 An unresolvable base is a hard RED, for the same reason a missing baseline is. The CI checkout
 therefore uses `fetch-depth: 0`; locally, `git fetch origin main` is what a "cannot resolve a base"
-message is asking for. `CATALOG_BASELINE_BASE` overrides with a verbatim commit-ish (no merge base)
-and exists for the tests and for a provider that hands the base sha over directly.
+message is asking for.
+
+`CATALOG_BASELINE_BASE` overrides with a verbatim commit-ish (no merge base), for a CI provider that
+hands the base sha over directly. It **rejects a value that resolves to HEAD or to a descendant of
+HEAD**, and that rejection is the point: because the override skips the merge base, `=HEAD` used to
+compare the baseline against itself — every growth set empty, the check printing
+`ok baseline freeze (frozen against CATALOG_BASELINE_BASE HEAD (…))`. Measured on a branch that reds
+without it, the whole gate went PASS 6/6, exit 0. It reported itself as frozen while being a thaw.
+`ratchet.test.mjs` carries the known-answer case; the suite injects its own base through an explicit
+`runFreezeCheck({base})` argument rather than the env var, because a test-only escape hatch that ships
+in the shipped code is not test-only.
+
+The **push lane** needed the override for the opposite reason. `.github/workflows/ci.yml` runs on
+`push: branches: [main]` as well as on pull requests, and on a push `origin/main` IS the pushed commit
+— so `merge-base(origin/main, HEAD) == HEAD` and the freeze was vacuous for every direct push.
+Measured: a gap absorbed straight onto main gave zero failures. The `governance-gates` step now passes
+`github.event.before` on that lane, which is a real ancestor, and skips it on the null sha (branch
+creation), where the merge-base path applies as before.
+
+There is still no thaw switch. Growth is unlocked only by naming the axis and the id and giving a
+reason.
 
 ## Partial entries
 
