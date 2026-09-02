@@ -12,7 +12,12 @@
 // pure formatters). Network calls made in module scope (`fetch(...)`) are also
 // flagged, since a presentational widget must not fetch.
 
-const FILE_PATTERN = /\/packages\/web\/src\/widgets\/.+\.(?:ts|tsx|js|jsx|mjs|cjs)$/
+// `.astro` is included: astro-eslint-parser exposes the frontmatter script as
+// real ESTree nodes, so an `import` or a module-scope `fetch(...)` in a widget's
+// `---` block is reached by the same visitors as a `.ts` module. Leaving it out
+// meant an `.astro` widget could import the app data layer and fetch at module
+// scope with no diagnostic at all.
+const FILE_PATTERN = /\/packages\/web\/src\/widgets\/.+\.(?:astro|ts|tsx|js|jsx|mjs|cjs)$/
 
 // Forbidden import-source fragments. An import is flagged if its specifier
 // CONTAINS any of these substrings (case-insensitive). Kept small + explicit.

@@ -35,7 +35,7 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro,css}\" --max-warnings 0",
     "audit:inline-scripts": "node scripts/audit-inline-scripts.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
