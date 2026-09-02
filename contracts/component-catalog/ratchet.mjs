@@ -424,20 +424,54 @@ export function evaluateFreeze({baseline, base, raises = [], raiseErrors = [], d
  *
  * A NAMED ref is resolved through `git merge-base`, so a branch is judged on what IT added and not
  * on what the target branch has landed since it forked. `CATALOG_BASELINE_BASE` overrides with a
- * VERBATIM commit-ish, no merge-base — it exists for the tests and for a CI provider that hands the
- * base sha over directly.
+ * VERBATIM commit-ish, no merge-base — it exists for a CI provider that hands the base sha over
+ * directly (the push lane passes `github.event.before`).
+ *
+ * That override was a THAW SWITCH, and it reported itself as frozen while being one. Because it
+ * takes a verbatim commit-ish with no merge-base, `CATALOG_BASELINE_BASE=HEAD` compared the baseline
+ * against ITSELF: every growth set came out empty and the check printed
+ * `ok baseline freeze (frozen against CATALOG_BASELINE_BASE HEAD (…))`. Measured on a branch that
+ * reds without it, that turned a FAIL into a PASS with exit 0. So a base that resolves to HEAD, or
+ * to a DESCENDANT of HEAD, is now rejected outright: neither can contain a change this branch has
+ * not already made, so neither is a comparison. There is still no way to turn the freeze off.
+ *
+ * The `base` OPTION is separate and deliberately not validated the same way: it is an in-process
+ * argument the known-answer suite passes to point the freeze at a fixture repo's commit, not a
+ * switch an operator can reach from the environment. That is exactly why the suite no longer injects
+ * through the env var — a test-only escape hatch that ships in the shipped binary is not test-only.
  *
  * Failure to resolve is a hard error, never a skip. A gate that greens when its own input is missing
  * is not a gate, which is the same rule `readBaseline` follows for a missing baseline.
  *
  * @returns {{commit: string, describe: string}}
  */
-export function resolveFreezeBase({env = process.env, cwd = REPO_ROOT} = {}) {
+export function resolveFreezeBase({env = process.env, cwd = REPO_ROOT, base = null} = {}) {
+  if (typeof base === 'string' && base.trim().length > 0) {
+    const resolved = git(['rev-parse', '--verify', '--quiet', `${base.trim()}^{commit}`], cwd)
+    if (!resolved.ok || resolved.stdout.length === 0) {
+      throw new FreezeError(`the freeze base \`${base}\` does not resolve to a commit in this repository.`)
+    }
+    return {commit: resolved.stdout, describe: `the explicit base \`${base}\``}
+  }
+
   const override = String(env[FREEZE_ENV.base] ?? '').trim()
   if (override.length > 0) {
     const resolved = git(['rev-parse', '--verify', '--quiet', `${override}^{commit}`], cwd)
     if (!resolved.ok || resolved.stdout.length === 0) {
       throw new FreezeError(`${FREEZE_ENV.base}=\`${override}\` does not resolve to a commit in this repository.`)
+    }
+    const head = git(['rev-parse', '--verify', '--quiet', 'HEAD^{commit}'], cwd)
+    if (head.ok && head.stdout.length > 0) {
+      // `--is-ancestor HEAD <base>` is true when base IS HEAD or descends from it. Either way the
+      // comparison set is empty by construction, which is a thaw wearing the word "frozen".
+      const vacuous = git(['merge-base', '--is-ancestor', head.stdout, resolved.stdout], cwd)
+      if (vacuous.ok) {
+        throw new FreezeError(
+          `${FREEZE_ENV.base}=\`${override}\` resolves to ${resolved.stdout.slice(0, 9)}, which is HEAD or a descendant of it. ` +
+            `Comparing the baseline against itself makes every growth set empty, so the freeze would report \`ok\` while checking nothing. ` +
+            `Point it at the commit this branch forked from (the push lane passes \`github.event.before\`), or unset it and let the merge base with origin/main be resolved.`
+        )
+      }
     }
     return {commit: resolved.stdout, describe: `${FREEZE_ENV.base} \`${override}\``}
   }
@@ -493,11 +527,11 @@ export function commitMessagesSince(commit, cwd = REPO_ROOT) {
  *
  * @returns {{frozen: boolean, describe: string, failures: string[], notes: string[]}}
  */
-export function runFreezeCheck({baseline, env = process.env, cwd = REPO_ROOT}) {
+export function runFreezeCheck({baseline, env = process.env, cwd = REPO_ROOT, base: baseRef = null}) {
   if (!isFrozen(env)) {
     return {frozen: false, describe: `not frozen — set ${FREEZE_ENV.frozen}=1 (CI sets it implicitly)`, failures: [], notes: []}
   }
-  const {commit, describe} = resolveFreezeBase({env, cwd})
+  const {commit, describe} = resolveFreezeBase({env, cwd, base: baseRef})
   const base = readBaselineAtRef(commit, cwd)
   const {raises, errors} = collectRaises({env, messages: commitMessagesSince(commit, cwd)})
   const describeBase = `${describe} (${commit.slice(0, 9)})`
