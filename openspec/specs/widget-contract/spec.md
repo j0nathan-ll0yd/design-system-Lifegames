@@ -16,6 +16,13 @@ does not hold application state, it does not reach for a platform sensor, and it
 color the token tier has not already named. Its props shape is generated, its fixture is real, and
 its claim to be tested is checked rather than asserted.
 
+That paragraph is the ambition. Several requirements below are **narrower than the ambition**, because
+their gate is: a scan that covers one tree and not its neighbour, a rule that checks an import is
+present rather than that a type derives from it, a suite half of which is compiled out on the lane that
+gates. Each such requirement states the narrower truth and carries a `**Follow-up (gate widening…)**`
+note naming the tightening that would let it claim more. The note is a record of a known gap, not a
+commitment; widening a gate is its own change, and the requirement moves only when the gate does.
+
 ### How a requirement is bound to its proof
 
 Each requirement is bound by a line-leading `// covers:` comment in the test that holds it, naming
@@ -67,8 +74,27 @@ that declared it, naming the Props type, never silently skipped.
 ### Requirement: Every manifest widget has a fixture on disk and instantiates without crashing
 
 Every entry in `widget-manifest.json` SHALL name a fixture that exists in the widget resource bundle,
-and the manifest SHALL be decodable as a whole. The manifest is the register the render smoke pass
-walks; an entry with no fixture is a widget nothing can render.
+that fixture SHALL parse as JSON, and the manifest SHALL be decodable as a whole. The manifest is the
+register the render smoke pass walks; an entry with no fixture is a widget nothing can render. This
+half holds for **every** manifest entry and runs on the gating lane.
+
+The **instantiation** half is narrower than the heading reads, on two axes, and this requirement
+claims only what the suite actually does:
+
+- **Coverage.** The instantiation cases hand-list their widgets rather than reading the manifest. Four
+  cases exist — health, reading, identity and other — and each names a subset of its category, so the
+  listed categories are not covered exhaustively and the `github` and `location` categories are not
+  instantiated at all. A widget added to the manifest is held to the fixture and JSON halves, and is
+  not instantiated by this suite unless it is added to a case by hand.
+- **Platform.** The instantiation cases are compiled under `#if canImport(UIKit)`. The gating CI lane
+  runs `swift test` on macOS (`.github/workflows/ci.yml` `test-swift`, host `macOS/arm64`; the package
+  declares `.macOS(.v14)`), where UIKit is not importable — so on that lane the instantiation cases
+  are **compiled out and do not run**. They build and run only on a UIKit platform.
+
+**Follow-up (gate widening, not described here):** running the instantiation pass on the CI lane —
+by building it for a UIKit destination or by rewriting the cases to be platform-agnostic — and driving
+it from the manifest rather than a hand-listed subset would let this requirement claim instantiation
+for every manifest widget. Until then it does not.
 
 #### Scenario: A manifest entry names a fixture that is not on disk
 
@@ -82,12 +108,35 @@ walks; an entry with no fixture is a widget nothing can render.
 - **WHEN** a widget is added to or removed from the manifest
 - **THEN** the pinned manifest count SHALL fail until the register is moved in the same change
 
+#### Scenario: A manifest fixture is present but is not parseable JSON
+
+- **GIVEN** a fixture that resolves from the bundle but whose bytes are not a JSON object or array
+- **WHEN** the render smoke suite reads every manifest entry's fixture
+- **THEN** the suite SHALL fail naming that widget, because a present-but-unreadable fixture is a
+  widget nothing can render
+
+#### Scenario: The suite runs on the macOS gating lane
+
+- **GIVEN** the instantiation cases compiled under `#if canImport(UIKit)`
+- **WHEN** the gating lane runs `swift test` on macOS, where UIKit is not importable
+- **THEN** the fixture-existence and JSON-validity cases SHALL run over every manifest entry, and the
+  instantiation cases SHALL be compiled out — so a crash-on-init reachable only through those cases is
+  NOT caught by this lane
+
 ### Requirement: A web widget module imports no data layer and performs no module-scope fetch
 
-A module under `packages/web/src/widgets/` SHALL NOT import an application data layer, an API client,
-an application store, or a third-party HTTP or data-fetching library, and SHALL NOT call `fetch` at
-module scope. The rule matches import **specifiers**, not identifiers, so a pure presentational
-helper import stays legal.
+A `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs` or `.cjs` module under `packages/web/src/widgets/` SHALL NOT
+import an application data layer, an API client, an application store, or a third-party HTTP or
+data-fetching library, and SHALL NOT call `fetch` outside a function body. Both `import` and
+`require()` forms are matched. The rule matches import **specifiers** against a small, closed,
+case-insensitive substring list, not identifiers, so a pure presentational helper import stays legal.
+
+`.astro` files under the same tree are **not** scanned by this rule, so an `.astro` widget that
+imports a data module is not flagged today. This is the one extension gap in the web-purity pair: the
+raw-hex rule below does scan `.astro`, this one does not.
+
+**Follow-up (gate widening, not described here):** adding `.astro` to this rule's file pattern would
+close the gap. It is left out of this capability until the rule scans that extension.
 
 #### Scenario: A widget reaches for the application data layer
 
@@ -111,12 +160,28 @@ helper import stays legal.
 
 ### Requirement: A Swift widget or component source holds no unreviewed raw color literal
 
-A source under `Sources/LifegamesWidgets/`, `Sources/LifegamesComponents/` or
-`Sources/LifegamesComponentsCore/` SHALL NOT contain `Color(hex:)` or `Color(red:green:blue:)`, SHALL
-NOT import `ComposableArchitecture`, `HealthKit`, `CoreLocation`, `APIClient` or `SharedModels`, and
-SHALL NOT import `UIKit` alongside `SwiftUI`. A `Color(hex:)` site whose value arrives as runtime data
-MAY be exempted by an entry in `widget-purity-exceptions.json` naming the file, the line, and a reason
-that explains why the raw color is required.
+The two halves of this requirement carry **different scopes**, because the gate scans two different
+corpora.
+
+The **color and co-import half** covers all three trees: a source under `Sources/LifegamesWidgets/`,
+`Sources/LifegamesComponents/` or `Sources/LifegamesComponentsCore/` SHALL NOT contain `Color(hex:)`
+or `Color(red:green:blue:)`, and SHALL NOT import `UIKit` alongside `SwiftUI`.
+
+The **forbidden-import half** covers the widget tree only: a source under `Sources/LifegamesWidgets/`
+SHALL NOT import `ComposableArchitecture`, `HealthKit`, `CoreLocation`, `APIClient` or `SharedModels`.
+A component under `Sources/LifegamesComponents/` or `Sources/LifegamesComponentsCore/` is **not**
+scanned for those imports, and a component that imports one of them passes the gate today.
+
+A `Color(hex:)` site whose value arrives as runtime data MAY be exempted by an entry in
+`widget-purity-exceptions.json`. The gate keys an exemption on the file and the line; the `reason`
+field is a review convention the exceptions file requires of its authors and the gate does not parse,
+so an exemption is a recorded decision rather than a checked one.
+
+**Follow-up (gate widening, not described here):** extending the forbidden-import ban to
+`Sources/LifegamesComponents/` and `Sources/LifegamesComponentsCore/` is a plausible tightening, as is
+requiring the exemption `reason` field the exceptions file already asks its authors for. Until the
+gate scans that corpus, this requirement stays at the widget tree, because a requirement wider than
+its gate is a wish with a heading.
 
 #### Scenario: A widget names a color the token tier has not named
 
@@ -141,15 +206,20 @@ that explains why the raw color is required.
 
 ### Requirement: A web widget source holds no raw hex outside a token fallback argument
 
-A `.ts`, `.tsx`, `.js` or `.jsx` file under `packages/web/src/widgets/` SHALL NOT contain a CSS hex
-color literal. The second argument of `var(--lg-*, FALLBACK)` is exempt, because that form is a token
-reference with a declared fallback rather than a hardcoded color. An HTML numeric character entity is
-not a color and SHALL NOT be reported.
+An `.astro`, `.css`, `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs` or `.cjs` file under
+`packages/web/src/widgets/` SHALL NOT contain a CSS hex color literal — a `#` followed by exactly
+three, four, six or eight hex digits. `.astro` and `.css` are scanned as raw source text, because
+their style content is not exposed to the rule as string nodes; JS and TS files are scanned as raw
+source text **and** at string and template-literal nodes, deduplicated by position, so the diagnostic
+anchors to the node. The second argument of `var(--lg-*, FALLBACK)` is exempt, because that form is a
+token reference with a declared fallback rather than a hardcoded color. An HTML numeric character
+entity is not a color and SHALL NOT be reported.
 
 #### Scenario: A widget hardcodes a hex color
 
 - **GIVEN** a widget source under `packages/web/src/widgets/`
-- **WHEN** it holds a three-, six- or eight-digit hex literal in a string or template literal
+- **WHEN** it holds a three-, four-, six- or eight-digit hex literal in a string, a template literal
+  or the raw text of an `.astro` or `.css` file
 - **THEN** lint SHALL report the literal verbatim, so the review names the color it is replacing
 
 #### Scenario: A token reference carries a hex fallback
@@ -167,20 +237,41 @@ not a color and SHALL NOT be reported.
 
 ### Requirement: A web widget Props type extends its generated schema unless marked schema-exempt
 
-A `*.types.ts` file under `packages/web/src/widgets/` SHALL derive its exported Props type from a type
-imported from `@j0nathan-ll0yd/schemas`, so the prop shape has exactly one author. A widget with no
-schema yet MAY opt out with a line-leading `// schema-exempt:` marker carrying a reason; per
-`CONTRACT.md`, changing that marker is a minor bump on `@j0nathan-ll0yd/web`.
+A `<widget>/<name>.types.ts` file under `packages/web/src/widgets/` — exactly one directory level down
+— SHALL import from `@j0nathan-ll0yd/schemas`. What the gate checks is the **presence of that import**,
+not that the exported Props type derives from it: a file that imports the package and then hand-writes
+its Props type alongside passes. Single authorship of the prop shape is the intent the import stands
+for, and no gate holds it — `typecheck` checks whatever shape a file declares, and does not require
+that shape to descend from a schema type. Derivation rests on review.
+
+A widget with no schema yet MAY opt out with a `// schema-exempt:` marker that is the **first comment
+in the file**; a marker appearing after any other comment does not exempt. The gate requires only the
+`schema-exempt:` text — it does not check that a reason follows, so the reason is a review convention
+rather than a parsed field. Per `CONTRACT.md`, changing that marker is a minor bump on
+`@j0nathan-ll0yd/web`.
+
+**Follow-up (gate widening, not described here):** checking that the exported Props type actually
+extends or intersects an imported schema type, and requiring non-empty reason text after the marker,
+would let this requirement claim derivation instead of import presence.
 
 #### Scenario: A Props type is authored independently of the schema
 
 - **GIVEN** a `*.types.ts` file inside the widget tree
-- **WHEN** it exports a Props type without importing from `@j0nathan-ll0yd/schemas`
-- **THEN** lint SHALL report it, because a second hand-written copy of a prop shape drifts silently
+- **WHEN** it carries no import of `@j0nathan-ll0yd/schemas`
+- **THEN** lint SHALL report it once, naming the file, because a second hand-written copy of a prop
+  shape drifts silently — and it SHALL report whether or not the file exports a Props type, since the
+  import is what is checked
+
+#### Scenario: A Props type is hand-written beside a schema import
+
+- **GIVEN** a `*.types.ts` file that imports `@j0nathan-ll0yd/schemas` and then declares its Props
+  type without referencing anything from that import
+- **WHEN** lint runs over it
+- **THEN** the rule SHALL pass it, because the rule checks import presence rather than derivation
 
 #### Scenario: A widget with no schema declares the exemption
 
-- **GIVEN** the same file carrying a `// schema-exempt:` marker and a reason
+- **GIVEN** the same file whose first comment is a `// schema-exempt:` marker
 - **WHEN** lint runs over it
 - **THEN** the file SHALL be skipped entirely, because the gap is now recorded rather than hidden
 
@@ -334,20 +425,41 @@ the pulsing map marker depends on MapKit and a coordinate stream.
 
 ### Requirement: A widget labelled Stable has at least two real product surfaces
 
-A widget whose lifecycle label is `Stable` SHALL have at least two real product-surface consumers.
-A widget with no consumer and no planned surface is `incubating` — a valid state, reported at
-information level, never a violation. Showcase, preview and watch-stub importers SHALL NOT count as
-product surfaces.
+A widget whose lifecycle label is `Stable` SHALL have at least two consumers recorded in the registry
+that carries it. This is a **blocking** rule: under `--check` the gate exits non-zero when any entry
+is `Stable` with fewer than two recorded consumers. The gate's own header comment still describes the
+`Stable` finding as advisory, which is stale — the exit code is the authority, and it blocks.
+
+What the gate counts is the length of the entry's `consumers` array, as recorded. That showcase,
+preview and watch-stub importers do not count as product surfaces is enforced **upstream**, in how
+`production-widgets.json` and `widget-consumers.json` are curated — the registries record only real
+product surfaces per the census. The gate does not classify a consumer, so a registry that recorded a
+showcase importer as a consumer would be counted as a surface here.
+
+Two non-blocking states are reported and SHALL NOT fail the gate: a widget with no consumer and no
+planned surface is `incubating` — a valid state, reported at information level — and a widget with
+exactly one consumer and no planned surface is reported as an advisory note.
+
+**Follow-up (gate widening, not described here):** having the gate classify consumer entries itself,
+rather than trusting registry curation, would move the showcase/preview/watch-stub exclusion into the
+gate. Refreshing the stale "advisory" wording in the script header is a docs fix on the same file.
 
 #### Scenario: A widget is promoted to Stable on one surface
 
-- **GIVEN** a registry entry whose status is `Stable` and whose consumer list holds fewer than two
-  product surfaces
-- **WHEN** the promotion gate evaluates both registries
-- **THEN** it SHALL exit non-zero, because `Stable` is the two-surface threshold
+- **GIVEN** a registry entry whose status is `Stable` and whose `consumers` array holds fewer than two
+  entries
+- **WHEN** the promotion gate evaluates both registries under `--check`
+- **THEN** it SHALL exit non-zero, because `Stable` is the two-surface threshold and the rule blocks
 
 #### Scenario: A widget is developing toward its first surface
 
 - **GIVEN** a registry entry with zero consumers and no planned surface
 - **WHEN** the promotion gate evaluates it
 - **THEN** it SHALL be reported as incubating and SHALL NOT fail the gate
+
+#### Scenario: A widget has reached exactly one surface
+
+- **GIVEN** a registry entry with one consumer and no planned surface, whose status is not `Stable`
+- **WHEN** the promotion gate evaluates it
+- **THEN** it SHALL be reported as an advisory note and SHALL NOT fail the gate, because the blocking
+  threshold belongs to the `Stable` label rather than to the surface count alone
