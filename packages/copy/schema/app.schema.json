@@ -1114,9 +1114,9 @@
         "alerts": {
           "type": "object",
           "title": "AppBookshelfAlerts",
-          "description": "Bookshelf error-alert titles (load/add/update/delete failures).",
+          "description": "Bookshelf error-alert titles (load/add/update/delete failures) plus the add-book rejection message.",
           "additionalProperties": false,
-          "required": ["failedToLoad", "failedToAddBook", "failedToUpdate", "failedToDelete"],
+          "required": ["failedToLoad", "failedToAddBook", "failedToUpdate", "failedToDelete", "kindleEditionRejected"],
           "properties": {
             "failedToLoad": {
               "$ref": "#/$defs/CopyString"
@@ -1128,6 +1128,9 @@
               "$ref": "#/$defs/CopyString"
             },
             "failedToDelete": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "kindleEditionRejected": {
               "$ref": "#/$defs/CopyString"
             }
           }

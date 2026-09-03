@@ -2752,6 +2752,18 @@
           "owner": "jonathan",
           "lastReviewed": "2026-06-11"
         }
+      },
+      "kindleEditionRejected": {
+        "value": "Kindle editions carry no library record to enrich. Switch the format to Hardcover or Paperback, then add it again.",
+        "_meta": {
+          "description": "Bookshelf add-book rejection message, shown as the alert body when the ASIN detected in the Amazon browser is a Kindle edition (B-prefixed). Explains the cause and the recovery step.",
+          "usage": ["ios:BookshelfFeature/BookshelfFeature.swift (addBook guard, alert message TextState)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-09-03",
+          "rationale": "A Kindle ASIN has no ISBN and no Open Library record, so metadata enrichment can never succeed for it. The message names the fix rather than the failure."
+        }
       }
     }
   },
