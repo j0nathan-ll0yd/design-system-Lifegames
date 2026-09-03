@@ -214,7 +214,8 @@ public struct AppBookshelf: Codable, Sendable {
     /// Add Book search screen — title, search placeholder, empty prompt, ASIN template, add
     /// button.
     public let addBook: AppBookshelfAddBook
-    /// Bookshelf error-alert titles (load/add/update/delete failures).
+    /// Bookshelf error-alert titles (load/add/update/delete failures) plus the add-book
+    /// rejection message.
     public let alerts: AppBookshelfAlerts
     public let currentlyReading: String
     /// Edit Book screen — title, buttons, placeholders, section headers, and metadata field
@@ -381,16 +382,19 @@ public extension AppBookshelfAddBook {
     }
 }
 
-/// Bookshelf error-alert titles (load/add/update/delete failures).
+/// Bookshelf error-alert titles (load/add/update/delete failures) plus the add-book
+/// rejection message.
 // MARK: - AppBookshelfAlerts
 public struct AppBookshelfAlerts: Codable, Sendable {
     public let failedToAddBook, failedToDelete, failedToLoad, failedToUpdate: String
+    public let kindleEditionRejected: String
 
-    public init(failedToAddBook: String, failedToDelete: String, failedToLoad: String, failedToUpdate: String) {
+    public init(failedToAddBook: String, failedToDelete: String, failedToLoad: String, failedToUpdate: String, kindleEditionRejected: String) {
         self.failedToAddBook = failedToAddBook
         self.failedToDelete = failedToDelete
         self.failedToLoad = failedToLoad
         self.failedToUpdate = failedToUpdate
+        self.kindleEditionRejected = kindleEditionRejected
     }
 }
 
@@ -416,13 +420,15 @@ public extension AppBookshelfAlerts {
         failedToAddBook: String? = nil,
         failedToDelete: String? = nil,
         failedToLoad: String? = nil,
-        failedToUpdate: String? = nil
+        failedToUpdate: String? = nil,
+        kindleEditionRejected: String? = nil
     ) -> AppBookshelfAlerts {
         return AppBookshelfAlerts(
             failedToAddBook: failedToAddBook ?? self.failedToAddBook,
             failedToDelete: failedToDelete ?? self.failedToDelete,
             failedToLoad: failedToLoad ?? self.failedToLoad,
-            failedToUpdate: failedToUpdate ?? self.failedToUpdate
+            failedToUpdate: failedToUpdate ?? self.failedToUpdate,
+            kindleEditionRejected: kindleEditionRejected ?? self.kindleEditionRejected
         )
     }
 
