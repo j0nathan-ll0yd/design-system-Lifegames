@@ -247,6 +247,13 @@ jobs:
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
         run: node scripts/validate-dtcg.mjs
+      # That gate's own known-answer suite. It is the sixth gate atlas catalog check D3
+      # names, and the only one that runs OUTSIDE governance-gates — which is why D3's
+      # runner had to grow this job as a second entry. The proof runs beside the gate it
+      # proves rather than in governance-gates: build-tokens is where the validator lives,
+      # and governance-gates `needs:` it, so a red here blocks the required context too.
+      - name: Prove the DTCG validator can fail
+        run: node --test scripts/validate-dtcg.test.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: token-dist
@@ -491,8 +498,17 @@ jobs:
           pnpm widget:inventory -- --check
           # P1 token parity (web/Swift accent hex)
           node scripts/check-token-parity.mjs --check
+          # That gate's own known-answer suite. Atlas catalog check D3 named six governance
+          # gates and only ONE of them — Swift purity, below — had a can-fail proof (atlas
+          # decision 0111 phase 1). The four suites added here and the DTCG suite in
+          # build-tokens close that gap. They run HERE for the same reason the purity suite
+          # does: reachable only through `pnpm test:scripts` they would live in
+          # .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to merge a
+          # gate that stopped gating. Each is offline and well under a second.
+          node --test scripts/check-token-parity.test.mjs
           # WCAG-AA contrast gate
           node scripts/check-contrast.mjs
+          node --test scripts/check-contrast.test.mjs
           # P3 Swift widget purity — widgets AND components. GOVERNANCE.md §5 bans the app-only
           # imports for "a DS component"; the scan covered only Sources/LifegamesWidgets/, so a
           # component importing HealthKit exited 0. Measured across the 34 component files at the
@@ -508,8 +524,10 @@ jobs:
           node --test scripts/check-swift-widget-purity.test.mjs
           # Watch exclusions (F-014)
           node scripts/check-watch-exclusions.mjs --check
+          node --test scripts/check-watch-exclusions.test.mjs
           # P4/P7 promotion gate
           node scripts/check-promotion.mjs --check
+          node --test scripts/check-promotion.test.mjs
           # P2 widget compliance (registry ↔ Astro/fixture/manifest)
           node scripts/widget-compliance.mjs
           # Component-contract catalog + conformance ratchet (atlas decision 0060;

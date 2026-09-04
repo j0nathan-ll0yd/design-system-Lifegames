@@ -1,8 +1,5 @@
 {
   "description": "Requirements in openspec/specs/**/spec.md that describe an ENFORCED rule with no known-answer test to tether. Each entry is a recorded GAP, not a pass. When a requirement gains a covering test, prune its id here in the SAME change. Only uncovered-requirement findings are eligible; every other covers finding blocks unconditionally.",
   "generatedBy": "node scripts/openspec-covers.mjs --update-baseline",
-  "uncovered": [
-    "widget-contract#A widget labelled Stable has at least two real product surfaces",
-    "widget-contract#The watch targets exclude the widgets that cannot run on watchOS"
-  ]
+  "uncovered": []
 }

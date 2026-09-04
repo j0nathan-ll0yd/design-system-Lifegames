@@ -11,14 +11,25 @@
  *   pnpm dtcg:validate --report — writes report only, exits 0 even on violations (for CI artifact)
  *
  * EXCLUSIONS: tokens/projections/** is NOT validated (projection mapping tables, not DTCG tokens).
+ *
+ * `validateDtcg({root})` is exported so the known-answer suite
+ * (validate-dtcg.test.mjs) can point the validation at a temp fixture tree. The
+ * root is an explicit ARGUMENT, deliberately not an environment variable — same
+ * reasoning as check-swift-widget-purity.mjs.
+ *
+ * AN EMPTY SOURCE CORPUS IS A VIOLATION. `walk()` returns `[]` for a directory
+ * that does not exist, so a renamed `tokens/` tree, or a filename convention that
+ * drifted off `*.tokens.json`, left the validator walking ZERO files, finding zero
+ * violations and exiting 0. Conformance over an empty set is not conformance. The
+ * dist corpus is deliberately NOT held to this: `packages/tokens/dist` is a build
+ * artifact and the validator legitimately runs before it exists.
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
 import * as prettier from 'prettier'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
-const REPORT_ONLY = process.argv.includes('--report')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
 
 const VALID_TYPES = new Set([
   'color',
@@ -57,12 +68,6 @@ function walk(dir, ext) {
   return results
 }
 
-const sourceFiles = walk(path.join(ROOT, 'tokens'), '.tokens.json').filter((f) => !f.includes(`${path.sep}projections${path.sep}`))
-
-const distFiles = walk(path.join(ROOT, 'packages/tokens/dist'), '.dtcg.json')
-
-const allFiles = [...sourceFiles, ...distFiles]
-
 // ── violation types ───────────────────────────────────────────────────────────
 /**
  * @typedef {{ file: string, path: string, rule: string, detail: string }} Violation
@@ -75,8 +80,8 @@ const allFiles = [...sourceFiles, ...distFiles]
  * @param {string | null} inheritedType
  * @param {Violation[]} violations
  */
-function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
-  const relFile = path.relative(ROOT, filePath)
+function walkTokens(obj, filePath, currentPath, inheritedType, violations, root) {
+  const relFile = path.relative(root, filePath)
 
   // Check for bare 'value' or 'type' keys (deprecated pre-spec syntax)
   if ('value' in obj) {
@@ -180,39 +185,68 @@ function walkTokens(obj, filePath, currentPath, inheritedType, violations) {
       })
       continue
     }
-    walkTokens(child, filePath, `${currentPath}.${key}`, effectiveType ?? null, violations)
+    walkTokens(child, filePath, `${currentPath}.${key}`, effectiveType ?? null, violations, root)
   }
 }
 
 // ── run validation ────────────────────────────────────────────────────────────
-/** @type {Violation[]} */
-const allViolations = []
+/**
+ * Validate every DTCG source and dist artifact under `root`.
+ *
+ * MISSING_DESCRIPTION is advisory; every other rule is a hard violation, as is an
+ * empty source corpus.
+ *
+ * @param {{root?: string}} [options]
+ * @returns {{violations: Violation[], hardViolations: Violation[], byRule: Record<string, Violation[]>, sourceFiles: string[], distFiles: string[]}}
+ */
+export function validateDtcg({root = DEFAULT_ROOT} = {}) {
+  const sourceFiles = walk(path.join(root, 'tokens'), '.tokens.json').filter((f) => !f.includes(`${path.sep}projections${path.sep}`))
+  const distFiles = walk(path.join(root, 'packages/tokens/dist'), '.dtcg.json')
 
-for (const filePath of allFiles) {
-  let parsed
-  try {
-    parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
-  } catch (e) {
-    allViolations.push({file: path.relative(ROOT, filePath), path: '(root)', rule: 'PARSE_ERROR', detail: String(e)})
-    continue
+  /** @type {Violation[]} */
+  const violations = []
+
+  if (sourceFiles.length === 0) {
+    violations.push({
+      file: 'tokens/',
+      path: '(root)',
+      rule: 'EMPTY_SOURCE_CORPUS',
+      detail: 'No tokens/**/*.tokens.json source files were found — the validator would otherwise walk zero files and report conformance.'
+    })
   }
-  walkTokens(parsed, filePath, '(root)', null, allViolations)
+
+  for (const filePath of [...sourceFiles, ...distFiles]) {
+    let parsed
+    try {
+      parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+    } catch (e) {
+      violations.push({file: path.relative(root, filePath), path: '(root)', rule: 'PARSE_ERROR', detail: String(e)})
+      continue
+    }
+    walkTokens(parsed, filePath, '(root)', null, violations, root)
+  }
+
+  const byRule = {}
+  for (const v of violations) {
+    ;(byRule[v.rule] ??= []).push(v)
+  }
+
+  return {violations, hardViolations: violations.filter((v) => v.rule !== 'MISSING_DESCRIPTION'), byRule, sourceFiles, distFiles}
 }
 
-// ── group violations by rule ──────────────────────────────────────────────────
-const byRule = {}
-for (const v of allViolations) {
-  ;(byRule[v.rule] ??= []).push(v)
-}
+/** Write docs/dtcg-audit.md and set the process exit code. */
+async function main() {
+  const REPORT_ONLY = process.argv.includes('--report')
+  const ROOT = DEFAULT_ROOT
+  const {violations: allViolations, hardViolations, byRule, sourceFiles, distFiles} = validateDtcg({root: ROOT})
 
-// ── build report ──────────────────────────────────────────────────────────────
-const totalViolations = allViolations.length
-const violationTypes = Object.keys(byRule).sort()
+  const totalViolations = allViolations.length
+  const violationTypes = Object.keys(byRule).sort()
 
-const sourceCount = sourceFiles.length
-const distCount = distFiles.length
+  const sourceCount = sourceFiles.length
+  const distCount = distFiles.length
 
-let report = `# DTCG 2025.10 Conformance Audit Report
+  let report = `# DTCG 2025.10 Conformance Audit Report
 
 Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 
@@ -233,71 +267,71 @@ Spec reference: https://tr.designtokens.org/format/ (2025.10 stable)
 
 `
 
-if (totalViolations === 0) {
-  report += `**All files pass DTCG 2025.10 conformance checks.**\n`
-} else {
-  const ruleDescriptions = {
-    BARE_VALUE_KEY: 'Deprecated bare `"value"` key (must use `"$value"`)',
-    BARE_TYPE_KEY: 'Deprecated bare `"type"` key (must use `"$type"`)',
-    INVALID_TYPE: 'Unknown `$type` value',
-    MISSING_TYPE: 'Token leaf missing `$type` (not set locally or inherited)',
-    MISSING_DESCRIPTION: 'Token leaf missing `$description`',
-    SHADOW_MISSING_FIELD: 'Shadow composite missing required field',
-    TYPOGRAPHY_MISSING_FIELDS: 'Typography composite missing standard DTCG fields',
-    TYPOGRAPHY_INVALID_VALUE: 'Typography `$value` must be object or reference string',
-    INVALID_NODE: 'Non-object node in token group position',
-    PARSE_ERROR: 'JSON parse error'
+  if (totalViolations === 0) {
+    report += `**All files pass DTCG 2025.10 conformance checks.**\n`
+  } else {
+    const ruleDescriptions = {
+      BARE_VALUE_KEY: 'Deprecated bare `"value"` key (must use `"$value"`)',
+      BARE_TYPE_KEY: 'Deprecated bare `"type"` key (must use `"$type"`)',
+      INVALID_TYPE: 'Unknown `$type` value',
+      MISSING_TYPE: 'Token leaf missing `$type` (not set locally or inherited)',
+      MISSING_DESCRIPTION: 'Token leaf missing `$description`',
+      SHADOW_MISSING_FIELD: 'Shadow composite missing required field',
+      TYPOGRAPHY_MISSING_FIELDS: 'Typography composite missing standard DTCG fields',
+      TYPOGRAPHY_INVALID_VALUE: 'Typography `$value` must be object or reference string',
+      INVALID_NODE: 'Non-object node in token group position',
+      PARSE_ERROR: 'JSON parse error'
+    }
+
+    for (const rule of violationTypes) {
+      const entries = byRule[rule]
+      const desc = ruleDescriptions[rule] ?? rule
+      report += `### ${rule} — ${desc}\n\n`
+      report += `${entries.length} occurrence(s)\n\n`
+      report += `| File | Token Path | Detail |\n|---|---|---|\n`
+      for (const v of entries.slice(0, 50)) {
+        const detail = v.detail.replace(/\|/g, '\\|')
+        report += `| \`${v.file}\` | \`${v.path}\` | ${detail} |\n`
+      }
+      if (entries.length > 50) {
+        report += `| ... | ... | *(${entries.length - 50} more)* |\n`
+      }
+      report += '\n'
+    }
   }
 
-  for (const rule of violationTypes) {
-    const entries = byRule[rule]
-    const desc = ruleDescriptions[rule] ?? rule
-    report += `### ${rule} — ${desc}\n\n`
-    report += `${entries.length} occurrence(s)\n\n`
-    report += `| File | Token Path | Detail |\n|---|---|---|\n`
-    for (const v of entries.slice(0, 50)) {
-      const detail = v.detail.replace(/\|/g, '\\|')
-      report += `| \`${v.file}\` | \`${v.path}\` | ${detail} |\n`
-    }
-    if (entries.length > 50) {
-      report += `| ... | ... | *(${entries.length - 50} more)* |\n`
-    }
-    report += '\n'
-  }
-}
-
-report += `## Composite-Type Token Candidates
+  report += `## Composite-Type Token Candidates
 
 The following token groups use $type values that should be represented as
 composite types per DTCG 2025.10 (typography, shadow, transition):
 
 `
 
-// Identify composite candidates in source: already-typed composites are fine.
-// This section just lists what we found.
-const compositeCounts = {typography: 0, shadow: 0, transition: 0}
-for (const filePath of sourceFiles) {
-  try {
-    const src = fs.readFileSync(filePath, 'utf-8')
-    if (src.includes('"typography"')) {
-      compositeCounts.typography++
-    }
-    if (src.includes('"shadow"')) {
-      compositeCounts.shadow++
-    }
-    if (src.includes('"transition"')) {
-      compositeCounts.transition++
-    }
-  } catch (_) {}
-}
+  // Identify composite candidates in source: already-typed composites are fine.
+  // This section just lists what we found.
+  const compositeCounts = {typography: 0, shadow: 0, transition: 0}
+  for (const filePath of sourceFiles) {
+    try {
+      const src = fs.readFileSync(filePath, 'utf-8')
+      if (src.includes('"typography"')) {
+        compositeCounts.typography++
+      }
+      if (src.includes('"shadow"')) {
+        compositeCounts.shadow++
+      }
+      if (src.includes('"transition"')) {
+        compositeCounts.transition++
+      }
+    } catch (_) {}
+  }
 
-report += `| Composite Type | Files Using It |\n|---|---|\n`
-for (const [type, count] of Object.entries(compositeCounts)) {
-  report += `| \`${type}\` | ${count} |\n`
-}
-report += '\n'
+  report += `| Composite Type | Files Using It |\n|---|---|\n`
+  for (const [type, count] of Object.entries(compositeCounts)) {
+    report += `| \`${type}\` | ${count} |\n`
+  }
+  report += '\n'
 
-report += `## Files Validated
+  report += `## Files Validated
 
 ### Source token files (\`tokens/**/*.tokens.json\`, excluding projections)
 
@@ -308,39 +342,45 @@ ${sourceFiles.map((f) => `- \`${path.relative(ROOT, f)}\``).join('\n')}
 ${distFiles.length > 0 ? distFiles.map((f) => `- \`${path.relative(ROOT, f)}\``).join('\n') : '*(none found — run `pnpm build:tokens` to generate)*'}
 `
 
-// ── write report ──────────────────────────────────────────────────────────────
-fs.mkdirSync(path.join(ROOT, 'docs'), {recursive: true})
-const auditPath = path.join(ROOT, 'docs/dtcg-audit.md')
-const auditPrettierCfg = await prettier.resolveConfig(auditPath)
-const formattedReport = await prettier.format(report, {...auditPrettierCfg, parser: 'markdown', filepath: auditPath})
-fs.writeFileSync(auditPath, formattedReport)
-console.log(`Wrote docs/dtcg-audit.md`)
+  // ── write report ──────────────────────────────────────────────────────────────
+  fs.mkdirSync(path.join(ROOT, 'docs'), {recursive: true})
+  const auditPath = path.join(ROOT, 'docs/dtcg-audit.md')
+  const auditPrettierCfg = await prettier.resolveConfig(auditPath)
+  const formattedReport = await prettier.format(report, {...auditPrettierCfg, parser: 'markdown', filepath: auditPath})
+  fs.writeFileSync(auditPath, formattedReport)
+  console.log(`Wrote docs/dtcg-audit.md`)
 
-// ── print summary ─────────────────────────────────────────────────────────────
-console.log('')
-console.log('DTCG 2025.10 Conformance Audit')
-console.log('==============================')
-console.log(`Source files:  ${sourceCount}`)
-console.log(`Dist files:    ${distCount}`)
-console.log(`Violations:    ${totalViolations}`)
-if (totalViolations > 0) {
-  for (const rule of violationTypes) {
-    console.log(`  ${rule}: ${byRule[rule].length}`)
+  // ── print summary ─────────────────────────────────────────────────────────────
+  console.log('')
+  console.log('DTCG 2025.10 Conformance Audit')
+  console.log('==============================')
+  console.log(`Source files:  ${sourceCount}`)
+  console.log(`Dist files:    ${distCount}`)
+  console.log(`Violations:    ${totalViolations}`)
+  if (totalViolations > 0) {
+    for (const rule of violationTypes) {
+      console.log(`  ${rule}: ${byRule[rule].length}`)
+    }
+  }
+  console.log('')
+
+  // ── exit code ─────────────────────────────────────────────────────────────────
+  // MISSING_DESCRIPTION is advisory (many tokens legitimately lack it).
+  // Only hard-fail on structural violations.
+  if (!REPORT_ONLY && totalViolations > 0) {
+    if (hardViolations.length > 0) {
+      console.error(`ERROR: ${hardViolations.length} hard DTCG conformance violation(s). See docs/dtcg-audit.md for details.`)
+      process.exit(1)
+    } else {
+      console.warn(`WARN: ${totalViolations} advisory violation(s) (MISSING_DESCRIPTION only). See docs/dtcg-audit.md.`)
+    }
+  } else if (totalViolations === 0) {
+    console.log('All files pass DTCG 2025.10 conformance checks.')
   }
 }
-console.log('')
 
-// ── exit code ─────────────────────────────────────────────────────────────────
-if (!REPORT_ONLY && totalViolations > 0) {
-  // MISSING_DESCRIPTION is advisory (many tokens legitimately lack it)
-  // Only hard-fail on structural violations
-  const hardViolations = allViolations.filter((v) => v.rule !== 'MISSING_DESCRIPTION')
-  if (hardViolations.length > 0) {
-    console.error(`ERROR: ${hardViolations.length} hard DTCG conformance violation(s). See docs/dtcg-audit.md for details.`)
-    process.exit(1)
-  } else {
-    console.warn(`WARN: ${totalViolations} advisory violation(s) (MISSING_DESCRIPTION only). See docs/dtcg-audit.md.`)
-  }
-} else if (totalViolations === 0) {
-  console.log('All files pass DTCG 2025.10 conformance checks.')
+// Importing this module for the known-answer suite must not write a report or
+// call process.exit.
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
+  await main()
 }

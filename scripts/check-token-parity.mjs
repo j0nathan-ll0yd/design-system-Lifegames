@@ -26,17 +26,29 @@
  * Usage:
  *   node scripts/check-token-parity.mjs           — print parity table, exit 0
  *   node scripts/check-token-parity.mjs --check   — print parity table, exit 1 on mismatches
+ *
+ * `compareTokenParity({root})` is exported so the known-answer suite
+ * (check-token-parity.test.mjs) can point the comparison at a temp fixture tree.
+ * The root is an explicit ARGUMENT, deliberately not an environment variable —
+ * same reasoning as check-swift-widget-purity.mjs.
+ *
+ * AN EMPTY SIDE IS A VIOLATION, not a clean run. `tokens.css` is a BUILD ARTIFACT
+ * — governance-gates downloads it from the `token-dist` artifact rather than
+ * building it — and both loaders returned an empty Map when their source was
+ * missing or unparseable. Zero roles on either side then produced zero
+ * comparisons, zero mismatches and exit 0, so a build that emitted nothing, an
+ * artifact that failed to download, or a renamed xcassets directory retired the
+ * cross-platform contract at green. An empty side is now a blocking finding.
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
-const CHECK_MODE = process.argv.includes('--check')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
 
-const CSS_PATH = path.join(ROOT, 'packages/tokens/dist/tokens.css')
-const XCASSETS = path.join(ROOT, 'Sources/LifegamesTokens/Resources/Colors.xcassets')
-const EXCEPTIONS_PATH = path.join(ROOT, 'tokens/parity-exceptions.json')
+const CSS_REL = 'packages/tokens/dist/tokens.css'
+const XCASSETS_REL = 'Sources/LifegamesTokens/Resources/Colors.xcassets'
+const EXCEPTIONS_REL = 'tokens/parity-exceptions.json'
 
 // Role-family prefix that the parity gate cares about. Primitive (accent/neon)
 // + semantic (surface/text/border/health/sleep/podium/status). Roles outside
@@ -58,12 +70,12 @@ const HARDCODED_SKIPS = new Set([])
 
 // ── web: parse --lg-color-{role} hex from tokens.css ────────────────────────────
 /** @returns {Map<string, string>} role (e.g. "accent-pink") → "#rrggbb" */
-function loadWebAccentHex() {
+function loadWebAccentHex(cssPath) {
   const map = new Map()
-  if (!fs.existsSync(CSS_PATH)) {
+  if (!fs.existsSync(cssPath)) {
     return map
   }
-  const css = fs.readFileSync(CSS_PATH, 'utf-8')
+  const css = fs.readFileSync(cssPath, 'utf-8')
   const re = new RegExp(`--lg-color-(${ROLE_BODY})\\s*:\\s*(#[0-9a-fA-F]{3,8})\\s*;`, 'g')
   let m
   while ((m = re.exec(css)) !== null) {
@@ -74,20 +86,20 @@ function loadWebAccentHex() {
 
 // ── swift: convert color-{role}.colorset sRGB components → hex ─────────────────
 /** @returns {Map<string, string>} role (e.g. "accent-pink") → "#rrggbb" */
-function loadSwiftAccentHex() {
+function loadSwiftAccentHex(xcassets) {
   const map = new Map()
-  if (!fs.existsSync(XCASSETS)) {
+  if (!fs.existsSync(xcassets)) {
     return map
   }
   const dirRe = new RegExp(`^color-(${ROLE_BODY})\\.colorset$`)
-  for (const entry of fs.readdirSync(XCASSETS)) {
+  for (const entry of fs.readdirSync(xcassets)) {
     // color-accent-pink.colorset → role "accent-pink"
     const m = dirRe.exec(entry)
     if (!m) {
       continue
     }
     const role = m[1]
-    const contents = path.join(XCASSETS, entry, 'Contents.json')
+    const contents = path.join(xcassets, entry, 'Contents.json')
     if (!fs.existsSync(contents)) {
       continue
     }
@@ -153,12 +165,12 @@ function normalizeHex(hex) {
   return h
 }
 
-function loadExceptions() {
-  if (!fs.existsSync(EXCEPTIONS_PATH)) {
+function loadExceptions(exceptionsPath) {
+  if (!fs.existsSync(exceptionsPath)) {
     return new Set()
   }
   try {
-    const parsed = JSON.parse(fs.readFileSync(EXCEPTIONS_PATH, 'utf-8'))
+    const parsed = JSON.parse(fs.readFileSync(exceptionsPath, 'utf-8'))
     if (!Array.isArray(parsed)) {
       return new Set()
     }
@@ -168,90 +180,134 @@ function loadExceptions() {
   }
 }
 
-const web = loadWebAccentHex()
-const swift = loadSwiftAccentHex()
-const fileExceptions = loadExceptions()
-const exceptions = new Set([...fileExceptions, ...HARDCODED_SKIPS])
+/**
+ * Compare the web and Swift color outputs role by role.
+ *
+ * @param {{root?: string}} [options]
+ * @returns {{web: Map<string, string>, swift: Map<string, string>, sortedRoles: string[], mismatches: object[], exemptedMismatches: object[], webOnly: string[], swiftOnly: string[], exceptions: Set<string>, fileExceptions: Set<string>, emptySources: string[], violations: string[]}}
+ */
+export function compareTokenParity({root = DEFAULT_ROOT} = {}) {
+  const web = loadWebAccentHex(path.join(root, CSS_REL))
+  const swift = loadSwiftAccentHex(path.join(root, XCASSETS_REL))
+  const fileExceptions = loadExceptions(path.join(root, EXCEPTIONS_REL))
+  const exceptions = new Set([...fileExceptions, ...HARDCODED_SKIPS])
 
-// ── compare roles present in both ───────────────────────────────────────────────
-const allRoles = new Set([...web.keys(), ...swift.keys()])
-const sortedRoles = [...allRoles].sort()
+  // A side with zero roles cannot disagree with anything. Report it rather than
+  // letting the comparison loop run zero times and call that parity.
+  const emptySources = []
+  if (web.size === 0) {
+    emptySources.push(CSS_REL)
+  }
+  if (swift.size === 0) {
+    emptySources.push(XCASSETS_REL)
+  }
 
-const mismatches = []
-const exemptedMismatches = []
-const webOnly = []
-const swiftOnly = []
+  const allRoles = new Set([...web.keys(), ...swift.keys()])
+  const sortedRoles = [...allRoles].sort()
 
-console.log('Token Parity Check — P1 cross-platform contract (primitive + semantic tiers)')
-console.log('===========================================================================\n')
-console.log(`Role families: ${ROLE_FAMILIES}`)
-console.log(`Web source:    packages/tokens/dist/tokens.css (${web.size} roles)`)
-console.log(`Swift source:  Colors.xcassets color-*.colorset (${swift.size} roles)`)
-console.log(
-  `Exceptions:    ${exceptions.size} role(s) excluded from gating ` +
-    `(${fileExceptions.size} from tokens/parity-exceptions.json + ` +
-    `${HARDCODED_SKIPS.size} hardcoded)\n`
-)
+  const mismatches = []
+  const exemptedMismatches = []
+  const webOnly = []
+  const swiftOnly = []
 
-const cols = ['Role', 'Web hex', 'Swift hex', 'Match']
-const widths = [22, 10, 11, 8]
-console.log(cols.map((c, i) => c.padEnd(widths[i])).join(' '))
-console.log(cols.map((_, i) => '-'.repeat(widths[i])).join(' '))
+  for (const role of sortedRoles) {
+    const w = web.get(role)
+    const s = swift.get(role)
+    if (w && s) {
+      if (w === s) {
+        continue
+      }
+      if (exceptions.has(role)) {
+        exemptedMismatches.push({role, web: w, swift: s})
+      } else {
+        mismatches.push({role, web: w, swift: s})
+      }
+    } else if (w && !s) {
+      webOnly.push(role)
+    } else {
+      swiftOnly.push(role)
+    }
+  }
 
-for (const role of sortedRoles) {
-  const w = web.get(role)
-  const s = swift.get(role)
-  let match
+  const violations = [
+    ...emptySources.map((rel) => `empty-parity-source: ${rel} yielded zero color roles — the comparison would otherwise run zero times and report parity`),
+    ...mismatches.map((m) => `p1-hex-divergence: ${m.role} web ${m.web} != swift ${m.swift}`)
+  ]
+
+  return {web, swift, sortedRoles, mismatches, exemptedMismatches, webOnly, swiftOnly, exceptions, fileExceptions, emptySources, violations}
+}
+
+/** The per-role verdict rendered in the parity table. */
+function matchLabel(result, role) {
+  const w = result.web.get(role)
+  const s = result.swift.get(role)
   if (w && s) {
     if (w === s) {
-      match = 'YES'
-    } else if (exceptions.has(role)) {
-      match = 'EXEMPT'
-      exemptedMismatches.push({role, web: w, swift: s})
-    } else {
-      match = 'NO'
-      mismatches.push({role, web: w, swift: s})
+      return 'YES'
     }
-  } else if (w && !s) {
-    match = 'web-only'
-    webOnly.push(role)
-  } else {
-    match = 'swift-only'
-    swiftOnly.push(role)
+    return result.exceptions.has(role) ? 'EXEMPT' : 'NO'
   }
-  console.log([
-    role.padEnd(widths[0]),
-    String(w ?? '-').padEnd(widths[1]),
-    String(s ?? '-').padEnd(widths[2]),
-    match.padEnd(widths[3])
-  ].join(' '))
+  return w ? 'web-only' : 'swift-only'
 }
 
-console.log('\nCounts')
-console.log('------')
-console.log(`Roles in both:      ${sortedRoles.length - webOnly.length - swiftOnly.length}`)
-console.log(`Hex mismatches:     ${mismatches.length}`)
-console.log(`Exempted mismatches:${exemptedMismatches.length}`)
-console.log(`Web-only roles:     ${webOnly.length}${webOnly.length ? ' (' + webOnly.join(', ') + ')' : ''}`)
-console.log(`Swift-only roles:   ${swiftOnly.length}${swiftOnly.length ? ' (' + swiftOnly.join(', ') + ')' : ''}`)
+// Importing this module for the known-answer suite must not print a report or
+// call process.exit.
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
+  const checkMode = process.argv.includes('--check')
+  const result = compareTokenParity()
+  const {web, swift, sortedRoles, mismatches, exemptedMismatches, webOnly, swiftOnly, exceptions, fileExceptions} = result
 
-if (exemptedMismatches.length > 0) {
-  console.log('\nExempted divergences (recorded in parity-exceptions.json or HARDCODED_SKIPS):')
-  for (const m of exemptedMismatches) {
-    console.log(`  ${m.role}: web ${m.web} != swift ${m.swift}  [allowed]`)
+  console.log('Token Parity Check — P1 cross-platform contract (primitive + semantic tiers)')
+  console.log('===========================================================================\n')
+  console.log(`Role families: ${ROLE_FAMILIES}`)
+  console.log(`Web source:    ${CSS_REL} (${web.size} roles)`)
+  console.log(`Swift source:  Colors.xcassets color-*.colorset (${swift.size} roles)`)
+  console.log(
+    `Exceptions:    ${exceptions.size} role(s) excluded from gating ` +
+      `(${fileExceptions.size} from ${EXCEPTIONS_REL} + ` +
+      `${HARDCODED_SKIPS.size} hardcoded)\n`
+  )
+
+  const cols = ['Role', 'Web hex', 'Swift hex', 'Match']
+  const widths = [22, 10, 11, 8]
+  console.log(cols.map((c, i) => c.padEnd(widths[i])).join(' '))
+  console.log(cols.map((_, i) => '-'.repeat(widths[i])).join(' '))
+
+  for (const role of sortedRoles) {
+    console.log([
+      role.padEnd(widths[0]),
+      String(web.get(role) ?? '-').padEnd(widths[1]),
+      String(swift.get(role) ?? '-').padEnd(widths[2]),
+      matchLabel(result, role).padEnd(widths[3])
+    ].join(' '))
   }
-}
 
-if (mismatches.length > 0) {
-  console.log('\nP1 PARITY VIOLATIONS (hex differs across platforms, not in exceptions):')
-  for (const m of mismatches) {
-    console.log(`  ${m.role}: web ${m.web} != swift ${m.swift}`)
+  console.log('\nCounts')
+  console.log('------')
+  console.log(`Roles in both:      ${sortedRoles.length - webOnly.length - swiftOnly.length}`)
+  console.log(`Hex mismatches:     ${mismatches.length}`)
+  console.log(`Exempted mismatches:${exemptedMismatches.length}`)
+  console.log(`Web-only roles:     ${webOnly.length}${webOnly.length ? ' (' + webOnly.join(', ') + ')' : ''}`)
+  console.log(`Swift-only roles:   ${swiftOnly.length}${swiftOnly.length ? ' (' + swiftOnly.join(', ') + ')' : ''}`)
+
+  if (exemptedMismatches.length > 0) {
+    console.log('\nExempted divergences (recorded in parity-exceptions.json or HARDCODED_SKIPS):')
+    for (const m of exemptedMismatches) {
+      console.log(`  ${m.role}: web ${m.web} != swift ${m.swift}  [allowed]`)
+    }
   }
-  console.log('\nTo intentionally allow a role to diverge, add it to tokens/parity-exceptions.json')
-  console.log('with an ADR reference in the same PR.')
-}
 
-// ── exit code ─────────────────────────────────────────────────────────────────
-// --check: exit 1 when non-exempted hex mismatches found (blocking gate).
-// Without flag: exit 0.
-process.exit(CHECK_MODE && mismatches.length > 0 ? 1 : 0)
+  if (result.violations.length > 0) {
+    console.error(`\nP1 PARITY VIOLATIONS: ${result.violations.length}`)
+    for (const v of result.violations) {
+      console.error(`  ✗ ${v}`)
+    }
+    console.error('\nTo intentionally allow a role to diverge, add it to tokens/parity-exceptions.json')
+    console.error('with an ADR reference in the same PR.')
+  }
+
+  // ── exit code ───────────────────────────────────────────────────────────────
+  // --check: exit 1 on a non-exempted hex mismatch OR an empty side (blocking
+  // gate). Without the flag: exit 0.
+  process.exit(checkMode && result.violations.length > 0 ? 1 : 0)
+}
