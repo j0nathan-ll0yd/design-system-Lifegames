@@ -329,6 +329,14 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
+      # The structural content sentinel and the mint-from-empty wrapper are the two
+      # things standing between a 2% pixel threshold and a silently vanished
+      # component (issue #145). Both were reachable only through `pnpm test:scripts`,
+      # which lives in .husky/pre-push and in no workflow on any event — the same
+      # gap the D4 comment above records for the digest suite. A local hook is not a
+      # gate: `--no-verify` skips it and CI would never notice.
+      - name: Storybook visual-regression guard suite
+        run: node --test scripts/storybook-visual-regression.test.mjs
       - run: pnpm --filter storybook storybook:build
       # Optional Chromatic step:
       # - uses: chromaui/action@latest
