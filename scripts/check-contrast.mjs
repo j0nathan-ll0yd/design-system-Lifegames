@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// mantle-cli-output: WCAG-AA contrast gate report for stdout
 // WCAG-AA contrast gate for Lifegames Design System tokens.
 //
 // Reads packages/tokens/dist/tokens.css, resolves overlay colors by
@@ -14,44 +15,36 @@
 // known-acceptable failures (e.g. accent.amber-on-surface.base, where the
 // vibrant amber is intentionally below 3:1 against deep backgrounds and
 // is only used decoratively — never as text).
+//
+// `evaluateContrast({css, allowFail})` is exported so the known-answer suite
+// (check-contrast.test.mjs) can feed the gate a synthetic stylesheet. The
+// stylesheet is an explicit ARGUMENT, deliberately not an environment variable
+// — same reasoning as check-swift-widget-purity.mjs. A missing tokens.css was
+// already fail-closed (exit 2) and stays that way; the CSS path is resolved
+// against this file rather than the PROCESS CWD, which is what `path.resolve`
+// with a bare relative path used to do — running the gate from any other
+// directory made it report "run pnpm build:tokens first" and exit 2.
 
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import {blend, formatHex, parse, wcagContrast} from 'culori'
 
-const CSS_PATH = path.resolve('packages/tokens/dist/tokens.css')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const CSS_REL = 'packages/tokens/dist/tokens.css'
 
-// ── arg parsing ───────────────────────────────────────────────────────────────
-// --allow-fail <id> [--allow-fail <id> ...] — pairing IDs to demote from
-// gating failure to advisory. Each ID is "{textRole}-on-{surfaceRole}",
-// e.g. "accent.amber-on-surface.base".
-const ALLOW_FAIL = new Set()
-{
-  const argv = process.argv.slice(2)
-  for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === '--allow-fail' && argv[i + 1]) {
-      ALLOW_FAIL.add(argv[i + 1])
-      i++
-    }
+/** Parse `--lg-*` custom-property declarations out of a stylesheet. */
+function parseTokens(css) {
+  const tokens = {}
+  const DECL_RE = /^\s*(--lg-[\w-]+):\s*([^;]+);/gm
+  let m
+  while ((m = DECL_RE.exec(css))) {
+    tokens[m[1]] = m[2].trim()
   }
+  return tokens
 }
 
-if (!fs.existsSync(CSS_PATH)) {
-  console.error(`tokens.css not found at ${CSS_PATH}. Run 'pnpm build:tokens' first.`)
-  process.exit(2)
-}
-
-const css = fs.readFileSync(CSS_PATH, 'utf8')
-
-const tokens = {}
-const DECL_RE = /^\s*(--lg-[\w-]+):\s*([^;]+);/gm
-let m
-while ((m = DECL_RE.exec(css))) {
-  tokens[m[1]] = m[2].trim()
-}
-
-function resolveOnSurfaceBase(name) {
+function resolveOnSurfaceBase(tokens, name) {
   const raw = tokens[name]
   if (!raw) {
     throw new Error(`missing token: ${name}`)
@@ -71,7 +64,7 @@ function resolveOnSurfaceBase(name) {
   return blend([base, c], 'normal')
 }
 
-function resolveOpaque(name) {
+function resolveOpaque(tokens, name) {
   const raw = tokens[name]
   if (!raw) {
     throw new Error(`missing token: ${name}`)
@@ -178,51 +171,88 @@ function pairingId(textName, surfName) {
   return `${compact(textName)}-on-${compact(surfName)}`
 }
 
-const results = []
-const failures = []
+/**
+ * Evaluate every WCAG pairing against a stylesheet.
+ *
+ * @param {{css: string, allowFail?: Iterable<string>}} options
+ * @returns {{results: object[], failures: object[], allowedFailCount: number, pairingCount: number}}
+ */
+export function evaluateContrast({css, allowFail = []}) {
+  const tokens = parseTokens(css)
+  const allowed = new Set(allowFail)
+  const results = []
+  const failures = []
 
-for (const [textName, surfName, min, kind] of PAIRINGS) {
-  const text = resolveOpaque(textName)
-  const surf = resolveOnSurfaceBase(surfName)
-  const ratio = wcagContrast(text, surf)
-  const lc = apcaLc(culoriToSrgbObj(text), culoriToSrgbObj(surf))
-  const pass = ratio >= min
-  const id = pairingId(textName, surfName)
-  const allowedFail = !pass && ALLOW_FAIL.has(id)
-  results.push({id, textName, surfName, ratio, min, kind, pass, allowedFail, lc, surfHex: formatHex(surf)})
-  if (!pass && !allowedFail) {
-    failures.push({id, textName, surfName, ratio, min})
+  for (const [textName, surfName, min, kind] of PAIRINGS) {
+    const text = resolveOpaque(tokens, textName)
+    const surf = resolveOnSurfaceBase(tokens, surfName)
+    const ratio = wcagContrast(text, surf)
+    const lc = apcaLc(culoriToSrgbObj(text), culoriToSrgbObj(surf))
+    const pass = ratio >= min
+    const id = pairingId(textName, surfName)
+    const allowedFail = !pass && allowed.has(id)
+    results.push({id, textName, surfName, ratio, min, kind, pass, allowedFail, lc, surfHex: formatHex(surf)})
+    if (!pass && !allowedFail) {
+      failures.push({id, textName, surfName, ratio, min})
+    }
   }
+
+  return {results, failures, allowedFailCount: results.filter((r) => r.allowedFail).length, pairingCount: PAIRINGS.length}
 }
 
-const colW = Math.max(...PAIRINGS.map(([t]) => t.length))
-const surW = Math.max(...PAIRINGS.map(([, s]) => s.length))
+export { PAIRINGS }
 
-console.log('WCAG-AA contrast gate (packages/tokens/dist/tokens.css)')
-console.log('APCA Lc shown as |Lc| (advisory only — does not gate)')
-console.log('─'.repeat(colW + surW + 50))
-for (const r of results) {
-  const mark = r.pass ? '✓' : r.allowedFail ? '!' : '✗'
-  const lcStr = `|Lc|=${Math.abs(r.lc).toFixed(1).padStart(5)}`
-  console.log(
-    `${mark} ${r.textName.padEnd(colW)}  on  ${r.surfName.padEnd(surW)} (${r.surfHex})  ` +
-      `${r.ratio.toFixed(2).padStart(5)}:1  ${lcStr}  (≥${r.min}:1 ${r.kind})` +
-      (r.allowedFail ? '  [--allow-fail]' : '')
-  )
-}
-console.log('─'.repeat(colW + surW + 50))
-
-const allowedFailCount = results.filter((r) => r.allowedFail).length
-if (allowedFailCount) {
-  console.log(`Note: ${allowedFailCount} pairing(s) below threshold are whitelisted via --allow-fail.`)
-}
-
-if (failures.length) {
-  console.error(`\n${failures.length} violation(s) — fix the underlying tokens or whitelist via --allow-fail <id>.`)
-  for (const f of failures) {
-    console.error(`  ✗ ${f.id} → ${f.ratio.toFixed(2)}:1 (need ≥${f.min}:1)`)
+// Importing this module for the known-answer suite must not read tokens.css,
+// print a report, or call process.exit.
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
+  // --allow-fail <id> [--allow-fail <id> ...] — pairing IDs to demote from
+  // gating failure to advisory. Each ID is "{textRole}-on-{surfaceRole}",
+  // e.g. "accent.amber-on-surface.base".
+  const allowFail = new Set()
+  const argv = process.argv.slice(2)
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--allow-fail' && argv[i + 1]) {
+      allowFail.add(argv[i + 1])
+      i++
+    }
   }
-  process.exit(1)
-}
 
-console.log(`All ${results.length - allowedFailCount} gating pairings pass WCAG-AA${allowedFailCount ? ` (${allowedFailCount} whitelisted)` : ''}.`)
+  const cssPath = path.join(DEFAULT_ROOT, CSS_REL)
+  if (!fs.existsSync(cssPath)) {
+    console.error(`tokens.css not found at ${cssPath}. Run 'pnpm build:tokens' first.`)
+    process.exit(2)
+  }
+
+  const {results, failures, allowedFailCount} = evaluateContrast({css: fs.readFileSync(cssPath, 'utf8'), allowFail})
+
+  const colW = Math.max(...PAIRINGS.map(([t]) => t.length))
+  const surW = Math.max(...PAIRINGS.map(([, s]) => s.length))
+
+  console.log(`WCAG-AA contrast gate (${CSS_REL})`)
+  console.log('APCA Lc shown as |Lc| (advisory only — does not gate)')
+  console.log('─'.repeat(colW + surW + 50))
+  for (const r of results) {
+    const mark = r.pass ? '✓' : r.allowedFail ? '!' : '✗'
+    const lcStr = `|Lc|=${Math.abs(r.lc).toFixed(1).padStart(5)}`
+    console.log(
+      `${mark} ${r.textName.padEnd(colW)}  on  ${r.surfName.padEnd(surW)} (${r.surfHex})  ` +
+        `${r.ratio.toFixed(2).padStart(5)}:1  ${lcStr}  (≥${r.min}:1 ${r.kind})` +
+        (r.allowedFail ? '  [--allow-fail]' : '')
+    )
+  }
+  console.log('─'.repeat(colW + surW + 50))
+
+  if (allowedFailCount) {
+    console.log(`Note: ${allowedFailCount} pairing(s) below threshold are whitelisted via --allow-fail.`)
+  }
+
+  if (failures.length) {
+    console.error(`\n${failures.length} violation(s) — fix the underlying tokens or whitelist via --allow-fail <id>.`)
+    for (const f of failures) {
+      console.error(`  ✗ ${f.id} → ${f.ratio.toFixed(2)}:1 (need ≥${f.min}:1)`)
+    }
+    process.exit(1)
+  }
+
+  console.log(`All ${results.length - allowedFailCount} gating pairings pass WCAG-AA${allowedFailCount ? ` (${allowedFailCount} whitelisted)` : ''}.`)
+}

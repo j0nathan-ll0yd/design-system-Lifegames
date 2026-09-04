@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// mantle-cli-output: watch exclusions check report for stdout
 /**
  * Watch Exclusions Check — F-014 (GOVERNANCE.md P-Watch).
  *
@@ -19,18 +20,27 @@
  * Usage:
  *   node scripts/check-watch-exclusions.mjs          — print findings, exit 0
  *   node scripts/check-watch-exclusions.mjs --check  — print findings, exit 1 on violations
+ *
+ * `scanWatchExclusions({root})` is exported so the known-answer suite
+ * (check-watch-exclusions.test.mjs) can point the scan at a temp fixture tree.
+ * The root is an explicit ARGUMENT, deliberately not an environment variable —
+ * same reasoning as check-swift-widget-purity.mjs: a gate whose corpus can be
+ * relocated from the environment can be aimed at an empty directory and told
+ * to report success.
+ *
+ * MISSING CORPUS IS A VIOLATION, not silence. Both scan roots are directories in
+ * this repo; when one is absent the gate has nothing to read and its previous
+ * behaviour was to walk zero files and exit 0. Renaming or moving a Watch target
+ * would therefore have retired this gate at exit 0, with no finding. A declared
+ * root that does not resolve is now a blocking finding of its own.
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
-const CHECK_MODE = process.argv.includes('--check')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
 
-const WATCH_DIRS = [
-  path.join(ROOT, 'Sources/LifegamesComponentsWatch'),
-  path.join(ROOT, 'Sources/LifegamesWidgetsWatch')
-]
+const WATCH_DIRS = ['Sources/LifegamesComponentsWatch', 'Sources/LifegamesWidgetsWatch']
 
 const FORBIDDEN_SYMBOLS = ['ECG', 'PulsingMapMarker']
 
@@ -55,52 +65,82 @@ function walk(dir, ext) {
   return results
 }
 
-const findings = []
+/**
+ * Scan the Watch targets for excluded symbols.
+ *
+ * @param {{root?: string}} [options]
+ * @returns {{findings: Array<{kind: string, file: string, symbol: string, line: number | null, text: string}>, missingDirs: string[], scannedFileCount: number, dirs: string[]}}
+ */
+export function scanWatchExclusions({root = DEFAULT_ROOT} = {}) {
+  const findings = []
+  const missingDirs = []
+  let scannedFileCount = 0
 
-for (const dir of WATCH_DIRS) {
-  const swiftFiles = walk(dir, '.swift')
-  for (const file of swiftFiles) {
-    const rel = path.relative(ROOT, file)
-    const basename = path.basename(file)
-
-    // Filename check
-    for (const symbol of FORBIDDEN_SYMBOLS) {
-      if (basename.includes(symbol)) {
-        findings.push({kind: 'filename', file: rel, symbol, line: null, text: basename})
-      }
+  for (const relDir of WATCH_DIRS) {
+    const dir = path.join(root, relDir)
+    if (!fs.existsSync(dir)) {
+      missingDirs.push(relDir)
+      findings.push({
+        kind: 'missing-scan-root',
+        file: relDir,
+        symbol: '(corpus)',
+        line: null,
+        text: `declared Watch scan root ${relDir} does not exist — the gate would otherwise walk zero files and report clean`
+      })
+      continue
     }
+    for (const file of walk(dir, '.swift')) {
+      scannedFileCount++
+      const rel = path.relative(root, file)
+      const basename = path.basename(file)
 
-    // Source-content check (imports + symbol references)
-    const src = fs.readFileSync(file, 'utf-8')
-    const lines = src.split('\n')
-    lines.forEach((text, idx) => {
-      for (const {symbol, re} of SYMBOL_REGEXES) {
-        re.lastIndex = 0
-        if (re.test(text)) {
-          findings.push({kind: 'reference', file: rel, symbol, line: idx + 1, text: text.trim()})
+      // Filename check
+      for (const symbol of FORBIDDEN_SYMBOLS) {
+        if (basename.includes(symbol)) {
+          findings.push({kind: 'filename', file: rel, symbol, line: null, text: basename})
         }
       }
-    })
+
+      // Source-content check (imports + symbol references)
+      const src = fs.readFileSync(file, 'utf-8')
+      const lines = src.split('\n')
+      lines.forEach((text, idx) => {
+        for (const {symbol, re} of SYMBOL_REGEXES) {
+          re.lastIndex = 0
+          if (re.test(text)) {
+            findings.push({kind: 'reference', file: rel, symbol, line: idx + 1, text: text.trim()})
+          }
+        }
+      })
+    }
   }
+
+  return {findings, missingDirs, scannedFileCount, dirs: [...WATCH_DIRS]}
 }
 
-// ── report ──────────────────────────────────────────────────────────────────────
-console.log('Watch Exclusions Check — F-014')
-console.log('==============================\n')
-console.log(`Scanned dirs: ${WATCH_DIRS.map((d) => path.relative(ROOT, d)).join(', ')}`)
-console.log(`Forbidden symbols: ${FORBIDDEN_SYMBOLS.join(', ')}\n`)
+// Importing this module for the known-answer suite must not print a report or
+// call process.exit.
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
+  const checkMode = process.argv.includes('--check')
+  const {findings, scannedFileCount} = scanWatchExclusions()
 
-if (findings.length === 0) {
-  console.log('No Watch exclusion violations. ECG / PulsingMapMarker are absent from Watch targets.')
-} else {
-  console.log(`WATCH EXCLUSION VIOLATIONS: ${findings.length} hit(s):\n`)
-  for (const v of findings) {
-    const loc = v.line ? `${v.file}:${v.line}` : v.file
-    console.log(`  ${loc}  [${v.kind} / ${v.symbol}]`)
-    console.log(`    ${v.text}`)
+  console.log('Watch Exclusions Check — F-014')
+  console.log('==============================\n')
+  console.log(`Scanned dirs: ${WATCH_DIRS.join(', ')} (${scannedFileCount} Swift file(s))`)
+  console.log(`Forbidden symbols: ${FORBIDDEN_SYMBOLS.join(', ')}\n`)
+
+  if (findings.length === 0) {
+    console.log('No Watch exclusion violations. ECG / PulsingMapMarker are absent from Watch targets.')
+  } else {
+    console.log(`WATCH EXCLUSION VIOLATIONS: ${findings.length} hit(s):\n`)
+    for (const v of findings) {
+      const loc = v.line ? `${v.file}:${v.line}` : v.file
+      console.log(`  ${loc}  [${v.kind} / ${v.symbol}]`)
+      console.log(`    ${v.text}`)
+    }
+    console.log('\nThese symbols are explicitly excluded from the Watch DS surface.')
+    console.log('If a Watch-appropriate variant is needed, ship it under a new name.')
   }
-  console.log('\nThese symbols are explicitly excluded from the Watch DS surface.')
-  console.log('If a Watch-appropriate variant is needed, ship it under a new name.')
-}
 
-process.exit(CHECK_MODE && findings.length > 0 ? 1 : 0)
+  process.exit(checkMode && findings.length > 0 ? 1 : 0)
+}
