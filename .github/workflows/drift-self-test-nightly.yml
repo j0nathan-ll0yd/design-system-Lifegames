@@ -1,12 +1,12 @@
 name: Drift self-test (nightly, full)
 
 # THE MAIN-BRANCH SAFETY NET for the C147 package-drift gate's known-answer
-# self-test (scripts/check-package-drift.mjs --self-test).
+# self-test (audits/checks/c147-package-drift.mjs --self-test).
 #
 # WHY THIS EXISTS
 # On pull requests the self-test step in ci.yml is gated to engine/contract
-# changes (dorny/paths-filter over scripts/check-package-drift.{mjs,test.mjs} and
-# pnpm-lock.yaml, which is where the contract now moves since atlas decision 0079
+# changes (dorny/paths-filter over audits/checks/c147-package-drift.mjs,
+# audits/__tests__/c147-package-drift.test.mjs and pnpm-lock.yaml, which is where the contract now moves since atlas decision 0079
 # item 4 wave 2 replaced scripts/fixtures/** with the published
 # @j0nathan-ll0yd/estate-contracts), because running that memory-heavy step on
 # EVERY PR across the shared self-hosted arm64 fleet let two unrelated PRs exhaust
@@ -20,7 +20,7 @@ name: Drift self-test (nightly, full)
 #
 # WHY self-hosted linux arm64 node
 # Self-hosted estate policy requires all jobs to run on self-hosted runners.
-# Memory isolation in check-package-drift.mjs ensures the self-test runs within
+# Memory isolation in c147-package-drift.mjs ensures the self-test runs within
 # memory limits without OOM-reaping.
 
 on:
@@ -60,4 +60,4 @@ jobs:
       # FULL run — no --mutation filter, no path gate. Fails loudly (exit 1) if the
       # baseline goes red or any of the 31 mutations survives.
       - name: Known-answer self-test (full — baseline + all 31 mutations)
-        run: node scripts/check-package-drift.mjs --self-test
+        run: node audits/checks/c147-package-drift.mjs --self-test

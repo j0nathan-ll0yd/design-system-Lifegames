@@ -28,8 +28,8 @@
  *      This is the check that makes the catalog a SPEC rather than a document: a hand-edit to a
  *      committed contract, or a source change nobody regenerated for, reds here.
  *
- * `--check` is accepted for parity with the sibling gates (`check-promotion.mjs --check`,
- * `check-swift-widget-purity.mjs --check`) and is a no-op: in check mode this gate never writes.
+ * `--check` is accepted for parity with the sibling gates (`d3-promotion.mjs --check`,
+ * `d3-swift-widget-purity.mjs --check`) and is a no-op: in check mode this gate never writes.
  *
  * `--update-baseline` is the ONE writing mode: it re-records `conformance-baseline.json` from the
  * current catalog. It runs checks 1–3 first and refuses to write if any of them fails, because a

@@ -17,7 +17,7 @@ import {readdirSync, readFileSync} from 'node:fs'
 import {fileURLToPath} from 'node:url'
 import path from 'node:path'
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const WEB_SRC = path.join(repoRoot, 'packages/web/src')
 
 /** The exported load-time entry point. Named here so a rename breaks this gate

@@ -3,7 +3,7 @@
 # .preferredColorScheme(.dark). Exits 1 with a violation report if any are missing.
 set -euo pipefail
 
-SOURCES_DIR="$(dirname "$0")/../Sources"
+SOURCES_DIR="$(dirname "$0")/../../Sources"
 VIOLATIONS=()
 
 while IFS= read -r -d '' file; do

@@ -8,12 +8,12 @@ estate carrying a live product surface and **zero** capabilities — 0 requireme
 
 ## Layout
 
-| Path                                  | Role                                                                       |
-| ------------------------------------- | -------------------------------------------------------------------------- |
-| `specs/<capability>/spec.md`          | The capability. `### Requirement:` blocks, each with `#### Scenario:` GWT. |
-| `covers-baseline.json`                | Grandfathered untethered requirements, keyed by identity. Generated.       |
-| `../scripts/openspec-covers.mjs`      | The gate. Blocking in CI `governance-gates` and in `.husky/pre-push`.      |
-| `../scripts/openspec-covers.test.mjs` | The gate's known-answer suite, including its can-fail proof.               |
+| Path                                              | Role                                                                       |
+| ------------------------------------------------- | -------------------------------------------------------------------------- |
+| `specs/<capability>/spec.md`                      | The capability. `### Requirement:` blocks, each with `#### Scenario:` GWT. |
+| `covers-baseline.json`                            | Grandfathered untethered requirements, keyed by identity. Generated.       |
+| `../audits/checks/d3-openspec-covers.mjs`         | The gate. Blocking in CI `governance-gates` and in `.husky/pre-push`.      |
+| `../audits/__tests__/d3-openspec-covers.test.mjs` | The gate's known-answer suite, including its can-fail proof.               |
 
 ## Capabilities
 
@@ -23,7 +23,7 @@ estate carrying a live product surface and **zero** capabilities — 0 requireme
 
 ## The rule is not in this repo
 
-`scripts/openspec-covers.mjs` is a ~300-line wrapper. The rule it runs ships as
+`audits/checks/d3-openspec-covers.mjs` is a ~300-line wrapper. The rule it runs ships as
 `@j0nathan-ll0yd/estate-contracts/openspec-covers`, exact-pinned at `0.6.0` in `package.json` and
 resolved from the lockfile, so this repo cannot hold a divergent local copy of a cross-repo rule. The
 wrapper verifies the shipped bytes against the `.sha256` sidecar shipped beside them, asserts the
@@ -59,9 +59,10 @@ table's disjointness invariant is asserted at startup rather than assumed.
 ## The baseline
 
 `covers-baseline.json` names requirements that describe an **enforced** rule with no known-answer test
-to tether. Three today, all of them blocking gates in `governance-gates` whose behavior nothing pins:
-Swift widget purity (`check-swift-widget-purity.mjs`), watch exclusions
-(`check-watch-exclusions.mjs`), and the promotion gate (`check-promotion.mjs`).
+to tether. **None today** — the file is empty. It held three (Swift widget purity, watch exclusions,
+the promotion gate); `audits/__tests__/d3-swift-widget-purity.test.mjs` closed the first, and #257's
+`d3-watch-exclusions.test.mjs` and `d3-promotion.test.mjs` closed the other two. An empty baseline
+grandfathers nothing, which is the strictest state the gate has.
 
 Each entry is a recorded **gap**, not a pass:
 

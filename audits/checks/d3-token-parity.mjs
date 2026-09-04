@@ -24,8 +24,8 @@
  *   but still printed in the parity table for visibility.
  *
  * Usage:
- *   node scripts/check-token-parity.mjs           — print parity table, exit 0
- *   node scripts/check-token-parity.mjs --check   — print parity table, exit 1 on mismatches
+ *   node audits/checks/d3-token-parity.mjs           — print parity table, exit 0
+ *   node audits/checks/d3-token-parity.mjs --check   — print parity table, exit 1 on mismatches
  *
  * `compareTokenParity({root})` is exported so the known-answer suite
  * (check-token-parity.test.mjs) can point the comparison at a temp fixture tree.
@@ -44,7 +44,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 const CSS_REL = 'packages/tokens/dist/tokens.css'
 const XCASSETS_REL = 'Sources/LifegamesTokens/Resources/Colors.xcassets'

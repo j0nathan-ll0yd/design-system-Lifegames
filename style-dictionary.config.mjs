@@ -1037,7 +1037,7 @@ function emitDeprecatedTokensJson() {
 
 // tokens.dtcg.json — normalised DTCG output for downstream conformance tooling.
 // Emits the resolved token tree with $value and $type at every leaf, matching
-// the W3C DTCG draft shape. scripts/validate-dtcg.mjs consumes this file when
+// the W3C DTCG draft shape. audits/checks/d3-validate-dtcg.mjs consumes this file when
 // invoked with --report.
 function emitTokensDtcgJson() {
   const tree = {}

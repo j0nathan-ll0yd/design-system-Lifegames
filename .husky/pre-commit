@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # Tier 1 (fast). Heavy CI-parity checks live in pre-push.
-bash scripts/scan-personal-data.sh
+bash audits/checks/d6-scan-personal-data.sh
 npx lint-staged
 
 # Generated-artifact freshness guard (mirrors mantle's conditional contract:check).

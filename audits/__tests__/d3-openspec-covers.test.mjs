@@ -1,10 +1,10 @@
 // mantle-cli-output: test file, not a CLI script (marker satisfies scripts/-dir convention scan)
 /**
- * Known-answer tests for the openspec-covers gate (`openspec-covers.mjs`).
+ * Known-answer tests for the openspec-covers gate (`d3-openspec-covers.mjs`).
  *
  * Runs under `pnpm test:scripts` (node --test) AND directly in the CI `governance-gates` step, for
  * the same reason `contracts/component-catalog/ratchet.test.mjs` and
- * `scripts/check-package-drift.test.mjs` run there: a suite reachable only through `pnpm test:scripts`
+ * `c147-package-drift.test.mjs` run there: a suite reachable only through `pnpm test:scripts`
  * lives in `.husky/pre-push` and in no workflow, so `DS_SKIP_PREPUSH=1` would be enough to merge a
  * gate that no longer gates.
  *
@@ -43,7 +43,7 @@ import {
   requirementKey,
   runGate,
   writeBaseline
-} from './openspec-covers.mjs'
+} from '../checks/d3-openspec-covers.mjs'
 
 const scratch = () => mkdtempSync(join(tmpdir(), 'openspec-covers-test-'))
 

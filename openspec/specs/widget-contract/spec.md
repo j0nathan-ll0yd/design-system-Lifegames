@@ -31,7 +31,7 @@ requirement says which.
 ### How a requirement is bound to its proof
 
 Each requirement is bound by a line-leading `// covers:` comment in the test that holds it, naming
-this capability and then the requirement name verbatim. `scripts/openspec-covers.mjs --blocking`
+this capability and then the requirement name verbatim. `audits/checks/d3-openspec-covers.mjs --blocking`
 reconciles both directions on every PR: a requirement with no tether reds, and a tether naming no
 requirement reds.
 
@@ -48,13 +48,15 @@ copy of the same fact would only be a new way to be wrong.
 
 ### Known gaps
 
-Two requirements below describe rules this repo enforces with a **blocking gate that has no
-known-answer test**. They are recorded, by identity, in `openspec/covers-baseline.json`. They are
-gaps, not passes: the moment one of them gains a test, its id must be pruned from the baseline in the
-same change, and a third untethered requirement cannot be added without appearing in that file.
+`openspec/covers-baseline.json` is **empty**: every requirement below is tethered to a known-answer
+test. An untethered requirement cannot be added without appearing in that file, and each id recorded
+there is a gap, not a pass — the moment one gains a test, its id must be pruned in the same change.
 
-It was three. The Swift purity gate has since gained `scripts/check-swift-widget-purity.test.mjs`,
-and its id was pruned in the same change — which is the discipline working, not an exception to it.
+It was three, then two, now none. The Swift purity gate gained
+`audits/__tests__/d3-swift-widget-purity.test.mjs`; watch exclusions and the Stable-promotion bar
+gained `audits/__tests__/d3-watch-exclusions.test.mjs` and `audits/__tests__/d3-promotion.test.mjs`
+(#257). Each id was pruned in the change that closed it — the discipline working, not an exception
+to it. An empty baseline grandfathers nothing, which is the strictest state, not an absent gate.
 
 ## Requirements
 

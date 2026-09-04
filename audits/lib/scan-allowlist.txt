@@ -1,17 +1,17 @@
-# Allowlist for scripts/scan-personal-data.sh.
+# Allowlist for audits/checks/d6-scan-personal-data.sh.
 #
 # Format: one entry per line, `<repo-relative-path>:<check-label>`.
 #   <check-label> is one of: marker:j0nathan-ll0yd, marker:j0nathan_ll0yd,
 #   email, phone, coordinate — or `*` to suppress every check for that path.
 # Blank lines and `#`-prefixed comments are ignored.
 #
-# Entries below were seeded by running `scripts/scan-personal-data.sh --full-tree`
+# Entries below were seeded by running `audits/checks/d6-scan-personal-data.sh --full-tree`
 # and triaging every hit (lp-audit D6, 2026-07-16). Re-triage this file whenever
 # a genuinely new hit shows up that isn't already covered here.
 #
 # All entries are the `marker:j0nathan-ll0yd` check. The other heuristics
 # (email/phone/coordinate) had zero remaining hits after the built-in
-# @example.{com,org,net} + noreply exclusions — see scan-personal-data.sh's
+# @example.{com,org,net} + noreply exclusions — see d6-scan-personal-data.sh's
 # EMAIL_ALLOW_REGEX. The marker itself is the maintainer's own PUBLIC GitHub
 # handle / portfolio domain (not a secret), so it legitimately appears
 # throughout: the copy package's identity content (its entire purpose is to
@@ -32,7 +32,7 @@ packages/copy/dist/identity.flat.json:marker:j0nathan-ll0yd
 packages/copy/dist/llm.flat.json:marker:j0nathan-ll0yd
 
 # apps/portfolio/ is the user's real portfolio — expected to contain real
-# identity (see scan-personal-data.sh's header note).
+# identity (see d6-scan-personal-data.sh's header note).
 apps/portfolio/public/llms.txt:marker:j0nathan-ll0yd
 apps/portfolio/src/layouts/Dashboard.astro:marker:j0nathan-ll0yd
 
@@ -61,9 +61,9 @@ packages/web/src/production/index.ts:marker:j0nathan-ll0yd
 
 # `~/Repositories/<repo>`-style local path-convention defaults, and upstream
 # repo-path references (mantle-LifegamesPortal, design-system-Lifegames).
-scripts/check-baseline-age.mjs:marker:j0nathan-ll0yd
+audits/checks/d2-baseline-age.mjs:marker:j0nathan-ll0yd
 scripts/sync-assets.sh:marker:j0nathan-ll0yd
-scripts/widget-inventory.mjs:marker:j0nathan-ll0yd
+audits/checks/d3-widget-inventory.mjs:marker:j0nathan-ll0yd
 packages/schemas/.contract-lock.json:marker:j0nathan-ll0yd
 packages/schemas/scripts/baseline-validate.mjs:marker:j0nathan-ll0yd
 packages/schemas/scripts/generate-contract-lock.ts:marker:j0nathan-ll0yd
@@ -423,8 +423,8 @@ style-dictionary.config.mjs:marker:j0nathan-ll0yd
 # contract itself is a dependency, @j0nathan-ll0yd/estate-contracts, so the scope
 # also appears in the engine's imports and in the two lanes' comments naming it.
 # Not personal data; it is the mandated distribution namespace.
-scripts/check-package-drift.mjs:marker:j0nathan-ll0yd
-scripts/check-package-drift.test.mjs:marker:j0nathan-ll0yd
+audits/checks/c147-package-drift.mjs:marker:j0nathan-ll0yd
+audits/__tests__/c147-package-drift.test.mjs:marker:j0nathan-ll0yd
 .github/workflows/package-drift-post-publish.yml:marker:j0nathan-ll0yd
 .github/workflows/drift-self-test-nightly.yml:marker:j0nathan-ll0yd
 .github/dependabot.yml:marker:j0nathan-ll0yd
@@ -483,5 +483,5 @@ contracts/component-catalog/component-catalog-conformance.json:marker:j0nathan-l
 # A public GitHub handle used as a distribution scope, not personal data.
 openspec/README.md:marker:j0nathan-ll0yd
 openspec/specs/widget-contract/spec.md:marker:j0nathan-ll0yd
-scripts/openspec-covers.mjs:marker:j0nathan-ll0yd
-scripts/openspec-covers.test.mjs:marker:j0nathan-ll0yd
+audits/checks/d3-openspec-covers.mjs:marker:j0nathan-ll0yd
+audits/__tests__/d3-openspec-covers.test.mjs:marker:j0nathan-ll0yd

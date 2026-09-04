@@ -23,7 +23,7 @@ import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import {scanWatchExclusions} from './check-watch-exclusions.mjs'
+import {scanWatchExclusions} from '../checks/d3-watch-exclusions.mjs'
 
 const COMPONENTS_WATCH = 'Sources/LifegamesComponentsWatch'
 const WIDGETS_WATCH = 'Sources/LifegamesWidgetsWatch'

@@ -27,7 +27,7 @@ import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import {compareTokenParity} from './check-token-parity.mjs'
+import {compareTokenParity} from '../checks/d3-token-parity.mjs'
 
 const CSS_REL = 'packages/tokens/dist/tokens.css'
 const XCASSETS_REL = 'Sources/LifegamesTokens/Resources/Colors.xcassets'
@@ -182,7 +182,7 @@ test('the real repository tree passes the gate once tokens are built', (t) => {
   // `token-dist` artifact in governance-gates, so it is absent in a bare
   // checkout. Skipping is honest here; the fixture cases above carry the
   // can-fail proof either way.
-  if (!fs.existsSync(path.resolve(import.meta.dirname, '..', CSS_REL))) {
+  if (!fs.existsSync(path.resolve(import.meta.dirname, '..', '..', CSS_REL))) {
     t.skip(`${CSS_REL} not built — run \`pnpm build:tokens\` to exercise the real-tree case`)
     return
   }

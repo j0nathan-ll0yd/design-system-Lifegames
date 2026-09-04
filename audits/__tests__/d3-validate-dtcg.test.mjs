@@ -29,7 +29,7 @@ import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import {validateDtcg} from './validate-dtcg.mjs'
+import {validateDtcg} from '../checks/d3-validate-dtcg.mjs'
 
 /**
  * Materialise a fixture repo of token files.

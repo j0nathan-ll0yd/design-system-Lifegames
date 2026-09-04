@@ -18,8 +18,8 @@
  * this script reports it as a violation.
  *
  * Usage:
- *   node scripts/check-watch-exclusions.mjs          — print findings, exit 0
- *   node scripts/check-watch-exclusions.mjs --check  — print findings, exit 1 on violations
+ *   node audits/checks/d3-watch-exclusions.mjs          — print findings, exit 0
+ *   node audits/checks/d3-watch-exclusions.mjs --check  — print findings, exit 1 on violations
  *
  * `scanWatchExclusions({root})` is exported so the known-answer suite
  * (check-watch-exclusions.test.mjs) can point the scan at a temp fixture tree.
@@ -38,7 +38,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 const WATCH_DIRS = ['Sources/LifegamesComponentsWatch', 'Sources/LifegamesWidgetsWatch']
 

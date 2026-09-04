@@ -26,7 +26,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import test from 'node:test'
 
-import {evaluateContrast, PAIRINGS} from './check-contrast.mjs'
+import {evaluateContrast, PAIRINGS} from '../checks/d3-contrast.mjs'
 
 const CSS_REL = 'packages/tokens/dist/tokens.css'
 
@@ -140,7 +140,7 @@ test('an EMPTY stylesheet throws — the gate cannot score an absent palette', (
 })
 
 test('the real built tokens.css passes the gate', (t) => {
-  const cssPath = path.resolve(import.meta.dirname, '..', CSS_REL)
+  const cssPath = path.resolve(import.meta.dirname, '..', '..', CSS_REL)
   if (!fs.existsSync(cssPath)) {
     t.skip(`${CSS_REL} not built — run \`pnpm build:tokens\` to exercise the real-tree case`)
     return

@@ -11,7 +11,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
+const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const CHECK_MODE = process.argv.includes('--check')
 
 // ── path constants ────────────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ console.log(`Wrote ${OUTPUT_JSON}`)
 // maintainer-curated and not derivable from import scans) AND reconcile it so
 // every portfolio-consumed widget has a matching entry. A widget listed in
 // consumedWidgets[] but absent from widgets[] is the self-inconsistency
-// lp-audit D1 (audit-widget-matrix.mjs) flags as HIGH. Missing entries are
+// lp-audit D1 (d1-widget-matrix.mjs) flags as HIGH. Missing entries are
 // appended with the fields we CAN derive — category (from the widget inventory)
 // and consumers (from the import scan) — with status defaulting to
 // "Experimental" and plannedSurface to null for later maintainer curation.
