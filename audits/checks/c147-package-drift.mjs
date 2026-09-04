@@ -1569,7 +1569,7 @@ export function resolveToken({
  * Exhausted attempts return the SAME auth/unreachable result they returned before and still
  * become INDETERMINATE / exit 3. This removes a flake; it can never manufacture a pass. A
  * genuinely bad token costs these four attempts and then reports exactly what it always
- * reported. The `retries never manufacture a pass` tests in check-package-drift.test.mjs
+ * reported. The `retries never manufacture a pass` tests in c147-package-drift.test.mjs
  * pin both halves.
  *
  * Ported verbatim in behaviour from the twin mantle engine
@@ -1692,7 +1692,7 @@ export async function fetchTarball(url, token, integrity) {
 /**
  * `quiet` redirects the CHILD's stdout to OUR stderr (fd 2) rather than discarding it.
  *
- * MEASURED before the fix: `check-package-drift.mjs --lane=branch --json` wrote 39657
+ * MEASURED before the fix: `c147-package-drift.mjs --lane=branch --json` wrote 39657
  * bytes to stdout, of which the JSON document was the tail — turbo streams its whole
  * build log to the inherited stdout first, so `JSON.parse(stdout)` threw
  * `Unexpected token '•'` and --json was unusable by any machine consumer (finding X8).
@@ -2977,7 +2977,7 @@ function buildFixture(registryUrl) {
  * no `sinceRef` touches git not at all, so no history is needed beyond the initial commit.
  */
 function buildChangesetCascadeFixture(registryUrl) {
-  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'pkg-drift-cascade-')))
   fs.mkdirSync(path.join(root, 'packages', 'csleaf', 'src'), {recursive: true})
   fs.mkdirSync(path.join(root, 'packages', 'csdep', 'src'), {recursive: true})
@@ -4440,7 +4440,7 @@ async function main(argv) {
     return selfTestCommand(opts)
   }
 
-  const repoRoot = opts.repoRoot ? path.resolve(opts.repoRoot) : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+  const repoRoot = opts.repoRoot ? path.resolve(opts.repoRoot) : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
   const result = await runGate({
     repoRoot,
     ...(opts.registry ? {registry: opts.registry} : {}),

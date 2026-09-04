@@ -75,7 +75,7 @@ import {
   surfaceOfPayload,
   VERIFIED_TS_VERSIONS,
   writeCache
-} from './check-package-drift.mjs'
+} from '../checks/c147-package-drift.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 
@@ -371,7 +371,7 @@ test('the typescript pin is EXACT, is a member of the verified set, and is what 
   // contract's set, the manifest's declared version, that the declaration is a bare version rather
   // than a range, and the compiler actually loaded. A caret or tilde is not a pin — it is a time
   // bomb, because 7.x is already published.
-  const rootManifest = JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8'))
+  const rootManifest = JSON.parse(fs.readFileSync(path.join(here, '..', '..', 'package.json'), 'utf8'))
   const declared = rootManifest.devDependencies.typescript
   assert.match(declared, /^\d+\.\d+\.\d+$/, 'package.json must pin typescript EXACTLY, with no range operator')
   assert.ok(VERIFIED_TS_VERSIONS.includes(declared), `the pinned ${declared} is not in the verified set ${VERIFIED_TS_VERSIONS.join(', ')}`)

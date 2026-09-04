@@ -339,7 +339,7 @@ node contracts/component-catalog/check.mjs --update-baseline   # the ONE writing
 
 The writing mode is invoked directly rather than through `pnpm check:component-catalog -- …`: pnpm
 11 forwards the bare `--` to the script as a literal argument, which the gate rejects with exit 2.
-Same trap, same answer as `check-package-drift.mjs --lane=pre-push` in `.husky/pre-push`.
+Same trap, same answer as `c147-package-drift.mjs --lane=pre-push` in `.husky/pre-push`.
 
 Six checks, in cost order:
 

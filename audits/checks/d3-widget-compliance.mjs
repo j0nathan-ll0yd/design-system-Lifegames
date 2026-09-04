@@ -6,13 +6,13 @@
  * Reads production-widgets.json as the authoritative registry and checks
  * each widget against the codebase (astro files, fixtures, manifest).
  *
- * Usage: node scripts/widget-compliance.mjs
+ * Usage: node audits/checks/d3-widget-compliance.mjs
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
+const ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 function readJSON(relativePath) {
   const fullPath = path.join(ROOT, relativePath)
@@ -41,11 +41,11 @@ if (manifest) {
 }
 // Also index by the V3-suffixed names used in production-widgets.json
 // since manifest uses shorter names (e.g. "PlaceLeaderboard" vs "PlaceLeaderboardV3")
-// Exported for reuse by scripts/audit-widget-matrix.mjs, which reconciles this
+// Exported for reuse by audits/checks/d1-widget-matrix.mjs, which reconciles this
 // same V3 naming split across a wider set of registries.
 export const MANIFEST_ALIASES = {PlaceLeaderboardV3: 'PlaceLeaderboard', ExplorationOdometerV3: 'ExplorationOdometer'}
 
-// Exported for reuse by scripts/audit-widget-matrix.mjs.
+// Exported for reuse by audits/checks/d1-widget-matrix.mjs.
 export function toKebabName(name) {
   return name.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/V(\d)/g, '-v$1').toLowerCase()
 }

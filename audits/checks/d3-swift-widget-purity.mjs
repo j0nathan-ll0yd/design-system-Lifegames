@@ -37,11 +37,11 @@
  *    affordance instead of staying pure SwiftUI.
  *
  * Usage:
- *   node scripts/check-swift-widget-purity.mjs           — print findings, exit 0
- *   node scripts/check-swift-widget-purity.mjs --check   — exit 1 on un-exempted violations
+ *   node audits/checks/d3-swift-widget-purity.mjs           — print findings, exit 0
+ *   node audits/checks/d3-swift-widget-purity.mjs --check   — exit 1 on un-exempted violations
  *
  * `scanPurity({root})` is exported so the known-answer suite
- * (check-swift-widget-purity.test.mjs) can point the scan at a temp fixture
+ * (d3-swift-widget-purity.test.mjs) can point the scan at a temp fixture
  * tree. The root is an explicit ARGUMENT, deliberately not an environment
  * variable: an env var that relocates a gate's corpus is a thaw switch, and a
  * gate pointed at an empty directory reports "no findings" and exits 0.
@@ -50,7 +50,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 // Forbidden imports. Each entry: { label, pattern } where pattern is matched
 // against each source line. `import X` for modules; APIClient/SharedModels are

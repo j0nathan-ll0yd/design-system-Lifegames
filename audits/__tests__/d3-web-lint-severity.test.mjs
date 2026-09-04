@@ -29,7 +29,7 @@ import path from 'node:path'
 import test from 'node:test'
 import {ESLint} from 'eslint'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
+const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const WEB = path.join(ROOT, 'packages/web')
 const WIDGETS = path.join(WEB, 'src/widgets')
 

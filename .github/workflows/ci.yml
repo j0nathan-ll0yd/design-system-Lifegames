@@ -126,7 +126,7 @@ jobs:
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: drift-engine-changes
         with:
-          # The two check-package-drift files are the engine and its unit/self-test
+          # The two c147-package-drift files are the engine and its unit/self-test
           # suite. The contract itself used to live in scripts/fixtures/**; since
           # atlas decision 0079 item 4 wave 2 it arrives as
           # @j0nathan-ll0yd/estate-contracts, so the lockfile is now the file that
@@ -137,8 +137,8 @@ jobs:
           # to prevent. Wider and correct beats narrower and blind.
           filters: |
             engine:
-              - 'scripts/check-package-drift.mjs'
-              - 'scripts/check-package-drift.test.mjs'
+              - 'audits/checks/c147-package-drift.mjs'
+              - 'audits/__tests__/c147-package-drift.test.mjs'
               - 'pnpm-lock.yaml'
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -151,7 +151,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # D4 — THE SHARED DIGEST CONTRACT, AND IT RAN IN NO WORKFLOW AT ALL.
-      # scripts/check-package-drift.test.mjs runs the 35 cross-implementation
+      # audits/__tests__/c147-package-drift.test.mjs runs the 35 cross-implementation
       # conformance vectors from @j0nathan-ll0yd/estate-contracts/package-digest,
       # AND the assertion that the resolved fixture still hashes to
       # DRIFT_CONFORMANCE_SHA256 — the pin that keeps a vector change visible in
@@ -162,16 +162,16 @@ jobs:
       # It runs FIRST: a digest rule that no longer agrees with the estate makes
       # every verdict below meaningless.
       - name: Digest conformance + unit suite (35 shared vectors, fixture checksum)
-        run: node --test scripts/check-package-drift.test.mjs
+        run: node --test audits/__tests__/c147-package-drift.test.mjs
 # Exercise the real package-drift pipeline plus source mutants, including wrapper exit semantics.
 # Paths gate pull-request cost; the nightly run always executes. npm remains installed to test
 # npm/pnpm asymmetry.
       - name: Known-answer self-test (must prove it can fail)
         if: steps.drift-engine-changes.outputs.engine == 'true'
-        run: node scripts/check-package-drift.mjs --self-test
+        run: node audits/checks/c147-package-drift.mjs --self-test
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: package-version-drift
-        run: node scripts/check-package-drift.mjs --lane=branch
+        run: node audits/checks/c147-package-drift.mjs --lane=branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -246,14 +246,14 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
-        run: node scripts/validate-dtcg.mjs
+        run: node audits/checks/d3-validate-dtcg.mjs
       # That gate's own known-answer suite. It is the sixth gate atlas catalog check D3
       # names, and the only one that runs OUTSIDE governance-gates — which is why D3's
       # runner had to grow this job as a second entry. The proof runs beside the gate it
       # proves rather than in governance-gates: build-tokens is where the validator lives,
       # and governance-gates `needs:` it, so a red here blocks the required context too.
       - name: Prove the DTCG validator can fail
-        run: node --test scripts/validate-dtcg.test.mjs
+        run: node --test audits/__tests__/d3-validate-dtcg.test.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: token-dist
@@ -497,7 +497,7 @@ jobs:
           # Widget inventory drift (P5)
           pnpm widget:inventory -- --check
           # P1 token parity (web/Swift accent hex)
-          node scripts/check-token-parity.mjs --check
+          node audits/checks/d3-token-parity.mjs --check
           # That gate's own known-answer suite. Atlas catalog check D3 named six governance
           # gates and only ONE of them — Swift purity, below — had a can-fail proof (atlas
           # decision 0111 phase 1). The four suites added here and the DTCG suite in
@@ -505,15 +505,15 @@ jobs:
           # does: reachable only through `pnpm test:scripts` they would live in
           # .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to merge a
           # gate that stopped gating. Each is offline and well under a second.
-          node --test scripts/check-token-parity.test.mjs
+          node --test audits/__tests__/d3-token-parity.test.mjs
           # WCAG-AA contrast gate
-          node scripts/check-contrast.mjs
-          node --test scripts/check-contrast.test.mjs
+          node audits/checks/d3-contrast.mjs
+          node --test audits/__tests__/d3-contrast.test.mjs
           # P3 Swift widget purity — widgets AND components. GOVERNANCE.md §5 bans the app-only
           # imports for "a DS component"; the scan covered only Sources/LifegamesWidgets/, so a
           # component importing HealthKit exited 0. Measured across the 34 component files at the
           # time of widening: zero hits, so the wider gate went green immediately.
-          node scripts/check-swift-widget-purity.mjs --check
+          node audits/checks/d3-swift-widget-purity.mjs --check
           # That gate's own known-answer suite — it had NONE, which is why it was one of the three
           # requirements grandfathered in openspec/covers-baseline.json. Two defects lived in the
           # blind spot: the widget-only import scan above, and an exemption in
@@ -521,15 +521,15 @@ jobs:
           # reason, against the file's own "Reason MUST explain why". Same argument as the suites
           # below: reachable only through `pnpm test:scripts`, it would run in .husky/pre-push and no
           # workflow, so DS_SKIP_PREPUSH=1 would be enough to merge a gate that stopped gating.
-          node --test scripts/check-swift-widget-purity.test.mjs
+          node --test audits/__tests__/d3-swift-widget-purity.test.mjs
           # Watch exclusions (F-014)
-          node scripts/check-watch-exclusions.mjs --check
-          node --test scripts/check-watch-exclusions.test.mjs
+          node audits/checks/d3-watch-exclusions.mjs --check
+          node --test audits/__tests__/d3-watch-exclusions.test.mjs
           # P4/P7 promotion gate
-          node scripts/check-promotion.mjs --check
-          node --test scripts/check-promotion.test.mjs
+          node audits/checks/d3-promotion.mjs --check
+          node --test audits/__tests__/d3-promotion.test.mjs
           # P2 widget compliance (registry ↔ Astro/fixture/manifest)
-          node scripts/widget-compliance.mjs
+          node audits/checks/d3-widget-compliance.mjs
           # Component-contract catalog + conformance ratchet (atlas decision 0060;
           # Phoenix eval GAP 2). Five checks: grammar conformance, entry validity,
           # completeness, the CONFORMANCE RATCHET, and idempotence. It ran ONLY in
@@ -565,17 +565,17 @@ jobs:
           # in package-version-drift: reachable only through `pnpm test:scripts`, it would
           # run in .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to
           # merge a gate that no longer gates. ~0.3s.
-          node --test scripts/openspec-covers.test.mjs
+          node --test audits/__tests__/d3-openspec-covers.test.mjs
           # SSR image-fallback gate: every .astro that server-renders a
           # data-fallback cover must bundle the load-time initImageFallbacks()
           # call. Mirrors the digest-conformance precedent above
-          # (package-version-drift's `node --test scripts/check-package-drift.test.mjs`):
+          # (package-version-drift's `node --test audits/__tests__/c147-package-drift.test.mjs`):
           # reachable only through `pnpm test:scripts` it would live in
           # .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough
           # to merge a widget whose SSR covers can never fall back. It runs HERE
           # rather than in lint-web because governance-gates is a required status
           # context and lint-web is not — a gate that cannot block is not a gate.
-          node --test scripts/check-ssr-image-fallback.test.mjs
+          node --test audits/__tests__/d3-ssr-image-fallback.test.mjs
           # Web widget-purity lint (P1 raw hex, P3 forbidden imports / module-scope fetch, W16
           # props-extend-schema). It runs HERE and not only in lint-web for the reason stated on the
           # SSR gate above: governance-gates is a required status context and lint-web is not.
@@ -590,16 +590,16 @@ jobs:
           # the two things that were actually broken. This asserts the resolved SEVERITY through the
           # real eslint.config.js and that the lint script still scans every extension its rules
           # claim — a regression to 'warn' or a dropped extension reds here.
-          node --test scripts/check-web-lint-severity.test.mjs
+          node --test audits/__tests__/d3-web-lint-severity.test.mjs
           # The local ESLint rules' RuleTester suites. They ran in NO workflow and NO hook — not
-          # turbo, not `pnpm test:scripts` (whose globs are scripts/, packages/schemas/scripts/ and
+          # turbo, not `pnpm test:scripts` (whose globs were scripts/, packages/schemas/scripts/ and
           # contracts/component-catalog/ only) — so every rule above was one silent edit away from
           # reporting nothing, with its `// covers:` tether still satisfying check:covers.
           node --test eslint-local-rules/__tests__/*.test.js
           # Style Dictionary golden-file characterization (F-005)
           pnpm --filter @j0nathan-ll0yd/tokens test
           # S22 preview scheme audit
-          bash scripts/check-preview-scheme.sh
+          bash audits/checks/d3-preview-scheme.sh
 
   docs-build:
     needs: build-tokens

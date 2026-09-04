@@ -36,7 +36,7 @@ docs/maintenance/**
 # Golden MDX fixtures use <$> custom shortcode syntax not parseable by Prettier
 Tests/golden-mdx/**
 
-# Generated, non-deterministic inventory data (scripts/widget-inventory.mjs).
+# Generated, non-deterministic inventory data (audits/checks/d3-widget-inventory.mjs).
 # Has no byte gate of its own; formatting it is pointless and would churn diffs.
 widget-consumers.json
 

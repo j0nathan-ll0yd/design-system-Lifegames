@@ -20,7 +20,7 @@ import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import {evaluatePromotion} from './check-promotion.mjs'
+import {evaluatePromotion} from '../checks/d3-promotion.mjs'
 
 const SWIFT_REGISTRY = 'Sources/LifegamesWidgets/Resources/production-widgets.json'
 const WEB_REGISTRY = 'widget-consumers.json'

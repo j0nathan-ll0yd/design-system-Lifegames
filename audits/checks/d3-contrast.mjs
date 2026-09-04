@@ -30,7 +30,7 @@ import path from 'node:path'
 import process from 'node:process'
 import {blend, formatHex, parse, wcagContrast} from 'culori'
 
-const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 const CSS_REL = 'packages/tokens/dist/tokens.css'
 
 /** Parse `--lg-*` custom-property declarations out of a stylesheet. */

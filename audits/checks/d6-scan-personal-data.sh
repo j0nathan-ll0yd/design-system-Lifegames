@@ -16,7 +16,7 @@
 #
 # Known-legitimate hits that aren't covered by the two built-in exclusions
 # above (webmaster@lifegames.org and noreply-style addresses) are suppressed
-# via scripts/scan-allowlist.txt: one `path:check-label` per line (see that
+# via audits/lib/scan-allowlist.txt: one `path:check-label` per line (see that
 # file's header for the exact format). An allowlisted path/check pair is
 # skipped entirely for that finding.
 #
@@ -25,8 +25,8 @@
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ALLOWLIST_FILE="$REPO_ROOT/scripts/scan-allowlist.txt"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ALLOWLIST_FILE="$REPO_ROOT/audits/lib/scan-allowlist.txt"
 FIXTURE_POOL_PREFIX="Sources/LifegamesWidgets/Resources/widgets/"
 
 FULL_TREE=0
@@ -47,7 +47,7 @@ MARKERS=(
 # this repo (e.g. Sources/LifegamesWidgets/Resources/widgets/media/*.json),
 # and a real leak would essentially never land on a reserved domain.
 # The same RFC also reserves the .test/.example/.invalid/.localhost TLDs, which
-# are guaranteed never to resolve; check-package-drift.mjs's self-test uses
+# are guaranteed never to resolve; c147-package-drift.mjs's self-test uses
 # @example.invalid for the throwaway git repo's committer identity. Excluding
 # them by TLD keeps the email check ACTIVE on those files, which allowlisting
 # the path would not — an allowlist entry suppresses the check for the whole
@@ -72,7 +72,7 @@ COORD_REGEX='-?[0-9]{1,3}\.[0-9]{4,}, *-?[0-9]{1,3}\.[0-9]{4,}'
 # (machine-generated, third-party package metadata only — e.g. an upstream
 # maintainer's deprecation notice can contain a real-looking email that has
 # nothing to do with this repo).
-SKIP_FILES_REGEX='^(scripts/scan-personal-data\.sh|scripts/scan-allowlist\.txt|pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$'
+SKIP_FILES_REGEX='^(audits/checks/d6-scan-personal-data\.sh|audits/lib/scan-allowlist\.txt|pnpm-lock\.yaml|package-lock\.json|yarn\.lock)$'
 
 if [ "$FULL_TREE" -eq 1 ]; then
   FILES=$(git -C "$REPO_ROOT" ls-files | grep -vE "$SKIP_FILES_REGEX" || true)
@@ -127,7 +127,7 @@ done <<< "$FILES"
 
 if [ "$FOUND" -ne 0 ]; then
   echo ""
-  echo "Scrub personal data before committing, or add a documented entry to scripts/scan-allowlist.txt."
+  echo "Scrub personal data before committing, or add a documented entry to audits/lib/scan-allowlist.txt."
   echo "See Sources/LifegamesWidgets/Resources/widgets/SCRUBBING.md for the fixture-pool scrubbing log."
   exit 1
 fi

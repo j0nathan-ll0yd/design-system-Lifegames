@@ -29,7 +29,7 @@ module (mirror).
 
 Mapping to platform outputs (web vs iOS) is encoded in
 [GOVERNANCE.md §5](GOVERNANCE.md). The
-[parity gate](scripts/check-token-parity.mjs) enforces that role hex
+[parity gate](audits/checks/d3-token-parity.mjs) enforces that role hex
 values stay identical across platforms — a parity-breaking change
 without an entry in `tokens/parity-exceptions.json` is rejected at CI.
 

@@ -45,7 +45,7 @@ import {
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-export const REPO_ROOT = resolve(__dirname, '..')
+export const REPO_ROOT = resolve(__dirname, '..', '..')
 
 /**
  * The covers spec version this repo's openspec/ tree was written against.
@@ -97,7 +97,7 @@ export function assertLanguagesDisjoint(languages) {
       throw new Error(
         `openspec-covers language table is not disjoint: '${language.glob}' is claimed by both ` +
           `'${seenGlobs.get(language.glob)}' and '${language.id}'. A file matched twice is counted twice. ` +
-          "Reconcile scripts/openspec-covers.mjs with the contract's DEFAULT_LANGUAGES."
+          "Reconcile audits/checks/d3-openspec-covers.mjs with the contract's DEFAULT_LANGUAGES."
       )
     }
     if (seenIds.has(language.id)) {
@@ -213,7 +213,11 @@ const BASELINE_DESCRIPTION = 'Requirements in openspec/specs/**/spec.md that des
  * produce byte-identical output and the file is a diff, not a churn.
  */
 export function writeBaseline(uncoveredKeys, path = BASELINE_PATH) {
-  const body = {description: BASELINE_DESCRIPTION, generatedBy: 'node scripts/openspec-covers.mjs --update-baseline', uncovered: [...uncoveredKeys].sort()}
+  const body = {
+    description: BASELINE_DESCRIPTION,
+    generatedBy: 'node audits/checks/d3-openspec-covers.mjs --update-baseline',
+    uncovered: [...uncoveredKeys].sort()
+  }
   writeFileSync(path, `${JSON.stringify(body, null, 2)}\n`)
   return body
 }

@@ -17,8 +17,8 @@
  *   - widget-consumers.json `widgets` array                       (web, R6)
  *
  * Usage:
- *   node scripts/check-promotion.mjs           — print summary table + counts
- *   node scripts/check-promotion.mjs --check   — same; exit code governed by BLOCKING flag
+ *   node audits/checks/d3-promotion.mjs           — print summary table + counts
+ *   node audits/checks/d3-promotion.mjs --check   — same; exit code governed by BLOCKING flag
  *
  * Showcase / preview / watch-stub importers are excluded from the consumer count
  * upstream (the registries record only real product surfaces per the census).
@@ -38,7 +38,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 // ── ADVISORY MODE TOGGLE ──────────────────────────────────────────────────────
 // BLOCKING = true: exit 1 when P7 violations are found (--check mode).

@@ -29,7 +29,7 @@
 
 ## Fixture Rules
 
-- Personal data MUST be scrubbed before push (enforced by `scripts/scan-personal-data.sh`)
+- Personal data MUST be scrubbed before push (enforced by `audits/checks/d6-scan-personal-data.sh`)
 - All scrubs recorded in `SCRUBBING.md`
 
 ## Schema Validation
@@ -64,7 +64,7 @@ All use Vite 8 (unified from prior Vite 6/7 split).
 - **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
-- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the non-required `lint-web` job. `scripts/check-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they are now in `test:scripts` and in `governance-gates`.
+- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the non-required `lint-web` job. `audits/__tests__/d3-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they are now in `test:scripts` and in `governance-gates`.
 
 ## Component-Contract Catalog (`contracts/component-catalog/`)
 
@@ -114,7 +114,7 @@ fixture→Props decode, W16 props-extend-schema, registry reconciliation, the co
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
 promotion bar. **Describe what is already enforced**; a requirement with no gate behind it is a wish
 with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
-`@j0nathan-ll0yd/estate-contracts@0.6.0`; `scripts/openspec-covers.mjs` is a wrapper that verifies the
+`@j0nathan-ll0yd/estate-contracts@0.6.0`; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
 shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins
 `EXPECTED_COVERS_SPEC_VERSION` (4). **Binding:** a line-leading `// covers:` comment naming the
 capability, then `#`, then the requirement name verbatim; a trailing comment is a reported near-miss,
@@ -122,20 +122,31 @@ not a tether. There are deliberately **no `Verified by` citations** — a hand-t
 and the tether already holds the file and the line. **Scan surface:** the contract's three default
 languages plus `**/*.test.mjs` and `**/*.test.js` (this repo's `node --test` and ESLint `RuleTester`
 suites), passed through the documented `languages` option — a scan-surface choice, not a rule change,
-with disjointness asserted at startup. **Baseline:** `openspec/covers-baseline.json` grandfathers the
-2 requirements whose enforcing gate has no known-answer test (`check-watch-exclusions.mjs`,
-`check-promotion.mjs`). It was 3; `check-swift-widget-purity.mjs` gained
-`scripts/check-swift-widget-purity.test.mjs` and its id was pruned in the same change. Only `uncovered-requirement` is eligible; every
+with disjointness asserted at startup. **Baseline:** `openspec/covers-baseline.json` is EMPTY — every
+requirement is tethered. It held 3 gates whose behavior nothing pinned; `d3-swift-widget-purity.mjs`
+gained `audits/__tests__/d3-swift-widget-purity.test.mjs`, and `d3-watch-exclusions.mjs` and
+`d3-promotion.mjs` gained theirs in #257. Each id was pruned in the change that closed it. Only `uncovered-requirement` is eligible; every
 other finding type blocks unconditionally; a baseline id naming no live requirement FAILS; a graduated
 id is reported PRUNABLE and must be pruned in the same PR; an unparseable baseline is a hard RED; an
 absent one grandfathers nothing (stricter, never a pass). Re-record with `pnpm covers:update-baseline`
 — never hand-edit an id. Gate: `pnpm check:covers` — wired into BOTH the CI `governance-gates` step
-(required status context) and `.husky/pre-push`; `scripts/openspec-covers.test.mjs` also runs directly
+(required status context) and `.husky/pre-push`; `audits/__tests__/d3-openspec-covers.test.mjs` also runs directly
 in `governance-gates` as the can-fail proof. See `openspec/README.md`.
 
 ## lp-audit (Audit System — D domain)
 
-This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `audits/checks/d1-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `audits/checks/d2-baseline-age.mjs` (D2 — visual-baseline staleness), and `audits/checks/d6-scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+
+**Layout (atlas decision 0111 phase 2c).** Every audit runner sits under `audits/checks/`, id-prefixed
+(`d1-`, `d2-`, `d3-`, `d6-`, `c147-`); known-answer suites in `audits/__tests__/` carry their runner's
+id; repo-local check data in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
+catalog row over the whole `ci.yml#governance-gates` lane, so `d3-` prefixes all ten of that job's
+runners — the catalog registers the JOB, not a single script. `scripts/` keeps this repo's build and
+authoring tooling (token builds, generators, scaffolds, the worktree provisioner) plus two
+asset-identity suites no registered lane runs; a `check-`-prefixed name is NOT what puts a file under
+`audits/`, a registered lane is. atlas's `audits/audits.yaml` declares these roots in its `layouts:`
+block, and A19 reads its lane-recognition roots from there — moving a runner without updating that
+block turns a silent drop into a `runner-outside-declared-roots` finding. See `audits/README.md`.
 
 ## Commits
 

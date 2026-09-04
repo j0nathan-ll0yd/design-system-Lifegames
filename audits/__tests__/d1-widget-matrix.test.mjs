@@ -1,7 +1,7 @@
 // mantle-cli-output: test file, not a CLI script (marker satisfies scripts/-dir convention scan)
 import {describe, test} from 'node:test'
 import assert from 'node:assert/strict'
-import {buildMatrix, canonicalize, sortFindings} from './audit-widget-matrix.mjs'
+import {buildMatrix, canonicalize, sortFindings} from '../checks/d1-widget-matrix.mjs'
 
 // covers: widget-contract#The widget registries reconcile with each other and with the filesystem
 describe('canonicalize', () => {
@@ -39,7 +39,7 @@ describe('buildMatrix — MovementRings-style registry gap', () => {
   // Reproduces the real drift found in this repo 2026-07-16: a widget fully
   // shipped on disk (astro + Swift View) and marked production:true in
   // widget-manifest.json, but entirely absent from production-widgets.json —
-  // the registry scripts/widget-compliance.mjs treats as authoritative.
+  // the registry audits/checks/d3-widget-compliance.mjs treats as authoritative.
   const sources = {
     productionRegistry: [
       // Note: no entry for "MovementRings" on any platform.

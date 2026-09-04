@@ -1,6 +1,6 @@
 name: Package payload drift (post-publish)
 
-# The post-publish LANE of the C147 gate (scripts/check-package-drift.mjs).
+# The post-publish LANE of the C147 gate (audits/checks/c147-package-drift.mjs).
 #
 # WHY A SECOND LANE EXISTS
 # On a branch, "this package declares 1.2.0 and the registry's newest is 1.1.0"
@@ -51,6 +51,6 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       - name: Package payload drift (post-publish lane)
-        run: node scripts/check-package-drift.mjs --lane=post-publish
+        run: node audits/checks/c147-package-drift.mjs --lane=post-publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

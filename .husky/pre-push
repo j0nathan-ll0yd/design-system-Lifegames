@@ -72,11 +72,12 @@ step "component-catalog gate"  env CATALOG_BASELINE_FROZEN=1 pnpm check:componen
 # It ALSO runs in the CI governance-gates step, which is where it BINDS — this line
 # is the CI-parity tier (B9): a tether someone else broke should block locally too.
 #
-# Three requirements are grandfathered by identity in openspec/covers-baseline.json:
-# they describe rules this repo enforces with a blocking gate that has no
-# known-answer test. Re-record with `pnpm covers:update-baseline`; never hand-edit an
-# id. A baseline id naming no live requirement FAILS, and a graduated requirement's
-# stale id is reported prunable and must be pruned in the same change.
+# openspec/covers-baseline.json is EMPTY: every requirement is tethered. It held three
+# gates whose behavior nothing pinned, and each id was pruned in the change that gave
+# that gate a known-answer suite (the last two in #257). Re-record with
+# `pnpm covers:update-baseline`; never hand-edit an id. A baseline id naming no live
+# requirement FAILS, and a graduated requirement's stale id is reported prunable and
+# must be pruned in the same change.
 step "openspec-covers gate"    pnpm check:covers
 
 # C147 — published-package payload drift: a published package's payload changed
@@ -99,7 +100,7 @@ step "openspec-covers gate"    pnpm check:covers
 # Invoked directly rather than through `pnpm check:package-drift -- --lane=...`:
 # pnpm 11 forwards the bare `--` to the script as a literal argument, which the
 # parser rejects. Caught by this very hook on its first run.
-step "package payload drift"   node scripts/check-package-drift.mjs --lane=pre-push
+step "package payload drift"   node audits/checks/c147-package-drift.mjs --lane=pre-push
 
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises

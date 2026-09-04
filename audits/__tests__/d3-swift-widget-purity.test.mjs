@@ -27,7 +27,7 @@ import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import {scanPurity} from './check-swift-widget-purity.mjs'
+import {scanPurity} from '../checks/d3-swift-widget-purity.mjs'
 
 const WIDGET_DIR = 'Sources/LifegamesWidgets'
 const COMPONENT_DIR = 'Sources/LifegamesComponents'

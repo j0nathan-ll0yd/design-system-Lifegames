@@ -8,13 +8,13 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import {toKebabName} from './widget-compliance.mjs'
+import {toKebabName} from './d3-widget-compliance.mjs'
 
-const ROOT = path.resolve(import.meta.dirname, '..')
+const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const STALE_DAYS_THRESHOLD = 14
 
 // ---------------------------------------------------------------------------
-// Pure reconciliation logic (unit-tested in audit-widget-matrix.test.mjs with
+// Pure reconciliation logic (unit-tested in d1-widget-matrix.test.mjs with
 // fixture registries — no filesystem access below this line).
 // ---------------------------------------------------------------------------
 
@@ -211,7 +211,7 @@ export function buildMatrix({
         id: cid,
         severity: 'medium',
         message:
-          `docs/widget-inventory.json reports hasStory:${row.docsInventoryHasStory} for "${cid}", but the filesystem shows hasStorybookStory:${hasStorybookStory}. scripts/widget-inventory.mjs looks for co-located *.stories.tsx next to *.types.ts, which cannot see apps/storybook/src/production/*.stories.ts.`
+          `docs/widget-inventory.json reports hasStory:${row.docsInventoryHasStory} for "${cid}", but the filesystem shows hasStorybookStory:${hasStorybookStory}. audits/checks/d3-widget-inventory.mjs looks for co-located *.stories.tsx next to *.types.ts, which cannot see apps/storybook/src/production/*.stories.ts.`
       })
     }
 

@@ -29,7 +29,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import * as prettier from 'prettier'
 
-const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..')
+const DEFAULT_ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 const VALID_TYPES = new Set([
   'color',

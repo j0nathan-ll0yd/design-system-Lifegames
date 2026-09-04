@@ -6,7 +6,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {test} from 'node:test'
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 const isolatedChildEnv = Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('GIT_')))
 
 function run(command, args, cwd) {
@@ -23,10 +23,11 @@ test('full-tree mode rejects a forbidden artifact even when nothing is staged', 
   const fixtureRoot = mkdtempSync(path.join(tmpdir(), 'd6-full-tree-'))
 
   try {
-    mkdirSync(path.join(fixtureRoot, 'scripts'), {recursive: true})
+    mkdirSync(path.join(fixtureRoot, 'audits/checks'), {recursive: true})
+    mkdirSync(path.join(fixtureRoot, 'audits/lib'), {recursive: true})
     mkdirSync(path.join(fixtureRoot, 'fixtures'), {recursive: true})
-    copyFileSync(path.join(repoRoot, 'scripts/scan-personal-data.sh'), path.join(fixtureRoot, 'scripts/scan-personal-data.sh'))
-    writeFileSync(path.join(fixtureRoot, 'scripts/scan-allowlist.txt'), '# No allowlisted findings in this isolated fixture.\n')
+    copyFileSync(path.join(repoRoot, 'audits/checks/d6-scan-personal-data.sh'), path.join(fixtureRoot, 'audits/checks/d6-scan-personal-data.sh'))
+    writeFileSync(path.join(fixtureRoot, 'audits/lib/scan-allowlist.txt'), '# No allowlisted findings in this isolated fixture.\n')
     writeFileSync(path.join(fixtureRoot, 'fixtures/safe.txt'), 'Synthetic public fixture.\n')
 
     assertSucceeded(run('git', ['init', '--initial-branch=main'], fixtureRoot), 'initialize fixture repository')
@@ -37,7 +38,7 @@ test('full-tree mode rejects a forbidden artifact even when nothing is staged', 
       'commit clean fixture'
     )
 
-    const cleanScan = run('bash', ['scripts/scan-personal-data.sh', '--full-tree'], fixtureRoot)
+    const cleanScan = run('bash', ['audits/checks/d6-scan-personal-data.sh', '--full-tree'], fixtureRoot)
     assertSucceeded(cleanScan, 'full-tree scan should accept the clean fixture')
     assert.match(cleanScan.stdout, /OK: no personal data markers found \(full tree, 1 files\)\./)
 
@@ -56,10 +57,10 @@ test('full-tree mode rejects a forbidden artifact even when nothing is staged', 
     assertSucceeded(status, 'read fixture repository status')
     assert.equal(status.stdout, '', 'the forbidden artifact must be tracked and unstaged')
 
-    const stagedScan = run('bash', ['scripts/scan-personal-data.sh'], fixtureRoot)
+    const stagedScan = run('bash', ['audits/checks/d6-scan-personal-data.sh'], fixtureRoot)
     assertSucceeded(stagedScan, 'staged mode should remain a fast no-op when nothing is staged')
 
-    const fullTreeScan = run('bash', ['scripts/scan-personal-data.sh', '--full-tree'], fixtureRoot)
+    const fullTreeScan = run('bash', ['audits/checks/d6-scan-personal-data.sh', '--full-tree'], fixtureRoot)
     assert.equal(fullTreeScan.status, 1, `full-tree scan unexpectedly passed\nstdout:\n${fullTreeScan.stdout}`)
     assert.match(fullTreeScan.stdout, /ERROR: \[marker:.*\] fixtures\/committed-personal-data\.txt:/)
     assert.match(fullTreeScan.stdout, /Scrub personal data before committing/)

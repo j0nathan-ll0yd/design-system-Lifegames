@@ -28,9 +28,9 @@
  * be overridden via --web-root <path>.
  *
  * Usage:
- *   node scripts/check-baseline-age.mjs                       — advisory print
- *   node scripts/check-baseline-age.mjs --max-age-days 60     — custom threshold
- *   node scripts/check-baseline-age.mjs --web-root <path>     — alternate web repo
+ *   node audits/checks/d2-baseline-age.mjs                       — advisory print
+ *   node audits/checks/d2-baseline-age.mjs --max-age-days 60     — custom threshold
+ *   node audits/checks/d2-baseline-age.mjs --web-root <path>     — alternate web repo
  */
 
 import fs from 'node:fs'
@@ -42,7 +42,7 @@ function arg(name, fallback) {
   return i !== -1 && argv[i + 1] ? argv[i + 1] : fallback
 }
 
-const DS_ROOT = path.resolve(import.meta.dirname, '..')
+const DS_ROOT = path.resolve(import.meta.dirname, '..', '..')
 const WEB_ROOT = path.resolve(arg('--web-root', path.join(process.env.HOME ?? '', 'Repositories/j0nathan-ll0yd.github.io')))
 const MAX_AGE_DAYS = Number.parseInt(arg('--max-age-days', '90'), 10)
 const DAY_MS = 24 * 60 * 60 * 1000

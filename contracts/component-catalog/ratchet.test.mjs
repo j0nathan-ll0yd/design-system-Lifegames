@@ -47,7 +47,7 @@ const scratch = () => mkdtempSync(join(tmpdir(), 'conformance-ratchet-test-'))
  * A widget with a behavioral test and an a11y label — covered on both axes.
  *
  * The test path deliberately omits the consumer repo name a real entry carries. `evaluateRatchet`
- * reads null-versus-not, never the value, and `scripts/scan-allowlist.txt` allowlists that marker
+ * reads null-versus-not, never the value, and `audits/lib/scan-allowlist.txt` allowlists that marker
  * only where the reference must stay FOLLOWABLE (`BEHAVIORAL_TESTS` and the two real contracts). A
  * fictional path has nothing to follow, so widening the allowlist for one would weaken the scan for
  * no gain.

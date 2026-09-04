@@ -11,10 +11,10 @@ name: Audit DS
 # workflow adds (a) SCHEDULED execution of check-baseline-age.mjs, which
 # existed but was never wired to run anywhere, and (b) the D1 widget
 # completeness matrix, which reconciles all 4 widget registries plus
-# the filesystem — something scripts/widget-compliance.mjs structurally
+# the filesystem — something audits/checks/d3-widget-compliance.mjs structurally
 # cannot do, since it only validates entries that ARE in production-widgets.json
 # and can't detect a widget missing from that registry entirely (see
-# scripts/audit-widget-matrix.mjs's header for the concrete drift this caught).
+# audits/checks/d1-widget-matrix.mjs's header for the concrete drift this caught).
 #
 # Promoting D1 to --check (blocking) is a Phase 6 bake-in decision, not made here.
 #
@@ -107,11 +107,11 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: D6 known-answer regression (committed, not staged)
-        run: node --test scripts/scan-personal-data.test.mjs
+        run: node --test audits/__tests__/d6-scan-personal-data.test.mjs
 
       - name: D6 scan every tracked file (blocking)
         shell: bash
-        run: bash scripts/scan-personal-data.sh --full-tree
+        run: bash audits/checks/d6-scan-personal-data.sh --full-tree
 
   # Separate hosted-runner job (first-cycle finding #14, 2026-07-17): the ping
   # curl timed out (exit 28) from the self-hosted fleet containers while
