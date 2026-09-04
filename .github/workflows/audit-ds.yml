@@ -26,6 +26,11 @@ on:
   schedule:
     - cron: '37 5 * * 1' # weekly Monday, off-round minute (D6 — avoid on-the-hour/22:00-02:00 UTC congestion)
   workflow_dispatch:
+    inputs:
+      scheduled_by_external:
+        description: 'Set only by the trusted external scheduler (decision 0092)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -121,7 +126,22 @@ jobs:
   healthcheck-ping:
     name: Healthchecks.io dead-man's-switch ping
     needs: [audit, d6-personal-data-full-tree]
-    if: always()
+    # TRUSTED-SCHEDULE PREDICATE (atlas decisions 0091/0092). `if: always()` alone
+    # let ANY manual workflow_dispatch refresh the dead-man tile, so a dead clock
+    # looked alive as long as a human ran the lane by hand — the exact mask 0091
+    # measured (the daily lanes fired 9.7-11h late, then missed a day, with every
+    # tile green). A ping must answer "did the SCHEDULED run execute", so only the
+    # clock may ping: GitHub cron, or a workflow_dispatch that carries the trusted
+    # external scheduler's marker (0092 ruling 3). An ordinary human dispatch runs
+    # the audits and skips this job. Verbatim the predicate in mantle-LifegamesPortal
+    # audit-backend.yml and j0nathan-ll0yd.github.io audit-web.yml.
+    #
+    # DS is NOT in the external scheduler's slot table today (ci-runners-private
+    # src/lib/auditscheduler/schedule.go lists atlas, web and backend only), so the
+    # `schedule` half is what carries this ping and the cron above stays the clock.
+    # The marker half is the compatibility plumbing 0092 Phase 1 calls for: inert at
+    # `default: false` until a slot for this lane is added.
+    if: always() && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.scheduled_by_external == true))
     runs-on: [self-hosted, linux, arm64, node]
     timeout-minutes: 2
     steps:
