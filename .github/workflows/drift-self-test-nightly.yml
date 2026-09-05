@@ -41,7 +41,14 @@ concurrency:
 
 jobs:
   drift-self-test:
-    runs-on: [self-hosted, linux, arm64, node]
+    # node-highmem, not node: this is the FULL self-test (baseline + every mutation) and the
+    # heaviest job in this repo -- p50 356s / max 418s over 26 runs, against 101s for the
+    # PR-gated package-version-drift that already uses this tier. The harness fans out at
+    # min(24, os.availableParallelism()), which honours the container CPU quota, so the 4-vCPU
+    # standard tier was the binding constraint. node-highmem carries 16 vCPU (raised from an
+    # inherited 4 on 2026-09-03) and 16 GiB; measured peak here is 1501 MiB, so the larger tier
+    # is chosen purely for CPU, not memory.
+    runs-on: [self-hosted, linux, arm64, node-highmem]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
