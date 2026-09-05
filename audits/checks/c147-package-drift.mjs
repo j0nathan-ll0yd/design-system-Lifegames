@@ -111,7 +111,7 @@ export const EXPORT_EXTRACT_CONFORMANCE_SHA256 = '09ff0fe255c3e139ba9df1012be55d
  * the verdict SET or an exit mapping changes — never for the probe, discovery, reporting or CLI
  * flags. See atlas decision 0022.
  */
-export const LADDER_SPEC_VERSION = 1
+export const LADDER_SPEC_VERSION = 2
 
 /**
  * sha256 of `@j0nathan-ll0yd/estate-contracts/verdict-ladder/fixture.json`. Same discipline as
@@ -120,7 +120,7 @@ export const LADDER_SPEC_VERSION = 1
  * independent spec versions and independent checksums. Bump the dependency and this constant in the
  * SAME change.
  */
-export const LADDER_CONFORMANCE_SHA256 = '2dd86a7865b58e02d9b7a6d9a015efd97c5194c6d2a09aab600f564d6bbf507e'
+export const LADDER_CONFORMANCE_SHA256 = '299625328d1c87aeb7bc6e8dc90a5f710ca7c9e2526920104aa087712df1ea0d'
 
 export const DEFAULT_REGISTRY = 'https://npm.pkg.github.com'
 export const DEFAULT_SCOPE = '@j0nathan-ll0yd'

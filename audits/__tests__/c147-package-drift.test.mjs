@@ -698,7 +698,7 @@ test('ladder conformance: a wrong LADDER_SPEC_VERSION short-circuits with exactl
     compareSemver
   })
   assert.equal(failures.length, 1)
-  assert.match(failures[0], /^LADDER_SPEC_VERSION: implementation is 2, fixture is 1$/)
+  assert.equal(failures[0], `LADDER_SPEC_VERSION: implementation is ${LADDER_SPEC_VERSION + 1}, fixture is ${LADDER_SPEC_VERSION}`)
 })
 
 /**
