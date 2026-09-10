@@ -15,8 +15,14 @@ import Foundation
 /// (TS/Zod/Swift). Values are stored as the literal template line text with each Eta
 /// interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and
 /// all literal markdown markers/punctuation preserved verbatim — so the rendered template
-/// output stays byte-identical. Casing is the source's natural case. Every object group has
-/// a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across
+/// output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship
+/// as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are
+/// CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes},
+/// no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that
+/// structure and used to regex-parse the affixes straight back off before re-adding them.
+/// The `full` group keeps its rendered form on purpose: its consumer renders it through Eta
+/// verbatim and never re-parses it. Casing is the source's natural case. Every object group
+/// has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across
 /// namespaces. The $defs block is byte-identical to schema/identity.schema.json,
 /// schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and
 /// schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file
@@ -42,8 +48,9 @@ public struct Llm: Codable, Sendable {
     /// pairs (shared across webmcp and server-card).
     public let mcp: LlmMCP
     /// Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section
-    /// headings, list-label prefixes, explanatory paragraphs, link descriptions, technology
-    /// block, and the JSON-endpoint descriptions.
+    /// headings (CopyHeading — bare text), links (CopyLink — {label, url, notes}), list-label
+    /// prefixes, explanatory paragraphs, the technology block, and the JSON-endpoint
+    /// descriptions. The consumer's codec owns every markdown affix.
     public let txt: LlmTxt
 
     public init(agentDiscovery: LlmAgentDiscovery, dashboard: LlmDashboard, full: LlmFull, mcp: LlmMCP, txt: LlmTxt) {
@@ -777,21 +784,33 @@ public extension LlmMCP {
 }
 
 /// Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section
-/// headings, list-label prefixes, explanatory paragraphs, link descriptions, technology
-/// block, and the JSON-endpoint descriptions.
+/// headings (CopyHeading — bare text), links (CopyLink — {label, url, notes}), list-label
+/// prefixes, explanatory paragraphs, the technology block, and the JSON-endpoint
+/// descriptions. The consumer's codec owns every markdown affix.
 // MARK: - LlmTxt
 public struct LlmTxt: Codable, Sendable {
-    public let aboutBody, aboutHeading, canonicalBody, canonicalHeading: String
-    public let endpointArticles, endpointBooks, endpointFocus, endpointGithubEvents: String
-    public let endpointHealth, endpointLocation, endpointSleep, endpointStarred: String
-    public let endpointTheatre, endpointWorkouts, expertiseHeading, linkGithub: String
-    public let linkLinkedin, linkSite, liveBody, liveFullDump: String
-    public let liveHeading, liveIndexAlias, optionalBody, optionalHeading: String
-    public let technologyDesign, technologyFramework, technologyHeading, technologyHosting: String
-    public let technologyLiveData, titleHeading, wikiArchitecture, wikiBrand: String
-    public let wikiSpec: String
+    public let aboutBody: String
+    public let aboutHeading: String
+    public let canonicalBody: String
+    public let canonicalHeading: String
+    public let endpointArticles, endpointBooks, endpointFocus, endpointGithubEvents: LlmLink
+    public let endpointHealth, endpointLocation, endpointSleep, endpointStarred: LlmLink
+    public let endpointTheatre, endpointWorkouts: LlmLink
+    public let expertiseHeading: String
+    public let linkGithub, linkLinkedin, linkSite: LlmLink
+    public let liveBody: String
+    public let liveFullDump: LlmLink
+    public let liveHeading: String
+    public let liveIndexAlias: LlmLink
+    public let optionalBody: String
+    public let optionalHeading: String
+    public let technologyDesign, technologyFramework: String
+    public let technologyHeading: String
+    public let technologyHosting, technologyLiveData: String
+    public let titleHeading: String
+    public let wikiArchitecture, wikiBrand, wikiSpec: LlmLink
 
-    public init(aboutBody: String, aboutHeading: String, canonicalBody: String, canonicalHeading: String, endpointArticles: String, endpointBooks: String, endpointFocus: String, endpointGithubEvents: String, endpointHealth: String, endpointLocation: String, endpointSleep: String, endpointStarred: String, endpointTheatre: String, endpointWorkouts: String, expertiseHeading: String, linkGithub: String, linkLinkedin: String, linkSite: String, liveBody: String, liveFullDump: String, liveHeading: String, liveIndexAlias: String, optionalBody: String, optionalHeading: String, technologyDesign: String, technologyFramework: String, technologyHeading: String, technologyHosting: String, technologyLiveData: String, titleHeading: String, wikiArchitecture: String, wikiBrand: String, wikiSpec: String) {
+    public init(aboutBody: String, aboutHeading: String, canonicalBody: String, canonicalHeading: String, endpointArticles: LlmLink, endpointBooks: LlmLink, endpointFocus: LlmLink, endpointGithubEvents: LlmLink, endpointHealth: LlmLink, endpointLocation: LlmLink, endpointSleep: LlmLink, endpointStarred: LlmLink, endpointTheatre: LlmLink, endpointWorkouts: LlmLink, expertiseHeading: String, linkGithub: LlmLink, linkLinkedin: LlmLink, linkSite: LlmLink, liveBody: String, liveFullDump: LlmLink, liveHeading: String, liveIndexAlias: LlmLink, optionalBody: String, optionalHeading: String, technologyDesign: String, technologyFramework: String, technologyHeading: String, technologyHosting: String, technologyLiveData: String, titleHeading: String, wikiArchitecture: LlmLink, wikiBrand: LlmLink, wikiSpec: LlmLink) {
         self.aboutBody = aboutBody
         self.aboutHeading = aboutHeading
         self.canonicalBody = canonicalBody
@@ -851,24 +870,24 @@ public extension LlmTxt {
         aboutHeading: String? = nil,
         canonicalBody: String? = nil,
         canonicalHeading: String? = nil,
-        endpointArticles: String? = nil,
-        endpointBooks: String? = nil,
-        endpointFocus: String? = nil,
-        endpointGithubEvents: String? = nil,
-        endpointHealth: String? = nil,
-        endpointLocation: String? = nil,
-        endpointSleep: String? = nil,
-        endpointStarred: String? = nil,
-        endpointTheatre: String? = nil,
-        endpointWorkouts: String? = nil,
+        endpointArticles: LlmLink? = nil,
+        endpointBooks: LlmLink? = nil,
+        endpointFocus: LlmLink? = nil,
+        endpointGithubEvents: LlmLink? = nil,
+        endpointHealth: LlmLink? = nil,
+        endpointLocation: LlmLink? = nil,
+        endpointSleep: LlmLink? = nil,
+        endpointStarred: LlmLink? = nil,
+        endpointTheatre: LlmLink? = nil,
+        endpointWorkouts: LlmLink? = nil,
         expertiseHeading: String? = nil,
-        linkGithub: String? = nil,
-        linkLinkedin: String? = nil,
-        linkSite: String? = nil,
+        linkGithub: LlmLink? = nil,
+        linkLinkedin: LlmLink? = nil,
+        linkSite: LlmLink? = nil,
         liveBody: String? = nil,
-        liveFullDump: String? = nil,
+        liveFullDump: LlmLink? = nil,
         liveHeading: String? = nil,
-        liveIndexAlias: String? = nil,
+        liveIndexAlias: LlmLink? = nil,
         optionalBody: String? = nil,
         optionalHeading: String? = nil,
         technologyDesign: String? = nil,
@@ -877,9 +896,9 @@ public extension LlmTxt {
         technologyHosting: String? = nil,
         technologyLiveData: String? = nil,
         titleHeading: String? = nil,
-        wikiArchitecture: String? = nil,
-        wikiBrand: String? = nil,
-        wikiSpec: String? = nil
+        wikiArchitecture: LlmLink? = nil,
+        wikiBrand: LlmLink? = nil,
+        wikiSpec: LlmLink? = nil
     ) -> LlmTxt {
         return LlmTxt(
             aboutBody: aboutBody ?? self.aboutBody,
@@ -915,6 +934,64 @@ public extension LlmTxt {
             wikiArchitecture: wikiArchitecture ?? self.wikiArchitecture,
             wikiBrand: wikiBrand ?? self.wikiBrand,
             wikiSpec: wikiSpec ?? self.wikiSpec
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+// MARK: - LlmLink
+public struct LlmLink: Codable, Sendable {
+    /// The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet
+    /// affix and no markdown link brackets.
+    public let label: String
+    /// Optional prose describing the target. Carries no leading ': ' separator.
+    public let notes: String?
+    /// The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the
+    /// consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses
+    /// and no whitespace.
+    public let url: String
+
+    public init(label: String, notes: String?, url: String) {
+        self.label = label
+        self.notes = notes
+        self.url = url
+    }
+}
+
+// MARK: LlmLink convenience initializers and mutators
+
+public extension LlmLink {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(LlmLink.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        label: String? = nil,
+        notes: String?? = nil,
+        url: String? = nil
+    ) -> LlmLink {
+        return LlmLink(
+            label: label ?? self.label,
+            notes: notes ?? self.notes,
+            url: url ?? self.url
         )
     }
 

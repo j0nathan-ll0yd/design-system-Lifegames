@@ -3,7 +3,7 @@
 // Re-run: pnpm -F @j0nathan-ll0yd/copy build
 
 /**
- * Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.
+ * Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.
  */
 export interface Llm {
   txt: LlmTxt;
@@ -13,31 +13,31 @@ export interface Llm {
   agentDiscovery: LlmAgentDiscovery;
 }
 /**
- * Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings, list-label prefixes, explanatory paragraphs, link descriptions, technology block, and the JSON-endpoint descriptions.
+ * Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings (CopyHeading — bare text), links (CopyLink — {label, url, notes}), list-label prefixes, explanatory paragraphs, the technology block, and the JSON-endpoint descriptions. The consumer's codec owns every markdown affix.
  */
 export interface LlmTxt {
   titleHeading: string;
   aboutHeading: string;
   aboutBody: string;
-  linkSite: string;
-  linkGithub: string;
-  linkLinkedin: string;
+  linkSite: LlmLink;
+  linkGithub: LlmLink;
+  linkLinkedin: LlmLink;
   liveHeading: string;
   liveBody: string;
-  liveFullDump: string;
-  liveIndexAlias: string;
+  liveFullDump: LlmLink;
+  liveIndexAlias: LlmLink;
   canonicalHeading: string;
   canonicalBody: string;
-  endpointHealth: string;
-  endpointSleep: string;
-  endpointFocus: string;
-  endpointGithubEvents: string;
-  endpointStarred: string;
-  endpointBooks: string;
-  endpointArticles: string;
-  endpointTheatre: string;
-  endpointWorkouts: string;
-  endpointLocation: string;
+  endpointHealth: LlmLink;
+  endpointSleep: LlmLink;
+  endpointFocus: LlmLink;
+  endpointGithubEvents: LlmLink;
+  endpointStarred: LlmLink;
+  endpointBooks: LlmLink;
+  endpointArticles: LlmLink;
+  endpointTheatre: LlmLink;
+  endpointWorkouts: LlmLink;
+  endpointLocation: LlmLink;
   technologyHeading: string;
   technologyFramework: string;
   technologyHosting: string;
@@ -46,9 +46,23 @@ export interface LlmTxt {
   expertiseHeading: string;
   optionalHeading: string;
   optionalBody: string;
-  wikiSpec: string;
-  wikiArchitecture: string;
-  wikiBrand: string;
+  wikiSpec: LlmLink;
+  wikiArchitecture: LlmLink;
+  wikiBrand: LlmLink;
+}
+export interface LlmLink {
+  /**
+   * The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.
+   */
+  label: string;
+  /**
+   * The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.
+   */
+  url: string;
+  /**
+   * Optional prose describing the target. Carries no leading ': ' separator.
+   */
+  notes?: string;
 }
 /**
  * Prose strings from llms-full.eta — the complete LLM data dump (/llms-full.txt + /index.md). The <SYSTEM> framing line, headings, blockquote intro, meta labels, table column headers, the _No … available._ fallbacks, list-label prefixes, and explanatory paragraphs.

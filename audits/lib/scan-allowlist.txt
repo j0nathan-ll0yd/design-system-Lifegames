@@ -205,6 +205,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/raise-web-widget-purity-gates.md:marker:j0nathan-ll0yd
 .changeset/olive-donkeys-smile.md:marker:j0nathan-ll0yd
 .changeset/tall-buttons-repeat.md:marker:j0nathan-ll0yd
+.changeset/structured-llm-link-and-heading-leaves.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd

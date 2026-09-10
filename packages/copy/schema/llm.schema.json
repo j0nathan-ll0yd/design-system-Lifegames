@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/copy.llm.schema.json",
   "title": "LifegamesCopyLlm",
-  "description": "Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+  "description": "Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
   "type": "object",
   "additionalProperties": false,
   "required": ["txt", "full", "dashboard", "mcp", "agentDiscovery"],
@@ -10,7 +10,7 @@
     "txt": {
       "type": "object",
       "title": "LlmTxt",
-      "description": "Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings, list-label prefixes, explanatory paragraphs, link descriptions, technology block, and the JSON-endpoint descriptions.",
+      "description": "Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings (CopyHeading — bare text), links (CopyLink — {label, url, notes}), list-label prefixes, explanatory paragraphs, the technology block, and the JSON-endpoint descriptions. The consumer's codec owns every markdown affix.",
       "additionalProperties": false,
       "required": [
         "titleHeading",
@@ -49,73 +49,73 @@
       ],
       "properties": {
         "titleHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "aboutHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "aboutBody": {
           "$ref": "#/$defs/CopyString"
         },
         "linkSite": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "linkGithub": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "linkLinkedin": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "liveHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "liveBody": {
           "$ref": "#/$defs/CopyString"
         },
         "liveFullDump": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "liveIndexAlias": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "canonicalHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "canonicalBody": {
           "$ref": "#/$defs/CopyString"
         },
         "endpointHealth": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointSleep": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointFocus": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointGithubEvents": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointStarred": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointBooks": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointArticles": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointTheatre": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointWorkouts": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "endpointLocation": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "technologyHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "technologyFramework": {
           "$ref": "#/$defs/CopyString"
@@ -130,22 +130,22 @@
           "$ref": "#/$defs/CopyString"
         },
         "expertiseHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "optionalHeading": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyHeading"
         },
         "optionalBody": {
           "$ref": "#/$defs/CopyString"
         },
         "wikiSpec": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "wikiArchitecture": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         },
         "wikiBrand": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyLink"
         }
       }
     },
@@ -806,6 +806,56 @@
           "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
           "items": {
             "type": "string"
+          }
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    },
+    "CopyHeading": {
+      "type": "object",
+      "description": "A section heading, authored as the BARE heading text plus its authoring context. The markdown level affix ('# ', '## ') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is un-rendered again by any consumer that models document structure (atlas decision 0128 P3a). The 'pattern' rejects a leaf that still carries the affix. Flattens to a plain string, so the consumer-facing type is the same as CopyString.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The heading text, authored in ICU MessageFormat 1 syntax. Carries no leading markdown '#' affix and no leading whitespace.",
+          "pattern": "^[^#\\s]"
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    },
+    "CopyLink": {
+      "type": "object",
+      "description": "A link, authored as FIELDS plus its authoring context. The rendered markdown bullet ('- [label](url): notes') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is regex-parsed back into these same three fields by the consumer (atlas decision 0128 P3a). Each 'pattern' rejects a field that still carries an affix. Flattens to an object, hoisted into the derived flat schema's own $defs so every generator names ONE shared type instead of one structural copy per key.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "object",
+          "description": "The link's fields. 'label' and 'notes' are authored prose; 'url' is the target.",
+          "additionalProperties": false,
+          "required": ["label", "url"],
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              "pattern": "^(?![-*+]\\s)[^\\[\\]]+$"
+            },
+            "url": {
+              "type": "string",
+              "description": "The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.",
+              "pattern": "^[^()\\s]+$"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Optional prose describing the target. Carries no leading ': ' separator.",
+              "pattern": "^[^:\\s]"
+            }
           }
         },
         "_meta": {
