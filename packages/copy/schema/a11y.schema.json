@@ -282,6 +282,56 @@
           "$ref": "#/$defs/CopyMeta"
         }
       }
+    },
+    "CopyHeading": {
+      "type": "object",
+      "description": "A section heading, authored as the BARE heading text plus its authoring context. The markdown level affix ('# ', '## ') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is un-rendered again by any consumer that models document structure (atlas decision 0128 P3a). The 'pattern' rejects a leaf that still carries the affix. Flattens to a plain string, so the consumer-facing type is the same as CopyString.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The heading text, authored in ICU MessageFormat 1 syntax. Carries no leading markdown '#' affix and no leading whitespace.",
+          "pattern": "^[^#\\s]"
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    },
+    "CopyLink": {
+      "type": "object",
+      "description": "A link, authored as FIELDS plus its authoring context. The rendered markdown bullet ('- [label](url): notes') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is regex-parsed back into these same three fields by the consumer (atlas decision 0128 P3a). Each 'pattern' rejects a field that still carries an affix. Flattens to an object, hoisted into the derived flat schema's own $defs so every generator names ONE shared type instead of one structural copy per key.",
+      "additionalProperties": false,
+      "required": ["value", "_meta"],
+      "properties": {
+        "value": {
+          "type": "object",
+          "description": "The link's fields. 'label' and 'notes' are authored prose; 'url' is the target.",
+          "additionalProperties": false,
+          "required": ["label", "url"],
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              "pattern": "^(?![-*+]\\s)[^\\[\\]]+$"
+            },
+            "url": {
+              "type": "string",
+              "description": "The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.",
+              "pattern": "^[^()\\s]+$"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Optional prose describing the target. Carries no leading ': ' separator.",
+              "pattern": "^[^:\\s]"
+            }
+          }
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
     }
   }
 }

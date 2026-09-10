@@ -33,21 +33,36 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const SRC = join(HERE, '..', 'src')
 const REPORT_ONLY = process.argv.includes('--report')
 
-/** A copy leaf is { value, _meta } where value is string | string[]. */
+/** A copy leaf is { value, _meta } where value is string | string[] | a field object (CopyLink). */
 function isLeaf(n) {
   return (
     n && typeof n === 'object' && !Array.isArray(n) && Object.prototype.hasOwnProperty.call(n, 'value') && Object.prototype.hasOwnProperty.call(n, '_meta')
   )
 }
 
+/**
+ * Every string one leaf's `value` holds, as [pathSuffix, string] pairs. A field object (CopyLink's
+ * label/url/notes) reports its field name, so a violation names the field and not just the leaf —
+ * without this branch those strings would fall out of the walk entirely and escape the gate.
+ */
+function leafStrings(value) {
+  if (typeof value === 'string') {
+    return [['', value]]
+  }
+  if (Array.isArray(value)) {
+    return value.filter((v) => typeof v === 'string').map((v) => ['', v])
+  }
+  if (value && typeof value === 'object') {
+    return Object.entries(value).filter(([, v]) => typeof v === 'string').map(([k, v]) => [`.${k}`, v])
+  }
+  return []
+}
+
 /** Walk the rich tree, invoking cb(keyPath, value, meta) per string value. */
 function walk(node, path, cb) {
   if (isLeaf(node)) {
-    const vals = Array.isArray(node.value) ? node.value : [node.value]
-    for (const v of vals) {
-      if (typeof v === 'string') {
-        cb(path, v, node._meta || {})
-      }
+    for (const [suffix, v] of leafStrings(node.value)) {
+      cb(path + suffix, v, node._meta || {})
     }
     return
   }

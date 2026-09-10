@@ -23,12 +23,30 @@ interface Leaf {
   maxChars?: number
 }
 
+/**
+ * Every string one leaf's `value` holds. A CopyLink leaf's value is a field OBJECT, so its
+ * label/url/notes are collected individually — each is authored prose or an ICU MF1 template in
+ * its own right, and without this branch all three would skip the MF1 and maxChars assertions.
+ */
+function leafValues(value: unknown): string[] {
+  if (typeof value === 'string') {
+    return [value]
+  }
+  if (Array.isArray(value)) {
+    return value.filter((v): v is string => typeof v === 'string')
+  }
+  if (value && typeof value === 'object') {
+    return Object.values(value).filter((v): v is string => typeof v === 'string')
+  }
+  return []
+}
+
 function collectLeaves(node: unknown, path: string, out: Leaf[]): void {
   if (
     node && typeof node === 'object' && !Array.isArray(node) && 'value' in node && '_meta' in node
   ) {
-    const leaf = node as {value: string | string[]; _meta?: {constraints?: {maxChars?: number}}}
-    out.push({path, values: Array.isArray(leaf.value) ? leaf.value : [leaf.value], maxChars: leaf._meta?.constraints?.maxChars})
+    const leaf = node as {value: unknown; _meta?: {constraints?: {maxChars?: number}}}
+    out.push({path, values: leafValues(leaf.value), maxChars: leaf._meta?.constraints?.maxChars})
     return
   }
   if (node && typeof node === 'object' && !Array.isArray(node)) {
@@ -142,6 +160,37 @@ for (const ns of NAMESPACES) {
     })
   })
 }
+
+describe('@j0nathan-ll0yd/copy llm txt surface', () => {
+  // The llms.txt consumer models the document structurally and its codec re-adds every markdown
+  // affix, so a `txt` leaf that ships one gets regex-parsed straight back off (atlas decision 0128
+  // P3a). The CopyHeading/CopyLink `pattern`s hold the MIGRATED keys; this holds the whole group,
+  // so a NEW key added back as a rendered CopyString bullet or heading fails here.
+  const RENDERED_LINK_RE = /^\s*[-*+]\s+\[/
+  const RENDERED_HEADING_RE = /^\s*#{1,6}\s/
+
+  it('no txt leaf ships a rendered markdown link or heading affix', () => {
+    const txt = (readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: Record<string, unknown>}).txt
+    const offenders: string[] = []
+    for (const [key, value] of Object.entries(txt)) {
+      for (const str of leafValues(value)) {
+        if (RENDERED_LINK_RE.test(str) || RENDERED_HEADING_RE.test(str)) {
+          offenders.push(`txt.${key}: ${JSON.stringify(str)}`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  it('every txt link ships as {label, url} fields', () => {
+    const txt = (readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: Record<string, unknown>}).txt
+    const links = Object.entries(txt).filter(([, v]) => v !== null && typeof v === 'object')
+    expect(links.length).toBe(18)
+    for (const [key, value] of links) {
+      expect({key, ...(value as object)}).toMatchObject({key, label: expect.any(String), url: expect.any(String)})
+    }
+  })
+})
 
 describe('@j0nathan-ll0yd/copy cross-namespace invariants', () => {
   it('the $defs block is byte-identical across every schema (inlined per file, no cross-file $ref)', () => {

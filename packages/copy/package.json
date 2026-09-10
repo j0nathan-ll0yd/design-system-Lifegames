@@ -8,6 +8,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.ts",
+    "./package.json": "./package.json",
     "./identity.flat.json": "./dist/identity.flat.json",
     "./identity.zod": "./dist/identity.zod.ts",
     "./widgets.flat.json": "./dist/widgets.flat.json",
