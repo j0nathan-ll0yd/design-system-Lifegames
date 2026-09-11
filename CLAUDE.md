@@ -114,9 +114,9 @@ fixture→Props decode, W16 props-extend-schema, registry reconciliation, the co
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
 promotion bar. **Describe what is already enforced**; a requirement with no gate behind it is a wish
 with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
-`@j0nathan-ll0yd/estate-contracts@0.6.0`; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
+`@j0nathan-ll0yd/estate-contracts@0.13.0`; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
 shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins
-`EXPECTED_COVERS_SPEC_VERSION` (4). **Binding:** a line-leading `// covers:` comment naming the
+`EXPECTED_COVERS_SPEC_VERSION` (5). **Binding:** a line-leading `// covers:` comment naming the
 capability, then `#`, then the requirement name verbatim; a trailing comment is a reported near-miss,
 not a tether. There are deliberately **no `Verified by` citations** — a hand-typed line number drifts
 and the tether already holds the file and the line. **Scan surface:** the contract's three default

@@ -53,8 +53,22 @@ export const REPO_ROOT = resolve(__dirname, '..', '..')
  * v4 added `requirement-without-scenario`: every `### Requirement:` must carry at least one
  * `#### Scenario:`. Moving this number means the rule changed under us -- read the tier README,
  * bring openspec/ into line with the new rule, and move the constant in the same change.
+ *
+ * v5 (atlas decision 0127, arriving here with `estate-contracts` 0.11.0 -> 0.13.0) rewrote
+ * `checkVerifiedBy` to read a wrapped BLOCK rather than a single line: version 4 harvested citations
+ * only from lines that themselves matched `/verified by/i`, so a citation on line 2+ of a wrapped
+ * paragraph was never resolved. Opening-line behavior is byte-identical, so the change can only ADD
+ * findings. NOTHING ELSE MOVED: `COVERS_FINDING_TYPES` is the same closed set, `Finding` keeps its
+ * shape, and the four C147 conformance checksums in `c147-package-drift.mjs` are unchanged.
+ *
+ * RECONCILED, NOT RE-PINNED. This tree carries no `Verified by` citations by design
+ * (`openspec/README.md`, `openspec/specs/widget-contract/spec.md`), but both files say so in PROSE
+ * that still contains the keyword, so v5 does open a block on each and read its continuation lines.
+ * The gate was run against the corpus under both versions before this constant moved: 13
+ * requirements, 31 `covers:` annotations, 0 findings, OK under v4 and OK under v5 alike. The delta
+ * on this repo is exactly zero.
  */
-export const EXPECTED_COVERS_SPEC_VERSION = 4
+export const EXPECTED_COVERS_SPEC_VERSION = 5
 
 /** The tier's reference module URL. Sidecars sit beside it; the layout is flat and stable. */
 const REFERENCE_URL = new URL(import.meta.resolve('@j0nathan-ll0yd/estate-contracts/openspec-covers'))
