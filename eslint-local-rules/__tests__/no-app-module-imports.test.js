@@ -11,6 +11,7 @@ const outsideFile = '/repo/packages/web/src/runtime/heart-rate.ts'
 
 const tester = new RuleTester({languageOptions: {ecmaVersion: 2022, sourceType: 'module'}})
 
+// covers: widget-contract#A web widget module imports no data layer and performs no module-scope fetch
 tester.run('no-app-module-imports', rule, {
   valid: [
     // Pure presentational helper import — allowed.

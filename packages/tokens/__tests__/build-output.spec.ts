@@ -42,6 +42,16 @@ describe('Style Dictionary build is byte-identical to golden snapshots', () => {
     expect(didRebuild).toBe(true)
   })
 
+  it('keeps web body and metadata typography at or above 12px', () => {
+    const css = readFileSync(join(repoRoot, 'packages', 'tokens', 'dist', 'tokens.css'), 'utf-8')
+    for (const token of ['caption2', 'caption', 'footnote', 'body', 'callout']) {
+      expect(css).toContain(`--lg-font-size-${token}: clamp(0.75rem,`)
+    }
+    for (const token of ['body', 'label', 'caption', 'code']) {
+      expect(css).toContain(`--lg-typography-${token}-font-size: clamp(0.75rem,`)
+    }
+  })
+
   describe('dist/ outputs', () => {
     const goldenDistDir = join(goldenRoot, 'dist')
     const liveDistDir = join(repoRoot, 'packages', 'tokens', 'dist')

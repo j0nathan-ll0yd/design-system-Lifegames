@@ -1,0 +1,25 @@
+---
+import MovementRings from '../../../../../src/widgets/health/MovementRings.astro';
+
+// The default `movement-rings` fixture, inlined in the flat `health.movement.*`
+// shape the widget's own adapter accepts. Values are the populated (non-empty)
+// state on purpose: the ring group only renders when `isEmpty` is false, and an
+// empty widget would make the a11y assertions vacuously pass.
+const health = {
+  movement: {
+    moveKcal: 380,
+    exerciseMin: 32,
+    standHr: 9,
+    steps: 8421,
+    distanceMeters: 6200,
+    flights: 14,
+    daylightMin: 48,
+    basalKcal: 1620,
+    restingHeartRate: 58,
+    goals: { moveKcal: 500, exerciseMin: 30, standHr: 12, daylightMin: 20 },
+    solar: { sunriseHHmm: '06:30', sunsetHHmm: '20:15', currentProgressPct: 60 },
+  },
+};
+---
+
+<MovementRings health={health} />

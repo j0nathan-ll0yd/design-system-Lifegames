@@ -35,7 +35,7 @@
       "$value": {
         "fontFamily": "{font.family.brand}",
         "fontWeight": "{font.weight.regular}",
-        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+        "fontSize": "clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)",
         "lineHeight": 1.5
       },
       "$description": "Default body text. Maps to typography.body primitive."
@@ -45,7 +45,7 @@
       "$value": {
         "fontFamily": "{font.family.brand}",
         "fontWeight": "{font.weight.medium}",
-        "fontSize": "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)",
+        "fontSize": "clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)",
         "lineHeight": 1.4
       },
       "$description": "Form labels and UI element labels."
@@ -55,7 +55,7 @@
       "$value": {
         "fontFamily": "{font.family.brand}",
         "fontWeight": "{font.weight.regular}",
-        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+        "fontSize": "clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)",
         "lineHeight": 1.3
       },
       "$description": "Caption / supporting text. Maps to typography.caption primitive."
@@ -65,7 +65,7 @@
       "$value": {
         "fontFamily": "{font.family.mono}",
         "fontWeight": "{font.weight.regular}",
-        "fontSize": "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)",
+        "fontSize": "clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)",
         "lineHeight": 1.6
       },
       "$description": "Monospaced code blocks and inline code. Uses the mono family stack, ending in the monospace generic."

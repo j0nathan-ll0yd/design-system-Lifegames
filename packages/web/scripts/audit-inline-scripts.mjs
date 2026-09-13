@@ -44,7 +44,7 @@ function walk(dir, out) {
     var full = path.join(dir, entry.name)
     if (entry.isDirectory()) {
       walk(full, out)
-    } else if (/\.(astro|html)$/.test(entry.name)) {
+    } else if (/\.(astro|html|ts|tsx|js|jsx)$/.test(entry.name)) {
       out.push(full)
     }
   }
@@ -57,7 +57,12 @@ var SCRIPT_BLOCK_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi
 /* Inline HTML event-handler attribute. A quote MUST immediately follow `=` so
  * we match the HTML-attribute form `onerror="..."` while ignoring JS property
  * assignment like `el.onclick = fn` / `this.onerror = null`. */
-var INLINE_HANDLER_RE = /\bon[a-z]+=["']/i
+var MARKUP_INLINE_HANDLER_RE = /\son[a-z]+\s*=/i
+
+/* Event-handler attributes emitted inside runtime HTML strings. The quote
+ * distinguishes markup text from a safe property assignment such as
+ * `img.onerror = handler`. */
+var RUNTIME_INLINE_HANDLER_RE = /\bon[a-z]+\s*=\s*["']/i
 
 /* Astro `define:vars` is a template directive on <script>/<style> that
  * serializes server values into an inline <script>. Match the directive form
@@ -104,11 +109,12 @@ for (var f = 0; f < files.length; f++) {
   var file = files[f]
   var rel = path.relative(webRoot, file)
   var content = fs.readFileSync(file, 'utf-8')
+  var isMarkup = /\.(astro|html)$/.test(file)
 
   // 1. Inline <script is:inline> WITH a non-empty body (no src, not data).
   var m
   SCRIPT_BLOCK_RE.lastIndex = 0
-  while ((m = SCRIPT_BLOCK_RE.exec(content)) !== null) {
+  while (isMarkup && (m = SCRIPT_BLOCK_RE.exec(content)) !== null) {
     var openTag = m[1]
     var body = m[2]
     if (!isInline(openTag)) {
@@ -130,17 +136,21 @@ for (var f = 0; f < files.length; f++) {
   // 2/3. define:vars and inline event-handler attributes (line-scanned).
   // Scan only the template body (frontmatter is server-only TS, never emitted);
   // lineOffset re-maps reported line numbers back to the original file.
-  var template = stripFrontmatter(content)
+  var template = isMarkup ? stripFrontmatter(content) : content
   var lineOffset = content.split('\n').length - template.split('\n').length
   var lines = template.split('\n')
   for (var i = 0; i < lines.length; i++) {
-    if (DEFINE_VARS_RE.test(lines[i])) {
+    if (isMarkup && DEFINE_VARS_RE.test(lines[i])) {
       violations++
       console.error('✗ ' + rel + ':' + (i + 1 + lineOffset) + ' -- define:vars (Astro emits an inline <script>; CSP blocks it).')
     }
-    if (INLINE_HANDLER_RE.test(lines[i])) {
+    if (isMarkup && MARKUP_INLINE_HANDLER_RE.test(lines[i])) {
       violations++
       console.error('✗ ' + rel + ':' + (i + 1 + lineOffset) + ' -- inline event handler (CSP rejects onX="..." without \'unsafe-hashes\').')
+    }
+    if (!isMarkup && RUNTIME_INLINE_HANDLER_RE.test(lines[i])) {
+      violations++
+      console.error('✗ ' + rel + ':' + (i + 1) + " -- runtime HTML string emits an inline event handler (CSP rejects it without 'unsafe-hashes').")
     }
   }
 }

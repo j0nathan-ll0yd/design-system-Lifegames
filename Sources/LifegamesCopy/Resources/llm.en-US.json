@@ -1,38 +1,107 @@
 {
   "txt": {
-    "titleHeading": "# {profileName} — Human Datastream",
-    "aboutHeading": "## About",
+    "titleHeading": "{profileName} — Human Datastream",
+    "aboutHeading": "About",
     "aboutBody": "{profileName} is an {profileTitleLower} and backend engineer based in {profileLocation} with {profileYearsExperience} years of professional experience. The portfolio site is a sci-fi \"Human Datastream\" dashboard — a single-page application that visualizes real-time personal data across two domains: Body and Mind.",
-    "linkSite": "- [Site]({siteUrl})",
-    "linkGithub": "- [GitHub]({profileGithub})",
-    "linkLinkedin": "- [LinkedIn]({profileLinkedin})",
-    "liveHeading": "## Live LLM-optimized content",
+    "linkSite": {
+      "label": "Site",
+      "url": "{siteUrl}"
+    },
+    "linkGithub": {
+      "label": "GitHub",
+      "url": "{profileGithub}"
+    },
+    "linkLinkedin": {
+      "label": "LinkedIn",
+      "url": "{profileLinkedin}"
+    },
+    "liveHeading": "Live LLM-optimized content",
     "liveBody": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics use 7-day aggregates only; GitHub, books, reading, and theatre use full granularity.",
-    "liveFullDump": "- [llms-full.txt]({siteUrl}/llms-full.txt): Complete data dump — all domains as structured markdown with tables and source citations",
-    "liveIndexAlias": "- [index.md]({siteUrl}/index.md): Markdown alias of llms-full.txt for agents expecting .md extensions",
-    "canonicalHeading": "## Canonical JSON",
+    "liveFullDump": {
+      "label": "llms-full.txt",
+      "url": "{siteUrl}/llms-full.txt",
+      "notes": "Complete data dump — all domains as structured markdown with tables and source citations"
+    },
+    "liveIndexAlias": {
+      "label": "index.md",
+      "url": "{siteUrl}/index.md",
+      "notes": "Markdown alias of llms-full.txt for agents expecting .md extensions"
+    },
+    "canonicalHeading": "Canonical JSON",
     "canonicalBody": "The backend composes the markdown variants from these live JSON sources. LLMs that prefer raw machine-readable data can fetch them directly:",
-    "endpointHealth": "- [health.json]({cloudfrontBase}/health.json): biometrics (heart rate, HRV, activity, workouts)",
-    "endpointSleep": "- [sleep.json]({cloudfrontBase}/sleep.json): sleep phases and efficiency",
-    "endpointFocus": "- [focus.json]({cloudfrontBase}/focus.json): focus / Do Not Disturb state",
-    "endpointGithubEvents": "- [github-events.json]({cloudfrontBase}/github-events.json): GitHub commits, PRs, issues",
-    "endpointStarred": "- [github-starred-repos.json]({cloudfrontBase}/github-starred-repos.json): starred repositories",
-    "endpointBooks": "- [books.json]({cloudfrontBase}/books.json): bookshelf with status, ratings, progress",
-    "endpointArticles": "- [articles.json]({cloudfrontBase}/articles.json): saved articles",
-    "endpointTheatre": "- [theatre-reviews.json]({cloudfrontBase}/theatre-reviews.json): theatre reviews",
-    "endpointWorkouts": "- [workouts.json]({cloudfrontBase}/workouts.json): workout sessions",
-    "endpointLocation": "- [location.json]({cloudfrontBase}/location.json): location activity and place summaries",
-    "technologyHeading": "## Technology",
+    "endpointHealth": {
+      "label": "health.json",
+      "url": "{cloudfrontBase}/health.json",
+      "notes": "biometrics (heart rate, HRV, activity, workouts)"
+    },
+    "endpointSleep": {
+      "label": "sleep.json",
+      "url": "{cloudfrontBase}/sleep.json",
+      "notes": "sleep phases and efficiency"
+    },
+    "endpointFocus": {
+      "label": "focus.json",
+      "url": "{cloudfrontBase}/focus.json",
+      "notes": "focus / Do Not Disturb state"
+    },
+    "endpointGithubEvents": {
+      "label": "github-events.json",
+      "url": "{cloudfrontBase}/github-events.json",
+      "notes": "GitHub commits, PRs, issues"
+    },
+    "endpointStarred": {
+      "label": "github-starred-repos.json",
+      "url": "{cloudfrontBase}/github-starred-repos.json",
+      "notes": "starred repositories"
+    },
+    "endpointBooks": {
+      "label": "books.json",
+      "url": "{cloudfrontBase}/books.json",
+      "notes": "bookshelf with status, ratings, progress"
+    },
+    "endpointArticles": {
+      "label": "articles.json",
+      "url": "{cloudfrontBase}/articles.json",
+      "notes": "saved articles"
+    },
+    "endpointTheatre": {
+      "label": "theatre-reviews.json",
+      "url": "{cloudfrontBase}/theatre-reviews.json",
+      "notes": "theatre reviews"
+    },
+    "endpointWorkouts": {
+      "label": "workouts.json",
+      "url": "{cloudfrontBase}/workouts.json",
+      "notes": "workout sessions"
+    },
+    "endpointLocation": {
+      "label": "location.json",
+      "url": "{cloudfrontBase}/location.json",
+      "notes": "location activity and place summaries"
+    },
+    "technologyHeading": "Technology",
     "technologyFramework": "- Framework: Astro (static site generation, 0 KB JS by default)",
     "technologyHosting": "- Hosting: Cloudflare Pages via GitHub Actions",
     "technologyLiveData": "- Live data: CloudFront-backed JSON API polled at runtime by the dashboard; same JSON composed into LLM-friendly markdown by the backend",
     "technologyDesign": "- Design: Glass-morphism, dark theme, fluid responsive tokens, CSS container queries",
-    "expertiseHeading": "## Expertise",
-    "optionalHeading": "## Optional",
+    "expertiseHeading": "Expertise",
+    "optionalHeading": "Optional",
     "optionalBody": "Secondary reference material — skippable when a shorter context is needed.",
-    "wikiSpec": "- [Wiki: LLM Content Spec]({profileGithub}/j0nathan-ll0yd.github.io/wiki/LLM-Content-Spec): Format, URLs, freshness, Level 2 health constraint",
-    "wikiArchitecture": "- [Wiki: Architecture]({profileGithub}/j0nathan-ll0yd.github.io/wiki/Astro-Implementation): Components, data flow, build system",
-    "wikiBrand": "- [Wiki: Brand Guide]({profileGithub}/j0nathan-ll0yd.github.io/wiki/Brand-Guide): Colors, typography, glass-morphism"
+    "wikiSpec": {
+      "label": "Wiki: LLM Content Spec",
+      "url": "{profileGithub}/j0nathan-ll0yd.github.io/wiki/LLM-Content-Spec",
+      "notes": "Format, URLs, freshness, Level 2 health constraint"
+    },
+    "wikiArchitecture": {
+      "label": "Wiki: Architecture",
+      "url": "{profileGithub}/j0nathan-ll0yd.github.io/wiki/Astro-Implementation",
+      "notes": "Components, data flow, build system"
+    },
+    "wikiBrand": {
+      "label": "Wiki: Brand Guide",
+      "url": "{profileGithub}/j0nathan-ll0yd.github.io/wiki/Brand-Guide",
+      "notes": "Colors, typography, glass-morphism"
+    }
   },
   "full": {
     "systemFraming": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an engineering director and backend engineer. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",

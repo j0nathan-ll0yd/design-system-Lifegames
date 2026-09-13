@@ -375,13 +375,14 @@ export interface AppBookshelfEditBook {
   fieldGenresPlaceholder: string;
 }
 /**
- * Bookshelf error-alert titles (load/add/update/delete failures).
+ * Bookshelf error-alert titles (load/add/update/delete failures) plus the add-book rejection message.
  */
 export interface AppBookshelfAlerts {
   failedToLoad: string;
   failedToAddBook: string;
   failedToUpdate: string;
   failedToDelete: string;
+  kindleEditionRejected: string;
 }
 /**
  * watchOS app + sync-status complication — diagnostics chrome, sync action labels, and complication strings.

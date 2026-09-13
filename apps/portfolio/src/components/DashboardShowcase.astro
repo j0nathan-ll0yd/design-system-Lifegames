@@ -37,14 +37,12 @@ const { theatre, focus } = data;
   <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
   <div class="command-layout">
-    <!-- LEFT PANEL: Identity -->
     <aside class="left-panel" aria-label="Profile">
       <IdentityCard profile={profile} compact={true} />
       <BioTerminal profile={profile} />
       <SystemStatus system={system} compact={true} />
     </aside>
 
-    <!-- TOP BAR -->
     <header class="top-bar">
       <div class="top-bar-title">Human Datastream</div>
       <span id="pollStatus" class="poll-status">
@@ -54,10 +52,8 @@ const { theatre, focus } = data;
       <div class="top-bar-clock" id="liveClock" aria-live="off" aria-label="Current time"></div>
     </header>
 
-    <!-- RIGHT PANEL: Triptych Grid -->
     <main id="main-content" class="right-panel">
       <div class="triptych-grid" id="triptychGrid">
-        <!-- COLUMN 1: BODY -->
         <section class="triptych-column triptych-column-body" aria-label="Body">
           <h2 class="column-header column-header-pink">Body</h2>
           {
@@ -78,7 +74,6 @@ const { theatre, focus } = data;
           </div>
         </section>
 
-        <!-- COLUMN 2: MIND -->
         <section class="triptych-column triptych-column-mind" aria-label="Mind">
           <h2 class="column-header column-header-green">Mind</h2>
           <DevActivityLog events={github.devActivity} />

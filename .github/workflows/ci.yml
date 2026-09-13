@@ -33,7 +33,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # format:check runs dprint (TS/JS/JSON) + prettier (astro/md/mdx/css).
-      - run: pnpm format:check
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: format
+        run: pnpm format:check
 
   typecheck:
     # tsc --noEmit across the packages that extend @j0nathan-ll0yd/config's
@@ -53,7 +55,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
-      - run: pnpm typecheck
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: typecheck
+        run: pnpm typecheck
 
   schemas-freshness:
     # Verifies vendored LP schemas + generated TS/Swift artifacts are not stale.
@@ -86,52 +90,9 @@ jobs:
           CONTRACT_CHECK_MODE: blocking
 
   package-version-drift:
-    # C147. Catches "a published package's payload changed but nobody bumped that
-    # package's version". No other gate sees it: typecheck, lint and tests all
-    # pass, and `changeset publish` SILENTLY SKIPS any version already on the
-    # registry and exits 0 — so consumers just never receive the change.
-    #
-    # THE STATUS CONTEXT REQUIRED IN BRANCH PROTECTION IS `package-version-drift`
-    # (the job id, identical in mantle/LP/OMD so one set of gh commands covers the
-    # estate). It is a REQUIRED context on `main` as of 2026-08-04: a red gate now
-    # blocks merge, and the transport retries a throttled 403 (REQUEST_ATTEMPTS in
-    # check-package-drift.mjs) so a momentary registry throttle cannot make it flake.
-    #
-    # No fetch-depth: 0. The previous generation walked each manifest's own commit
-    # history to find the version-setting commit, so it needed the full history
-    # (and a shallow graft boundary looked exactly like a real root commit — a
-    # silent total pass). The check is now CONTENT-BASED: it compares the payload
-    # this checkout would publish against the payload already published under the
-    # declared version. The only git it does is one `git ls-files` per package for
-    # the leak screen, which is depth-independent.
-    #
-    # It DOES now need an install and a build (the payload includes dist/), and a
-    # registry token — GitHub Packages returns E401 even for public packages, so
-    # there is no anonymous fallback and a missing token is INDETERMINATE/exit 3,
-    # never a pass.
-    #
-    # FORK PRs (finding D12). This job deliberately carries NO job-level `if:`, unlike its
-    # thirteen siblings in this file. They may skip; a gate intended to be a REQUIRED
-    # status context may not, because GITHUB REPORTS A SKIPPED JOB AS SATISFYING A REQUIRED
-    # CHECK. Requiring `package-version-drift` while it skips on fork PRs would therefore
-    # buy nothing on exactly the pull requests a maintainer has least reason to trust: the
-    # context would go green having measured nothing. That is the "I could not tell, so
-    # pass" laundering the engine itself refuses to do at the verdict layer (a dead
-    # registry, a missing token or an empty inventory are all exit 3, never 0), and it must
-    # not be reintroduced at the workflow layer.
-    #
-    # It genuinely CANNOT measure fork-PR code: it runs on SELF-HOSTED runners and its
-    # measurement is `pnpm install` + a real workspace build + `pnpm pack`, i.e. arbitrary
-    # execution of the pull request's code on this estate's own hardware with a GitHub
-    # Packages token in the environment. So it runs and fails LOUDLY instead. The refusal
-    # is the FIRST step and precedes `actions/checkout`, so no fork-controlled byte is ever
-    # fetched, let alone executed — for a `pull_request` event the workflow definition
-    # itself comes from the base branch, so the self-hosted runner only ever echoes.
-    #
-    # A maintainer clears it by pushing the branch to this repository, which is what they
-    # must do to land it in any case. If that trade is ever judged wrong, the one-line
-    # revert is to restore the sibling `if:` — but then this context MUST NOT be added to
-    # branch protection, because a required-and-skippable check is worse than no check.
+  # Required content-drift gate: registry authentication and a real build are part of the check.
+  # Fork PRs fail before checkout because skipped required checks pass, while running fork code
+  # on self-hosted hardware is unsafe. Push the branch to this repository to measure it.
     runs-on: [self-hosted, linux, arm64, node-highmem]
     steps:
       - name: Refuse to measure fork-PR code on a self-hosted runner
@@ -142,7 +103,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       # RUNNER-DEATH ROOT CAUSE (this filter is the remedy). The "Known-answer
       # self-test" step below stands up throwaway repos + an offline registry and
-      # re-runs the shipped pipeline under 13 source mutations — a ~14-minute,
+      # re-runs the shipped pipeline under 31 source mutations (the count was 13
+      # when this comment was written; the mutants fan out across cores, so the
+      # step measured 380.6s on the self-hosted fleet in run 32785190011) — a
       # memory-and-IO-heavy step. Run on EVERY pull request across the shared
       # self-hosted arm64 fleet, two unrelated PRs land on the same physical host
       # and the host exhausts memory; the OOM killer reaps a runner VM mid-step, so
@@ -163,14 +126,20 @@ jobs:
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: drift-engine-changes
         with:
-          # scripts/fixtures/** is exactly the vendored contract (the conformance
-          # JSON/sha256 vectors and the three shared runner .mjs files); the two
-          # check-package-drift files are the engine and its unit/self-test suite.
+          # The two c147-package-drift files are the engine and its unit/self-test
+          # suite. The contract itself used to live in scripts/fixtures/**; since
+          # atlas decision 0079 item 4 wave 2 it arrives as
+          # @j0nathan-ll0yd/estate-contracts, so the lockfile is now the file that
+          # changes when the vectors, the runners or the extractor change. Watching
+          # pnpm-lock.yaml is deliberately WIDER than the retired path (any dependency
+          # bump trips it) — the self-test is memory-heavy, so the cost is real, but a
+          # contract change that skipped the self-test is the failure this gate exists
+          # to prevent. Wider and correct beats narrower and blind.
           filters: |
             engine:
-              - 'scripts/check-package-drift.mjs'
-              - 'scripts/check-package-drift.test.mjs'
-              - 'scripts/fixtures/**'
+              - 'audits/checks/c147-package-drift.mjs'
+              - 'audits/__tests__/c147-package-drift.test.mjs'
+              - 'pnpm-lock.yaml'
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -182,47 +151,27 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install --frozen-lockfile
       # D4 — THE SHARED DIGEST CONTRACT, AND IT RAN IN NO WORKFLOW AT ALL.
-      # scripts/check-package-drift.test.mjs carries the 34 cross-implementation
-      # conformance vectors vendored from atlas/contracts/package-digest/, AND the
-      # Layer-1 assertion that the vendored fixture still hashes to
-      # DRIFT_CONFORMANCE_SHA256 — the check that makes vendoring safe rather than
-      # merely convenient. It was reachable only through `pnpm test:scripts`, which
+      # audits/__tests__/c147-package-drift.test.mjs runs the 35 cross-implementation
+      # conformance vectors from @j0nathan-ll0yd/estate-contracts/package-digest,
+      # AND the assertion that the resolved fixture still hashes to
+      # DRIFT_CONFORMANCE_SHA256 — the pin that keeps a vector change visible in
+      # this repo's diff. It was reachable only through `pnpm test:scripts`, which
       # appears in .husky/pre-push and in no workflow on any event, so this repo
       # could diverge from the canonical normalization rule with all 20 CI checks
       # green and only a local pre-push hook standing between that and a merge.
-      # It is 52 assertions in ~70 ms and runs FIRST: a digest rule that no longer
-      # agrees with the estate makes every verdict below meaningless.
-      - name: Digest conformance + unit suite (34 shared vectors, fixture checksum)
-        run: node --test scripts/check-package-drift.test.mjs
-      # A2b — a gate that can never fail is as dangerous as one that never runs.
-      # --self-test stands up a throwaway git repo and an offline registry, runs
-      # the SHIPPED pipeline end to end against them, and then re-runs it under
-      # thirteen deliberate SOURCE-TEXT mutations, failing if any survives.
-      #
-      # Four of those thirteen cross the PROCESS boundary, and that number is the
-      # point (finding D3). Every in-process assertion reads the pipeline's return
-      # value, so the exit site itself was untested and a one-line change there kept
-      # the whole suite green while the gate exited 0 on real drift (finding X2).
-      # One spawned rung was not enough either: it asserted only DRIFT -> 2, so any
-      # edit that PRESERVED 2 stayed invisible. S13/S17/S18/S19 now spawn the script
-      # as a real OS process at a drift, a clean tree, a dead registry and an empty
-      # inventory, pinning exits 2/0/3/3 — MEASURED: with `process.exitCode` rewritten
-      # to launder exit 3 into 0, the previous suite reported "self-test passed, all
-      # 9 mutations killed" while every "could not tell" became a pass.
-      #
-      # It requires npm on PATH as well as pnpm — S14 seeds the toy registry with
-      # `npm pack` to reproduce the npm-publish/pnpm-pack manifest asymmetry
-      # (finding X3) end to end.
-      # Gated to engine/contract changes (see the paths-filter above). On a PR that
-      # does not touch the drift engine this step is SKIPPED — a skipped step does
-      # not fail the job, and the two always-on steps still report the required
-      # `package-version-drift` context. The nightly workflow re-runs the full
-      # self-test against main so nothing that skipped here goes unvalidated.
+      # It runs FIRST: a digest rule that no longer agrees with the estate makes
+      # every verdict below meaningless.
+      - name: Digest conformance + unit suite (35 shared vectors, fixture checksum)
+        run: node --test audits/__tests__/c147-package-drift.test.mjs
+# Exercise the real package-drift pipeline plus source mutants, including wrapper exit semantics.
+# Paths gate pull-request cost; the nightly run always executes. npm remains installed to test
+# npm/pnpm asymmetry.
       - name: Known-answer self-test (must prove it can fail)
         if: steps.drift-engine-changes.outputs.engine == 'true'
-        run: node scripts/check-package-drift.mjs --self-test
-      - name: Package payload drift
-        run: node scripts/check-package-drift.mjs --lane=branch
+        run: node audits/checks/c147-package-drift.mjs --self-test
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: package-version-drift
+        run: node audits/checks/c147-package-drift.mjs --lane=branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -297,7 +246,14 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
-        run: node scripts/validate-dtcg.mjs
+        run: node audits/checks/d3-validate-dtcg.mjs
+      # That gate's own known-answer suite. It is the sixth gate atlas catalog check D3
+      # names, and the only one that runs OUTSIDE governance-gates — which is why D3's
+      # runner had to grow this job as a second entry. The proof runs beside the gate it
+      # proves rather than in governance-gates: build-tokens is where the validator lives,
+      # and governance-gates `needs:` it, so a red here blocks the required context too.
+      - name: Prove the DTCG validator can fail
+        run: node --test audits/__tests__/d3-validate-dtcg.test.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: token-dist
@@ -425,7 +381,9 @@ jobs:
           swift --version
       # Also enforces the cross-platform fixture contract (LifegamesWidgetsTests/ContractTests).
       # Do not add --filter — that would silently drop contract coverage.
-      - run: swift test
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: test-swift
+        run: swift test
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: failure()
         with:
@@ -458,8 +416,37 @@ jobs:
       # The step that used to sit here (pnpm --filter @j0nathan-ll0yd/web tsc) was a
       # silent no-op — no tsconfig meant tsc printed help and exited 0 via
       # pnpm<=9's implicit exec fallback. See #110.
-      - name: Web unit tests (updaters/adapters Props contract)
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: contract-ts
         run: pnpm --filter @j0nathan-ll0yd/web test
+
+  # Real-browser half of the web runtime suite. Separate from contract-ts because
+  # that job runs on a node-labelled runner with no browser binaries, and separate
+  # from visual-regression because this asserts behavior, not pixels.
+  #
+  # It exists because jsdom structurally cannot answer the question it asks. jsdom
+  # performs no <picture> source selection, so a dead <source> and a live one look
+  # identical to it -- which is how 3.0.0 shipped an image fallback that set
+  # img.src correctly and still painted a broken glyph in every real browser.
+  web-browser-runtime:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, playwright]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: web-browser-runtime
+        run: pnpm --filter @j0nathan-ll0yd/web test:browser
 
   governance-gates:
     name: governance-gates
@@ -468,6 +455,15 @@ jobs:
     runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # The conformance BASELINE FREEZE (atlas decision 0102 move 1b) compares
+          # contracts/component-catalog/conformance-baseline.json against its own copy at the
+          # merge base with the target branch. The default depth-1 checkout fetches only the
+          # ref under test, so `origin/main` does not exist and there is no shared ancestor to
+          # resolve — and the freeze treats an unresolvable base as RED, never as a skip. Full
+          # history is what makes it resolvable. GitHub Actions sets CI, which is what arms the
+          # freeze; there is deliberately no env var here to remove.
+          fetch-depth: 0
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -482,24 +478,136 @@ jobs:
         with:
           name: token-dist
           path: packages/tokens/dist/
-      - name: Widget inventory drift (P5)
-        run: pnpm widget:inventory -- --check
-      - name: P1 token parity (web/Swift accent hex)
-        run: node scripts/check-token-parity.mjs --check
-      - name: WCAG-AA contrast gate
-        run: node scripts/check-contrast.mjs
-      - name: P3 Swift widget purity
-        run: node scripts/check-swift-widget-purity.mjs --check
-      - name: Watch exclusions (F-014)
-        run: node scripts/check-watch-exclusions.mjs --check
-      - name: P4/P7 promotion gate
-        run: node scripts/check-promotion.mjs --check
-      - name: P2 widget compliance (registry ↔ Astro/fixture/manifest)
-        run: node scripts/widget-compliance.mjs
-      - name: Style Dictionary golden-file characterization (F-005)
-        run: pnpm --filter @j0nathan-ll0yd/tokens test
-      - name: S22 preview scheme audit
-        run: bash scripts/check-preview-scheme.sh
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      # The nine gate probes are folded into ONE step whose name is the required-check
+      # context, so the merge gate binds to a step that runs the decisive commands.
+      # Per-probe granularity in the Actions UI is the accepted trade; the default
+      # `bash -e` shell means this step's exit code is the first failing probe's.
+      - name: governance-gates
+        env:
+          # The baseline freeze resolves its base as the MERGE BASE with origin/main. On the
+          # pull_request lane that is the fork point and the comparison is real. On the PUSH lane it
+          # is VACUOUS: origin/main IS the pushed commit, so merge-base(origin/main, HEAD) == HEAD,
+          # the baseline is compared against itself, every growth set is empty and the freeze passes.
+          # Measured: a gap absorbed directly on main gave `failures: 0`. So on a push, hand the
+          # freeze the commit that was there BEFORE it — that is a real ancestor and a real
+          # comparison. Empty on pull_request, where merge-base is already correct.
+          #
+          # Skipped when it is the null sha (branch creation, no prior commit to compare against) —
+          # the merge-base path then applies as before. `CATALOG_BASELINE_BASE` rejects HEAD and any
+          # descendant of it, so this cannot be turned into a self-comparison.
+          CATALOG_FREEZE_PUSH_BASE: ${{ github.event_name == 'push' && github.event.before || '' }}
+        run: |
+          if [ -n "$CATALOG_FREEZE_PUSH_BASE" ] && [ "$CATALOG_FREEZE_PUSH_BASE" != "0000000000000000000000000000000000000000" ]; then
+            export CATALOG_BASELINE_BASE="$CATALOG_FREEZE_PUSH_BASE"
+            echo "[freeze] push lane — comparing the baseline against $CATALOG_BASELINE_BASE"
+          fi
+          # Widget inventory drift (P5)
+          pnpm widget:inventory -- --check
+          # P1 token parity (web/Swift accent hex)
+          node audits/checks/d3-token-parity.mjs --check
+          # That gate's own known-answer suite. Atlas catalog check D3 named six governance
+          # gates and only ONE of them — Swift purity, below — had a can-fail proof (atlas
+          # decision 0111 phase 1). The four suites added here and the DTCG suite in
+          # build-tokens close that gap. They run HERE for the same reason the purity suite
+          # does: reachable only through `pnpm test:scripts` they would live in
+          # .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to merge a
+          # gate that stopped gating. Each is offline and well under a second.
+          node --test audits/__tests__/d3-token-parity.test.mjs
+          # WCAG-AA contrast gate
+          node audits/checks/d3-contrast.mjs
+          node --test audits/__tests__/d3-contrast.test.mjs
+          # P3 Swift widget purity — widgets AND components. GOVERNANCE.md §5 bans the app-only
+          # imports for "a DS component"; the scan covered only Sources/LifegamesWidgets/, so a
+          # component importing HealthKit exited 0. Measured across the 34 component files at the
+          # time of widening: zero hits, so the wider gate went green immediately.
+          node audits/checks/d3-swift-widget-purity.mjs --check
+          # That gate's own known-answer suite — it had NONE, which is why it was one of the three
+          # requirements grandfathered in openspec/covers-baseline.json. Two defects lived in the
+          # blind spot: the widget-only import scan above, and an exemption in
+          # widget-purity-exceptions.json that suppressed a Color(hex:) finding while stating no
+          # reason, against the file's own "Reason MUST explain why". Same argument as the suites
+          # below: reachable only through `pnpm test:scripts`, it would run in .husky/pre-push and no
+          # workflow, so DS_SKIP_PREPUSH=1 would be enough to merge a gate that stopped gating.
+          node --test audits/__tests__/d3-swift-widget-purity.test.mjs
+          # Watch exclusions (F-014)
+          node audits/checks/d3-watch-exclusions.mjs --check
+          node --test audits/__tests__/d3-watch-exclusions.test.mjs
+          # P4/P7 promotion gate
+          node audits/checks/d3-promotion.mjs --check
+          node --test audits/__tests__/d3-promotion.test.mjs
+          # P2 widget compliance (registry ↔ Astro/fixture/manifest)
+          node audits/checks/d3-widget-compliance.mjs
+          # Component-contract catalog + conformance ratchet (atlas decision 0060;
+          # Phoenix eval GAP 2). Five checks: grammar conformance, entry validity,
+          # completeness, the CONFORMANCE RATCHET, and idempotence. It ran ONLY in
+          # .husky/pre-push, so DS_SKIP_PREPUSH=1 was enough to merge a hand-edited
+          # contract, an unregenerated source change, or a new widget carrying
+          # neither a behavioral test nor an a11y label. governance-gates is a
+          # required status context; a gate that cannot block is not a gate.
+          # Offline and ~0.4s, so it costs this step nothing.
+          pnpm check:component-catalog
+          # The ratchet's own known-answer suite, including the CAN-FAIL PROOF for the
+          # baseline freeze: a widget added with a new gap plus `--update-baseline` must red,
+          # a genuine closure must pass, and a named justified raise must pass. The gate above
+          # cannot prove any of that — a freeze arm that silently stopped comparing would leave
+          # it green forever. Same argument, same precedent as check-package-drift.test.mjs
+          # above and check-ssr-image-fallback.test.mjs below: reachable only through
+          # `pnpm test:scripts`, this suite would run in .husky/pre-push and no workflow, so
+          # DS_SKIP_PREPUSH=1 would be enough to merge a broken ratchet. ~2s.
+          node --test contracts/component-catalog/ratchet.test.mjs
+          # openspec-covers (atlas decision 0102 ranked move 5). design-system had 0
+          # capabilities and no openspec/ tree at all; it now has one — widget-contract —
+          # and this is the gate that keeps it honest in BOTH directions: a requirement
+          # that loses its covering test reds, and a `// covers:` tether naming no
+          # requirement reds. The rule is not in this repo: it resolves from the
+          # exact-pinned @j0nathan-ll0yd/estate-contracts, and the wrapper verifies the
+          # shipped bytes against the sidecar shipped beside them before it runs. No
+          # `|| true` — blocking is the point, and governance-gates is the required
+          # status context, so this is where it binds.
+          pnpm check:covers
+          # The gate's own known-answer suite, including the CAN-FAIL PROOF: dropping the
+          # tether on a real requirement must block, a stale baseline id must fail, and an
+          # unparseable baseline must throw rather than degrade to an empty set that
+          # passes. Same argument as ratchet.test.mjs above and check-package-drift.test.mjs
+          # in package-version-drift: reachable only through `pnpm test:scripts`, it would
+          # run in .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to
+          # merge a gate that no longer gates. ~0.3s.
+          node --test audits/__tests__/d3-openspec-covers.test.mjs
+          # SSR image-fallback gate: every .astro that server-renders a
+          # data-fallback cover must bundle the load-time initImageFallbacks()
+          # call. Mirrors the digest-conformance precedent above
+          # (package-version-drift's `node --test audits/__tests__/c147-package-drift.test.mjs`):
+          # reachable only through `pnpm test:scripts` it would live in
+          # .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough
+          # to merge a widget whose SSR covers can never fall back. It runs HERE
+          # rather than in lint-web because governance-gates is a required status
+          # context and lint-web is not — a gate that cannot block is not a gate.
+          node --test audits/__tests__/d3-ssr-image-fallback.test.mjs
+          # Web widget-purity lint (P1 raw hex, P3 forbidden imports / module-scope fetch, W16
+          # props-extend-schema). It runs HERE and not only in lint-web for the reason stated on the
+          # SSR gate above: governance-gates is a required status context and lint-web is not.
+          # `pnpm lint` alone was not a gate either way — both P3 and W16 were configured 'warn' and
+          # the script carried no --max-warnings, so a widget importing axios beside a .types.ts with
+          # no schema import printed `2 problems (0 errors, 2 warnings)` and exited 0. They are
+          # 'error' now, the glob covers .css and .astro, and --max-warnings 0 closes the rest.
+          # Measured blast radius of the raise across the whole tree: zero existing violations.
+          pnpm -F @j0nathan-ll0yd/web lint
+          # The configuration's own known-answer suite. A RuleTester case passes identically whether
+          # its rule is 'warn' or 'error' and never sees the CLI glob, so it cannot prove either of
+          # the two things that were actually broken. This asserts the resolved SEVERITY through the
+          # real eslint.config.js and that the lint script still scans every extension its rules
+          # claim — a regression to 'warn' or a dropped extension reds here.
+          node --test audits/__tests__/d3-web-lint-severity.test.mjs
+          # The local ESLint rules' RuleTester suites. They ran in NO workflow and NO hook — not
+          # turbo, not `pnpm test:scripts` (whose globs were scripts/, packages/schemas/scripts/ and
+          # contracts/component-catalog/ only) — so every rule above was one silent edit away from
+          # reporting nothing, with its `// covers:` tether still satisfying check:covers.
+          node --test eslint-local-rules/__tests__/*.test.js
+          # Style Dictionary golden-file characterization (F-005)
+          pnpm --filter @j0nathan-ll0yd/tokens test
+          # S22 preview scheme audit
+          bash audits/checks/d3-preview-scheme.sh
 
   docs-build:
     needs: build-tokens

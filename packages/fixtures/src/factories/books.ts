@@ -1,3 +1,9 @@
+// Raw (pre-adapter) books-export factories.
+//
+// The `example-*` cover keys below use the reserved `.invalid` TLD. They preserve
+// the non-null raw export shape without pretending nonexistent objects live on the
+// public CloudFront distribution. Playwright may still intercept them, but an
+// accidental fetch cannot become first-party 403 noise.
 import type {BooksExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {isoTimestamp, placeholderText} from './helpers'
 
@@ -17,8 +23,12 @@ export function createBook(overrides: Partial<BookEntry> = {}): BookEntry {
     isbn10: '1984820710',
     isbn13: null,
     pageCount: 432,
-    mainImage: 'https://m.media-amazon.com/images/I/example-tainted-cup.jpg',
-    mainImageThumb: 'https://m.media-amazon.com/images/I/example-tainted-cup-thumb.jpg',
+    // Cover content version (LP #250). Null by default, which is what the producer
+    // emits when a cover has no optimized derivatives — it keeps this entry coherent
+    // with mainImageCard/mainImage*Avif/images all being null below.
+    mainImageVersion: null,
+    mainImage: 'https://fixtures.invalid/images/books/example-tainted-cup.webp',
+    mainImageThumb: 'https://fixtures.invalid/images/books/example-tainted-cup-thumb.webp',
     mainImageCard: null,
     mainImageAvif: null,
     mainImageThumbAvif: null,
@@ -51,8 +61,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2024-02-06',
         publishedYear: 2024,
         pageCount: 432,
-        mainImage: 'https://m.media-amazon.com/images/I/example-tainted-cup.jpg',
-        mainImageThumb: 'https://m.media-amazon.com/images/I/example-tainted-cup-thumb.jpg',
+        mainImage: 'https://fixtures.invalid/images/books/example-tainted-cup.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-tainted-cup-thumb.webp',
         averageRating: '4.5',
         category: 'Fantasy, Mystery, Thriller',
         status: 'finished',
@@ -71,8 +81,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2025-02-04',
         publishedYear: 2025,
         pageCount: 480,
-        mainImage: 'https://m.media-amazon.com/images/I/example-drop-of-corruption.jpg',
-        mainImageThumb: 'https://m.media-amazon.com/images/I/example-drop-of-corruption-thumb.jpg',
+        mainImage: 'https://fixtures.invalid/images/books/example-drop-of-corruption.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-drop-of-corruption-thumb.webp',
         averageRating: '4.6',
         category: 'Fantasy, Mystery, Thriller',
         status: 'finished',
@@ -91,8 +101,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2018-08-21',
         publishedYear: 2018,
         pageCount: 512,
-        mainImage: 'https://m.media-amazon.com/images/I/example-foundryside.jpg',
-        mainImageThumb: 'https://m.media-amazon.com/images/I/example-foundryside-thumb.jpg',
+        mainImage: 'https://fixtures.invalid/images/books/example-foundryside.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-foundryside-thumb.webp',
         averageRating: '4.3',
         category: 'Fantasy',
         status: 'finished',
@@ -111,8 +121,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2020-04-21',
         publishedYear: 2020,
         pageCount: null,
-        mainImage: 'https://m.media-amazon.com/images/I/example-shorefall.jpg',
-        mainImageThumb: 'https://m.media-amazon.com/images/I/example-shorefall-thumb.jpg',
+        mainImage: 'https://fixtures.invalid/images/books/example-shorefall.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-shorefall-thumb.webp',
         averageRating: '4.2',
         category: 'Fantasy',
         status: 'reading',
@@ -131,8 +141,8 @@ export function createBooksFixture(overrides: Partial<BooksExport> = {}): BooksE
         publicationDate: '2024-09-01',
         publishedYear: 2024,
         pageCount: 307,
-        mainImage: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy.jpg',
-        mainImageThumb: 'https://m.media-amazon.com/images/I/example-crafting-eng-strategy-thumb.jpg',
+        mainImage: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy.webp',
+        mainImageThumb: 'https://fixtures.invalid/images/books/example-crafting-eng-strategy-thumb.webp',
         averageRating: '4.7',
         category: 'Technology, Business',
         status: 'upNext',

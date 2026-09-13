@@ -371,9 +371,12 @@ export const appSchema = z
             failedToAddBook: z.string(),
             failedToUpdate: z.string(),
             failedToDelete: z.string(),
+            kindleEditionRejected: z.string(),
           })
           .strict()
-          .describe('Bookshelf error-alert titles (load/add/update/delete failures).'),
+          .describe(
+            'Bookshelf error-alert titles (load/add/update/delete failures) plus the add-book rejection message.',
+          ),
       })
       .strict()
       .describe(

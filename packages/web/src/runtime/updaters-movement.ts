@@ -1,6 +1,6 @@
 // Movement Rings widget + Heart Rate footer-vitals strip updaters.
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
-import {widgets} from '@j0nathan-ll0yd/copy'
+import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import type {AdaptedHealth} from './adapters'
 
 // Default goals — kept in sync with MovementRings.astro SSR defaults.
@@ -36,6 +36,15 @@ function setText(id: string, text: string): void {
   if (el) {
     el.textContent = text
   }
+}
+
+// The ring group's accessible name, composed from the same `a11y.movement.rings`
+// template the SSR path uses (MovementRings.astro), so the two cannot drift.
+// Percentages are unclamped to match it: the centre readout clamps to 100%
+// because a ring cannot overdraw, but the ANNOUNCED value stays truthful at 107%.
+function ringsLabel(move: number, exercise: number, stand: number): string {
+  const pct = (fraction: number): string => String(Math.round(fraction * 100))
+  return a11y.movement.rings.replace('{calories}', pct(move)).replace('{exercise}', pct(exercise)).replace('{stand}', pct(stand))
 }
 
 /**
@@ -118,6 +127,19 @@ export function updateMovementRings(data: AdaptedHealth): void {
   setRingProgress('ringStand', RING_RADII.stand, standPct)
 
   setText('ringCenterPct', Math.round(Math.min(movePct, 1) * 100) + '%')
+
+  // The ring group's accessible name carries the same three percentages the rings
+  // draw, and it is the ONLY place a screen reader hears them. On an `output: 'static'`
+  // consumer the SSR label is frozen at BUILD time while these rings repaint on every
+  // poll, so leaving it alone announces stale numbers over live rings — worse than no
+  // name at all, because it is confidently wrong.
+  //
+  // Not needed on the paused path above: `#cardMovement.is-paused .mv-data` is
+  // `display: none`, so the rings leave the accessibility tree entirely.
+  const ringsSvg = card.querySelector('.mv-rings svg[role="img"]')
+  if (ringsSvg) {
+    ringsSvg.setAttribute('aria-label', ringsLabel(movePct, exercisePct, standPct))
+  }
 
   // Chips: steps · distance · flights
   const steps = Math.round(q.stepCount?.value ?? 0)

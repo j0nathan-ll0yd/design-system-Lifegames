@@ -263,7 +263,4 @@
   }
 </style>
 
-<!-- ComingSoon ships scriptless. The production wrapper (production/ComingSoon.astro)
-     stamps the random dossier ID into #dossierId via a bundled module script.
-     CSP `script-src 'self'` rejects inline script bodies, so the runtime lives
-     in the bundled production path, never as an inline block here. -->
+{/* Keep runtime in the production wrapper because the site CSP rejects inline scripts. */}

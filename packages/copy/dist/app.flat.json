@@ -269,7 +269,8 @@
       "failedToLoad": "Failed to Load",
       "failedToAddBook": "Failed to Add Book",
       "failedToUpdate": "Failed to Update",
-      "failedToDelete": "Failed to Delete"
+      "failedToDelete": "Failed to Delete",
+      "kindleEditionRejected": "Kindle editions carry no library record to enrich. Switch the format to Hardcover or Paperback, then add it again."
     }
   },
   "watch": {

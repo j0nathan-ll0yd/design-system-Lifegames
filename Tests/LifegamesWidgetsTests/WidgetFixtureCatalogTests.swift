@@ -2,6 +2,7 @@ import Foundation
 import Testing
 @testable import LifegamesWidgets
 
+// covers: widget-contract#Every cataloged widget fixture decodes into the Props type its catalog row names
 /// CI-enforced fixture catalog test. Mirrors the gallery's `*Variations.swift` entries: every
 /// `(category, name)` pair referenced by a `Kind.fixture(name)` case must round-trip through
 /// `WidgetFixtures.data(...)` and `JSONDecoder().decode(PropsType.self, ...)`.

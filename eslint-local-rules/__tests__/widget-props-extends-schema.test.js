@@ -14,6 +14,7 @@ const nonTypesFile = '/repo/packages/web/src/runtime/heart-rate.ts'
 
 const tester = new RuleTester({languageOptions: {ecmaVersion: 2022, sourceType: 'module', parser: tsParser}})
 
+// covers: widget-contract#A web widget Props type extends its generated schema unless marked schema-exempt
 tester.run('widget-props-extends-schema', rule, {
   valid: [
     // Props type imports from @j0nathan-ll0yd/schemas — valid.

@@ -2,6 +2,7 @@ import Foundation
 import Testing
 @testable import LifegamesWidgets
 
+// covers: widget-contract#Every cataloged widget fixture decodes into the Props type its catalog row names
 @Suite("Contract Tests — Fixture JSON decodes into Props structs")
 struct ContractTests {
     private func loadFixture(_ path: String) throws -> Data {

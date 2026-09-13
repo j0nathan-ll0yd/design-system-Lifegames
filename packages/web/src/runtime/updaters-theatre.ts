@@ -1,6 +1,6 @@
 import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
-import {imgFallbackAttrs, localizeImageUrl} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
 import {renderWidgetEmpty} from './updater-empty'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
@@ -59,35 +59,39 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
     const gradeColor = (r.rating && GRADE_COLORS[r.rating]) || ''
     html += `<a class="theatre-card" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer" style="animation-delay: ${i * 0.08}s">`
     html += `<div class="theatre-poster-wrap">`
-    if (r.imageUrl) {
-      const localSrc = localizeImageUrl(r.imageUrl)
-      const cardUrl = localizeImageUrl(r.imageUrlCard ?? null)
-      const fallback = imgFallbackAttrs(cardUrl || localSrc, r.imageUrl)
+    if (r.imageUrl || r.imageUrlAvif || r.imageUrlCardAvif) {
+      // Runtime theatre posters never have committed same-origin copies.
+      const posterUrl = sanitizeImageUrl(r.imageUrl, {onReject: 'omit'})
+      const cardUrl = sanitizeImageUrl(r.imageUrlCard, {onReject: 'omit'})
+      const cardAvif = sanitizeImageUrl(r.imageUrlCardAvif, {onReject: 'omit'})
+      const posterAvif = sanitizeImageUrl(r.imageUrlAvif, {onReject: 'omit'})
+      const displaySrc = cardUrl || posterUrl || PLACEHOLDER_IMAGE_SRC
+      const avifSrcset = [cardAvif ? esc(cardAvif) + ' 1x' : '', posterAvif ? esc(posterAvif) + ' 2x' : ''].filter(Boolean).join(', ')
+      const fallback = imgFallbackAttrs(displaySrc, avifSrcset.length > 0)
       if (cardUrl) {
-        var avifSrc = r.imageUrlCardAvif
-          ? '<source srcset="' + esc(r.imageUrlCardAvif) + ' 1x, ' + esc(r.imageUrlAvif ?? r.imageUrl) + ' 2x" type="image/avif">'
+        // The 2x entry is emitted only when a real AVIF exists for it — a
+        // non-AVIF URL inside type="image/avif" is chosen by the browser and
+        // then fails to decode, with no <picture> fallback to recover it.
+        var avifSrc = avifSrcset
+          ? '<source srcset="' + avifSrcset + '" type="image/avif">'
           : ''
         var imgTag = '<img src="' +
           esc(cardUrl) +
           '" srcset="' +
           esc(cardUrl) +
           ' 1x, ' +
-          esc(localSrc ?? r.imageUrl) +
-          ' 2x" width="95" height="143" alt="' +
-          esc(r.title) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+          esc(posterUrl || displaySrc) +
+          ' 2x" width="95" height="143" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
           fallback +
           '>'
         html += avifSrc ? '<picture>' + avifSrc + imgTag + '</picture>' : imgTag
       } else {
-        var avifSrc = r.imageUrlAvif
-          ? '<source srcset="' + esc(r.imageUrlAvif) + '" type="image/avif">'
+        var avifSrc = avifSrcset
+          ? '<source srcset="' + avifSrcset + '" type="image/avif">'
           : ''
         var imgTag = '<img src="' +
-          esc(localSrc ?? r.imageUrl) +
-          '" width="95" height="143" alt="' +
-          esc(r.title) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
+          esc(displaySrc) +
+          '" width="95" height="143" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer"' +
           fallback +
           '>'
         html += avifSrc ? '<picture>' + avifSrc + imgTag + '</picture>' : imgTag
@@ -102,5 +106,6 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
   })
 
   row.innerHTML = html
+  installImageFallbacks(row)
   card.classList.remove('is-loading')
 }

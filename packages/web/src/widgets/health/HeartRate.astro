@@ -71,8 +71,7 @@ const fmtTemp = (() => {
         </div>
       )
     }
-    <!-- Paused block: always in DOM (hidden by default); shown when .is-paused via CSS.
-         Replaces the data content entirely — no stale numbers are visible when the watch is off. -->
+    {/* Both states stay mounted so live updates can switch without exposing stale values. */}
     <div class="hr-paused" role="status" aria-live="polite" id="hrPaused">
       <svg
         class="hr-paused-icon"
@@ -112,8 +111,6 @@ const fmtTemp = (() => {
         }
       </span>
     </div>
-    <!-- Data content: always in DOM; hidden by .is-paused so stale numbers are never shown
-         when the watch is off. -->
     {
       !isEmpty && (
         <div class="hr-data">

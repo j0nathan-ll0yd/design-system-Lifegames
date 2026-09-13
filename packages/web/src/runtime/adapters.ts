@@ -1,4 +1,5 @@
 import {ACTIVITY_TYPE_MAP, HYDRATION, LANG_COLORS, STATUS_LABELS} from './constants'
+import {sanitizeImageUrl} from './image-sanitizer'
 import {computeSleepPercentages, computeTotalSleepSeconds, formatDuration, formatPhase} from './sleep'
 import type {
   ArticlesExport,
@@ -104,12 +105,16 @@ export interface AdaptedBookEntry {
   rating: number | null
   progress: number | undefined
   link: string
-  cover: string | null
-  coverThumb: string | null
-  coverCard: string | null
-  coverAvif: string | null
-  coverThumbAvif: string | null
-  coverCardAvif: string | null
+  // Image fields keep the export contract's own names (books.json emits
+  // `mainImage*`). An adapter-local rename to `cover*` was how the widgets
+  // silently drifted off the contract — a renamed field reads as present in
+  // the widget while the real one goes unread (atlas decision 0086).
+  mainImage: string | null
+  mainImageThumb: string | null
+  mainImageCard: string | null
+  mainImageAvif: string | null
+  mainImageThumbAvif: string | null
+  mainImageCardAvif: string | null
   notes: string | null
   finishedAt: string | null
   startedAt: string | null
@@ -321,19 +326,16 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       rating: b.rating ?? null,
       progress,
       link: 'https://www.amazon.com/dp/' + b.asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
-      // CloudFront URLs flow through unchanged. The updater conditionally rewrites
-      // to a local /images/books/<asin>-*.webp path only for ASINs that were in
-      // the SSR fixture (`ssrAsins`) — those are the only ASINs that have a
-      // committed local copy under `public/images/books/`. Books added after the
-      // dashboard was last built (e.g. a new book the backend just synced)
-      // would 404 on the local path, and Cloudflare Pages caches that 404 for
-      // 30 days. Defaulting to CloudFront avoids the entire bug class.
-      cover: b.mainImage ?? null,
-      coverThumb: b.mainImageThumb ?? null,
-      coverCard: b.mainImageCard ?? null,
-      coverAvif: b.mainImageAvif ?? null,
-      coverThumbAvif: b.mainImageThumbAvif ?? null,
-      coverCardAvif: b.mainImageCardAvif ?? null,
+      // Sanitize at the contract boundary. Renderers repeat the check at the
+      // point of use because they also accept fixture and DOM-sourced data.
+      // Rejected raster URLs paint the committed placeholder; rejected AVIF
+      // candidates are absent so they cannot override the raster fallback.
+      mainImage: sanitizeImageUrl(b.mainImage),
+      mainImageThumb: sanitizeImageUrl(b.mainImageThumb),
+      mainImageCard: sanitizeImageUrl(b.mainImageCard),
+      mainImageAvif: sanitizeImageUrl(b.mainImageAvif, {onReject: 'omit'}),
+      mainImageThumbAvif: sanitizeImageUrl(b.mainImageThumbAvif, {onReject: 'omit'}),
+      mainImageCardAvif: sanitizeImageUrl(b.mainImageCardAvif, {onReject: 'omit'}),
       notes: b.notes ?? null,
       finishedAt: b.finishedAt ?? null,
       startedAt: b.startedAt ?? null

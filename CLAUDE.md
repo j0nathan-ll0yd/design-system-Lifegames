@@ -29,7 +29,7 @@
 
 ## Fixture Rules
 
-- Personal data MUST be scrubbed before push (enforced by `scripts/scan-personal-data.sh`)
+- Personal data MUST be scrubbed before push (enforced by `audits/checks/d6-scan-personal-data.sh`)
 - All scrubs recorded in `SCRUBBING.md`
 
 ## Schema Validation
@@ -64,6 +64,7 @@ All use Vite 8 (unified from prior Vite 6/7 split).
 - **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
+- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the non-required `lint-web` job. `audits/__tests__/d3-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they are now in `test:scripts` and in `governance-gates`.
 
 ## Component-Contract Catalog (`contracts/component-catalog/`)
 
@@ -78,15 +79,74 @@ hand-write a prop shape. Sources: props ← the generated widget schema in
 `packages/schemas/generated/widgets/`, states ← fixture + Storybook-snapshot filenames, a11y ←
 `.accessibilityLabel(` in the Swift view. The canonical widget id is the generated schema FILENAME,
 paired via that schema's `title`; an unmappable Swift view throws rather than being paired by
-guesswork. Gaps are written as `null`, never faked as a pass. Gate:
-`pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
-idempotence) — wired into `.husky/pre-push`; unit tests run under `pnpm test:scripts`. Bumping
+guesswork. Gaps are written as `null`, never faked as a pass. **Conformance ratchet:**
+`conformance-baseline.json` grandfathers the 31 widgets with no behavioral test and the 29 with no
+a11y label; a null field whose id is NOT in the matching list FAILS, so a new widget with neither and
+a regression that drops either both red. A baseline id naming no widget also FAILS; a graduated
+widget's stale id is reported PRUNABLE and must be pruned in the same PR. Missing or unparseable
+baseline is a hard RED. Re-record with `node contracts/component-catalog/check.mjs
+--update-baseline` — never hand-edit an id. **Baseline freeze** (atlas decision 0102 move 1b): the
+baseline is also compared against its own copy at the MERGE BASE, so `--update-baseline` cannot
+silently absorb a new gap. Any id ADDED to a gap list FAILS unless a `Baseline-Raise:
+<axis>:<widget-id> <reason>` trailer on a commit in the branch (or `CATALOG_BASELINE_RAISE`) names
+that exact axis and id and gives a reason; a shrunk set always passes. Identity-keyed, never a count.
+Armed by `CI=1` or `CATALOG_BASELINE_FROZEN=1` (`.husky/pre-push` sets it); an unresolvable base is
+RED, which is why the CI `governance-gates` checkout uses `fetch-depth: 0`. There is no thaw switch:
+`CATALOG_BASELINE_BASE` skips the merge base, so it REJECTS any value resolving to HEAD or a
+descendant of HEAD — `=HEAD` used to compare the baseline against itself and print `ok` while checking
+nothing. Tests inject their base through `runFreezeCheck({base})`, not the env var. On the **push**
+lane `origin/main` IS the pushed commit, so the merge base is HEAD and the freeze was vacuous; CI now
+passes `github.event.before` there.
+Gate: `pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
+conformance ratchet, baseline freeze, idempotence) — wired into BOTH the CI `governance-gates` step
+(required status context) and `.husky/pre-push`; unit tests run under `pnpm test:scripts`, and
+`ratchet.test.mjs` also runs directly in `governance-gates` as the freeze's can-fail proof. Bumping
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
 change. See `contracts/component-catalog/README.md`.
 
+## OpenSpec capabilities (`openspec/`)
+
+Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
+`openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
+today: `widget-contract`** (13 requirements / 32 scenarios), which restates the widget contract already
+enforced by `governance-gates`, `test-swift`, `contract-ts` and `lint-web` — P3/F-015 purity, the
+fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
+and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
+promotion bar. **Describe what is already enforced**; a requirement with no gate behind it is a wish
+with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
+`@j0nathan-ll0yd/estate-contracts@0.13.0`; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
+shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins
+`EXPECTED_COVERS_SPEC_VERSION` (5). **Binding:** a line-leading `// covers:` comment naming the
+capability, then `#`, then the requirement name verbatim; a trailing comment is a reported near-miss,
+not a tether. There are deliberately **no `Verified by` citations** — a hand-typed line number drifts
+and the tether already holds the file and the line. **Scan surface:** the contract's three default
+languages plus `**/*.test.mjs` and `**/*.test.js` (this repo's `node --test` and ESLint `RuleTester`
+suites), passed through the documented `languages` option — a scan-surface choice, not a rule change,
+with disjointness asserted at startup. **Baseline:** `openspec/covers-baseline.json` is EMPTY — every
+requirement is tethered. It held 3 gates whose behavior nothing pinned; `d3-swift-widget-purity.mjs`
+gained `audits/__tests__/d3-swift-widget-purity.test.mjs`, and `d3-watch-exclusions.mjs` and
+`d3-promotion.mjs` gained theirs in #257. Each id was pruned in the change that closed it. Only `uncovered-requirement` is eligible; every
+other finding type blocks unconditionally; a baseline id naming no live requirement FAILS; a graduated
+id is reported PRUNABLE and must be pruned in the same PR; an unparseable baseline is a hard RED; an
+absent one grandfathers nothing (stricter, never a pass). Re-record with `pnpm covers:update-baseline`
+— never hand-edit an id. Gate: `pnpm check:covers` — wired into BOTH the CI `governance-gates` step
+(required status context) and `.husky/pre-push`; `audits/__tests__/d3-openspec-covers.test.mjs` also runs directly
+in `governance-gates` as the can-fail proof. See `openspec/README.md`.
+
 ## lp-audit (Audit System — D domain)
 
-This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `scripts/audit-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `scripts/check-baseline-age.mjs` (D2 — visual-baseline staleness), and `scripts/scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `audits/checks/d1-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `audits/checks/d2-baseline-age.mjs` (D2 — visual-baseline staleness), and `audits/checks/d6-scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+
+**Layout (atlas decision 0111 phase 2c).** Every audit runner sits under `audits/checks/`, id-prefixed
+(`d1-`, `d2-`, `d3-`, `d6-`, `c147-`); known-answer suites in `audits/__tests__/` carry their runner's
+id; repo-local check data in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
+catalog row over the whole `ci.yml#governance-gates` lane, so `d3-` prefixes all ten of that job's
+runners — the catalog registers the JOB, not a single script. `scripts/` keeps this repo's build and
+authoring tooling (token builds, generators, scaffolds, the worktree provisioner) plus two
+asset-identity suites no registered lane runs; a `check-`-prefixed name is NOT what puts a file under
+`audits/`, a registered lane is. atlas's `audits/audits.yaml` declares these roots in its `layouts:`
+block, and A19 reads its lane-recognition roots from there — moving a runner without updating that
+block turns a silent drop into a `runner-outside-declared-roots` finding. See `audits/README.md`.
 
 ## Commits
 

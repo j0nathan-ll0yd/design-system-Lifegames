@@ -10,7 +10,9 @@ export const VARIATION_EXCEPTIONS: Record<
   {domain: string; variation: ReservedVariation; rationale: string}[]
 > = {}
 
+// `focus` was excepted here while every one of its properties was required and
+// non-nullable. portal-contract 2.x added the OPTIONAL `hidingSince`, so the walker
+// now has an optional-key check to make and the exception is gone.
 export const WALKER_EXCEPTIONS: Record<string, string> = {
-  'health.quantities': 'additionalProperties schema — not walker-enumerable; covered by vitest factory-key assertion',
-  focus: 'all properties required and non-nullable — nothing for the walker to verify; covered by Ajv + manual review'
+  'health.quantities': 'additionalProperties schema — not walker-enumerable; covered by vitest factory-key assertion'
 }

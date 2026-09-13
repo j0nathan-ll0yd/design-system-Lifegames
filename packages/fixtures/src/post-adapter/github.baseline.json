@@ -75,38 +75,38 @@
   "devActivity": [
     {
       "type": "commit",
-      "repo": "mantle",
-      "title": "Unify handler pattern",
+      "repo": "design-system",
+      "title": "Add component catalog fleet generation",
       "date": "2h ago",
-      "hash": "a9421b5",
+      "hash": "67fd9f2",
       "additions": 28,
       "deletions": 16,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/commit/a9421b5"
+      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/67fd9f2"
     },
     {
       "type": "pr_opened",
       "repo": "media-downloader",
-      "title": "chore(deps): update yt-dlp",
+      "title": "Update yt-dlp",
       "date": "1d ago",
       "number": 388,
       "additions": 1,
       "deletions": 1,
-      "url": "https://github.com/j0nathan-ll0yd/aws-cloudformation-media-downloader/pull/388"
-    },
-    {
-      "type": "commit",
-      "repo": "mantle",
-      "title": "Add validation engine",
-      "date": "2d ago",
-      "hash": "b3c4d5e",
-      "additions": 45,
-      "deletions": 12,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/commit/b3c4d5e"
+      "url": "https://github.com/j0nathan-ll0yd/mantle-OfflineMediaDownloader/pull/388"
     },
     {
       "type": "commit",
       "repo": "portfolio",
-      "title": "Add skeleton loading states",
+      "title": "Pre-flight egress probe to distinguish runner-egress-down from site-down",
+      "date": "2d ago",
+      "hash": "336f56e",
+      "additions": 45,
+      "deletions": 12,
+      "url": "https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/336f56e"
+    },
+    {
+      "type": "commit",
+      "repo": "portfolio",
+      "title": "Add skeleton loading states for live-data dashboard widgets",
       "date": "3d ago",
       "hash": "9deedf9",
       "additions": 156,
@@ -115,13 +115,13 @@
     },
     {
       "type": "commit",
-      "repo": "mantle",
-      "title": "Extract shared utilities",
+      "repo": "design-system",
+      "title": "Align fixture catalog with initializer states",
       "date": "5d ago",
-      "hash": "f6g7h8i",
+      "hash": "ab08ec7",
       "additions": 89,
       "deletions": 34,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/commit/f6g7h8i"
+      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/ab08ec7"
     }
   ],
   "commitHours": [2, 0, 0, 0, 0, 1, 3, 5, 12, 18, 22, 15, 8, 14, 20, 19, 16, 10, 6, 4, 5, 8, 6, 3],

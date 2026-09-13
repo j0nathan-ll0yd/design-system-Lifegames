@@ -36,10 +36,17 @@ docs/maintenance/**
 # Golden MDX fixtures use <$> custom shortcode syntax not parseable by Prettier
 Tests/golden-mdx/**
 
-# Generated, non-deterministic inventory data (scripts/widget-inventory.mjs).
+# Generated, non-deterministic inventory data (audits/checks/d3-widget-inventory.mjs).
 # Has no byte gate of its own; formatting it is pointless and would churn diffs.
 widget-consumers.json
 
 # prettier-plugin-astro parser bug: [].slice.call() in <script is:inline> is
 # misidentified as JSX array syntax. File has 5 is:inline scripts (W9 ES5 conv.)
 apps/portfolio/src/layouts/Dashboard.astro
+
+# Nested git worktrees. A linked worktree checked out under .worktrees/ is a
+# separate working copy of this repo, not source belonging to this one. Prettier
+# walking into it makes `format:check` -- and therefore the pre-push hook -- fail
+# on files the pushing branch does not contain, blocking every local push for as
+# long as any worktree exists.
+.worktrees/**

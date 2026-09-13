@@ -2,6 +2,7 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
+import {PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
 import {widgets} from '@j0nathan-ll0yd/copy'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
@@ -97,7 +98,7 @@ describe('updateTheatreReviews', () => {
     expect(document.getElementById('theatreRow')!.innerHTML).not.toContain('theatre-grade')
   })
 
-  it('renders localized image URL when imageUrl is a CloudFront URL', () => {
+  it('keeps CloudFront posters remote because theatre has no SSR copies', () => {
     const reviews = [
       {
         title: 'CF Show',
@@ -116,7 +117,63 @@ describe('updateTheatreReviews', () => {
     updateTheatreReviews(makeExport(reviews))
     const img = document.querySelector('#theatreRow img') as HTMLImageElement
     expect(img).not.toBeNull()
-    expect(img.src).toContain('/images/theatre/cf-show.webp')
+    expect(img.getAttribute('src')).toBe(`${CLOUDFRONT_BASE}/images/theatre/cf-show.webp`)
+  })
+
+  it('replaces a rejected poster URL with the placeholder', () => {
+    const reviews = [
+      {
+        title: 'Unsafe Show',
+        slug: 'unsafe-show',
+        url: 'https://example.com/unsafe',
+        author: 'Jonathan',
+        publishedAt: '2026-01-01',
+        rating: 'A',
+        ratingNumeric: 4,
+        excerpt: 'Good',
+        imageUrl: 'https://evil.test/poster.webp',
+        imageUrlAvif: 'https://evil.test/poster.avif',
+        imageWidth: 95,
+        imageHeight: 143
+      }
+    ]
+    updateTheatreReviews(makeExport(reviews))
+    const img = document.querySelector('#theatreRow img') as HTMLImageElement
+    expect(img.getAttribute('src')).toBe(PLACEHOLDER_IMAGE_SRC)
+    expect(document.querySelectorAll('#theatreRow source')).toHaveLength(0)
+  })
+
+  it('keeps poster images decorative and installs a CSP-safe fallback listener', () => {
+    const original = `${CLOUDFRONT_BASE}/images/theatre/cf-show.webp`
+    const reviews = [
+      {
+        title: 'CF Show',
+        slug: 'cf-show',
+        url: 'https://example.com/cf',
+        author: 'Jonathan',
+        publishedAt: '2026-01-01',
+        rating: 'A',
+        ratingNumeric: 4,
+        excerpt: 'Good',
+        imageUrl: original,
+        imageUrlAvif: null,
+        imageUrlCard: `${CLOUDFRONT_BASE}/images/theatre/cf-show-card.webp`,
+        imageUrlCardAvif: null,
+        imageWidth: 95,
+        imageHeight: 143
+      }
+    ]
+
+    updateTheatreReviews(makeExport(reviews))
+    const img = document.querySelector('#theatreRow img') as HTMLImageElement
+    expect(img.alt).toBe('')
+    expect(img.outerHTML).not.toContain('onerror=')
+    expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
+
+    img.dispatchEvent(new Event('error'))
+    expect(img.srcset).toBe('')
+    expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
+    expect(img.onerror).toBeNull()
   })
 
   it('removes is-loading after rendering reviews', () => {

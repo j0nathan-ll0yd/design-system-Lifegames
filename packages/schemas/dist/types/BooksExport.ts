@@ -16,6 +16,7 @@ export interface BooksExport {
     isbn10: string | null;
     isbn13: string | null;
     pageCount: number | null;
+    mainImageVersion: string | null;
     mainImage: string | null;
     mainImageThumb: string | null;
     mainImageCard: string | null;

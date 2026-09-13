@@ -54,3 +54,13 @@ apps/storybook/__snapshots__/__diff__/
 
 # Local onboarding scratch docs
 docs/ONBOARDING.md
+
+# Vitest browser-mode failure artifacts (packages/web test:browser). Written on a
+# failing assertion only; the baselines this suite cares about are pixel-free.
+packages/web/.vitest-attachments/
+packages/web/tests/browser/__screenshots__/
+
+# Nested git worktrees (see .prettierignore). Untracked-but-not-ignored, a
+# `git add -A` stages one as an embedded-repo gitlink (mode 160000), which is
+# never intended.
+.worktrees/

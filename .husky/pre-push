@@ -40,13 +40,45 @@ step "lint"                    pnpm lint
 step "typecheck"               pnpm typecheck
 step "schemas freshness"       pnpm check:schemas-freshness
 
-# Component-contract catalog (atlas decision 0060). Offline, zero-dep and fast, so
-# it runs before the network-dependent drift gate. Four checks: grammar conformance
-# vectors + sidecar digest, entry validity, completeness, and IDEMPOTENCE — the
-# catalog is regenerated into a temp dir and diffed against what is committed, so a
-# hand-edited contract or an unregenerated source change reds here rather than
-# shipping a claim that reads as verified. See contracts/component-catalog/README.md.
-step "component-catalog gate"  pnpm check:component-catalog
+# Component-contract catalog (atlas decision 0060). Offline and fast, so it runs
+# before the network-dependent drift gate. Five checks: grammar conformance vectors
+# + sidecar digest, entry validity, completeness, the CONFORMANCE RATCHET (a widget
+# with a null behavioral test or a null a11y label must be grandfathered in
+# conformance-baseline.json, so a new widget with neither and a regression that
+# drops either both red), and IDEMPOTENCE — the catalog is regenerated into a temp
+# dir and diffed against what is committed, so a hand-edited contract or an
+# unregenerated source change reds here rather than shipping a claim that reads as
+# verified. See contracts/component-catalog/README.md.
+#
+# It ALSO runs in the CI governance-gates step (Phoenix eval GAP 2). This line stays
+# because pre-push is DS's declared CI-parity tier and a drift someone else landed
+# should block locally too (B9) — but CI is now where it BINDS, since
+# DS_SKIP_PREPUSH=1 skips everything below.
+#
+# CATALOG_BASELINE_FROZEN=1 arms the sixth check, the BASELINE FREEZE (atlas decision
+# 0102 move 1b): the committed conformance-baseline.json is compared against its copy
+# at the merge base with origin/main, and an id that was ADDED reds unless a
+# `Baseline-Raise: <axis>:<widget-id> <reason>` trailer on a commit in this branch
+# justifies it. CI sets the flag implicitly through CI=1; setting it here is what makes
+# an absorbed gap red BEFORE the push rather than after. It needs origin/main to exist
+# locally — run `git fetch origin main` if it says it cannot resolve a base.
+step "component-catalog gate"  env CATALOG_BASELINE_FROZEN=1 pnpm check:component-catalog
+
+# openspec-covers (atlas decision 0102 ranked move 5). Reconciles every
+# `### Requirement:` in openspec/specs/** against the `// covers:` tethers in this
+# repo's test corpus, both directions, blocking. Offline apart from the install
+# that already happened, and ~0.3s, so it sits beside the catalog gate.
+#
+# It ALSO runs in the CI governance-gates step, which is where it BINDS — this line
+# is the CI-parity tier (B9): a tether someone else broke should block locally too.
+#
+# openspec/covers-baseline.json is EMPTY: every requirement is tethered. It held three
+# gates whose behavior nothing pinned, and each id was pruned in the change that gave
+# that gate a known-answer suite (the last two in #257). Re-record with
+# `pnpm covers:update-baseline`; never hand-edit an id. A baseline id naming no live
+# requirement FAILS, and a graduated requirement's stale id is reported prunable and
+# must be pruned in the same change.
+step "openspec-covers gate"    pnpm check:covers
 
 # C147 — published-package payload drift: a published package's payload changed
 # but nobody bumped that package's version, so `changeset publish` silently skips
@@ -68,7 +100,7 @@ step "component-catalog gate"  pnpm check:component-catalog
 # Invoked directly rather than through `pnpm check:package-drift -- --lane=...`:
 # pnpm 11 forwards the bare `--` to the script as a literal argument, which the
 # parser rejects. Caught by this very hook on its first run.
-step "package payload drift"   node scripts/check-package-drift.mjs --lane=pre-push
+step "package payload drift"   node audits/checks/c147-package-drift.mjs --lane=pre-push
 
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises

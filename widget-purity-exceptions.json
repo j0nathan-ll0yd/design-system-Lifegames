@@ -1,5 +1,5 @@
 {
-  "$comment": "F-015 widget-purity allow-list. Each entry exempts one specific Color(hex:) site (file + line) from the no-raw-Color rule. Reason MUST explain why the raw color is required (typically: runtime-data-driven where the hex is supplied by the API, not authored). The allow-list is read by scripts/check-swift-widget-purity.mjs.",
+  "$comment": "F-015 widget-purity allow-list. Each entry exempts one specific Color(hex:) site (file + line) from the no-raw-Color rule. Reason MUST explain why the raw color is required (typically: runtime-data-driven where the hex is supplied by the API, not authored). The allow-list is read by audits/checks/d3-swift-widget-purity.mjs.",
   "colorHex": [
     {
       "file": "Sources/LifegamesWidgets/GitHub/LanguageStackView.swift",

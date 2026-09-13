@@ -1,7 +1,7 @@
 /**
  * Unit tests for the component-contract catalog grammar, its conformance runner and its generator.
  *
- * Runs under `pnpm test:scripts` (node --test), beside scripts/check-package-drift.test.mjs.
+ * Runs under `pnpm test:scripts` (node --test), beside ratchet.test.mjs.
  *
  * These tests deliberately do NOT restate any prop shape, state name or accessibility label. A
  * second hand-written copy of a generated value is exactly the drift this catalog exists to catch,
@@ -78,6 +78,7 @@ function nestedSchema(levels) {
 // Conformance vectors
 // ─────────────────────────────────────────────────────────────────────────────
 
+// covers: widget-contract#The component-contract catalog is generated from source, never hand-authored
 test('conformance: the vectors match the sha256 sidecar', () => {
   assert.deepEqual(assertVectorIntegrity(vectorBytes, readFileSync(SIDECAR_PATH, 'utf8')), [])
 })

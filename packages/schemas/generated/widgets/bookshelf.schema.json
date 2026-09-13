@@ -61,35 +61,23 @@
                   }
                 ]
               },
-              "coverAvif": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
+              "mainImage": {
+                "type": ["string", "null"]
               },
-              "coverCardAvif": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
+              "mainImageThumb": {
+                "type": ["string", "null"]
               },
-              "coverThumbAvif": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
+              "mainImageCard": {
+                "type": ["string", "null"]
+              },
+              "mainImageAvif": {
+                "type": ["string", "null"]
+              },
+              "mainImageThumbAvif": {
+                "type": ["string", "null"]
+              },
+              "mainImageCardAvif": {
+                "type": ["string", "null"]
               },
               "finishedAt": {
                 "type": ["string", "null"]

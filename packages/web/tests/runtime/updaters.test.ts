@@ -25,6 +25,8 @@ import type {
   WorkoutEntry
 } from '../../src/runtime/adapters'
 import type {LocationExport} from '../../src/runtime/location-types'
+import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
+import {PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
 import {widgets} from '@j0nathan-ll0yd/copy'
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -874,12 +876,12 @@ describe('updateBookshelf', () => {
           rating: null,
           progress: 42,
           link: 'https://amazon.com/dp/B001TEST',
-          cover: null,
-          coverThumb: null,
-          coverCard: null,
-          coverAvif: null,
-          coverThumbAvif: null,
-          coverCardAvif: null,
+          mainImage: null,
+          mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           notes: null,
           finishedAt: null,
           startedAt: null
@@ -905,9 +907,180 @@ describe('updateBookshelf', () => {
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('Test Book')
   })
 
+  // ── First-party image contract (atlas decision 0086) ────────────────────
+  describe('cover images are first-party only', () => {
+    function makeBookWithCovers(): AdaptedBooks {
+      const base = makeBooks()
+      return {
+        ...base,
+        books: [{
+          ...base.books[0]!,
+          mainImage: `${CLOUDFRONT_BASE}/images/books/B001TEST.webp`,
+          mainImageThumb: `${CLOUDFRONT_BASE}/images/books/B001TEST-thumb.webp`,
+          mainImageCard: `${CLOUDFRONT_BASE}/images/books/B001TEST-card.webp`,
+          mainImageAvif: `${CLOUDFRONT_BASE}/images/books/B001TEST.avif`,
+          mainImageThumbAvif: `${CLOUDFRONT_BASE}/images/books/B001TEST-thumb.avif`,
+          mainImageCardAvif: `${CLOUDFRONT_BASE}/images/books/B001TEST-card.avif`
+        }]
+      }
+    }
+
+    it('resolves the cover src from the mainImageCard contract field', () => {
+      updateBookshelf(makeBookWithCovers())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(`${CLOUDFRONT_BASE}/images/books/B001TEST-card.webp`)
+    })
+
+    it('renders the AVIF source from the mainImage*Avif contract fields', () => {
+      updateBookshelf(makeBookWithCovers())
+      const source = document.querySelector('#dashShelfRow source') as HTMLSourceElement
+      expect(source.getAttribute('type')).toBe('image/avif')
+      expect(source.getAttribute('srcset')).toContain('B001TEST-card.avif')
+    })
+
+    it('falls back to the first-party placeholder when the export has no cover', () => {
+      updateBookshelf(makeBooks())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('points the onerror fallback at the placeholder, not the source URL', () => {
+      updateBookshelf(makeBookWithCovers())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
+
+      img.dispatchEvent(new Event('error'))
+      expect(new URL(img.src).pathname).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('emits no third-party image host in the rendered shelf', () => {
+      updateBookshelf(makeBookWithCovers())
+      const html = document.getElementById('dashShelfRow')!.innerHTML
+      expect(html).not.toContain('m.media-amazon.com')
+      expect(html).not.toContain('squarespace')
+      // Every image URL is same-origin or the first-party CloudFront distribution.
+      const srcs = Array.from(document.querySelectorAll('#dashShelfRow img')).map((el) => el.getAttribute('src') ?? '')
+      expect(srcs.length).toBeGreaterThan(0)
+      srcs.forEach((src) => {
+        expect(src.startsWith('/images/') || src.startsWith(`${CLOUDFRONT_BASE}/images/`)).toBe(true)
+      })
+    })
+
+    it('keeps a runtime-only cover on CloudFront across repeated refreshes', () => {
+      // The first updater render is not evidence that a local file existed at
+      // build time. A second refresh must not turn this live-only URL into a
+      // nonexistent /images/books/ path.
+      updateBookshelf(makeBookWithCovers())
+      updateBookshelf(makeBookWithCovers())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(`${CLOUDFRONT_BASE}/images/books/B001TEST-card.webp`)
+      expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
+    })
+
+    it('localizes only the exact candidates captured from SSR', () => {
+      const covers = makeBookWithCovers()
+      const cardUrl = covers.books[0]!.mainImageCard!
+      document.body.innerHTML = `
+        <div id="cardBooks"><div id="dashShelfRow">
+          <div class="shelf-book" data-local-cover='["${cardUrl}"]'>
+            <div class="shelf-cover-wrapper"><img src="${cardUrl}"></div>
+            <div class="shelf-book-title"><span></span></div>
+            <div class="shelf-book-author"></div>
+            <div class="shelf-book-status"></div>
+          </div>
+        </div></div>
+      `
+
+      updateBookshelf(covers)
+      expect(document.querySelector('#dashShelfRow img')!.getAttribute('src')).toBe('/images/books/B001TEST-card.webp')
+
+      const versioned = structuredClone(covers)
+      versioned.books[0]!.mainImageCard = `${CLOUDFRONT_BASE}/images/books/B001TEST-v2-card.webp`
+      updateBookshelf(versioned)
+      expect(document.querySelector('#dashShelfRow img')!.getAttribute('src')).toBe(`${CLOUDFRONT_BASE}/images/books/B001TEST-v2-card.webp`)
+    })
+
+    it('replaces AVIF pictures atomically on slot reuse', () => {
+      updateBookshelf(makeBookWithCovers())
+      const next = makeBookWithCovers()
+      next.books[0]!.mainImageCardAvif = `${CLOUDFRONT_BASE}/images/books/NEXT-card.avif`
+      next.books[0]!.mainImageThumbAvif = `${CLOUDFRONT_BASE}/images/books/NEXT-thumb.avif`
+
+      updateBookshelf(next)
+      const wrapper = document.querySelector('.shelf-cover-wrapper')!
+      expect(wrapper.querySelector('source')!.getAttribute('srcset')).toContain('NEXT-card.avif')
+      expect(wrapper.innerHTML).not.toContain('B001TEST-card.avif')
+    })
+
+    it('replaces an AVIF picture with a bare image', () => {
+      updateBookshelf(makeBookWithCovers())
+      const bare = makeBookWithCovers()
+      bare.books[0]!.mainImageAvif = null
+      bare.books[0]!.mainImageThumbAvif = null
+      bare.books[0]!.mainImageCardAvif = null
+
+      updateBookshelf(bare)
+      const wrapper = document.querySelector('.shelf-cover-wrapper')!
+      expect(wrapper.querySelector('picture')).toBeNull()
+      expect(wrapper.querySelectorAll('source')).toHaveLength(0)
+    })
+
+    it('replaces a bare image with an AVIF picture', () => {
+      const bare = makeBookWithCovers()
+      bare.books[0]!.mainImageAvif = null
+      bare.books[0]!.mainImageThumbAvif = null
+      bare.books[0]!.mainImageCardAvif = null
+      updateBookshelf(bare)
+
+      updateBookshelf(makeBookWithCovers())
+      const wrapper = document.querySelector('.shelf-cover-wrapper')!
+      expect(wrapper.querySelector('picture')).not.toBeNull()
+      expect(wrapper.querySelectorAll('source')).toHaveLength(1)
+    })
+
+    it('uses the placeholder on the in-place path when the cover disappears', () => {
+      updateBookshelf(makeBookWithCovers())
+      updateBookshelf(makeBooks())
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(PLACEHOLDER_IMAGE_SRC)
+      expect(img.hasAttribute('srcset')).toBe(false)
+      expect(img.dataset.fallback).toBeUndefined()
+      expect(document.querySelectorAll('#dashShelfRow source')).toHaveLength(0)
+      expect(document.querySelector('#dashShelfRow picture')).toBeNull()
+    })
+
+    it('replaces rejected raster URLs and omits rejected AVIF sources', () => {
+      const unsafe = makeBookWithCovers()
+      unsafe.books[0]!.mainImage = 'https://evil.test/cover.webp'
+      unsafe.books[0]!.mainImageThumb = 'https://evil.test/cover-thumb.webp'
+      unsafe.books[0]!.mainImageCard = 'https://evil.test/cover-card.webp'
+      unsafe.books[0]!.mainImageAvif = 'https://evil.test/cover.avif'
+      unsafe.books[0]!.mainImageThumbAvif = 'https://evil.test/cover-thumb.avif'
+      unsafe.books[0]!.mainImageCardAvif = 'https://evil.test/cover-card.avif'
+
+      updateBookshelf(unsafe)
+      const img = document.querySelector('#dashShelfRow img') as HTMLImageElement
+      expect(img.getAttribute('src')).toBe(PLACEHOLDER_IMAGE_SRC)
+      expect(document.querySelectorAll('#dashShelfRow source')).toHaveLength(0)
+    })
+  })
+
   it('renders book author', () => {
     updateBookshelf(makeBooks())
     expect(document.getElementById('dashShelfRow')!.innerHTML).toContain('Test Author')
+  })
+
+  it('renders list items as the direct children of the bookshelf list', () => {
+    document.body.innerHTML = `
+      <div id="cardBooks" class="is-loading">
+        <div class="widget-body">
+          <ul class="shelf-row" id="dashShelfRow" role="list"></ul>
+        </div>
+      </div>
+    `
+    updateBookshelf(makeBooks())
+    const row = document.getElementById('dashShelfRow')!
+    expect(Array.from(row.children).map((child) => child.tagName)).toEqual(['LI'])
   })
 
   it('renders the reading status badge (natural-case source, CSS uppercases to READING)', () => {
@@ -950,12 +1123,12 @@ describe('updateBookshelf', () => {
           rating: 4,
           progress: undefined,
           link: 'https://amazon.com/dp/B002TEST',
-          cover: null,
-          coverThumb: null,
-          coverCard: null,
-          coverAvif: null,
-          coverThumbAvif: null,
-          coverCardAvif: null,
+          mainImage: null,
+          mainImageThumb: null,
+          mainImageCard: null,
+          mainImageAvif: null,
+          mainImageThumbAvif: null,
+          mainImageCardAvif: null,
           notes: null,
           finishedAt: null,
           startedAt: null
@@ -969,12 +1142,12 @@ describe('updateBookshelf', () => {
   it('updates in-place when existing book count matches', () => {
     // Pre-populate with same count of .shelf-book elements
     document.getElementById('dashShelfRow')!.innerHTML = `
-      <div class="shelf-book" data-book='{}'>
+      <li class="shelf-book" data-book='{}'>
         <img src="" alt="">
         <div class="shelf-book-title"><span>Old Title</span></div>
         <div class="shelf-book-author">Old Author</div>
         <div class="shelf-book-status shelf-status-upNext">Up Next</div>
-      </div>
+      </li>
     `
     updateBookshelf(makeBooks())
     expect(document.querySelector('.shelf-book-title span')!.textContent).toBe('Test Book')

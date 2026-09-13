@@ -4,4 +4,5 @@
 export interface FocusExport {
   generatedAt: string;
   currentFocus: string;
+  hidingSince?: string;
 }

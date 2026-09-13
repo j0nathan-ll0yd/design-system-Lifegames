@@ -646,25 +646,25 @@ declare const tokens: {
     readonly body: {
       readonly fontFamily: "Space Grotesk";
       readonly fontWeight: 400;
-      readonly fontSize: "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)";
+      readonly fontSize: "clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)";
       readonly lineHeight: 1.5;
     };
     readonly label: {
       readonly fontFamily: "Space Grotesk";
       readonly fontWeight: 500;
-      readonly fontSize: "clamp(0.72rem, 0.65rem + 0.20vw, 0.82rem)";
+      readonly fontSize: "clamp(0.75rem, 0.68rem + 0.20vw, 0.82rem)";
       readonly lineHeight: 1.4;
     };
     readonly caption: {
       readonly fontFamily: "Space Grotesk";
       readonly fontWeight: 400;
-      readonly fontSize: "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)";
+      readonly fontSize: "clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)";
       readonly lineHeight: 1.3;
     };
     readonly code: {
       readonly fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace";
       readonly fontWeight: 400;
-      readonly fontSize: "clamp(0.70rem, 0.64rem + 0.14vw, 0.78rem)";
+      readonly fontSize: "clamp(0.75rem, 0.70rem + 0.14vw, 0.80rem)";
       readonly lineHeight: 1.6;
     };
   };

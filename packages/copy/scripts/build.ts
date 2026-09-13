@@ -1,41 +1,9 @@
 #!/usr/bin/env tsx
 /**
- * build.ts — @j0nathan-ll0yd/copy build + codegen pipeline.
- *
- * Single producer of every copy artifact. Manifest-driven: the NAMESPACES
- * array parametrizes the per-namespace pipeline. Each manifest entry maps one
- * copy namespace to its rich authoring file, flat schema, and generated outputs.
- * New namespaces are added as additional manifest entries.
- *
- * Per-namespace pipeline:
- *   1. Validate the RICH authoring file (src/<name>.en-US.json) against the
- *      rich schema (schema/<name>.schema.json) with Ajv + ajv-formats. This is
- *      the ONLY place the rich {value,_meta} shape is validated.
- *   2. Derive a FLAT JSON Schema from the rich one: walk the schema tree and
- *      replace ONLY the leaf $refs (CopyString → {type:string}, CopyStringList →
- *      {type:array,items:{type:string}}), preserving every object wrapper,
- *      `required` array, and `additionalProperties:false`. This flat schema is
- *      the SINGLE input to all codegen (TS/Zod/Swift) — consumers read flat
- *      values, never the rich {value,_meta} shape.
- *   3. Emit the flat instance (dist/<name>.flat.json, _meta stripped) + barrel.
- *   4. TS    — json-schema-to-typescript over the flat schema → dist/<name>.ts
- *   5. Zod   — json-schema-to-zod over the flat schema → dist/<name>.zod.ts
- *   6. Swift — quicktype over the flat schema → ../../Sources/LifegamesCopy/<TopLevelType>.generated.swift
- *   7. Resource — flat instance → ../../Sources/LifegamesCopy/Resources/<name>.en-US.json
- *
- * Round-trip guard: the derived flat schema MUST validate the flat instance
- * (ajv.validate(flatSchema, flatJson)) so a derivation bug cannot silently drop
- * a `required` field. Idempotent: re-running yields byte-identical output.
- *
- * Cross-namespace Swift type-name collision guard: quicktype derives nested
- * struct names from JSON keys, so two namespaces sharing a top-level type name
- * would emit colliding Swift structs across files. After generating every
- * namespace the build asserts the set of top-level Swift type names is unique.
- *
- * Leaf boundary: @j0nathan-ll0yd/copy is a zero-runtime-dependency leaf — the src/
- * tree must not import any @j0nathan-ll0yd/* or UI package (enforced by the
- * leaf-boundary ESLint rule, GOVERNANCE P3.1). The authoring schema lives in
- * schema/ and is read here in scripts/; consumers read the flat dist/ outputs only.
+ * Sole producer for manifest-driven copy artifacts. It validates rich authoring, derives the flat
+ * consumer schema and instance, emits TypeScript, Zod, Swift, and resources, then round-trips
+ * outputs. Swift identifier collisions fail because distinct copy keys would otherwise alias.
+ * The published package remains zero-runtime-dependency.
  */
 
 import {mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
@@ -70,9 +38,9 @@ type JsonSchema = Record<string, any>
  * `identity` is parametrized here so additional namespaces are pure data entries.
  */
 interface Namespace {
-  /** Namespace key, used for src/dist/resource basenames (e.g. 'identity'). */
+  /** Namespace key, used for src/dist/resource basenames (for example, 'identity'). */
   name: string
-  /** Top-level TS/Swift type name + flat-schema title (e.g. 'Identity'). */
+  /** Top-level TS/Swift type name + flat-schema title (for example, 'Identity'). */
   topLevelType: string
   /** Flat-schema $id. */
   flatSchemaId: string
@@ -112,23 +80,56 @@ function ensureDir(p: string): void {
 }
 
 // ── Derive the FLAT schema (tree-walk; replace only leaf $refs) ───────────────
-const STRING_REF = '#/$defs/CopyString'
-const LIST_REF = '#/$defs/CopyStringList'
+//
+// The flat form of a leaf IS its rich `value` subschema, minus that subschema's own top-level
+// `description` — which documents the AUTHORING contract, not the consumer-facing field. So the
+// rich `$defs` stay the single source for every leaf's grammar, including the affix-rejecting
+// `pattern`s on CopyHeading and CopyLink, and this walk never restates a shape. (CopyString then
+// derives `{type: 'string'}` and CopyStringList `{type: 'array', items: {type: 'string'}}`, which
+// is what the two hardcoded forms this replaced produced.)
+const LEAF_REF_RE = /^#\/\$defs\/(Copy[A-Za-z0-9]+)$/
 
-function deriveFlat(node: JsonSchema): JsonSchema {
+/** Per-namespace state for one flat-schema derivation. */
+interface FlatContext {
+  /** Rich `$defs` — the source for every leaf's flat form. */
+  richDefs: JsonSchema
+  /** Top-level type name, prefixed onto hoisted def names ('Llm' + 'Link' → 'LlmLink'). */
+  prefix: string
+  /** Object-valued leaf forms, hoisted out of the tree and keyed by flat def name. */
+  hoisted: Record<string, JsonSchema>
+}
+
+/** The flat form of one rich leaf `$def`: its `value` subschema without the authoring description. */
+function flatLeafForm(ctx: FlatContext, defName: string): JsonSchema {
+  const def = ctx.richDefs[defName]
+  if (!def?.properties?.value || !def.properties._meta) {
+    throw new Error(`deriveFlat: "#/$defs/${defName}" is not a copy leaf ({value, _meta}) — only leaf $defs may be referenced`)
+  }
+  const {description: _authoringDescription, ...flat} = structuredClone(def.properties.value) as JsonSchema
+  return flat
+}
+
+function deriveFlat(node: JsonSchema, ctx: FlatContext): JsonSchema {
   if (node && typeof node === 'object' && typeof node.$ref === 'string') {
-    if (node.$ref === STRING_REF) {
-      return {type: 'string'}
+    const match = LEAF_REF_RE.exec(node.$ref)
+    if (!match) {
+      throw new Error(`deriveFlat: unexpected $ref "${node.$ref}" — only Copy* leaf $defs are allowed`)
     }
-    if (node.$ref === LIST_REF) {
-      return {type: 'array', items: {type: 'string'}}
+    const flat = flatLeafForm(ctx, match[1]!)
+    if (flat.type !== 'object') {
+      return flat
     }
-    throw new Error(`deriveFlat: unexpected $ref "${node.$ref}" — only CopyString/CopyStringList leaves are allowed`)
+    // An OBJECT-valued leaf is hoisted into the flat schema's own `$defs` and referenced, never
+    // inlined: quicktype and json-schema-to-typescript each name one type per `$def`, where N
+    // inline copies of the same shape emit LlmLink1…LlmLinkN and LinkSiteClass/LinkGithubClass/….
+    const hoistedName = `${ctx.prefix}${match[1]!.replace(/^Copy/, '')}`
+    ctx.hoisted[hoistedName] = {title: hoistedName, ...flat}
+    return {$ref: `#/$defs/${hoistedName}`}
   }
   if (node && node.type === 'object' && node.properties) {
     const properties: JsonSchema = {}
     for (const [key, sub] of Object.entries(node.properties)) {
-      properties[key] = deriveFlat(sub as JsonSchema)
+      properties[key] = deriveFlat(sub as JsonSchema, ctx)
     }
     const out: JsonSchema = {type: 'object'}
     if (node.title) {
@@ -147,6 +148,34 @@ function deriveFlat(node: JsonSchema): JsonSchema {
     return out
   }
   throw new Error(`deriveFlat: unexpected node shape ${JSON.stringify(node).slice(0, 160)}`)
+}
+
+/**
+ * Returns `node` with every `#/$defs/*` reference replaced by its target and the `$defs` block
+ * dropped. Used for the Zod input only — see the call site for why the shipped schema keeps refs.
+ * Terminates because hoisted leaf forms are flat by construction and never reference each other.
+ */
+function inlineFlatDefs(node: any, defs: Record<string, JsonSchema>): any {
+  if (Array.isArray(node)) {
+    return node.map((n) => inlineFlatDefs(n, defs))
+  }
+  if (!node || typeof node !== 'object') {
+    return node
+  }
+  if (typeof node.$ref === 'string') {
+    const target = defs[node.$ref.replace('#/$defs/', '')]
+    if (!target) {
+      throw new Error(`inlineFlatDefs: unresolvable $ref "${node.$ref}" in the derived flat schema`)
+    }
+    return inlineFlatDefs(target, defs)
+  }
+  const out: any = {}
+  for (const [key, value] of Object.entries(node)) {
+    if (key !== '$defs') {
+      out[key] = inlineFlatDefs(value, defs)
+    }
+  }
+  return out
 }
 
 // ── Derive the FLAT instance (strip _meta, keep values) ───────────────────────
@@ -188,7 +217,7 @@ const swiftTopLevelNames: {name: string; namespace: string}[] = []
  * the same name redeclare it (compile error). The top-level guard alone misses
  * nested collisions, so we also assert that the full set of struct names is
  * unique across namespaces. Disambiguate by giving each colliding group object a
- * unique `title` in its rich schema (e.g. a11y prefixes its groups with `A11y`).
+ * unique `title` in its rich schema (for example, a11y prefixes its groups with `A11y`).
  */
 const swiftStructNames: {name: string; namespace: string}[] = []
 const SWIFT_STRUCT_RE = /^public struct ([A-Za-z0-9_]+)/gm
@@ -233,11 +262,13 @@ for (const ns of NAMESPACES) {
 
   // ── 2. Derive the FLAT schema ───────────────────────────────────────────────
   console.log(`copy:build — deriving flat schema (${ns.name})...`)
+  const flatCtx: FlatContext = {richDefs: richSchema.$defs ?? {}, prefix: ns.topLevelType, hoisted: {}}
   const flatSchema: JsonSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     $id: ns.flatSchemaId,
-    ...deriveFlat(richSchema),
-    title: ns.topLevelType
+    ...deriveFlat(richSchema, flatCtx),
+    title: ns.topLevelType,
+    ...(Object.keys(flatCtx.hoisted).length > 0 ? {$defs: flatCtx.hoisted} : {})
   }
 
   // ── 3. Derive the FLAT instance + round-trip guard ──────────────────────────
@@ -276,8 +307,12 @@ for (const ns of NAMESPACES) {
   writeFileSync(tsPath, ts)
 
   // ── 6. Zod (validates the FLAT JSON the web collection reads) ────────────────
+  // json-schema-to-zod has no $ref resolver and emits `z.any()` for one, which would drop every
+  // hoisted leaf's validation from the published Zod schema. TS and Swift codegen both WANT the
+  // $ref (one named type, not one structural copy per key), so the ref survives in the shipped
+  // flat schema and only the Zod input is dereferenced.
   console.log(`copy:build — Zod (json-schema-to-zod, ${ns.name})...`)
-  const zodRaw = jsonSchemaToZod(flatSchema, {name: `${ns.name}Schema`, module: 'esm'})
+  const zodRaw = jsonSchemaToZod(inlineFlatDefs(flatSchema, flatCtx.hoisted), {name: `${ns.name}Schema`, module: 'esm'})
   const zodPath = join(DIST, `${ns.name}.zod.ts`)
   const zod = await formatWithPrettier(genHeader(ns.name) + zodRaw, zodPath, 'typescript')
   writeFileSync(zodPath, zod)

@@ -1,4 +1,5 @@
 import type {BookshelfProps} from '../widgets/reading/Bookshelf.types'
+import {installImageFallbacks} from './image-utils'
 
 export function initBookshelf(container: HTMLElement, _fixture: BookshelfProps): void {
   // Idempotency guard: prevent duplicate click listeners and onerror attachments.
@@ -7,18 +8,7 @@ export function initBookshelf(container: HTMLElement, _fixture: BookshelfProps):
   }
   container.dataset.bookshelfInit = '1'
 
-  // Image fallback: if local image fails, swap to data-fallback URL
-  const imgs = container.querySelectorAll<HTMLImageElement>('img[data-fallback]')
-  imgs.forEach((img) => {
-    img.onerror = function() {
-      const fallback = img.dataset.fallback
-      if (fallback) {
-        img.srcset = ''
-        img.src = fallback
-        img.onerror = null
-      }
-    }
-  })
+  installImageFallbacks(container)
 
   // Wire click/keyboard handlers on book items to dispatch detail event
   const books = container.querySelectorAll<HTMLElement>('.shelf-book')

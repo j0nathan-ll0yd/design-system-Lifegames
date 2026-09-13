@@ -5,9 +5,20 @@
 // from adaptBooks() (which feeds the runtime updater). The SSR shell reads this
 // authored display shape. Authored against `@j0nathan-ll0yd/schemas` `DashboardBooks`
 // (authored/dashboard-books.schema.json). All values absolute — deterministic.
+//
+// COVER RULE: a non-null cover URL here must name an ASIN in COVERED_ASINS —
+// an object the real books pipeline actually produced. The SSR shell renders
+// these covers verbatim into `<img src>`, with no route interception in front of
+// them, so a URL without a backing object is a guaranteed 403 on every page load
+// (atlas 0086 issue #2). Books outside COVERED_ASINS carry null covers and the
+// consumer paints the same-origin placeholder instead. `pnpm -F
+// @j0nathan-ll0yd/fixtures test` enforces this.
 import type {DashboardBooks} from '@j0nathan-ll0yd/schemas'
 import {authored} from './branded'
 
+// The four ASINs below are fixture-only stand-ins that the pipeline never
+// processed: every /images/books/<asin>.{webp,avif} key 403s. Their covers are
+// null so the SSR shell requests nothing for them.
 export const baseline = authored<DashboardBooks>({
   books: [
     {
@@ -15,6 +26,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'David Thomas',
       isbn: '9780135957059',
       asin: '0135957052',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example1',
       status: 'reading',
       rating: null,
@@ -25,6 +42,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'Robert C. Martin',
       isbn: '9780132350884',
       asin: '0132350882',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example2',
       status: 'finished',
       rating: 4,
@@ -36,6 +59,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'Martin Kleppmann',
       isbn: '9781449373320',
       asin: '1449373321',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example3',
       status: 'finished',
       rating: 5,
@@ -47,6 +76,12 @@ export const baseline = authored<DashboardBooks>({
       author: 'John Ousterhout',
       isbn: '9781732102200',
       asin: '173210220X',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/example4',
       status: 'upNext',
       rating: null,
@@ -107,6 +142,13 @@ export const empty = authored<DashboardBooks>({
 // Maximally populated: many books across all statuses, all bookMeta populated with
 // non-null series info, all stats at high realistic values, all nullable fields
 // (rating, seriesName, seriesNumber, seriesTotal, finishedAt) set to non-null values.
+//
+// Covers are the ONE exception to "every nullable field non-null": the last book
+// (1449373321) is outside COVERED_ASINS, so its covers are null under the COVER
+// RULE above. The other five carry real CloudFront objects, so this variation
+// still exercises a rendered cover AND the placeholder in one shelf. The raw
+// full-variation oracle (scripts/check-full-coverage.ts) walks generated/**, not
+// this post-adapter tree, so it is unaffected.
 export const full = authored<DashboardBooks>({
   books: [
     {
@@ -114,6 +156,12 @@ export const full = authored<DashboardBooks>({
       author: 'Robert Jackson Bennett',
       isbn: '9781984820716',
       asin: '1984820710',
+      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/1984820710.webp',
+      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/1984820710-thumb.webp',
+      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/1984820710-card.webp',
+      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1984820710.avif',
+      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1984820710-thumb.avif',
+      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/1984820710-card.avif',
       link: 'https://amzn.to/tainted-cup',
       status: 'finished',
       rating: 5,
@@ -125,6 +173,12 @@ export const full = authored<DashboardBooks>({
       author: 'Robert Jackson Bennett',
       isbn: '9780593723845',
       asin: '0593723848',
+      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/0593723848.webp',
+      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/0593723848-thumb.webp',
+      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/0593723848-card.webp',
+      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0593723848.avif',
+      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0593723848-thumb.avif',
+      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0593723848-card.avif',
       link: 'https://amzn.to/drop-of-corruption',
       status: 'finished',
       rating: 5,
@@ -136,6 +190,12 @@ export const full = authored<DashboardBooks>({
       author: 'Robert Jackson Bennett',
       isbn: '9780525573845',
       asin: '0525573844',
+      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/0525573844.webp',
+      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/0525573844-thumb.webp',
+      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/0525573844-card.webp',
+      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0525573844.avif',
+      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0525573844-thumb.avif',
+      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/0525573844-card.avif',
       link: 'https://amzn.to/foundryside',
       status: 'finished',
       rating: 5,
@@ -147,6 +207,12 @@ export const full = authored<DashboardBooks>({
       author: 'Robert Jackson Bennett',
       isbn: '9780593723814',
       asin: 'B07QVH2Q2K',
+      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K.webp',
+      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K-thumb.webp',
+      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K-card.webp',
+      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K.avif',
+      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K-thumb.avif',
+      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/B07QVH2Q2K-card.avif',
       link: 'https://amzn.to/shorefall',
       status: 'reading',
       rating: 4,
@@ -157,6 +223,12 @@ export const full = authored<DashboardBooks>({
       author: 'Will Larson',
       isbn: '9780593723857',
       asin: 'B0FBRJY116',
+      mainImage: 'https://d1pfm520aduift.cloudfront.net/images/books/B0FBRJY116.webp',
+      mainImageThumb: 'https://d1pfm520aduift.cloudfront.net/images/books/B0FBRJY116-thumb.webp',
+      mainImageCard: 'https://d1pfm520aduift.cloudfront.net/images/books/B0FBRJY116-card.webp',
+      mainImageAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/B0FBRJY116.avif',
+      mainImageThumbAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/B0FBRJY116-thumb.avif',
+      mainImageCardAvif: 'https://d1pfm520aduift.cloudfront.net/images/books/B0FBRJY116-card.avif',
       link: 'https://amzn.to/crafting-eng-strategy',
       status: 'upNext',
       rating: 4,
@@ -167,6 +239,12 @@ export const full = authored<DashboardBooks>({
       author: 'Martin Kleppmann',
       isbn: '9781449373320',
       asin: '1449373321',
+      mainImage: null,
+      mainImageThumb: null,
+      mainImageCard: null,
+      mainImageAvif: null,
+      mainImageThumbAvif: null,
+      mainImageCardAvif: null,
       link: 'https://amzn.to/ddia',
       status: 'finished',
       rating: 5,

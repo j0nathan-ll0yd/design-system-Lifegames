@@ -11,7 +11,17 @@
 // `devActivity[].date` is a pre-formatted relative string ("2h ago"), so it is
 // already deterministic — no clock injection needed for this domain.
 import type {DashboardGithub} from '@j0nathan-ll0yd/schemas'
+import {
+  githubCommitUrl,
+  githubPullUrl,
+  PUBLIC_GITHUB_COMMITS,
+  PUBLIC_GITHUB_PULLS,
+  type PublicGithubCommitReference,
+  type PublicGithubPullReference
+} from '../github-references'
 import {authored} from './branded'
+
+type DashboardGithubEvent = NonNullable<DashboardGithub['devActivity']>[number]
 
 // Deterministic 52x7 contribution grid. Generated from a fixed integer sequence
 // (NOT Math.random) so re-runs are byte-identical. Each cell is a small count.
@@ -47,6 +57,20 @@ function buildFullGrid(): [number, number, number, number, number, number, numbe
   return weeks
 }
 
+function commitActivity(ref: PublicGithubCommitReference, date: string, additions: number, deletions: number): DashboardGithubEvent {
+  return {type: 'commit', repo: ref.displayRepository, title: ref.title, date, hash: ref.hash, additions, deletions, url: githubCommitUrl(ref)}
+}
+
+function pullActivity(
+  type: 'pr_merged' | 'pr_opened',
+  ref: PublicGithubPullReference,
+  date: string,
+  additions: number,
+  deletions: number
+): DashboardGithubEvent {
+  return {type, repo: ref.displayRepository, title: ref.title, date, number: ref.number, additions, deletions, url: githubPullUrl(ref)}
+}
+
 export const baseline = authored<DashboardGithub>({
   contributions: buildGrid(),
   totalContributions: 1847,
@@ -54,56 +78,11 @@ export const baseline = authored<DashboardGithub>({
   streak: {current: 12, longest: 47},
   languages: {TypeScript: 432500, JavaScript: 298620, Python: 145300, Swift: 87432, Go: 54200, CSS: 38100, HTML: 22400, Shell: 8900},
   devActivity: [
-    {
-      type: 'commit',
-      repo: 'mantle',
-      title: 'Unify handler pattern',
-      date: '2h ago',
-      hash: 'a9421b5',
-      additions: 28,
-      deletions: 16,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/a9421b5'
-    },
-    {
-      type: 'pr_opened',
-      repo: 'media-downloader',
-      title: 'chore(deps): update yt-dlp',
-      date: '1d ago',
-      number: 388,
-      additions: 1,
-      deletions: 1,
-      url: 'https://github.com/j0nathan-ll0yd/aws-cloudformation-media-downloader/pull/388'
-    },
-    {
-      type: 'commit',
-      repo: 'mantle',
-      title: 'Add validation engine',
-      date: '2d ago',
-      hash: 'b3c4d5e',
-      additions: 45,
-      deletions: 12,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/b3c4d5e'
-    },
-    {
-      type: 'commit',
-      repo: 'portfolio',
-      title: 'Add skeleton loading states',
-      date: '3d ago',
-      hash: '9deedf9',
-      additions: 156,
-      deletions: 24,
-      url: 'https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/9deedf9'
-    },
-    {
-      type: 'commit',
-      repo: 'mantle',
-      title: 'Extract shared utilities',
-      date: '5d ago',
-      hash: 'f6g7h8i',
-      additions: 89,
-      deletions: 34,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/f6g7h8i'
-    }
+    commitActivity(PUBLIC_GITHUB_COMMITS[5], '2h ago', 28, 16),
+    pullActivity('pr_opened', PUBLIC_GITHUB_PULLS[6], '1d ago', 1, 1),
+    commitActivity(PUBLIC_GITHUB_COMMITS[1], '2d ago', 45, 12),
+    commitActivity(PUBLIC_GITHUB_COMMITS[0], '3d ago', 156, 24),
+    commitActivity(PUBLIC_GITHUB_COMMITS[6], '5d ago', 89, 34)
   ],
   commitHours: [2, 0, 0, 0, 0, 1, 3, 5, 12, 18, 22, 15, 8, 14, 20, 19, 16, 10, 6, 4, 5, 8, 6, 3],
   weeklyCommits: [15, 22, 18, 31, 12, 25, 19, 28, 14, 23, 17, 20],
@@ -155,106 +134,16 @@ export const full = authored<DashboardGithub>({
     Ruby: 12400
   },
   devActivity: [
-    {
-      type: 'commit',
-      repo: 'mantle',
-      title: 'Unify handler pattern across all Lambda functions for consistent error handling',
-      date: '1h ago',
-      hash: 'a9421b5',
-      additions: 245,
-      deletions: 89,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/a9421b5'
-    },
-    {
-      type: 'pr_merged',
-      repo: 'design-system',
-      title: 'feat(fixtures): normalize variations with empty/baseline/full triad',
-      date: '3h ago',
-      number: 60,
-      additions: 1850,
-      deletions: 120,
-      url: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames/pull/60'
-    },
-    {
-      type: 'commit',
-      repo: 'portfolio',
-      title: 'Implement skeleton loading states for all dashboard widgets with CSS animations',
-      date: '1d ago',
-      hash: 'b3c4d5e',
-      additions: 512,
-      deletions: 134,
-      url: 'https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/b3c4d5e'
-    },
-    {
-      type: 'pr_opened',
-      repo: 'mantle',
-      title: 'refactor(db): migrate DSQL schema to use branded column types for type safety',
-      date: '2d ago',
-      number: 312,
-      additions: 892,
-      deletions: 445,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/pull/312'
-    },
-    {
-      type: 'commit',
-      repo: 'media-downloader',
-      title: 'Add CloudFront cache invalidation after successful S3 export for all domains',
-      date: '3d ago',
-      hash: 'c5d6e7f',
-      additions: 267,
-      deletions: 89,
-      url: 'https://github.com/j0nathan-ll0yd/aws-cloudformation-media-downloader/commit/c5d6e7f'
-    },
-    {
-      type: 'pr_merged',
-      repo: 'portfolio',
-      title: 'feat(widgets): add theatre reviews widget with grade-based color coding',
-      date: '4d ago',
-      number: 42,
-      additions: 634,
-      deletions: 28,
-      url: 'https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/pull/42'
-    },
-    {
-      type: 'commit',
-      repo: 'design-system',
-      title: 'Add DTCG token definitions for neon accent colors and fluid typography scales',
-      date: '5d ago',
-      hash: 'd7e8f9g',
-      additions: 420,
-      deletions: 67,
-      url: 'https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/d7e8f9g'
-    },
-    {
-      type: 'commit',
-      repo: 'mantle',
-      title: 'Extract shared validation utilities into dedicated validation engine module',
-      date: '6d ago',
-      hash: 'e8f9g0h',
-      additions: 378,
-      deletions: 156,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/e8f9g0h'
-    },
-    {
-      type: 'pr_opened',
-      repo: 'ios-app',
-      title: 'feat(gallery): add SwiftUI design gallery with neon console exploration',
-      date: '1w ago',
-      number: 15,
-      additions: 1240,
-      deletions: 340,
-      url: 'https://github.com/j0nathan-ll0yd/ios-LifegamesPortal/pull/15'
-    },
-    {
-      type: 'commit',
-      repo: 'mantle',
-      title: 'Optimize Lambda cold start by lazy-loading non-critical modules at invocation time',
-      date: '1w ago',
-      hash: 'f9g0h1i',
-      additions: 98,
-      deletions: 31,
-      url: 'https://github.com/j0nathan-ll0yd/mantle/commit/f9g0h1i'
-    }
+    commitActivity(PUBLIC_GITHUB_COMMITS[2], '1h ago', 245, 89),
+    pullActivity('pr_merged', PUBLIC_GITHUB_PULLS[3], '3h ago', 1850, 120),
+    commitActivity(PUBLIC_GITHUB_COMMITS[3], '1d ago', 512, 134),
+    pullActivity('pr_opened', PUBLIC_GITHUB_PULLS[7], '2d ago', 892, 445),
+    commitActivity(PUBLIC_GITHUB_COMMITS[10], '3d ago', 267, 89),
+    pullActivity('pr_merged', PUBLIC_GITHUB_PULLS[0], '4d ago', 634, 28),
+    commitActivity(PUBLIC_GITHUB_COMMITS[7], '5d ago', 420, 67),
+    commitActivity(PUBLIC_GITHUB_COMMITS[8], '6d ago', 378, 156),
+    pullActivity('pr_opened', PUBLIC_GITHUB_PULLS[8], '1w ago', 1240, 340),
+    commitActivity(PUBLIC_GITHUB_COMMITS[11], '1w ago', 98, 31)
   ],
   commitHours: [
     4,

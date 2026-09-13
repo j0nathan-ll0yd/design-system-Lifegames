@@ -79,58 +79,58 @@
   "devActivity": [
     {
       "type": "commit",
-      "repo": "mantle",
-      "title": "Unify handler pattern across all Lambda functions for consistent error handling",
+      "repo": "portfolio",
+      "title": "Enforce RSS feed specification provenance",
       "date": "1h ago",
-      "hash": "a9421b5",
+      "hash": "1e1178d",
       "additions": 245,
       "deletions": 89,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/commit/a9421b5"
+      "url": "https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/1e1178d"
     },
     {
       "type": "pr_merged",
       "repo": "design-system",
-      "title": "feat(fixtures): normalize variations with empty/baseline/full triad",
+      "title": "Stop advertising the retired llms-small.txt",
       "date": "3h ago",
-      "number": 60,
+      "number": 206,
       "additions": 1850,
       "deletions": 120,
-      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/pull/60"
+      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/pull/206"
     },
     {
       "type": "commit",
       "repo": "portfolio",
-      "title": "Implement skeleton loading states for all dashboard widgets with CSS animations",
+      "title": "Wire the openspec-covers gate as a blocking per-PR job",
       "date": "1d ago",
-      "hash": "b3c4d5e",
+      "hash": "1e932ef",
       "additions": 512,
       "deletions": 134,
-      "url": "https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/b3c4d5e"
+      "url": "https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io/commit/1e932ef"
     },
     {
       "type": "pr_opened",
-      "repo": "mantle",
-      "title": "refactor(db): migrate DSQL schema to use branded column types for type safety",
+      "repo": "media-downloader",
+      "title": "Block new uncovered OpenSpec requirements",
       "date": "2d ago",
-      "number": 312,
+      "number": 615,
       "additions": 892,
       "deletions": 445,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/pull/312"
+      "url": "https://github.com/j0nathan-ll0yd/mantle-OfflineMediaDownloader/pull/615"
     },
     {
       "type": "commit",
       "repo": "media-downloader",
-      "title": "Add CloudFront cache invalidation after successful S3 export for all domains",
+      "title": "Block new uncovered OpenSpec requirements",
       "date": "3d ago",
-      "hash": "c5d6e7f",
+      "hash": "ffdf547",
       "additions": 267,
       "deletions": 89,
-      "url": "https://github.com/j0nathan-ll0yd/aws-cloudformation-media-downloader/commit/c5d6e7f"
+      "url": "https://github.com/j0nathan-ll0yd/mantle-OfflineMediaDownloader/commit/ffdf547"
     },
     {
       "type": "pr_merged",
       "repo": "portfolio",
-      "title": "feat(widgets): add theatre reviews widget with grade-based color coding",
+      "title": "Fix reading-feed items hidden by an animation race",
       "date": "4d ago",
       "number": 42,
       "additions": 634,
@@ -140,42 +140,42 @@
     {
       "type": "commit",
       "repo": "design-system",
-      "title": "Add DTCG token definitions for neon accent colors and fluid typography scales",
+      "title": "Add component catalog prop depth",
       "date": "5d ago",
-      "hash": "d7e8f9g",
+      "hash": "8037546",
       "additions": 420,
       "deletions": 67,
-      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/d7e8f9g"
+      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/8037546"
     },
     {
       "type": "commit",
-      "repo": "mantle",
-      "title": "Extract shared validation utilities into dedicated validation engine module",
+      "repo": "design-system",
+      "title": "Pilot the component-contract catalog",
       "date": "6d ago",
-      "hash": "e8f9g0h",
+      "hash": "7b805ba",
       "additions": 378,
       "deletions": 156,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/commit/e8f9g0h"
+      "url": "https://github.com/j0nathan-ll0yd/design-system-Lifegames/commit/7b805ba"
     },
     {
       "type": "pr_opened",
-      "repo": "ios-app",
-      "title": "feat(gallery): add SwiftUI design gallery with neon console exploration",
+      "repo": "media-downloader",
+      "title": "Refresh first-party lockfile pins",
       "date": "1w ago",
-      "number": 15,
+      "number": 614,
       "additions": 1240,
       "deletions": 340,
-      "url": "https://github.com/j0nathan-ll0yd/ios-LifegamesPortal/pull/15"
+      "url": "https://github.com/j0nathan-ll0yd/mantle-OfflineMediaDownloader/pull/614"
     },
     {
       "type": "commit",
-      "repo": "mantle",
-      "title": "Optimize Lambda cold start by lazy-loading non-critical modules at invocation time",
+      "repo": "media-downloader",
+      "title": "Activate Docker-free prebuilt-image deploys",
       "date": "1w ago",
-      "hash": "f9g0h1i",
+      "hash": "19a42a6",
       "additions": 98,
       "deletions": 31,
-      "url": "https://github.com/j0nathan-ll0yd/mantle/commit/f9g0h1i"
+      "url": "https://github.com/j0nathan-ll0yd/mantle-OfflineMediaDownloader/commit/19a42a6"
     }
   ],
   "commitHours": [

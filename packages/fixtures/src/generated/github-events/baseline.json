@@ -3,50 +3,50 @@
   "events": [
     {
       "type": "commit",
-      "repo": "j0nathan-ll0yd/mantle",
-      "title": "Add Aurora DSQL migration support",
+      "repo": "j0nathan-ll0yd/design-system-Lifegames",
+      "title": "Add component catalog fleet generation",
       "date": "2026-03-18",
-      "hash": "a1b2c3d",
+      "hash": "67fd9f2",
       "additions": 45,
       "deletions": 8
     },
     {
       "type": "commit",
       "repo": "j0nathan-ll0yd/j0nathan-ll0yd.github.io",
-      "title": "Update location widget styles",
+      "title": "Pre-flight egress probe to distinguish runner-egress-down from site-down",
       "date": "2026-03-18",
-      "hash": "e4f5g6h",
+      "hash": "336f56e",
       "additions": 22,
       "deletions": 11
     },
     {
       "type": "commit",
-      "repo": "j0nathan-ll0yd/mantle",
-      "title": "Fix permissions regeneration after table changes",
+      "repo": "j0nathan-ll0yd/design-system-Lifegames",
+      "title": "Align fixture catalog with initializer states",
       "date": "2026-03-18",
-      "hash": "i7j8k9l",
+      "hash": "ab08ec7",
       "additions": 7,
       "deletions": 2
     },
     {
       "type": "pr_merged",
       "repo": "j0nathan-ll0yd/j0nathan-ll0yd.github.io",
-      "title": "Add theatre reviews widget",
+      "title": "Fix reading-feed items hidden by an animation race",
       "date": "2026-03-18",
-      "hash": "a1b2c3d",
+      "hash": "67fd9f2",
       "additions": 12,
       "deletions": 3,
       "number": 42
     },
     {
       "type": "pr_opened",
-      "repo": "j0nathan-ll0yd/mantle",
-      "title": "Implement unified type sync pipeline",
+      "repo": "j0nathan-ll0yd/design-system-Lifegames",
+      "title": "Stop advertising the retired llms-small.txt",
       "date": "2026-03-18",
-      "hash": "a1b2c3d",
+      "hash": "67fd9f2",
       "additions": 12,
       "deletions": 3,
-      "number": 17
+      "number": 206
     }
   ]
 }

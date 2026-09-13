@@ -2,6 +2,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { widgets, a11y } from '@j0nathan-ll0yd/copy';
+import {
+  localizeImageUrl,
+  PLACEHOLDER_IMAGE_SRC,
+  sanitizeImageUrl,
+} from '../../runtime/image-utils';
 
 const { books } = Astro.props;
 const bookList = books.books;
@@ -19,12 +24,21 @@ const sortedBooks = bookList.slice().sort((a: any, b: any) => {
 });
 const displayBooks = sortedBooks.slice(0, 5);
 
-const booksDir = path.join(process.cwd(), 'public', 'images', 'books');
-function hasLocalImage(asin: string): boolean {
+const publicDir = path.join(process.cwd(), 'public');
+const sanitizerOptions = { baseUrl: Astro.url, onReject: 'omit' as const };
+
+function localImageUrl(candidate: string | null): string | null {
+  if (!candidate) return null;
+  const localized = localizeImageUrl(candidate, sanitizerOptions);
+  if (!localized) return null;
   try {
-    return fs.existsSync(path.join(booksDir, `${asin}-card.webp`));
+    const pathname = decodeURIComponent(new URL(localized, Astro.url).pathname);
+    if (!pathname.startsWith('/images/')) return null;
+    const file = path.resolve(publicDir, `.${pathname}`);
+    if (!file.startsWith(`${publicDir}${path.sep}`) || !fs.existsSync(file)) return null;
+    return localized;
   } catch {
-    return false;
+    return null;
   }
 }
 ---
@@ -61,13 +75,48 @@ function hasLocalImage(asin: string): boolean {
       {
         displayBooks.map((b: any, i: number) => {
           const asin = b.asin || b.isbn;
-          const hasLocal = hasLocalImage(asin);
-          const localCard = `/images/books/${asin}-card.webp`;
-          const localThumb = `/images/books/${asin}-thumb.webp`;
-          const amazonFallback = `https://m.media-amazon.com/images/P/${asin}.01._SCLZZZZZZZ_SX200_.jpg`;
-          const imgSrc = hasLocal ? localCard : amazonFallback;
-          const imgSrcset = hasLocal ? `${localCard} 1x, ${localThumb} 2x` : undefined;
-          const fallbackAttr = hasLocal ? amazonFallback : undefined;
+          // Prefer the committed same-origin copy; otherwise the export's own
+          // first-party CloudFront URL; otherwise the placeholder. No branch
+          // here may reach a third-party host (atlas decision 0086).
+          const contractCard = sanitizeImageUrl(b.mainImageCard || b.mainImage, sanitizerOptions);
+          const contractThumb = sanitizeImageUrl(b.mainImageThumb || b.mainImage, sanitizerOptions);
+          const contractAvifCard = sanitizeImageUrl(
+            b.mainImageCardAvif || b.mainImageAvif,
+            sanitizerOptions,
+          );
+          const contractAvifThumb = sanitizeImageUrl(
+            b.mainImageThumbAvif || b.mainImageAvif,
+            sanitizerOptions,
+          );
+          const localCard = localImageUrl(contractCard);
+          const localThumb = localImageUrl(contractThumb);
+          const localAvifCard = localImageUrl(contractAvifCard);
+          const localAvifThumb = localImageUrl(contractAvifThumb);
+          const displayCard = localCard || contractCard;
+          const displayThumb = localThumb || contractThumb;
+          const imgSrc = displayCard || displayThumb || PLACEHOLDER_IMAGE_SRC;
+          const imgSrcset =
+            displayCard && displayThumb ? `${displayCard} 1x, ${displayThumb} 2x` : undefined;
+          const displayAvifCard = localAvifCard || contractAvifCard;
+          const displayAvifThumb = localAvifThumb || contractAvifThumb;
+          const avifSrcset =
+            [
+              displayAvifCard ? `${displayAvifCard} 1x` : null,
+              displayAvifThumb ? `${displayAvifThumb} 2x` : null,
+            ]
+              .filter(Boolean)
+              .join(', ') || null;
+          // Capture exact candidates with committed files. URL identity, not an
+          // ASIN or inferred filename, determines whether a later live refresh
+          // may localize the candidate.
+          const localCoverCandidates = [
+            localCard ? contractCard : null,
+            localThumb ? contractThumb : null,
+            localAvifCard ? contractAvifCard : null,
+            localAvifThumb ? contractAvifThumb : null,
+          ].filter(Boolean);
+          const fallbackAttr =
+            imgSrc !== PLACEHOLDER_IMAGE_SRC || avifSrcset ? PLACEHOLDER_IMAGE_SRC : undefined;
           const meta = bookMeta[asin] || {};
           const bookData = JSON.stringify({
             title: b.title,
@@ -89,25 +138,25 @@ function hasLocalImage(asin: string): boolean {
             publicationDate: meta.publicationDate || null,
             desc: meta.desc || null,
             genres: meta.genres || [],
-            cover: meta.cover || null,
+            // Contract field names — BookModal reads `mainImage*` from here.
+            mainImage: sanitizeImageUrl(b.mainImage, { baseUrl: Astro.url }),
+            mainImageAvif: sanitizeImageUrl(b.mainImageAvif, sanitizerOptions),
           });
           return (
             <li
               class={`shelf-book${b.status === 'reading' ? ' shelf-book-active' : ''}`}
               style={`animation-delay: ${i * 0.08}s`}
               data-book={bookData}
+              data-local-cover={JSON.stringify(localCoverCandidates)}
               tabindex="0"
               aria-label={a11y.bookshelf.bookItem
                 .replace('{title}', b.title)
                 .replace('{author}', b.author)}
             >
               <div class="shelf-cover-wrapper">
-                {b.coverAvif ? (
+                {avifSrcset ? (
                   <picture>
-                    <source
-                      srcset={`${b.coverCardAvif} 1x, ${b.coverThumbAvif} 2x`}
-                      type="image/avif"
-                    />
+                    <source srcset={avifSrcset} type="image/avif" />
                     <img
                       src={imgSrc}
                       srcset={imgSrcset}
@@ -117,11 +166,6 @@ function hasLocalImage(asin: string): boolean {
                       loading="lazy"
                       decoding="async"
                       data-fallback={fallbackAttr}
-                      onerror={
-                        fallbackAttr
-                          ? "this.srcset='';this.src=this.dataset.fallback;this.onerror=null"
-                          : undefined
-                      }
                     />
                   </picture>
                 ) : (
@@ -134,11 +178,6 @@ function hasLocalImage(asin: string): boolean {
                     loading="lazy"
                     decoding="async"
                     data-fallback={fallbackAttr}
-                    onerror={
-                      fallbackAttr
-                        ? "this.srcset='';this.src=this.dataset.fallback;this.onerror=null"
-                        : undefined
-                    }
                   />
                 )}
               </div>
@@ -191,3 +230,20 @@ function hasLocalImage(asin: string): boolean {
     </ul>
   </div>
 </div>
+
+<script>
+  // The covers above are SERVER-RENDERED and already loading before any script
+  // runs, so the `data-fallback` attribute they carry needs a handler bound at
+  // load time. Until this existed the only thing that installed one was the
+  // live-data swap (updateBookshelf / initBookshelf), which leaves the offline
+  // shell — and any slow or failed books.json — showing blank covers with no
+  // placeholder.
+  //
+  // Fallback wiring only: no click or keyboard binding, so this does not
+  // double-bind the consumer's own page-level handlers. Bundled (not
+  // `is:inline`), so it stays inside `script-src 'self'`, and idempotent, so the
+  // island and production wrappers may each run their own init as well.
+  import { initImageFallbacks } from '../../runtime/image-utils';
+
+  initImageFallbacks();
+</script>
