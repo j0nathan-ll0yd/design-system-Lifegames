@@ -41,18 +41,21 @@ When an intentional visual change is made (token update, component redesign), up
 TARGET_URL=http://localhost:6006 pnpm --filter storybook storybook:visual:update
 ```
 
-Then commit the updated `.png` files in `apps/storybook/__snapshots__/`. Include a brief note in the commit message explaining the visual change.
+The update command moves the old set aside, mints into an empty snapshot directory, and restores the old set if the run fails. This prevents an under-threshold difference from preserving a stale baseline and removes baselines for stories that no longer exist. Then commit the updated `.png` files in `apps/storybook/__snapshots__/`. Include a brief note in the commit message explaining the visual change.
 
 > USER REVIEW CHECKPOINT: When baselines are committed for the first time or updated, the user must visually inspect the screenshots before merging.
 
 ## Configuration
 
-**`apps/storybook/test-runner-jest.config.js`** — the Jest config for `@storybook/test-runner`:
+**`apps/storybook/.storybook/test-runner.mjs`** — the browser hook and image-snapshot policy for `@storybook/test-runner`:
 
 - `postVisit` hook: captures a full-page screenshot with animations disabled after each story renders
-- Failure threshold: 0.2% pixel diff (absorbs sub-pixel anti-aliasing variance across environments)
+- Pixel failure threshold: 2% (absorbs known font-rendering, gradient, and sub-pixel anti-aliasing variance across environments)
+- Structural sentinel: rejects a blank live render and any baseline-to-current non-background footprint swing of 50% or more, even when the raw pixel diff is under 2%
 - Snapshot dir: `apps/storybook/__snapshots__/<storyId>.png`
 - Diff dir: `apps/storybook/__snapshots__/__diff__/<storyId>-diff.png` (gitignored, uploaded as CI artifact on failure)
+
+`apps/storybook/test-runner-jest.config.mjs` configures the Jest/Playwright process (Chromium, headless); it does not own screenshot hooks or thresholds.
 
 ## Snapshot coverage
 
@@ -81,7 +84,7 @@ On failure, diff images are uploaded as a PR artifact (`visual-regression-diffs-
 
 ## Baseline commit protocol
 
-1. Run `storybook:visual:update` locally against a clean build.
+1. Run `storybook:visual:update` locally against a clean build. The command automatically mints the complete set from an empty baseline directory.
 2. Review each changed `.png` in `apps/storybook/__snapshots__/` visually.
 3. Commit with a message like `visual(snapshots): update baselines after token X change`.
 4. The CI check mode will pass against the new baselines on the next run.

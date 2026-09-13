@@ -9,7 +9,7 @@
     "storybook:build": "storybook build",
     "storybook:test": "vitest --project=storybook",
     "storybook:visual": "test-storybook --config-dir .storybook",
-    "storybook:visual:update": "test-storybook --config-dir .storybook -u"
+    "storybook:visual:update": "node .storybook/update-visual-snapshots.mjs"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "10.4.2",

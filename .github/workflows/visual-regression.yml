@@ -82,7 +82,8 @@ jobs:
       - name: Run visual regression (update mode)
         if: ${{ inputs.update_snapshots == true }}
         run: pnpm --filter storybook storybook:visual:update
-        # storybook:visual:update uses -u flag (jest-image-snapshot baseline refresh)
+        # The update wrapper moves the old set aside, mints with -u from an empty
+        # snapshot directory, and restores the old set if the run fails.
         env:
           TARGET_URL: http://localhost:6006
 
