@@ -44,7 +44,8 @@
     "format:check": "dprint check && prettier --check \"**/*.{astro,md,mdx,css}\""
   },
   "devDependencies": {
-    "@changesets/cli": "^2.31.0",
+    "@changesets/cli": "^3.0.2",
+    "@changesets/get-release-plan": "^5.0.1",
     "@j0nathan-ll0yd/config": "workspace:*",
     "@j0nathan-ll0yd/estate-contracts": "0.13.2",
     "@playwright/test": "^1.60.0",
