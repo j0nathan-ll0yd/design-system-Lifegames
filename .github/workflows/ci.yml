@@ -533,6 +533,11 @@ jobs:
           # Watch exclusions (F-014)
           node audits/checks/d3-watch-exclusions.mjs --check
           node --test audits/__tests__/d3-watch-exclusions.test.mjs
+          # Release workflow contract — Changesets v2 input names + the pinned action
+          # sha (a wrong name ships silently: release.yml never runs on the PR lane;
+          # see mantle-LifegamesPortal #263/#343). Same reachability argument as the
+          # suites above: scripts/*.test.mjs is otherwise pre-push-only.
+          node --test scripts/release-workflow.test.mjs
           # P4/P7 promotion gate
           node audits/checks/d3-promotion.mjs --check
           node --test audits/__tests__/d3-promotion.test.mjs
