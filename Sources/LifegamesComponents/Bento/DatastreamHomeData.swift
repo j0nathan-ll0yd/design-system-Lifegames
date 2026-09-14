@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 // MARK: - DatastreamHomeData
 
@@ -49,7 +50,17 @@ public struct DatastreamHomeData: Sendable {
     // MARK: - Reading
 
     /// Remote URL for the current book's cover image. Nil when unknown.
+    ///
+    /// For callers whose cover images are anonymously fetchable. A caller whose covers are
+    /// private cannot use this — see ``bookCoverImage``.
     public var bookCoverURL: URL?
+    /// An already-fetched, already-decoded cover image for the current book. Nil when unknown.
+    ///
+    /// Takes precedence over ``bookCoverURL``. It exists because the Life Portal app's covers
+    /// travel over a bearer-authenticated channel that this presentational layer holds no
+    /// credential for, so the app fetches and decodes them and hands the result down
+    /// (atlas decision 0135).
+    public var bookCoverImage: Image?
     /// Reading progress for the current book (0–1).
     public var bookProgress: Double
 
@@ -88,7 +99,12 @@ public struct DatastreamHomeData: Sendable {
         latitude: Double, longitude: Double,
         placeName: String, placeSubtitle: String, locationStatus: String,
         dateLabel: String = "Today",
-        lastUpdated: Date? = nil
+        lastUpdated: Date? = nil,
+        // Defaulted and last so every existing caller compiles untouched. The internal name
+        // deliberately differs from the property: with both spelled `bookCoverImage`,
+        // swiftformat's redundantSelf rule strips the required `self.` and turns the
+        // assignment into a self-assignment (then unusedArguments renames the parameter `_`).
+        bookCoverImage coverImage: Image? = nil
     ) {
         self.dateLabel = dateLabel
         self.lastUpdated = lastUpdated
@@ -105,6 +121,7 @@ public struct DatastreamHomeData: Sendable {
         self.cups = cups
         self.lastBeverage = lastBeverage
         self.bookCoverURL = bookCoverURL
+        bookCoverImage = coverImage
         self.bookProgress = bookProgress
         self.latitude = latitude
         self.longitude = longitude
@@ -126,8 +143,13 @@ public extension DatastreamHomeData {
         standProgress: 0.917, standValue: "11/12",
         restingHR: 58,
         caffeineMg: 165, caffeineTarget: 400, cups: 2, lastBeverage: "Espresso",
-        // First-party gallery/preview fixture URL — not an API endpoint (exception: S27)
-        bookCoverURL: URL(string: "https://d1pfm520aduift.cloudfront.net/images/books/1984820710.webp"),
+        // No cover URL. The key this sample pinned (`images/books/1984820710.webp`) was retired
+        // on 2026-08-27 when LP #250 moved covers to `<asin>-<version>.webp`, so it has resolved
+        // to nothing since; and the prefix is suppressed for unauthenticated callers during a
+        // hiding focus mode (atlas decision 0135), so no replacement URL would be reliable
+        // either. The gallery renders the spine placeholder, which is what the app renders for a
+        // book whose cover has not materialized. Preview a filled tile with a bundled asset.
+        bookCoverURL: nil,
         bookProgress: 0.68,
         latitude: 37.7955, longitude: -122.3937,
         placeName: "Blue Bottle Coffee",
