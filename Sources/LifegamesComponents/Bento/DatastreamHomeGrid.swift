@@ -200,15 +200,29 @@ public struct DatastreamHomeGrid: View {
 
             selectable(.books) {
                 BentoTileView(title: "Books", accent: LGColor.accentAmber, size: .small) {
-                    BookCoverTile(
-                        coverURL: data.bookCoverURL,
-                        progress: data.bookProgress
-                    )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 160)
+                    // A decoded image the caller fetched itself wins over a URL this layer
+                    // would have to fetch anonymously (atlas decision 0135).
+                    booksTile
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 160)
                 }
                 .frame(width: 130)
             }
+        }
+    }
+
+    /// The Books tile's cover source.
+    ///
+    /// A decoded image the caller fetched itself wins over a URL this layer would have to
+    /// fetch anonymously. The Life Portal app's covers are private and reach it over a
+    /// bearer-authenticated channel (atlas decision 0135), so it supplies the image; callers
+    /// with public covers keep supplying a URL.
+    @ViewBuilder
+    private var booksTile: some View {
+        if let coverImage = data.bookCoverImage {
+            BookCoverTile(coverImage: coverImage, progress: data.bookProgress)
+        } else {
+            BookCoverTile(coverURL: data.bookCoverURL, progress: data.bookProgress)
         }
     }
 

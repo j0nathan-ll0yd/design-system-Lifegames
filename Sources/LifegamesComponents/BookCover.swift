@@ -86,13 +86,19 @@ public struct BookCover: View {
         BookCover(title: "Project Hail Mary", width: 80, height: 120)
         // Placeholder with different accent
         BookCover(title: "The Martian", width: 80, height: 120, accent: LGColor.accentBlue)
-        // Image mode (remote URL — will show placeholder until loaded)
+        // Placeholder with a highlight ring (the currently-reading treatment).
+        //
+        // This slot used to preview the image branch against a remote cover key. That key
+        // format was retired on 2026-08-27 (LP #250), and the prefix it lived under is
+        // suppressed for unauthenticated callers during a hiding focus mode (atlas decision
+        // 0135) — so the URL rendered this placeholder anyway, just slower and unpredictably.
+        // Preview the image branch with a bundled asset when one exists; never with a URL.
         BookCover(
             title: "Dune",
-            imageURL: URL(string: "https://d1pfm520aduift.cloudfront.net/images/books/1984820710.webp"),
             width: 80,
             height: 120,
-            accent: LGColor.accentGreen
+            accent: LGColor.accentGreen,
+            borderColor: LGColor.accentAmber
         )
     }
     .padding()

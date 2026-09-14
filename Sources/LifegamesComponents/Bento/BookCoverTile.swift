@@ -5,17 +5,59 @@ import SwiftUI
 
 /// Book cover tile for the bento grid.
 ///
-/// Renders the book cover via `AsyncImage` with `.aspectRatio(contentMode: .fill)`.
+/// Renders the book cover with `.aspectRatio(contentMode: .fill)` from one of two sources,
+/// and falls back to an amber gradient "spine" placeholder when neither yields an image.
 /// A thin amber progress strip is pinned to the bottom edge (width proportional to `progress`),
-/// with a percentage label. Falls back to an amber gradient "spine" placeholder when the
-/// cover URL is nil or the image fails to load.
+/// with a percentage label.
+///
+/// ## Two sources, and why
+///
+/// ``init(coverImage:progress:)`` takes an ALREADY-LOADED image. It exists because a caller
+/// whose images are private cannot hand this tile a URL: the bytes arrive over a
+/// bearer-authenticated channel the tile has no credential for, so the caller must fetch and
+/// decode them itself (atlas decision 0135). `AsyncImage` cannot express that.
+///
+/// ``init(coverURL:progress:)`` stays for callers whose images are public and anonymously
+/// fetchable. It is unchanged, so every existing caller compiles untouched.
 public struct BookCoverTile: View {
     public let coverURL: URL?
+    public let coverImage: Image?
     public let progress: Double
 
     public init(coverURL: URL?, progress: Double) {
         self.coverURL = coverURL
+        coverImage = nil
         self.progress = progress
+    }
+
+    /// Renders an image the caller has already fetched and decoded.
+    public init(coverImage: Image?, progress: Double) {
+        coverURL = nil
+        self.coverImage = coverImage
+        self.progress = progress
+    }
+
+    /// Which branch ``coverImage(width:height:)`` will render.
+    ///
+    /// Exposed so the branch decision can be asserted directly. A snapshot cannot serve as
+    /// that evidence here: the baseline would be minted by the same change it verifies.
+    enum CoverSource: Equatable {
+        case image
+        case remote(URL)
+        case placeholder
+    }
+
+    /// A supplied image wins over a URL. Both initializers nil the other field, so the two
+    /// can never both be set today; the precedence is stated anyway so a future memberwise
+    /// initializer cannot make the branch ambiguous.
+    var coverSource: CoverSource {
+        if coverImage != nil {
+            return .image
+        }
+        if let coverURL {
+            return .remote(coverURL)
+        }
+        return .placeholder
     }
 
     /// Clamped progress in [0, 1].
@@ -40,7 +82,16 @@ public struct BookCoverTile: View {
 
     @ViewBuilder
     private func coverImage(width: CGFloat, height: CGFloat) -> some View {
-        if let url = coverURL {
+        switch coverSource {
+        case .image:
+            if let coverImage {
+                coverImage
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: width, height: height)
+                    .clipped()
+            }
+        case let .remote(url):
             AsyncImage(url: url) { phase in
                 switch phase {
                 case let .success(image):
@@ -57,7 +108,7 @@ public struct BookCoverTile: View {
                     spinePlaceholder(width: width, height: height)
                 }
             }
-        } else {
+        case .placeholder:
             spinePlaceholder(width: width, height: height)
         }
     }
@@ -114,19 +165,14 @@ public struct BookCoverTile: View {
 // MARK: - Previews
 
 #if os(iOS)
-    #Preview("Book Cover Tile — With Cover") {
-        BookCoverTile(
-            coverURL: URL(string: "https://d1pfm520aduift.cloudfront.net/images/books/1984820710.webp"),
-            progress: 0.68
-        )
-        .frame(width: 120, height: 160)
-        .padding()
-        .background(LGColor.surfaceBase)
-        .preferredColorScheme(.dark)
-    }
-
+    // No remote-cover preview. The cover keys this tile used to preview against were retired
+    // on 2026-08-27 (LP #250 moved `<asin>.webp` to `<asin>-<version>.webp`), and the prefix
+    // they lived under is suppressed for unauthenticated callers whenever a hiding focus mode
+    // is active (atlas decision 0135). Any URL written here renders broken and rots on the next
+    // content change. A bundled sample asset is the right way to preview a filled tile; it is
+    // deliberately not in this change.
     #Preview("Book Cover Tile — Placeholder") {
-        BookCoverTile(coverURL: nil, progress: 0.35)
+        BookCoverTile(coverImage: nil, progress: 0.35)
             .frame(width: 120, height: 160)
             .padding()
             .background(LGColor.surfaceBase)
