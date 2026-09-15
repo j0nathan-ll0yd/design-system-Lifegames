@@ -47,7 +47,7 @@
     "@changesets/cli": "^3.0.2",
     "@changesets/get-release-plan": "^5.0.1",
     "@j0nathan-ll0yd/config": "workspace:*",
-    "@j0nathan-ll0yd/estate-contracts": "0.13.2",
+    "@j0nathan-ll0yd/estate-contracts": "0.13.3",
     "@playwright/test": "^1.60.0",
     "dprint": "0.55.2",
     "eslint-config-prettier": "^10.1.5",
