@@ -480,7 +480,7 @@ export function compareSemver(a, b) {
     // Two unparseable versions are EQUAL, deterministically, and an unparseable version sorts BEFORE
     // any parseable one: the ladder never manufactures an ordering between strings it cannot parse,
     // and an unknown version can never read as "ahead of the registry" (a would-be PENDING_PUBLISH
-    // becomes VERSION_REGRESSION). Held to atlas/contracts/verdict-ladder by the semver-*-not-semver
+    // becomes VERSION_REGRESSION). Held to the installed verdict-ladder by the semver-*-not-semver
     // conformance vectors; the previous `localeCompare` disagreed on both counts.
     return !pa && !pb ? 0 : (!pa ? -1 : 1)
   }
