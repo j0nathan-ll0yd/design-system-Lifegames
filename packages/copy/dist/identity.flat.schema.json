@@ -24,6 +24,9 @@
         "jobTitle": {
           "type": "string"
         },
+        "rolePhrase": {
+          "type": "string"
+        },
         "employer": {
           "type": "string"
         },
@@ -85,6 +88,7 @@
         "lastName",
         "handle",
         "jobTitle",
+        "rolePhrase",
         "employer",
         "employerUrl",
         "alumniOf",

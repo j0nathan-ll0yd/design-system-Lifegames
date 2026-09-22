@@ -77,3 +77,33 @@ replacement sentence: no llm leaf may name a multi-day span (`N-day`, `weekly`, 
 `multi-day`) or assert a habit (`typical`, `usually`, `habitual`, `on most days`). The nouns "window",
 "average", and "aggregate" stay legal on their own, because honest copy has to be able to DENY a
 window and a denial contains the noun it denies.
+
+---
+
+identity: add `person.rolePhrase`; llm: bind it from `full.systemFraming`.
+
+`full.systemFraming` hardcoded "an engineering director and backend engineer" — identity facts
+restated inside llm copy, which drifts the moment identity changes.
+
+New leaf `identity.person.rolePhrase` = `engineering director and backend engineer`. Lowercase on
+purpose: its only consumer drops it mid-sentence, where title case reads "an Engineering Director".
+`full.systemFraming` now binds `{profileRolePhrase}`; nothing else in that sentence changed.
+
+`identity.person.jobTitle` is unchanged and remains the canonical short title for the Person JSON-LD
+and the profile line. `{profileTitle}` was rejected as the binding on two counts: it is title case,
+and it names only one of the two roles, so binding it would silently drop "and backend engineer" from
+the published framing. `person.longBio` opens with the same two roles but as a capitalised full
+sentence, so it cannot be spliced mid-sentence either — hence a dedicated field.
+
+**Consumer action required before adopting this version.** `mantle-LifegamesPortal` must bind
+`profileRolePhrase` from `identity.person.rolePhrase` in `src/lib/llm-content/profile.ts`, `view.ts`,
+and `render.ts`. Until it does, MF1 renders the literal `{profileRolePhrase}` into the published
+`llms-full.txt` and `/index.md`.
+
+`identity` goes from 60 leaves to 61 (person 20 → 21). `llm` stays at 179 — `systemFraming` is a value
+edit, not a leaf addition.
+
+Adds `packages/copy/tests/llm-identity-binding.test.ts`: the role phrase must be lowercase, every
+`full.systemFraming` placeholder must resolve to an `identity.person` leaf under the `profile<Field>`
+convention, substituting the value must render `— an <phrase>.`, and no llm leaf may restate any
+substantial `identity.person` value verbatim.

@@ -13,6 +13,7 @@ export const identitySchema = z
         lastName: z.string(),
         handle: z.string(),
         jobTitle: z.string(),
+        rolePhrase: z.string(),
         employer: z.string(),
         employerUrl: z.string(),
         alumniOf: z.string(),

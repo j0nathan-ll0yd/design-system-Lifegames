@@ -99,7 +99,7 @@
     }
   },
   "full": {
-    "systemFraming": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an engineering director and backend engineer. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",
+    "systemFraming": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an {profileRolePhrase}. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",
     "titleHeading": "# {profileName} — Human Datastream (Complete)",
     "intro": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are single-day\n> values, summarised and never averaged over a window. Everything else is full granularity.",
     "metaLastUpdated": "**Last updated:** {lastUpdated}",
