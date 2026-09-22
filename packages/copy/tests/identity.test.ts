@@ -68,8 +68,9 @@ interface NamespaceFixture {
 }
 
 const NAMESPACES: NamespaceFixture[] = [
-  // identity: person 20 (name/firstName/lastName/handle/jobTitle/employer/employerUrl/alumniOf/alumniOfUrl/location/yearsExperience/philosophy/skills/interests/sameAs/shortBio/socialBio/longBio/flavorBio/experiencePhrase) + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5) + privacy 16 (title/lastUpdated/lastUpdatedLabel/backLink/whoHeading/dataDisplayedHeading/dataCollectedHeading/analyticsHeading/rightsHeading/changesHeading/who/dataDisplayed/dataCollected/analytics/rights/changes).
-  {name: 'identity', expectedLeaves: 60},
+  // identity: person 21 (name/firstName/lastName/handle/jobTitle/rolePhrase/employer/employerUrl/alumniOf/alumniOfUrl/location/yearsExperience/philosophy/skills/interests/sameAs/shortBio/socialBio/longBio/flavorBio/experiencePhrase) + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5) + privacy 16 (title/lastUpdated/lastUpdatedLabel/backLink/whoHeading/dataDisplayedHeading/dataCollectedHeading/analyticsHeading/rightsHeading/changesHeading/who/dataDisplayed/dataCollected/analytics/rights/changes).
+  //   person gained rolePhrase — the lowercase mid-sentence role noun phrase llm.full.systemFraming binds.
+  {name: 'identity', expectedLeaves: 61},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
@@ -99,8 +100,8 @@ const NAMESPACES: NamespaceFixture[] = [
   {name: 'permissions', expectedLeaves: 6},
   // errors: validation 2 + client 2.
   {name: 'errors', expectedLeaves: 4},
-  // llm: txt 33 + full 103 + dashboard 3 + mcp 31 + agentDiscovery 13.
-  {name: 'llm', expectedLeaves: 183}
+  // llm: txt 32 + full 102 + dashboard 3 + mcp 29 + agentDiscovery 13.
+  {name: 'llm', expectedLeaves: 179}
 ]
 
 for (const ns of NAMESPACES) {
@@ -185,7 +186,7 @@ describe('@j0nathan-ll0yd/copy llm txt surface', () => {
   it('every txt link ships as {label, url} fields', () => {
     const txt = (readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: Record<string, unknown>}).txt
     const links = Object.entries(txt).filter(([, v]) => v !== null && typeof v === 'object')
-    expect(links.length).toBe(18)
+    expect(links.length).toBe(17)
     for (const [key, value] of links) {
       expect({key, ...(value as object)}).toMatchObject({key, label: expect.any(String), url: expect.any(String)})
     }

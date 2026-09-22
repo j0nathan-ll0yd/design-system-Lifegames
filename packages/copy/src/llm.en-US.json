@@ -87,14 +87,14 @@
       }
     },
     "liveBody": {
-      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics use 7-day aggregates only; GitHub, books, reading, and theatre use full granularity.",
+      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics come from the latest export, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
       "_meta": {
         "description": "Live-content explanatory paragraph (static).",
         "usage": ["llms-txt.eta:15"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "liveFullDump": {
@@ -284,21 +284,6 @@
         "lastReviewed": "2026-06-11"
       }
     },
-    "endpointLocation": {
-      "value": {
-        "label": "location.json",
-        "url": "{cloudfrontBase}/location.json",
-        "notes": "location activity and place summaries"
-      },
-      "_meta": {
-        "description": "location.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
-        "usage": ["llms-txt.eta:33"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
     "technologyHeading": {
       "value": "Technology",
       "_meta": {
@@ -435,14 +420,14 @@
   },
   "full": {
     "systemFraming": {
-      "value": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an engineering director and backend engineer. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",
+      "value": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an {profileRolePhrase}. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",
       "_meta": {
-        "description": "<SYSTEM> framing line. ICU MF1; consumer substitutes the profile name. Literal <SYSTEM></SYSTEM> tags, quotes, and em-dash preserved.",
+        "description": "<SYSTEM> framing line. ICU MF1; consumer substitutes the profile name and the role phrase. {profileRolePhrase} binds identity.person.rolePhrase, NOT jobTitle: jobTitle is title case ('Engineering Director') and would read 'an Engineering Director' mid-sentence, and it names only one of the two roles, so binding it would silently drop 'and backend engineer'. Literal <SYSTEM></SYSTEM> tags, quotes, and em-dash preserved.",
         "usage": ["llms-full.eta:1"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "titleHeading": {
@@ -457,14 +442,14 @@
       }
     },
     "intro": {
-      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are 7-day\n> aggregates only (no point-in-time biometrics). Everything else is full granularity.",
+      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics come from the\n> latest export, summarised and never averaged over a window. Everything else is full granularity.",
       "_meta": {
         "description": "Blockquote intro (static, 4 lines). Newlines and '> ' blockquote markers preserved verbatim.",
         "usage": ["llms-full.eta:5-8"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "metaLastUpdated": {
@@ -745,25 +730,25 @@
       }
     },
     "bodyAggregateNote": {
-      "value": "All body metrics are 7-day aggregates ending {bodyEndingDate}. No point-in-time values\nare included — this is a privacy-preserving granularity choice. For raw daily\nvalues, see the JSON endpoints linked in the Streams section.",
+      "value": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. For dated raw values, see the JSON endpoints linked in the Streams section.",
       "_meta": {
-        "description": "Body 7-day-aggregate privacy note (3 lines). ICU MF1; consumer substitutes the ending date. Newlines and em-dash preserved.",
+        "description": "Body latest-export + privacy note (3 lines). Static — no ICU placeholder: the former {bodyEndingDate} substitution is REDUNDANT, not wrong. LP render.ts binds bodyDataAsOf from the same view.body.dataAsOf value, and full.bodyDataAsOf already publishes it one line earlier as '**Data as of:** {bodyDataAsOf}', so the note was restating a date the document states above it. (Historical note for anyone re-deriving this: before LP PR #356 the binding WAS the compose instant — view.ts endingDate: formatDate(inputs.composedAt) — and the reason to drop it was that it could not honestly date the values at all. #356 repointed it at the health export's own date, so the honesty objection is gone and only the duplication remains.) Newlines and em-dash preserved.",
         "usage": ["llms-full.eta:53-55"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "cardioHeading": {
-      "value": "### Cardiovascular (7-day aggregate)",
+      "value": "### Cardiovascular (latest export)",
       "_meta": {
         "description": "Cardiovascular subsection heading.",
         "usage": ["llms-full.eta:57"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "cardioEmpty": {
@@ -811,14 +796,14 @@
       }
     },
     "sleepHeading": {
-      "value": "### Sleep (7-day aggregate)",
+      "value": "### Sleep (latest export)",
       "_meta": {
         "description": "Sleep subsection heading.",
         "usage": ["llms-full.eta:72"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "sleepEmpty": {
@@ -888,25 +873,25 @@
       }
     },
     "activityHeading": {
-      "value": "### Activity (7-day aggregate)",
+      "value": "### Activity (latest export)",
       "_meta": {
         "description": "Activity subsection heading.",
         "usage": ["llms-full.eta:85"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "workoutsHeading": {
-      "value": "### Workouts (7-day aggregate)",
+      "value": "### Workouts (latest export)",
       "_meta": {
         "description": "Workouts subsection heading.",
         "usage": ["llms-full.eta:91"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "workoutsEmpty": {
@@ -921,14 +906,14 @@
       }
     },
     "workoutsActivityTypes": {
-      "value": "- Typical activity types: {activityTypes}",
+      "value": "- Activity types in this export: {activityTypes}",
       "_meta": {
         "description": "Workouts — typical activity types list item. ICU MF1; consumer substitutes the types.",
         "usage": ["llms-full.eta:97"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "workoutsAvgDuration": {
@@ -954,14 +939,14 @@
       }
     },
     "hydrationHeading": {
-      "value": "### Hydration (7-day aggregate)",
+      "value": "### Hydration (latest export)",
       "_meta": {
         "description": "Hydration subsection heading.",
         "usage": ["llms-full.eta:102"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "hydrationWater": {
@@ -1560,17 +1545,6 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
-    },
-    "streamLocation": {
-      "value": "- {cloudfrontBase}/location.json — location activity and place summaries",
-      "_meta": {
-        "description": "Streams — location.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
-        "usage": ["llms-full.eta:302"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
     }
   },
   "dashboard": {
@@ -1764,7 +1738,7 @@
       }
     },
     "dsHealthDesc": {
-      "value": "Heart rate, HRV, activity, and workout data (7-day aggregates)",
+      "value": "Heart rate, HRV, activity, and workout data (latest export, summarised)",
       "_meta": {
         "description": "Description for the health data source. Canonical (server-card) variant. Shared by webmcp.js dataSources[] and server-card.json resources[].",
         "usage": [
@@ -1775,7 +1749,7 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-09-22"
       }
     },
     "dsSleepName": {
@@ -2010,36 +1984,6 @@
         "usage": [
           "web:public/js/webmcp.js (dataSources[8].description)",
           "web:public/.well-known/mcp/server-card.json (resources[8].description)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
-      }
-    },
-    "dsLocationName": {
-      "value": "Location aggregates",
-      "_meta": {
-        "description": "Display name for the location data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
-        "usage": [
-          "web:public/js/webmcp.js (dataSources[9].name)",
-          "web:public/.well-known/mcp/server-card.json (resources[9].name)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "label",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
-      }
-    },
-    "dsLocationDesc": {
-      "value": "Aggregated place summaries and location data",
-      "_meta": {
-        "description": "Description for the location data source. Canonical (server-card) variant.",
-        "usage": [
-          "web:public/js/webmcp.js (dataSources[9].description)",
-          "web:public/.well-known/mcp/server-card.json (resources[9].description)",
           "web:scripts/generate-webmcp.mjs"
         ],
         "register": "machine",

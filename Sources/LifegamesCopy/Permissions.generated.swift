@@ -13,9 +13,9 @@ import Foundation
 /// LifePortalWatch target). The copy build derives a FLAT schema from this one (stripping
 /// _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat
 /// 1 syntax (static passthrough — no interpolation here). Stored in natural case. The $defs
-/// block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, and
-/// schema/a11y.schema.json; the $defs are inlined per schema file (no cross-file $ref),
-/// which the flat-schema derivation requires.
+/// block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json,
+/// schema/a11y.schema.json, and schema/app.schema.json; the $defs are inlined per schema
+/// file (no cross-file $ref), which the flat-schema derivation requires.
 // MARK: - Permissions
 public struct Permissions: Codable, Sendable {
     /// NSHealthShareUsageDescription — shown when the app/watch requests HealthKit read access.

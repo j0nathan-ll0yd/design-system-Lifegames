@@ -328,7 +328,7 @@ public struct Person: Codable, Sendable {
     public let experiencePhrase, firstName, flavorBio, handle: String
     public let interests: [String]
     public let jobTitle, lastName, location, longBio: String
-    public let name, philosophy: String
+    public let name, philosophy, rolePhrase: String
     public let sameAs: [String]
     public let shortBio: String
     public let skills: [String]
@@ -339,10 +339,10 @@ public struct Person: Codable, Sendable {
         case alumniOfURL = "alumniOfUrl"
         case employer
         case employerURL = "employerUrl"
-        case experiencePhrase, firstName, flavorBio, handle, interests, jobTitle, lastName, location, longBio, name, philosophy, sameAs, shortBio, skills, socialBio, yearsExperience
+        case experiencePhrase, firstName, flavorBio, handle, interests, jobTitle, lastName, location, longBio, name, philosophy, rolePhrase, sameAs, shortBio, skills, socialBio, yearsExperience
     }
 
-    public init(alumniOf: String, alumniOfURL: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+    public init(alumniOf: String, alumniOfURL: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, rolePhrase: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
         self.alumniOf = alumniOf
         self.alumniOfURL = alumniOfURL
         self.employer = employer
@@ -358,6 +358,7 @@ public struct Person: Codable, Sendable {
         self.longBio = longBio
         self.name = name
         self.philosophy = philosophy
+        self.rolePhrase = rolePhrase
         self.sameAs = sameAs
         self.shortBio = shortBio
         self.skills = skills
@@ -400,6 +401,7 @@ public extension Person {
         longBio: String? = nil,
         name: String? = nil,
         philosophy: String? = nil,
+        rolePhrase: String? = nil,
         sameAs: [String]? = nil,
         shortBio: String? = nil,
         skills: [String]? = nil,
@@ -422,6 +424,7 @@ public extension Person {
             longBio: longBio ?? self.longBio,
             name: name ?? self.name,
             philosophy: philosophy ?? self.philosophy,
+            rolePhrase: rolePhrase ?? self.rolePhrase,
             sameAs: sameAs ?? self.sameAs,
             shortBio: shortBio ?? self.shortBio,
             skills: skills ?? self.skills,

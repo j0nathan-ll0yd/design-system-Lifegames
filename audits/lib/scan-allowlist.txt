@@ -206,6 +206,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/olive-donkeys-smile.md:marker:j0nathan-ll0yd
 .changeset/tall-buttons-repeat.md:marker:j0nathan-ll0yd
 .changeset/structured-llm-link-and-heading-leaves.md:marker:j0nathan-ll0yd
+.changeset/scrub-dead-location-copy-leaves.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
@@ -311,6 +312,9 @@ packages/copy/scripts/build.ts:marker:j0nathan-ll0yd
 packages/copy/scripts/check-copy-voice.mjs:marker:j0nathan-ll0yd
 packages/copy/scripts/check-no-hardcoded-copy.mjs:marker:j0nathan-ll0yd
 packages/copy/tests/identity.test.ts:marker:j0nathan-ll0yd
+packages/copy/tests/llm-artifact-sync.test.ts:marker:j0nathan-ll0yd
+packages/copy/tests/llm-claim-honesty.test.ts:marker:j0nathan-ll0yd
+packages/copy/tests/llm-identity-binding.test.ts:marker:j0nathan-ll0yd
 packages/copy/voice.summary.json:marker:j0nathan-ll0yd
 packages/fixtures/.gitignore:marker:j0nathan-ll0yd
 packages/fixtures/fixture-map.json:marker:j0nathan-ll0yd

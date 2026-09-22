@@ -63,6 +63,19 @@
         "lastReviewed": "2026-06-11"
       }
     },
+    "rolePhrase": {
+      "value": "engineering director and backend engineer",
+      "_meta": {
+        "description": "Full role description as a LOWERCASE mid-sentence noun phrase. Lowercase on purpose: its only consumer drops it into the middle of a sentence ('… profile for {profileName} — an {profileRolePhrase}.'), where the title-case jobTitle would read 'an Engineering Director'. jobTitle stays the canonical short title for JSON-LD and the profile line; this field is NOT a replacement for it. Distinct from longBio, which opens with the same two roles but as a capitalised full sentence and so cannot be spliced mid-sentence.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-full.eta:1 (via copy llm.full.systemFraming {profileRolePhrase})"
+        ],
+        "register": "factual",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-09-22"
+      }
+    },
     "employer": {
       "value": "Squarespace",
       "_meta": {

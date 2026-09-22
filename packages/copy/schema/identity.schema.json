@@ -17,6 +17,7 @@
         "lastName",
         "handle",
         "jobTitle",
+        "rolePhrase",
         "employer",
         "employerUrl",
         "alumniOf",
@@ -47,6 +48,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "jobTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rolePhrase": {
           "$ref": "#/$defs/CopyString"
         },
         "employer": {
