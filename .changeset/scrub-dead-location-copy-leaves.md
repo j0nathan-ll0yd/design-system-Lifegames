@@ -51,8 +51,8 @@ at three, so "Typical activity types" asserted a habit from one export.
 
 Reworded:
 
-- `full.intro`, `txt.liveBody` — body metrics are single-day values, summarised and never averaged
-  over a window.
+- `full.intro`, `txt.liveBody` — body metrics come from the latest export, summarised and never
+  averaged over a window.
 - `full.bodyAggregateNote` — each body metric is a single value from the latest export; values are
   summarised as ranges, shares, or goal status rather than published raw.
 - `full.cardioHeading`, `full.sleepHeading`, `full.activityHeading`, `full.workoutsHeading`,
@@ -63,11 +63,15 @@ Reworded:
   on the original work list; it carried the same false claim and is published to
   `.well-known/mcp/server-card.json`.
 
-`full.bodyAggregateNote` loses its `{bodyEndingDate}` placeholder. That binding resolved to the
-COMPOSE timestamp, not a data date — `view.ts:394` is `endingDate: formatDate(inputs.composedAt)` and
-`types.ts:31` states "`composedAt` is a fact about the composition run itself, not about any source".
-It could not honestly date the values under any wording. LP's binding at `render.ts:231` is now
-unreferenced by copy; removing it is LP's cleanup, not this package's.
+`(latest export)` is the canonical spelling estate-wide, set by LP PR #356 (`aggregate.ts:272` emits
+`${n} workouts (latest export)`, its docblock recording `(recent)` as the former form). Every leaf
+above uses it for this idea.
+
+`full.bodyAggregateNote` loses its `{bodyEndingDate}` placeholder. The reason is REDUNDANCY, not a
+false value: LP binds the same `view.body.dataAsOf` to `bodyDataAsOf`, and `full.bodyDataAsOf` already
+publishes it one line earlier as `**Data as of:** {bodyDataAsOf}`. The note was restating a date the
+document states directly above it. LP's `bodyEndingDate` binding is now unreferenced by copy;
+retiring it is LP's cleanup, not this package's, and it rides the copy-bump PR rather than this one.
 
 The leaf count is unchanged at 179 — these are value edits, not removals. `_meta.lastReviewed` is
 bumped to 2026-09-22 on exactly the ten edited leaves, per VOICE.md.

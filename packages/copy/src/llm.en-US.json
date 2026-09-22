@@ -87,7 +87,7 @@
       }
     },
     "liveBody": {
-      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics are single-day values, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
+      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics come from the latest export, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
       "_meta": {
         "description": "Live-content explanatory paragraph (static).",
         "usage": ["llms-txt.eta:15"],
@@ -442,7 +442,7 @@
       }
     },
     "intro": {
-      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are single-day\n> values, summarised and never averaged over a window. Everything else is full granularity.",
+      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics come from the\n> latest export, summarised and never averaged over a window. Everything else is full granularity.",
       "_meta": {
         "description": "Blockquote intro (static, 4 lines). Newlines and '> ' blockquote markers preserved verbatim.",
         "usage": ["llms-full.eta:5-8"],
@@ -732,7 +732,7 @@
     "bodyAggregateNote": {
       "value": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. For dated raw values, see the JSON endpoints linked in the Streams section.",
       "_meta": {
-        "description": "Body single-day-value + privacy note (3 lines). Static — no ICU placeholder: the former {bodyEndingDate} substitution was the COMPOSE timestamp (LP view.ts endingDate: formatDate(inputs.composedAt)), not a data date, so it could not honestly label the values. Newlines and em-dash preserved.",
+        "description": "Body latest-export + privacy note (3 lines). Static — no ICU placeholder: the former {bodyEndingDate} substitution is REDUNDANT, not wrong. LP render.ts binds bodyDataAsOf from the same view.body.dataAsOf value, and full.bodyDataAsOf already publishes it one line earlier as '**Data as of:** {bodyDataAsOf}', so the note was restating a date the document states above it. (Historical note for anyone re-deriving this: before LP PR #356 the binding WAS the compose instant — view.ts endingDate: formatDate(inputs.composedAt) — and the reason to drop it was that it could not honestly date the values at all. #356 repointed it at the health export's own date, so the honesty objection is gone and only the duplication remains.) Newlines and em-dash preserved.",
         "usage": ["llms-full.eta:53-55"],
         "register": "machine",
         "audience": "machine",

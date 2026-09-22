@@ -16,7 +16,7 @@
       "url": "{profileLinkedin}"
     },
     "liveHeading": "Live LLM-optimized content",
-    "liveBody": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics are single-day values, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
+    "liveBody": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics come from the latest export, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
     "liveFullDump": {
       "label": "llms-full.txt",
       "url": "{siteUrl}/llms-full.txt",
@@ -101,7 +101,7 @@
   "full": {
     "systemFraming": "<SYSTEM>This is the complete, authoritative personal \"Human Datastream\" profile for {profileName} — an {profileRolePhrase}. It contains biographical information plus live health aggregates, GitHub activity, reading, saved articles, and theatre reviews, auto-composed from source data by a backend Lambda.</SYSTEM>",
     "titleHeading": "# {profileName} — Human Datastream (Complete)",
-    "intro": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are single-day\n> values, summarised and never averaged over a window. Everything else is full granularity.",
+    "intro": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics come from the\n> latest export, summarised and never averaged over a window. Everything else is full granularity.",
     "metaLastUpdated": "**Last updated:** {lastUpdated}",
     "metaGenerated": "**Generated:** {generated}",
     "metaSource": "**Source:** {source}",
