@@ -87,14 +87,14 @@
       }
     },
     "liveBody": {
-      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics use 7-day aggregates only; GitHub, books, reading, and theatre use full granularity.",
+      "value": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics are single-day values, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
       "_meta": {
         "description": "Live-content explanatory paragraph (static).",
         "usage": ["llms-txt.eta:15"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "liveFullDump": {
@@ -442,14 +442,14 @@
       }
     },
     "intro": {
-      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are 7-day\n> aggregates only (no point-in-time biometrics). Everything else is full granularity.",
+      "value": "> Full data dump for LLM ingestion. Everything the dashboard displays, rendered\n> as structured markdown with tables, interpretation, and source citations.\n> Composed by a backend Lambda on data-change events. Body metrics are single-day\n> values, summarised and never averaged over a window. Everything else is full granularity.",
       "_meta": {
         "description": "Blockquote intro (static, 4 lines). Newlines and '> ' blockquote markers preserved verbatim.",
         "usage": ["llms-full.eta:5-8"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "metaLastUpdated": {
@@ -730,25 +730,25 @@
       }
     },
     "bodyAggregateNote": {
-      "value": "All body metrics are 7-day aggregates ending {bodyEndingDate}. No point-in-time values\nare included — this is a privacy-preserving granularity choice. For raw daily\nvalues, see the JSON endpoints linked in the Streams section.",
+      "value": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. For dated raw values, see the JSON endpoints linked in the Streams section.",
       "_meta": {
-        "description": "Body 7-day-aggregate privacy note (3 lines). ICU MF1; consumer substitutes the ending date. Newlines and em-dash preserved.",
+        "description": "Body single-day-value + privacy note (3 lines). Static — no ICU placeholder: the former {bodyEndingDate} substitution was the COMPOSE timestamp (LP view.ts endingDate: formatDate(inputs.composedAt)), not a data date, so it could not honestly label the values. Newlines and em-dash preserved.",
         "usage": ["llms-full.eta:53-55"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "cardioHeading": {
-      "value": "### Cardiovascular (7-day aggregate)",
+      "value": "### Cardiovascular (latest export)",
       "_meta": {
         "description": "Cardiovascular subsection heading.",
         "usage": ["llms-full.eta:57"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "cardioEmpty": {
@@ -796,14 +796,14 @@
       }
     },
     "sleepHeading": {
-      "value": "### Sleep (7-day aggregate)",
+      "value": "### Sleep (latest export)",
       "_meta": {
         "description": "Sleep subsection heading.",
         "usage": ["llms-full.eta:72"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "sleepEmpty": {
@@ -873,25 +873,25 @@
       }
     },
     "activityHeading": {
-      "value": "### Activity (7-day aggregate)",
+      "value": "### Activity (latest export)",
       "_meta": {
         "description": "Activity subsection heading.",
         "usage": ["llms-full.eta:85"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "workoutsHeading": {
-      "value": "### Workouts (7-day aggregate)",
+      "value": "### Workouts (latest export)",
       "_meta": {
         "description": "Workouts subsection heading.",
         "usage": ["llms-full.eta:91"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "workoutsEmpty": {
@@ -906,14 +906,14 @@
       }
     },
     "workoutsActivityTypes": {
-      "value": "- Typical activity types: {activityTypes}",
+      "value": "- Activity types in this export: {activityTypes}",
       "_meta": {
         "description": "Workouts — typical activity types list item. ICU MF1; consumer substitutes the types.",
         "usage": ["llms-full.eta:97"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "workoutsAvgDuration": {
@@ -939,14 +939,14 @@
       }
     },
     "hydrationHeading": {
-      "value": "### Hydration (7-day aggregate)",
+      "value": "### Hydration (latest export)",
       "_meta": {
         "description": "Hydration subsection heading.",
         "usage": ["llms-full.eta:102"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-09-22"
       }
     },
     "hydrationWater": {
@@ -1738,7 +1738,7 @@
       }
     },
     "dsHealthDesc": {
-      "value": "Heart rate, HRV, activity, and workout data (7-day aggregates)",
+      "value": "Heart rate, HRV, activity, and workout data (latest export, summarised)",
       "_meta": {
         "description": "Description for the health data source. Canonical (server-card) variant. Shared by webmcp.js dataSources[] and server-card.json resources[].",
         "usage": [
@@ -1749,7 +1749,7 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-09-22"
       }
     },
     "dsSleepName": {

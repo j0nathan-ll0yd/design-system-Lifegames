@@ -36,3 +36,44 @@ Corrects stale prose in `schema/llm.schema.json` (the namespace has five groups,
 Eta-template value rule covers `txt` and `full` only; the identical-`$defs` list omitted
 `errors.schema.json`) and in `schema/permissions.schema.json` (its identical-`$defs` list omitted
 `app.schema.json`).
+
+---
+
+llm slice: stop claiming a seven-day window and a workout habit (atlas decision 0142 D2).
+
+Ten leaves carried claims the source data cannot support. The health export stores ONE dated value
+per metric — `mantle-LifegamesPortal/src/schemas/health.ts:78` is
+`healthQuantitySchema = z.object({type, date, value, unit})`, and `src/lib/llm-content/aggregate.ts:81`
+reads exactly one entry (`health.quantities['restingHeartRate']`) and rounds `entry.value`. There is
+no series and nothing to average across days, so "7-day aggregate" was false everywhere it appeared.
+`aggregate.ts:259` derives workout activity types from the distinct types in the latest export capped
+at three, so "Typical activity types" asserted a habit from one export.
+
+Reworded:
+
+- `full.intro`, `txt.liveBody` — body metrics are single-day values, summarised and never averaged
+  over a window.
+- `full.bodyAggregateNote` — each body metric is a single value from the latest export; values are
+  summarised as ranges, shares, or goal status rather than published raw.
+- `full.cardioHeading`, `full.sleepHeading`, `full.activityHeading`, `full.workoutsHeading`,
+  `full.hydrationHeading` — `(7-day aggregate)` becomes `(latest export)`. The `###` affix is
+  retained: the `full` group ships rendered markdown on purpose, unlike the `txt` group.
+- `full.workoutsActivityTypes` — `Typical activity types` becomes `Activity types in this export`.
+- `mcp.dsHealthDesc` — `(7-day aggregates)` becomes `(latest export, summarised)`. This leaf was not
+  on the original work list; it carried the same false claim and is published to
+  `.well-known/mcp/server-card.json`.
+
+`full.bodyAggregateNote` loses its `{bodyEndingDate}` placeholder. That binding resolved to the
+COMPOSE timestamp, not a data date — `view.ts:394` is `endingDate: formatDate(inputs.composedAt)` and
+`types.ts:31` states "`composedAt` is a fact about the composition run itself, not about any source".
+It could not honestly date the values under any wording. LP's binding at `render.ts:231` is now
+unreferenced by copy; removing it is LP's cleanup, not this package's.
+
+The leaf count is unchanged at 179 — these are value edits, not removals. `_meta.lastReviewed` is
+bumped to 2026-09-22 on exactly the ten edited leaves, per VOICE.md.
+
+Also adds `packages/copy/tests/llm-claim-honesty.test.ts`, which asserts the PROPERTY rather than the
+replacement sentence: no llm leaf may name a multi-day span (`N-day`, `weekly`, `per week`,
+`multi-day`) or assert a habit (`typical`, `usually`, `habitual`, `on most days`). The nouns "window",
+"average", and "aggregate" stay legal on their own, because honest copy has to be able to DENY a
+window and a denial contains the noun it denies.

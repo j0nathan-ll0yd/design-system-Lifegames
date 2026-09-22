@@ -313,6 +313,7 @@ packages/copy/scripts/check-copy-voice.mjs:marker:j0nathan-ll0yd
 packages/copy/scripts/check-no-hardcoded-copy.mjs:marker:j0nathan-ll0yd
 packages/copy/tests/identity.test.ts:marker:j0nathan-ll0yd
 packages/copy/tests/llm-artifact-sync.test.ts:marker:j0nathan-ll0yd
+packages/copy/tests/llm-claim-honesty.test.ts:marker:j0nathan-ll0yd
 packages/copy/voice.summary.json:marker:j0nathan-ll0yd
 packages/fixtures/.gitignore:marker:j0nathan-ll0yd
 packages/fixtures/fixture-map.json:marker:j0nathan-ll0yd
