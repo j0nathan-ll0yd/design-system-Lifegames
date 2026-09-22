@@ -36,7 +36,7 @@
     "build:m3": "node scripts/build-m3.mjs",
     "sync:claude-design": "node scripts/sync-claude-design.mjs",
     "changeset": "changeset",
-    "changeset:version": "changeset version",
+    "changeset:version": "changeset version && prettier --write \"**/CHANGELOG.md\"",
     "changeset:publish": "changeset publish",
     "prepare": "husky",
     "typecheck": "turbo run typecheck",
