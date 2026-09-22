@@ -5,28 +5,32 @@
 import Foundation
 
 /// Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded
-/// English-prose string in the backend LLM-content Eta templates
-/// (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent
-/// Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two
-/// groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full`
-/// (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString
-/// carrying authoring context in _meta with usage citing the template file:line. The copy
-/// build derives a FLAT schema from this one (stripping _meta) for all consumer codegen
-/// (TS/Zod/Swift). Values are stored as the literal template line text with each Eta
-/// interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and
-/// all literal markdown markers/punctuation preserved verbatim — so the rendered template
-/// output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship
-/// as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are
-/// CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes},
-/// no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that
-/// structure and used to regex-parse the affixes straight back off before re-adding them.
-/// The `full` group keeps its rendered form on purpose: its consumer renders it through Eta
-/// verbatim and never re-parses it. Casing is the source's natural case. Every object group
-/// has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across
-/// namespaces. The $defs block is byte-identical to schema/identity.schema.json,
-/// schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and
-/// schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file
-/// $ref), which the flat-schema derivation requires.
+/// English-prose string the LLM-facing surfaces render: the backend LLM-content Eta
+/// templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the
+/// ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md,
+/// plus the web dashboard HTML and the .well-known discovery documents that the web repo's
+/// scripts/generate-webmcp.mjs emits at prebuild. Five groups: `txt` (title LlmTxt, from
+/// llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta —
+/// the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), and
+/// `agentDiscovery` (title LlmAgentDiscovery); each group's own description names its
+/// source. Every leaf carries authoring context in _meta whose usage cites that source
+/// file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all
+/// consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are
+/// stored as the literal template line text with each Eta interpolation tag (<%= it.X %>)
+/// replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown
+/// markers/punctuation preserved verbatim — so the rendered template output stays
+/// byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not
+/// as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare
+/// text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): '
+/// affixes), because the consumer's llms.txt codec models exactly that structure and used to
+/// regex-parse the affixes straight back off before re-adding them. The `full` group keeps
+/// its rendered form on purpose: its consumer renders it through Eta verbatim and never
+/// re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title
+/// (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs
+/// block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json,
+/// schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and
+/// schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref),
+/// which the flat-schema derivation requires.
 // MARK: - Llm
 public struct Llm: Codable, Sendable {
     /// Prose strings for the A2A agent-card (.well-known/agent-card.json) and AI catalog
@@ -284,14 +288,14 @@ public struct LlmFull: Codable, Sendable {
     public let sleepEfficiencyLabel, sleepEmpty, sleepHeading, sleepRemLabel: String
     public let sleepTotalLabel, starredDataAsOf, starredEmpty, starredHeading: String
     public let starredSummary, starredTopics, streamArticles, streamBooks: String
-    public let streamFocus, streamGithubEvents, streamHealth, streamLocation: String
-    public let streamsBody, streamsHeading, streamSleep, streamStarred: String
-    public let streamTheatre, streamWorkouts, systemFraming, systemHeading: String
-    public let theatreByLine, theatreDataAsOf, theatreEmpty, theatreHeading: String
-    public let theatreSource, titleHeading, workoutsActivityTypes, workoutsAvgDuration: String
-    public let workoutsAvgEnergy, workoutsEmpty, workoutsHeading: String
+    public let streamFocus, streamGithubEvents, streamHealth, streamsBody: String
+    public let streamsHeading, streamSleep, streamStarred, streamTheatre: String
+    public let streamWorkouts, systemFraming, systemHeading, theatreByLine: String
+    public let theatreDataAsOf, theatreEmpty, theatreHeading, theatreSource: String
+    public let titleHeading, workoutsActivityTypes, workoutsAvgDuration, workoutsAvgEnergy: String
+    public let workoutsEmpty, workoutsHeading: String
 
-    public init(activityHeading: String, articlesColumns: String, articlesDataAsOf: String, articlesEmpty: String, articlesHeading: String, bodyAggregateNote: String, bodyDataAsOf: String, bodyHeading: String, bookshelfByAuthor: String, bookshelfDataAsOf: String, bookshelfEmpty: String, bookshelfFinishedHeading: String, bookshelfHeading: String, bookshelfIsbnLabel: String, bookshelfNotesLabel: String, bookshelfReadingHeading: String, bookshelfStatAvgRating: String, bookshelfStatBooksRead: String, bookshelfStatReading: String, bookshelfStatsHeading: String, bookshelfStatUpNext: String, bookshelfUpNextHeading: String, cardioColumns: String, cardioEmpty: String, cardioHeading: String, cardioHrvLabel: String, cardioRestingLabel: String, contentsBody: String, contentsHeading: String, contentsMind: String, contentsProfile: String, contentsStreams: String, contentsSystem: String, expertiseHeading: String, freshnessColumns: String, freshnessHeading: String, freshnessNote: String, githubActiveRepos: String, githubDataAsOf: String, githubEmpty: String, githubHeading: String, githubRecentCommitsHeading: String, githubRecentEvents: String, githubRecentPrsHeading: String, githubStarredCount: String, hydrationCaffeine: String, hydrationHeading: String, hydrationWater: String, intro: String, linkGithub: String, linkLinkedin: String, linksHeading: String, linkSite: String, metaGenerated: String, metaLastUpdated: String, metaSource: String, mindHeading: String, profileBio: String, profileCurrentFocus: String, profileExperience: String, profileHeading: String, profileInterests: String, profileLocation: String, profileNameLine: String, profilePhilosophy: String, profileSkills: String, sleepColumns: String, sleepDeepLabel: String, sleepEfficiencyLabel: String, sleepEmpty: String, sleepHeading: String, sleepRemLabel: String, sleepTotalLabel: String, starredDataAsOf: String, starredEmpty: String, starredHeading: String, starredSummary: String, starredTopics: String, streamArticles: String, streamBooks: String, streamFocus: String, streamGithubEvents: String, streamHealth: String, streamLocation: String, streamsBody: String, streamsHeading: String, streamSleep: String, streamStarred: String, streamTheatre: String, streamWorkouts: String, systemFraming: String, systemHeading: String, theatreByLine: String, theatreDataAsOf: String, theatreEmpty: String, theatreHeading: String, theatreSource: String, titleHeading: String, workoutsActivityTypes: String, workoutsAvgDuration: String, workoutsAvgEnergy: String, workoutsEmpty: String, workoutsHeading: String) {
+    public init(activityHeading: String, articlesColumns: String, articlesDataAsOf: String, articlesEmpty: String, articlesHeading: String, bodyAggregateNote: String, bodyDataAsOf: String, bodyHeading: String, bookshelfByAuthor: String, bookshelfDataAsOf: String, bookshelfEmpty: String, bookshelfFinishedHeading: String, bookshelfHeading: String, bookshelfIsbnLabel: String, bookshelfNotesLabel: String, bookshelfReadingHeading: String, bookshelfStatAvgRating: String, bookshelfStatBooksRead: String, bookshelfStatReading: String, bookshelfStatsHeading: String, bookshelfStatUpNext: String, bookshelfUpNextHeading: String, cardioColumns: String, cardioEmpty: String, cardioHeading: String, cardioHrvLabel: String, cardioRestingLabel: String, contentsBody: String, contentsHeading: String, contentsMind: String, contentsProfile: String, contentsStreams: String, contentsSystem: String, expertiseHeading: String, freshnessColumns: String, freshnessHeading: String, freshnessNote: String, githubActiveRepos: String, githubDataAsOf: String, githubEmpty: String, githubHeading: String, githubRecentCommitsHeading: String, githubRecentEvents: String, githubRecentPrsHeading: String, githubStarredCount: String, hydrationCaffeine: String, hydrationHeading: String, hydrationWater: String, intro: String, linkGithub: String, linkLinkedin: String, linksHeading: String, linkSite: String, metaGenerated: String, metaLastUpdated: String, metaSource: String, mindHeading: String, profileBio: String, profileCurrentFocus: String, profileExperience: String, profileHeading: String, profileInterests: String, profileLocation: String, profileNameLine: String, profilePhilosophy: String, profileSkills: String, sleepColumns: String, sleepDeepLabel: String, sleepEfficiencyLabel: String, sleepEmpty: String, sleepHeading: String, sleepRemLabel: String, sleepTotalLabel: String, starredDataAsOf: String, starredEmpty: String, starredHeading: String, starredSummary: String, starredTopics: String, streamArticles: String, streamBooks: String, streamFocus: String, streamGithubEvents: String, streamHealth: String, streamsBody: String, streamsHeading: String, streamSleep: String, streamStarred: String, streamTheatre: String, streamWorkouts: String, systemFraming: String, systemHeading: String, theatreByLine: String, theatreDataAsOf: String, theatreEmpty: String, theatreHeading: String, theatreSource: String, titleHeading: String, workoutsActivityTypes: String, workoutsAvgDuration: String, workoutsAvgEnergy: String, workoutsEmpty: String, workoutsHeading: String) {
         self.activityHeading = activityHeading
         self.articlesColumns = articlesColumns
         self.articlesDataAsOf = articlesDataAsOf
@@ -375,7 +379,6 @@ public struct LlmFull: Codable, Sendable {
         self.streamFocus = streamFocus
         self.streamGithubEvents = streamGithubEvents
         self.streamHealth = streamHealth
-        self.streamLocation = streamLocation
         self.streamsBody = streamsBody
         self.streamsHeading = streamsHeading
         self.streamSleep = streamSleep
@@ -500,7 +503,6 @@ public extension LlmFull {
         streamFocus: String? = nil,
         streamGithubEvents: String? = nil,
         streamHealth: String? = nil,
-        streamLocation: String? = nil,
         streamsBody: String? = nil,
         streamsHeading: String? = nil,
         streamSleep: String? = nil,
@@ -605,7 +607,6 @@ public extension LlmFull {
             streamFocus: streamFocus ?? self.streamFocus,
             streamGithubEvents: streamGithubEvents ?? self.streamGithubEvents,
             streamHealth: streamHealth ?? self.streamHealth,
-            streamLocation: streamLocation ?? self.streamLocation,
             streamsBody: streamsBody ?? self.streamsBody,
             streamsHeading: streamsHeading ?? self.streamsHeading,
             streamSleep: streamSleep ?? self.streamSleep,
@@ -646,14 +647,14 @@ public extension LlmFull {
 public struct LlmMCP: Codable, Sendable {
     public let agentSkillDescription, dsArticlesDesc, dsArticlesName, dsBooksDesc: String
     public let dsBooksName, dsFocusDesc, dsFocusName, dsGithubEventsDesc: String
-    public let dsGithubEventsName, dsHealthDesc, dsHealthName, dsLocationDesc: String
-    public let dsLocationName, dsSleepDesc, dsSleepName, dsStarredReposDesc: String
-    public let dsStarredReposName, dsTheatreReviewsDesc, dsTheatreReviewsName, dsWorkoutsDesc: String
-    public let dsWorkoutsName, serverDescription, stackDesign, stackFont: String
-    public let stackFramework, stackHosting, stackLiveData, toolGetCurrentReading: String
-    public let toolGetDataSources, toolGetProfile, toolGetTechStack: String
+    public let dsGithubEventsName, dsHealthDesc, dsHealthName, dsSleepDesc: String
+    public let dsSleepName, dsStarredReposDesc, dsStarredReposName, dsTheatreReviewsDesc: String
+    public let dsTheatreReviewsName, dsWorkoutsDesc, dsWorkoutsName, serverDescription: String
+    public let stackDesign, stackFont, stackFramework, stackHosting: String
+    public let stackLiveData, toolGetCurrentReading, toolGetDataSources, toolGetProfile: String
+    public let toolGetTechStack: String
 
-    public init(agentSkillDescription: String, dsArticlesDesc: String, dsArticlesName: String, dsBooksDesc: String, dsBooksName: String, dsFocusDesc: String, dsFocusName: String, dsGithubEventsDesc: String, dsGithubEventsName: String, dsHealthDesc: String, dsHealthName: String, dsLocationDesc: String, dsLocationName: String, dsSleepDesc: String, dsSleepName: String, dsStarredReposDesc: String, dsStarredReposName: String, dsTheatreReviewsDesc: String, dsTheatreReviewsName: String, dsWorkoutsDesc: String, dsWorkoutsName: String, serverDescription: String, stackDesign: String, stackFont: String, stackFramework: String, stackHosting: String, stackLiveData: String, toolGetCurrentReading: String, toolGetDataSources: String, toolGetProfile: String, toolGetTechStack: String) {
+    public init(agentSkillDescription: String, dsArticlesDesc: String, dsArticlesName: String, dsBooksDesc: String, dsBooksName: String, dsFocusDesc: String, dsFocusName: String, dsGithubEventsDesc: String, dsGithubEventsName: String, dsHealthDesc: String, dsHealthName: String, dsSleepDesc: String, dsSleepName: String, dsStarredReposDesc: String, dsStarredReposName: String, dsTheatreReviewsDesc: String, dsTheatreReviewsName: String, dsWorkoutsDesc: String, dsWorkoutsName: String, serverDescription: String, stackDesign: String, stackFont: String, stackFramework: String, stackHosting: String, stackLiveData: String, toolGetCurrentReading: String, toolGetDataSources: String, toolGetProfile: String, toolGetTechStack: String) {
         self.agentSkillDescription = agentSkillDescription
         self.dsArticlesDesc = dsArticlesDesc
         self.dsArticlesName = dsArticlesName
@@ -665,8 +666,6 @@ public struct LlmMCP: Codable, Sendable {
         self.dsGithubEventsName = dsGithubEventsName
         self.dsHealthDesc = dsHealthDesc
         self.dsHealthName = dsHealthName
-        self.dsLocationDesc = dsLocationDesc
-        self.dsLocationName = dsLocationName
         self.dsSleepDesc = dsSleepDesc
         self.dsSleepName = dsSleepName
         self.dsStarredReposDesc = dsStarredReposDesc
@@ -718,8 +717,6 @@ public extension LlmMCP {
         dsGithubEventsName: String? = nil,
         dsHealthDesc: String? = nil,
         dsHealthName: String? = nil,
-        dsLocationDesc: String? = nil,
-        dsLocationName: String? = nil,
         dsSleepDesc: String? = nil,
         dsSleepName: String? = nil,
         dsStarredReposDesc: String? = nil,
@@ -751,8 +748,6 @@ public extension LlmMCP {
             dsGithubEventsName: dsGithubEventsName ?? self.dsGithubEventsName,
             dsHealthDesc: dsHealthDesc ?? self.dsHealthDesc,
             dsHealthName: dsHealthName ?? self.dsHealthName,
-            dsLocationDesc: dsLocationDesc ?? self.dsLocationDesc,
-            dsLocationName: dsLocationName ?? self.dsLocationName,
             dsSleepDesc: dsSleepDesc ?? self.dsSleepDesc,
             dsSleepName: dsSleepName ?? self.dsSleepName,
             dsStarredReposDesc: dsStarredReposDesc ?? self.dsStarredReposDesc,
@@ -794,8 +789,8 @@ public struct LlmTxt: Codable, Sendable {
     public let canonicalBody: String
     public let canonicalHeading: String
     public let endpointArticles, endpointBooks, endpointFocus, endpointGithubEvents: LlmLink
-    public let endpointHealth, endpointLocation, endpointSleep, endpointStarred: LlmLink
-    public let endpointTheatre, endpointWorkouts: LlmLink
+    public let endpointHealth, endpointSleep, endpointStarred, endpointTheatre: LlmLink
+    public let endpointWorkouts: LlmLink
     public let expertiseHeading: String
     public let linkGithub, linkLinkedin, linkSite: LlmLink
     public let liveBody: String
@@ -810,7 +805,7 @@ public struct LlmTxt: Codable, Sendable {
     public let titleHeading: String
     public let wikiArchitecture, wikiBrand, wikiSpec: LlmLink
 
-    public init(aboutBody: String, aboutHeading: String, canonicalBody: String, canonicalHeading: String, endpointArticles: LlmLink, endpointBooks: LlmLink, endpointFocus: LlmLink, endpointGithubEvents: LlmLink, endpointHealth: LlmLink, endpointLocation: LlmLink, endpointSleep: LlmLink, endpointStarred: LlmLink, endpointTheatre: LlmLink, endpointWorkouts: LlmLink, expertiseHeading: String, linkGithub: LlmLink, linkLinkedin: LlmLink, linkSite: LlmLink, liveBody: String, liveFullDump: LlmLink, liveHeading: String, liveIndexAlias: LlmLink, optionalBody: String, optionalHeading: String, technologyDesign: String, technologyFramework: String, technologyHeading: String, technologyHosting: String, technologyLiveData: String, titleHeading: String, wikiArchitecture: LlmLink, wikiBrand: LlmLink, wikiSpec: LlmLink) {
+    public init(aboutBody: String, aboutHeading: String, canonicalBody: String, canonicalHeading: String, endpointArticles: LlmLink, endpointBooks: LlmLink, endpointFocus: LlmLink, endpointGithubEvents: LlmLink, endpointHealth: LlmLink, endpointSleep: LlmLink, endpointStarred: LlmLink, endpointTheatre: LlmLink, endpointWorkouts: LlmLink, expertiseHeading: String, linkGithub: LlmLink, linkLinkedin: LlmLink, linkSite: LlmLink, liveBody: String, liveFullDump: LlmLink, liveHeading: String, liveIndexAlias: LlmLink, optionalBody: String, optionalHeading: String, technologyDesign: String, technologyFramework: String, technologyHeading: String, technologyHosting: String, technologyLiveData: String, titleHeading: String, wikiArchitecture: LlmLink, wikiBrand: LlmLink, wikiSpec: LlmLink) {
         self.aboutBody = aboutBody
         self.aboutHeading = aboutHeading
         self.canonicalBody = canonicalBody
@@ -820,7 +815,6 @@ public struct LlmTxt: Codable, Sendable {
         self.endpointFocus = endpointFocus
         self.endpointGithubEvents = endpointGithubEvents
         self.endpointHealth = endpointHealth
-        self.endpointLocation = endpointLocation
         self.endpointSleep = endpointSleep
         self.endpointStarred = endpointStarred
         self.endpointTheatre = endpointTheatre
@@ -875,7 +869,6 @@ public extension LlmTxt {
         endpointFocus: LlmLink? = nil,
         endpointGithubEvents: LlmLink? = nil,
         endpointHealth: LlmLink? = nil,
-        endpointLocation: LlmLink? = nil,
         endpointSleep: LlmLink? = nil,
         endpointStarred: LlmLink? = nil,
         endpointTheatre: LlmLink? = nil,
@@ -910,7 +903,6 @@ public extension LlmTxt {
             endpointFocus: endpointFocus ?? self.endpointFocus,
             endpointGithubEvents: endpointGithubEvents ?? self.endpointGithubEvents,
             endpointHealth: endpointHealth ?? self.endpointHealth,
-            endpointLocation: endpointLocation ?? self.endpointLocation,
             endpointSleep: endpointSleep ?? self.endpointSleep,
             endpointStarred: endpointStarred ?? self.endpointStarred,
             endpointTheatre: endpointTheatre ?? self.endpointTheatre,

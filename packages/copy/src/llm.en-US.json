@@ -284,21 +284,6 @@
         "lastReviewed": "2026-06-11"
       }
     },
-    "endpointLocation": {
-      "value": {
-        "label": "location.json",
-        "url": "{cloudfrontBase}/location.json",
-        "notes": "location activity and place summaries"
-      },
-      "_meta": {
-        "description": "location.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
-        "usage": ["llms-txt.eta:33"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
     "technologyHeading": {
       "value": "Technology",
       "_meta": {
@@ -1560,17 +1545,6 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-11"
       }
-    },
-    "streamLocation": {
-      "value": "- {cloudfrontBase}/location.json — location activity and place summaries",
-      "_meta": {
-        "description": "Streams — location.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
-        "usage": ["llms-full.eta:302"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
     }
   },
   "dashboard": {
@@ -2010,36 +1984,6 @@
         "usage": [
           "web:public/js/webmcp.js (dataSources[8].description)",
           "web:public/.well-known/mcp/server-card.json (resources[8].description)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
-      }
-    },
-    "dsLocationName": {
-      "value": "Location aggregates",
-      "_meta": {
-        "description": "Display name for the location data source. Shared by webmcp.js dataSources[] and server-card.json resources[].",
-        "usage": [
-          "web:public/js/webmcp.js (dataSources[9].name)",
-          "web:public/.well-known/mcp/server-card.json (resources[9].name)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "label",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
-      }
-    },
-    "dsLocationDesc": {
-      "value": "Aggregated place summaries and location data",
-      "_meta": {
-        "description": "Description for the location data source. Canonical (server-card) variant.",
-        "usage": [
-          "web:public/js/webmcp.js (dataSources[9].description)",
-          "web:public/.well-known/mcp/server-card.json (resources[9].description)",
           "web:scripts/generate-webmcp.mjs"
         ],
         "register": "machine",

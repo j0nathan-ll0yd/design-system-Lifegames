@@ -99,8 +99,8 @@ const NAMESPACES: NamespaceFixture[] = [
   {name: 'permissions', expectedLeaves: 6},
   // errors: validation 2 + client 2.
   {name: 'errors', expectedLeaves: 4},
-  // llm: txt 33 + full 103 + dashboard 3 + mcp 31 + agentDiscovery 13.
-  {name: 'llm', expectedLeaves: 183}
+  // llm: txt 32 + full 102 + dashboard 3 + mcp 29 + agentDiscovery 13.
+  {name: 'llm', expectedLeaves: 179}
 ]
 
 for (const ns of NAMESPACES) {
@@ -185,7 +185,7 @@ describe('@j0nathan-ll0yd/copy llm txt surface', () => {
   it('every txt link ships as {label, url} fields', () => {
     const txt = (readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: Record<string, unknown>}).txt
     const links = Object.entries(txt).filter(([, v]) => v !== null && typeof v === 'object')
-    expect(links.length).toBe(18)
+    expect(links.length).toBe(17)
     for (const [key, value] of links) {
       expect({key, ...(value as object)}).toMatchObject({key, label: expect.any(String), url: expect.any(String)})
     }

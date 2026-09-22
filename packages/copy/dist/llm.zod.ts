@@ -309,27 +309,6 @@ export const llmSchema = z
               .optional(),
           })
           .strict(),
-        endpointLocation: z
-          .object({
-            label: z
-              .string()
-              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
-              .describe(
-                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
-              ),
-            url: z
-              .string()
-              .regex(new RegExp('^[^()\\s]+$'))
-              .describe(
-                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
-              ),
-            notes: z
-              .string()
-              .regex(new RegExp('^[^:\\s]'))
-              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
-              .optional(),
-          })
-          .strict(),
         technologyHeading: z.string().regex(new RegExp('^[^#\\s]')),
         technologyFramework: z.string(),
         technologyHosting: z.string(),
@@ -510,7 +489,6 @@ export const llmSchema = z
         streamArticles: z.string(),
         streamTheatre: z.string(),
         streamWorkouts: z.string(),
-        streamLocation: z.string(),
       })
       .strict()
       .describe(
@@ -557,8 +535,6 @@ export const llmSchema = z
         dsTheatreReviewsDesc: z.string(),
         dsWorkoutsName: z.string(),
         dsWorkoutsDesc: z.string(),
-        dsLocationName: z.string(),
-        dsLocationDesc: z.string(),
       })
       .strict()
       .describe(
@@ -587,5 +563,5 @@ export const llmSchema = z
   })
   .strict()
   .describe(
-    "Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+    "Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string the LLM-facing surfaces render: the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md, plus the web dashboard HTML and the .well-known discovery documents that the web repo's scripts/generate-webmcp.mjs emits at prebuild. Five groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta — the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), and `agentDiscovery` (title LlmAgentDiscovery); each group's own description names its source. Every leaf carries authoring context in _meta whose usage cites that source file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
   );

@@ -3,7 +3,7 @@
 // Re-run: pnpm -F @j0nathan-ll0yd/copy build
 
 /**
- * Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string in the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md surfaces. Two groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index) and `full` (title LlmFull, from llms-full.eta — the complete data dump). Each leaf is a CopyString carrying authoring context in _meta with usage citing the template file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, and schema/permissions.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.
+ * Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string the LLM-facing surfaces render: the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md, plus the web dashboard HTML and the .well-known discovery documents that the web repo's scripts/generate-webmcp.mjs emits at prebuild. Five groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta — the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), and `agentDiscovery` (title LlmAgentDiscovery); each group's own description names its source. Every leaf carries authoring context in _meta whose usage cites that source file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.
  */
 export interface Llm {
   txt: LlmTxt;
@@ -37,7 +37,6 @@ export interface LlmTxt {
   endpointArticles: LlmLink;
   endpointTheatre: LlmLink;
   endpointWorkouts: LlmLink;
-  endpointLocation: LlmLink;
   technologyHeading: string;
   technologyFramework: string;
   technologyHosting: string;
@@ -170,7 +169,6 @@ export interface LlmFull {
   streamArticles: string;
   streamTheatre: string;
   streamWorkouts: string;
-  streamLocation: string;
 }
 /**
  * LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link titles and JSON-LD Dataset prose.
@@ -213,8 +211,6 @@ export interface LlmMcp {
   dsTheatreReviewsDesc: string;
   dsWorkoutsName: string;
   dsWorkoutsDesc: string;
-  dsLocationName: string;
-  dsLocationDesc: string;
 }
 /**
  * Prose strings for the A2A agent-card (.well-known/agent-card.json) and AI catalog (.well-known/ai-catalog.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.

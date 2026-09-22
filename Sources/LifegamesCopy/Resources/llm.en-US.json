@@ -74,11 +74,6 @@
       "url": "{cloudfrontBase}/workouts.json",
       "notes": "workout sessions"
     },
-    "endpointLocation": {
-      "label": "location.json",
-      "url": "{cloudfrontBase}/location.json",
-      "notes": "location activity and place summaries"
-    },
     "technologyHeading": "Technology",
     "technologyFramework": "- Framework: Astro (static site generation, 0 KB JS by default)",
     "technologyHosting": "- Hosting: Cloudflare Pages via GitHub Actions",
@@ -205,8 +200,7 @@
     "streamBooks": "- {cloudfrontBase}/books.json — bookshelf with status, ratings, progress",
     "streamArticles": "- {cloudfrontBase}/articles.json — saved articles",
     "streamTheatre": "- {cloudfrontBase}/theatre-reviews.json — theatre reviews",
-    "streamWorkouts": "- {cloudfrontBase}/workouts.json — workout sessions",
-    "streamLocation": "- {cloudfrontBase}/location.json — location activity and place summaries"
+    "streamWorkouts": "- {cloudfrontBase}/workouts.json — workout sessions"
   },
   "dashboard": {
     "alternateLinkMarkdown": "LLM-friendly complete content",
@@ -242,9 +236,7 @@
     "dsTheatreReviewsName": "Theatre reviews",
     "dsTheatreReviewsDesc": "Theatre show reviews with ratings and venue info",
     "dsWorkoutsName": "Workouts",
-    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn",
-    "dsLocationName": "Location aggregates",
-    "dsLocationDesc": "Aggregated place summaries and location data"
+    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn"
   },
   "agentDiscovery": {
     "agentCardDescription": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, and theatre reviews as structured JSON via CloudFront.",
