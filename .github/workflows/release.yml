@@ -53,6 +53,18 @@ jobs:
       # the Version PR. No `publish-script:` input — publishing lives in
       # publish-ds-packages.yml. github-token + env.GITHUB_TOKEN are the PAT so the
       # opened PR triggers required CI (see header).
+      #
+      # `changeset:version` formats the changelogs it writes, and must keep doing so.
+      # `changeset version` indents each changeset body by two spaces when it folds it into
+      # CHANGELOG.md, and it applies that indent to the body's BLANK lines too — leaving two
+      # trailing spaces on every blank line. `prettier --check` reds on exactly that, so the
+      # Version PR was born failing its own required `format` check and could not be merged.
+      # Measured on the 3.0.0 copy release (2026-09-22): 24 insertions, 25 deletions in
+      # packages/copy/CHANGELOG.md, all of it trailing whitespace, no content change.
+      # A one-paragraph changeset never trips it, which is why this surfaced only once a
+      # changeset carried multiple paragraphs. Formatting the generated file is the fix; do not
+      # instead exempt CHANGELOG.md from prettier, which would trade a blocked release for an
+      # unformatted artifact nobody checks.
       - name: Create Version Packages PR
         uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1 # v2.1.1
         with:
