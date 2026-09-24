@@ -1238,11 +1238,23 @@ test('parseArgs defaults to the branch lane with the cache and build enabled', (
     build: true,
     selfTest: false,
     mutation: null,
+    // `--baseline-only` runs the self-test's baseline rung alone, so CI can shard the 31 mutation
+    // rungs across a matrix without dropping the baseline. Default false: an unflagged run is the
+    // full self-test, exactly as before.
+    baselineOnly: false,
     repoRoot: null,
     registry: null,
     scope: null,
     help: false
   })
+})
+
+test('parseArgs reads --baseline-only, and it stays off unless asked for', () => {
+  assert.equal(parseArgs(['--self-test', '--baseline-only']).baselineOnly, true)
+  assert.equal(parseArgs(['--self-test']).baselineOnly, false)
+  // It can only ever run FEWER rungs than a full run, so it cannot launder a green result — but an
+  // unknown flag must still be rejected rather than silently ignored.
+  assert.throws(() => parseArgs(['--self-test', '--baseline-onlyy']), /unknown argument/)
 })
 
 test('parseArgs accepts the overrides the end-to-end exit-code test needs', () => {

@@ -75,6 +75,19 @@ function declaredSharding(workflowPath) {
   return {text, invocations, matrices, labels}
 }
 
+/**
+ * A workflow with every comment-only line removed.
+ *
+ * WHY THIS EXISTS, MEASURED. The `if: always()` assertion below originally matched the raw file
+ * and PASSED with the real `if: always()` key deleted — because the prose above that job explains
+ * why the key is there and contains the literal string. A structural assertion satisfied by a
+ * comment proves nothing about the workflow, which is the same defect class this suite guards
+ * against. Every assertion about a YAML KEY reads this, and matches line-anchored.
+ */
+function withoutComments(text) {
+  return text.split('\n').filter((line) => !/^\s*#/.test(line)).join('\n')
+}
+
 function runDriver(args) {
   try {
     const stdout = execFileSync('bash', [DRIVER, ...args], {encoding: 'utf8', cwd: REPO_ROOT, stdio: ['ignore', 'pipe', 'pipe']})
@@ -201,8 +214,9 @@ test('PROOF OF FAIL — the driver REFUSES a shard total larger than the mutatio
 
 test('the required job aggregates the rungs FAIL-CLOSED — success is the only exempting result', () => {
   const {text} = declaredSharding(CI_WORKFLOW)
-  const guard = text.slice(text.indexOf('Self-test rungs must have passed'),
-    text.indexOf('- uses: actions/checkout', text.indexOf('Self-test rungs must have passed')))
+  const bareGuardText = withoutComments(text)
+  const guard = bareGuardText.slice(bareGuardText.indexOf('Self-test rungs must have passed'),
+    bareGuardText.indexOf('- uses: actions/checkout', bareGuardText.indexOf('Self-test rungs must have passed')))
   assert.ok(guard.length > 0, 'the aggregation step is missing from ci.yml')
 
   // It must consult BOTH rungs and the filter, or a failing rung could go unnoticed.
@@ -214,27 +228,30 @@ test('the required job aggregates the rungs FAIL-CLOSED — success is the only 
   assert.ok(guard.includes("!= 'success'"), 'the aggregation step must treat any non-success result as a failure')
 
   // The required job must run even when a dependency fails; a plain `needs` would SKIP it, and
-  // GitHub counts a skipped required check as satisfied.
-  const jobBlock = text.slice(text.indexOf('  package-version-drift:'))
-  assert.match(jobBlock.slice(0, 1200), /if: always\(\)/, 'package-version-drift must be `if: always()` so it cannot be skipped into a pass')
-  assert.match(jobBlock.slice(0, 1200), /needs: \[drift-engine-filter, drift-self-test-baseline, drift-self-test-shard\]/,
+  // GitHub counts a skipped required check as satisfied. Read from the comment-stripped text and
+  // matched line-anchored, so the prose explaining the key cannot stand in for the key.
+  const bare = withoutComments(text)
+  const jobBlock = bare.slice(bare.indexOf('\n  package-version-drift:'))
+  const header = jobBlock.slice(0, jobBlock.indexOf('steps:'))
+  assert.match(header, /^ {4}if: always\(\)$/m, 'package-version-drift must carry a real `if: always()` key so it cannot be skipped into a pass')
+  assert.match(header, /^ {4}needs: \[drift-engine-filter, drift-self-test-baseline, drift-self-test-shard\]$/m,
     'package-version-drift must depend on the filter and both self-test rungs')
 })
 
 test('fail-fast stays OFF on both shard matrices', () => {
   for (const [name, path] of [['ci.yml', CI_WORKFLOW], ['drift-self-test-nightly.yml', NIGHTLY_WORKFLOW]]) {
-    const {text} = declaredSharding(path)
-    const block = text.slice(text.indexOf('drift-self-test-shard:'))
+    const bare = withoutComments(declaredSharding(path).text)
+    const block = bare.slice(bare.indexOf('  drift-self-test-shard:'))
     const strategy = block.slice(block.indexOf('strategy:'), block.indexOf('matrix:'))
-    assert.match(strategy, /fail-fast: false/, `${name}: fail-fast must be false so a failing shard does not cancel siblings and hide survivors`)
+    assert.match(strategy, /^ {6}fail-fast: false$/m, `${name}: fail-fast must be false so a failing shard does not cancel siblings and hide survivors`)
   }
 })
 
 test('the nightly run has a fail-closed aggregator job, so a reaped shard cannot read as clean', () => {
-  const {text} = declaredSharding(NIGHTLY_WORKFLOW)
-  const aggregator = text.slice(text.indexOf('  drift-self-test:'))
+  const bare = withoutComments(declaredSharding(NIGHTLY_WORKFLOW).text)
+  const aggregator = bare.slice(bare.indexOf('\n  drift-self-test:'))
   assert.ok(aggregator.length > 0, 'the nightly aggregator job is missing')
-  assert.match(aggregator, /if: always\(\)/, 'the nightly aggregator must run even when a rung fails')
+  assert.match(aggregator.slice(0, aggregator.indexOf('steps:')), /^ {4}if: always\(\)$/m, 'the nightly aggregator must carry a real `if: always()` key')
   assert.ok(aggregator.includes("!= 'success'"), 'the nightly aggregator must treat any non-success rung as a failure')
   for (const needle of ['needs.drift-self-test-baseline.result', 'needs.drift-self-test-shard.result']) {
     assert.ok(aggregator.includes(needle), `the nightly aggregator does not read ${needle}`)
@@ -243,8 +260,8 @@ test('the nightly run has a fail-closed aggregator job, so a reaped shard cannot
 
 test('the baseline rung is invoked in both lanes — sharding must not retire it', () => {
   for (const [name, path] of [['ci.yml', CI_WORKFLOW], ['drift-self-test-nightly.yml', NIGHTLY_WORKFLOW]]) {
-    const {text} = declaredSharding(path)
-    assert.ok(text.includes('--self-test --baseline-only'),
+    const bare = withoutComments(declaredSharding(path).text)
+    assert.ok(bare.includes('--self-test --baseline-only'),
       `${name}: the baseline rung is not invoked. A mutant is scored killed by its target scenario failing, so without the baseline a broken suite looks like 31 kills.`)
   }
 })
