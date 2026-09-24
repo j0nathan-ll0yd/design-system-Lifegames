@@ -93,39 +93,20 @@ jobs:
         env:
           CONTRACT_CHECK_MODE: blocking
 
-  package-version-drift:
-  # Required content-drift gate: registry authentication and a real build are part of the check.
-  # Fork PRs fail before checkout because skipped required checks pass, while running fork code
-  # on self-hosted hardware is unsafe. Push the branch to this repository to measure it.
-    runs-on: [self-hosted, linux, arm64, node-highmem]
+  drift-engine-filter:
+    # Answers one question for the jobs below: did this change touch the drift engine or the
+    # contract it is held to? It lives in its own job because BOTH the self-test jobs and the
+    # required `package-version-drift` job need the answer, and a `steps.<id>.outputs` value
+    # cannot cross a job boundary.
+    #
+    # Fork PRs skip this job (same condition as every other job here), which leaves the required
+    # job's refusal step to report RED — see its first step.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, linux, arm64, node]
+    outputs:
+      engine: ${{ steps.drift-engine-changes.outputs.engine }}
     steps:
-      - name: Refuse to measure fork-PR code on a self-hosted runner
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        run: |
-          echo "::error title=package-version-drift cannot evaluate a fork PR::This gate builds and packs the workspace on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check - it would claim 'no drift' having measured nothing. Push the branch to this repository and re-run."
-          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      # RUNNER-DEATH ROOT CAUSE (this filter is the remedy). The "Known-answer
-      # self-test" step below stands up throwaway repos + an offline registry and
-      # re-runs the shipped pipeline under 31 source mutations (the count was 13
-      # when this comment was written; the mutants fan out across cores, so the
-      # step measured 380.6s on the self-hosted fleet in run 32785190011) — a
-      # memory-and-IO-heavy step. Run on EVERY pull request across the shared
-      # self-hosted arm64 fleet, two unrelated PRs land on the same physical host
-      # and the host exhausts memory; the OOM killer reaps a runner VM mid-step, so
-      # the log blob is never flushed (`BlobNotFound`) and `package-version-drift`
-      # goes RED on PRs that never touched the drift engine (#165, #167). It is NOT
-      # a TCP-port collision: the toy registry already binds an ephemeral port
-      # (`server.listen(0, ...)`) and each VM has its own network namespace, so a
-      # port could never collide across concurrent jobs — the contention is for host
-      # RAM. The fix is to stop paying that cost on PRs that cannot change the
-      # verdict: gate the self-test to engine/contract changes here, and run the
-      # FULL self-test nightly on a github-hosted runner
-      # (.github/workflows/drift-self-test-nightly.yml) as the main-branch safety net.
-      # The two ALWAYS-ON steps (digest conformance + unit suite, and the payload
-      # drift measurement) keep running unconditionally, so the job still reports the
-      # `package-version-drift` status context on every PR — the required-gate
-      # contract is intact whether or not the self-test step runs.
       - name: Detect drift-engine / contract changes
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: drift-engine-changes
@@ -136,14 +117,170 @@ jobs:
           # @j0nathan-ll0yd/estate-contracts, so the lockfile is now the file that
           # changes when the vectors, the runners or the extractor change. Watching
           # pnpm-lock.yaml is deliberately WIDER than the retired path (any dependency
-          # bump trips it) — the self-test is memory-heavy, so the cost is real, but a
-          # contract change that skipped the self-test is the failure this gate exists
-          # to prevent. Wider and correct beats narrower and blind.
+          # bump trips it) — a contract change that skipped the self-test is the failure
+          # this gate exists to prevent. Wider and correct beats narrower and blind.
+          #
+          # That width used to be expensive, which is why narrowing it kept being
+          # tempting. Sharding the self-test (below) is what made the width cheap, so
+          # the filter no longer has to trade coverage for cost. The shard driver is
+          # watched too: it decides which mutants run, so a change to it must re-prove
+          # the partition is still total.
           filters: |
             engine:
               - 'audits/checks/c147-package-drift.mjs'
+              - 'audits/checks/c147-self-test-shard.sh'
               - 'audits/__tests__/c147-package-drift.test.mjs'
+              - 'audits/__tests__/c147-self-test-shard.test.mjs'
               - 'pnpm-lock.yaml'
+
+  drift-self-test-baseline:
+    # Rung 1 of the self-test: the UN-MUTATED suite is green. Separated from the mutation rungs
+    # so those can be sharded without dropping this one. It is load-bearing and cannot be
+    # inferred from the mutation rungs: a mutant is scored "killed" purely by its target scenario
+    # failing, so a broken baseline makes mutants look killed for the wrong reason. That is why
+    # the full run checks the baseline FIRST, and why sharding the mutants alone would have
+    # quietly retired a measurer.
+    #
+    # Measured: 53.6s, 191 MiB peak RSS — one process, no fan-out.
+    needs: drift-engine-filter
+    if: needs.drift-engine-filter.outputs.engine == 'true'
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - name: Known-answer self-test — baseline rung
+        run: node audits/checks/c147-package-drift.mjs --self-test --baseline-only
+
+  drift-self-test-shard:
+    # Rung 2 of the self-test: the suite CAN fail — all 31 source mutations must be killed.
+    #
+    # RUNNER-DEATH ROOT CAUSE, AND WHY THIS IS A MATRIX. Running the mutation rungs inside ONE
+    # job fanned out `min(31, os.availableParallelism())` mutant processes — 16 lanes on the
+    # highmem tier, ~176-193 MiB each, measured peak 1501 MiB for the job. On the shared
+    # self-hosted arm64 fleet, concurrent jobs from unrelated PRs exhaust the physical host's RAM
+    # and the OOM killer reaps a runner VM mid-step; the log blob never flushes (`BlobNotFound`)
+    # and this required context goes RED having measured nothing. Recorded in atlas
+    # `audits/audits.yaml` under A2's evidence for design-system-Lifegames run 32654389950
+    # (main@6828871): the job "concluded failure with 9 of its 14 steps concluded and NOT ONE of
+    # them a failure", and the false red "propagated into a design review". It is NOT a TCP-port
+    # collision — the toy registry binds an ephemeral port and each VM has its own network
+    # namespace; the contention is for host RAM.
+    #
+    # Each shard runs its mutants ONE AT A TIME, so peak RSS per job is a single mutant (~193
+    # MiB) instead of sixteen, and per-job wall clock drops to a fraction of the full run — which
+    # shrinks the window in which a job can be reaped. Parallelism moves ACROSS runners, where
+    # each shard has its own memory, instead of WITHIN one runner. `max-parallel` caps the
+    # aggregate fleet footprint at ~4 x 193 MiB, still well under the 1501 MiB this replaces.
+    #
+    # The shard count is duplicated in drift-self-test-nightly.yml on purpose — the two lanes must
+    # run the same partition. `audits/__tests__/c147-self-test-shard.test.mjs` asserts they agree,
+    # that the matrix enumerates 1..N with no gaps, and that the partition covers every mutation
+    # the engine declares. Coverage is never a hand-kept list: the driver reads the ids from the
+    # engine on every run.
+    needs: drift-engine-filter
+    if: needs.drift-engine-filter.outputs.engine == 'true'
+    runs-on: [self-hosted, linux, arm64, node]
+    strategy:
+      # fail-fast MUST stay false. With it on, one failing shard cancels its siblings, and a
+      # cancelled shard's mutants are neither killed nor reported — the aggregate would still be
+      # a failure, but the log would name one survivor when there could be several.
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - name: Known-answer self-test — mutation shard ${{ matrix.shard }}/8
+        run: bash audits/checks/c147-self-test-shard.sh ${{ matrix.shard }} 8
+
+  package-version-drift:
+  # Required content-drift gate: registry authentication and a real build are part of the check.
+  # Fork PRs fail before checkout because skipped required checks pass, while running fork code
+  # on self-hosted hardware is unsafe. Push the branch to this repository to measure it.
+  #
+  # This is the job branch protection requires, so its NAME must not change and it must report on
+  # every event. It runs with `if: always()` and aggregates the self-test jobs itself rather than
+  # letting `needs` gate it, because a plain `needs` would SKIP this job when a self-test job
+  # fails — and GitHub counts a skipped required check as satisfied, which is the exact failure
+  # mode (a green-looking gate that measured nothing) this job exists to avoid.
+    needs: [drift-engine-filter, drift-self-test-baseline, drift-self-test-shard]
+    if: always()
+    runs-on: [self-hosted, linux, arm64, node-highmem]
+    steps:
+      - name: Refuse to measure fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=package-version-drift cannot evaluate a fork PR::This gate builds and packs the workspace on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check - it would claim 'no drift' having measured nothing. Push the branch to this repository and re-run."
+          exit 1
+      # FAIL-CLOSED AGGREGATION. Every outcome is enumerated and the default is failure, so a
+      # result this step does not recognise reds the gate instead of falling through. For a matrix
+      # job `needs.<job>.result` is 'success' only when EVERY shard succeeded, so one survivor in
+      # one shard fails the required context.
+      - name: Self-test rungs must have passed
+        env:
+          FILTER_RESULT: ${{ needs.drift-engine-filter.result }}
+          ENGINE_TOUCHED: ${{ needs.drift-engine-filter.outputs.engine }}
+          BASELINE_RESULT: ${{ needs.drift-self-test-baseline.result }}
+          SHARD_RESULT: ${{ needs.drift-self-test-shard.result }}
+        run: |
+          set -euo pipefail
+          echo "filter=$FILTER_RESULT engine=$ENGINE_TOUCHED baseline=$BASELINE_RESULT shards=$SHARD_RESULT"
+
+          if [ "$FILTER_RESULT" != 'success' ]; then
+            echo "::error title=drift self-test gating could not be evaluated::drift-engine-filter concluded '$FILTER_RESULT'. Without its answer this job cannot tell whether the self-test was required, so it reports RED rather than guessing."
+            exit 1
+          fi
+
+          if [ "$ENGINE_TOUCHED" = 'true' ]; then
+            # The self-test was required. Both rungs must have actually succeeded — 'skipped'
+            # and 'cancelled' are failures here, not exemptions.
+            for rung in "baseline:$BASELINE_RESULT" "shards:$SHARD_RESULT"; do
+              name="${rung%%:*}"
+              result="${rung#*:}"
+              if [ "$result" != 'success' ]; then
+                echo "::error title=drift self-test $name rung did not pass::This change touches the drift engine or its contract, so the self-test was required. The $name rung concluded '$result'. A required gate must not go green on an unproven engine."
+                exit 1
+              fi
+            done
+            echo "self-test required and passed: baseline green, all mutation shards green."
+            exit 0
+          fi
+
+          # The self-test was not required, so both rungs must be 'skipped'. Anything else means
+          # they ran and did not pass, which still reds the gate.
+          for rung in "baseline:$BASELINE_RESULT" "shards:$SHARD_RESULT"; do
+            name="${rung%%:*}"
+            result="${rung#*:}"
+            case "$result" in
+              skipped) ;;
+              success) echo "note: $name rung ran and passed although it was not required." ;;
+              *)
+                echo "::error title=drift self-test $name rung concluded '$result'::It was not required for this change, but it did not skip cleanly either. That is reported rather than ignored."
+                exit 1
+                ;;
+            esac
+          done
+          echo "self-test not required for this change (engine and contract untouched); nightly covers main."
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -167,12 +304,10 @@ jobs:
       # every verdict below meaningless.
       - name: Digest conformance + unit suite (35 shared vectors, fixture checksum)
         run: node --test audits/__tests__/c147-package-drift.test.mjs
-# Exercise the real package-drift pipeline plus source mutants, including wrapper exit semantics.
-# Paths gate pull-request cost; the nightly run always executes. npm remains installed to test
-# npm/pnpm asymmetry.
-      - name: Known-answer self-test (must prove it can fail)
-        if: steps.drift-engine-changes.outputs.engine == 'true'
-        run: node audits/checks/c147-package-drift.mjs --self-test
+      # The shard-partition suite runs HERE as well as under `pnpm test:scripts`, because it is
+      # what proves the sharded self-test above still covers every mutation the engine declares.
+      - name: Shard partition totality suite
+        run: node --test audits/__tests__/c147-self-test-shard.test.mjs
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: package-version-drift
         run: node audits/checks/c147-package-drift.mjs --lane=branch

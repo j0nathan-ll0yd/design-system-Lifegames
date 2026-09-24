@@ -4281,7 +4281,7 @@ function absolutizeOwnImports(source) {
     (_match, prefix, quote, specifier) => `${prefix}${quote}${import.meta.resolve(specifier)}${quote}`)
 }
 
-async function selfTestCommand({mutation}) {
+async function selfTestCommand({mutation, baselineOnly}) {
   if (mutation) {
     if (!(mutation in MUTATIONS)) {
       console.error(`unknown mutation ${mutation}; known: ${Object.keys(MUTATIONS).join(', ')}`)
@@ -4296,6 +4296,41 @@ async function selfTestCommand({mutation}) {
       return 1
     }
     console.log(`\nmutation ${mutation} killed by ${relevant.length} assertion(s) at ${scenario}*.\n`)
+    return 0
+  }
+
+  // THE BASELINE RUNG, ADDRESSABLE ON ITS OWN — so the self-test can be SHARDED without
+  // dropping it. The full run below proves two different things: that the un-mutated suite is
+  // green (this rung), and that each of the 31 mutants is killed (the fan-out). CI now splits
+  // the second half across a matrix of jobs, one `--mutation=<id>` per invocation, because
+  // running all 31 inside ONE job fanned out min(31, availableParallelism()) mutant processes
+  // at ~176 MiB each and the shared self-hosted host was OOM-reaped mid-step — a false RED on
+  // a required gate that has already propagated into a design review (atlas A2 evidence,
+  // design-system run 32654389950).
+  //
+  // Sharding the mutants alone would have silently retired this rung, since no `--mutation=`
+  // invocation re-runs the suite CLEAN and a mutant is scored "killed" purely by its target
+  // scenario failing — a broken baseline makes mutants look killed for the wrong reason, which
+  // is exactly why the baseline is checked FIRST below. So it gets its own entry point rather
+  // than being dropped.
+  //
+  // Strictly additive: no verdict logic, no scenario, no mutation table and no conformance
+  // checksum is touched, and no source line that any mutation anchors on is edited. The proof
+  // is that the full `--self-test` still kills all 31.
+  if (baselineOnly) {
+    console.log('\nself-test (baseline only): end-to-end, throwaway git repo + offline registry, no stubbed seams\n')
+    const startedBaseline = Date.now()
+    const failures = await runSelfTest({})
+    if (failures.length > 0) {
+      console.error(`\nself-test baseline FAILED (${failures.length} assertion(s)):`)
+      for (const failure of failures) {
+        console.error(`  - ${failure}`)
+      }
+      return 1
+    }
+    console.log(
+      `\nself-test baseline passed (${((Date.now() - startedBaseline) / 1000).toFixed(1)}s). Mutation rungs run separately — see --mutation=<id>.\n`
+    )
     return 0
   }
 
@@ -4374,6 +4409,7 @@ export function parseArgs(argv) {
     build: true,
     selfTest: false,
     mutation: null,
+    baselineOnly: false,
     repoRoot: null,
     registry: null,
     scope: null,
@@ -4397,6 +4433,12 @@ export function parseArgs(argv) {
       opts.selfTest = true
     } else if (arg.startsWith('--mutation=')) {
       opts.mutation = arg.slice('--mutation='.length)
+    } else if (arg === '--baseline-only') {
+      // Runs the self-test's BASELINE rung and nothing else, so CI can shard the 31 mutation
+      // rungs across separate jobs without losing the "un-mutated suite is green" guarantee.
+      // Only meaningful with --self-test; it can only ever run FEWER rungs than a full run, so
+      // it cannot launder a green result.
+      opts.baselineOnly = true
     } else if (arg.startsWith('--repo-root=')) {
       // Point the gate at another checkout. Exists so the end-to-end exit-code test can
       // spawn THIS file as a real process against a throwaway fixture repo (finding X2).

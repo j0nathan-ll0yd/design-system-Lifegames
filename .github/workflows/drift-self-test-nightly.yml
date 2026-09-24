@@ -20,8 +20,14 @@ name: Drift self-test (nightly, full)
 #
 # WHY self-hosted linux arm64 node
 # Self-hosted estate policy requires all jobs to run on self-hosted runners.
-# Memory isolation in c147-package-drift.mjs ensures the self-test runs within
-# memory limits without OOM-reaping.
+#
+# This block used to claim that "memory isolation in c147-package-drift.mjs ensures the
+# self-test runs within memory limits without OOM-reaping". That was wrong, and it was wrong
+# in the direction that hurts: this workflow WAS reaped on 2026-09-23 (run 35854756898 — the
+# mutation step ran 16m31s and was cancelled with not one failing step). The engine bounds its
+# own per-process memory, but nothing bounded the SUM of the mutant processes it fanned out, and
+# the shared physical host is what runs out of RAM. The remedy is the sharding below, not a
+# claim about isolation.
 
 on:
   schedule:
@@ -40,15 +46,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  drift-self-test:
-    # node-highmem, not node: this is the FULL self-test (baseline + every mutation) and the
-    # heaviest job in this repo -- p50 356s / max 418s over 26 runs, against 101s for the
-    # PR-gated package-version-drift that already uses this tier. The harness fans out at
-    # min(24, os.availableParallelism()), which honours the container CPU quota, so the 4-vCPU
-    # standard tier was the binding constraint. node-highmem carries 16 vCPU (raised from an
-    # inherited 4 on 2026-09-03) and 16 GiB; measured peak here is 1501 MiB, so the larger tier
-    # is chosen purely for CPU, not memory.
-    runs-on: [self-hosted, linux, arm64, node-highmem]
+  # SHARDED, and the shard count MUST match ci.yml's `drift-self-test-shard` matrix — the two
+  # lanes have to run the same partition or "nightly covers main" stops being true.
+  # `audits/__tests__/c147-self-test-shard.test.mjs` asserts they agree.
+  #
+  # It used to be one job running the whole thing: `--self-test` with no filter, which fanned out
+  # min(31, os.availableParallelism()) mutant processes -- 16 lanes on the highmem tier, measured
+  # peak 1501 MiB, p50 356s / max 418s over 26 runs. That job was reaped on 2026-09-23 (run
+  # 35854756898: the mutation step ran 16m31s and was cancelled with no failing step), the same
+  # syndrome atlas records under A2 for design-system run 32654389950. Sharding drops peak RSS per
+  # job to a single mutant (~193 MiB) and shortens each job, so the reap window shrinks with it.
+  #
+  # The `node` tier is now correct where `node-highmem` was needed before: highmem was chosen for
+  # its 16 vCPU because the harness's in-job fan-out was the thing being scaled. A shard runs its
+  # mutants one at a time, so per-job CPU demand is one process and the parallelism comes from the
+  # matrix instead.
+  drift-self-test-baseline:
+    # Rung 1: the un-mutated suite is green. Measured 53.6s, 191 MiB peak RSS.
+    runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
@@ -64,7 +79,58 @@ jobs:
       # node_modules/@changesets into a throwaway fixture and runs the real
       # @changesets/get-release-plan probe against it.
       - run: pnpm install --frozen-lockfile
-      # FULL run — no --mutation filter, no path gate. Fails loudly (exit 1) if the
-      # baseline goes red or any of the 31 mutations survives.
-      - name: Known-answer self-test (full — baseline + all 31 mutations)
-        run: node audits/checks/c147-package-drift.mjs --self-test
+      - name: Known-answer self-test — baseline rung
+        run: node audits/checks/c147-package-drift.mjs --self-test --baseline-only
+
+  drift-self-test-shard:
+    # Rung 2: all 31 mutations killed. No path gate here — the nightly always runs every shard,
+    # which is what makes it the main-branch safety net for PRs whose filter skipped the rungs.
+    runs-on: [self-hosted, linux, arm64, node]
+    strategy:
+      # See ci.yml: fail-fast off so one failing shard does not cancel its siblings and hide
+      # survivors that would otherwise be named.
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - name: Authenticate to GitHub Packages
+        run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - name: Known-answer self-test — mutation shard ${{ matrix.shard }}/8
+        run: bash audits/checks/c147-self-test-shard.sh ${{ matrix.shard }} 8
+
+  drift-self-test:
+    # FAIL-CLOSED AGGREGATION, and the job whose conclusion represents this workflow. Without it a
+    # reaped or skipped shard would leave the run's overall conclusion looking clean; the name is
+    # kept from the pre-sharding job so anything watching this workflow still finds it.
+    needs: [drift-self-test-baseline, drift-self-test-shard]
+    if: always()
+    runs-on: [self-hosted, linux, arm64, node]
+    steps:
+      - name: Every self-test rung must have passed
+        env:
+          BASELINE_RESULT: ${{ needs.drift-self-test-baseline.result }}
+          SHARD_RESULT: ${{ needs.drift-self-test-shard.result }}
+        run: |
+          set -euo pipefail
+          echo "baseline=$BASELINE_RESULT shards=$SHARD_RESULT"
+          # Unlike the PR lane there is no filter here: the nightly runs every rung every night,
+          # so 'skipped' is a failure and so is anything other than success.
+          for rung in "baseline:$BASELINE_RESULT" "shards:$SHARD_RESULT"; do
+            name="${rung%%:*}"
+            result="${rung#*:}"
+            if [ "$result" != 'success' ]; then
+              echo "::error title=nightly drift self-test $name rung concluded '$result'::The nightly is the main-branch safety net for PRs whose path filter skipped these rungs. A rung that did not succeed means main is unproven."
+              exit 1
+            fi
+          done
+          echo "nightly self-test green: baseline plus all mutation shards."
