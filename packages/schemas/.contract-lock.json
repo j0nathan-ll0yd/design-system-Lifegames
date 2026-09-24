@@ -1,15 +1,15 @@
 {
   "generatedFrom": {
     "repo": "j0nathan-ll0yd/mantle-LifegamesPortal",
-    "sha": "3a0e813858751bca5301abf0e75bf682d79382e3",
-    "checksum": "sha256:9d3495206a6b647b344edb4eeff2fb2986046513e846f56834c5faa978f46740"
+    "sha": "ed6b2e4bc29af7e6ce2af773346ade1fd524b893",
+    "checksum": "sha256:ef1a85661591d39824c75dd3a5170f25eca1fb3965842a2cd478cf5ef567e2b9"
   },
-  "generatedAt": "2026-09-13T06:02:05.688Z",
+  "generatedAt": "2026-09-23T23:55:13.113Z",
   "generatorVersion": "1.0.0",
   "files": {
     "articles-export.schema.json": "sha256:e51e4591cbb5aa0ac933861e5a63c865c4eb83520e28e4bdde5627d0668f8d59",
     "books-export.schema.json": "sha256:645860095819b44fe25a0ccaddbf7d722bcf836e31df6c06a7dc032058ec22e7",
-    "focus-export.schema.json": "sha256:1115d4aa5fe5dd2619c5dabe6bc6f0875e461ac5b91ec80b1361042b5166a877",
+    "focus-export.schema.json": "sha256:5294bdc980ec7cfba1719e2c8a21461a1376cbabe8145bdd0581a83a48e3507e",
     "github-events-export.schema.json": "sha256:2f65eac484b1516f0387107c36ab8f650542428ecb96aa1d9a9f48274999d1ee",
     "github-starred-repos-export.schema.json": "sha256:b421c24f4561384e9da56b4d500160b4780c5b90be8fafc5207e6eb22db333a5",
     "health-export.schema.json": "sha256:1469e169cc585c1eb4a298d953399eb4540a8baf33ff3b101697b5a6b80e158d",

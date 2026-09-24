@@ -13,7 +13,12 @@
  * Fail-closed guard: every non-excepted domain must yield >=1 check. A domain that
  * produces zero checks indicates a silent no-op and exits non-zero.
  *
- * Expected: 9 domains checked (all raw domains except focus, which is WALKER_EXCEPTED).
+ * Expected: 9 domains checked — every raw domain in fixture-map.json. No domain is
+ * skipped outright: WALKER_EXCEPTIONS currently holds only the sub-path
+ * `health.quantities`. `focus` IS checked; it was domain-excepted while all of its
+ * properties were required, and portal-contract 2.x added `hidingSince` for the
+ * walker to enumerate. There is no `location` row because portal-contract publishes no
+ * location export schema.
  */
 import {existsSync, readFileSync} from 'node:fs'
 import {dirname, join, resolve} from 'node:path'
@@ -175,7 +180,8 @@ for (const [dir, schemaFile] of Object.entries(fixtureMap.raw)) {
     continue
   }
 
-  // Skip domain-level exceptions (e.g. focus).
+  // Skip domain-level exceptions. None are active today; WALKER_EXCEPTIONS holds
+  // only the sub-path `health.quantities`, which is honoured inside walkSchema.
   if (Object.prototype.hasOwnProperty.call(WALKER_EXCEPTIONS, dir)) {
     process.stdout.write(`[fixtures:check-full-coverage] SKIP ${dir} — ${WALKER_EXCEPTIONS[dir]}\n`)
     continue
