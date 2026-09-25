@@ -13,6 +13,16 @@ import {toKebabName} from './d3-widget-compliance.mjs'
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const STALE_DAYS_THRESHOLD = 14
 
+/**
+ * Coverage declaration for the hub's A18 check (atlas decision 0145). A18 parses this
+ * array statically at pinned origin/main — it never imports or runs this file — and
+ * reconciles it against the surfaces catalog row D1 claims. Both directions fail: a
+ * claimed surface no runner declares, and a declared surface the catalog does not claim.
+ * Nothing imports it; it is metadata. The initializer must stay a literal array of
+ * literal objects, each with exactly one non-empty string `surfaceId`.
+ */
+export const ARTIFACTS = [{surfaceId: 'ds-swiftui-widgets'}, {surfaceId: 'ds-web-widgets'}]
+
 // ---------------------------------------------------------------------------
 // Pure reconciliation logic (unit-tested in d1-widget-matrix.test.mjs with
 // fixture registries — no filesystem access below this line).
