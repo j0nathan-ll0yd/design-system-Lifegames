@@ -36,6 +36,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+// Coverage declaration for the hub's A18 check (atlas decision 0145). A18 parses this
+// array statically at pinned origin/main — it never imports or runs this file — and
+// reconciles it against the surfaces the catalog row D2 claims. Both directions fail: a
+// claimed surface no runner declares, and a declared surface the catalog does not claim.
+// Nothing imports it; it is metadata. The initializer must stay a literal array of
+// literal objects, each with exactly one non-empty string `surfaceId`.
+export const ARTIFACTS = [{surfaceId: 'ds-web-widgets'}]
+
 const argv = process.argv.slice(2)
 function arg(name, fallback) {
   const i = argv.indexOf(name)
