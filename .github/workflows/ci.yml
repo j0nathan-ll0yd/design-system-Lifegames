@@ -20,6 +20,20 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# WHY EVERY LONG STEP RUNS UNDER `bash scripts/ci-heartbeat.sh`
+# GitHub terminates a self-hosted job at a server-side INACTIVITY deadline of roughly 600s, and
+# the trigger is SILENCE, not duration. Over 1792 runs / 10444 jobs (2026-05-26 to 2026-10-02),
+# 15 jobs in this repo ran LONGER than 600s and concluded success — the longest 947s — while 23
+# finished in the 596-604s band and NOT ONE of those concluded success. Every band job whose log
+# survives retention shows a single silent interval of 906.3s to 1104.1s ending after the kill,
+# and the container kept executing for up to 518.6s past GitHub's own `completed_at` stamp, so
+# the fleet was never the terminator. `pnpm install --frozen-lockfile` is where they stalled most
+# often, and
+# it prints NOTHING while the registry is unreachable. `timeout-minutes` cannot see that failure:
+# it bounds duration, and duration was never the problem. The wrapper prints a line a minute so
+# the deadline never sees a silent interval, and caps the wrapped command so the heartbeat cannot
+# become a licence to hang. See scripts/ci-heartbeat.sh for what it does NOT cover.
+
 jobs:
   format:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
@@ -35,7 +49,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # format:check runs dprint (TS/JS/JSON) + prettier (astro/md/mdx/css).
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: format
@@ -58,7 +72,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: typecheck
         run: pnpm typecheck
@@ -79,7 +93,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # The lock model decides whether .contract-lock.json churns: CI has no LP
       # checkout, so the sha-preservation branch is the one that runs here every time.
       # Its regression is invisible to check:schemas-freshness (which reads the lock,
@@ -156,9 +170,9 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - name: Known-answer self-test — baseline rung
-        run: node audits/checks/c147-package-drift.mjs --self-test --baseline-only
+        run: bash scripts/ci-heartbeat.sh node audits/checks/c147-package-drift.mjs --self-test --baseline-only
 
   drift-self-test-shard:
     # Rung 2 of the self-test: the suite CAN fail — all 31 source mutations must be killed.
@@ -208,9 +222,9 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - name: Known-answer self-test — mutation shard ${{ matrix.shard }}/8
-        run: bash audits/checks/c147-self-test-shard.sh ${{ matrix.shard }} 8
+        run: bash scripts/ci-heartbeat.sh bash audits/checks/c147-self-test-shard.sh ${{ matrix.shard }} 8
 
   package-version-drift:
   # Required content-drift gate: registry authentication and a real build are part of the check.
@@ -290,7 +304,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # D4 — THE SHARED DIGEST CONTRACT, AND IT RAN IN NO WORKFLOW AT ALL.
       # audits/__tests__/c147-package-drift.test.mjs runs the 35 cross-implementation
       # conformance vectors from @j0nathan-ll0yd/estate-contracts/package-digest,
@@ -310,7 +324,7 @@ jobs:
         run: node --test audits/__tests__/c147-self-test-shard.test.mjs
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: package-version-drift
-        run: node audits/checks/c147-package-drift.mjs --lane=branch
+        run: bash scripts/ci-heartbeat.sh node audits/checks/c147-package-drift.mjs --lane=branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -332,7 +346,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - run: pnpm -F @j0nathan-ll0yd/copy build
       - run: pnpm -F @j0nathan-ll0yd/copy test
       - run: pnpm -F @j0nathan-ll0yd/copy lint
@@ -363,7 +377,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - run: pnpm -F @j0nathan-ll0yd/fixtures build
       - run: pnpm -F @j0nathan-ll0yd/fixtures test
       - run: pnpm -F @j0nathan-ll0yd/fixtures lint
@@ -382,7 +396,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - run: pnpm build:tokens
       - name: DTCG 2025.10 conformance check
         run: node audits/checks/d3-validate-dtcg.mjs
@@ -413,7 +427,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: token-dist
@@ -437,7 +451,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: token-dist
@@ -463,7 +477,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: token-dist
@@ -546,7 +560,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # This job runs the web unit suite (updaters/adapters — the TS side of the
       # Props contract), which previously ran in NO CI job.
       # It deliberately does NOT typecheck: packages/web gained a real
@@ -582,7 +596,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: web-browser-runtime
         run: pnpm --filter @j0nathan-ll0yd/web test:browser
@@ -612,7 +626,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: token-dist
@@ -768,7 +782,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: token-dist

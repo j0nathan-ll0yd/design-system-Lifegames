@@ -77,7 +77,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
 
       # Build every package so the dist/ artifacts in each `files` allow-list
       # exist before pack (tokens/dist is gitignored; copy/schemas emit dist).

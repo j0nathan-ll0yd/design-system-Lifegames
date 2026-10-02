@@ -1572,6 +1572,80 @@ test('a 200 is NOT retried — the happy path costs exactly one request', async 
   }
 })
 
+/**
+ * A registry that accepts the connection and then says NOTHING, forever. The shape `fetch` has
+ * no defence against on its own.
+ */
+async function startSilentRegistry() {
+  let attempts = 0
+  const sockets = new Set()
+  const server = http.createServer(() => {
+    attempts += 1
+    // Deliberately no writeHead and no end: the request hangs open.
+  })
+  server.on('connection', (socket) => {
+    sockets.add(socket)
+    socket.on('close', () => sockets.delete(socket))
+  })
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve))
+  return {
+    url: `http://127.0.0.1:${server.address().port}`,
+    attempts: () => attempts,
+    close: async () => {
+      for (const socket of sockets) {
+        socket.destroy()
+      }
+      await new Promise((resolve) => server.close(resolve))
+    }
+  }
+}
+
+test('a request that never answers is bounded and reports unreachable, never ok', async () => {
+  // WHY THIS EXISTS — MEASURED 2026-09-23. `fetch` applies no timeout, so a registry that accepts
+  // a connection and then goes quiet stalled this engine indefinitely, and the engine prints
+  // nothing while a request is in flight. GitHub kills a self-hosted job after ~600s of SILENCE,
+  // so an unbounded wait was an unbounded silence: nightly job 107160499144 went 944.1s without
+  // a log line and was killed at 601s having measured nothing.
+  //
+  // BOTH HALVES. The wait must be bounded, AND the bound must land on `unreachable` — which
+  // runGate turns into INDETERMINATE / exit 3, never CLEAN. A timeout that returned `ok` or
+  // `absent` would read "nothing published, so fine" off a registry it never managed to read.
+  const previous = process.env.C147_REQUEST_TIMEOUT_MS
+  process.env.C147_REQUEST_TIMEOUT_MS = '250'
+  const registry = await startSilentRegistry()
+  const started = Date.now()
+  try {
+    const result = await fetchPackument(registry.url, '@toy/widget', 'test-token')
+    assert.equal(result.kind, 'unreachable')
+    assert.notEqual(result.kind, 'ok')
+    assert.notEqual(result.kind, 'absent')
+    assert.match(result.detail, /TIMEOUT after 250ms/)
+    // Four attempts of 250ms plus the 500/1500/4000ms backoff is about 7s. Without the bound this
+    // call does not return at all, so any finite assertion here is the regression guard.
+    const elapsed = Date.now() - started
+    assert.ok(elapsed < 20_000, `expected the bounded wait to finish well inside 20s, took ${elapsed}ms`)
+    assert.equal(registry.attempts(), 4)
+  } finally {
+    if (previous === undefined) {
+      delete process.env.C147_REQUEST_TIMEOUT_MS
+    } else {
+      process.env.C147_REQUEST_TIMEOUT_MS = previous
+    }
+    await registry.close()
+  }
+})
+
+test('the per-request budget defaults to the value the deadline justifies', async () => {
+  // Pinned so a later edit cannot restore an unbounded wait by deleting the default, nor raise it
+  // past the point where four attempts exceed the ~600s inactivity deadline on their own.
+  const source = fs.readFileSync(new URL('../checks/c147-package-drift.mjs', import.meta.url), 'utf8')
+  const declared = source.match(/^const REQUEST_TIMEOUT_MS = ([\d_]+)$/m)
+  assert.ok(declared, 'REQUEST_TIMEOUT_MS is no longer declared as a literal constant')
+  const ms = Number(declared[1].replace(/_/g, ''))
+  const worstCase = ms * 4 + 6000 // REQUEST_ATTEMPTS attempts plus the 500/1500/4000ms backoff
+  assert.ok(worstCase < 600_000, `four attempts of ${ms}ms would take ${worstCase}ms, past the ~600s deadline`)
+})
+
 test('retryAfterMs ignores an absent, unparseable or absurd Retry-After', () => {
   // Falling back to the fixed backoff is the safe direction: the request is still
   // retried. Honouring a multi-hour Retry-After would hang the gate instead, and a

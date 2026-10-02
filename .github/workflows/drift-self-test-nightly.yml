@@ -78,9 +78,9 @@ jobs:
       # Needed for the cascade rung (S26): the self-test symlinks this repo's
       # node_modules/@changesets into a throwaway fixture and runs the real
       # @changesets/get-release-plan probe against it.
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - name: Known-answer self-test — baseline rung
-        run: node audits/checks/c147-package-drift.mjs --self-test --baseline-only
+        run: bash scripts/ci-heartbeat.sh node audits/checks/c147-package-drift.mjs --self-test --baseline-only
 
   drift-self-test-shard:
     # Rung 2: all 31 mutations killed. No path gate here — the nightly always runs every shard,
@@ -104,9 +104,9 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       - name: Known-answer self-test — mutation shard ${{ matrix.shard }}/8
-        run: bash audits/checks/c147-self-test-shard.sh ${{ matrix.shard }} 8
+        run: bash scripts/ci-heartbeat.sh bash audits/checks/c147-self-test-shard.sh ${{ matrix.shard }} 8
 
   drift-self-test:
     # FAIL-CLOSED AGGREGATION, and the job whose conclusion represents this workflow. Without it a
