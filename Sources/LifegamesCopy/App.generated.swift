@@ -26,7 +26,7 @@ public struct App: Codable, Sendable {
     /// coordinate tip.
     public let addPlace: AppAddPlace
     /// Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book
-    /// screens and bookshelf alerts.
+    /// screens, bookshelf alerts, and the pending-sync state for optimistic edits.
     public let bookshelf: AppBookshelf
     /// Shared button/action labels reused across many screens (alert buttons, toolbar actions).
     public let common: AppCommon
@@ -208,7 +208,7 @@ public extension AppAddPlace {
 }
 
 /// Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book
-/// screens and bookshelf alerts.
+/// screens, bookshelf alerts, and the pending-sync state for optimistic edits.
 // MARK: - AppBookshelf
 public struct AppBookshelf: Codable, Sendable {
     /// Add Book search screen — title, search placeholder, empty prompt, ASIN template, add
@@ -222,11 +222,15 @@ public struct AppBookshelf: Codable, Sendable {
     /// labels.
     public let editBook: AppBookshelfEditBook
     public let enriching, finishedDate, navTitle, pageOf: String
-    public let pages, sectionPending, sectionRecentlyFinished, sectionUpNext: String
-    public let statusFinished, statusPending, statusReading, statusUpNext: String
-    public let tileBooks, tileComplete, tileHeader, tileReading: String
+    public let pages: String
+    /// Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row
+    /// badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
+    public let pending: AppBookshelfPending
+    public let sectionPending, sectionRecentlyFinished, sectionUpNext, statusFinished: String
+    public let statusPending, statusReading, statusUpNext, tileBooks: String
+    public let tileComplete, tileHeader, tileReading: String
 
-    public init(addBook: AppBookshelfAddBook, alerts: AppBookshelfAlerts, currentlyReading: String, editBook: AppBookshelfEditBook, enriching: String, finishedDate: String, navTitle: String, pageOf: String, pages: String, sectionPending: String, sectionRecentlyFinished: String, sectionUpNext: String, statusFinished: String, statusPending: String, statusReading: String, statusUpNext: String, tileBooks: String, tileComplete: String, tileHeader: String, tileReading: String) {
+    public init(addBook: AppBookshelfAddBook, alerts: AppBookshelfAlerts, currentlyReading: String, editBook: AppBookshelfEditBook, enriching: String, finishedDate: String, navTitle: String, pageOf: String, pages: String, pending: AppBookshelfPending, sectionPending: String, sectionRecentlyFinished: String, sectionUpNext: String, statusFinished: String, statusPending: String, statusReading: String, statusUpNext: String, tileBooks: String, tileComplete: String, tileHeader: String, tileReading: String) {
         self.addBook = addBook
         self.alerts = alerts
         self.currentlyReading = currentlyReading
@@ -236,6 +240,7 @@ public struct AppBookshelf: Codable, Sendable {
         self.navTitle = navTitle
         self.pageOf = pageOf
         self.pages = pages
+        self.pending = pending
         self.sectionPending = sectionPending
         self.sectionRecentlyFinished = sectionRecentlyFinished
         self.sectionUpNext = sectionUpNext
@@ -278,6 +283,7 @@ public extension AppBookshelf {
         navTitle: String? = nil,
         pageOf: String? = nil,
         pages: String? = nil,
+        pending: AppBookshelfPending? = nil,
         sectionPending: String? = nil,
         sectionRecentlyFinished: String? = nil,
         sectionUpNext: String? = nil,
@@ -300,6 +306,7 @@ public extension AppBookshelf {
             navTitle: navTitle ?? self.navTitle,
             pageOf: pageOf ?? self.pageOf,
             pages: pages ?? self.pages,
+            pending: pending ?? self.pending,
             sectionPending: sectionPending ?? self.sectionPending,
             sectionRecentlyFinished: sectionRecentlyFinished ?? self.sectionRecentlyFinished,
             sectionUpNext: sectionUpNext ?? self.sectionUpNext,
@@ -549,6 +556,58 @@ public extension AppBookshelfEditBook {
             sectionRating: sectionRating ?? self.sectionRating,
             sectionStatus: sectionStatus ?? self.sectionStatus,
             title: title ?? self.title
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row
+/// badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
+// MARK: - AppBookshelfPending
+public struct AppBookshelfPending: Codable, Sendable {
+    public let pill, rowBadge, stuck: String
+
+    public init(pill: String, rowBadge: String, stuck: String) {
+        self.pill = pill
+        self.rowBadge = rowBadge
+        self.stuck = stuck
+    }
+}
+
+// MARK: AppBookshelfPending convenience initializers and mutators
+
+public extension AppBookshelfPending {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(AppBookshelfPending.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        pill: String? = nil,
+        rowBadge: String? = nil,
+        stuck: String? = nil
+    ) -> AppBookshelfPending {
+        return AppBookshelfPending(
+            pill: pill ?? self.pill,
+            rowBadge: rowBadge ?? self.rowBadge,
+            stuck: stuck ?? self.stuck
         )
     }
 

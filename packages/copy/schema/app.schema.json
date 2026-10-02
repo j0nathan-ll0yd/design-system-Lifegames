@@ -905,7 +905,7 @@
     "bookshelf": {
       "type": "object",
       "title": "AppBookshelf",
-      "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.",
+      "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens, bookshelf alerts, and the pending-sync state for optimistic edits.",
       "additionalProperties": false,
       "required": [
         "navTitle",
@@ -927,7 +927,8 @@
         "finishedDate",
         "addBook",
         "editBook",
-        "alerts"
+        "alerts",
+        "pending"
       ],
       "properties": {
         "navTitle": {
@@ -1131,6 +1132,24 @@
               "$ref": "#/$defs/CopyString"
             },
             "kindleEditionRejected": {
+              "$ref": "#/$defs/CopyString"
+            }
+          }
+        },
+        "pending": {
+          "type": "object",
+          "title": "AppBookshelfPending",
+          "description": "Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.",
+          "additionalProperties": false,
+          "required": ["rowBadge", "pill", "stuck"],
+          "properties": {
+            "rowBadge": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "pill": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "stuck": {
               "$ref": "#/$defs/CopyString"
             }
           }
