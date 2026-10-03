@@ -223,7 +223,7 @@ public struct AppBookshelf: Codable, Sendable {
     public let editBook: AppBookshelfEditBook
     public let enriching, finishedDate, navTitle, pageOf: String
     public let pages: String
-    /// Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row
+    /// Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row
     /// badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
     public let pending: AppBookshelfPending
     public let sectionPending, sectionRecentlyFinished, sectionUpNext, statusFinished: String
@@ -568,7 +568,7 @@ public extension AppBookshelfEditBook {
     }
 }
 
-/// Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row
+/// Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row
 /// badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
 // MARK: - AppBookshelfPending
 public struct AppBookshelfPending: Codable, Sendable {
@@ -1869,7 +1869,7 @@ public struct AppSettings: Codable, Sendable {
     public let sectionLocation, serverLabel, shareLog, simActive: String
     public let syncNow, tokenClear, tokenConfigured, tokenMissing: String
     public let tokenPlaceholder, tokenSave, tokenSavedConfirmation: String
-    /// Token-verification affordance beside the API token row (atlas decision 0151 Phase 5) —
+    /// Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) —
     /// the verify button plus the three result lines for GET /health/ping: valid, invalid (401,
     /// act on the token), unreachable (transport failure, token unjudged).
     public let tokenVerification: AppSettingsTokenVerification
@@ -2090,7 +2090,7 @@ public extension AppSettingsAlerts {
     }
 }
 
-/// Token-verification affordance beside the API token row (atlas decision 0151 Phase 5) —
+/// Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) —
 /// the verify button plus the three result lines for GET /health/ping: valid, invalid (401,
 /// act on the token), unreachable (transport failure, token unjudged).
 // MARK: - AppSettingsTokenVerification

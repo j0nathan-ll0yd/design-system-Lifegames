@@ -2,7 +2,7 @@
 '@j0nathan-ll0yd/copy': minor
 ---
 
-settings: add the token-verification strings for the Settings API section (atlas decision 0151, Phase 5).
+settings: add the token-verification strings for the Settings API section (atlas decision 0153, Phase 5).
 
 Four additive keys under `app.settings.tokenVerification`, consumed on iOS as
 `CopyLoader.app.settings.tokenVerification.*`:

@@ -106,7 +106,7 @@ export interface AppSettings {
   alerts: AppSettingsAlerts;
 }
 /**
- * Token-verification affordance beside the API token row (atlas decision 0151 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).
+ * Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).
  */
 export interface AppSettingsTokenVerification {
   verify: string;
@@ -396,7 +396,7 @@ export interface AppBookshelfAlerts {
   kindleEditionRejected: string;
 }
 /**
- * Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
+ * Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
  */
 export interface AppBookshelfPending {
   rowBadge: string;

@@ -536,7 +536,7 @@
         "value": "Verify",
         "_meta": {
           "description": "API section verify button beside the token row. Fires GET /health/ping with the saved bearer token and swaps in one of the three result lines (valid/invalid/unreachable).",
-          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verify button; planned, atlas decision 0151 Phase 5)"],
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verify button; planned, atlas decision 0153 Phase 5)"],
           "register": "label",
           "audience": "human",
           "owner": "jonathan",
@@ -548,7 +548,7 @@
         "value": "Token verified.",
         "_meta": {
           "description": "Verification result line when GET /health/ping succeeds with the saved token. States the fact; no celebration.",
-          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0151 Phase 5)"],
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0153 Phase 5)"],
           "register": "factual",
           "audience": "human",
           "owner": "jonathan",
@@ -560,7 +560,7 @@
         "value": "Token rejected. Paste a fresh one.",
         "_meta": {
           "description": "Verification result line on 401 — the saved token is wrong. Permanent failure: only acting on the token fixes it.",
-          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0151 Phase 5)"],
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0153 Phase 5)"],
           "register": "factual",
           "audience": "human",
           "owner": "jonathan",
@@ -572,7 +572,7 @@
         "value": "Could not reach the server. Try again when you are online.",
         "_meta": {
           "description": "Verification result line when GET /health/ping gets no response — transport failure, token unjudged. Transient: retrying later is the fix.",
-          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0151 Phase 5)"],
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0153 Phase 5)"],
           "register": "factual",
           "audience": "human",
           "owner": "jonathan",
@@ -2821,7 +2821,7 @@
         "value": "Waiting to sync",
         "_meta": {
           "description": "Per-row badge on a book whose edit is queued locally. Quiet state marker, not an alert.",
-          "usage": ["ios:BookshelfFeature/BookshelfView.swift (pending-edit row badge; planned, atlas decision 0151 Phase 2)"],
+          "usage": ["ios:BookshelfFeature/BookshelfView.swift (pending-edit row badge; planned, atlas decision 0153 Phase 2)"],
           "register": "label",
           "audience": "human",
           "owner": "jonathan",
@@ -2833,7 +2833,7 @@
         "value": "{count, plural, one {# change waiting to sync} other {# changes waiting to sync}}",
         "_meta": {
           "description": "Bookshelf count pill summarizing queued local edits. ICU MF1 plural; consumer substitutes the queued-write count. Rendered only while at least one write is queued, so no =0 clause.",
-          "usage": ["ios:BookshelfFeature/BookshelfView.swift (pending-edits count pill; planned, atlas decision 0151 Phase 2)"],
+          "usage": ["ios:BookshelfFeature/BookshelfView.swift (pending-edits count pill; planned, atlas decision 0153 Phase 2)"],
           "register": "label",
           "audience": "human",
           "owner": "jonathan",
@@ -2845,7 +2845,7 @@
         "value": "Still waiting to sync. Check your connection, or your token in Settings.",
         "_meta": {
           "description": "Escalation line once a queued edit has waited past the stuck threshold. States the fact, then the two things worth checking: connectivity, then the token in Settings.",
-          "usage": ["ios:BookshelfFeature/BookshelfView.swift (stuck-sync escalation line; planned, atlas decision 0151 Phase 2)"],
+          "usage": ["ios:BookshelfFeature/BookshelfView.swift (stuck-sync escalation line; planned, atlas decision 0153 Phase 2)"],
           "register": "factual",
           "audience": "human",
           "owner": "jonathan",

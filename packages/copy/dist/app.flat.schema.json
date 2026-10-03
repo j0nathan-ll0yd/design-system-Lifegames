@@ -196,7 +196,7 @@
         "tokenVerification": {
           "type": "object",
           "title": "AppSettingsTokenVerification",
-          "description": "Token-verification affordance beside the API token row (atlas decision 0151 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).",
+          "description": "Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).",
           "properties": {
             "verify": {
               "type": "string"
@@ -1127,7 +1127,7 @@
         "pending": {
           "type": "object",
           "title": "AppBookshelfPending",
-          "description": "Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.",
+          "description": "Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.",
           "properties": {
             "rowBadge": {
               "type": "string"
