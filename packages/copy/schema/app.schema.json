@@ -162,7 +162,7 @@
     "settings": {
       "type": "object",
       "title": "AppSettings",
-      "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.",
+      "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, destructive-action alerts, and the API token-verification affordance.",
       "additionalProperties": false,
       "required": [
         "sectionLocation",
@@ -180,6 +180,7 @@
         "tokenSave",
         "tokenClear",
         "tokenSavedConfirmation",
+        "tokenVerification",
         "sectionDiagnostics",
         "sectionAbout",
         "savedPlacesTitle",
@@ -246,6 +247,27 @@
         },
         "tokenSavedConfirmation": {
           "$ref": "#/$defs/CopyString"
+        },
+        "tokenVerification": {
+          "type": "object",
+          "title": "AppSettingsTokenVerification",
+          "description": "Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).",
+          "additionalProperties": false,
+          "required": ["verify", "valid", "invalid", "unreachable"],
+          "properties": {
+            "verify": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "valid": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "invalid": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "unreachable": {
+              "$ref": "#/$defs/CopyString"
+            }
+          }
         },
         "sectionDiagnostics": {
           "$ref": "#/$defs/CopyString"
@@ -1139,7 +1161,7 @@
         "pending": {
           "type": "object",
           "title": "AppBookshelfPending",
-          "description": "Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.",
+          "description": "Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.",
           "additionalProperties": false,
           "required": ["rowBadge", "pill", "stuck"],
           "properties": {

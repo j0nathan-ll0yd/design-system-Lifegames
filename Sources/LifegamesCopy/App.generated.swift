@@ -49,8 +49,8 @@ public struct App: Codable, Sendable {
     public let savedPlaces: AppSavedPlaces
     /// Dashboard triptych column header labels used on the web dashboard (index.astro).
     public let sections: AppSections
-    /// Settings screen — section headers, server/data/diagnostics/about rows, buttons, and
-    /// destructive-action alerts.
+    /// Settings screen — section headers, server/data/diagnostics/about rows, buttons,
+    /// destructive-action alerts, and the API token-verification affordance.
     public let settings: AppSettings
     /// Sleep-score entry sheet — title, prompt, placeholder, buttons, and a11y labels for the
     /// add/edit affordance.
@@ -223,7 +223,7 @@ public struct AppBookshelf: Codable, Sendable {
     public let editBook: AppBookshelfEditBook
     public let enriching, finishedDate, navTitle, pageOf: String
     public let pages: String
-    /// Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row
+    /// Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row
     /// badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
     public let pending: AppBookshelfPending
     public let sectionPending, sectionRecentlyFinished, sectionUpNext, statusFinished: String
@@ -568,7 +568,7 @@ public extension AppBookshelfEditBook {
     }
 }
 
-/// Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row
+/// Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row
 /// badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
 // MARK: - AppBookshelfPending
 public struct AppBookshelfPending: Codable, Sendable {
@@ -1855,8 +1855,8 @@ public extension AppSections {
     }
 }
 
-/// Settings screen — section headers, server/data/diagnostics/about rows, buttons, and
-/// destructive-action alerts.
+/// Settings screen — section headers, server/data/diagnostics/about rows, buttons,
+/// destructive-action alerts, and the API token-verification affordance.
 // MARK: - AppSettings
 public struct AppSettings: Codable, Sendable {
     public let aboutBuild, aboutPlatform, aboutVersion: String
@@ -1868,16 +1868,20 @@ public struct AppSettings: Codable, Sendable {
     public let sectionAPI, sectionData, sectionDataMode, sectionDiagnostics: String
     public let sectionLocation, serverLabel, shareLog, simActive: String
     public let syncNow, tokenClear, tokenConfigured, tokenMissing: String
-    public let tokenPlaceholder, tokenSave, tokenSavedConfirmation, totalVisits: String
-    public let unsyncedVisits, useRealHR, watchLogEntries: String
+    public let tokenPlaceholder, tokenSave, tokenSavedConfirmation: String
+    /// Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) —
+    /// the verify button plus the three result lines for GET /health/ping: valid, invalid (401,
+    /// act on the token), unreachable (transport failure, token unjudged).
+    public let tokenVerification: AppSettingsTokenVerification
+    public let totalVisits, unsyncedVisits, useRealHR, watchLogEntries: String
 
     public enum CodingKeys: String, CodingKey {
         case aboutBuild, aboutPlatform, aboutVersion, alerts, clearLogs, deleteAll, diagEmpty, fileSize, fullResync, lastHealthSync, realActive, recentEntries, reload, savedPlacesSubtitle, savedPlacesTitle, sectionAbout
         case sectionAPI = "sectionApi"
-        case sectionData, sectionDataMode, sectionDiagnostics, sectionLocation, serverLabel, shareLog, simActive, syncNow, tokenClear, tokenConfigured, tokenMissing, tokenPlaceholder, tokenSave, tokenSavedConfirmation, totalVisits, unsyncedVisits, useRealHR, watchLogEntries
+        case sectionData, sectionDataMode, sectionDiagnostics, sectionLocation, serverLabel, shareLog, simActive, syncNow, tokenClear, tokenConfigured, tokenMissing, tokenPlaceholder, tokenSave, tokenSavedConfirmation, tokenVerification, totalVisits, unsyncedVisits, useRealHR, watchLogEntries
     }
 
-    public init(aboutBuild: String, aboutPlatform: String, aboutVersion: String, alerts: AppSettingsAlerts, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionAPI: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, serverLabel: String, shareLog: String, simActive: String, syncNow: String, tokenClear: String, tokenConfigured: String, tokenMissing: String, tokenPlaceholder: String, tokenSave: String, tokenSavedConfirmation: String, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
+    public init(aboutBuild: String, aboutPlatform: String, aboutVersion: String, alerts: AppSettingsAlerts, clearLogs: String, deleteAll: String, diagEmpty: String, fileSize: String, fullResync: String, lastHealthSync: String, realActive: String, recentEntries: String, reload: String, savedPlacesSubtitle: String, savedPlacesTitle: String, sectionAbout: String, sectionAPI: String, sectionData: String, sectionDataMode: String, sectionDiagnostics: String, sectionLocation: String, serverLabel: String, shareLog: String, simActive: String, syncNow: String, tokenClear: String, tokenConfigured: String, tokenMissing: String, tokenPlaceholder: String, tokenSave: String, tokenSavedConfirmation: String, tokenVerification: AppSettingsTokenVerification, totalVisits: String, unsyncedVisits: String, useRealHR: String, watchLogEntries: String) {
         self.aboutBuild = aboutBuild
         self.aboutPlatform = aboutPlatform
         self.aboutVersion = aboutVersion
@@ -1909,6 +1913,7 @@ public struct AppSettings: Codable, Sendable {
         self.tokenPlaceholder = tokenPlaceholder
         self.tokenSave = tokenSave
         self.tokenSavedConfirmation = tokenSavedConfirmation
+        self.tokenVerification = tokenVerification
         self.totalVisits = totalVisits
         self.unsyncedVisits = unsyncedVisits
         self.useRealHR = useRealHR
@@ -1966,6 +1971,7 @@ public extension AppSettings {
         tokenPlaceholder: String? = nil,
         tokenSave: String? = nil,
         tokenSavedConfirmation: String? = nil,
+        tokenVerification: AppSettingsTokenVerification? = nil,
         totalVisits: String? = nil,
         unsyncedVisits: String? = nil,
         useRealHR: String? = nil,
@@ -2003,6 +2009,7 @@ public extension AppSettings {
             tokenPlaceholder: tokenPlaceholder ?? self.tokenPlaceholder,
             tokenSave: tokenSave ?? self.tokenSave,
             tokenSavedConfirmation: tokenSavedConfirmation ?? self.tokenSavedConfirmation,
+            tokenVerification: tokenVerification ?? self.tokenVerification,
             totalVisits: totalVisits ?? self.totalVisits,
             unsyncedVisits: unsyncedVisits ?? self.unsyncedVisits,
             useRealHR: useRealHR ?? self.useRealHR,
@@ -2071,6 +2078,62 @@ public extension AppSettingsAlerts {
             resyncConfirm: resyncConfirm ?? self.resyncConfirm,
             resyncMessage: resyncMessage ?? self.resyncMessage,
             resyncTitle: resyncTitle ?? self.resyncTitle
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) —
+/// the verify button plus the three result lines for GET /health/ping: valid, invalid (401,
+/// act on the token), unreachable (transport failure, token unjudged).
+// MARK: - AppSettingsTokenVerification
+public struct AppSettingsTokenVerification: Codable, Sendable {
+    public let invalid, unreachable, valid, verify: String
+
+    public init(invalid: String, unreachable: String, valid: String, verify: String) {
+        self.invalid = invalid
+        self.unreachable = unreachable
+        self.valid = valid
+        self.verify = verify
+    }
+}
+
+// MARK: AppSettingsTokenVerification convenience initializers and mutators
+
+public extension AppSettingsTokenVerification {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(AppSettingsTokenVerification.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        invalid: String? = nil,
+        unreachable: String? = nil,
+        valid: String? = nil,
+        verify: String? = nil
+    ) -> AppSettingsTokenVerification {
+        return AppSettingsTokenVerification(
+            invalid: invalid ?? self.invalid,
+            unreachable: unreachable ?? self.unreachable,
+            valid: valid ?? self.valid,
+            verify: verify ?? self.verify
         )
     }
 

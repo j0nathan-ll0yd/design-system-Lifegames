@@ -71,6 +71,17 @@ export const appSchema = z
         tokenSave: z.string(),
         tokenClear: z.string(),
         tokenSavedConfirmation: z.string(),
+        tokenVerification: z
+          .object({
+            verify: z.string(),
+            valid: z.string(),
+            invalid: z.string(),
+            unreachable: z.string(),
+          })
+          .strict()
+          .describe(
+            'Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).',
+          ),
         sectionDiagnostics: z.string(),
         sectionAbout: z.string(),
         savedPlacesTitle: z.string(),
@@ -107,7 +118,7 @@ export const appSchema = z
       })
       .strict()
       .describe(
-        'Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.',
+        'Settings screen — section headers, server/data/diagnostics/about rows, buttons, destructive-action alerts, and the API token-verification affordance.',
       ),
     savedPlaces: z
       .object({
@@ -381,7 +392,7 @@ export const appSchema = z
           .object({ rowBadge: z.string(), pill: z.string(), stuck: z.string() })
           .strict()
           .describe(
-            'Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.',
+            'Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.',
           ),
       })
       .strict()
