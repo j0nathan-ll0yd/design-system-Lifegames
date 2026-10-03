@@ -63,6 +63,11 @@ public struct DatastreamHomeData: Sendable {
     public var bookCoverImage: Image?
     /// Reading progress for the current book (0–1).
     public var bookProgress: Double
+    /// Compact staleness hint for the Books tile header (e.g. "2 hr. ago"), rendered as the
+    /// tile's badge in place of the live dot. Nil means fresh or unknown: the live dot keeps
+    /// rendering and nothing changes for existing callers. The app formats the string — this
+    /// bag stays preformatted-presentational like `placeSubtitle` (atlas decision 0153 D5).
+    public var booksUpdatedBadge: String?
 
     // MARK: - Location
 
@@ -96,6 +101,7 @@ public struct DatastreamHomeData: Sendable {
         restingHR: Int,
         caffeineMg: Int, caffeineTarget: Int, cups: Int, lastBeverage: String,
         bookCoverURL: URL?, bookProgress: Double,
+        booksUpdatedBadge: String? = nil,
         latitude: Double, longitude: Double,
         placeName: String, placeSubtitle: String, locationStatus: String,
         dateLabel: String = "Today",
@@ -123,6 +129,7 @@ public struct DatastreamHomeData: Sendable {
         self.bookCoverURL = bookCoverURL
         bookCoverImage = coverImage
         self.bookProgress = bookProgress
+        self.booksUpdatedBadge = booksUpdatedBadge
         self.latitude = latitude
         self.longitude = longitude
         self.placeName = placeName

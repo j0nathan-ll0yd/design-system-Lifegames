@@ -494,3 +494,5 @@ openspec/README.md:marker:j0nathan-ll0yd
 openspec/specs/widget-contract/spec.md:marker:j0nathan-ll0yd
 audits/checks/d3-openspec-covers.mjs:marker:j0nathan-ll0yd
 audits/__tests__/d3-openspec-covers.test.mjs:marker:j0nathan-ll0yd
+# Changesets must name the scoped public package they release.
+.changeset/offline-record-repoint.md:marker:j0nathan-ll0yd

@@ -219,10 +219,26 @@ public struct DatastreamHomeGrid: View {
     /// with public covers keep supplying a URL.
     @ViewBuilder
     private var booksTile: some View {
-        if let coverImage = data.bookCoverImage {
-            BookCoverTile(coverImage: coverImage, progress: data.bookProgress)
-        } else {
-            BookCoverTile(coverURL: data.bookCoverURL, progress: data.bookProgress)
+        // The chip is the snapshot-staleness hint (atlas decision 0153 D5): quiet metadata
+        // about the data's age, overlaid on the cover because the small tile's header row
+        // cannot fit a second text run beside the kerned title without wrapping both.
+        ZStack(alignment: .topTrailing) {
+            if let coverImage = data.bookCoverImage {
+                BookCoverTile(coverImage: coverImage, progress: data.bookProgress)
+            } else {
+                BookCoverTile(coverURL: data.bookCoverURL, progress: data.bookProgress)
+            }
+            if let badge = data.booksUpdatedBadge {
+                Text(badge)
+                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                    .lineLimit(1)
+                    .fixedSize()
+                    .foregroundStyle(LGColor.textMuted)
+                    .padding(.horizontal, Spacing.s250)
+                    .padding(.vertical, Spacing.s100)
+                    .background(LGColor.surfaceBase.opacity(0.72), in: Capsule())
+                    .padding(Spacing.s150)
+            }
         }
     }
 
