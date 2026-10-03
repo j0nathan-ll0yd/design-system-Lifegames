@@ -199,7 +199,7 @@ public struct DatastreamHomeGrid: View {
             }
 
             selectable(.books) {
-                // The badge is the snapshot-staleness hint (atlas decision 0151 D5). Muted,
+                // The badge is the snapshot-staleness hint (atlas decision 0153 D5). Muted,
                 // not accent: it is metadata about the data's age, not a live metric — and
                 // when it shows, the "live" dot it replaces would have been a lie.
                 BentoTileView(

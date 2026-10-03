@@ -66,7 +66,7 @@ public struct DatastreamHomeData: Sendable {
     /// Compact staleness hint for the Books tile header (e.g. "2 hr. ago"), rendered as the
     /// tile's badge in place of the live dot. Nil means fresh or unknown: the live dot keeps
     /// rendering and nothing changes for existing callers. The app formats the string — this
-    /// bag stays preformatted-presentational like `placeSubtitle` (atlas decision 0151 D5).
+    /// bag stays preformatted-presentational like `placeSubtitle` (atlas decision 0153 D5).
     public var booksUpdatedBadge: String?
 
     // MARK: - Location

@@ -39,7 +39,7 @@ final class BookCoverTileSourceTests: XCTestCase {
     }
 
     /// A caller that never sets the staleness badge must keep the live dot: the badge slot
-    /// defaults to nil, so adding it (atlas decision 0151 D5) changes nothing for existing
+    /// defaults to nil, so adding it (atlas decision 0153 D5) changes nothing for existing
     /// callers, the gallery sample included.
     func testHomeDataDefaultsToNoBooksBadge() {
         XCTAssertNil(DatastreamHomeData.sample.booksUpdatedBadge)
