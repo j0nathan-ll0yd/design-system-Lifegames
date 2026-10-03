@@ -65,7 +65,7 @@ export interface AppHome {
   syncStatus: string;
 }
 /**
- * Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.
+ * Settings screen — section headers, server/data/diagnostics/about rows, buttons, destructive-action alerts, and the API token-verification affordance.
  */
 export interface AppSettings {
   sectionLocation: string;
@@ -83,6 +83,7 @@ export interface AppSettings {
   tokenSave: string;
   tokenClear: string;
   tokenSavedConfirmation: string;
+  tokenVerification: AppSettingsTokenVerification;
   sectionDiagnostics: string;
   sectionAbout: string;
   savedPlacesTitle: string;
@@ -103,6 +104,15 @@ export interface AppSettings {
   aboutBuild: string;
   aboutPlatform: string;
   alerts: AppSettingsAlerts;
+}
+/**
+ * Token-verification affordance beside the API token row (atlas decision 0151 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).
+ */
+export interface AppSettingsTokenVerification {
+  verify: string;
+  valid: string;
+  invalid: string;
+  unreachable: string;
 }
 /**
  * Settings destructive-action confirmation alerts (delete-all, full re-sync, clear-logs).

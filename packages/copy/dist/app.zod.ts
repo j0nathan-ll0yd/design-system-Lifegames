@@ -71,6 +71,17 @@ export const appSchema = z
         tokenSave: z.string(),
         tokenClear: z.string(),
         tokenSavedConfirmation: z.string(),
+        tokenVerification: z
+          .object({
+            verify: z.string(),
+            valid: z.string(),
+            invalid: z.string(),
+            unreachable: z.string(),
+          })
+          .strict()
+          .describe(
+            'Token-verification affordance beside the API token row (atlas decision 0151 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).',
+          ),
         sectionDiagnostics: z.string(),
         sectionAbout: z.string(),
         savedPlacesTitle: z.string(),
@@ -107,7 +118,7 @@ export const appSchema = z
       })
       .strict()
       .describe(
-        'Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.',
+        'Settings screen — section headers, server/data/diagnostics/about rows, buttons, destructive-action alerts, and the API token-verification affordance.',
       ),
     savedPlaces: z
       .object({

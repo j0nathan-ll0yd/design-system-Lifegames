@@ -91,12 +91,12 @@ const NAMESPACES: NamespaceFixture[] = [
   //   + coffee 8 (mug/caffeineThisCup/dailyCaffeine + action ×5
   //     [connect/searching/reconnect/finishCup/newCup]).
   {name: 'a11y', expectedLeaves: 22},
-  // app: nav 10 + common 7 + home 12 + settings 41 + savedPlaces 4
+  // app: nav 10 + common 7 + home 12 + settings 45 + savedPlaces 4
   //   + addPlace 9 + health 9 + sleep 8 + location 73 + bookshelf 54 + watch 12
   //   + sections 2 + page404 2.
-  //   bookshelf gained pending.{rowBadge,pill,stuck} — the optimistic-edit
-  //   pending-sync strings (atlas decision 0151 Phase 2).
-  {name: 'app', expectedLeaves: 243},
+  //   settings gained tokenVerification.{verify,valid,invalid,unreachable} —
+  //   the API token-verification affordance (atlas decision 0151 Phase 5).
+  {name: 'app', expectedLeaves: 247},
   // permissions: health 2 + locationWhenInUse 2 + locationAlways 1 + motion 1.
   {name: 'permissions', expectedLeaves: 6},
   // errors: validation 2 + client 2.

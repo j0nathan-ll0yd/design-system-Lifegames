@@ -531,6 +531,56 @@
         "lastReviewed": "2026-07-07"
       }
     },
+    "tokenVerification": {
+      "verify": {
+        "value": "Verify",
+        "_meta": {
+          "description": "API section verify button beside the token row. Fires GET /health/ping with the saved bearer token and swaps in one of the three result lines (valid/invalid/unreachable).",
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verify button; planned, atlas decision 0151 Phase 5)"],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "A wrong token is the one failure the offline outbox can never heal — it looks exactly like being offline until the user can check it. One UI verb, stored natural-case like tokenSave/tokenClear."
+        }
+      },
+      "valid": {
+        "value": "Token verified.",
+        "_meta": {
+          "description": "Verification result line when GET /health/ping succeeds with the saved token. States the fact; no celebration.",
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0151 Phase 5)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "The three result lines share one slot, so all three carry sentence punctuation even though this one is short. The reassurance is implied, never congratulatory."
+        }
+      },
+      "invalid": {
+        "value": "Token rejected. Paste a fresh one.",
+        "_meta": {
+          "description": "Verification result line on 401 — the saved token is wrong. Permanent failure: only acting on the token fixes it.",
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0151 Phase 5)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "The split this group exists for: invalid means the token is at fault, so the line names the token and the next action ('paste', matching tokenPlaceholder vocabulary). Never worded like a connectivity problem."
+        }
+      },
+      "unreachable": {
+        "value": "Could not reach the server. Try again when you are online.",
+        "_meta": {
+          "description": "Verification result line when GET /health/ping gets no response — transport failure, token unjudged. Transient: retrying later is the fix.",
+          "usage": ["ios:SettingsFeature/SettingsFeatureView.swift (API section verification result line; planned, atlas decision 0151 Phase 5)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "Deliberately never blames the token: a dead network says nothing about credentials. 'Server' not 'backend' — app copy already says Server (serverLabel, simActive); 'backend' appears only in machine-surface prose."
+        }
+      }
+    },
     "sectionDiagnostics": {
       "value": "Diagnostics",
       "_meta": {
