@@ -377,10 +377,16 @@ export const appSchema = z
           .describe(
             'Bookshelf error-alert titles (load/add/update/delete failures) plus the add-book rejection message.',
           ),
+        pending: z
+          .object({ rowBadge: z.string(), pill: z.string(), stuck: z.string() })
+          .strict()
+          .describe(
+            'Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.',
+          ),
       })
       .strict()
       .describe(
-        'Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.',
+        'Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens, bookshelf alerts, and the pending-sync state for optimistic edits.',
       ),
     watch: z
       .object({

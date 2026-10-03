@@ -311,7 +311,7 @@ export interface AppLocationVisitDuration {
   inProgress: string;
 }
 /**
- * Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.
+ * Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens, bookshelf alerts, and the pending-sync state for optimistic edits.
  */
 export interface AppBookshelf {
   navTitle: string;
@@ -334,6 +334,7 @@ export interface AppBookshelf {
   addBook: AppBookshelfAddBook;
   editBook: AppBookshelfEditBook;
   alerts: AppBookshelfAlerts;
+  pending: AppBookshelfPending;
 }
 /**
  * Add Book search screen — title, search placeholder, empty prompt, ASIN template, add button.
@@ -383,6 +384,14 @@ export interface AppBookshelfAlerts {
   failedToUpdate: string;
   failedToDelete: string;
   kindleEditionRejected: string;
+}
+/**
+ * Pending-sync state for optimistic book edits (atlas decision 0151 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.
+ */
+export interface AppBookshelfPending {
+  rowBadge: string;
+  pill: string;
+  stuck: string;
 }
 /**
  * watchOS app + sync-status complication — diagnostics chrome, sync action labels, and complication strings.
