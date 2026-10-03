@@ -1581,6 +1581,42 @@ const REQUEST_ATTEMPTS = 4
 const RETRY_BACKOFF_MS = [500, 1500, 4000]
 
 /**
+ * Per-attempt wall-clock budget for ONE registry request, covering connect, headers and body.
+ *
+ * WHY THIS EXISTS — MEASURED 2026-09-23, not theorised. `fetch` applies no timeout of its own,
+ * so a registry that accepts a connection and then says nothing stalls this engine for as long
+ * as the kernel is willing to wait. That is not merely slow: GitHub terminates a self-hosted job
+ * at a SERVER-SIDE INACTIVITY DEADLINE of ~600s, and this engine prints nothing while a request
+ * is in flight, so an unbounded wait is also an unbounded SILENCE. Nightly job 107160499144 sat
+ * 944.1s inside a single `gate()` call with not one log line, and the job was killed at 601s
+ * having measured nothing. `timeout-minutes` cannot see that failure and never could.
+ *
+ * Four attempts of this budget plus the backoff bound one URL at roughly 246s, under the
+ * deadline even with no heartbeat at all.
+ *
+ * BOUNDING THE WAIT CANNOT MANUFACTURE A PASS, and that is the property to protect when editing
+ * this. A timeout is a transport failure, so it lands exactly where every other transport
+ * failure already lands: `unreachable` -> INDETERMINATE -> exit 3. It can only ever turn a hang
+ * into a reported "could not tell"; it can never turn one into CLEAN. The `a request that never
+ * answers is bounded and reports unreachable, never ok` test in c147-package-drift.test.mjs pins
+ * both halves.
+ */
+const REQUEST_TIMEOUT_MS = 60_000
+
+/**
+ * The budget actually used, read per attempt so a test can shorten it without a 246s wait.
+ *
+ * SAFE TO EXPOSE because it only ever fails CLOSED: a shorter budget produces MORE `unreachable`,
+ * which is MORE INDETERMINATE and MORE exit 3. There is no value of this variable that turns a
+ * drifted or unpublished package into CLEAN, so it cannot be used to wave a gate through. An
+ * absent, unparseable or non-positive value falls back to the constant above.
+ */
+function requestTimeoutMs() {
+  const override = Number(process.env.C147_REQUEST_TIMEOUT_MS)
+  return Number.isFinite(override) && override > 0 ? override : REQUEST_TIMEOUT_MS
+}
+
+/**
  * Statuses worth a second ask: throttling, timeouts, and the transient 5xx family.
  * 404 IS DELIBERATELY ABSENT — an absent package is an answer, not a flake, and retrying it
  * would only make the common NEVER_PUBLISHED path four times slower.
@@ -1611,13 +1647,19 @@ export function retryAfterMs(response) {
  * It classifies NOTHING. The caller alone decides what a status means, so no retry decision
  * can quietly become a verdict decision — a 403 that survives every attempt still reaches
  * fetchPackument as a 403 and still becomes `auth`.
+ *
+ * Each attempt carries its OWN REQUEST_TIMEOUT_MS signal, so an attempt that stalls costs the
+ * budget once rather than hanging the whole loop. The signal stays armed after `fetch` resolves,
+ * which is deliberate: the budget has to cover the BODY too, or a registry that sends headers
+ * and then trickles forever is unbounded again. Both callers therefore read their body inside a
+ * `try` and report an aborted read as the transport failure it is.
  */
 async function fetchWithRetry(url, init) {
   let last = {error: new Error('no attempt was made')}
   for (let attempt = 0; attempt < REQUEST_ATTEMPTS; attempt += 1) {
     let retryDelay = RETRY_BACKOFF_MS[attempt] ?? null
     try {
-      const response = await fetch(url, init)
+      const response = await fetch(url, {...init, signal: AbortSignal.timeout(requestTimeoutMs())})
       last = {response}
       if (!RETRYABLE_STATUSES.has(response.status)) {
         return last
@@ -1634,8 +1676,24 @@ async function fetchWithRetry(url, init) {
   return last
 }
 
-/** The `unreachable` detail for a transport-level failure, shared by both fetchers. */
-const transportDetail = (err, url) => `${err?.cause?.code ?? err?.code ?? 'FETCH_FAILED'} fetching ${url}`
+/**
+ * The `unreachable` detail for a transport-level failure, shared by both fetchers.
+ *
+ * A REQUEST_TIMEOUT_MS abort arrives as a `TimeoutError` with no `code`, so it is named
+ * explicitly. Falling through to `FETCH_FAILED` would hide the one failure whose remedy is a
+ * number in this file rather than a problem at the registry.
+ */
+const transportDetail = (err, url) => {
+  // The timeout test FIRST, and it has to be. A `TimeoutError` is a DOMException, and a
+  // DOMException carries the LEGACY NUMERIC `code` 23 — so reading `err.code` before checking the
+  // name reports a bare `23 fetching <url>` and buries the one failure whose remedy is
+  // REQUEST_TIMEOUT_MS in this file rather than a problem at the registry. Measured while writing
+  // this: the first draft printed exactly that.
+  if (err?.name === 'TimeoutError' || err?.cause?.name === 'TimeoutError') {
+    return `TIMEOUT after ${requestTimeoutMs()}ms fetching ${url}`
+  }
+  return `${err?.cause?.code ?? err?.code ?? 'FETCH_FAILED'} fetching ${url}`
+}
 
 export async function fetchPackument(registry, name, token) {
   const url = `${registry.replace(/\/$/, '')}/${encodeURIComponent(name)}`
@@ -1658,8 +1716,11 @@ export async function fetchPackument(registry, name, token) {
   let body
   try {
     body = await response.json()
-  } catch {
-    return {kind: 'unreachable', detail: `non-JSON packument from ${url}`}
+  } catch (err) {
+    // An abort here is the REQUEST_TIMEOUT_MS budget expiring mid-body, not malformed JSON.
+    // Reporting it as "non-JSON" would send the reader to the registry for a fault that is
+    // actually a stalled read; both land on `unreachable`, so only the detail differs.
+    return {kind: 'unreachable', detail: err?.name === 'TimeoutError' ? transportDetail(err, url) : `non-JSON packument from ${url}`}
   }
   return {kind: 'ok', versions: body.versions ?? {}}
 }
@@ -1673,7 +1734,15 @@ export async function fetchTarball(url, token, integrity) {
   if (!response.ok) {
     return {kind: 'unreachable', detail: `HTTP ${response.status} from ${url}`}
   }
-  const bytes = Buffer.from(await response.arrayBuffer())
+  let bytes
+  try {
+    bytes = Buffer.from(await response.arrayBuffer())
+  } catch (err) {
+    // The REQUEST_TIMEOUT_MS budget covers the body, and a tarball body is the one that takes
+    // real time. An unhandled abort here would CRASH the gate instead of reporting it, which is
+    // strictly worse than the hang this bound replaces.
+    return {kind: 'unreachable', detail: transportDetail(err, url)}
+  }
   if (integrity && integrity.startsWith('sha512-')) {
     const computed = `sha512-${sha512b64(bytes)}`
     if (computed !== integrity) {
@@ -3184,8 +3253,17 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
   // dist the prior build produced. This does NOT weaken A2b: `--no-build` is a shipped production
   // code path (S14/S15/S21/S22 already exercised it), and any rung that needs a rebuild but does not
   // get one FAILS ITS EXACT-VERDICT ASSERTION in the baseline — a red run, never a silent pass.
-  const gate = (overrides = {}) =>
-    evaluator.runGate({
+  // PROGRESS, and it is load-bearing rather than decoration. Every line this suite prints is a
+  // VERDICT, emitted after its rung has already finished, so a rung that stalls is indistinguishable
+  // from a rung that has not started — and the log is silent for the whole of it. Nightly job
+  // 107160499144 spent 944.1s between the suite's banner and its first `ok`, and there is no way
+  // to tell from the log which of the calls in that window ate it. Announcing the expensive calls
+  // BEFORE they run bounds the silence to one call and names the one that hangs next time.
+  let gateRuns = 0
+  const gate = (overrides = {}) => {
+    gateRuns += 1
+    say(`  ... gate ${gateRuns} -> ${overrides.registry ?? registryUrl}`)
+    return evaluator.runGate({
       repoRoot: root,
       registry: registryUrl,
       scope: '@toy',
@@ -3195,6 +3273,7 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
       build: false,
       ...overrides
     })
+  }
 
   /**
    * THE PROCESS-EXIT BOUNDARY, as a reusable rung (findings X2 and D3).
@@ -3214,8 +3293,11 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
    * do with the code under test. (Measured: UND_ERR_HEADERS_TIMEOUT, and the half-open
    * socket then poisoned the next in-process rung with ECONNRESET.)
    */
-  const spawnGate = (extraArgs = [], {repoRoot = root, registryArg = registryUrl} = {}) =>
-    new Promise((resolve) => {
+  let spawnRuns = 0
+  const spawnGate = (extraArgs = [], {repoRoot = root, registryArg = registryUrl} = {}) => {
+    spawnRuns += 1
+    say(`  ... spawned gate ${spawnRuns} -> ${registryArg}`)
+    return new Promise((resolve) => {
       execFile(process.execPath, [
         scriptPath,
         '--lane=branch',
@@ -3236,6 +3318,7 @@ async function runSelfTest({mutation = null, verbose = true, stopAfter = null} =
         resolve({status: error ? (typeof error.code === 'number' ? error.code : null) : 0, signal: error?.signal ?? null, stdout, stderr, doc})
       })
     })
+  }
 
   const spawnTail = (run) =>
     `spawned exit=${run.status} signal=${run.signal ?? 'none'} verdicts=${
