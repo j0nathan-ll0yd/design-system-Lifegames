@@ -2765,6 +2765,44 @@
           "rationale": "A Kindle ASIN has no ISBN and no Open Library record, so metadata enrichment can never succeed for it. The message names the fix rather than the failure."
         }
       }
+    },
+    "pending": {
+      "rowBadge": {
+        "value": "Waiting to sync",
+        "_meta": {
+          "description": "Per-row badge on a book whose edit is queued locally. Quiet state marker, not an alert.",
+          "usage": ["ios:BookshelfFeature/BookshelfView.swift (pending-edit row badge; planned, atlas decision 0151 Phase 2)"],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "Names the action in progress instead of the bare word 'offline' (action-based offline-UX wording). States the fact; no blame, no alarm."
+        }
+      },
+      "pill": {
+        "value": "{count, plural, one {# change waiting to sync} other {# changes waiting to sync}}",
+        "_meta": {
+          "description": "Bookshelf count pill summarizing queued local edits. ICU MF1 plural; consumer substitutes the queued-write count. Rendered only while at least one write is queued, so no =0 clause.",
+          "usage": ["ios:BookshelfFeature/BookshelfView.swift (pending-edits count pill; planned, atlas decision 0151 Phase 2)"],
+          "register": "label",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "Authored as ICU plural form like location.placeRename.result; iOS keeps native plural logic at the call site."
+        }
+      },
+      "stuck": {
+        "value": "Still waiting to sync. Check your connection, or your token in Settings.",
+        "_meta": {
+          "description": "Escalation line once a queued edit has waited past the stuck threshold. States the fact, then the two things worth checking: connectivity, then the token in Settings.",
+          "usage": ["ios:BookshelfFeature/BookshelfView.swift (stuck-sync escalation line; planned, atlas decision 0151 Phase 2)"],
+          "register": "factual",
+          "audience": "human",
+          "owner": "jonathan",
+          "lastReviewed": "2026-10-02",
+          "rationale": "Quiet escalation, not an alert: a queued transient write never interrupts. Covers both failure classes (connectivity, auth) without blaming the user."
+        }
+      }
     }
   },
   "watch": {
