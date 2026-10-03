@@ -199,7 +199,16 @@ public struct DatastreamHomeGrid: View {
             }
 
             selectable(.books) {
-                BentoTileView(title: "Books", accent: LGColor.accentAmber, size: .small) {
+                // The badge is the snapshot-staleness hint (atlas decision 0151 D5). Muted,
+                // not accent: it is metadata about the data's age, not a live metric — and
+                // when it shows, the "live" dot it replaces would have been a lie.
+                BentoTileView(
+                    title: "Books",
+                    accent: LGColor.accentAmber,
+                    size: .small,
+                    badgeText: data.booksUpdatedBadge,
+                    badgeColor: LGColor.textMuted
+                ) {
                     // A decoded image the caller fetched itself wins over a URL this layer
                     // would have to fetch anonymously (atlas decision 0135).
                     booksTile
