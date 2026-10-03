@@ -162,7 +162,7 @@
     "settings": {
       "type": "object",
       "title": "AppSettings",
-      "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, and destructive-action alerts.",
+      "description": "Settings screen — section headers, server/data/diagnostics/about rows, buttons, destructive-action alerts, and the API token-verification affordance.",
       "additionalProperties": false,
       "required": [
         "sectionLocation",
@@ -180,6 +180,7 @@
         "tokenSave",
         "tokenClear",
         "tokenSavedConfirmation",
+        "tokenVerification",
         "sectionDiagnostics",
         "sectionAbout",
         "savedPlacesTitle",
@@ -246,6 +247,27 @@
         },
         "tokenSavedConfirmation": {
           "$ref": "#/$defs/CopyString"
+        },
+        "tokenVerification": {
+          "type": "object",
+          "title": "AppSettingsTokenVerification",
+          "description": "Token-verification affordance beside the API token row (atlas decision 0153 Phase 5) — the verify button plus the three result lines for GET /health/ping: valid, invalid (401, act on the token), unreachable (transport failure, token unjudged).",
+          "additionalProperties": false,
+          "required": ["verify", "valid", "invalid", "unreachable"],
+          "properties": {
+            "verify": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "valid": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "invalid": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "unreachable": {
+              "$ref": "#/$defs/CopyString"
+            }
+          }
         },
         "sectionDiagnostics": {
           "$ref": "#/$defs/CopyString"
@@ -905,7 +927,7 @@
     "bookshelf": {
       "type": "object",
       "title": "AppBookshelf",
-      "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens and bookshelf alerts.",
+      "description": "Bookshelf feature — list sections, dashboard tile, status labels, plus the add/edit book screens, bookshelf alerts, and the pending-sync state for optimistic edits.",
       "additionalProperties": false,
       "required": [
         "navTitle",
@@ -927,7 +949,8 @@
         "finishedDate",
         "addBook",
         "editBook",
-        "alerts"
+        "alerts",
+        "pending"
       ],
       "properties": {
         "navTitle": {
@@ -1131,6 +1154,24 @@
               "$ref": "#/$defs/CopyString"
             },
             "kindleEditionRejected": {
+              "$ref": "#/$defs/CopyString"
+            }
+          }
+        },
+        "pending": {
+          "type": "object",
+          "title": "AppBookshelfPending",
+          "description": "Pending-sync state for optimistic book edits (atlas decision 0153 Phase 2) — per-row badge, count pill, and the stuck-sync escalation line. Quiet states, never alerts.",
+          "additionalProperties": false,
+          "required": ["rowBadge", "pill", "stuck"],
+          "properties": {
+            "rowBadge": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "pill": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "stuck": {
               "$ref": "#/$defs/CopyString"
             }
           }

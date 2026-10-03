@@ -1,5 +1,52 @@
 # @j0nathan-ll0yd/copy
 
+## 3.1.0
+
+### Minor Changes
+
+- a026138: bookshelf: add the pending-sync strings for optimistic book edits (atlas decision 0151, Phase 2).
+
+  Three additive keys under `app.bookshelf.pending`, consumed on iOS as
+  `CopyLoader.app.bookshelf.pending.*`:
+  - `rowBadge` — "Waiting to sync". Per-row badge on a book whose edit is queued locally.
+  - `pill` — `{count, plural, one {# change waiting to sync} other {# changes waiting to sync}}`.
+    ICU MF1 plural; the consumer renders it only while at least one write is queued, so no `=0`
+    clause. Same authoring pattern as `location.placeRename.result`.
+  - `stuck` — "Still waiting to sync. Check your connection, or your token in Settings."
+    Escalation line once a queued edit has waited past the stuck threshold: states the fact,
+    then the two things worth checking.
+
+  Queued transient writes stay quiet states, never alerts, and the wording names the action in
+  progress rather than the bare word "offline". Additive only — no existing key changed, hence
+  minor. Regenerated: `dist/app.flat.json`, `dist/app.flat.schema.json`, `dist/app.ts`,
+  `dist/app.zod.ts`, `Sources/LifegamesCopy/App.generated.swift`, and the bundled
+  `Sources/LifegamesCopy/Resources/app.en-US.json`.
+
+- 94e5a3d: settings: add the token-verification strings for the Settings API section (atlas decision 0153, Phase 5).
+
+  Four additive keys under `app.settings.tokenVerification`, consumed on iOS as
+  `CopyLoader.app.settings.tokenVerification.*`:
+  - `verify` — "Verify". Button beside the token row; fires `GET /health/ping` with the saved
+    bearer token.
+  - `valid` — "Token verified." Success line; states the fact and stops.
+  - `invalid` — "Token rejected. Paste a fresh one." 401: the token is wrong — permanent until
+    the user acts on the token, so the line names the next action ("paste", matching
+    `tokenPlaceholder` vocabulary).
+  - `unreachable` — "Could not reach the server. Try again when you are online." No response:
+    transport failure, token unjudged, so the wording never blames the token. "Server" not
+    "backend" — app copy already says Server (`serverLabel`, `simActive`).
+
+  A wrong token is the one failure the offline outbox can never heal — it looks exactly like
+  being offline until the user can verify it. The invalid/unreachable split keeps the two
+  failure classes distinct in the same result slot. Additive only — no existing key changed,
+  hence minor. Regenerated: `dist/app.flat.json`, `dist/app.flat.schema.json`, `dist/app.ts`,
+  `dist/app.zod.ts`, `Sources/LifegamesCopy/App.generated.swift`, and the bundled
+  `Sources/LifegamesCopy/Resources/app.en-US.json`.
+
+### Patch Changes
+
+- a61a9d0: Repoint bookshelf pending-sync metadata to atlas decision 0153 (the 0151 number was lost to a same-day collision). Usage and description annotations only; no string values change.
+
 ## 3.0.0
 
 ### Major Changes

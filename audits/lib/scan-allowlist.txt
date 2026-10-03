@@ -208,6 +208,8 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/structured-llm-link-and-heading-leaves.md:marker:j0nathan-ll0yd
 .changeset/scrub-dead-location-copy-leaves.md:marker:j0nathan-ll0yd
 .changeset/portal-contract-27-focus-hiding-since.md:marker:j0nathan-ll0yd
+.changeset/bookshelf-pending-sync-copy.md:marker:j0nathan-ll0yd
+.changeset/settings-token-verification-copy.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
@@ -492,3 +494,5 @@ openspec/README.md:marker:j0nathan-ll0yd
 openspec/specs/widget-contract/spec.md:marker:j0nathan-ll0yd
 audits/checks/d3-openspec-covers.mjs:marker:j0nathan-ll0yd
 audits/__tests__/d3-openspec-covers.test.mjs:marker:j0nathan-ll0yd
+# Changesets must name the scoped public package they release.
+.changeset/offline-record-repoint.md:marker:j0nathan-ll0yd

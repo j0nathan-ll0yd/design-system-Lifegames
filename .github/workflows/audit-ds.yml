@@ -58,7 +58,7 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
 
       # A meaningful D1 Astro/fixture check needs packages/tokens/dist/, which
       # is a gitignored build artifact (not committed) — build it fresh first.

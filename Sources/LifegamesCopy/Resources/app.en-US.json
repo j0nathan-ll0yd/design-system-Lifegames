@@ -50,6 +50,12 @@
     "tokenSave": "Save Token",
     "tokenClear": "Clear Token",
     "tokenSavedConfirmation": "Token saved",
+    "tokenVerification": {
+      "verify": "Verify",
+      "valid": "Token verified.",
+      "invalid": "Token rejected. Paste a fresh one.",
+      "unreachable": "Could not reach the server. Try again when you are online."
+    },
     "sectionDiagnostics": "Diagnostics",
     "sectionAbout": "About",
     "savedPlacesTitle": "Saved Places",
@@ -271,6 +277,11 @@
       "failedToUpdate": "Failed to Update",
       "failedToDelete": "Failed to Delete",
       "kindleEditionRejected": "Kindle editions carry no library record to enrich. Switch the format to Hardcover or Paperback, then add it again."
+    },
+    "pending": {
+      "rowBadge": "Waiting to sync",
+      "pill": "{count, plural, one {# change waiting to sync} other {# changes waiting to sync}}",
+      "stuck": "Still waiting to sync. Check your connection, or your token in Settings."
     }
   },
   "watch": {
