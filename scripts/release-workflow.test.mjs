@@ -18,7 +18,7 @@ test('release.yml uses the Changesets v2 input names for the version-only action
   const versionStep = workflow.jobs.version.steps.find((step) => step.name === 'Create Version Packages PR')
 
   assert.ok(versionStep, 'the Version Packages PR step exists')
-  assert.equal(versionStep.uses, 'changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1')
+  assert.equal(versionStep.uses, 'changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51')
   assert.equal(versionStep.with['version-script'], 'pnpm changeset:version')
   assert.equal(versionStep.with['commit-message'], 'ci(release): version packages')
   assert.equal(versionStep.with['pr-title'], 'ci(release): version packages')
