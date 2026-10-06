@@ -50,6 +50,12 @@
     "tokenSave": "Save Token",
     "tokenClear": "Clear Token",
     "tokenSavedConfirmation": "Token saved",
+    "tokenVerification": {
+      "verify": "Verify",
+      "valid": "Token verified.",
+      "invalid": "Token rejected. Paste a fresh one.",
+      "unreachable": "Could not reach the server. Try again when you are online."
+    },
     "sectionDiagnostics": "Diagnostics",
     "sectionAbout": "About",
     "savedPlacesTitle": "Saved Places",

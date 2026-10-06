@@ -1,5 +1,14 @@
 # @j0nathan-ll0yd/web
 
+## 3.2.6
+
+### Patch Changes
+
+- Updated dependencies [a026138]
+- Updated dependencies [a61a9d0]
+- Updated dependencies [94e5a3d]
+  - @j0nathan-ll0yd/copy@3.1.0
+
 ## 3.2.5
 
 ### Patch Changes

@@ -38,6 +38,13 @@ final class BookCoverTileSourceTests: XCTestCase {
         XCTAssertNil(DatastreamHomeData.sample.bookCoverImage)
     }
 
+    /// A caller that never sets the staleness badge must keep the live dot: the badge slot
+    /// defaults to nil, so adding it (atlas decision 0153 D5) changes nothing for existing
+    /// callers, the gallery sample included.
+    func testHomeDataDefaultsToNoBooksBadge() {
+        XCTAssertNil(DatastreamHomeData.sample.booksUpdatedBadge)
+    }
+
     /// The sample's cover URL was retired on 2026-08-27 (LP #250 moved `<asin>.webp` to
     /// `<asin>-<version>.webp`) and its prefix is focus-suppressed for anonymous callers.
     /// Pinned so a future edit cannot reintroduce a URL that renders broken.
