@@ -2304,6 +2304,17 @@
         "lastReviewed": "2026-10-07"
       }
     },
+    "apiSuppressedResponse": {
+      "value": "Hidden by an active focus mode. The JSON body states suppressed: true and the reason, and carries no data.",
+      "_meta": {
+        "description": "OpenAPI description of the 403 response every suppressible JSON export declares. While a hiding focus mode is active, the CloudFront data host's edge gate answers each export except focus.json with HTTP 403 and the body {\"suppressed\":true,\"reason\":\"focus mode active\"} (mantle-LifegamesPortal src/edge/focus-gate.js SUPPRESSION_RESPONSE). No braces in the value: ICU MF1 reads a brace as a placeholder.",
+        "usage": ["web:/openapi.json (responses.403.description on each suppressible export)"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
     "mcpHeading": {
       "value": "MCP server",
       "_meta": {
@@ -2426,9 +2437,9 @@
       }
     },
     "focusBody": {
-      "value": "Some focus modes hide the public data. While one is active, the on-domain data routes answer HTTP 503 with a Retry-After header, and the MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
+      "value": "Some focus modes hide the public data. While one is active, each JSON export except focus.json answers HTTP 403 with a JSON body that states suppressed: true and carries no data. The on-domain llms.txt, llms-full.txt, index.md, and feeds answer HTTP 503 with a Retry-After header. The MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
       "_meta": {
-        "description": "Section body — the fail-closed focus gate: what an agent sees while a hiding focus mode is active, and the instruction not to bypass it.",
+        "description": "Section body — the fail-closed focus gate: the 403 the CloudFront data host returns for each suppressible JSON export (mantle-LifegamesPortal src/edge/focus-gate.js SUPPRESSION_RESPONSE), the 503 with Retry-After the website proxy returns for its on-domain routes (functions/_lib/proxy.ts suppressionResponse), and the instruction not to bypass the gate.",
         "usage": ["web:src/pages/developers.astro (focusBody)"],
         "register": "factual",
         "audience": "dual",

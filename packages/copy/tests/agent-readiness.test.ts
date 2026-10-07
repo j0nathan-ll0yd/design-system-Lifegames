@@ -144,6 +144,21 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(halfPairs).toEqual([])
   })
 
+  it('the focus section names both suppression answers', () => {
+    // The CloudFront data host answers a suppressed JSON export with 403
+    // (mantle-LifegamesPortal src/edge/focus-gate.js); the website proxy answers its on-domain
+    // routes with 503 and Retry-After (functions/_lib/proxy.ts). An agent meets both.
+    expect(llm.developers['focusBody']).toContain('HTTP 403')
+    expect(llm.developers['focusBody']).toContain('HTTP 503')
+    expect(llm.developers['focusBody']).toContain('Retry-After')
+  })
+
+  it('the OpenAPI 403 description carries no ICU brace and states that no data is returned', () => {
+    const value = llm.developers['apiSuppressedResponse'] ?? ''
+    expect(value).not.toMatch(/[{}]/)
+    expect(value).toContain('suppressed: true')
+  })
+
   it('the developers usage terms restate the site Content-Usage header verbatim', () => {
     expect(llm.developers['usageBody']).toContain('Content-Usage: train-ai=n, search=y')
   })

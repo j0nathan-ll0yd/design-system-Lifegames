@@ -106,11 +106,12 @@ const NAMESPACES: NamespaceFixture[] = [
   {name: 'permissions', expectedLeaves: 6},
   // errors: validation 2 + client 2.
   {name: 'errors', expectedLeaves: 4},
-  // llm: txt 39 + full 102 + dashboard 3 + mcp 31 + agentDiscovery 6 + developers 19 + notFound 6.
+  // llm: txt 39 + full 102 + dashboard 3 + mcp 31 + agentDiscovery 6 + developers 20 + notFound 6.
   //   atlas decision 0158: txt gained linkSourceRepo + the When-to-use heading/body/4 links, mcp
   //   gained serverTitle/serverCardDescription, agentDiscovery lost the 7 orphaned A2A leaves, and
-  //   developers (title/metaDescription/intro + 8 heading/body pairs) and notFound are new.
-  {name: 'llm', expectedLeaves: 206}
+  //   developers (title/metaDescription/intro/apiSuppressedResponse + 8 heading/body
+  //   pairs) and notFound are new.
+  {name: 'llm', expectedLeaves: 207}
 ]
 
 for (const ns of NAMESPACES) {

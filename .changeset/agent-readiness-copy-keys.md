@@ -10,11 +10,11 @@ Added (identity, 26 leaves; the namespace grows from 61 to 87):
 - `about.*` (9) — title, meta description, and four headed sections for `/about`. The background section reuses `person.longBio`.
 - `contact.*` (12) — title, meta description, intro, three channel labels and notes, and the security-report note for `/contact`.
 
-Added (llm, 34 leaves):
+Added (llm, 35 leaves):
 
 - `txt.linkSourceRepo`, `txt.whenToUseHeading`, `txt.whenToUseBody`, `txt.whenToUseMcp`, `txt.whenToUseFull`, `txt.whenToUseApi`, `txt.whenToUseDevelopers` — the llms.txt "When to use" section and the source-repository link.
 - `mcp.serverTitle`, `mcp.serverCardDescription` — the SEP-2127 server-card title and short description. A test holds the description to the SEP-2127 limit of 100 characters.
-- `developers.*` (19) — title, meta description, intro, and a heading and body for each of eight machine interfaces.
+- `developers.*` (20) — title, meta description, intro, the OpenAPI description of the focus-suppression 403 (`apiSuppressedResponse`), and a heading and body for each of eight machine interfaces. The focus section names both answers an agent meets: 403 from the data host for each JSON export except `focus.json`, and 503 with `Retry-After` from the on-domain routes.
 - `notFound.*` (6) — heading, paragraph, and four links for the markdown 404 body.
 
 Changed values:

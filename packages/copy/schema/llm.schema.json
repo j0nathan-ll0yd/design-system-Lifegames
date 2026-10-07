@@ -718,7 +718,7 @@
     "developers": {
       "type": "object",
       "title": "LlmDevelopers",
-      "description": "Developer page copy (/developers on the website): title, meta description, intro, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
+      "description": "Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
       "additionalProperties": false,
       "required": [
         "title",
@@ -726,6 +726,7 @@
         "intro",
         "apiHeading",
         "apiBody",
+        "apiSuppressedResponse",
         "mcpHeading",
         "mcpBody",
         "webmcpHeading",
@@ -755,6 +756,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "apiBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiSuppressedResponse": {
           "$ref": "#/$defs/CopyString"
         },
         "mcpHeading": {

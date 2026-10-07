@@ -289,6 +289,7 @@
     "intro": "Everything on this site is also published for machines. Every interface is read-only, needs no key, and serves the same data the dashboard shows.",
     "apiHeading": "Data API and OpenAPI",
     "apiBody": "The live data ships as JSON exports, one per source. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
+    "apiSuppressedResponse": "Hidden by an active focus mode. The JSON body states suppressed: true and the reason, and carries no data.",
     "mcpHeading": "MCP server",
     "mcpBody": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are the JSON exports and llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
     "webmcpHeading": "WebMCP tools",
@@ -300,7 +301,7 @@
     "cachingHeading": "Caching and freshness",
     "cachingBody": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each section of llms-full.txt states its own data-as-of date.",
     "focusHeading": "Focus suppression",
-    "focusBody": "Some focus modes hide the public data. While one is active, the on-domain data routes answer HTTP 503 with a Retry-After header, and the MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
+    "focusBody": "Some focus modes hide the public data. While one is active, each JSON export except focus.json answers HTTP 403 with a JSON body that states suppressed: true and carries no data. The on-domain llms.txt, llms-full.txt, index.md, and feeds answer HTTP 503 with a Retry-After header. The MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
     "usageHeading": "Usage terms",
     "usageBody": "Every response from this domain carries Content-Usage: train-ai=n, search=y. Search use is allowed; training AI models on this content is not. Content is licensed under CC BY-NC 4.0."
   },

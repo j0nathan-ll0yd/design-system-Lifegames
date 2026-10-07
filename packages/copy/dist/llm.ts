@@ -235,7 +235,7 @@ export interface LlmAgentDiscovery {
   aiCatalogSkillsQueries: string[];
 }
 /**
- * Developer page copy (/developers on the website): title, meta description, intro, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
+ * Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
  */
 export interface LlmDevelopers {
   title: string;
@@ -243,6 +243,7 @@ export interface LlmDevelopers {
   intro: string;
   apiHeading: string;
   apiBody: string;
+  apiSuppressedResponse: string;
   mcpHeading: string;
   mcpBody: string;
   webmcpHeading: string;

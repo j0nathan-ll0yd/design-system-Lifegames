@@ -40,10 +40,11 @@ public struct Llm: Codable, Sendable {
     /// LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link
     /// titles and JSON-LD Dataset prose.
     public let dashboard: LlmDashboard
-    /// Developer page copy (/developers on the website): title, meta description, intro, and one
-    /// heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools,
-    /// llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage
-    /// terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
+    /// Developer page copy (/developers on the website): title, meta description, intro, the
+    /// OpenAPI description of the focus-suppression 403, and one heading plus body per machine
+    /// interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt,
+    /// feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the
+    /// consumer substitutes {siteUrl}.
     public let developers: LlmDevelopers
     /// Prose strings from llms-full.eta — the complete LLM data dump (/llms-full.txt +
     /// /index.md). The <SYSTEM> framing line, headings, blockquote intro, meta labels, table
@@ -250,21 +251,23 @@ public extension LlmDashboard {
     }
 }
 
-/// Developer page copy (/developers on the website): title, meta description, intro, and one
-/// heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools,
-/// llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage
-/// terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
+/// Developer page copy (/developers on the website): title, meta description, intro, the
+/// OpenAPI description of the focus-suppression 403, and one heading plus body per machine
+/// interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt,
+/// feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the
+/// consumer substitutes {siteUrl}.
 // MARK: - LlmDevelopers
 public struct LlmDevelopers: Codable, Sendable {
-    public let apiBody, apiHeading, cachingBody, cachingHeading: String
-    public let feedsBody, feedsHeading, focusBody, focusHeading: String
-    public let intro, llmsBody, llmsHeading, mcpBody: String
-    public let mcpHeading, metaDescription, title, usageBody: String
-    public let usageHeading, webmcpBody, webmcpHeading: String
+    public let apiBody, apiHeading, apiSuppressedResponse, cachingBody: String
+    public let cachingHeading, feedsBody, feedsHeading, focusBody: String
+    public let focusHeading, intro, llmsBody, llmsHeading: String
+    public let mcpBody, mcpHeading, metaDescription, title: String
+    public let usageBody, usageHeading, webmcpBody, webmcpHeading: String
 
-    public init(apiBody: String, apiHeading: String, cachingBody: String, cachingHeading: String, feedsBody: String, feedsHeading: String, focusBody: String, focusHeading: String, intro: String, llmsBody: String, llmsHeading: String, mcpBody: String, mcpHeading: String, metaDescription: String, title: String, usageBody: String, usageHeading: String, webmcpBody: String, webmcpHeading: String) {
+    public init(apiBody: String, apiHeading: String, apiSuppressedResponse: String, cachingBody: String, cachingHeading: String, feedsBody: String, feedsHeading: String, focusBody: String, focusHeading: String, intro: String, llmsBody: String, llmsHeading: String, mcpBody: String, mcpHeading: String, metaDescription: String, title: String, usageBody: String, usageHeading: String, webmcpBody: String, webmcpHeading: String) {
         self.apiBody = apiBody
         self.apiHeading = apiHeading
+        self.apiSuppressedResponse = apiSuppressedResponse
         self.cachingBody = cachingBody
         self.cachingHeading = cachingHeading
         self.feedsBody = feedsBody
@@ -306,6 +309,7 @@ public extension LlmDevelopers {
     func with(
         apiBody: String? = nil,
         apiHeading: String? = nil,
+        apiSuppressedResponse: String? = nil,
         cachingBody: String? = nil,
         cachingHeading: String? = nil,
         feedsBody: String? = nil,
@@ -327,6 +331,7 @@ public extension LlmDevelopers {
         return LlmDevelopers(
             apiBody: apiBody ?? self.apiBody,
             apiHeading: apiHeading ?? self.apiHeading,
+            apiSuppressedResponse: apiSuppressedResponse ?? self.apiSuppressedResponse,
             cachingBody: cachingBody ?? self.cachingBody,
             cachingHeading: cachingHeading ?? self.cachingHeading,
             feedsBody: feedsBody ?? self.feedsBody,
