@@ -100,12 +100,15 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
 
   it('the about work line names every person.skills token and no other language', () => {
     // The work line restates the skills list; it must not drop one or add a stack the source does
-    // not state. Tokens compare case-insensitively ("aws" in skills, "AWS" in prose).
-    const work = (identity.about['work'] ?? '').toLowerCase()
+    // not state. Whole-word, case-insensitive: "aws" in skills, "AWS" in prose, and a short token
+    // such as "go" must not match inside another word.
+    const work = identity.about['work'] ?? ''
     const skills = identity.person['skills'] as string[]
-    expect(skills.filter((skill) => !work.includes(skill.toLowerCase()))).toEqual([])
+    const namesWord = (word: string): boolean =>
+      new RegExp(`(?<![A-Za-z0-9#+])${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9#+])`, 'i').test(work)
+    expect(skills.filter((skill) => !namesWord(skill))).toEqual([])
     const LANGUAGES_NOT_IN_SKILLS = ['python', 'java', 'rust', 'ruby', 'kotlin', 'c#', 'php', 'javascript']
-    expect(LANGUAGES_NOT_IN_SKILLS.filter((language) => work.includes(language) && !skills.includes(language))).toEqual([])
+    expect(LANGUAGES_NOT_IN_SKILLS.filter((language) => namesWord(language) && !skills.includes(language))).toEqual([])
   })
 
   it('the When-to-use and source-repository links point at the contract URLs', () => {
