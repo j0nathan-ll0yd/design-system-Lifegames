@@ -126,7 +126,7 @@
       "value": {
         "label": "MCP server",
         "url": "{siteUrl}/mcp",
-        "notes": "Read-only Model Context Protocol server over Streamable HTTP; the JSON exports and llms-full.txt as resources"
+        "notes": "Read-only Model Context Protocol server over Streamable HTTP; health data only as coarsened bands"
       },
       "_meta": {
         "description": "When-to-use link — the MCP server. ICU MF1; the consumer substitutes the site base URL into 'url'. The consumer's renderer owns the '- [label](url): notes' affixes.",
@@ -137,7 +137,8 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Notes reworded 2026-10-07: they said the JSON exports are resources, which no longer holds for health. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "whenToUseFull": {
@@ -1690,20 +1691,24 @@
       }
     },
     "datasetDescription": {
-      "value": "Live biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON.",
+      "value": "Summarised biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON.",
       "_meta": {
         "description": "JSON-LD Dataset.description prose for the Human Datastream structured-data block.",
-        "usage": ["web:src/layouts/Dashboard.astro:100 (JSON-LD Dataset.description)"],
+        "usage": [
+          "web:src/layouts/Dashboard.astro:100 (JSON-LD Dataset.description)",
+          "web:/mcp (llms-full.txt resource description)"
+        ],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-12"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07: \"Live biometric\" invited a point-in-time reading. The website MCP server also uses this value as the llms-full.txt resource description. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     }
   },
   "mcp": {
     "serverDescription": {
-      "value": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: live biometric aggregates, GitHub activity, reading lists, theatre reviews, and llms-full.txt, the complete profile and data. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
+      "value": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: GitHub activity, reading lists, theatre reviews, focus state, and llms-full.txt, which carries health, sleep, and workouts only as coarsened bands. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
       "_meta": {
         "description": "Long description of the MCP server at {siteUrl}/mcp: what it exposes and how it is reached. No length limit; the SEP-2127 card carries the short form in mcp.serverCardDescription.",
         "usage": [
@@ -1714,7 +1719,7 @@
         "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07",
-        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the old value said \"as JSON resources via CloudFront\" and the server card pointed its transport at the CloudFront distribution, which answers an MCP initialize with an HTML 403. The value now describes the real server on the site domain."
+        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the old value said \"as JSON resources via CloudFront\" and the server card pointed its transport at the CloudFront distribution, which answers an MCP initialize with an HTML 403. The value now describes the real server on the site domain. Reworded again 2026-10-07: the MCP server no longer serves the raw health, sleep, and workouts exports. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "serverTitle": {
@@ -1733,7 +1738,7 @@
       }
     },
     "serverCardDescription": {
-      "value": "Read-only MCP server for Jonathan Lloyd's live data: health, code, reading, and theatre.",
+      "value": "Read-only MCP server for Jonathan Lloyd's data: summarised health, code, reading, and theatre.",
       "_meta": {
         "description": "Short description in the SEP-2127 server card. SEP-2127 limits description to 100 characters; constraints.maxChars and a dedicated test enforce it.",
         "usage": [
@@ -1746,11 +1751,12 @@
         "lastReviewed": "2026-10-07",
         "constraints": {
           "maxChars": 100
-        }
+        },
+        "rationale": "Reworded 2026-10-07: \"live data: health\" invited a point-in-time health answer. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "agentSkillDescription": {
-      "value": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live biometric data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
+      "value": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
       "_meta": {
         "description": "Description of the portfolio-expert skill in the agent-skills index (.well-known/agent-skills/index.json). Tells consuming agents when and why to use this skill.",
         "usage": [
@@ -1760,7 +1766,8 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07: dropped \"biometric\" from \"live biometric data sources\". SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "toolGetProfile": {
@@ -1778,7 +1785,7 @@
       }
     },
     "toolGetDataSources": {
-      "value": "Returns a list of all live JSON data endpoints on CloudFront with descriptions. Fetch these URLs for real-time data.",
+      "value": "Returns the public data sources with descriptions and URLs. Health, sleep, and workouts point at llms-full.txt, which carries them only as coarsened bands.",
       "_meta": {
         "description": "Description of the get_data_sources WebMCP tool. Tells MCP-aware browsers what the tool returns.",
         "usage": [
@@ -1788,7 +1795,8 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07: the old value (\"all live JSON data endpoints on CloudFront … Fetch these URLs for real-time data\") sent agents to raw real-time health data. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "toolGetCurrentReading": {
@@ -2148,6 +2156,21 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-24"
       }
+    },
+    "coarsenedBandDesc": {
+      "value": "Available to agents only as the coarsened band in the Body section of llms-full.txt. Raw values are not served to agents.",
+      "_meta": {
+        "description": "Data-source description the MCP get_data_sources tool and WebMCP use for health, sleep, and workouts. Their entries point at llms-full.txt, not the raw exports, so dsHealthDesc, dsSleepDesc, and dsWorkoutsDesc (which describe the raw exports) would mislead there. Named outside the ds*Name/Desc family on purpose: that family is one row per JSON artifact, held to the endpoint list by tests/llm-artifact-sync.test.ts.",
+        "usage": [
+          "web:/mcp (get_data_sources tool, health/sleep/workouts entries)",
+          "web:public/js/webmcp.js (get_data_sources, health/sleep/workouts entries)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "rationale": "SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
+      }
     }
   },
   "agentDiscovery": {
@@ -2166,7 +2189,7 @@
       }
     },
     "aiCatalogMcpDescription": {
-      "value": "Read-only MCP server with Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews. Stateless Streamable HTTP, no authentication.",
+      "value": "Read-only MCP server with Jonathan Lloyd's published data: summarised biometrics, GitHub activity, reading lists, and theatre reviews. Stateless Streamable HTTP, no authentication.",
       "_meta": {
         "description": "Description for the MCP-server catalog entry. Tells AI crawlers what the MCP server at {siteUrl}/mcp exposes and how it is reached.",
         "usage": [
@@ -2178,12 +2201,12 @@
         "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07",
-        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the old value described the server card, not a server. The site now runs a real read-only MCP server."
+        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the old value described the server card, not a server. The site now runs a real read-only MCP server. Reworded again 2026-10-07: \"live personal data: biometrics\" invited a point-in-time health answer. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "aiCatalogMcpQueries": {
       "value": [
-        "What is Jonathan Lloyd's current heart rate?",
+        "What range does Jonathan Lloyd's resting heart rate fall in?",
         "What has Jonathan been reading lately?",
         "Show me Jonathan's GitHub contributions this week."
       ],
@@ -2196,7 +2219,8 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07: queries[0] was \"What is Jonathan Lloyd's current heart rate?\", a point-in-time health question. It now asks for the coarsened resting-heart-rate band llms-full.txt publishes. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "aiCatalogSkillsName": {
@@ -2339,14 +2363,15 @@
       }
     },
     "mcpBody": {
-      "value": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are the JSON exports and llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
+      "value": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are llms-full.txt and every JSON export except health, sleep, and workouts, which reach agents only as the coarsened bands in llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
       "_meta": {
         "description": "Section body — the MCP server: endpoint, transport, resources, tools, and the SEP-2127 server card. ICU MF1; the consumer substitutes the site base URL.",
         "usage": ["web:src/pages/developers.astro (mcpBody)"],
         "register": "factual",
         "audience": "dual",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07. SKILL.md decision 4 and atlas decision 0096: no raw point-in-time health value reaches an LLM channel. Health, sleep, and workouts reach agents only as the coarsened bands in the Body section of llms-full.txt. No trend or multi-day window exists to describe (atlas decision 0142 D2; mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15)."
       }
     },
     "webmcpHeading": {

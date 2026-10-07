@@ -644,6 +644,7 @@ export const llmSchema = z
         dsTheatreReviewsDesc: z.string(),
         dsWorkoutsName: z.string(),
         dsWorkoutsDesc: z.string(),
+        coarsenedBandDesc: z.string(),
       })
       .strict()
       .describe(

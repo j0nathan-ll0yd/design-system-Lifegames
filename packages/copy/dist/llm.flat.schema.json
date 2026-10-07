@@ -712,6 +712,9 @@
         },
         "dsWorkoutsDesc": {
           "type": "string"
+        },
+        "coarsenedBandDesc": {
+          "type": "string"
         }
       },
       "required": [
@@ -745,7 +748,8 @@
         "dsTheatreReviewsName",
         "dsTheatreReviewsDesc",
         "dsWorkoutsName",
-        "dsWorkoutsDesc"
+        "dsWorkoutsDesc",
+        "coarsenedBandDesc"
       ],
       "additionalProperties": false
     },

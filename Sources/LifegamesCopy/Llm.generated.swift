@@ -751,17 +751,18 @@ public extension LlmFull {
 /// pairs (shared across webmcp and server-card).
 // MARK: - LlmMCP
 public struct LlmMCP: Codable, Sendable {
-    public let agentSkillDescription, dsArticlesDesc, dsArticlesName, dsBooksDesc: String
-    public let dsBooksName, dsFocusDesc, dsFocusName, dsGithubEventsDesc: String
-    public let dsGithubEventsName, dsHealthDesc, dsHealthName, dsSleepDesc: String
-    public let dsSleepName, dsStarredReposDesc, dsStarredReposName, dsTheatreReviewsDesc: String
-    public let dsTheatreReviewsName, dsWorkoutsDesc, dsWorkoutsName, serverCardDescription: String
-    public let serverDescription, serverTitle, stackDesign, stackFont: String
-    public let stackFramework, stackHosting, stackLiveData, toolGetCurrentReading: String
-    public let toolGetDataSources, toolGetProfile, toolGetTechStack: String
+    public let agentSkillDescription, coarsenedBandDesc, dsArticlesDesc, dsArticlesName: String
+    public let dsBooksDesc, dsBooksName, dsFocusDesc, dsFocusName: String
+    public let dsGithubEventsDesc, dsGithubEventsName, dsHealthDesc, dsHealthName: String
+    public let dsSleepDesc, dsSleepName, dsStarredReposDesc, dsStarredReposName: String
+    public let dsTheatreReviewsDesc, dsTheatreReviewsName, dsWorkoutsDesc, dsWorkoutsName: String
+    public let serverCardDescription, serverDescription, serverTitle, stackDesign: String
+    public let stackFont, stackFramework, stackHosting, stackLiveData: String
+    public let toolGetCurrentReading, toolGetDataSources, toolGetProfile, toolGetTechStack: String
 
-    public init(agentSkillDescription: String, dsArticlesDesc: String, dsArticlesName: String, dsBooksDesc: String, dsBooksName: String, dsFocusDesc: String, dsFocusName: String, dsGithubEventsDesc: String, dsGithubEventsName: String, dsHealthDesc: String, dsHealthName: String, dsSleepDesc: String, dsSleepName: String, dsStarredReposDesc: String, dsStarredReposName: String, dsTheatreReviewsDesc: String, dsTheatreReviewsName: String, dsWorkoutsDesc: String, dsWorkoutsName: String, serverCardDescription: String, serverDescription: String, serverTitle: String, stackDesign: String, stackFont: String, stackFramework: String, stackHosting: String, stackLiveData: String, toolGetCurrentReading: String, toolGetDataSources: String, toolGetProfile: String, toolGetTechStack: String) {
+    public init(agentSkillDescription: String, coarsenedBandDesc: String, dsArticlesDesc: String, dsArticlesName: String, dsBooksDesc: String, dsBooksName: String, dsFocusDesc: String, dsFocusName: String, dsGithubEventsDesc: String, dsGithubEventsName: String, dsHealthDesc: String, dsHealthName: String, dsSleepDesc: String, dsSleepName: String, dsStarredReposDesc: String, dsStarredReposName: String, dsTheatreReviewsDesc: String, dsTheatreReviewsName: String, dsWorkoutsDesc: String, dsWorkoutsName: String, serverCardDescription: String, serverDescription: String, serverTitle: String, stackDesign: String, stackFont: String, stackFramework: String, stackHosting: String, stackLiveData: String, toolGetCurrentReading: String, toolGetDataSources: String, toolGetProfile: String, toolGetTechStack: String) {
         self.agentSkillDescription = agentSkillDescription
+        self.coarsenedBandDesc = coarsenedBandDesc
         self.dsArticlesDesc = dsArticlesDesc
         self.dsArticlesName = dsArticlesName
         self.dsBooksDesc = dsBooksDesc
@@ -815,6 +816,7 @@ public extension LlmMCP {
 
     func with(
         agentSkillDescription: String? = nil,
+        coarsenedBandDesc: String? = nil,
         dsArticlesDesc: String? = nil,
         dsArticlesName: String? = nil,
         dsBooksDesc: String? = nil,
@@ -848,6 +850,7 @@ public extension LlmMCP {
     ) -> LlmMCP {
         return LlmMCP(
             agentSkillDescription: agentSkillDescription ?? self.agentSkillDescription,
+            coarsenedBandDesc: coarsenedBandDesc ?? self.coarsenedBandDesc,
             dsArticlesDesc: dsArticlesDesc ?? self.dsArticlesDesc,
             dsArticlesName: dsArticlesName ?? self.dsArticlesName,
             dsBooksDesc: dsBooksDesc ?? self.dsBooksDesc,

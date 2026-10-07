@@ -25,7 +25,7 @@
     "whenToUseMcp": {
       "label": "MCP server",
       "url": "{siteUrl}/mcp",
-      "notes": "Read-only Model Context Protocol server over Streamable HTTP; the JSON exports and llms-full.txt as resources"
+      "notes": "Read-only Model Context Protocol server over Streamable HTTP; health data only as coarsened bands"
     },
     "whenToUseFull": {
       "label": "llms-full.txt",
@@ -232,15 +232,15 @@
   "dashboard": {
     "alternateLinkMarkdown": "LLM-friendly complete content",
     "alternateLinkPlain": "LLM discovery index",
-    "datasetDescription": "Live biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON."
+    "datasetDescription": "Summarised biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON."
   },
   "mcp": {
-    "serverDescription": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: live biometric aggregates, GitHub activity, reading lists, theatre reviews, and llms-full.txt, the complete profile and data. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
+    "serverDescription": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: GitHub activity, reading lists, theatre reviews, focus state, and llms-full.txt, which carries health, sleep, and workouts only as coarsened bands. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
     "serverTitle": "Human Datastream",
-    "serverCardDescription": "Read-only MCP server for Jonathan Lloyd's live data: health, code, reading, and theatre.",
-    "agentSkillDescription": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live biometric data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
+    "serverCardDescription": "Read-only MCP server for Jonathan Lloyd's data: summarised health, code, reading, and theatre.",
+    "agentSkillDescription": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
     "toolGetProfile": "Returns professional profile: name, title, location, experience, expertise, and social links for Jonathan Lloyd.",
-    "toolGetDataSources": "Returns a list of all live JSON data endpoints on CloudFront with descriptions. Fetch these URLs for real-time data.",
+    "toolGetDataSources": "Returns the public data sources with descriptions and URLs. Health, sleep, and workouts point at llms-full.txt, which carries them only as coarsened bands.",
     "toolGetCurrentReading": "Fetches the current bookshelf from the live API and returns books being read, up next, and recently finished.",
     "toolGetTechStack": "Returns the technology stack and architecture details of this portfolio site.",
     "stackFramework": "Astro {astroMajor}.x (static site generation, 0 KB JS by default)",
@@ -265,13 +265,14 @@
     "dsTheatreReviewsName": "Theatre reviews",
     "dsTheatreReviewsDesc": "Theatre show reviews with ratings and venue info",
     "dsWorkoutsName": "Workouts",
-    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn"
+    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn",
+    "coarsenedBandDesc": "Available to agents only as the coarsened band in the Body section of llms-full.txt. Raw values are not served to agents."
   },
   "agentDiscovery": {
     "aiCatalogMcpName": "Human Datastream MCP Server",
-    "aiCatalogMcpDescription": "Read-only MCP server with Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews. Stateless Streamable HTTP, no authentication.",
+    "aiCatalogMcpDescription": "Read-only MCP server with Jonathan Lloyd's published data: summarised biometrics, GitHub activity, reading lists, and theatre reviews. Stateless Streamable HTTP, no authentication.",
     "aiCatalogMcpQueries": [
-      "What is Jonathan Lloyd's current heart rate?",
+      "What range does Jonathan Lloyd's resting heart rate fall in?",
       "What has Jonathan been reading lately?",
       "Show me Jonathan's GitHub contributions this week."
     ],
@@ -292,7 +293,7 @@
     "apiBody": "The live data ships as JSON exports, one per data stream. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
     "apiSuppressedResponse": "Hidden by an active focus mode. The JSON body states suppressed: true and the reason, and carries no data.",
     "mcpHeading": "MCP server",
-    "mcpBody": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are the JSON exports and llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
+    "mcpBody": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are llms-full.txt and every JSON export except health, sleep, and workouts, which reach agents only as the coarsened bands in llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
     "webmcpHeading": "WebMCP tools",
     "webmcpBody": "The dashboard page registers the same read-only tools in the browser through document.modelContext.registerTool(). Each tool declares readOnlyHint: true. A browser agent can call them instead of scraping the page.",
     "llmsHeading": "llms.txt and llms-full.txt",

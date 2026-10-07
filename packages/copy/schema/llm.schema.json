@@ -645,7 +645,8 @@
         "dsTheatreReviewsName",
         "dsTheatreReviewsDesc",
         "dsWorkoutsName",
-        "dsWorkoutsDesc"
+        "dsWorkoutsDesc",
+        "coarsenedBandDesc"
       ],
       "properties": {
         "serverDescription": { "$ref": "#/$defs/CopyString" },
@@ -678,7 +679,8 @@
         "dsTheatreReviewsName": { "$ref": "#/$defs/CopyString" },
         "dsTheatreReviewsDesc": { "$ref": "#/$defs/CopyString" },
         "dsWorkoutsName": { "$ref": "#/$defs/CopyString" },
-        "dsWorkoutsDesc": { "$ref": "#/$defs/CopyString" }
+        "dsWorkoutsDesc": { "$ref": "#/$defs/CopyString" },
+        "coarsenedBandDesc": { "$ref": "#/$defs/CopyString" }
       }
     },
     "agentDiscovery": {
