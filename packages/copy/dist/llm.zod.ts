@@ -74,6 +74,113 @@ export const llmSchema = z
               .optional(),
           })
           .strict(),
+        linkSourceRepo: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        whenToUseHeading: z.string().regex(new RegExp('^[^#\\s]')),
+        whenToUseBody: z.string(),
+        whenToUseMcp: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        whenToUseFull: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        whenToUseApi: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        whenToUseDevelopers: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
         liveHeading: z.string().regex(new RegExp('^[^#\\s]')),
         liveBody: z.string(),
         liveFullDump: z
@@ -507,6 +614,8 @@ export const llmSchema = z
     mcp: z
       .object({
         serverDescription: z.string(),
+        serverTitle: z.string(),
+        serverCardDescription: z.string(),
         agentSkillDescription: z.string(),
         toolGetProfile: z.string(),
         toolGetDataSources: z.string(),
@@ -538,27 +647,139 @@ export const llmSchema = z
       })
       .strict()
       .describe(
-        'Prose strings for the WebMCP client (public/js/webmcp.js), MCP server-card (.well-known/mcp/server-card.json), and agent-skills index (.well-known/agent-skills/index.json). Generated by scripts/generate-webmcp.mjs at prebuild. Includes tool descriptions, tech-stack values, and data-source name/description pairs (shared across webmcp and server-card).',
+        'Prose strings for the WebMCP client (public/js/webmcp.js), the MCP server at /mcp and its SEP-2127 server card (/mcp/server-card, with a compatibility copy at .well-known/mcp/server-card.json), and agent-skills index (.well-known/agent-skills/index.json). Generated by scripts/generate-webmcp.mjs at prebuild. Includes tool descriptions, tech-stack values, and data-source name/description pairs (shared across webmcp and server-card).',
       ),
     agentDiscovery: z
       .object({
-        agentCardDescription: z.string(),
-        agentCardSkillName: z.string(),
-        agentCardSkillDescription: z.string(),
-        agentCardSkillExamples: z.array(z.string()),
         aiCatalogMcpName: z.string(),
         aiCatalogMcpDescription: z.string(),
         aiCatalogMcpQueries: z.array(z.string()),
         aiCatalogSkillsName: z.string(),
         aiCatalogSkillsDescription: z.string(),
         aiCatalogSkillsQueries: z.array(z.string()),
-        aiCatalogA2aName: z.string(),
-        aiCatalogA2aDescription: z.string(),
-        aiCatalogA2aQueries: z.array(z.string()),
       })
       .strict()
       .describe(
-        'Prose strings for the A2A agent-card (.well-known/agent-card.json) and AI catalog (.well-known/ai-catalog.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.',
+        'Prose strings for the AI catalog (.well-known/ai-catalog.json, also served as .well-known/ard.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.',
+      ),
+    developers: z
+      .object({
+        title: z.string(),
+        metaDescription: z.string(),
+        intro: z.string(),
+        apiHeading: z.string(),
+        apiBody: z.string(),
+        mcpHeading: z.string(),
+        mcpBody: z.string(),
+        webmcpHeading: z.string(),
+        webmcpBody: z.string(),
+        llmsHeading: z.string(),
+        llmsBody: z.string(),
+        feedsHeading: z.string(),
+        feedsBody: z.string(),
+        cachingHeading: z.string(),
+        cachingBody: z.string(),
+        focusHeading: z.string(),
+        focusBody: z.string(),
+        usageHeading: z.string(),
+        usageBody: z.string(),
+      })
+      .strict()
+      .describe(
+        'Developer page copy (/developers on the website): title, meta description, intro, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.',
+      ),
+    notFound: z
+      .object({
+        heading: z.string().regex(new RegExp('^[^#\\s]')),
+        body: z.string(),
+        linkLlmsTxt: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        linkIndexMd: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        linkSitemap: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+        linkDevelopers: z
+          .object({
+            label: z
+              .string()
+              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
+              .describe(
+                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              ),
+            url: z
+              .string()
+              .regex(new RegExp('^[^()\\s]+$'))
+              .describe(
+                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
+              ),
+            notes: z
+              .string()
+              .regex(new RegExp('^[^:\\s]'))
+              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
+              .optional(),
+          })
+          .strict(),
+      })
+      .strict()
+      .describe(
+        "The markdown 404 body the website serves to agents that ask for text/markdown (functions/_middleware.ts): a heading (CopyHeading — bare text), a paragraph, and links (CopyLink — {label, url, notes}) to the agent entry points. The consumer's renderer owns every markdown affix.",
       ),
   })
   .strict()

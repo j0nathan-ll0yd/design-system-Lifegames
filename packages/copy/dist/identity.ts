@@ -21,6 +21,11 @@ export interface Identity {
     alumniOf: string;
     alumniOfUrl: string;
     location: string;
+    email: string;
+    contactType: string;
+    addressLocality: string;
+    addressRegion: string;
+    addressCountry: string;
     yearsExperience: string;
     philosophy: string;
     skills: string[];
@@ -106,5 +111,36 @@ export interface Identity {
     analytics: string;
     rights: string;
     changes: string;
+  };
+  /**
+   * About page copy (/about) — title, meta description, and headed sections. The background section body reuses person.longBio.
+   */
+  about: {
+    title: string;
+    metaDescription: string;
+    backgroundHeading: string;
+    workHeading: string;
+    work: string;
+    siteHeading: string;
+    site: string;
+    outsideHeading: string;
+    outside: string;
+  };
+  /**
+   * Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.
+   */
+  contact: {
+    title: string;
+    metaDescription: string;
+    intro: string;
+    channelsHeading: string;
+    emailLabel: string;
+    emailNote: string;
+    linkedinLabel: string;
+    linkedinNote: string;
+    githubLabel: string;
+    githubNote: string;
+    securityHeading: string;
+    security: string;
   };
 }

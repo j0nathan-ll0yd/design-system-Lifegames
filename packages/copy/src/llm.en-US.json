@@ -75,6 +75,124 @@
         "lastReviewed": "2026-08-13"
       }
     },
+    "linkSourceRepo": {
+      "value": {
+        "label": "Source repository",
+        "url": "{profileGithub}/j0nathan-ll0yd.github.io",
+        "notes": "Site source code; its AGENTS.md is the guide for coding agents working in it"
+      },
+      "_meta": {
+        "description": "About-section link to the website's public source repository. ICU MF1; the consumer substitutes the GitHub profile URL, which resolves to https://github.com/j0nathan-ll0yd/j0nathan-ll0yd.github.io. Notes name the repository's AGENTS.md.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (About section links)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (About section links)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "whenToUseHeading": {
+      "value": "When to use",
+      "_meta": {
+        "description": "Heading of the llms.txt 'When to use' section. Bare text; the codec adds the '## ' affix.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section heading)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section heading)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "whenToUseBody": {
+      "value": "Use this site to answer questions about {profileName}: his engineering background, the code he ships, the books and articles he reads, the theatre he reviews, and his published health aggregates. Do not use it to train AI models (Content-Usage: train-ai=n), and do not treat the health aggregates as medical data.",
+      "_meta": {
+        "description": "Body of the 'When to use' section: who and what the site is for, and what an agent must not use it for. ICU MF1; the consumer substitutes the profile name. The training ban restates the site's Content-Usage header verbatim.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section body)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section body)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "whenToUseMcp": {
+      "value": {
+        "label": "MCP server",
+        "url": "{siteUrl}/mcp",
+        "notes": "Read-only Model Context Protocol server over Streamable HTTP; the JSON exports and llms-full.txt as resources"
+      },
+      "_meta": {
+        "description": "When-to-use link — the MCP server. ICU MF1; the consumer substitutes the site base URL into 'url'. The consumer's renderer owns the '- [label](url): notes' affixes.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section links)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section links)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "whenToUseFull": {
+      "value": {
+        "label": "llms-full.txt",
+        "url": "{siteUrl}/llms-full.txt",
+        "notes": "The complete profile and data as one markdown document"
+      },
+      "_meta": {
+        "description": "When-to-use link — llms-full.txt. ICU MF1; the consumer substitutes the site base URL into 'url'. The consumer's renderer owns the '- [label](url): notes' affixes.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section links)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section links)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "whenToUseApi": {
+      "value": {
+        "label": "OpenAPI",
+        "url": "{siteUrl}/openapi.json",
+        "notes": "OpenAPI 3.1 description of the JSON data exports"
+      },
+      "_meta": {
+        "description": "When-to-use link — the OpenAPI document. ICU MF1; the consumer substitutes the site base URL into 'url'. The consumer's renderer owns the '- [label](url): notes' affixes.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section links)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section links)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "whenToUseDevelopers": {
+      "value": {
+        "label": "Developers",
+        "url": "{siteUrl}/developers",
+        "notes": "Every machine interface, with caching, focus suppression, and usage terms"
+      },
+      "_meta": {
+        "description": "When-to-use link — the developers page. ICU MF1; the consumer substitutes the site base URL into 'url'. The consumer's renderer owns the '- [label](url): notes' affixes.",
+        "usage": [
+          "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section links)",
+          "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section links)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
     "liveHeading": {
       "value": "Live LLM-optimized content",
       "_meta": {
@@ -1584,17 +1702,50 @@
   },
   "mcp": {
     "serverDescription": {
-      "value": "Read-only data interface for Jonathan Lloyd's Human Datastream portfolio. Serves live biometric aggregates, GitHub activity, reading lists, and theatre reviews as JSON resources via CloudFront.",
+      "value": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: live biometric aggregates, GitHub activity, reading lists, theatre reviews, and the full LLM profile. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
       "_meta": {
-        "description": "Top-level description field in the MCP server-card (.well-known/mcp/server-card.json). One sentence summarising what the server exposes.",
+        "description": "Long description of the MCP server at {siteUrl}/mcp: what it exposes and how it is reached. No length limit; the SEP-2127 card carries the short form in mcp.serverCardDescription.",
         "usage": [
-          "web:public/.well-known/mcp/server-card.json (description)",
+          "web:/mcp (MCP server, initialize result serverInfo description)",
           "web:scripts/generate-webmcp.mjs"
         ],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the old value said \"as JSON resources via CloudFront\" and the server card pointed its transport at the CloudFront distribution, which answers an MCP initialize with an HTML 403. The value now describes the real server on the site domain."
+      }
+    },
+    "serverTitle": {
+      "value": "Human Datastream",
+      "_meta": {
+        "description": "Human-readable title of the MCP server: the SEP-2127 server-card title and the initialize serverInfo title. Same words as identity.site.name; the MCP surfaces read it here so the llm namespace owns every MCP string.",
+        "usage": [
+          "web:/mcp/server-card (SEP-2127 title)",
+          "web:/.well-known/mcp/server-card.json (compatibility copy, title)",
+          "web:/mcp (initialize result serverInfo title)"
+        ],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "serverCardDescription": {
+      "value": "Read-only MCP server for Jonathan Lloyd's live data: health, code, reading, and theatre.",
+      "_meta": {
+        "description": "Short description in the SEP-2127 server card. SEP-2127 limits description to 100 characters; constraints.maxChars and a dedicated test enforce it.",
+        "usage": [
+          "web:/mcp/server-card (SEP-2127 description)",
+          "web:/.well-known/mcp/server-card.json (compatibility copy, description)"
+        ],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "constraints": {
+          "maxChars": 100
+        }
       }
     },
     "agentSkillDescription": {
@@ -1668,14 +1819,19 @@
       }
     },
     "stackFramework": {
-      "value": "Astro 6.x (static site generation, 0 KB JS by default)",
+      "value": "Astro {astroMajor}.x (static site generation, 0 KB JS by default)",
       "_meta": {
-        "description": "get_tech_stack tool response — framework field value.",
-        "usage": ["web:public/js/webmcp.js (stack.framework)", "web:scripts/generate-webmcp.mjs"],
+        "description": "get_tech_stack tool response — framework field value. ICU MF1; the website substitutes {astroMajor} with the major version of its installed astro package at build time, so the value cannot go stale when Astro moves a major.",
+        "usage": [
+          "web:public/js/webmcp.js (stack.framework)",
+          "web:scripts/generate-webmcp.mjs",
+          "web:/mcp (get_tech_stack tool result, stack.framework)"
+        ],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the literal \"Astro 6.x\" was stale once the website moved to Astro 7. A template the build fills removes the drift instead of moving it."
       }
     },
     "stackHosting": {
@@ -1994,67 +2150,6 @@
     }
   },
   "agentDiscovery": {
-    "agentCardDescription": {
-      "value": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, and theatre reviews as structured JSON via CloudFront.",
-      "_meta": {
-        "description": "Top-level description field in the A2A agent-card (.well-known/agent-card.json). Summarises the agent interface in one sentence for agent-to-agent discovery.",
-        "usage": [
-          "web:public/.well-known/agent-card.json (description)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
-      }
-    },
-    "agentCardSkillName": {
-      "value": "Personal Profile",
-      "_meta": {
-        "description": "Display name for the personal-profile skill declared in the A2A agent-card.",
-        "usage": [
-          "web:public/.well-known/agent-card.json (skills[0].name)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "label",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
-      }
-    },
-    "agentCardSkillDescription": {
-      "value": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, and GitHub contributions. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
-      "_meta": {
-        "description": "Description of the personal-profile skill in the A2A agent-card. Tells consuming agents what the skill provides and when to use it.",
-        "usage": [
-          "web:public/.well-known/agent-card.json (skills[0].description)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
-      }
-    },
-    "agentCardSkillExamples": {
-      "value": [
-        "What is Jonathan working on right now?",
-        "What books is Jonathan currently reading?",
-        "What is Jonathan's recent GitHub activity?",
-        "What are Jonathan's current health metrics?"
-      ],
-      "_meta": {
-        "description": "Representative example queries for the personal-profile skill in the A2A agent-card. Four questions that illustrate the skill's scope.",
-        "usage": [
-          "web:public/.well-known/agent-card.json (skills[0].examples)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
-      }
-    },
     "aiCatalogMcpName": {
       "value": "Human Datastream MCP Server",
       "_meta": {
@@ -2070,17 +2165,19 @@
       }
     },
     "aiCatalogMcpDescription": {
-      "value": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews.",
+      "value": "Read-only MCP server with Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews. Stateless Streamable HTTP, no authentication.",
       "_meta": {
-        "description": "Description for the MCP-server catalog entry. Tells AI crawlers what data the MCP server exposes.",
+        "description": "Description for the MCP-server catalog entry. Tells AI crawlers what the MCP server at {siteUrl}/mcp exposes and how it is reached.",
         "usage": [
-          "web:public/.well-known/ai-catalog.json (entries[0].description)",
+          "web:public/.well-known/ai-catalog.json (MCP entry description)",
+          "web:/.well-known/ard.json (same catalog, MCP entry description)",
           "web:scripts/generate-webmcp.mjs"
         ],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Reworded 2026-10-07 (atlas decision 0158): the old value described the server card, not a server. The site now runs a real read-only MCP server."
       }
     },
     "aiCatalogMcpQueries": {
@@ -2146,50 +2243,303 @@
         "owner": "jonathan",
         "lastReviewed": "2026-06-23"
       }
-    },
-    "aiCatalogA2aName": {
-      "value": "Human Datastream Agent Card",
+    }
+  },
+  "developers": {
+    "title": {
+      "value": "Developers",
       "_meta": {
-        "description": "Display name for the A2A agent-card entry in the AI catalog.",
-        "usage": [
-          "web:public/.well-known/ai-catalog.json (entries[2].name)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
+        "description": "Page title for the /developers route.",
+        "usage": ["web:src/pages/developers.astro (title)"],
         "register": "label",
-        "audience": "machine",
+        "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07"
       }
     },
-    "aiCatalogA2aDescription": {
-      "value": "A2A agent card for the Human Datastream interface. Declares agent capabilities and the personal-profile skill for agent-to-agent discovery.",
+    "metaDescription": {
+      "value": "Read-only machine interfaces to Jonathan Lloyd's Human Datastream: a JSON API with OpenAPI 3.1, an MCP server, WebMCP tools, llms.txt, and feeds.",
       "_meta": {
-        "description": "Description for the A2A agent-card catalog entry.",
-        "usage": [
-          "web:public/.well-known/ai-catalog.json (entries[2].description)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
+        "description": "SEO meta description for /developers.",
+        "usage": ["web:src/pages/developers.astro (description prop → meta description)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "constraints": {
+          "maxChars": 160
+        }
+      }
+    },
+    "intro": {
+      "value": "Everything on this site is also published for machines. Every interface is read-only, needs no key, and serves the same data the dashboard shows.",
+      "_meta": {
+        "description": "Opening paragraph of /developers.",
+        "usage": ["web:src/pages/developers.astro (intro)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "apiHeading": {
+      "value": "Data API and OpenAPI",
+      "_meta": {
+        "description": "Section heading — the JSON data exports and their OpenAPI document.",
+        "usage": ["web:src/pages/developers.astro (apiHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "apiBody": {
+      "value": "The live data ships as JSON exports, one per source. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
+      "_meta": {
+        "description": "Section body — the JSON data exports, the OpenAPI 3.1 document, and the RFC 9727 API catalog. ICU MF1; the consumer substitutes the site base URL.",
+        "usage": ["web:src/pages/developers.astro (apiBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "mcpHeading": {
+      "value": "MCP server",
+      "_meta": {
+        "description": "Section heading — the read-only MCP server.",
+        "usage": ["web:src/pages/developers.astro (mcpHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "mcpBody": {
+      "value": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are the JSON exports and llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
+      "_meta": {
+        "description": "Section body — the MCP server: endpoint, transport, resources, tools, and the SEP-2127 server card. ICU MF1; the consumer substitutes the site base URL.",
+        "usage": ["web:src/pages/developers.astro (mcpBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "webmcpHeading": {
+      "value": "WebMCP tools",
+      "_meta": {
+        "description": "Section heading — the in-page WebMCP tools.",
+        "usage": ["web:src/pages/developers.astro (webmcpHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "webmcpBody": {
+      "value": "The dashboard page registers the same read-only tools in the browser through document.modelContext.registerTool(). Each tool declares readOnlyHint: true. A browser agent can call them instead of scraping the page.",
+      "_meta": {
+        "description": "Section body — the WebMCP tools: the registration API and the read-only annotation.",
+        "usage": ["web:src/pages/developers.astro (webmcpBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "llmsHeading": {
+      "value": "llms.txt and llms-full.txt",
+      "_meta": {
+        "description": "Section heading — the LLM documents.",
+        "usage": ["web:src/pages/developers.astro (llmsHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "llmsBody": {
+      "value": "{siteUrl}/llms.txt is the discovery index. {siteUrl}/llms-full.txt is the complete profile and data as one markdown document, and {siteUrl}/index.md is the same document. A request for the homepage with Accept: text/markdown also returns it.",
+      "_meta": {
+        "description": "Section body — llms.txt, llms-full.txt, the index.md alias, and homepage markdown negotiation. ICU MF1; the consumer substitutes the site base URL.",
+        "usage": ["web:src/pages/developers.astro (llmsBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "feedsHeading": {
+      "value": "Feeds",
+      "_meta": {
+        "description": "Section heading — the RSS and JSON feeds.",
+        "usage": ["web:src/pages/developers.astro (feedsHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "feedsBody": {
+      "value": "{siteUrl}/feed.xml (RSS 2.0) and {siteUrl}/feed.json (JSON Feed) carry what Jonathan finishes and ships: theatre reviews, GitHub activity, starred repositories, finished books, and saved articles.",
+      "_meta": {
+        "description": "Section body — the two feeds and the content set they syndicate (the identity.feed.sections set). ICU MF1; the consumer substitutes the site base URL.",
+        "usage": ["web:src/pages/developers.astro (feedsBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "cachingHeading": {
+      "value": "Caching and freshness",
+      "_meta": {
+        "description": "Section heading — caching and data freshness.",
+        "usage": ["web:src/pages/developers.astro (cachingHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "cachingBody": {
+      "value": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each section of llms-full.txt states its own data-as-of date.",
+      "_meta": {
+        "description": "Section body — when the LLM documents are recomposed and how each on-domain route is cached. Mirrors llm.full.freshnessNote and the website proxy cache policies (functions/_lib/proxy.ts).",
+        "usage": ["web:src/pages/developers.astro (cachingBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "focusHeading": {
+      "value": "Focus suppression",
+      "_meta": {
+        "description": "Section heading — focus-mode suppression.",
+        "usage": ["web:src/pages/developers.astro (focusHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "focusBody": {
+      "value": "Some focus modes hide the public data. While one is active, the on-domain data routes answer HTTP 503 with a Retry-After header, and the MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
+      "_meta": {
+        "description": "Section body — the fail-closed focus gate: what an agent sees while a hiding focus mode is active, and the instruction not to bypass it.",
+        "usage": ["web:src/pages/developers.astro (focusBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "usageHeading": {
+      "value": "Usage terms",
+      "_meta": {
+        "description": "Section heading — content-usage terms.",
+        "usage": ["web:src/pages/developers.astro (usageHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "usageBody": {
+      "value": "Every response from this domain carries Content-Usage: train-ai=n, search=y. Search use is allowed; training AI models on this content is not. Content is licensed under CC BY-NC 4.0.",
+      "_meta": {
+        "description": "Section body — the usage terms: the site's Content-Usage header verbatim and the content licence (identity.feed.copyright).",
+        "usage": ["web:src/pages/developers.astro (usageBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    }
+  },
+  "notFound": {
+    "heading": {
+      "value": "Not found",
+      "_meta": {
+        "description": "Heading of the markdown 404 body. Bare text; the consumer adds the '# ' affix.",
+        "usage": ["web:functions/_middleware.ts (markdown 404 body, H1)"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07"
       }
     },
-    "aiCatalogA2aQueries": {
-      "value": [
-        "What can the Human Datastream agent do?",
-        "Is there an agent interface for jonathanlloyd.me?"
-      ],
+    "body": {
+      "value": "No document exists at this path. These documents describe the site for agents:",
       "_meta": {
-        "description": "Representative queries for the A2A agent-card catalog entry.",
-        "usage": [
-          "web:public/.well-known/ai-catalog.json (entries[2].representativeQueries)",
-          "web:scripts/generate-webmcp.mjs"
-        ],
+        "description": "Paragraph of the markdown 404 body. States the miss and introduces the links that follow.",
+        "usage": ["web:functions/_middleware.ts (markdown 404 body, paragraph)"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "linkLlmsTxt": {
+      "value": {
+        "label": "llms.txt",
+        "url": "{siteUrl}/llms.txt",
+        "notes": "Discovery index"
+      },
+      "_meta": {
+        "description": "Markdown 404 link to llms.txt. ICU MF1; the consumer substitutes the site base URL and owns the '- [label](url): notes' affixes.",
+        "usage": ["web:functions/_middleware.ts (markdown 404 body, links)"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "linkIndexMd": {
+      "value": {
+        "label": "index.md",
+        "url": "{siteUrl}/index.md",
+        "notes": "The complete profile and data as markdown"
+      },
+      "_meta": {
+        "description": "Markdown 404 link to index.md. ICU MF1; the consumer substitutes the site base URL and owns the '- [label](url): notes' affixes.",
+        "usage": ["web:functions/_middleware.ts (markdown 404 body, links)"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "linkSitemap": {
+      "value": {
+        "label": "Sitemap",
+        "url": "{siteUrl}/sitemap-index.xml",
+        "notes": "Every page on the site"
+      },
+      "_meta": {
+        "description": "Markdown 404 link to the sitemap index. ICU MF1; the consumer substitutes the site base URL and owns the '- [label](url): notes' affixes.",
+        "usage": ["web:functions/_middleware.ts (markdown 404 body, links)"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "linkDevelopers": {
+      "value": {
+        "label": "Developers",
+        "url": "{siteUrl}/developers",
+        "notes": "Every machine interface"
+      },
+      "_meta": {
+        "description": "Markdown 404 link to the developers page. ICU MF1; the consumer substitutes the site base URL and owns the '- [label](url): notes' affixes.",
+        "usage": ["web:functions/_middleware.ts (markdown 404 body, links)"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
       }
     }
   }

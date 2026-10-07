@@ -42,6 +42,21 @@
         "location": {
           "type": "string"
         },
+        "email": {
+          "type": "string"
+        },
+        "contactType": {
+          "type": "string"
+        },
+        "addressLocality": {
+          "type": "string"
+        },
+        "addressRegion": {
+          "type": "string"
+        },
+        "addressCountry": {
+          "type": "string"
+        },
         "yearsExperience": {
           "type": "string"
         },
@@ -94,6 +109,11 @@
         "alumniOf",
         "alumniOfUrl",
         "location",
+        "email",
+        "contactType",
+        "addressLocality",
+        "addressRegion",
+        "addressCountry",
         "yearsExperience",
         "philosophy",
         "skills",
@@ -311,8 +331,110 @@
         "changes"
       ],
       "additionalProperties": false
+    },
+    "about": {
+      "type": "object",
+      "description": "About page copy (/about) — title, meta description, and headed sections. The background section body reuses person.longBio.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "metaDescription": {
+          "type": "string"
+        },
+        "backgroundHeading": {
+          "type": "string"
+        },
+        "workHeading": {
+          "type": "string"
+        },
+        "work": {
+          "type": "string"
+        },
+        "siteHeading": {
+          "type": "string"
+        },
+        "site": {
+          "type": "string"
+        },
+        "outsideHeading": {
+          "type": "string"
+        },
+        "outside": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "metaDescription",
+        "backgroundHeading",
+        "workHeading",
+        "work",
+        "siteHeading",
+        "site",
+        "outsideHeading",
+        "outside"
+      ],
+      "additionalProperties": false
+    },
+    "contact": {
+      "type": "object",
+      "description": "Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "metaDescription": {
+          "type": "string"
+        },
+        "intro": {
+          "type": "string"
+        },
+        "channelsHeading": {
+          "type": "string"
+        },
+        "emailLabel": {
+          "type": "string"
+        },
+        "emailNote": {
+          "type": "string"
+        },
+        "linkedinLabel": {
+          "type": "string"
+        },
+        "linkedinNote": {
+          "type": "string"
+        },
+        "githubLabel": {
+          "type": "string"
+        },
+        "githubNote": {
+          "type": "string"
+        },
+        "securityHeading": {
+          "type": "string"
+        },
+        "security": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "metaDescription",
+        "intro",
+        "channelsHeading",
+        "emailLabel",
+        "emailNote",
+        "linkedinLabel",
+        "linkedinNote",
+        "githubLabel",
+        "githubNote",
+        "securityHeading",
+        "security"
+      ],
+      "additionalProperties": false
     }
   },
-  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy", "about", "contact"],
   "additionalProperties": false
 }

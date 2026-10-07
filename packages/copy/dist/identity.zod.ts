@@ -19,6 +19,11 @@ export const identitySchema = z
         alumniOf: z.string(),
         alumniOfUrl: z.string(),
         location: z.string(),
+        email: z.string(),
+        contactType: z.string(),
+        addressLocality: z.string(),
+        addressRegion: z.string(),
+        addressCountry: z.string(),
         yearsExperience: z.string(),
         philosophy: z.string(),
         skills: z.array(z.string()),
@@ -113,6 +118,41 @@ export const identitySchema = z
       .strict()
       .describe(
         'Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.',
+      ),
+    about: z
+      .object({
+        title: z.string(),
+        metaDescription: z.string(),
+        backgroundHeading: z.string(),
+        workHeading: z.string(),
+        work: z.string(),
+        siteHeading: z.string(),
+        site: z.string(),
+        outsideHeading: z.string(),
+        outside: z.string(),
+      })
+      .strict()
+      .describe(
+        'About page copy (/about) — title, meta description, and headed sections. The background section body reuses person.longBio.',
+      ),
+    contact: z
+      .object({
+        title: z.string(),
+        metaDescription: z.string(),
+        intro: z.string(),
+        channelsHeading: z.string(),
+        emailLabel: z.string(),
+        emailNote: z.string(),
+        linkedinLabel: z.string(),
+        linkedinNote: z.string(),
+        githubLabel: z.string(),
+        githubNote: z.string(),
+        securityHeading: z.string(),
+        security: z.string(),
+      })
+      .strict()
+      .describe(
+        'Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.',
       ),
   })
   .strict()
