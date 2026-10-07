@@ -24,8 +24,8 @@ Changed values:
 
 Removed: `agentDiscovery.agentCardDescription`, `agentDiscovery.agentCardSkillName`, `agentDiscovery.agentCardSkillDescription`, `agentDiscovery.agentCardSkillExamples`, `agentDiscovery.aiCatalogA2aName`, `agentDiscovery.aiCatalogA2aDescription`, `agentDiscovery.aiCatalogA2aQueries`. The A2A agent card is a settled decline. A grep of the website, the backend, the iOS app, and this repository outside the copy package finds no reader.
 
-**MAJOR, not minor.** The export-surface rule compares named exports per subpath, so it sees no break: no export name is removed. Under semver-ts.org, deleting seven properties from the exported `Llm['agentDiscovery']` type breaks any consumer that reads them. Same reasoning as 3.0.0.
+**MAJOR, not minor.** Two breaking changes. First, the export-surface rule compares named exports per subpath, so it sees no break: no export name is removed. Under semver-ts.org, deleting seven properties from the exported `Llm['agentDiscovery']` type breaks any consumer that reads them. Same reasoning as 3.0.0. Second, `mcp.stackFramework` changes from a literal to a template. A consumer that emits it verbatim ships the literal `{astroMajor}`.
 
-Consumer impact: none in code. The website and the backend pin 3.0.0 exactly and read none of the removed keys. Each bumps in its own change. The website must substitute `{astroMajor}` in `mcp.stackFramework` when it bumps. iOS needs no change: no iOS code reads `agentDiscovery`.
+Consumer impact: one website code change. `scripts/generate-webmcp.mjs:133` emits `mcp.stackFramework` verbatim and must substitute `{astroMajor}` when the website bumps. The website and the backend pin 3.0.0 exactly and read none of the removed keys. Each bumps in its own change. iOS needs no change: no iOS code reads `agentDiscovery`, and the new `IdentityAbout`, `IdentityContact`, `LlmDevelopers`, and `LlmNotFound` structs collide with no iOS type.
 
 Regenerated: `dist/identity.*`, `dist/llm.*`, `Sources/LifegamesCopy/Identity.generated.swift`, `Sources/LifegamesCopy/Llm.generated.swift`, and the bundled `Sources/LifegamesCopy/Resources/{identity,llm}.en-US.json`.

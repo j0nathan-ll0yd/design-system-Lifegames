@@ -315,6 +315,7 @@
     },
     "about": {
       "type": "object",
+      "title": "IdentityAbout",
       "description": "About page copy (/about) — title, meta description, and headed sections. The background section body reuses person.longBio.",
       "additionalProperties": false,
       "required": [
@@ -360,6 +361,7 @@
     },
     "contact": {
       "type": "object",
+      "title": "IdentityContact",
       "description": "Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.",
       "additionalProperties": false,
       "required": [

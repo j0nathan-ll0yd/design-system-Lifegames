@@ -21,11 +21,13 @@ function readJson(p: string): unknown {
 describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () => {
   const identity = readJson(join(PKG, 'dist', 'identity.flat.json')) as {
     person: Record<string, string | string[]>
+    site: Record<string, string>
     about: Record<string, string>
     contact: Record<string, string>
     privacy: Record<string, string>
   }
   const llm = readJson(join(PKG, 'dist', 'llm.flat.json')) as {
+    txt: Record<string, unknown>
     mcp: Record<string, string>
     agentDiscovery: Record<string, unknown>
     developers: Record<string, string>
@@ -61,7 +63,7 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
   })
 
   it('no orphaned A2A leaf survives in agentDiscovery', () => {
-    expect(Object.keys(llm.agentDiscovery).filter((key) => /^agentCard|A2a/.test(key))).toEqual([])
+    expect(Object.keys(llm.agentDiscovery).filter((key) => /^(agentCard|aiCatalogA2a)/.test(key))).toEqual([])
   })
 
   it('every identity leaf that names an email address names person.email', () => {
@@ -94,6 +96,39 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(identity.about['work']).toContain(person['jobTitle'])
     expect(identity.about['work']).toContain(person['employer'])
     expect(identity.about['work']).toContain(person['alumniOf'])
+  })
+
+  it('the about work line names every person.skills token and no other language', () => {
+    // The work line restates the skills list; it must not drop one or add a stack the source does
+    // not state. Tokens compare case-insensitively ("aws" in skills, "AWS" in prose).
+    const work = (identity.about['work'] ?? '').toLowerCase()
+    const skills = identity.person['skills'] as string[]
+    expect(skills.filter((skill) => !work.includes(skill.toLowerCase()))).toEqual([])
+    const LANGUAGES_NOT_IN_SKILLS = ['python', 'java', 'rust', 'ruby', 'kotlin', 'c#', 'php', 'javascript']
+    expect(LANGUAGES_NOT_IN_SKILLS.filter((language) => work.includes(language) && !skills.includes(language))).toEqual([])
+  })
+
+  it('the When-to-use and source-repository links point at the contract URLs', () => {
+    const urlOf = (key: string): string => (llm.txt[key] as {url: string}).url
+    expect({
+      whenToUseMcp: urlOf('whenToUseMcp'),
+      whenToUseFull: urlOf('whenToUseFull'),
+      whenToUseApi: urlOf('whenToUseApi'),
+      whenToUseDevelopers: urlOf('whenToUseDevelopers'),
+      linkSourceRepo: urlOf('linkSourceRepo')
+    }).toEqual({
+      whenToUseMcp: '{siteUrl}/mcp',
+      whenToUseFull: '{siteUrl}/llms-full.txt',
+      whenToUseApi: '{siteUrl}/openapi.json',
+      whenToUseDevelopers: '{siteUrl}/developers',
+      // {profileGithub} is https://github.com/j0nathan-ll0yd (identity.person.sameAs[1]).
+      linkSourceRepo: '{profileGithub}/j0nathan-ll0yd.github.io'
+    })
+    expect((identity.person['sameAs'] as string[])[1]).toBe('https://github.com/j0nathan-ll0yd')
+  })
+
+  it('the MCP server title is the site name', () => {
+    expect(llm.mcp['serverTitle']).toBe(identity.site['name'])
   })
 
   it('the contact email note matches the Person contactType', () => {

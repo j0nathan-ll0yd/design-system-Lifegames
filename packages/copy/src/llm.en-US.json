@@ -110,7 +110,7 @@
     "whenToUseBody": {
       "value": "Use this site to answer questions about {profileName}: his engineering background, the code he ships, the books and articles he reads, the theatre he reviews, and his published health aggregates. Do not use it to train AI models (Content-Usage: train-ai=n), and do not treat the health aggregates as medical data.",
       "_meta": {
-        "description": "Body of the 'When to use' section: who and what the site is for, and what an agent must not use it for. ICU MF1; the consumer substitutes the profile name. The training ban restates the site's Content-Usage header verbatim.",
+        "description": "Body of the 'When to use' section: who and what the site is for, and what an agent must not use it for. ICU MF1; the consumer substitutes the profile name. The training ban restates the train-ai half of the site's Content-Usage header (train-ai=n, search=y).",
         "usage": [
           "backend:src/lib/llm-content/templates/llms-txt.eta (When to use section body)",
           "backend:src/lib/llm-content/render.ts buildLlmsTxtDoc (When to use section body)"
@@ -118,7 +118,8 @@
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-07",
+        "rationale": "The medical-data line is owner policy, not a sourced fact. It follows VOICE.md Appendix E (data is a mirror, not a coach; the health aggregates are summarised from one export). Pending owner sign-off at the atlas decision 0158 step-1 checkpoint."
       }
     },
     "whenToUseMcp": {
@@ -1702,7 +1703,7 @@
   },
   "mcp": {
     "serverDescription": {
-      "value": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: live biometric aggregates, GitHub activity, reading lists, theatre reviews, and the full LLM profile. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
+      "value": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: live biometric aggregates, GitHub activity, reading lists, theatre reviews, and llms-full.txt, the complete profile and data. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
       "_meta": {
         "description": "Long description of the MCP server at {siteUrl}/mcp: what it exposes and how it is reached. No length limit; the SEP-2127 card carries the short form in mcp.serverCardDescription.",
         "usage": [
@@ -1725,7 +1726,7 @@
           "web:/.well-known/mcp/server-card.json (compatibility copy, title)",
           "web:/mcp (initialize result serverInfo title)"
         ],
-        "register": "label",
+        "register": "brand",
         "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07"
@@ -2272,7 +2273,7 @@
       }
     },
     "intro": {
-      "value": "Everything on this site is also published for machines. Every interface is read-only, needs no key, and serves the same data the dashboard shows.",
+      "value": "The dashboard data is also published for machines. Every interface below is read-only, needs no key, and serves the same data the dashboard shows.",
       "_meta": {
         "description": "Opening paragraph of /developers.",
         "usage": ["web:src/pages/developers.astro (intro)"],
@@ -2294,7 +2295,7 @@
       }
     },
     "apiBody": {
-      "value": "The live data ships as JSON exports, one per source. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
+      "value": "The live data ships as JSON exports, one per data stream. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
       "_meta": {
         "description": "Section body — the JSON data exports, the OpenAPI 3.1 document, and the RFC 9727 API catalog. ICU MF1; the consumer substitutes the site base URL.",
         "usage": ["web:src/pages/developers.astro (apiBody)"],
@@ -2415,7 +2416,7 @@
       }
     },
     "cachingBody": {
-      "value": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each section of llms-full.txt states its own data-as-of date.",
+      "value": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each data section of llms-full.txt states its own data-as-of date.",
       "_meta": {
         "description": "Section body — when the LLM documents are recomposed and how each on-domain route is cached. Mirrors llm.full.freshnessNote and the website proxy cache policies (functions/_lib/proxy.ts).",
         "usage": ["web:src/pages/developers.astro (cachingBody)"],
@@ -2459,9 +2460,9 @@
       }
     },
     "usageBody": {
-      "value": "Every response from this domain carries Content-Usage: train-ai=n, search=y. Search use is allowed; training AI models on this content is not. Content is licensed under CC BY-NC 4.0.",
+      "value": "Every response from this domain carries Content-Usage: train-ai=n, search=y. Search use is allowed; training AI models on this content is not. The feeds are licensed under CC BY-NC 4.0.",
       "_meta": {
-        "description": "Section body — the usage terms: the site's Content-Usage header verbatim and the content licence (identity.feed.copyright).",
+        "description": "Section body — the usage terms: the site's Content-Usage header verbatim, and the feed licence (identity.feed.copyright, which covers the feeds only).",
         "usage": ["web:src/pages/developers.astro (usageBody)"],
         "register": "factual",
         "audience": "dual",

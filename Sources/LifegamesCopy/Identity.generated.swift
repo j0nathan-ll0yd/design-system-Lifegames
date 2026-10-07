@@ -16,11 +16,11 @@ public struct Identity: Codable, Sendable {
     public let a11Y: A11Y
     /// About page copy (/about) — title, meta description, and headed sections. The background
     /// section body reuses person.longBio.
-    public let about: About
+    public let about: IdentityAbout
     /// Contact page copy (/contact) — title, meta description, intro, channel labels and notes,
     /// and the security-report note. Addresses and profile URLs come from person.email and
     /// person.sameAs.
-    public let contact: Contact
+    public let contact: IdentityContact
     /// RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain
     /// section labels.
     public let feed: Feed
@@ -44,7 +44,7 @@ public struct Identity: Codable, Sendable {
         case about, contact, feed, humansTxt, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, about: About, contact: Contact, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
         self.about = about
         self.contact = contact
@@ -77,8 +77,8 @@ public extension Identity {
 
     func with(
         a11Y: A11Y? = nil,
-        about: About? = nil,
-        contact: Contact? = nil,
+        about: IdentityAbout? = nil,
+        contact: IdentityContact? = nil,
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
         person: Person? = nil,
@@ -159,8 +159,8 @@ public extension A11Y {
 
 /// About page copy (/about) — title, meta description, and headed sections. The background
 /// section body reuses person.longBio.
-// MARK: - About
-public struct About: Codable, Sendable {
+// MARK: - IdentityAbout
+public struct IdentityAbout: Codable, Sendable {
     public let backgroundHeading, metaDescription, outside, outsideHeading: String
     public let site, siteHeading, title, work: String
     public let workHeading: String
@@ -178,11 +178,11 @@ public struct About: Codable, Sendable {
     }
 }
 
-// MARK: About convenience initializers and mutators
+// MARK: IdentityAbout convenience initializers and mutators
 
-public extension About {
+public extension IdentityAbout {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(About.self, from: data)
+        self = try newJSONDecoder().decode(IdentityAbout.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -206,8 +206,8 @@ public extension About {
         title: String? = nil,
         work: String? = nil,
         workHeading: String? = nil
-    ) -> About {
-        return About(
+    ) -> IdentityAbout {
+        return IdentityAbout(
             backgroundHeading: backgroundHeading ?? self.backgroundHeading,
             metaDescription: metaDescription ?? self.metaDescription,
             outside: outside ?? self.outside,
@@ -232,8 +232,8 @@ public extension About {
 /// Contact page copy (/contact) — title, meta description, intro, channel labels and notes,
 /// and the security-report note. Addresses and profile URLs come from person.email and
 /// person.sameAs.
-// MARK: - Contact
-public struct Contact: Codable, Sendable {
+// MARK: - IdentityContact
+public struct IdentityContact: Codable, Sendable {
     public let channelsHeading, emailLabel, emailNote, githubLabel: String
     public let githubNote, intro, linkedinLabel, linkedinNote: String
     public let metaDescription, security, securityHeading, title: String
@@ -254,11 +254,11 @@ public struct Contact: Codable, Sendable {
     }
 }
 
-// MARK: Contact convenience initializers and mutators
+// MARK: IdentityContact convenience initializers and mutators
 
-public extension Contact {
+public extension IdentityContact {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Contact.self, from: data)
+        self = try newJSONDecoder().decode(IdentityContact.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -285,8 +285,8 @@ public extension Contact {
         security: String? = nil,
         securityHeading: String? = nil,
         title: String? = nil
-    ) -> Contact {
-        return Contact(
+    ) -> IdentityContact {
+        return IdentityContact(
             channelsHeading: channelsHeading ?? self.channelsHeading,
             emailLabel: emailLabel ?? self.emailLabel,
             emailNote: emailNote ?? self.emailNote,

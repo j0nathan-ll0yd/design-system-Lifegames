@@ -134,12 +134,12 @@
     "email": {
       "value": "webmaster@lifegames.org",
       "_meta": {
-        "description": "Public contact email address — the same address /.well-known/security.txt publishes (Contact: mailto:). Locale-invariant. One home for the address: the web layer maps it into the Person JSON-LD contactPoint and the contact page, and the identity tests hold every other identity leaf that names an address to this value.",
+        "description": "Public contact email address — the same address /.well-known/security.txt publishes (Contact: mailto:). Locale-invariant. The source of truth for the address: the web layer maps it into the Person JSON-LD contactPoint and the contact page. Prose leaves that name the address (privacy.who, privacy.rights, contact.security) inline it, and the identity tests hold each of them equal to this value.",
         "usage": [
           "web:src/layouts/Dashboard.astro (Person JSON-LD contactPoint.email)",
           "web:src/pages/contact.astro (email channel link text and mailto: href)"
         ],
-        "register": "label",
+        "register": "atom",
         "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07"
@@ -161,7 +161,7 @@
       "_meta": {
         "description": "City of residence — the locality half of person.location. schema.org PostalAddress addressLocality.",
         "usage": ["web:src/layouts/Dashboard.astro (Person JSON-LD address.addressLocality)"],
-        "register": "label",
+        "register": "atom",
         "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07",
@@ -884,9 +884,9 @@
       }
     },
     "work": {
-      "value": "Jonathan is Engineering Director at Squarespace. He builds backend systems in TypeScript, Go, Swift, and Perl, on AWS serverless infrastructure. He studied at California State University, Fullerton.",
+      "value": "Jonathan is Engineering Director at Squarespace. His skills include AWS, serverless, TypeScript, Go, Swift, and Perl. He studied at California State University, Fullerton.",
       "_meta": {
-        "description": "Work section body for /about: current role, employer, working stack, and education. Every fact comes from identity.person (jobTitle, employer, skills, alumniOf); the identity tests hold the role, employer, and school to those leaves.",
+        "description": "Work section body for /about: current role, employer, skills, and education. Restates identity.person jobTitle, employer, skills, and alumniOf without adding roles or claims; the identity tests hold every one of them, including each skill token, to those leaves.",
         "usage": ["web:src/pages/about.astro (sections[1].body)"],
         "register": "factual",
         "audience": "dual",
@@ -933,7 +933,7 @@
       "_meta": {
         "description": "Interests section body for /about. Restates person.interests and person.philosophy as one human-readable line.",
         "usage": ["web:src/pages/about.astro (sections[3].body)"],
-        "register": "expressive",
+        "register": "factual",
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07"
