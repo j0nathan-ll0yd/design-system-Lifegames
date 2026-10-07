@@ -207,3 +207,65 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(urls.sort()).toEqual(['{siteUrl}/developers', '{siteUrl}/index.md', '{siteUrl}/llms.txt', '{siteUrl}/sitemap-index.xml'])
   })
 })
+
+/**
+ * A section that carries a display date (`lastUpdated`, "July 2026") and a machine date
+ * (`lastModified`, "2026-07-30") states the same fact twice. The privacy page showed "June 2026"
+ * for two months after commit 1a23ee2 (PR #148, 2026-07-30) changed its text, because nothing tied
+ * the display string to the change. This holds every such pair to one month and year, and every
+ * `lastModified` to a real calendar date the website's sitemap can emit.
+ */
+describe('@j0nathan-ll0yd/copy content dates', () => {
+  const ISO_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/
+
+  interface Section {
+    path: string
+    fields: Record<string, unknown>
+  }
+
+  /** Every object in a flat namespace that holds at least one direct string field. */
+  function sections(node: unknown, path: string, out: Section[]): Section[] {
+    if (node && typeof node === 'object' && !Array.isArray(node)) {
+      const fields = node as Record<string, unknown>
+      out.push({path, fields})
+      for (const [key, value] of Object.entries(fields)) {
+        sections(value, `${path}.${key}`, out)
+      }
+    }
+    return out
+  }
+
+  const all = ['identity', 'llm'].flatMap((ns) => sections(readJson(join(PKG, 'dist', `${ns}.flat.json`)), ns, []))
+  const dated = all.filter((s) => 'lastModified' in s.fields)
+
+  /** UTC calendar date, or null when the string is not a real YYYY-MM-DD day. */
+  function calendarDate(value: unknown): Date | null {
+    const match = typeof value === 'string' ? ISO_DATE_RE.exec(value) : null
+    if (!match) {
+      return null
+    }
+    const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])))
+    return date.toISOString().slice(0, 10) === value ? date : null
+  }
+
+  it('the four contract sections carry lastModified', () => {
+    expect(dated.map((s) => s.path).sort()).toEqual(['identity.about', 'identity.contact', 'identity.privacy', 'llm.developers'])
+  })
+
+  it('every lastModified is a real ISO-8601 calendar date', () => {
+    expect(dated.filter((s) => calendarDate(s.fields['lastModified']) === null).map((s) => `${s.path}.lastModified: ${String(s.fields['lastModified'])}`))
+      .toEqual([])
+  })
+
+  it('wherever a section has both, lastUpdated is the en-US month and year of lastModified', () => {
+    const pairs = dated.filter((s) => 'lastUpdated' in s.fields)
+    // Non-vacuous: the privacy section is the pair this test exists for.
+    expect(pairs.map((s) => s.path)).toContain('identity.privacy')
+    const drift = pairs.flatMap((s) => {
+      const date = calendarDate(s.fields['lastModified'])
+      const expected = date?.toLocaleString('en-US', {month: 'long', year: 'numeric', timeZone: 'UTC'})
+      return s.fields['lastUpdated'] === expected ? [] : [`${s.path}: lastUpdated ${JSON.stringify(s.fields['lastUpdated'])} != ${JSON.stringify(expected)}`]
+    })
+    expect(drift).toEqual([])
+  })
+})

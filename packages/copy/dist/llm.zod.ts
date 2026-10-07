@@ -666,6 +666,7 @@ export const llmSchema = z
       .object({
         title: z.string(),
         metaDescription: z.string(),
+        lastModified: z.string(),
         intro: z.string(),
         apiHeading: z.string(),
         apiBody: z.string(),

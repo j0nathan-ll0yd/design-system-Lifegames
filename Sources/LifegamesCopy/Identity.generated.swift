@@ -31,7 +31,8 @@ public struct Identity: Codable, Sendable {
     public let person: Person
     /// Privacy policy page copy — plain-English sections covering who operates the site, what
     /// data is displayed, what is collected from visitors, analytics, user rights, and change
-    /// notifications. Includes section headings, the last-updated label, and the back-link.
+    /// notifications. Includes section headings, the last-updated label and date, the
+    /// machine-readable lastModified date, and the back-link.
     public let privacy: Privacy
     /// SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in
     /// consumers.
@@ -161,12 +162,13 @@ public extension A11Y {
 /// section body reuses person.longBio.
 // MARK: - IdentityAbout
 public struct IdentityAbout: Codable, Sendable {
-    public let backgroundHeading, metaDescription, outside, outsideHeading: String
-    public let site, siteHeading, title, work: String
-    public let workHeading: String
+    public let backgroundHeading, lastModified, metaDescription, outside: String
+    public let outsideHeading, site, siteHeading, title: String
+    public let work, workHeading: String
 
-    public init(backgroundHeading: String, metaDescription: String, outside: String, outsideHeading: String, site: String, siteHeading: String, title: String, work: String, workHeading: String) {
+    public init(backgroundHeading: String, lastModified: String, metaDescription: String, outside: String, outsideHeading: String, site: String, siteHeading: String, title: String, work: String, workHeading: String) {
         self.backgroundHeading = backgroundHeading
+        self.lastModified = lastModified
         self.metaDescription = metaDescription
         self.outside = outside
         self.outsideHeading = outsideHeading
@@ -198,6 +200,7 @@ public extension IdentityAbout {
 
     func with(
         backgroundHeading: String? = nil,
+        lastModified: String? = nil,
         metaDescription: String? = nil,
         outside: String? = nil,
         outsideHeading: String? = nil,
@@ -209,6 +212,7 @@ public extension IdentityAbout {
     ) -> IdentityAbout {
         return IdentityAbout(
             backgroundHeading: backgroundHeading ?? self.backgroundHeading,
+            lastModified: lastModified ?? self.lastModified,
             metaDescription: metaDescription ?? self.metaDescription,
             outside: outside ?? self.outside,
             outsideHeading: outsideHeading ?? self.outsideHeading,
@@ -235,16 +239,18 @@ public extension IdentityAbout {
 // MARK: - IdentityContact
 public struct IdentityContact: Codable, Sendable {
     public let channelsHeading, emailLabel, emailNote, githubLabel: String
-    public let githubNote, intro, linkedinLabel, linkedinNote: String
-    public let metaDescription, security, securityHeading, title: String
+    public let githubNote, intro, lastModified, linkedinLabel: String
+    public let linkedinNote, metaDescription, security, securityHeading: String
+    public let title: String
 
-    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityHeading: String, title: String) {
+    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, lastModified: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityHeading: String, title: String) {
         self.channelsHeading = channelsHeading
         self.emailLabel = emailLabel
         self.emailNote = emailNote
         self.githubLabel = githubLabel
         self.githubNote = githubNote
         self.intro = intro
+        self.lastModified = lastModified
         self.linkedinLabel = linkedinLabel
         self.linkedinNote = linkedinNote
         self.metaDescription = metaDescription
@@ -279,6 +285,7 @@ public extension IdentityContact {
         githubLabel: String? = nil,
         githubNote: String? = nil,
         intro: String? = nil,
+        lastModified: String? = nil,
         linkedinLabel: String? = nil,
         linkedinNote: String? = nil,
         metaDescription: String? = nil,
@@ -293,6 +300,7 @@ public extension IdentityContact {
             githubLabel: githubLabel ?? self.githubLabel,
             githubNote: githubNote ?? self.githubNote,
             intro: intro ?? self.intro,
+            lastModified: lastModified ?? self.lastModified,
             linkedinLabel: linkedinLabel ?? self.linkedinLabel,
             linkedinNote: linkedinNote ?? self.linkedinNote,
             metaDescription: metaDescription ?? self.metaDescription,
@@ -628,15 +636,17 @@ public extension Person {
 
 /// Privacy policy page copy — plain-English sections covering who operates the site, what
 /// data is displayed, what is collected from visitors, analytics, user rights, and change
-/// notifications. Includes section headings, the last-updated label, and the back-link.
+/// notifications. Includes section headings, the last-updated label and date, the
+/// machine-readable lastModified date, and the back-link.
 // MARK: - Privacy
 public struct Privacy: Codable, Sendable {
     public let analytics, analyticsHeading, backLink, changes: String
     public let changesHeading, dataCollected, dataCollectedHeading, dataDisplayed: String
-    public let dataDisplayedHeading, lastUpdated, lastUpdatedLabel, rights: String
-    public let rightsHeading, title, who, whoHeading: String
+    public let dataDisplayedHeading, lastModified, lastUpdated, lastUpdatedLabel: String
+    public let rights, rightsHeading, title, who: String
+    public let whoHeading: String
 
-    public init(analytics: String, analyticsHeading: String, backLink: String, changes: String, changesHeading: String, dataCollected: String, dataCollectedHeading: String, dataDisplayed: String, dataDisplayedHeading: String, lastUpdated: String, lastUpdatedLabel: String, rights: String, rightsHeading: String, title: String, who: String, whoHeading: String) {
+    public init(analytics: String, analyticsHeading: String, backLink: String, changes: String, changesHeading: String, dataCollected: String, dataCollectedHeading: String, dataDisplayed: String, dataDisplayedHeading: String, lastModified: String, lastUpdated: String, lastUpdatedLabel: String, rights: String, rightsHeading: String, title: String, who: String, whoHeading: String) {
         self.analytics = analytics
         self.analyticsHeading = analyticsHeading
         self.backLink = backLink
@@ -646,6 +656,7 @@ public struct Privacy: Codable, Sendable {
         self.dataCollectedHeading = dataCollectedHeading
         self.dataDisplayed = dataDisplayed
         self.dataDisplayedHeading = dataDisplayedHeading
+        self.lastModified = lastModified
         self.lastUpdated = lastUpdated
         self.lastUpdatedLabel = lastUpdatedLabel
         self.rights = rights
@@ -684,6 +695,7 @@ public extension Privacy {
         dataCollectedHeading: String? = nil,
         dataDisplayed: String? = nil,
         dataDisplayedHeading: String? = nil,
+        lastModified: String? = nil,
         lastUpdated: String? = nil,
         lastUpdatedLabel: String? = nil,
         rights: String? = nil,
@@ -702,6 +714,7 @@ public extension Privacy {
             dataCollectedHeading: dataCollectedHeading ?? self.dataCollectedHeading,
             dataDisplayed: dataDisplayed ?? self.dataDisplayed,
             dataDisplayedHeading: dataDisplayedHeading ?? self.dataDisplayedHeading,
+            lastModified: lastModified ?? self.lastModified,
             lastUpdated: lastUpdated ?? self.lastUpdated,
             lastUpdatedLabel: lastUpdatedLabel ?? self.lastUpdatedLabel,
             rights: rights ?? self.rights,

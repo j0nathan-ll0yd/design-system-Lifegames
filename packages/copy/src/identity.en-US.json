@@ -670,14 +670,26 @@
       }
     },
     "lastUpdated": {
-      "value": "June 2026",
+      "value": "July 2026",
       "_meta": {
         "description": "Month and year of the last material change to the privacy policy. Updated when the policy prose changes meaningfully.",
         "usage": ["web:src/pages/privacy.astro (last-updated dateline)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Corrected 2026-10-07 from \"June 2026\". Commit 1a23ee2 (PR #148, 2026-07-30) removed \"location check-ins\" from privacy.dataDisplayed. Narrowing the data displayed is a material change, and privacy.changes promises an updated date for one, so the page showed a stale date from 2026-07-30. The identity tests hold this string to the month and year of privacy.lastModified."
+      }
+    },
+    "lastModified": {
+      "value": "2026-07-30",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The privacy text entered this package in commit a2b8c3f (PR #80, 2026-06-24) and last changed in commit 1a23ee2 (PR #148, 2026-07-30), which removed \"location check-ins\" from privacy.dataDisplayed. A hash of the privacy section's values is unchanged from a2b8c3f through f698fee, changes at 1a23ee2, and is unchanged from there through this change. privacy.lastUpdated is the display form; the identity tests hold the two to the same month and year.",
+        "usage": ["web:sitemap <lastmod> for /privacy"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
       }
     },
     "lastUpdatedLabel": {
@@ -861,6 +873,17 @@
         }
       }
     },
+    "lastModified": {
+      "value": "2026-10-07",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /about text entered this package on this date (atlas decision 0158). Bump it with any change to a value in this group.",
+        "usage": ["web:sitemap <lastmod> for /about"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
     "backgroundHeading": {
       "value": "Background",
       "_meta": {
@@ -964,6 +987,17 @@
         "constraints": {
           "maxChars": 160
         }
+      }
+    },
+    "lastModified": {
+      "value": "2026-10-07",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /contact text entered this package on this date (atlas decision 0158). Bump it with any change to a value in this group.",
+        "usage": ["web:sitemap <lastmod> for /contact"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
       }
     },
     "intro": {

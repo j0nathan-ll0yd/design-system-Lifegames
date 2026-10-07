@@ -92,11 +92,12 @@ export interface Identity {
     };
   };
   /**
-   * Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.
+   * Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label and date, the machine-readable lastModified date, and the back-link.
    */
   privacy: {
     title: string;
     lastUpdated: string;
+    lastModified: string;
     lastUpdatedLabel: string;
     backLink: string;
     whoHeading: string;
@@ -121,6 +122,7 @@ export interface Identity {
 export interface IdentityAbout {
   title: string;
   metaDescription: string;
+  lastModified: string;
   backgroundHeading: string;
   workHeading: string;
   work: string;
@@ -135,6 +137,7 @@ export interface IdentityAbout {
 export interface IdentityContact {
   title: string;
   metaDescription: string;
+  lastModified: string;
   intro: string;
   channelsHeading: string;
   emailLabel: string;

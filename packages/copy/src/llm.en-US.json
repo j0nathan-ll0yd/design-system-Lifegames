@@ -2272,6 +2272,17 @@
         }
       }
     },
+    "lastModified": {
+      "value": "2026-10-07",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /developers text entered this package on this date (atlas decision 0158). Bump it with any change to a value in this group.",
+        "usage": ["web:sitemap <lastmod> for /developers"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
     "intro": {
       "value": "The dashboard data is also published for machines. Every interface below is read-only, needs no key, and serves the same data the dashboard shows.",
       "_meta": {

@@ -261,12 +261,15 @@
     },
     "privacy": {
       "type": "object",
-      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label and date, the machine-readable lastModified date, and the back-link.",
       "properties": {
         "title": {
           "type": "string"
         },
         "lastUpdated": {
+          "type": "string"
+        },
+        "lastModified": {
           "type": "string"
         },
         "lastUpdatedLabel": {
@@ -315,6 +318,7 @@
       "required": [
         "title",
         "lastUpdated",
+        "lastModified",
         "lastUpdatedLabel",
         "backLink",
         "whoHeading",
@@ -343,6 +347,9 @@
         "metaDescription": {
           "type": "string"
         },
+        "lastModified": {
+          "type": "string"
+        },
         "backgroundHeading": {
           "type": "string"
         },
@@ -368,6 +375,7 @@
       "required": [
         "title",
         "metaDescription",
+        "lastModified",
         "backgroundHeading",
         "workHeading",
         "work",
@@ -387,6 +395,9 @@
           "type": "string"
         },
         "metaDescription": {
+          "type": "string"
+        },
+        "lastModified": {
           "type": "string"
         },
         "intro": {
@@ -423,6 +434,7 @@
       "required": [
         "title",
         "metaDescription",
+        "lastModified",
         "intro",
         "channelsHeading",
         "emailLabel",

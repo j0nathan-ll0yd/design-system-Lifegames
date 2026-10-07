@@ -286,6 +286,7 @@
   "developers": {
     "title": "Developers",
     "metaDescription": "Read-only machine interfaces to Jonathan Lloyd's Human Datastream: a JSON API with OpenAPI 3.1, an MCP server, WebMCP tools, llms.txt, and feeds.",
+    "lastModified": "2026-10-07",
     "intro": "The dashboard data is also published for machines. Every interface below is read-only, needs no key, and serves the same data the dashboard shows.",
     "apiHeading": "Data API and OpenAPI",
     "apiBody": "The live data ships as JSON exports, one per data stream. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",

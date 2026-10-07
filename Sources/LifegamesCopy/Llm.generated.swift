@@ -262,11 +262,12 @@ public extension LlmDashboard {
 public struct LlmDevelopers: Codable, Sendable {
     public let apiBody, apiHeading, apiSuppressedResponse, cachingBody: String
     public let cachingHeading, feedsBody, feedsHeading, focusBody: String
-    public let focusHeading, intro, llmsBody, llmsHeading: String
-    public let mcpBody, mcpHeading, metaDescription, title: String
-    public let usageBody, usageHeading, webmcpBody, webmcpHeading: String
+    public let focusHeading, intro, lastModified, llmsBody: String
+    public let llmsHeading, mcpBody, mcpHeading, metaDescription: String
+    public let title, usageBody, usageHeading, webmcpBody: String
+    public let webmcpHeading: String
 
-    public init(apiBody: String, apiHeading: String, apiSuppressedResponse: String, cachingBody: String, cachingHeading: String, feedsBody: String, feedsHeading: String, focusBody: String, focusHeading: String, intro: String, llmsBody: String, llmsHeading: String, mcpBody: String, mcpHeading: String, metaDescription: String, title: String, usageBody: String, usageHeading: String, webmcpBody: String, webmcpHeading: String) {
+    public init(apiBody: String, apiHeading: String, apiSuppressedResponse: String, cachingBody: String, cachingHeading: String, feedsBody: String, feedsHeading: String, focusBody: String, focusHeading: String, intro: String, lastModified: String, llmsBody: String, llmsHeading: String, mcpBody: String, mcpHeading: String, metaDescription: String, title: String, usageBody: String, usageHeading: String, webmcpBody: String, webmcpHeading: String) {
         self.apiBody = apiBody
         self.apiHeading = apiHeading
         self.apiSuppressedResponse = apiSuppressedResponse
@@ -277,6 +278,7 @@ public struct LlmDevelopers: Codable, Sendable {
         self.focusBody = focusBody
         self.focusHeading = focusHeading
         self.intro = intro
+        self.lastModified = lastModified
         self.llmsBody = llmsBody
         self.llmsHeading = llmsHeading
         self.mcpBody = mcpBody
@@ -319,6 +321,7 @@ public extension LlmDevelopers {
         focusBody: String? = nil,
         focusHeading: String? = nil,
         intro: String? = nil,
+        lastModified: String? = nil,
         llmsBody: String? = nil,
         llmsHeading: String? = nil,
         mcpBody: String? = nil,
@@ -341,6 +344,7 @@ public extension LlmDevelopers {
             focusBody: focusBody ?? self.focusBody,
             focusHeading: focusHeading ?? self.focusHeading,
             intro: intro ?? self.intro,
+            lastModified: lastModified ?? self.lastModified,
             llmsBody: llmsBody ?? self.llmsBody,
             llmsHeading: llmsHeading ?? self.llmsHeading,
             mcpBody: mcpBody ?? self.mcpBody,

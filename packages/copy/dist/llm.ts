@@ -240,6 +240,7 @@ export interface LlmAgentDiscovery {
 export interface LlmDevelopers {
   title: string;
   metaDescription: string;
+  lastModified: string;
   intro: string;
   apiHeading: string;
   apiBody: string;

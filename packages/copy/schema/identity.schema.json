@@ -242,11 +242,12 @@
     },
     "privacy": {
       "type": "object",
-      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label and date, the machine-readable lastModified date, and the back-link.",
       "additionalProperties": false,
       "required": [
         "title",
         "lastUpdated",
+        "lastModified",
         "lastUpdatedLabel",
         "backLink",
         "whoHeading",
@@ -267,6 +268,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "lastUpdated": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
           "$ref": "#/$defs/CopyString"
         },
         "lastUpdatedLabel": {
@@ -321,6 +325,7 @@
       "required": [
         "title",
         "metaDescription",
+        "lastModified",
         "backgroundHeading",
         "workHeading",
         "work",
@@ -334,6 +339,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "metaDescription": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
           "$ref": "#/$defs/CopyString"
         },
         "backgroundHeading": {
@@ -367,6 +375,7 @@
       "required": [
         "title",
         "metaDescription",
+        "lastModified",
         "intro",
         "channelsHeading",
         "emailLabel",
@@ -383,6 +392,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "metaDescription": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
           "$ref": "#/$defs/CopyString"
         },
         "intro": {

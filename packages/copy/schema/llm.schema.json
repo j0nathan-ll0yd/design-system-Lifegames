@@ -723,6 +723,7 @@
       "required": [
         "title",
         "metaDescription",
+        "lastModified",
         "intro",
         "apiHeading",
         "apiBody",
@@ -747,6 +748,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "metaDescription": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
           "$ref": "#/$defs/CopyString"
         },
         "intro": {

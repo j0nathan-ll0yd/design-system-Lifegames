@@ -800,6 +800,9 @@
         "metaDescription": {
           "type": "string"
         },
+        "lastModified": {
+          "type": "string"
+        },
         "intro": {
           "type": "string"
         },
@@ -858,6 +861,7 @@
       "required": [
         "title",
         "metaDescription",
+        "lastModified",
         "intro",
         "apiHeading",
         "apiBody",

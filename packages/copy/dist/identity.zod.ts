@@ -100,6 +100,7 @@ export const identitySchema = z
       .object({
         title: z.string(),
         lastUpdated: z.string(),
+        lastModified: z.string(),
         lastUpdatedLabel: z.string(),
         backLink: z.string(),
         whoHeading: z.string(),
@@ -117,12 +118,13 @@ export const identitySchema = z
       })
       .strict()
       .describe(
-        'Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.',
+        'Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label and date, the machine-readable lastModified date, and the back-link.',
       ),
     about: z
       .object({
         title: z.string(),
         metaDescription: z.string(),
+        lastModified: z.string(),
         backgroundHeading: z.string(),
         workHeading: z.string(),
         work: z.string(),
@@ -139,6 +141,7 @@ export const identitySchema = z
       .object({
         title: z.string(),
         metaDescription: z.string(),
+        lastModified: z.string(),
         intro: z.string(),
         channelsHeading: z.string(),
         emailLabel: z.string(),

@@ -75,7 +75,8 @@ const NAMESPACES: NamespaceFixture[] = [
   //   background body reuses person.longBio) and
   //   contact 12 (title/metaDescription/intro/channelsHeading + 3 label/note pairs +
   //   securityHeading/security) — atlas decision 0158.
-  {name: 'identity', expectedLeaves: 87},
+  //   privacy, about, and contact each gained lastModified (the sitemap <lastmod> date).
+  {name: 'identity', expectedLeaves: 90},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
@@ -111,7 +112,8 @@ const NAMESPACES: NamespaceFixture[] = [
   //   gained serverTitle/serverCardDescription, agentDiscovery lost the 7 orphaned A2A leaves, and
   //   developers (title/metaDescription/intro/apiSuppressedResponse + 8 heading/body
   //   pairs) and notFound are new.
-  {name: 'llm', expectedLeaves: 207}
+  //   developers gained lastModified (the sitemap <lastmod> date).
+  {name: 'llm', expectedLeaves: 208}
 ]
 
 for (const ns of NAMESPACES) {

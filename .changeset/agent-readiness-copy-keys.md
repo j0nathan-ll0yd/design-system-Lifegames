@@ -4,23 +4,28 @@
 
 agent readiness: add the copy for the MCP server, the about, contact, and developers pages, and the markdown 404 body. Remove the seven orphaned A2A leaves (atlas decision 0158).
 
-Added (identity, 26 leaves; the namespace grows from 61 to 87):
+Added (identity, 29 leaves; the namespace grows from 61 to 90):
 
 - `person.email`, `person.contactType`, `person.addressLocality`, `person.addressRegion`, `person.addressCountry` — the Person JSON-LD `contactPoint` and `address`. The email is the `security.txt` contact. The address parts split the existing `person.location`.
-- `about.*` (9) — title, meta description, and four headed sections for `/about`. The background section reuses `person.longBio`.
-- `contact.*` (12) — title, meta description, intro, three channel labels and notes, and the security-report note for `/contact`.
+- `about.*` (10) — title, meta description, `lastModified`, and four headed sections for `/about`. The background section reuses `person.longBio`.
+- `contact.*` (13) — title, meta description, `lastModified`, intro, three channel labels and notes, and the security-report note for `/contact`.
+- `privacy.lastModified` — `2026-07-30`, the date the privacy text last changed (commit 1a23ee2, PR #148).
 
-Added (llm, 35 leaves):
+Each `lastModified` is a machine-readable ISO-8601 date for the website's sitemap `<lastmod>`.
+
+Added (llm, 36 leaves):
 
 - `txt.linkSourceRepo`, `txt.whenToUseHeading`, `txt.whenToUseBody`, `txt.whenToUseMcp`, `txt.whenToUseFull`, `txt.whenToUseApi`, `txt.whenToUseDevelopers` — the llms.txt "When to use" section and the source-repository link.
 - `mcp.serverTitle`, `mcp.serverCardDescription` — the SEP-2127 server-card title and short description. A test holds the description to the SEP-2127 limit of 100 characters.
-- `developers.*` (20) — title, meta description, intro, the OpenAPI description of the focus-suppression 403 (`apiSuppressedResponse`), and a heading and body for each of eight machine interfaces. The focus section names both answers an agent meets: 403 from the data host for each JSON export except `focus.json`, and 503 with `Retry-After` from the on-domain routes.
+- `developers.*` (21) — title, meta description, `lastModified`, intro, the OpenAPI description of the focus-suppression 403 (`apiSuppressedResponse`), and a heading and body for each of eight machine interfaces. The focus section names both answers an agent meets: 403 from the data host for each JSON export except `focus.json`, and 503 with `Retry-After` from the on-domain routes.
 - `notFound.*` (6) — heading, paragraph, and four links for the markdown 404 body.
 
 Changed values:
 
 - `mcp.serverDescription` and `agentDiscovery.aiCatalogMcpDescription` now describe the real read-only MCP server at `/mcp`. The "via CloudFront" claim is gone: the CloudFront distribution answers an MCP `initialize` with an HTML 403.
 - `mcp.stackFramework` is now the template `Astro {astroMajor}.x (…)`. The website fills `{astroMajor}` from its installed `astro` version, so the value no longer goes stale. The old literal said "Astro 6.x"; the website runs Astro 7.
+
+Fixed: `privacy.lastUpdated` changes from "June 2026" to "July 2026". Commit 1a23ee2 (PR #148, 2026-07-30) removed "location check-ins" from `privacy.dataDisplayed`. Narrowing the data displayed is a material change, and `privacy.changes` promises an updated date for one. The page has shown a stale date since 2026-07-30. A test now holds every `lastUpdated` to the month and year of its section's `lastModified`.
 
 Removed: `agentDiscovery.agentCardDescription`, `agentDiscovery.agentCardSkillName`, `agentDiscovery.agentCardSkillDescription`, `agentDiscovery.agentCardSkillExamples`, `agentDiscovery.aiCatalogA2aName`, `agentDiscovery.aiCatalogA2aDescription`, `agentDiscovery.aiCatalogA2aQueries`. The A2A agent card is a settled decline. A grep of the website, the backend, the iOS app, and this repository outside the copy package finds no reader.
 
