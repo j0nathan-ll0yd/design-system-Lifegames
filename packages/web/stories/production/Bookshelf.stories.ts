@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite'
 import {html} from 'lit'
+import {renderStateCard} from './state-notice'
 
 // DS-internal fixture: reading/bookshelf.json
 const defaultBooks = [
@@ -82,3 +83,12 @@ export const Empty: Story = {args: {books: []}}
 export const Loading: Story = {args: {books: []}}
 
 export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}
+
+// Honest non-data states (atlas decision 0160): chrome plus a notice, no data.
+export const Unavailable: Story = {
+  render: () => renderStateCard({id: 'cardBooks', title: 'Bookshelf', accentClass: 'tri-card-accent-amber', state: 'unavailable'})
+}
+
+export const Suppressed: Story = {
+  render: () => renderStateCard({id: 'cardBooks', title: 'Bookshelf', accentClass: 'tri-card-accent-amber', state: 'suppressed'})
+}

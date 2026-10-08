@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite'
 import {html} from 'lit'
+import {renderStateCard} from './state-notice'
 
 // DS-internal fixture: health/hydration.json
 const meta: Meta = {
@@ -61,3 +62,12 @@ export const Empty: Story = {
 export const Loading: Story = {args: {waterOz: 0, waterMax: 120, caffeineMg: 0, caffeineMax: 500}}
 
 export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}
+
+// Honest non-data states (atlas decision 0160): chrome plus a notice, no data.
+export const Unavailable: Story = {
+  render: () => renderStateCard({id: 'cardHydration', title: 'Hydration', accentClass: 'tri-card-accent-pink', state: 'unavailable'})
+}
+
+export const Suppressed: Story = {
+  render: () => renderStateCard({id: 'cardHydration', title: 'Hydration', accentClass: 'tri-card-accent-pink', state: 'suppressed'})
+}
