@@ -118,8 +118,8 @@ private struct BookModalPopulatedView: View {
     private var bodySection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 20) {
-                StatBlock(value: props.pages.map(String.init) ?? "\u{2014}", label: bookModalCopy.pages)
-                StatBlock(value: props.year.map(String.init) ?? "\u{2014}", label: bookModalCopy.published)
+                StatBlock(value: props.pages.map(String.init) ?? NoReading.mark, label: bookModalCopy.pages)
+                StatBlock(value: props.year.map(String.init) ?? NoReading.mark, label: bookModalCopy.published)
                 StatBlock(value: props.statusLabel, label: bookModalCopy.status)
             }
 
@@ -270,6 +270,7 @@ private struct StatBlock: View {
             Text(value)
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(Color.colorTextTitle)
+                .noReadingAccessibility(value)
             Text(label)
                 .font(.system(size: 9))
                 .foregroundStyle(Color.colorTextMuted)

@@ -149,26 +149,27 @@ private struct HeartRatePopulatedView: View {
 
 // MARK: - HR Footer — compact 3-up vitals ribbon (visual weight matches Movement swatch row)
 
-private struct DailyVitalsFooterView: View {
+struct DailyVitalsFooterView: View {
     let restingHeartRate: Double?
     let respiratoryRate: Double?
     let wristTemperatureDelta: Double?
 
-    private var rhrValue: String {
-        guard let rhr = restingHeartRate else { return "—" }
-        return "\(Int(rhr.rounded()))"
+    /// A whole-number vital, or the no-reading mark when the export omitted it.
+    static func vitalText(_ value: Double?) -> String {
+        guard let value else { return NoReading.mark }
+        return "\(Int(value.rounded()))"
     }
 
-    private var rrValue: String {
-        guard let rr = respiratoryRate else { return "—" }
-        return "\(Int(rr.rounded()))"
-    }
-
-    private var tempValue: String {
-        guard let delta = wristTemperatureDelta else { return "—" }
+    /// A signed temperature delta, or the no-reading mark when the export omitted it.
+    static func tempText(_ delta: Double?) -> String {
+        guard let delta else { return NoReading.mark }
         let sign = delta >= 0 ? "+" : ""
         return "\(sign)\(String(format: "%.1f", delta))"
     }
+
+    private var rhrValue: String { Self.vitalText(restingHeartRate) }
+    private var rrValue: String { Self.vitalText(respiratoryRate) }
+    private var tempValue: String { Self.tempText(wristTemperatureDelta) }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -205,6 +206,7 @@ private struct VitalRibbonCell: View {
                 Text(value)
                     .font(.system(size: 10, weight: .semibold, design: .monospaced))
                     .foregroundStyle(LGColor.textTitle)
+                    .noReadingAccessibility(value)
                 Text(unit)
                     .font(.system(size: 8, design: .monospaced))
                     .foregroundStyle(LGColor.textMuted.opacity(0.7))

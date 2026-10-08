@@ -177,6 +177,7 @@ private struct VesselReadout: View {
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(color)
                 .neonGlow(color, radius: 3)
+                .noReadingAccessibility(value)
 
             Text(label)
                 .font(.system(size: 9, weight: .medium))

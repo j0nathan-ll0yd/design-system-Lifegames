@@ -135,3 +135,56 @@ struct HonestWidgetStateTests {
         #expect(HydrationPopulatedView.valueText(0, unit: "mg", measured: false) == NoReading.mark)
     }
 }
+
+/// The no-reading mark is labelled for VoiceOver with the shared copy key
+/// (`widgets.widgetState.noReading`), never read as "dash" (atlas decision 0160).
+@Suite struct NoReadingAccessibilityTests {
+    @Test func theMarkReadsAsNoReading() {
+        #expect(NoReading.accessibilityLabel(for: NoReading.mark) == CopyLoader.widgets.widgetState.noReading)
+        #expect(!CopyLoader.widgets.widgetState.noReading.isEmpty)
+    }
+
+    @Test func aRealValueKeepsItsOwnReading() {
+        #expect(NoReading.accessibilityLabel(for: "62") == nil)
+        #expect(NoReading.accessibilityLabel(for: "54 oz") == nil)
+    }
+
+    @Test func missingVitalsRenderTheLabelledMark() {
+        #expect(DailyVitalsFooterView.vitalText(nil) == NoReading.mark)
+        #expect(DailyVitalsFooterView.tempText(nil) == NoReading.mark)
+        #expect(DailyVitalsFooterView.vitalText(58.4) == "58")
+        #expect(DailyVitalsFooterView.tempText(-0.4) == "-0.4")
+        #expect(HydrationPopulatedView.valueText(0, unit: "oz", measured: false) == NoReading.mark)
+    }
+
+    /// Every no-reading mark in the widget views goes through NoReading.mark, so it
+    /// carries the accessibility label: no view may render a bare em-dash literal.
+    @Test func noWidgetViewRendersABareDash() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/LifegamesWidgets")
+        let views = try FileManager.default.subpathsOfDirectory(atPath: root.path)
+            .filter { $0.hasSuffix("View.swift") }
+        #expect(!views.isEmpty)
+        var offenders: [String] = []
+        for rel in views {
+            let source = try String(contentsOf: root.appendingPathComponent(rel), encoding: .utf8)
+            for (i, line) in source.components(separatedBy: "\n").enumerated() {
+                let code = line.components(separatedBy: "//").first ?? ""
+                if code.contains("\"—\"") || code.contains("\"\\u{2014}\"") {
+                    offenders.append("\(rel):\(i + 1)")
+                }
+            }
+        }
+        #expect(offenders.isEmpty, "bare no-reading marks: \(offenders)")
+    }
+
+    /// The label modifier is applied at every value cell that can show the mark.
+    @Test func everyValueCellAppliesTheLabel() throws {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/LifegamesWidgets")
+        for rel in ["Health/HeartRateView.swift", "Health/HydrationView.swift", "Reading/BookModalView.swift"] {
+            let source = try String(contentsOf: root.appendingPathComponent(rel), encoding: .utf8)
+            #expect(source.contains(".noReadingAccessibility(value)"), "\(rel) shows NoReading.mark without its label")
+        }
+    }
+}
