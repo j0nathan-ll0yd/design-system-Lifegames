@@ -52,7 +52,9 @@ import var_max from '@fixtures/health/heart-rate.max.json';
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `health` | `object` | Yes | — |
+| `health` | `object` | No | — |
+| `state` | `WidgetState` | No | — |
+| `generatedAt` | `string \| null` | No | — |
 
 <details>
 <summary><code>health</code> shape</summary>
@@ -60,8 +62,8 @@ import var_max from '@fixtures/health/heart-rate.max.json';
 ```typescript
 {
 quantities: {
-heartRate: { value: number; unit: string };
-hrvSDNN: { value: number; unit: string };
+heartRate?: { value: number; unit: string };
+hrvSDNN?: { value: number; unit: string };
 restingHeartRate?: { value: number; unit: string };
 respiratoryRate?: { value: number; unit: string };
 wristTemperatureDelta?: { value: number; unit: string };

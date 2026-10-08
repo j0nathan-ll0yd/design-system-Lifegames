@@ -122,8 +122,17 @@ function auditPropsUsage() {
   return audit
 }
 
-function extractPropsInterface(source, interfaceName) {
-  const startRe = new RegExp(`export interface ${interfaceName}\\s*\\{`)
+// A union type's `|` would split a GFM table cell, even inside backticks.
+function tableCell(text) {
+  return text.replace(/\|/g, '\\|')
+}
+
+// Base interfaces a widget Props may extend that live outside its .types.ts.
+// WidgetStateProps carries the optional render-state inputs (atlas decision 0160).
+const EXTERNAL_BASES = {WidgetStateProps: path.join(ROOT, 'packages/web/src/runtime/widget-state.ts')}
+
+function extractInterfaceBody(source, interfaceName) {
+  const startRe = new RegExp(`export interface ${interfaceName}(?:\\s+extends\\s+([\\w\\s,]+?))?\\s*\\{`)
   const startMatch = source.match(startRe)
   if (!startMatch) {
     return null
@@ -142,7 +151,32 @@ function extractPropsInterface(source, interfaceName) {
   if (depth !== 0) {
     throw new Error(`Unbalanced braces in ${interfaceName}`)
   }
-  return source.slice(start, i - 1)
+  const bases = startMatch[1] ? startMatch[1].split(',').map((b) => b.trim()).filter(Boolean) : []
+  return {body: source.slice(start, i - 1), bases}
+}
+
+// The interface's own fields first, then each base's fields (resolved in the
+// same file, or from EXTERNAL_BASES).
+function extractPropsInterface(source, interfaceName) {
+  const own = extractInterfaceBody(source, interfaceName)
+  if (!own) {
+    return null
+  }
+  let body = own.body
+  for (const base of own.bases) {
+    const baseSource = EXTERNAL_BASES[base] ? fs.readFileSync(EXTERNAL_BASES[base], 'utf-8') : source
+    const inherited = extractInterfaceBody(baseSource, base)
+    if (inherited) {
+      // Bases may follow the TS style of their own package (no semicolons,
+      // JSDoc): drop comments and terminate each member so parseTopLevelFields
+      // sees one field per member.
+      const members = inherited.body.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/\/\/.*$/, '').trim()).filter(Boolean).map((
+        l
+      ) => (/[;{,]$/.test(l) ? l : l + ';'))
+      body += '\n' + members.join('\n')
+    }
+  }
+  return body
 }
 
 function parseTopLevelFields(body) {
@@ -313,7 +347,7 @@ function generateDynamicMdx(widget, actualName, fields, index, manifest) {
   const detailsBlocks = []
 
   for (const field of fields) {
-    propsTable += `| \`${field.name}\` | \`${field.type}\` | ${field.optional ? 'No' : 'Yes'} | — |\n`
+    propsTable += `| \`${field.name}\` | \`${tableCell(field.type)}\` | ${field.optional ? 'No' : 'Yes'} | — |\n`
     if (field.nestedShape) {
       detailsBlocks.push(`<details>\n<summary><code>${field.name}</code> shape</summary>\n\n\`\`\`typescript\n${field.nestedShape}\n\`\`\`\n\n</details>`)
     }
@@ -513,7 +547,7 @@ function generateStaticMdx(widget, actualName, fields, index, manifest) {
   const detailsBlocks = []
 
   for (const field of fields) {
-    dataTable += `| \`${field.name}\` | \`${field.type}\` | ${field.optional ? 'No' : 'Yes'} | — |\n`
+    dataTable += `| \`${field.name}\` | \`${tableCell(field.type)}\` | ${field.optional ? 'No' : 'Yes'} | — |\n`
     if (field.nestedShape) {
       detailsBlocks.push(`<details>\n<summary><code>${field.name}</code> shape</summary>\n\n\`\`\`typescript\n${field.nestedShape}\n\`\`\`\n\n</details>`)
     }
