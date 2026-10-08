@@ -46,7 +46,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
       </div>
       <div id="systemStatus">
         {lines.map((line: any, idx: number) => {
-          const source = sourceMap[line.key] || '';
+          const source = line.source ?? sourceMap[line.key] ?? '';
           const provenance = isSourceKey(source) ? widgets.systemStatus.sources[source] : undefined;
           return (
             <div class="sys-line" data-source={source} style={`animation-delay: ${idx * 0.1}s`}>
@@ -108,7 +108,7 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
         <div class="left-panel-status">
           <div id="systemStatus">
             {lines.map((line: any, idx: number) => {
-              const source = sourceMap[line.key] || '';
+              const source = line.source ?? sourceMap[line.key] ?? '';
               const provenance = isSourceKey(source)
                 ? widgets.systemStatus.sources[source]
                 : undefined;

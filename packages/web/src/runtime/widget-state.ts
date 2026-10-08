@@ -148,7 +148,11 @@ export function toEpochMs(now: number | string | Date | null | undefined): numbe
   return typeof now === 'number' && Number.isFinite(now) ? now : Date.now()
 }
 
-/** Root attributes every live card carries (spread onto the `.tri-card`). */
+/**
+ * Root attributes every live card carries (spread onto the `.tri-card`).
+ * `data-generated-at` appears only in a data state: an export timestamp is
+ * itself gated, so a non-data card names none even when a caller passes one.
+ */
 export function stateRootAttrs(state: WidgetState, generatedAt?: string | null): Record<string, string | undefined> {
-  return {'data-ssr-state': state, 'data-generated-at': generatedAt || undefined}
+  return {'data-ssr-state': state, 'data-generated-at': (rendersData(state) && generatedAt) || undefined}
 }

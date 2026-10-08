@@ -17,7 +17,7 @@ import {
   type WorkoutEntry
 } from './adapters'
 import {esc} from './html-utils'
-import {isHidingFocus, oldestGeneratedAt, rendersData, toEpochMs, type WidgetState, type WidgetStateProps, worstState} from './widget-state'
+import {isHidingFocus, NO_READING, oldestGeneratedAt, rendersData, toEpochMs, type WidgetState, type WidgetStateProps, worstState} from './widget-state'
 import {widgets} from '@j0nathan-ll0yd/copy'
 import type {
   ArticlesExport,
@@ -103,9 +103,18 @@ export function formatAge(iso: string, now: number): string {
  * SystemStatus template and `updateSystemStatus`. A source with a timestamp is
  * ACTIVE with its age in <time datetime>; a source without one is OFFLINE.
  */
-export function composeSystemLines(timestamps: Partial<Record<string, string | null>>, now: number | string | Date): SystemLine[] {
+export function composeSystemLines(
+  timestamps: Partial<Record<string, string | null>>,
+  now: number | string | Date,
+  opts: {suppressed?: boolean} = {}
+): SystemLine[] {
   const nowMs = toEpochMs(now)
   return SYSTEM_SOURCES.map(({source, key, color}) => {
+    if (opts.suppressed) {
+      // A hiding focus mode: every row stays (so a later update can fill it)
+      // but names no timestamp, age or status — the gate wins.
+      return {key, source, dotClass: '', keyClass: 'sys-key', valClass: 'sys-val', value: esc(NO_READING)}
+    }
     const ts = timestamps[source]
     const valid = typeof ts === 'string' && Number.isFinite(Date.parse(ts))
     if (valid) {
@@ -284,8 +293,9 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
             date: e.date,
             datetime: e.datetime,
             hash: e.hash ?? '',
-            additions: e.additions ?? 0,
-            deletions: e.deletions ?? 0,
+            // Absent counts stay absent (the widget renders no "+0 -0").
+            ...(typeof e.additions === 'number' ? {additions: e.additions} : {}),
+            ...(typeof e.deletions === 'number' ? {deletions: e.deletions} : {}),
             ...(e.number !== undefined ? {number: e.number} : {}),
             url: e.url
           }))
@@ -296,7 +306,7 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
     readingFeed: {...stateProps(articles), ...(articles.data ? {reading: {articles: toReadingArticles(adaptedArticles)}} : {})},
     bookshelf: {...stateProps(books), ...(adaptedBooks ? {books: toBookshelfBooks(adaptedBooks)} : {})},
     theatreReviews: {...stateProps(theatre), ...(theatre.data ? {reviews: theatre.data.reviews, totalReviews: theatre.data.totalReviews} : {})},
-    systemStatus: {system: {lines: suppressed ? [] : composeSystemLines(timestamps, nowMs)}},
+    systemStatus: {system: {lines: composeSystemLines(timestamps, nowMs, {suppressed})}},
     focusOverlay: {currentFocus, now: nowIso},
     dndOverlay: {currentFocus, now: nowIso}
   }

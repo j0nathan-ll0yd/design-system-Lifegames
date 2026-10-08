@@ -59,7 +59,11 @@ export function updateHeartRate(data: AdaptedHealth): void {
   const hrvStyle = classifyHRV(hrv)
 
   const card = document.getElementById('cardHR')
-  revealLiveData(card)
+  // Without a heart-rate measurement the server renders unavailable, and a
+  // recorded 0 renders empty; the client does not claim live for either.
+  if (typeof hrRaw === 'number' && hrRaw > 0) {
+    revealLiveData(card)
+  }
 
   // Paused state: watch worn=false means the watch is off wrist or charging.
   // CSS controls visibility: is-paused on the card hides .hr-data and shows .hr-paused.
@@ -268,13 +272,17 @@ export function updateNightSummary(data: AdaptedSleep): void {
     if (pill) {
       const val = pill.querySelector('.sleep-moon-pill-val')
       if (val) {
-        val.textContent = data.sleepPhaseFormatted[phase] ?? ''
+        // '' marks a phase the export did not carry: no reading, never 0m.
+        val.textContent = data.sleepPhaseFormatted[phase] || NO_READING
       }
     }
   })
 
   const insight = document.getElementById('sleepInsight')
-  if (insight) {
+  if (insight && (data.derived.deepPct == null || data.derived.remPct == null)) {
+    // Without both shares there is no caption: nothing is invented.
+    insight.innerHTML = ''
+  } else if (insight) {
     // Source the words from copy; split the ICU template on the em-dash to keep
     // the percentage clauses in their own styled <span>s (mirrors NightSummary.astro).
     const clauses = widgets.nightSummary.restorative.split('—').map((c) => c.trim())
@@ -349,7 +357,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
     return
   }
 
-  revealLiveData(card)
+  revealLiveData(card, !events || events.length === 0 ? 'empty' : 'live')
   if (!events || events.length === 0) {
     body.innerHTML = '<div class="widget-empty">' + esc(widgets.devLog.empty) + '</div>'
     card.classList.remove('is-loading')
@@ -370,14 +378,15 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   events.forEach((e: AdaptedGithubEvent) => {
     const icon = iconMap[e.type] || fallbackIcon
     let detail = ''
-    if (e.type === 'commit' && e.hash) {
+    // Line counts only when the export carried both (no invented "+0 -0").
+    if (e.type === 'commit' && e.hash && typeof e.additions === 'number' && typeof e.deletions === 'number') {
       detail = '<span style="color:var(--neon-green)">+' +
-        (e.additions || 0) +
+        Number(e.additions) +
         '</span> <span style="color:var(--neon-red)">-' +
-        (e.deletions || 0) +
+        Number(e.deletions) +
         '</span>'
-    } else if (e.number !== undefined) {
-      detail = '#' + e.number
+    } else if (typeof e.number === 'number') {
+      detail = '#' + Number(e.number)
     }
 
     if (e.url) {
@@ -419,7 +428,7 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
     return
   }
 
-  revealLiveData(card)
+  revealLiveData(card, !articles || articles.length === 0 ? 'empty' : 'live')
   if (!articles || articles.length === 0) {
     body.innerHTML = '<div class="widget-empty">' + esc(widgets.readingFeed.empty) + '</div>'
     card.classList.remove('is-loading')
@@ -963,7 +972,7 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
     return
   }
 
-  revealLiveData(card)
+  revealLiveData(card, !repos || repos.length === 0 ? 'empty' : 'live')
   if (!repos || repos.length === 0) {
     const body = card.querySelector('.widget-body')
     if (body) {
@@ -985,7 +994,7 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
     html += '<a class="gh-sl-name" href="' + esc(repo.url) + '" target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">'
     html += '<span class="gh-sl-owner">' + esc(repo.owner) + '/</span>' + esc(repo.name)
     html += '</a>'
-    html += '<span class="gh-sl-stars">&#9733; ' + repo.stars.toLocaleString() + '</span>'
+    html += '<span class="gh-sl-stars">&#9733; ' + repo.stars.toLocaleString('en-US') + '</span>'
     html += '<span class="gh-sl-lang">'
     html += '<span class="gh-sl-lang-dot" style="background: ' + color + ';"></span>'
     html += esc(repo.language)

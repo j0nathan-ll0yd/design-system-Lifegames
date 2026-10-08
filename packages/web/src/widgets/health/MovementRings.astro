@@ -64,12 +64,15 @@ const scaffoldHidden = isScaffoldHidden(widgetState);
 const q = (showData ? health?.quantities : undefined) ?? {};
 
 // Goals are configuration, not measurements (server-synced; SSR defaults until
-// the device's first goals sync). They never stand in for a measurement.
+// the device's first goals sync). They never stand in for a measurement. The
+// owner's synced goals come from the health export, so a non-data state shows
+// only the design-system defaults.
+const syncedGoals = showData ? health?.goals : undefined;
 const goals = {
-  moveKcal: health?.goals?.moveKcal ?? 500,
-  exerciseMin: health?.goals?.exerciseMin ?? 30,
-  standHr: health?.goals?.standHr ?? 12,
-  daylightMin: health?.goals?.daylightMin ?? 20,
+  moveKcal: syncedGoals?.moveKcal ?? 500,
+  exerciseMin: syncedGoals?.exerciseMin ?? 30,
+  standHr: syncedGoals?.standHr ?? 12,
+  daylightMin: syncedGoals?.daylightMin ?? 20,
 };
 
 const round = (v: number | undefined): number | null =>
@@ -105,19 +108,21 @@ if (showData && measured.every((v) => v === 0)) {
   widgetState = 'empty';
 }
 const isEmpty = widgetState === 'empty';
+// The scaffold behind the empty notice stays value-free, like every other non-data state.
+const renderValues = showData && !isEmpty;
 
 const txt = (v: number | null, format: (n: number) => string = String): string =>
-  showData ? formatMeasurement(v, format) : '';
+  renderValues ? formatMeasurement(v, format) : '';
 const stepsText = txt(steps, (n) => n.toLocaleString('en-US'));
 const distanceText = txt(distanceM ?? null, (n) => (n / 1000).toFixed(1));
 const flightsText = txt(flights);
-const centerText = showData
+const centerText = renderValues
   ? moveVal != null
     ? `${Math.round(Math.min(movePct, 1) * 100)}%`
     : NO_READING
   : '';
 const legend = (v: number | null, goal: number): string =>
-  showData ? `${formatMeasurement(v)}/${goal}` : '';
+  renderValues ? `${formatMeasurement(v)}/${goal}` : '';
 
 // Ring group accessible name. A missing ring reads "no reading" instead of a number.
 const ringPart = (v: number | null, frac: number) =>
@@ -130,19 +135,19 @@ const ringsLabel = a11y.movement.rings
 // SSR paused: if build-data already has watch.worn===false, apply is-paused at SSR time
 // so the page is correct before the runtime updater fires.
 // Watch state only in the data states: a suppressed card names nothing.
-const watch = showData ? health?.watch : undefined;
+const watch = renderValues ? health?.watch : undefined;
 const ssrPaused = watch?.worn === false;
 
 // Solar footer: server-computed facts. When `solar` is absent, nothing is
 // invented — the times read as no reading and the sun dot is not drawn.
-const solar = showData ? health?.solar : undefined;
-const sunrise = showData ? (solar?.sunriseHHmm ?? NO_READING) : '';
-const sunset = showData ? (solar?.sunsetHHmm ?? NO_READING) : '';
+const solar = renderValues ? health?.solar : undefined;
+const sunrise = renderValues ? (solar?.sunriseHHmm ?? NO_READING) : '';
+const sunset = renderValues ? (solar?.sunsetHHmm ?? NO_READING) : '';
 // Clamp like the updater does — a contract-violating pct must not paint off-track.
 const sunPct = solar ? Math.min(100, Math.max(0, solar.currentProgressPct)) : null;
 // Absent daylight = not measured → the no-reading mark, never a mock or a 0.
 const daylightMin = round(q.timeInDaylight?.value);
-const daylightText = showData ? formatMeasurement(daylightMin) : '';
+const daylightText = renderValues ? formatMeasurement(daylightMin) : '';
 const daylightHit = daylightMin != null && daylightMin >= goals.daylightMin;
 
 // SVG ring geometry (matches preview html)
@@ -204,7 +209,7 @@ function offset(circ: number, pct: number): number {
     </div>
     {
       isEmpty && (
-        <div class="mv-empty">
+        <div class="mv-empty" data-state-notice="empty">
           <span class="mv-empty-label">{widgets.movement.empty}</span>
         </div>
       )
@@ -250,9 +255,10 @@ function offset(circ: number, pct: number): number {
         }
       </span>
     </div>
+    {/* Rendered in every state (hidden behind any notice) so a later live update can reveal it. */}
     {
-      !isEmpty && (
-        <div class="mv-data" data-state-scaffold hidden={scaffoldHidden}>
+      (
+        <div class="mv-data" data-state-scaffold hidden={scaffoldHidden || isEmpty}>
           <div class="mv-layout">
             <div class="mv-rings">
               {/* The name belongs on the element carrying role="img", not on the
@@ -264,8 +270,8 @@ function offset(circ: number, pct: number): number {
               <svg
                 viewBox="0 0 144 144"
                 role="img"
-                aria-label={showData ? ringsLabel : undefined}
-                aria-hidden={showData ? undefined : 'true'}
+                aria-label={renderValues ? ringsLabel : undefined}
+                aria-hidden={renderValues ? undefined : 'true'}
               >
                 <circle class="mv-ring-track mv-ring-track-move" cx="72" cy="72" r="60" />
                 <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" />

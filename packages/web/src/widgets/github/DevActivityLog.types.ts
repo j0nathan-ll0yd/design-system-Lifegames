@@ -15,7 +15,10 @@ export interface DevActivityLogProps extends WidgetStateProps {
     // ISO timestamp behind `date`, rendered as <time datetime>.
     datetime?: string;
     hash: string;
-    additions: number;
-    deletions: number;
+    // Absent when the export did not carry them: no "+0 -0" is invented.
+    additions?: number;
+    deletions?: number;
+    number?: number;
+    url?: string;
   }[];
 }

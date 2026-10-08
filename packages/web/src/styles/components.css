@@ -224,7 +224,8 @@
       font-size: var(--font-size-base);
       font-style: italic;
       text-align: center;
-      opacity: 0.7;
+      /* No opacity: muted text at 0.7 measured 4.2:1 on the card (axe
+         color-contrast, WCAG 1.4.3 needs 4.5:1). Full --text-muted is 7.3:1. */
     }
 
     /* Two-line stacked empty state (title + body), e.g. bookshelf. The title

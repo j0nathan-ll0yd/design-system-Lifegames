@@ -15,7 +15,7 @@ export interface Article {
 
 export interface ReadingFeedProps extends WidgetStateProps {
   // Absent in the non-data states (unavailable, suppressed, loading).
-  // The server passes at most 10 articles (one client page).
+  // The server page passes at most 10 articles (toReadingArticles, one client page).
   reading?: {
     articles: Article[];
   };

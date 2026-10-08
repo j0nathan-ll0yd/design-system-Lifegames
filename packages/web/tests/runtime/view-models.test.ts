@@ -107,7 +107,9 @@ describe('toDashboardViewModels', () => {
     const vm = toDashboardViewModels({focus: {data: {currentFocus: 'Work', generatedAt: '2026-03-18T11:59:00Z'} as never}, health: {data: health}}, NOW)
     expect(vm.suppressed).toBe(true)
     expect(vm.heartRate).toEqual({state: 'suppressed', generatedAt: null})
-    expect(vm.systemStatus.system.lines).toEqual([])
+    // Every row stays, naming no timestamp, age or status.
+    expect(vm.systemStatus.system.lines).toHaveLength(7)
+    expect(vm.systemStatus.system.lines.every((l) => l.value === '—' && !l.value.includes('time'))).toBe(true)
     expect(vm.focusOverlay.currentFocus).toBe('Work')
   })
 

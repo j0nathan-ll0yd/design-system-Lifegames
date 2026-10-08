@@ -38,18 +38,25 @@ function getIcon(type: string) {
   return iconMap[type] || { symbol: '\u00B7', color: 'var(--lg-color-accent-green)' };
 }
 
+// Commit line counts render only when the export carried both; a count the
+// export lacks is not a zero. Number() keeps set:html free of any string.
 function getDetail(event: Event): string {
-  if (event.type === 'commit' && event.hash) {
+  if (
+    event.type === 'commit' &&
+    event.hash &&
+    typeof event.additions === 'number' &&
+    typeof event.deletions === 'number'
+  ) {
     return (
       '<span style="color:var(--lg-color-accent-green)">+' +
-      (event.additions || 0) +
+      Number(event.additions) +
       '</span> <span style="color:var(--lg-color-accent-red)">-' +
-      (event.deletions || 0) +
+      Number(event.deletions) +
       '</span>'
     );
   }
-  if (event.number !== undefined) {
-    return '#' + event.number;
+  if (typeof event.number === 'number') {
+    return '#' + Number(event.number);
   }
   return '';
 }

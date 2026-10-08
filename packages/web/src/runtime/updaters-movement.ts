@@ -65,6 +65,14 @@ export function updateMovementRings(data: AdaptedHealth): void {
   if (!card) {
     return
   }
+  // Empty (no movement measured, or every measurement a recorded zero): a card
+  // the server rendered empty keeps its empty notice; nothing is revealed.
+  const q0 = data.quantities
+  const measured = [q0.stepCount, q0.distanceWalkingRunning, q0.activeEnergyBurned, q0.exerciseTime].filter((m) => m != null)
+  if (measured.every((m) => m?.value === 0) && card.querySelector('[data-state-notice="empty"]')) {
+    card.classList.remove('is-loading')
+    return
+  }
   revealLiveData(card)
 
   // Paused state: watch worn=false means the watch is off wrist or charging.

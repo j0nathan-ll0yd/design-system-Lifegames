@@ -166,15 +166,17 @@ function extractPropsInterface(source, interfaceName) {
   for (const base of own.bases) {
     const baseSource = EXTERNAL_BASES[base] ? fs.readFileSync(EXTERNAL_BASES[base], 'utf-8') : source
     const inherited = extractInterfaceBody(baseSource, base)
-    if (inherited) {
-      // Bases may follow the TS style of their own package (no semicolons,
-      // JSDoc): drop comments and terminate each member so parseTopLevelFields
-      // sees one field per member.
-      const members = inherited.body.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/\/\/.*$/, '').trim()).filter(Boolean).map((
-        l
-      ) => (/[;{,]$/.test(l) ? l : l + ';'))
-      body += '\n' + members.join('\n')
+    if (!inherited) {
+      // A base the generator cannot read would silently drop props from the table.
+      throw new Error(`${interfaceName} extends ${base}, which is neither in its file nor in EXTERNAL_BASES`)
     }
+    // Bases may follow the TS style of their own package (no semicolons,
+    // JSDoc): drop comments and terminate each member so parseTopLevelFields
+    // sees one field per member.
+    const members = inherited.body.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').map((l) => l.replace(/\/\/.*$/, '').trim()).filter(Boolean).map((
+      l
+    ) => (/[;{,]$/.test(l) ? l : l + ';'))
+    body += '\n' + members.join('\n')
   }
   return body
 }

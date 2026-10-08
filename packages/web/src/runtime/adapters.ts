@@ -71,8 +71,10 @@ export interface AdaptedSleep {
   sleepScore: number | null
   sleepDurationFormatted: string
   sleepPhaseFormatted: Record<string, string>
-  derived: {deepPct: number; remPct: number; corePct: number}
-  phases: Record<string, number>
+  // null when the sleep export lacks deep, REM or core (see computeSleepPercentages).
+  derived: {deepPct: number | null; remPct: number | null; corePct: number | null}
+  // Seconds per phase; null for a phase the export did not carry.
+  phases: Record<string, number | null>
 }
 
 export interface WorkoutEntry {
@@ -215,7 +217,7 @@ export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | n
     const deep = sleepData.deep as {seconds: number} | undefined
     const core = sleepData.core as {seconds: number} | undefined
     const awake = sleepData.awake as {seconds: number} | undefined
-    const phases = {rem: rem?.seconds ?? 0, deep: deep?.seconds ?? 0, core: core?.seconds ?? 0, awake: awake?.seconds ?? 0}
+    const phases = {rem: rem?.seconds ?? null, deep: deep?.seconds ?? null, core: core?.seconds ?? null, awake: awake?.seconds ?? null}
     const totalSleepSeconds = computeTotalSleepSeconds(phases)
     sleepDurationFormatted = formatDuration(totalSleepSeconds)
     sleepPhaseFormatted = {deep: formatPhase(phases.deep), rem: formatPhase(phases.rem), core: formatPhase(phases.core), awake: formatPhase(phases.awake)}
@@ -248,7 +250,7 @@ export function adaptSleep(sleepData: SleepExport, healthData: HealthExport | nu
   const deep = sleepData.deep as {seconds: number} | undefined
   const core = sleepData.core as {seconds: number} | undefined
   const awake = sleepData.awake as {seconds: number} | undefined
-  const phases = {rem: rem?.seconds ?? 0, deep: deep?.seconds ?? 0, core: core?.seconds ?? 0, awake: awake?.seconds ?? 0}
+  const phases = {rem: rem?.seconds ?? null, deep: deep?.seconds ?? null, core: core?.seconds ?? null, awake: awake?.seconds ?? null}
   const totalSleepSeconds = computeTotalSleepSeconds(phases)
   const isEmpty = totalSleepSeconds === 0
   const pcts = computeSleepPercentages(phases)

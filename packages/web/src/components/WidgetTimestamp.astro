@@ -21,12 +21,21 @@ const showLabel = state !== 'unavailable' && state !== 'suppressed';
 ---
 
 {
+  /* data-live-label lets revealLiveData restore the live label after a stale
+    or notice state, so a recovered card never keeps a dishonest header. */
+}
+{
   asOf && generatedAt ? (
-    <time class="widget-timestamp widget-timestamp-stale" id={id} datetime={generatedAt}>
+    <time
+      class="widget-timestamp widget-timestamp-stale"
+      id={id}
+      datetime={generatedAt}
+      data-live-label={label}
+    >
       {pendingCopy.widgetState.asOf.replace('{time}', asOf)}
     </time>
   ) : (
-    <span class="widget-timestamp" id={id}>
+    <span class="widget-timestamp" id={id} data-live-label={label}>
       {showLabel ? label : ''}
     </span>
   )

@@ -20,6 +20,15 @@ const GRADE_COLORS: Record<string, string> = {
   F: '#ef4444'
 }
 
+/** The URL when it parses as https, otherwise null (no javascript:, data: or relative). */
+function safeHttpsUrl(url: string): string | null {
+  try {
+    return new URL(url).protocol === 'https:' ? url : null
+  } catch {
+    return null
+  }
+}
+
 /** One theatre review as the card markup reads it (the export's review item). */
 export type TheatreCardReview = Pick<
   TheatreReviewsExport['reviews'][number],
@@ -36,7 +45,9 @@ export function theatreCardsHtml(reviews: readonly TheatreCardReview[]): string 
   let html = ''
   reviews.forEach((r, i) => {
     const gradeColor = (r.rating && GRADE_COLORS[r.rating]) || ''
-    html += `<a class="theatre-card" href="${esc(r.url)}" target="_blank" rel="noopener noreferrer" style="animation-delay: ${i * 0.08}s">`
+    // This markup ships in server HTML: only an https review link becomes an href.
+    const href = safeHttpsUrl(r.url)
+    html += `<a class="theatre-card"${href ? ` href="${esc(href)}"` : ''} target="_blank" rel="noopener noreferrer" style="animation-delay: ${i * 0.08}s">`
     html += `<div class="theatre-poster-wrap">`
     if (r.imageUrl || r.imageUrlAvif || r.imageUrlCardAvif) {
       // Runtime theatre posters never have committed same-origin copies.

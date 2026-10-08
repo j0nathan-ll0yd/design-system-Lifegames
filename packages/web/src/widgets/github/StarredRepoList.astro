@@ -63,7 +63,7 @@ const repos: Repo[] = showData ? (repoList ?? []) : [];
               <span class="gh-sl-owner">{repo.owner}/</span>
               {repo.name}
             </a>
-            <span class="gh-sl-stars">★ {repo.stars.toLocaleString()}</span>
+            <span class="gh-sl-stars">★ {repo.stars.toLocaleString('en-US')}</span>
             <span class="gh-sl-lang">
               <span class="gh-sl-lang-dot" style={`background: ${repo.languageColor};`} />
               {repo.language}

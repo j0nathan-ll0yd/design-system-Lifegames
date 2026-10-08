@@ -6,7 +6,9 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {initHydration} from '../../src/runtime/hydration-init'
 import {revealLiveData} from '../../src/runtime/updater-empty'
 import {
+  updateBookshelf,
   updateDevActivityLog,
+  updateHeartRate,
   updateHydration,
   updateNightSummary,
   updateReadingFeed,
@@ -14,6 +16,8 @@ import {
   updateSystemStatus,
   updateWorkouts
 } from '../../src/runtime/updaters'
+import {updateMovementRings} from '../../src/runtime/updaters-movement'
+import {theatreCardsHtml} from '../../src/runtime/updaters-theatre'
 import type {AdaptedHealth, AdaptedSleep} from '../../src/runtime/adapters'
 import {NO_READING} from '../../src/runtime/widget-state'
 
@@ -253,5 +257,101 @@ describe('updateSystemStatus shares composeSystemLines', () => {
       'ACTIVE <span class="sys-val">(<time datetime="2026-03-18T10:00:00.000Z">2h ago</time>)</span>'
     )
     expect(document.querySelector('.sys-dot')?.className).toBe('sys-dot sys-dot-red')
+  })
+})
+
+describe('review fixes: header, state attribute and fabricated values', () => {
+  it('revealLiveData restores the live label over a stale "as of" time and drops the old provenance', () => {
+    document.body.innerHTML = `
+      <div id="card" data-ssr-state="stale" data-generated-at="2026-03-18T09:00:00Z">
+        <div class="widget-header"><time class="widget-timestamp widget-timestamp-stale" id="ts" datetime="2026-03-18T09:00:00Z" data-live-label="live">as of Mar 18, 2:00 AM PDT</time></div>
+      </div>`
+    revealLiveData(el('card'))
+    const ts = el('ts')
+    expect(ts.tagName).toBe('SPAN')
+    expect(ts.textContent).toBe('live')
+    expect(ts.hasAttribute('datetime')).toBe(false)
+    expect(el('card').dataset.ssrState).toBe('live')
+    expect(el('card').dataset.generatedAt).toBeUndefined()
+  })
+
+  it('an empty update records the card as empty, not live', () => {
+    document.body.innerHTML = `
+      <div id="cardReading" data-ssr-state="unavailable"><div class="widget-body"><div data-state-notice="unavailable"></div></div></div>
+      <div id="cardBooks" data-ssr-state="suppressed"><div class="widget-body"></div></div>`
+    updateReadingFeed([])
+    expect(el('cardReading').dataset.ssrState).toBe('empty')
+    updateBookshelf({books: [], bookMeta: {}, statusLabels: {}, stats: {total: 0, reading: 0, completed: 0, upcoming: 0}})
+    expect(el('cardBooks').dataset.ssrState).toBe('empty')
+  })
+
+  it('HeartRate stays unavailable when the update carries no heart rate', () => {
+    document.body.innerHTML = `
+      <div id="cardHR" data-ssr-state="unavailable"><div data-state-notice="unavailable"></div><div class="hr-data" data-state-scaffold hidden><span id="pulseBpm"></span></div></div>`
+    updateHeartRate({...health({}), quantities: {}})
+    expect(el('cardHR').dataset.ssrState).toBe('unavailable')
+    expect(document.querySelector('[data-state-notice]')).not.toBeNull()
+  })
+
+  it('MovementRings keeps a server-rendered empty notice for an all-zero update', () => {
+    document.body.innerHTML = `
+      <div id="cardMovement" class="is-loading" data-ssr-state="empty"><div class="mv-empty" data-state-notice="empty"></div><div class="mv-data" data-state-scaffold hidden></div></div>`
+    const zero = {value: 0, unit: 'count'}
+    updateMovementRings({...health({}), quantities: {stepCount: zero, distanceWalkingRunning: zero, activeEnergyBurned: zero}})
+    expect(document.querySelector('[data-state-notice="empty"]')).not.toBeNull()
+    expect((document.querySelector('.mv-data') as HTMLElement).hidden).toBe(true)
+    expect(el('cardMovement').classList.contains('is-loading')).toBe(false)
+  })
+
+  it('Dev Log renders no "+0 -0" for a commit without line counts', () => {
+    document.body.innerHTML = '<div id="cardDevLog"><div class="widget-body"></div></div>'
+    updateDevActivityLog([{type: 'commit', repo: 'r', title: 't', date: '2h ago', hash: 'abc1234', url: ''}])
+    expect(document.querySelector('.gh-dal-detail')).toBeNull()
+    updateDevActivityLog([{type: 'commit', repo: 'r', title: 't', date: '2h ago', hash: 'abc1234', additions: 12, deletions: 3, url: ''}])
+    expect(document.querySelector('.gh-dal-detail')?.textContent).toBe('+12 -3')
+  })
+
+  it('NightSummary renders a missing phase as no reading and drops the caption', () => {
+    document.body.innerHTML = `
+      <div id="cardSleep"><div id="sleepDuration"></div><div id="sleepScoreVal"></div><div id="sleepScoreFill"></div>
+      <div data-phase="deep"><span class="sleep-moon-pill-val"></span></div><div id="sleepInsight">old caption</div><div id="sleepTimestamp"></div></div>`
+    updateNightSummary({
+      isEmpty: false,
+      date: '2026-03-18',
+      sleepScore: 80,
+      sleepDurationFormatted: '4h 30m',
+      sleepPhaseFormatted: {deep: '', rem: '1h 30m', core: '3h', awake: ''},
+      derived: {deepPct: null, remPct: null, corePct: null},
+      phases: {deep: null, rem: 5400, core: 10800, awake: null}
+    })
+    expect(document.querySelector('[data-phase="deep"] .sleep-moon-pill-val')?.textContent).toBe(NO_READING)
+    expect(el('sleepInsight').innerHTML).toBe('')
+  })
+})
+
+describe('theatre cards link only to https', () => {
+  it('drops a javascript: review URL from the href', () => {
+    const html = theatreCardsHtml([{
+      title: 'T',
+      url: 'javascript:alert(1)',
+      rating: null,
+      imageUrl: null,
+      imageUrlAvif: null,
+      imageUrlCard: null,
+      imageUrlCardAvif: null
+    }])
+    expect(html).not.toContain('javascript:')
+    expect(html).not.toContain('href=')
+    expect(
+      theatreCardsHtml([{
+        title: 'T',
+        url: 'https://example.com/r',
+        rating: null,
+        imageUrl: null,
+        imageUrlAvif: null,
+        imageUrlCard: null,
+        imageUrlCardAvif: null
+      }])
+    ).toContain('href="https://example.com/r"')
   })
 })

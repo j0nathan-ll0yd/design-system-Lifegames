@@ -3,13 +3,15 @@
 // The production widgets render on a server runtime (Cloudflare Workers) that
 // has no project filesystem. No file under src/production/ or src/widgets/ may
 // import a node: module or read process.cwd(). Bookshelf.astro did both until
-// this change; this test keeps the class of defect out.
+// this change; this test keeps the class of defect out. src/runtime/ and
+// src/components/ are scanned too: the widgets import them, so a node: import
+// there reaches the server render just the same.
 import {readdirSync, readFileSync, statSync} from 'node:fs'
 import {join, relative} from 'node:path'
 import {describe, expect, it} from 'vitest'
 
 const SRC = join(__dirname, '../../src')
-const ROOTS = ['production', 'widgets']
+const ROOTS = ['production', 'widgets', 'runtime', 'components']
 const SOURCE_FILE = /\.(astro|ts|tsx|js|mjs)$/
 
 function walk(dir: string): string[] {

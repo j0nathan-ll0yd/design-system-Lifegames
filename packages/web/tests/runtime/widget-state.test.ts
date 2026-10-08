@@ -106,4 +106,11 @@ describe('formatting', () => {
     expect(stateRootAttrs('live', '2026-03-18T12:00:00Z')).toEqual({'data-ssr-state': 'live', 'data-generated-at': '2026-03-18T12:00:00Z'})
     expect(stateRootAttrs('unavailable', null)).toEqual({'data-ssr-state': 'unavailable', 'data-generated-at': undefined})
   })
+
+  it('stateRootAttrs never names a timestamp outside a data state, even when one is passed', () => {
+    for (const state of ['empty', 'unavailable', 'suppressed', 'loading'] as const) {
+      expect(stateRootAttrs(state, '2026-03-18T12:00:00Z')['data-generated-at'], state).toBeUndefined()
+    }
+    expect(stateRootAttrs('stale', '2026-03-18T12:00:00Z')['data-generated-at']).toBe('2026-03-18T12:00:00Z')
+  })
 })

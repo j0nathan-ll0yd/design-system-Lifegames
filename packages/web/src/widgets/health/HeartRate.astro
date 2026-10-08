@@ -31,9 +31,9 @@ if (rendersData(widgetState) && !hasHr) {
 }
 const showData = rendersData(widgetState);
 // The value-free scaffold the runtime updaters target. It renders in every
-// state but `empty`, hidden behind the notice in unavailable and suppressed,
-// so a later live update can reveal it (revealLiveData) without a reload.
-const scaffoldHidden = isScaffoldHidden(widgetState);
+// state, hidden behind the notice in empty, unavailable and suppressed, so a
+// later live update can reveal it (revealLiveData) without a reload.
+const scaffoldHidden = isScaffoldHidden(widgetState) || widgetState === 'empty';
 
 const hr = showData && hasHr ? Math.round(hrRaw) : 0;
 const hrv = showData && hasHrv ? Math.round(hrvRaw) : 0;
@@ -100,7 +100,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
     </div>
     {
       widgetState === 'empty' && (
-        <div class="hr-empty">
+        <div class="hr-empty" data-state-notice="empty">
           <span class="hr-empty-label">{widgets.heartRate.empty}</span>
         </div>
       )
@@ -150,7 +150,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
       </span>
     </div>
     {
-      widgetState !== 'empty' && (
+      (
         <div class="hr-data" data-state-scaffold hidden={scaffoldHidden}>
           <div class="hr-layout">
             <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
@@ -158,7 +158,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
                 class="ecg-canvas"
                 id="hrEcgCanvas"
                 data-bpm={showData ? String(hr) : undefined}
-                data-hrv={hasHrv ? String(hrv) : undefined}
+                data-hrv={showData && hasHrv ? String(hrv) : undefined}
                 data-stroke={state.ecgStroke}
                 width="400"
                 height="120"

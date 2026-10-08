@@ -108,11 +108,37 @@ function stringTokens(value: unknown, out: Set<string>, key = ''): Set<string> {
 // Every string the design system authors: chrome, never provenance.
 const AUTHORED = stringTokens({widgets, a11y, STATUS_LABELS, LANG_COLORS}, new Set())
 
+// The number half of the fixtures rule: a numeric leaf is a token unless it is
+// an integer below 10. Matched as a whole number in rendered text.
+function numberTokens(value: unknown, out: Set<string>): Set<string> {
+  if (typeof value === 'number') {
+    if (Number.isFinite(value) && !(Number.isInteger(value) && Math.abs(value) < 10)) {
+      out.add(String(value))
+    }
+  } else if (Array.isArray(value)) {
+    value.forEach((v) => numberTokens(v, out))
+  } else if (value && typeof value === 'object') {
+    Object.values(value).forEach((v) => numberTokens(v, out))
+  }
+  return out
+}
+
 let knownAnswerTokens: Set<string>
+let knownAnswerNumbers: Set<string>
+let knownAnswerTimestamps: Set<string>
 let legacyTokens: Set<string>
 
 beforeAll(() => {
   knownAnswerTokens = new Set()
+  knownAnswerNumbers = new Set()
+  knownAnswerTimestamps = new Set()
+  for (const domain of Object.keys(DOMAIN_DIRS) as Domain[]) {
+    const ka = raw(domain, KNOWN_ANSWER)
+    numberTokens(ka, knownAnswerNumbers)
+    if (typeof ka.generatedAt === 'string') {
+      knownAnswerTimestamps.add(ka.generatedAt)
+    }
+  }
   const others = new Set<string>()
   for (const domain of Object.keys(DOMAIN_DIRS) as Domain[]) {
     const dir = join(GENERATED, DOMAIN_DIRS[domain])
@@ -194,8 +220,21 @@ function expectKnownAnswer(r: Rendered, id: string): void {
   }
 }
 
-// Numeric known-answer values a non-data state must never carry.
-function expectNoKnownAnswerSlots(r: Rendered, id: string): void {
+// Whole-number match: "33" must not match inside "133" or "3.33".
+function containsNumber(text: string, n: string): boolean {
+  const escaped = n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(^|[^0-9.])${escaped}($|[^0-9.])`).test(text)
+}
+
+// A non-data state must carry no known-answer value at all: no distinctive
+// string, no number from any known-answer export (outside the widget's own
+// chrome), no export timestamp, and no derived value in a known slot.
+async function expectNoInputValue(r: Rendered, component: any, id: string): Promise<void> {
+  const chrome = await chromeOf(component, id)
+  expect(leaked(r, knownAnswerTokens)).toEqual([])
+  expect([...knownAnswerNumbers].filter((n) => containsNumber(r.text, n) && !containsNumber(chrome, n))).toEqual([])
+  expect([...knownAnswerTimestamps].filter((t) => r.text.includes(t))).toEqual([])
+  expect(r.root.getAttribute('data-generated-at')).toBeNull()
   const slots = SLOTS[id]
   if (slots) {
     for (const [selector, value] of Object.entries(slots())) {
@@ -270,12 +309,9 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const props = vmFor(exportsFor(KNOWN_ANSWER, 'stale'), vm)
     const r = await render(component, props, id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('stale')
-    if (id !== 'cardTheatreReviews') {
-      // TheatreReviews' header slot is its review-count link, not a timestamp.
-      const asOf = r.root.querySelector('time.widget-timestamp-stale')
-      expect(asOf?.getAttribute('datetime')).toBe(props.generatedAt)
-      expect(asOf?.textContent).toMatch(/^as of /)
-    }
+    const asOf = r.root.querySelector('time.widget-timestamp-stale')
+    expect(asOf?.getAttribute('datetime')).toBe(props.generatedAt)
+    expect(asOf?.textContent).toMatch(/^as of /)
     expect(leaked(r, legacyTokens, await chromeOf(component, id))).toEqual([])
     expectKnownAnswer(r, id)
   })
@@ -285,6 +321,11 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const r = await render(component, props, id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('unavailable')
     expect(r.root.querySelector('[data-state-notice="unavailable"]')?.textContent?.trim()).toBe(pendingCopy.widgetState.unavailable)
+    await expectNoInputValue(r, component, id)
+    // A caller that passes data WITH state unavailable still renders none of it.
+    const forced = await render(component, {...vmFor(exportsFor(KNOWN_ANSWER), vm), state: 'unavailable'}, id)
+    expect(forced.root.getAttribute('data-ssr-state')).toBe('unavailable')
+    await expectNoInputValue(forced, component, id)
   })
 
   it('suppressed: a notice and NO data, even when data is passed in', async () => {
@@ -294,13 +335,11 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const r = await render(component, props, id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('suppressed')
     expect(r.root.querySelector('[data-state-notice="suppressed"]')?.textContent?.trim()).toBe(pendingCopy.widgetState.suppressed)
-    expect(leaked(r, knownAnswerTokens)).toEqual([])
-    expectNoKnownAnswerSlots(r, id)
+    await expectNoInputValue(r, component, id)
     // Defense in depth: a caller that passes data WITH state suppressed still renders none of it.
     const forced = await render(component, {...vmFor(exportsFor(KNOWN_ANSWER), vm), state: 'suppressed'}, id)
     expect(forced.root.getAttribute('data-ssr-state')).toBe('suppressed')
-    expect(leaked(forced, knownAnswerTokens)).toEqual([])
-    expectNoKnownAnswerSlots(forced, id)
+    await expectNoInputValue(forced, component, id)
   })
 
   it('loading: the skeleton and a <noscript> note, no value', async () => {
@@ -309,8 +348,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     expect(r.root.classList.contains('is-loading')).toBe(true)
     expect(r.root.querySelector('.skeleton-state')).not.toBeNull()
     expect(r.html).toContain(pendingCopy.widgetState.needsJavaScript)
-    expect(leaked(r, knownAnswerTokens)).toEqual([])
-    expectNoKnownAnswerSlots(r, id)
+    await expectNoInputValue(r, component, id)
   })
 
   it('no state prop: the compatibility mapper keeps the pre-0160 call signature', async () => {

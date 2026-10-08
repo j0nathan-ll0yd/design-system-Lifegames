@@ -333,12 +333,29 @@ describe('adaptSleep', () => {
     expect(result.phases.awake).toBe(900)
   })
 
-  it('returns zero percentages when all phases are absent', () => {
+  it('returns null percentages and an empty sleep when all phases are absent (missing, not zero)', () => {
     const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z'}
     const result = adaptSleep(sleep, makeHealth())
+    expect(result.isEmpty).toBe(true)
+    expect(result.derived).toEqual({deepPct: null, remPct: null, corePct: null})
+    expect(result.phases).toEqual({rem: null, deep: null, core: null, awake: null})
+    expect(result.sleepPhaseFormatted).toEqual({deep: '', rem: '', core: '', awake: ''})
+  })
+
+  it('keeps a missing phase missing: no 0m pill and no share of a partial total', () => {
+    const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z', rem: {seconds: 5400}, core: {seconds: 10800}}
+    const result = adaptSleep(sleep, makeHealth())
+    expect(result.isEmpty).toBe(false)
+    expect(result.sleepPhaseFormatted.deep).toBe('')
+    expect(result.sleepPhaseFormatted.rem).toBe('1h 30m')
+    expect(result.derived).toEqual({deepPct: null, remPct: null, corePct: null})
+  })
+
+  it('keeps a recorded zero phase as a measured zero', () => {
+    const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z', rem: {seconds: 5400}, core: {seconds: 10800}, deep: {seconds: 0}}
+    const result = adaptSleep(sleep, makeHealth())
+    expect(result.sleepPhaseFormatted.deep).toBe('0m')
     expect(result.derived.deepPct).toBe(0)
-    expect(result.derived.remPct).toBe(0)
-    expect(result.derived.corePct).toBe(0)
   })
 })
 

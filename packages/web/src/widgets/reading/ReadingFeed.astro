@@ -5,14 +5,13 @@ import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
 import type { Article, ReadingFeedProps } from './ReadingFeed.types';
 
-// The client pages by 10, so the server renders at most one page.
-const SERVER_PAGE_SIZE = 10;
-
 const { reading, state: requestedState, generatedAt } = Astro.props as ReadingFeedProps;
 const articleList = reading?.articles ?? [];
 const widgetState = resolveWidgetState(requestedState, articleList.length > 0);
 const showData = rendersData(widgetState);
-const articles: Article[] = showData ? articleList.slice(0, SERVER_PAGE_SIZE) : [];
+// The server page passes at most one client page (toReadingArticles caps it at
+// 10); the widget renders what it is given, so direct callers keep paginating.
+const articles: Article[] = showData ? articleList : [];
 ---
 
 <div
