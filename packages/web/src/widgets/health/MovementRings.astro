@@ -129,7 +129,9 @@ const ringsLabel = a11y.movement.rings
 
 // SSR paused: if build-data already has watch.worn===false, apply is-paused at SSR time
 // so the page is correct before the runtime updater fires.
-const ssrPaused = showData && health?.watch?.worn === false;
+// Watch state only in the data states: a suppressed card names nothing.
+const watch = showData ? health?.watch : undefined;
+const ssrPaused = watch?.worn === false;
 
 // Solar footer: server-computed facts. When `solar` is absent, nothing is
 // invented — the times read as no reading and the sun dot is not drawn.
@@ -235,14 +237,14 @@ function offset(circ: number, pct: number): number {
       </svg>
       <span class="mv-paused-label" id="mvPausedLabel">
         {
-          health.watch?.source === 'charging'
+          watch?.source === 'charging'
             ? widgets.movement.paused.labelCharging
             : widgets.movement.paused.label
         }
       </span>
       <span class="mv-paused-desc" id="mvPausedDesc">
         {
-          health.watch?.source === 'charging'
+          watch?.source === 'charging'
             ? widgets.movement.paused.descriptionCharging
             : widgets.movement.paused.description
         }

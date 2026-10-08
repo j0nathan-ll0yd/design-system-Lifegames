@@ -37,11 +37,12 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro,css}\" --max-warnings 0",
     "audit:inline-scripts": "node scripts/audit-inline-scripts.mjs",
-    "test": "vitest run",
+    "test": "vitest run && vitest run --config vitest.server-render.config.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:browser:fixture": "astro build --root tests/browser/fixture-app",
-    "test:browser": "pnpm test:browser:fixture && vitest run --config vitest.browser.config.ts"
+    "test:browser": "pnpm test:browser:fixture && vitest run --config vitest.browser.config.ts",
+    "test:server-render": "vitest run --config vitest.server-render.config.ts"
   },
   "dependencies": {
     "@j0nathan-ll0yd/copy": "workspace:*",

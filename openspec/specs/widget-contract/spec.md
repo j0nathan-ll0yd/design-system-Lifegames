@@ -586,3 +586,48 @@ rather than promising a tightening nobody can currently test.
 - **WHEN** the promotion gate evaluates it
 - **THEN** it SHALL be reported as an advisory note and SHALL NOT fail the gate, because the blocking
   threshold belongs to the `Stable` label rather than to the surface count alone
+
+### Requirement: A live web widget renders real data or an honest state in its server markup
+
+Each live web widget (HeartRate, MovementRings, Hydration, NightSummary, Workouts, DevActivityLog,
+StarredRepoList, ReadingFeed, Bookshelf, TheatreReviews) SHALL render, in server markup and without
+client JavaScript, exactly one of six states: `live`, `stale`, `empty`, `unavailable`, `suppressed`
+or `loading`. Its card root SHALL carry the state as `data-ssr-state`. A data state SHALL carry the
+export's `generatedAt` as `data-generated-at`, and a card that reads two exports SHALL carry the oldest
+input timestamp and the worst input state. A measurement the export did not carry SHALL render as the
+no-reading mark, never as `0`. A non-data state SHALL carry no input value, and `suppressed` SHALL
+carry none even when a caller passes data (atlas decision 0160).
+
+This is a **blocking** rule. `packages/web/tests/server-render/states.test.ts` renders every live
+widget in every state through the Astro Container API, from the same view models the server page uses,
+and runs inside `pnpm --filter @j0nathan-ll0yd/web test` in the required `contract-ts` status context.
+Its known-answer inputs are the raw `ssrKnownAnswer` fixture variations, whose distinctive values
+appear in no other fixture (`packages/fixtures/tests/ssr-known-answer.test.ts`), so a rendered value
+proves its provenance.
+
+#### Scenario: A widget renders a value from another fixture
+
+- **GIVEN** a widget rendered from the known-answer exports
+- **WHEN** its markup carries a distinctive value of any other fixture variation that the widget does
+  not author itself
+- **THEN** the test SHALL fail, because that value did not come from the input
+
+#### Scenario: An adapter turns a missing measurement into zero
+
+- **GIVEN** the `sparse` health export, which omits water, caffeine, exercise, energy and sleep score
+- **WHEN** Hydration, MovementRings and NightSummary render it
+- **THEN** each slot for a missing measurement SHALL carry the no-reading mark, and the test SHALL fail
+  if it carries `0`
+
+#### Scenario: A widget loses a state
+
+- **GIVEN** any live widget and any of the six states
+- **WHEN** the widget renders without the matching `data-ssr-state` on its card root
+- **THEN** the test SHALL fail
+
+#### Scenario: A hiding focus mode is active
+
+- **GIVEN** the known-answer exports and a `currentFocus` of `Work`
+- **WHEN** every live widget renders
+- **THEN** each SHALL render `suppressed` with its notice and no known-answer value, even when the
+  caller also passes the data

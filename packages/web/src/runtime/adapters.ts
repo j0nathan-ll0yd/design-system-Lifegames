@@ -164,6 +164,8 @@ export interface AdaptedStarredRepo {
 
 // ── Adapter functions ──────────────────────────────────────────────
 
+const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}/
+
 export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | null): AdaptedHealth {
   const q = {...healthData.quantities}
 
@@ -317,7 +319,8 @@ export function adaptGithubEvents(data: GithubEventsExport | null, now?: number)
       url = 'https://github.com/' + fullRepo + '/issues/' + e.number
     }
 
-    return {...e, date, datetime: e.date && e.date.includes('T') ? e.date : undefined, repo, url}
+    // `datetime` keeps the export's own ISO value (timestamp or date-only).
+    return {...e, date, datetime: e.date && ISO_DATE_PREFIX.test(e.date) ? e.date : undefined, repo, url}
   })
 }
 

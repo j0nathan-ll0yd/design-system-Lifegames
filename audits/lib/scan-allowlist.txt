@@ -507,3 +507,8 @@ packages/web/src/runtime/view-models.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/widget-state.ts:marker:j0nathan-ll0yd
 packages/web/src/widgets/other/DndOverlay.astro:marker:j0nathan-ll0yd
 packages/web/src/widgets/other/FocusOverlay.astro:marker:j0nathan-ll0yd
+packages/web/tests/server-render/server-safe.test.ts:marker:j0nathan-ll0yd
+.changeset/honest-widget-states-fixtures.md:marker:j0nathan-ll0yd
+.changeset/honest-widget-states-schemas.md:marker:j0nathan-ll0yd
+.changeset/honest-widget-states-web.md:marker:j0nathan-ll0yd
+packages/web/tests/server-render/states.test.ts:marker:j0nathan-ll0yd
