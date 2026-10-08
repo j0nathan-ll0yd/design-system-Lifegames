@@ -19,10 +19,11 @@
 // so no gated or unrelated health field can reach the HTML through it.
 import Hydration from '../widgets/health/Hydration.astro';
 import type { HydrationProps } from '../widgets/health/Hydration.types';
-import { rendersData, resolveWidgetState } from '../runtime/widget-state';
+import { rendersData } from '../runtime/widget-state';
+import { hydrationState } from '../runtime/widget-rules';
 
 const props = Astro.props as HydrationProps;
-const state = resolveWidgetState(props.state, props.health?.hydration != null);
+const state = hydrationState(props);
 const carrier: HydrationProps | null =
   rendersData(state) && props.health
     ? { state, health: { hydration: { ...props.health.hydration } } }

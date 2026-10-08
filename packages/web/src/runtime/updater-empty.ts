@@ -25,7 +25,10 @@ export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): voi
     return
   }
   // The card now shows its empty state: its header and state attribute say so.
-  revealLiveData(card, 'empty')
+  // A suppressed card refuses: nothing is written.
+  if (!revealLiveData(card, 'empty')) {
+    return
+  }
   const body = card.querySelector('.widget-body')
   if (body) {
     body.innerHTML = 'message' in opts
@@ -42,6 +45,22 @@ export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): voi
   card.classList.remove('is-loading')
 }
 
+/** True when the card is in the suppressed state (a hiding focus mode). */
+export function isSuppressedCard(card: Element | null): boolean {
+  return card instanceof HTMLElement && card.dataset.ssrState === 'suppressed'
+}
+
+/**
+ * Leave the suppressed state, on the focus gate's word only. Call it when the
+ * caller has learned that the hiding focus mode ended; it records the card as
+ * `unavailable` (no data yet) so the next update can reveal it.
+ */
+export function releaseSuppression(card: Element | null): void {
+  if (isSuppressedCard(card)) {
+    ;(card as HTMLElement).dataset.ssrState = 'unavailable'
+  }
+}
+
 /**
  * Reveal a widget's live data after a server-rendered non-data state
  * (atlas decision 0160). The server renders `unavailable` and `suppressed`
@@ -51,13 +70,17 @@ export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): voi
  * un-hides the scaffold, restores the header's live label and records the
  * card's new state (`live`, or `empty` from an empty branch).
  *
- * Precondition: the caller has fresh, admitted data. Never call it while a
- * hiding focus mode is active — the site's focus gate owns that rule
- * (the site's live-data.ts suppresses polling first).
+ * It REFUSES to leave `suppressed` and returns false: a hiding focus mode is
+ * the gate's decision, never a data update's. The caller must then write
+ * nothing. Pass `{leaveSuppressed: true}` only from the focus gate's own
+ * transition (or call releaseSuppression first).
  */
-export function revealLiveData(card: Element | null, state: 'live' | 'empty' = 'live'): void {
+export function revealLiveData(card: Element | null, state: 'live' | 'empty' = 'live', opts: {leaveSuppressed?: boolean} = {}): boolean {
   if (!card) {
-    return
+    return true
+  }
+  if (isSuppressedCard(card) && !opts.leaveSuppressed) {
+    return false
   }
   card.querySelectorAll('[data-state-notice]').forEach((n) => n.remove())
   card.querySelectorAll<HTMLElement>('[data-state-scaffold]').forEach((s) => {
@@ -78,4 +101,5 @@ export function revealLiveData(card: Element | null, state: 'live' | 'empty' = '
     card.dataset.ssrState = state
     delete card.dataset.generatedAt
   }
+  return true
 }

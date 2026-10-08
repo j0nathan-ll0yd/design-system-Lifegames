@@ -7,9 +7,24 @@ export interface SleepPhases {
   awake: number | null // seconds
 }
 
-/** Asleep time: the sum of the phases the export carried (awake excluded). */
-export function computeTotalSleepSeconds(phases: SleepPhases): number {
-  return (phases.rem ?? 0) + (phases.deep ?? 0) + (phases.core ?? 0)
+/**
+ * Asleep time (awake excluded). Null unless the export carried REM, deep and
+ * core: a partial sum is not the night's total (atlas decision 0160, F1).
+ */
+export function computeTotalSleepSeconds(phases: SleepPhases): number | null {
+  if (phases.rem == null || phases.deep == null || phases.core == null) {
+    return null
+  }
+  return phases.rem + phases.deep + phases.core
+}
+
+/**
+ * No sleep recorded: the export carried no stage at all, or carried every
+ * asleep stage at 0. A partial export is not empty; its total is unknown.
+ */
+export function isSleepEmpty(phases: SleepPhases): boolean {
+  const none = phases.rem == null && phases.deep == null && phases.core == null && phases.awake == null
+  return none || computeTotalSleepSeconds(phases) === 0
 }
 
 export function formatDuration(seconds: number): string {

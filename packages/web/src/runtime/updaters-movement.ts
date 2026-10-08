@@ -2,7 +2,8 @@
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import type {AdaptedHealth} from './adapters'
-import {revealLiveData} from './updater-empty'
+import {isSuppressedCard, revealLiveData} from './updater-empty'
+import {formatPositiveVital, formatTempDelta, isMovementEmpty, standHoursFrom} from './widget-rules'
 import {formatMeasurement, NO_READING} from './widget-state'
 
 // Default goals — kept in sync with MovementRings.astro SSR defaults.
@@ -64,11 +65,13 @@ export function updateMovementRings(data: AdaptedHealth): void {
   if (!card) {
     return
   }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
   // Empty (no movement measured, or every measurement a recorded zero): a card
   // the server rendered empty keeps its empty notice; nothing is revealed.
-  const q0 = data.quantities
-  const measured = [q0.stepCount, q0.distanceWalkingRunning, q0.activeEnergyBurned, q0.exerciseTime].filter((m) => m != null)
-  if (measured.every((m) => m?.value === 0) && card.querySelector('[data-state-notice="empty"]')) {
+  if (isMovementEmpty({quantities: data.quantities}) && card.querySelector('[data-state-notice="empty"]')) {
     card.classList.remove('is-loading')
     return
   }
@@ -123,14 +126,7 @@ export function updateMovementRings(data: AdaptedHealth): void {
   // HKActivitySummary — the watch ring's own metric). Legacy payloads without
   // it fall back to standTime, where HealthKit ships minutes and the UI shows
   // hours (an approximation: minutes stood ≠ hours credited).
-  const standRaw = q.standTime
-  const standHours: number | null = q.standHours
-    ? Math.floor(q.standHours.value)
-    : standRaw
-    ? standRaw.unit === 'min'
-      ? Math.floor(standRaw.value / 60)
-      : Math.floor(standRaw.value)
-    : null
+  const standHours = standHoursFrom(q.standHours, q.standTime)
 
   const frac = (v: number | null, goal: number): number | null => (v == null ? null : goal > 0 ? v / goal : 0)
   const movePct = frac(moveVal, goals.moveKcal)
@@ -219,30 +215,27 @@ export function updateMovementRings(data: AdaptedHealth): void {
  * (RHR · RR · Temp). Renders '—' when a field is absent or zero.
  */
 export function updateHeartRateFooter(data: AdaptedHealth): void {
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(document.getElementById('cardHR'))) {
+    return
+  }
   const q = data.quantities
 
   // Unit spans are static siblings in the DOM — only update the value text.
-  const rhr = q.restingHeartRate
-  const fmtRhr = rhr && rhr.value > 0 ? String(Math.round(rhr.value)) : '—'
+  // Shared with HeartRate.astro, so server and client format the same.
+  const fmtRhr = formatPositiveVital(q.restingHeartRate?.value)
   const rhrEl = document.getElementById('hrFooterRhr')
   if (rhrEl) {
     rhrEl.textContent = fmtRhr
   }
 
-  const rr = q.respiratoryRate
-  const fmtRr = rr && rr.value > 0 ? String(Math.round(rr.value)) : '—'
+  const fmtRr = formatPositiveVital(q.respiratoryRate?.value)
   const rrEl = document.getElementById('hrFooterRr')
   if (rrEl) {
     rrEl.textContent = fmtRr
   }
 
-  const tempDelta = q.wristTemperatureDelta
-  let fmtTemp = '—'
-  if (tempDelta && Number.isFinite(tempDelta.value)) {
-    const v = tempDelta.value
-    const sign = v > 0 ? '+' : ''
-    fmtTemp = sign + v.toFixed(1)
-  }
+  const fmtTemp = formatTempDelta(q.wristTemperatureDelta?.value)
   const tempEl = document.getElementById('hrFooterTemp')
   if (tempEl) {
     tempEl.textContent = fmtTemp

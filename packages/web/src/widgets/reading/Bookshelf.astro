@@ -7,21 +7,13 @@ import {
   PLACEHOLDER_IMAGE_SRC,
   sanitizeImageUrl,
 } from '../../runtime/image-utils';
-import {
-  formatMonthYear,
-  rendersData,
-  resolveWidgetState,
-  stateRootAttrs,
-} from '../../runtime/widget-state';
+import { formatMonthYear, rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { bookshelfState } from '../../runtime/widget-rules';
 import type { BookshelfProps } from './Bookshelf.types';
 
-const {
-  books,
-  localCovers = [],
-  state: requestedState,
-  generatedAt,
-} = Astro.props as BookshelfProps;
-const widgetState = resolveWidgetState(requestedState, (books?.books.length ?? 0) > 0);
+const { books, localCovers = [], generatedAt } = Astro.props as BookshelfProps;
+// One owner for the state: the same rule the view model applies.
+const widgetState = bookshelfState(Astro.props as BookshelfProps);
 const showData = rendersData(widgetState);
 const bookList = showData ? (books?.books ?? []) : [];
 const bookMeta = books?.bookMeta ?? {};

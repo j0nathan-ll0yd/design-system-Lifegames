@@ -17,6 +17,18 @@ import {
   type WorkoutEntry
 } from './adapters'
 import {esc} from './html-utils'
+import {
+  bookshelfState,
+  devActivityLogState,
+  heartRateState,
+  hydrationState,
+  movementRingsState,
+  nightSummaryState,
+  readingFeedState,
+  starredRepoListState,
+  theatreReviewsState,
+  workoutsState
+} from './widget-rules'
 import {isHidingFocus, NO_READING, oldestGeneratedAt, rendersData, toEpochMs, type WidgetState, type WidgetStateProps, worstState} from './widget-state'
 import {widgets} from '@j0nathan-ll0yd/copy'
 import type {
@@ -252,7 +264,7 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
     theatreReviews: theatre.generatedAt
   }
 
-  return {
+  const vm: DashboardViewModels = {
     suppressed,
     heartRate: {...stateProps(health), ...(adaptedHealth ? {health: {quantities: adaptedHealth.quantities, watch: adaptedHealth.watch}} : {})},
     movementRings: {
@@ -310,6 +322,24 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
     focusOverlay: {currentFocus, now: nowIso},
     dndOverlay: {currentFocus, now: nowIso}
   }
+
+  // The final state of each card comes from the same rule its template
+  // applies, so data-ssr-state, the ssr-data meta and the X-SSR-Data header
+  // always agree with the markup. A card the rule moves out of a data state
+  // carries no data and no timestamp.
+  return {
+    ...vm,
+    heartRate: finalize(vm.heartRate, heartRateState),
+    movementRings: finalize(vm.movementRings, movementRingsState),
+    hydration: finalize(vm.hydration, hydrationState),
+    nightSummary: finalize(vm.nightSummary, nightSummaryState),
+    workouts: finalize(vm.workouts, workoutsState),
+    devActivityLog: finalize(vm.devActivityLog, devActivityLogState),
+    starredRepoList: finalize(vm.starredRepoList, starredRepoListState),
+    readingFeed: finalize(vm.readingFeed, readingFeedState),
+    bookshelf: finalize(vm.bookshelf, bookshelfState),
+    theatreReviews: finalize(vm.theatreReviews, theatreReviewsState)
+  }
 }
 
 function toBookshelfBooks(adapted: ReturnType<typeof adaptBooks>): NonNullable<BookshelfProps['books']> {
@@ -346,4 +376,10 @@ function toBookshelfBooks(adapted: ReturnType<typeof adaptBooks>): NonNullable<B
     bookMeta,
     statusLabels: adapted.statusLabels
   }
+}
+
+/** Apply a widget's state rule; a non-data result drops the data and the timestamp. */
+export function finalize<P extends WidgetStateProps>(props: P, rule: (p: P) => WidgetState): P {
+  const state = rule(props)
+  return rendersData(state) ? {...props, state} : ({state, generatedAt: null} as P)
 }

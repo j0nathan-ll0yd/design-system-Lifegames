@@ -4,7 +4,7 @@
 // times render as <time datetime>.
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {initHydration} from '../../src/runtime/hydration-init'
-import {revealLiveData} from '../../src/runtime/updater-empty'
+import {releaseSuppression, revealLiveData} from '../../src/runtime/updater-empty'
 import {
   updateBookshelf,
   updateDevActivityLog,
@@ -16,8 +16,8 @@ import {
   updateSystemStatus,
   updateWorkouts
 } from '../../src/runtime/updaters'
-import {updateMovementRings} from '../../src/runtime/updaters-movement'
-import {theatreCardsHtml} from '../../src/runtime/updaters-theatre'
+import {updateHeartRateFooter, updateMovementRings} from '../../src/runtime/updaters-movement'
+import {THEATRE_SITE, theatreCardsHtml, updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import type {AdaptedHealth, AdaptedSleep} from '../../src/runtime/adapters'
 import {NO_READING} from '../../src/runtime/widget-state'
 
@@ -80,8 +80,8 @@ describe('revealLiveData', () => {
 describe('updateHydration with missing measurements', () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <div id="cardHydration" class="is-loading" data-ssr-state="suppressed">
-        <div data-state-notice="suppressed">Hidden during focus</div>
+      <div id="cardHydration" class="is-loading" data-ssr-state="unavailable">
+        <div data-state-notice="unavailable">Data unavailable</div>
         <div data-state-scaffold hidden>
           <div id="hydraWaterLiq"></div><div id="hydraWaterVal"></div>
           <div id="hydraCoffeeLiq"></div><div id="hydraCoffeeVal"></div><div id="hydraCoffeeLabel"></div>
@@ -102,11 +102,28 @@ describe('updateHydration with missing measurements', () => {
     expect(el('hydraCoffeeVal').textContent).toBe('0 mg')
   })
 
-  it('recovers a server-suppressed card and clears the skeleton', () => {
+  it('recovers a server-unavailable card and clears the skeleton', () => {
     updateHydration(health({waterOz: 60, caffeineMg: 153}))
     expect(el('cardHydration').dataset.ssrState).toBe('live')
     expect(document.querySelector('[data-state-notice]')).toBeNull()
     expect(el('cardHydration').classList.contains('is-loading')).toBe(false)
+    expect(el('hydraWaterVal').textContent).toBe('60 oz')
+  })
+
+  it('never un-suppresses a suppressed card: the update writes nothing (M4)', () => {
+    el('cardHydration').dataset.ssrState = 'suppressed'
+    updateHydration(health({waterOz: 60, caffeineMg: 153}))
+    expect(el('cardHydration').dataset.ssrState).toBe('suppressed')
+    expect(document.querySelector('[data-state-notice]')).not.toBeNull()
+    expect(el('hydraWaterVal').textContent).toBe('')
+    expect((document.querySelector('[data-state-scaffold]') as HTMLElement).hidden).toBe(true)
+  })
+
+  it('updates again once the focus gate releases the suppression', () => {
+    el('cardHydration').dataset.ssrState = 'suppressed'
+    releaseSuppression(el('cardHydration'))
+    updateHydration(health({waterOz: 60, caffeineMg: 153}))
+    expect(el('cardHydration').dataset.ssrState).toBe('live')
     expect(el('hydraWaterVal').textContent).toBe('60 oz')
   })
 })
@@ -278,7 +295,7 @@ describe('review fixes: header, state attribute and fabricated values', () => {
   it('an empty update records the card as empty, not live', () => {
     document.body.innerHTML = `
       <div id="cardReading" data-ssr-state="unavailable"><div class="widget-body"><div data-state-notice="unavailable"></div></div></div>
-      <div id="cardBooks" data-ssr-state="suppressed"><div class="widget-body"></div></div>`
+      <div id="cardBooks" data-ssr-state="unavailable"><div class="widget-body"></div></div>`
     updateReadingFeed([])
     expect(el('cardReading').dataset.ssrState).toBe('empty')
     updateBookshelf({books: [], bookMeta: {}, statusLabels: {}, stats: {total: 0, reading: 0, completed: 0, upcoming: 0}})
@@ -353,5 +370,149 @@ describe('theatre cards link only to https', () => {
         imageUrlCardAvif: null
       }])
     ).toContain('href="https://example.com/r"')
+  })
+})
+
+describe('revealLiveData and suppression (M4)', () => {
+  it('refuses to leave suppressed without the flag, and leaves it with the flag', () => {
+    document.body.innerHTML = '<div id="c" data-ssr-state="suppressed"><div data-state-notice="suppressed"></div></div>'
+    expect(revealLiveData(el('c'))).toBe(false)
+    expect(el('c').dataset.ssrState).toBe('suppressed')
+    expect(document.querySelector('[data-state-notice]')).not.toBeNull()
+    expect(revealLiveData(el('c'), 'live', {leaveSuppressed: true})).toBe(true)
+    expect(el('c').dataset.ssrState).toBe('live')
+  })
+
+  it('every updater skips writes on a suppressed card', () => {
+    document.body.innerHTML = `
+      <div id="cardReading" data-ssr-state="suppressed"><div class="widget-body"><span id="marker">kept</span></div></div>
+      <div id="cardBooks" data-ssr-state="suppressed"><div class="widget-body"><span id="marker2">kept</span></div></div>`
+    updateReadingFeed([])
+    updateBookshelf({books: [], bookMeta: {}, statusLabels: {}, stats: {total: 0, reading: 0, completed: 0, upcoming: 0}})
+    expect(el('marker').textContent).toBe('kept')
+    expect(el('marker2').textContent).toBe('kept')
+    expect(el('cardReading').dataset.ssrState).toBe('suppressed')
+  })
+})
+
+// ── Review of PR #289, H1: client updaters render the no-reading mark per field ──
+
+describe('client: a field the update omits renders the no-reading mark', () => {
+  it('HeartRate with only a heart rate: HRV, RHR, RR and temperature read "—"', () => {
+    document.body.innerHTML = `
+      <div id="cardHR"><span id="pulseBpm"></span><span id="hrZoneBadge"></span><span id="hrHrvValue"></span>
+      <span id="hrFooterRhr"></span><span id="hrFooterRr"></span><span id="hrFooterTemp"></span></div>`
+    const h = {...health({}), quantities: {heartRate: {value: 97, unit: 'count/min'}}}
+    updateHeartRate(h)
+    updateHeartRateFooter(h)
+    expect(el('pulseBpm').textContent).toBe('97')
+    for (const id of ['hrHrvValue', 'hrFooterRhr', 'hrFooterRr', 'hrFooterTemp']) {
+      expect(el(id).textContent, id).toBe(NO_READING)
+    }
+  })
+
+  it('HeartRate with a heart rate of 0 and an HRV: the BPM reads "—", as on the server', () => {
+    document.body.innerHTML = '<div id="cardHR"><span id="pulseBpm"></span><span id="hrHrvValue"></span></div>'
+    updateHeartRate({...health({}), quantities: {heartRate: {value: 0, unit: 'count/min'}, hrvSDNN: {value: 40, unit: 'ms'}}})
+    expect(el('pulseBpm').textContent).toBe(NO_READING)
+    expect(el('hrHrvValue').textContent).toBe('40')
+  })
+
+  it('MovementRings with only steps: every other slot reads "—"', () => {
+    document.body.innerHTML = `
+      <div id="cardMovement"><div class="mv-rings"><svg role="img"></svg></div>
+      <span id="ringCenterPct"></span><span data-mv-metric="steps"></span><span data-mv-metric="distance"></span>
+      <span data-mv-metric="flights"></span><span id="legendMove"></span><span id="legendExercise"></span>
+      <span id="legendStand"></span><span id="mvDaylightMin"></span><span id="mvDaylightHit"></span>
+      <span id="mvSunrise"></span><span id="mvSunset"></span><div id="mvSunDot"></div></div>`
+    updateMovementRings({...health({}), quantities: {stepCount: {value: 12345, unit: 'count'}}})
+    expect(document.querySelector('[data-mv-metric="steps"]')?.textContent).toBe('12,345')
+    expect(document.querySelector('[data-mv-metric="distance"]')?.textContent).toBe(`${NO_READING}km`)
+    expect(document.querySelector('[data-mv-metric="flights"]')?.textContent).toBe(NO_READING)
+    for (const id of ['ringCenterPct', 'mvDaylightMin', 'mvSunrise', 'mvSunset']) {
+      expect(el(id).textContent, id).toBe(NO_READING)
+    }
+    for (const id of ['legendMove', 'legendExercise', 'legendStand']) {
+      expect(el(id).textContent, id).toMatch(new RegExp(`^${NO_READING}/\\d+$`))
+    }
+  })
+
+  it('MovementRings without steps: the steps slot reads "—"', () => {
+    document.body.innerHTML = '<div id="cardMovement"><span data-mv-metric="steps"></span><span data-mv-metric="flights"></span></div>'
+    updateMovementRings({...health({}), quantities: {flightsClimbed: {value: 12, unit: 'count'}}})
+    expect(document.querySelector('[data-mv-metric="steps"]')?.textContent).toBe(NO_READING)
+    expect(document.querySelector('[data-mv-metric="flights"]')?.textContent).toBe('12')
+  })
+
+  it('NightSummary missing one stage: the total reads "—"', () => {
+    document.body.innerHTML = `
+      <div id="cardSleep"><div id="sleepDuration"></div><div id="sleepScoreVal"></div><div id="sleepScoreFill"></div>
+      <div data-phase="deep"><span class="sleep-moon-pill-val"></span></div><div id="sleepInsight"></div><div id="sleepTimestamp"></div></div>`
+    updateNightSummary({
+      isEmpty: false,
+      date: '2026-03-18',
+      sleepScore: 80,
+      sleepDurationFormatted: '',
+      sleepPhaseFormatted: {deep: '', rem: '1h 30m', core: '3h', awake: ''},
+      derived: {deepPct: null, remPct: null, corePct: null},
+      phases: {deep: null, rem: 5400, core: 10800, awake: null}
+    })
+    expect(el('sleepDuration').textContent).toBe(NO_READING)
+    expect(document.querySelector('[data-phase="deep"] .sleep-moon-pill-val')?.textContent).toBe(NO_READING)
+  })
+
+  it('an empty sleep update records the card as empty, not live', () => {
+    document.body.innerHTML =
+      '<div id="cardSleep" data-ssr-state="unavailable"><div id="sleepDuration"></div><div id="sleepScoreVal"></div><div id="sleepInsight"></div><div id="sleepTimestamp"></div></div>'
+    updateNightSummary({
+      isEmpty: true,
+      date: '2026-03-18',
+      sleepScore: null,
+      sleepDurationFormatted: '',
+      sleepPhaseFormatted: {},
+      derived: {deepPct: null, remPct: null, corePct: null},
+      phases: {}
+    })
+    expect(el('cardSleep').dataset.ssrState).toBe('empty')
+  })
+
+  it('Starred repos: a non-https repository URL renders no href', () => {
+    document.body.innerHTML = '<div id="cardStarredRepos"><div class="widget-body"><div class="gh-starred-list"></div></div></div>'
+    updateStarredRepos([{owner: 'o', name: 'n', url: 'javascript:alert(1)', stars: 3, language: 'Go', languageColor: '#00ADD8', starredAt: '2 days ago'}])
+    expect(document.querySelector('.gh-sl-name')?.hasAttribute('href')).toBe(false)
+  })
+})
+
+describe('TheatreReviews header slot', () => {
+  it('a live update turns the empty non-data slot back into the review-site link', () => {
+    document.body.innerHTML = `
+      <div id="cardTheatreReviews" data-ssr-state="unavailable"><div class="widget-header"><span class="widget-timestamp theatre-count-link" id="theatreCount"></span></div>
+      <div class="widget-body"><div id="theatreRow" data-state-scaffold hidden></div></div></div>`
+    updateTheatreReviews({
+      generatedAt: '2026-03-18T12:00:00Z',
+      source: 'coasttocoastreviews.com',
+      totalReviews: 3,
+      reviews: [{
+        title: 'T',
+        slug: 't',
+        url: 'https://example.com/t',
+        author: 'a',
+        publishedAt: '2026-03-01',
+        rating: null,
+        ratingNumeric: null,
+        excerpt: '',
+        imageVersion: null,
+        imageUrl: null,
+        imageWidth: null,
+        imageHeight: null,
+        imageUrlAvif: null,
+        imageUrlCard: null,
+        imageUrlCardAvif: null
+      }]
+    })
+    const link = el('theatreCount')
+    expect(link.tagName).toBe('A')
+    expect(link.getAttribute('href')).toBe(THEATRE_SITE)
+    expect(link.textContent).toBe('3 reviews')
   })
 })

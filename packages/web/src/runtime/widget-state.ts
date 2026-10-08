@@ -154,5 +154,7 @@ export function toEpochMs(now: number | string | Date | null | undefined): numbe
  * itself gated, so a non-data card names none even when a caller passes one.
  */
 export function stateRootAttrs(state: WidgetState, generatedAt?: string | null): Record<string, string | undefined> {
-  return {'data-ssr-state': state, 'data-generated-at': (rendersData(state) && generatedAt) || undefined}
+  // Only a valid ISO timestamp: an unparseable value is no provenance at all.
+  const valid = rendersData(state) && typeof generatedAt === 'string' && Number.isFinite(Date.parse(generatedAt))
+  return {'data-ssr-state': state, 'data-generated-at': valid ? generatedAt : undefined}
 }

@@ -1,7 +1,7 @@
 import {widgets} from '@j0nathan-ll0yd/copy'
-import {esc} from './html-utils'
+import {esc, safeHttpsUrl} from './html-utils'
 import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
-import {renderWidgetEmpty, revealLiveData} from './updater-empty'
+import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
 const GRADE_COLORS: Record<string, string> = {
@@ -18,15 +18,6 @@ const GRADE_COLORS: Record<string, string> = {
   D: '#ff6b00',
   'D-': '#ff6b00',
   F: '#ef4444'
-}
-
-/** The URL when it parses as https, otherwise null (no javascript:, data: or relative). */
-function safeHttpsUrl(url: string): string | null {
-  try {
-    return new URL(url).protocol === 'https:' ? url : null
-  } catch {
-    return null
-  }
 }
 
 /** One theatre review as the card markup reads it (the export's review item). */
@@ -92,6 +83,9 @@ export function theatreCardsHtml(reviews: readonly TheatreCardReview[]): string 
   return html
 }
 
+/** The theatre review site the header count links to. */
+export const THEATRE_SITE = 'https://www.coasttocoastreviews.com'
+
 /** The header count label ("12 reviews"). */
 export function theatreCountLabel(totalReviews: number): string {
   return `${totalReviews} reviews`
@@ -102,8 +96,23 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
   if (!card) {
     return
   }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
 
-  const countEl = document.getElementById('theatreCount')
+  let countEl = document.getElementById('theatreCount')
+  if (countEl && countEl.tagName !== 'A') {
+    // A server-rendered non-data state left an empty slot: restore the link.
+    const link = document.createElement('a')
+    link.className = countEl.className
+    link.id = 'theatreCount'
+    link.href = THEATRE_SITE
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    countEl.replaceWith(link)
+    countEl = link
+  }
   if (countEl) {
     countEl.textContent = theatreCountLabel(data.totalReviews)
   }

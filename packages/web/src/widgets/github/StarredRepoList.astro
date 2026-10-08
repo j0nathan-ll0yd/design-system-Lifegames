@@ -2,7 +2,9 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { starredRepoListState } from '../../runtime/widget-rules';
+import { safeHttpsUrl } from '../../runtime/html-utils';
 import type { StarredRepoListProps } from './StarredRepoList.types';
 
 interface Repo {
@@ -18,8 +20,9 @@ interface Repo {
 
 type Props = Omit<StarredRepoListProps, 'repos'> & { repos?: Repo[] };
 
-const { repos: repoList, state: requestedState, generatedAt } = Astro.props;
-const widgetState = resolveWidgetState(requestedState, (repoList?.length ?? 0) > 0);
+const { repos: repoList, generatedAt } = Astro.props;
+// One owner for the state: the same rule the view model applies.
+const widgetState = starredRepoListState(Astro.props as StarredRepoListProps);
 const showData = rendersData(widgetState);
 const repos: Repo[] = showData ? (repoList ?? []) : [];
 ---
@@ -55,7 +58,7 @@ const repos: Repo[] = showData ? (repoList ?? []) : [];
           <div class="gh-sl-row">
             <a
               class="gh-sl-name"
-              href={repo.url}
+              href={safeHttpsUrl(repo.url) ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
               data-sa-link-event="repo_click"

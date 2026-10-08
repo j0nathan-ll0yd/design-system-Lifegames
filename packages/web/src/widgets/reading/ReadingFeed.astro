@@ -2,12 +2,14 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { readingFeedState } from '../../runtime/widget-rules';
 import type { Article, ReadingFeedProps } from './ReadingFeed.types';
 
-const { reading, state: requestedState, generatedAt } = Astro.props as ReadingFeedProps;
+const { reading, generatedAt } = Astro.props as ReadingFeedProps;
 const articleList = reading?.articles ?? [];
-const widgetState = resolveWidgetState(requestedState, articleList.length > 0);
+// One owner for the state: the same rule the view model applies.
+const widgetState = readingFeedState(Astro.props as ReadingFeedProps);
 const showData = rendersData(widgetState);
 // The server page passes at most one client page (toReadingArticles caps it at
 // 10); the widget renders what it is given, so direct callers keep paginating.

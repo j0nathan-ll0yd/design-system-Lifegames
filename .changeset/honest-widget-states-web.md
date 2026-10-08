@@ -28,6 +28,15 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
   scaffold, restores the header's live label and records `live` or `empty`. `renderWidgetEmpty`
   records `empty`. `theatreCardsHtml` in `runtime/updaters-theatre`.
 - `updateSystemStatus(timestamps, now?)` and `formatRelativeTime(iso, now?)` take an optional clock.
+- `runtime/widget-rules`: one state rule per widget (`heartRateState`, `movementRingsState`, …),
+  called by both the templates and `toDashboardViewModels`, so a loader's reported state always
+  matches `data-ssr-state`; shared formatters (`formatPositiveVital`, `formatHrv`,
+  `formatTempDelta`, `formatWorkoutDuration`, `standHoursFrom`) so server and client render the
+  same text. `finalize(props, rule)` in `runtime/view-models`.
+- `revealLiveData` returns `false` and writes nothing for a suppressed card unless the caller
+  passes `{leaveSuppressed: true}`; `releaseSuppression(card)` and `isSuppressedCard(card)` are
+  new. Every updater skips its writes on a suppressed card.
+- `safeHttpsUrl` in `runtime/html-utils`.
 - Adapted events, articles and starred repos carry `datetime` (ISO) beside their relative label.
 
 **Behavior changes consumers see.**
@@ -46,3 +55,14 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
 - MovementRings invents no sunrise, sunset or sun position when `solar` is absent.
 - SystemStatus never renders the retired Location row, in any mode.
 - Every date renders in `America/Los_Angeles`.
+- NightSummary: a sleep export missing REM, deep or core has no total (`sleepDurationFormatted`
+  is `''`, rendered as `—`), never a partial sum. `computeTotalSleepSeconds` returns `null` then.
+- A paused watch renders no value (the scaffold is value-free) and the paused copy renders only
+  while paused.
+- The loading state shows no "live" label and a still live dot; its `<noscript>` note is visible.
+- A stale card with a missing or invalid `generatedAt` shows no label and no `data-generated-at`.
+- HeartRate renders a heart rate of 0 as `—` on server and client. Hydration's empty state shows
+  the vessels with `—` and no input value.
+- StarredRepoList renders an `href` only for an https repository URL.
+- The `#cardWorkouts[style*='none']` rebalance rules are removed from `layout.css`: Workouts never
+  renders hidden.

@@ -6,9 +6,10 @@ import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, Ad
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
 import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
-import {renderWidgetEmpty, revealLiveData} from './updater-empty'
+import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import {composeSystemLines, formatAge} from './view-models'
 import {formatMeasurement, formatMonthYear, NO_READING} from './widget-state'
+import {formatHrv, formatPositiveVital, formatWorkoutDuration} from './widget-rules'
 
 const CATEGORY_COLORS: Record<string, string> = {
   Dining: 'var(--neon-orange, #ff6b00)',
@@ -42,7 +43,7 @@ const ACCENT_CLASSES = [
   'tri-card-accent-indigo'
 ]
 
-import {esc} from './html-utils'
+import {esc, safeHttpsUrl} from './html-utils'
 export { esc }
 
 export function updateHeartRate(data: AdaptedHealth): void {
@@ -59,6 +60,10 @@ export function updateHeartRate(data: AdaptedHealth): void {
   const hrvStyle = classifyHRV(hrv)
 
   const card = document.getElementById('cardHR')
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
   // Without a heart-rate measurement the server renders unavailable, and a
   // recorded 0 renders empty; the client does not claim live for either.
   if (typeof hrRaw === 'number' && hrRaw > 0) {
@@ -95,7 +100,7 @@ export function updateHeartRate(data: AdaptedHealth): void {
 
   const bpm = document.getElementById('pulseBpm')
   if (bpm) {
-    bpm.textContent = hasHr ? String(hr) : NO_READING
+    bpm.textContent = formatPositiveVital(hrRaw)
     bpm.style.color = zone.bpmColor
     bpm.style.textShadow = zone.bpmShadow
   }
@@ -110,7 +115,7 @@ export function updateHeartRate(data: AdaptedHealth): void {
 
   const hrvEl = document.getElementById('hrHrvValue')
   if (hrvEl) {
-    hrvEl.textContent = typeof hrvRaw === 'number' ? String(hrv) : NO_READING
+    hrvEl.textContent = formatHrv(hrvRaw)
     hrvEl.style.color = hrvStyle.color
     hrvEl.style.textShadow = hrvStyle.shadow
   }
@@ -138,6 +143,10 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
   if (!card) {
     return
   }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
 
   if (!data || data.length === 0) {
     return
@@ -151,15 +160,8 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
   card.style.display = ''
   revealLiveData(card)
 
-  function fmtDuration(seconds: number): string {
-    const h = Math.floor(seconds / 3600)
-    const m = Math.floor((seconds % 3600) / 60)
-    const s = Math.round(seconds % 60)
-    if (h > 0) {
-      return h + 'h ' + m + 'm'
-    }
-    return m + 'm' + (s > 0 ? ' ' + s + 's' : '')
-  }
+  // Shared with Workouts.astro, so server and client format the same.
+  const fmtDuration = formatWorkoutDuration
 
   function getIcon(type: string): string {
     if (type === 'Outdoor Walk') {
@@ -208,7 +210,12 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
 }
 
 export function updateNightSummary(data: AdaptedSleep): void {
-  revealLiveData(document.getElementById('cardSleep'))
+  const card = document.getElementById('cardSleep')
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
+  revealLiveData(card, data.isEmpty ? 'empty' : 'live')
   if (data.isEmpty) {
     const duration = document.getElementById('sleepDuration')
     if (duration) {
@@ -252,7 +259,8 @@ export function updateNightSummary(data: AdaptedSleep): void {
 
   const duration = document.getElementById('sleepDuration')
   if (duration) {
-    duration.textContent = data.sleepDurationFormatted
+    // '' is a total the export did not carry (a missing stage): no reading.
+    duration.textContent = data.sleepDurationFormatted || NO_READING
   }
 
   const scoreVal = document.getElementById('sleepScoreVal')
@@ -301,7 +309,12 @@ export function updateNightSummary(data: AdaptedSleep): void {
 }
 
 export function updateHydration(data: AdaptedHealth): void {
-  revealLiveData(document.getElementById('cardHydration'))
+  const card = document.getElementById('cardHydration')
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
+  revealLiveData(card)
   // Measurements are null when the export did not carry them: the bar stays
   // empty and the value reads as no reading, never 0 (atlas decision 0160).
   const waterOz = data.hydration.waterOz
@@ -349,6 +362,10 @@ function timeHtml(className: string, label: string, datetime: string | undefined
 export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   const card = document.getElementById('cardDevLog')
   if (!card) {
+    return
+  }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
     return
   }
 
@@ -420,6 +437,10 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
 export function updateReadingFeed(articles: AdaptedArticle[]): void {
   const card = document.getElementById('cardReading')
   if (!card) {
+    return
+  }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
     return
   }
 
@@ -725,6 +746,10 @@ export function updateBookshelf(data: AdaptedBooks): void {
   if (!card) {
     return
   }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
   const localCandidates = localCoverCandidates(card)
 
   // Empty state: render the shared two-line placeholder. This replaces
@@ -971,6 +996,10 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
   if (!card) {
     return
   }
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (isSuppressedCard(card)) {
+    return
+  }
 
   revealLiveData(card, !repos || repos.length === 0 ? 'empty' : 'live')
   if (!repos || repos.length === 0) {
@@ -991,7 +1020,10 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
   repos.forEach((repo) => {
     const color = LANG_COLORS[repo.language] || repo.languageColor || '#8b949e'
     html += '<div class="gh-sl-row">'
-    html += '<a class="gh-sl-name" href="' + esc(repo.url) + '" target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">'
+    // Only an https repository URL becomes an href (shared with the template).
+    const href = safeHttpsUrl(repo.url)
+    html += '<a class="gh-sl-name"' + (href ? ' href="' + esc(href) + '"' : '') +
+      ' target="_blank" rel="noopener noreferrer" data-sa-link-event="repo_click">'
     html += '<span class="gh-sl-owner">' + esc(repo.owner) + '/</span>' + esc(repo.name)
     html += '</a>'
     html += '<span class="gh-sl-stars">&#9733; ' + repo.stars.toLocaleString('en-US') + '</span>'

@@ -179,11 +179,14 @@ async function render(component: any, props: Record<string, unknown>, rootId: st
   }
   // Rendered text plus every content-bearing attribute value (a value hidden
   // in data-*, aria-label, href or alt still reaches every client). Structural
-  // attributes (class, id) and the dev-only data-astro-* annotations are not content.
-  const attrs = [...root.querySelectorAll('*'), root].flatMap((el) => [...el.attributes].filter((a) => !STRUCTURAL_ATTR.test(a.name)).map((a) => a.value))
+  // and presentational attributes (class, id, style, SVG geometry) and the
+  // dev-only data-astro-* annotations are not content.
+  const attrs = [...root.querySelectorAll('*'), root].flatMap((el) =>
+    [...el.attributes].filter((a) => CONTENT_ATTR.test(a.name) && !/^data-astro-/.test(a.name)).map((a) => a.value)
+  )
   return {html, doc, root, text: root.textContent + '\n' + attrs.join('\n')}
 }
-const STRUCTURAL_ATTR = /^(class|id|data-astro-.*)$/
+const CONTENT_ATTR = /^(aria-.*|alt|title|href|src|srcset|datetime|content|value|data-.*)$/
 
 // Whole-token match: "Work" must not match inside "Workouts".
 function contains(text: string, token: string): boolean {
@@ -191,19 +194,17 @@ function contains(text: string, token: string): boolean {
   return new RegExp(`(^|[^A-Za-z0-9])${escaped}($|[^A-Za-z0-9])`).test(text)
 }
 
-function leaked(rendered: Rendered, tokens: Set<string>, chrome = ''): string[] {
-  return [...tokens].filter((t) => contains(rendered.text, t) && !contains(chrome, t))
+function leaked(rendered: Rendered, tokens: Set<string>): string[] {
+  return [...tokens].filter((t) => contains(rendered.text, t))
 }
 
-// A widget's chrome: everything its data-free renders contain. A token found
-// there is the widget's own label, not a value from a fixture.
-const chromeCache = new Map<string, string>()
-async function chromeOf(component: any, id: string): Promise<string> {
-  if (!chromeCache.has(id)) {
-    const parts = await Promise.all((['unavailable', 'empty', 'loading'] as const).map((state) => render(component, {state}, id)))
-    chromeCache.set(id, parts.map((p) => p.text).join('\n'))
-  }
-  return chromeCache.get(id) ?? ''
+// The only exemption: a token that is a whole word of a string the design
+// system authors (copy, status labels) cannot prove provenance. Nothing a
+// widget renders on its own earns an exemption.
+const AUTHORED_TEXT = (): string => [...AUTHORED].join('\n')
+function leakedLegacy(rendered: Rendered): string[] {
+  const authored = AUTHORED_TEXT()
+  return [...legacyTokens].filter((t) => contains(rendered.text, t) && !contains(authored, t))
 }
 
 // A data state must carry the known answer: the exact slot values for the
@@ -228,10 +229,9 @@ function containsNumber(text: string, n: string): boolean {
 // A non-data state must carry no known-answer value at all: no distinctive
 // string, no number from any known-answer export (outside the widget's own
 // chrome), no export timestamp, and no derived value in a known slot.
-async function expectNoInputValue(r: Rendered, component: any, id: string): Promise<void> {
-  const chrome = await chromeOf(component, id)
+async function expectNoInputValue(r: Rendered, _component: any, id: string): Promise<void> {
   expect(leaked(r, knownAnswerTokens)).toEqual([])
-  expect([...knownAnswerNumbers].filter((n) => containsNumber(r.text, n) && !containsNumber(chrome, n))).toEqual([])
+  expect([...knownAnswerNumbers].filter((n) => containsNumber(r.text, n))).toEqual([])
   expect([...knownAnswerTimestamps].filter((t) => r.text.includes(t))).toEqual([])
   expect(r.root.getAttribute('data-generated-at')).toBeNull()
   const slots = SLOTS[id]
@@ -300,7 +300,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const r = await render(component, props, id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('live')
     expect(r.root.getAttribute('data-generated-at')).toBe(props.generatedAt)
-    expect(leaked(r, legacyTokens, await chromeOf(component, id))).toEqual([])
+    expect(leakedLegacy(r)).toEqual([])
     expectKnownAnswer(r, id)
   })
 
@@ -311,7 +311,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const asOf = r.root.querySelector('time.widget-timestamp-stale')
     expect(asOf?.getAttribute('datetime')).toBe(props.generatedAt)
     expect(asOf?.textContent).toMatch(/^as of /)
-    expect(leaked(r, legacyTokens, await chromeOf(component, id))).toEqual([])
+    expect(leakedLegacy(r)).toEqual([])
     expectKnownAnswer(r, id)
   })
 
@@ -363,7 +363,7 @@ describe('empty states', () => {
     const r = await render(component, vmFor(exportsFor('empty'), vm), id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('empty')
     expect(leaked(r, knownAnswerTokens)).toEqual([])
-    expect(leaked(r, legacyTokens, await chromeOf(component, id))).toEqual([])
+    expect(leakedLegacy(r)).toEqual([])
   })
 
   it('NightSummary renders zero sleep as the empty state, not "0h 0m" and a score of 0', async () => {
@@ -416,9 +416,15 @@ describe('a null measurement renders as no reading, never 0', () => {
   })
 
   it('HeartRate: a missing heart rate renders unavailable instead of throwing', async () => {
-    const r = await render(HeartRate, {health: {quantities: {}}}, 'cardHR')
+    const r = await render(HeartRate, {health: {quantities: {hrvSDNN: {value: 40, unit: 'ms'}}}}, 'cardHR')
     expect(r.root.getAttribute('data-ssr-state')).toBe('unavailable')
     expect(r.root.querySelector('#pulseBpm')?.textContent?.trim() ?? '').toBe('')
+  })
+
+  it('HeartRate: a readable export with no quantity at all is empty, not unavailable', async () => {
+    const r = await render(HeartRate, {health: {quantities: {}}}, 'cardHR')
+    expect(r.root.getAttribute('data-ssr-state')).toBe('empty')
+    expect(r.root.querySelector('[data-state-notice="empty"]')?.textContent?.trim()).toBe(widgets.heartRate.empty)
   })
 
   it('MovementRings: no invented sunrise, sunset or sun position without solar', async () => {
@@ -517,4 +523,242 @@ describe('card-specific contracts', () => {
     expect(r.text).not.toContain('Location')
     expect(r.root.querySelectorAll('.sys-line time[datetime]').length).toBe(7)
   })
+})
+
+// ── Review of PR #289, H1: non-data states are byte-identical to data-free ──
+//
+// A non-data render may differ from the data-free render of the same state by
+// nothing at all: not a value, not an attribute. The data-free render itself
+// carries no digit except the authored defaults (MovementRings' daylight goal
+// "20") and only text the design system authors.
+
+const NON_DATA_STATES = ['unavailable', 'suppressed', 'loading', 'empty'] as const
+
+// Text a data-free render may show besides authored copy: the no-reading and
+// empty marks, MovementRings' centre unit, the TheatreReviews count fallback,
+// the solar glyphs and the daylight-goal check mark. Reviewed by hand.
+const REVIEWED_CHROME_TEXT = new Set(['—', '--', 'cal', 'reviews', '☀', '☾', '✓', '·', '/'])
+// The only digits a data-free render may carry: MovementRings' default daylight goal.
+const ALLOWED_DATA_FREE_DIGITS = /goal 20 min/g
+
+function textNodes(root: Element): string[] {
+  const out: string[] = []
+  const walk = (n: Node): void => {
+    if (n.nodeType === 3) {
+      const t = (n.textContent ?? '').replace(/\s+/g, ' ').trim()
+      if (t) {
+        out.push(t)
+      }
+    }
+    n.childNodes.forEach(walk)
+  }
+  walk(root)
+  return out
+}
+
+// Every authored string leaf, unfiltered (the token rule above skips short
+// strings; chrome such as "BPM" or "km" is short).
+function allStrings(value: unknown, out: string[] = []): string[] {
+  if (typeof value === 'string') {
+    out.push(value)
+  } else if (value && typeof value === 'object') {
+    Object.values(value).forEach((v) => allStrings(v, out))
+  }
+  return out
+}
+
+function authoredPieces(): string[] {
+  // Copy strings split on their ICU placeholders: a text node may hold one piece.
+  return allStrings({widgets, a11y, STATUS_LABELS}).flatMap((v) => v.split(/\{[a-zA-Z]+\}/).map((p) => p.trim())).filter(Boolean)
+}
+
+describe.each(LIVE_WIDGETS)('$name: every non-data state is data-free', ({component, id, vm}) => {
+  it.each(NON_DATA_STATES)('%s: byte-identical to the data-free render, whatever the caller passes', async (state) => {
+    const dataFree = await render(component, {state}, id)
+    const forcedLive = await render(component, {...vmFor(exportsFor(KNOWN_ANSWER), vm), state}, id)
+    const forcedStale = await render(component, {...vmFor(exportsFor(KNOWN_ANSWER, 'stale'), vm), state, generatedAt: 'not-a-date'}, id)
+    expect(forcedLive.html).toBe(dataFree.html)
+    expect(forcedStale.html).toBe(dataFree.html)
+    if (state === 'empty') {
+      // The empty exports reach the same markup through the view model.
+      const fromExports = await render(component, vmFor(exportsFor('empty'), vm), id)
+      if (fromExports.root.getAttribute('data-ssr-state') === 'empty') {
+        expect(fromExports.html).toBe(dataFree.html)
+      }
+    }
+  })
+
+  it.each(NON_DATA_STATES)('%s: the data-free render shows only authored text and no digit', async (state) => {
+    const r = await render(component, {state}, id)
+    const pieces = authoredPieces()
+    // A text node may compose several authored pieces (the daylight caption):
+    // strip every authored piece and reviewed mark; only separators may remain.
+    const byLength = [...pieces, ...REVIEWED_CHROME_TEXT].sort((x, y) => y.length - x.length)
+    const unreviewed = textNodes(r.root).filter((t) => {
+      let rest = t
+      for (const p of byLength) {
+        rest = rest.split(p).join(' ')
+      }
+      return !/^[\s·:/%]*$/.test(rest.replace(/\b20\b/g, ''))
+    })
+    expect(unreviewed).toEqual([])
+    expect(r.text.replace(ALLOWED_DATA_FREE_DIGITS, '').match(/\d/g) ?? []).toEqual([])
+  })
+})
+
+// ── H1: each optional field absent renders the no-reading mark, server side ──
+
+function kaHealthWith(keep: string[]): any {
+  const h = raw('health', KNOWN_ANSWER)
+  const quantities = Object.fromEntries(Object.entries(h.quantities).filter(([k]) => keep.includes(k)))
+  return {date: h.date, generatedAt: h.generatedAt, quantities}
+}
+
+describe('a field the export omits renders the no-reading mark in its slot', () => {
+  it('HeartRate with only a heart rate: HRV, RHR, RR and temperature read "—"', async () => {
+    const r = await render(HeartRate, vmFor({health: {data: kaHealthWith(['heartRate'])}}, 'heartRate'), 'cardHR')
+    expect(r.root.getAttribute('data-ssr-state')).toBe('live')
+    for (const sel of ['#hrHrvValue', '#hrFooterRhr', '#hrFooterRr', '#hrFooterTemp']) {
+      expect(r.root.querySelector(sel)?.textContent?.trim(), sel).toBe(NO_READING)
+    }
+  })
+
+  it('HeartRate with a heart rate of 0 and an HRV: the BPM reads "—", as on the client', async () => {
+    const h = kaHealthWith(['heartRate', 'heartRateVariabilitySDNN'])
+    h.quantities.heartRate = {value: 0, unit: 'count/min'}
+    const r = await render(HeartRate, vmFor({health: {data: h}}, 'heartRate'), 'cardHR')
+    expect(r.root.querySelector('#pulseBpm')?.textContent?.trim()).toBe(NO_READING)
+  })
+
+  it('MovementRings with only steps: every other slot reads "—"', async () => {
+    const r = await render(MovementRings, vmFor({health: {data: kaHealthWith(['stepCount'])}}, 'movementRings'), 'cardMovement')
+    expect(r.root.getAttribute('data-ssr-state')).toBe('live')
+    for (const sel of ['[data-mv-metric="flights"]', '#mvDaylightMin', '#ringCenterPct', '#mvSunrise', '#mvSunset']) {
+      expect(r.root.querySelector(sel)?.textContent?.trim(), sel).toBe(NO_READING)
+    }
+    expect(r.root.querySelector('[data-mv-metric="distance"]')?.textContent?.replace(/\s+/g, '')).toBe(`${NO_READING}km`)
+    for (const sel of ['#legendMove', '#legendExercise', '#legendStand']) {
+      expect(r.root.querySelector(sel)?.textContent?.trim(), sel).toMatch(new RegExp(`^${NO_READING}/\\d+$`))
+    }
+  })
+
+  it('Hydration with water and no caffeine: caffeine reads "—"', async () => {
+    const r = await render(Hydration, vmFor({health: {data: kaHealthWith(['heartRate', 'dietaryWater'])}}, 'hydration'), 'cardHydration')
+    expect(r.root.querySelector('#hydraWaterVal')?.textContent?.trim()).toBe('60 oz')
+    expect(r.root.querySelector('#hydraCoffeeVal')?.textContent?.trim()).toBe(NO_READING)
+  })
+
+  it('Workouts with null duration, energy and distance: "—" and no distance stat', async () => {
+    const w = raw('workouts', KNOWN_ANSWER)
+    const data = {...w, workouts: [{...w.workouts[0], duration: null, energyBurned: null, distance: null}]}
+    const r = await render(Workouts, vmFor({workouts: {data}}, 'workouts'), 'cardWorkouts')
+    const values = [...r.root.querySelectorAll('.workout-stat-value')].map((v) => v.textContent?.trim())
+    expect(values).toEqual([NO_READING, NO_READING])
+  })
+
+  it('DevActivityLog: a commit without line counts renders no "+0 -0"', async () => {
+    const e = raw('githubEvents', KNOWN_ANSWER)
+    const commit = e.events.find((ev: any) => ev.type === 'commit')
+    const {additions: _a, deletions: _d, ...bare} = commit
+    const r = await render(DevActivityLog, vmFor({githubEvents: {data: {...e, events: [bare]}}}, 'devActivityLog'), 'cardDevLog')
+    expect(r.root.querySelectorAll('.gh-dal-line').length).toBe(1)
+    expect(r.root.querySelector('.gh-dal-detail')).toBeNull()
+    expect(r.root.textContent).not.toMatch(/\+\d+\s+-\d+/)
+  })
+
+  it('NightSummary missing one stage: that pill and the total read "—", no caption', async () => {
+    const sl = raw('sleep', KNOWN_ANSWER)
+    const {deep: _deep, ...partial} = sl
+    const r = await render(NightSummary, vmFor({health: {data: raw('health', KNOWN_ANSWER)}, sleep: {data: partial}}, 'nightSummary'), 'cardSleep')
+    expect(r.root.getAttribute('data-ssr-state')).toBe('live')
+    expect(r.root.querySelector('[data-phase="deep"] .sleep-moon-pill-val')?.textContent?.trim()).toBe(NO_READING)
+    expect(r.root.querySelector('#sleepDuration')?.textContent?.trim()).toBe(NO_READING)
+    expect(r.root.querySelector('#sleepInsight')?.textContent?.trim()).toBe('')
+  })
+})
+
+// ── M6: the matrix covers every widget that takes WidgetStateProps ──
+
+describe('the matrix covers every live widget', () => {
+  it('every *.types.ts whose Props extend WidgetStateProps has a matrix entry', () => {
+    const WIDGETS_DIR = join(__dirname, '../../src/widgets')
+    const live: string[] = []
+    for (const group of readdirSync(WIDGETS_DIR)) {
+      const dir = join(WIDGETS_DIR, group)
+      for (const file of readdirSync(dir).filter((f) => f.endsWith('.types.ts'))) {
+        if (/extends\s+[\w\s,]*\bWidgetStateProps\b/.test(readFileSync(join(dir, file), 'utf8'))) {
+          live.push(file.replace('.types.ts', ''))
+        }
+      }
+    }
+    expect(live.length).toBeGreaterThanOrEqual(10)
+    expect(live.sort()).toEqual(LIVE_WIDGETS.map((w) => w.name).sort())
+  })
+})
+
+// ── M2: the view model and the markup agree on the state, for every variation ──
+
+describe('the view-model state equals the rendered data-ssr-state', () => {
+  const variations = (domain: Domain): string[] => readdirSync(join(GENERATED, DOMAIN_DIRS[domain])).map((f) => f.replace(/\.json$/, ''))
+  const DOMAINS = (Object.keys(DOMAIN_DIRS) as Domain[]).filter((d) => d !== 'focus')
+
+  it.each(DOMAINS)('every %s variation, every widget', async (domain) => {
+    for (const variation of variations(domain)) {
+      const exports = exportsFor(KNOWN_ANSWER)
+      ;(exports as Record<string, DomainInput<any>>)[domain] = {data: raw(domain, variation)}
+      const vms = toDashboardViewModels(exports, NOW)
+      for (const w of LIVE_WIDGETS) {
+        const props = vms[w.vm] as unknown as Record<string, unknown>
+        const r = await render(w.component, props, w.id)
+        expect(r.root.getAttribute('data-ssr-state'), `${domain}/${variation} → ${w.name}`).toBe(props.state)
+      }
+    }
+  })
+})
+
+// ── M3: a paused watch renders no value, and paused copy only when paused ──
+
+describe('paused watch', () => {
+  const paused = (): any => ({...raw('health', KNOWN_ANSWER), watch: {worn: false, since: null, source: 'hrGap'}})
+
+  it.each([
+    [HeartRate, 'heartRate', 'cardHR', '#hrPausedLabel', widgets.heartRate.paused.label],
+    [MovementRings, 'movementRings', 'cardMovement', '#mvPausedLabel', widgets.movement.paused.label]
+  ] as const)('%#: is-paused, the paused label, and no known-answer value in the markup', async (component, vm, id, labelSel, label) => {
+    const r = await render(component, vmFor({health: {data: paused()}}, vm), id)
+    expect(r.root.classList.contains('is-paused')).toBe(true)
+    expect(r.root.querySelector(labelSel)?.textContent?.trim()).toBe(label)
+    expect([...knownAnswerNumbers].filter((n) => containsNumber(r.text, n))).toEqual([])
+    for (const value of Object.values(SLOTS[id]!())) {
+      expect(textNodes(r.root)).not.toContain(value)
+    }
+  })
+
+  it.each([
+    [HeartRate, 'heartRate', 'cardHR', '#hrPausedLabel', '#hrPausedDesc'],
+    [MovementRings, 'movementRings', 'cardMovement', '#mvPausedLabel', '#mvPausedDesc']
+  ] as const)('%#: the paused copy is absent when the watch is worn', async (component, vm, id, labelSel, descSel) => {
+    const r = await render(component, vmFor(exportsFor(KNOWN_ANSWER), vm), id)
+    expect(r.root.querySelector(labelSel)?.textContent?.trim()).toBe('')
+    expect(r.root.querySelector(descSel)?.textContent?.trim()).toBe('')
+  })
+})
+
+// ── Header timestamp edge cases ──
+
+describe('header timestamp', () => {
+  it.each(LIVE_WIDGETS.filter((w) => w.id !== 'cardTheatreReviews'))(
+    '$name: loading shows no "live" label and stale with a bad timestamp shows neither "live" nor the bad value',
+    async ({component, id, vm}) => {
+      const loading = await render(component, {state: 'loading'}, id)
+      expect(loading.root.querySelector('.widget-timestamp')?.textContent?.trim()).toBe('')
+      const props = vmFor(exportsFor(KNOWN_ANSWER, 'stale'), vm)
+      for (const generatedAt of ['not-a-date', null]) {
+        const r = await render(component, {...props, generatedAt}, id)
+        expect(r.root.getAttribute('data-ssr-state')).toBe('stale')
+        expect(r.root.getAttribute('data-generated-at')).toBeNull()
+        expect(r.root.querySelector('.widget-timestamp')?.textContent?.trim()).toBe('')
+      }
+    }
+  )
 })

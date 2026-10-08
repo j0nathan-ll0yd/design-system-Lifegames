@@ -2,28 +2,19 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import {
-  formatMeasurement,
-  rendersData,
-  resolveWidgetState,
-  stateRootAttrs,
-} from '../../runtime/widget-state';
+import { formatMeasurement, rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { formatWorkoutDuration, workoutsState } from '../../runtime/widget-rules';
 import type { Workout, WorkoutsProps } from './Workouts.types';
 
-const { health, state: requestedState, generatedAt } = Astro.props as WorkoutsProps;
-const workoutList = health?.workouts ?? [];
-// No workouts is the recovery-day empty state, which the widget always had.
-const widgetState = resolveWidgetState(requestedState, workoutList.length > 0);
+const props = Astro.props as WorkoutsProps;
+const { health, generatedAt } = props;
+// One owner for the state: the same rule the view model applies. No workouts
+// is the recovery-day empty state, which the widget always had.
+const widgetState = workoutsState(props);
 const showData = rendersData(widgetState);
-const workouts: Workout[] = showData ? workoutList : [];
-
-function fmtDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.round(seconds % 60);
-  if (h > 0) return h + 'h ' + m + 'm';
-  return m + 'm' + (s > 0 ? ' ' + s + 's' : '');
-}
+const workouts: Workout[] = showData ? (health?.workouts ?? []) : [];
+// Shared with updateWorkouts, so server and client format the same.
+const fmtDuration = formatWorkoutDuration;
 ---
 
 {/* Visible by default (atlas decision 0160, D5): real workouts reach every client. */}
@@ -174,7 +165,7 @@ function fmtDuration(seconds: number): string {
           </div>
         ))
       ) : widgetState === 'empty' ? (
-        <div class="workout-rest-center">
+        <div class="workout-rest-center" data-state-notice="empty">
           <svg class="workout-rest-icon" viewBox="0 0 56 56" fill="none">
             <circle
               cx="28"

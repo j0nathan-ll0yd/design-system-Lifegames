@@ -7,17 +7,16 @@ import {
   isScaffoldHidden,
   NO_READING,
   rendersData,
-  resolveWidgetState,
   stateRootAttrs,
 } from '../../runtime/widget-state';
+import { nightSummaryState } from '../../runtime/widget-rules';
 import type { NightSummaryProps } from './NightSummary.types';
 
-const { health, state: requestedState, generatedAt } = Astro.props as NightSummaryProps;
-
-// Zero recorded sleep is the empty state (never "0h 0m" and a score of 0).
-const noSleep =
-  health != null && (health.isEmpty === true || health.sleepDurationFormatted.trim() === '');
-const widgetState = resolveWidgetState(requestedState, health != null && !noSleep);
+const props = Astro.props as NightSummaryProps;
+const { health, generatedAt } = props;
+// One owner for the state: the same rule the view model applies. Zero
+// recorded sleep is the empty state (never "0h 0m" and a score of 0).
+const widgetState = nightSummaryState(props);
 const showData = rendersData(widgetState);
 const scaffoldHidden = isScaffoldHidden(widgetState);
 const isEmpty = widgetState === 'empty';
@@ -33,7 +32,8 @@ const remPct = showData ? (health?.derived.remPct ?? null) : null;
 const EMPTY_MARK = '--';
 const scoreText = isEmpty ? EMPTY_MARK : showData ? formatMeasurement(sleepScore) : '';
 const scoreWidth = sleepScore != null ? Math.min(Math.max(sleepScore, 0), 100) : 0;
-const durationText = isEmpty ? EMPTY_MARK : sleepDuration;
+// '' is a total the export did not carry (a missing sleep stage): no reading.
+const durationText = isEmpty ? EMPTY_MARK : showData ? sleepDuration || NO_READING : '';
 const phaseText = (phase: 'deep' | 'rem' | 'core' | 'awake'): string =>
   isEmpty ? EMPTY_MARK : showData ? phases?.[phase] || NO_READING : '';
 
@@ -177,7 +177,9 @@ const pills = [
     <div class="sleep-moon-insight" id="sleepInsight" data-state-scaffold hidden={scaffoldHidden}>
       {
         isEmpty ? (
-          <span class="sleep-insight-empty">{widgets.nightSummary.empty}</span>
+          <span class="sleep-insight-empty" data-state-notice="empty">
+            {widgets.nightSummary.empty}
+          </span>
         ) : hasCaption ? (
           <>
             <span>{restorativeDeepClause}</span> &mdash; <span>{restorativeRemClause}</span> &mdash;{' '}

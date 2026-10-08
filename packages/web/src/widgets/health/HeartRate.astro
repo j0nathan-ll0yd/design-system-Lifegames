@@ -4,58 +4,50 @@ import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { classifyHeartRate, classifyHRV } from '../../runtime/heart-rate';
 import {
-  formatMeasurement,
-  isScaffoldHidden,
-  NO_READING,
-  rendersData,
-  resolveWidgetState,
-  stateRootAttrs,
-} from '../../runtime/widget-state';
+  formatHrv,
+  formatPositiveVital,
+  formatTempDelta,
+  heartRateState,
+  isReading,
+} from '../../runtime/widget-rules';
+import { isScaffoldHidden, rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import type { HeartRateProps } from './HeartRate.types';
 
-const { health, state: requestedState, generatedAt } = Astro.props as HeartRateProps;
-const q = health?.quantities;
-const hrRaw = q?.heartRate?.value;
-const hrvRaw = q?.hrvSDNN?.value;
-const hasHr = typeof hrRaw === 'number' && Number.isFinite(hrRaw);
-const hasHrv = typeof hrvRaw === 'number' && Number.isFinite(hrvRaw);
+const props = Astro.props as HeartRateProps;
+const { health, generatedAt } = props;
+// One owner for the state: the same rule the view model applies.
+const widgetState = heartRateState(props);
+const q = rendersData(widgetState) ? health?.quantities : undefined;
 
-// Compatibility mapper first (no state → data decides), then the HeartRate
-// rules: a data state without the primary measurement cannot render honestly,
-// so it is `unavailable`; a recorded zero for both readings is `empty`.
-let widgetState = resolveWidgetState(requestedState, health != null);
-if (rendersData(widgetState) && !hasHr) {
-  widgetState = 'unavailable';
-} else if (rendersData(widgetState) && hrRaw === 0 && (!hasHrv || hrvRaw === 0)) {
-  widgetState = 'empty';
-}
-const showData = rendersData(widgetState);
+// SSR paused: the export reports the watch off the wrist or charging. The
+// card is still a live reading of the watch state, but it shows no value:
+// the scaffold renders value-free, and only the paused copy names anything.
+const watch = rendersData(widgetState) ? health?.watch : undefined;
+const ssrPaused = watch?.worn === false;
+const charging = watch?.source === 'charging';
+const showData = rendersData(widgetState) && !ssrPaused;
+
 // The value-free scaffold the runtime updaters target. It renders in every
 // state, hidden behind the notice in empty, unavailable and suppressed, so a
 // later live update can reveal it (revealLiveData) without a reload.
 const scaffoldHidden = isScaffoldHidden(widgetState) || widgetState === 'empty';
 
-const hr = showData && hasHr ? Math.round(hrRaw) : 0;
-const hrv = showData && hasHrv ? Math.round(hrvRaw) : 0;
-const watch = showData ? health?.watch : undefined;
-
-// SSR paused: if build-data itself reports watch.worn===false, apply is-paused at
-// SSR time so the page is correct before the runtime updater fires.
-const ssrPaused = watch?.worn === false;
+const hrRaw = showData ? q?.heartRate?.value : undefined;
+const hrvRaw = showData ? q?.hrvSDNN?.value : undefined;
+// A heart rate of 0 is no reading (server and client agree: formatPositiveVital).
+const hr = isReading(hrRaw) && hrRaw > 0 ? Math.round(hrRaw) : 0;
+const hrv = isReading(hrvRaw) ? Math.round(hrvRaw) : 0;
 const state = classifyHeartRate(hr);
 const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
 
-// 3-up footer vitals — RHR / RR / Temp.
-// Render the no-reading mark for any field that is absent or zero (empty signal).
-const rhr = showData ? q?.restingHeartRate : undefined;
-const rr = showData ? q?.respiratoryRate : undefined;
-const tempDelta = showData ? q?.wristTemperatureDelta : undefined;
-
-const fmtRhr = rhr && rhr.value > 0 ? String(Math.round(rhr.value)) : NO_READING;
-const fmtRr = rr && rr.value > 0 ? String(Math.round(rr.value)) : NO_READING;
-// Temp delta: show signed value to 1 decimal place (e.g. +0.2, -0.1)
-const fmtTemp = formatMeasurement(tempDelta?.value, (v) => (v > 0 ? '+' : '') + v.toFixed(1));
-const fmtHrv = hasHrv ? String(hrv) : NO_READING;
+// Every slot: the reading, the no-reading mark, or '' when the card shows no value.
+const slot = (text: string): string => (showData ? text : '');
+const fmtBpm = slot(formatPositiveVital(hrRaw));
+const fmtZone = slot(hr > 0 ? state.zone : formatPositiveVital(null));
+const fmtHrv = slot(formatHrv(hrvRaw));
+const fmtRhr = slot(formatPositiveVital(q?.restingHeartRate?.value));
+const fmtRr = slot(formatPositiveVital(q?.respiratoryRate?.value));
+const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
 ---
 
 <div
@@ -136,16 +128,20 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
       </svg>
       <span class="hr-paused-label" id="hrPausedLabel">
         {
-          watch?.source === 'charging'
-            ? widgets.heartRate.paused.labelCharging
-            : widgets.heartRate.paused.label
+          ssrPaused
+            ? charging
+              ? widgets.heartRate.paused.labelCharging
+              : widgets.heartRate.paused.label
+            : ''
         }
       </span>
       <span class="hr-paused-desc" id="hrPausedDesc">
         {
-          watch?.source === 'charging'
-            ? widgets.heartRate.paused.descriptionCharging
-            : widgets.heartRate.paused.description
+          ssrPaused
+            ? charging
+              ? widgets.heartRate.paused.descriptionCharging
+              : widgets.heartRate.paused.description
+            : ''
         }
       </span>
     </div>
@@ -157,9 +153,9 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
               <canvas
                 class="ecg-canvas"
                 id="hrEcgCanvas"
-                data-bpm={showData ? String(hr) : undefined}
-                data-hrv={showData && hasHrv ? String(hrv) : undefined}
-                data-stroke={state.ecgStroke}
+                data-bpm={showData && hr > 0 ? String(hr) : undefined}
+                data-hrv={showData && isReading(hrvRaw) ? String(hrv) : undefined}
+                data-stroke={showData ? state.ecgStroke : undefined}
                 width="400"
                 height="120"
               />
@@ -173,7 +169,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
                       id="pulseBpm"
                       style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}
                     >
-                      {showData ? hr : ''}
+                      {fmtBpm}
                     </span>
                     <span class="pulse-bpm-unit">{widgets.heartRate.bpm}</span>
                   </>
@@ -183,7 +179,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
                   id="hrZoneBadge"
                   style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}
                 >
-                  {showData ? state.zone : ''}
+                  {fmtZone}
                 </span>
               </div>
               <div class="hr-overlay-right">
@@ -193,7 +189,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
                   id="hrHrvValue"
                   style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}
                 >
-                  {showData ? fmtHrv : ''}
+                  {fmtHrv}
                 </span>
                 <span class="hr-hrv-unit">{widgets.heartRate.hrvUnit}</span>
               </div>
@@ -204,7 +200,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
               <span class="hr-footer-label">{widgets.heartRate.rhr}</span>
               <>
                 <span class="hr-footer-value" id="hrFooterRhr">
-                  {showData ? fmtRhr : ''}
+                  {fmtRhr}
                 </span>
                 <span class="hr-footer-unit">{widgets.heartRate.rhrUnit}</span>
               </>
@@ -213,7 +209,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
               <span class="hr-footer-label">{widgets.heartRate.rr}</span>
               <>
                 <span class="hr-footer-value" id="hrFooterRr">
-                  {showData ? fmtRr : ''}
+                  {fmtRr}
                 </span>
                 <span class="hr-footer-unit">{widgets.heartRate.rrUnit}</span>
               </>
@@ -221,7 +217,7 @@ const fmtHrv = hasHrv ? String(hrv) : NO_READING;
             <div class="hr-footer-cell">
               <span class="hr-footer-label">{widgets.heartRate.temp}</span>
               <span class="hr-footer-value" id="hrFooterTemp">
-                {showData ? fmtTemp : ''}
+                {fmtTemp}
               </span>
             </div>
           </div>

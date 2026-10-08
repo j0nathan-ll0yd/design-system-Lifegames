@@ -250,7 +250,8 @@
     }
     .tri-card[data-ssr-state='unavailable'] .live-dot,
     .tri-card[data-ssr-state='suppressed'] .live-dot,
-    .tri-card[data-ssr-state='stale'] .live-dot {
+    .tri-card[data-ssr-state='stale'] .live-dot,
+    .tri-card[data-ssr-state='loading'] .live-dot {
       animation: none;
       box-shadow: none;
       opacity: 0.35;
@@ -259,6 +260,21 @@
        suppressed notice. !important beats each scaffold's own display rule. */
     .tri-card [data-state-scaffold][hidden] {
       display: none !important;
+    }
+    /* A stale "as of" time is long: it truncates; the title never wraps (M5). */
+    .tri-card[data-ssr-state='stale'] .widget-label {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tri-card[data-ssr-state='stale'] .widget-header-right {
+      min-width: 0;
+      overflow: hidden;
+    }
+    .widget-timestamp-stale {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .widget-noscript {
       margin: var(--space-8) 0 0;
@@ -2560,7 +2576,8 @@
     .tri-card.is-loading .widget-body {
       position: relative;
     }
-    .tri-card.is-loading .widget-body > *:not(.skeleton-state) {
+    /* The <noscript> note stays visible over the skeleton (atlas 0160, H2). */
+    .tri-card.is-loading .widget-body > *:not(.skeleton-state):not(noscript) {
       opacity: 0;
       pointer-events: none;
     }

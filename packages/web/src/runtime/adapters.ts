@@ -1,6 +1,6 @@
 import {ACTIVITY_TYPE_MAP, HYDRATION, LANG_COLORS, STATUS_LABELS} from './constants'
 import {sanitizeImageUrl} from './image-sanitizer'
-import {computeSleepPercentages, computeTotalSleepSeconds, formatDuration, formatPhase} from './sleep'
+import {computeSleepPercentages, computeTotalSleepSeconds, formatDuration, formatPhase, isSleepEmpty} from './sleep'
 import type {
   ArticlesExport,
   BooksExport,
@@ -219,7 +219,8 @@ export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | n
     const awake = sleepData.awake as {seconds: number} | undefined
     const phases = {rem: rem?.seconds ?? null, deep: deep?.seconds ?? null, core: core?.seconds ?? null, awake: awake?.seconds ?? null}
     const totalSleepSeconds = computeTotalSleepSeconds(phases)
-    sleepDurationFormatted = formatDuration(totalSleepSeconds)
+    // '' when a stage is missing: the total is unknown, never a partial sum.
+    sleepDurationFormatted = totalSleepSeconds == null ? '' : formatDuration(totalSleepSeconds)
     sleepPhaseFormatted = {deep: formatPhase(phases.deep), rem: formatPhase(phases.rem), core: formatPhase(phases.core), awake: formatPhase(phases.awake)}
     const pcts = computeSleepPercentages(phases)
     deepPct = pcts.deepPct
@@ -252,14 +253,15 @@ export function adaptSleep(sleepData: SleepExport, healthData: HealthExport | nu
   const awake = sleepData.awake as {seconds: number} | undefined
   const phases = {rem: rem?.seconds ?? null, deep: deep?.seconds ?? null, core: core?.seconds ?? null, awake: awake?.seconds ?? null}
   const totalSleepSeconds = computeTotalSleepSeconds(phases)
-  const isEmpty = totalSleepSeconds === 0
+  const isEmpty = isSleepEmpty(phases)
   const pcts = computeSleepPercentages(phases)
 
   return {
     isEmpty,
     date: sleepData.date,
     sleepScore: healthData?.quantities?.sleepScore?.value ?? null,
-    sleepDurationFormatted: formatDuration(totalSleepSeconds),
+    // '' when a stage is missing: the total is unknown, never a partial sum.
+    sleepDurationFormatted: totalSleepSeconds == null ? '' : formatDuration(totalSleepSeconds),
     sleepPhaseFormatted: {deep: formatPhase(phases.deep), rem: formatPhase(phases.rem), core: formatPhase(phases.core), awake: formatPhase(phases.awake)},
     derived: {deepPct: pcts.deepPct, remPct: pcts.remPct, corePct: pcts.corePct},
     phases

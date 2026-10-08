@@ -3,70 +3,44 @@ import { widgets, a11y } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import {
+  movementRingsState,
+  normalizeMovementHealth,
+  standHoursFrom,
+} from '../../runtime/widget-rules';
+import {
   formatMeasurement,
   isScaffoldHidden,
   NO_READING,
   rendersData,
-  resolveWidgetState,
   stateRootAttrs,
 } from '../../runtime/widget-state';
 import type { MovementRingsProps } from './MovementRings.types';
 
-const { health: rawHealth, state: requestedState, generatedAt } = Astro.props as MovementRingsProps;
-
-// Shape adapter: accept the flat `health.movement.*` shape (Swift Props
-// contract used by widget fixtures) in addition to the nested
-// `health.quantities.*` shape (HealthKit export contract used by the
-// runtime updater). The renderer continues to use the nested shape. A flat
-// field the fixture omits stays absent — never a 0 (atlas decision 0160).
-const m = (rawHealth as any)?.movement as
-  | {
-      moveKcal?: number;
-      exerciseMin?: number;
-      standHr?: number;
-      steps?: number;
-      distanceMeters?: number;
-      flights?: number;
-      daylightMin?: number;
-      goals?: NonNullable<MovementRingsProps['health']>['goals'];
-      solar?: NonNullable<MovementRingsProps['health']>['solar'];
-    }
-  | undefined;
-const qty = (value: number | undefined, unit: string) =>
-  typeof value === 'number' ? { value, unit } : undefined;
-const health: MovementRingsProps['health'] =
-  rawHealth == null
-    ? undefined
-    : (rawHealth as any).quantities
-      ? rawHealth
-      : ({
-          quantities: {
-            stepCount: qty(m?.steps, 'count'),
-            distanceWalkingRunning: qty(m?.distanceMeters, 'm'),
-            flightsClimbed: qty(m?.flights, 'count'),
-            activeEnergyBurned: qty(m?.moveKcal, 'kcal'),
-            exerciseTime: qty(m?.exerciseMin, 'min'),
-            standTime: qty(m?.standHr, 'hr'),
-            // Flat-shape standHr is achieved hours — exactly what standHours carries.
-            standHours: qty(m?.standHr, 'count'),
-            timeInDaylight: qty(m?.daylightMin, 'min'),
-          },
-          goals: m?.goals,
-          solar: m?.solar,
-          // Pass watch through from the flat fixture shape so the paused overlay renders.
-          watch: (rawHealth as any).watch,
-        } as MovementRingsProps['health']);
-
-let widgetState = resolveWidgetState(requestedState, health != null);
-const showData = rendersData(widgetState);
+const props = Astro.props as MovementRingsProps;
+const { generatedAt } = props;
+// The flat Swift-fixture shape and the nested HealthKit shape normalize to one
+// shape; a field the input omits stays absent, never 0 (atlas decision 0160).
+const health = normalizeMovementHealth(props.health);
+// One owner for the state: the same rule the view model applies.
+const widgetState = movementRingsState(props);
+const isEmpty = widgetState === 'empty';
 const scaffoldHidden = isScaffoldHidden(widgetState);
-const q = (showData ? health?.quantities : undefined) ?? {};
+
+// SSR paused: the export reports the watch off the wrist or charging. The card
+// stays a live reading of the watch state, but it shows no movement value.
+const watch = rendersData(widgetState) ? health?.watch : undefined;
+const ssrPaused = watch?.worn === false;
+const charging = watch?.source === 'charging';
+// Values render only in a data state that is neither empty nor paused; every
+// other scaffold is value-free.
+const renderValues = rendersData(widgetState) && !isEmpty && !ssrPaused;
+const q = (renderValues ? health?.quantities : undefined) ?? {};
 
 // Goals are configuration, not measurements (server-synced; SSR defaults until
 // the device's first goals sync). They never stand in for a measurement. The
-// owner's synced goals come from the health export, so a non-data state shows
-// only the design-system defaults.
-const syncedGoals = showData ? health?.goals : undefined;
+// owner's synced goals come from the health export, so a card that shows no
+// value shows only the design-system defaults.
+const syncedGoals = renderValues ? health?.goals : undefined;
 const goals = {
   moveKcal: syncedGoals?.moveKcal ?? 500,
   exerciseMin: syncedGoals?.exerciseMin ?? 30,
@@ -77,16 +51,8 @@ const goals = {
 const round = (v: number | undefined): number | null =>
   typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : null;
 
-// Stand: prefer the achieved ring count (`standHours`, HKActivitySummary — the
-// watch ring's own metric); legacy data falls back to standTime (min → hr).
-const standHours: number | null = q.standHours
-  ? Math.floor(q.standHours.value)
-  : q.standTime
-    ? q.standTime.unit === 'min'
-      ? Math.floor(q.standTime.value / 60)
-      : Math.floor(q.standTime.value)
-    : null;
-
+// Stand: the achieved ring count, shared with updateMovementRings.
+const standHours = standHoursFrom(q.standHours, q.standTime);
 const moveVal = round(q.activeEnergyBurned?.value);
 const exerciseVal = round(q.exerciseTime?.value);
 
@@ -100,15 +66,6 @@ const standPct = frac(standHours, goals.standHr);
 const steps = round(q.stepCount?.value);
 const distanceM = q.distanceWalkingRunning?.value;
 const flights = round(q.flightsClimbed?.value);
-
-// Empty: no movement measurement at all, or every one of them a recorded zero.
-const measured = [steps, distanceM ?? null, moveVal, exerciseVal].filter((v) => v != null);
-if (showData && measured.every((v) => v === 0)) {
-  widgetState = 'empty';
-}
-const isEmpty = widgetState === 'empty';
-// The scaffold behind the empty notice stays value-free, like every other non-data state.
-const renderValues = showData && !isEmpty;
 
 const txt = (v: number | null, format: (n: number) => string = String): string =>
   renderValues ? formatMeasurement(v, format) : '';
@@ -130,12 +87,6 @@ const ringsLabel = a11y.movement.rings
   .replace('{calories}%', ringPart(moveVal, movePct))
   .replace('{exercise}%', ringPart(exerciseVal, exercisePct))
   .replace('{stand}%', ringPart(standHours, standPct));
-
-// SSR paused: if build-data already has watch.worn===false, apply is-paused at SSR time
-// so the page is correct before the runtime updater fires.
-// Watch state only in the data states: a suppressed card names nothing.
-const watch = renderValues ? health?.watch : undefined;
-const ssrPaused = watch?.worn === false;
 
 // Solar footer: server-computed facts. When `solar` is absent, nothing is
 // invented — the times read as no reading and the sun dot is not drawn.
@@ -241,16 +192,20 @@ function offset(circ: number, pct: number): number {
       </svg>
       <span class="mv-paused-label" id="mvPausedLabel">
         {
-          watch?.source === 'charging'
-            ? widgets.movement.paused.labelCharging
-            : widgets.movement.paused.label
+          ssrPaused
+            ? charging
+              ? widgets.movement.paused.labelCharging
+              : widgets.movement.paused.label
+            : ''
         }
       </span>
       <span class="mv-paused-desc" id="mvPausedDesc">
         {
-          watch?.source === 'charging'
-            ? widgets.movement.paused.descriptionCharging
-            : widgets.movement.paused.description
+          ssrPaused
+            ? charging
+              ? widgets.movement.paused.descriptionCharging
+              : widgets.movement.paused.description
+            : ''
         }
       </span>
     </div>

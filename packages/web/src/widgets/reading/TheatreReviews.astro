@@ -2,21 +2,19 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { theatreCardsHtml, theatreCountLabel } from '../../runtime/updaters-theatre';
-import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
+import { THEATRE_SITE, theatreCardsHtml, theatreCountLabel } from '../../runtime/updaters-theatre';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { theatreReviewsState } from '../../runtime/widget-rules';
 import type { TheatreReviewsProps } from './TheatreReviews.types';
 
 // Cards render from props on the server, through the same markup function the
 // live update uses (atlas decision 0160, D5).
-const {
-  reviews: reviewList,
-  totalReviews,
-  state: requestedState,
-  generatedAt,
-} = Astro.props as TheatreReviewsProps;
-const widgetState = resolveWidgetState(requestedState, (reviewList?.length ?? 0) > 0);
+const { reviews: reviewList, totalReviews, generatedAt } = Astro.props as TheatreReviewsProps;
+// One owner for the state: the same rule the view model applies.
+const widgetState = theatreReviewsState(Astro.props as TheatreReviewsProps);
 const showData = rendersData(widgetState);
 const cardsHtml = showData ? theatreCardsHtml(reviewList ?? []) : '';
+const showLabel = showData || widgetState === 'empty';
 const countLabel =
   showData && typeof totalReviews === 'number' ? theatreCountLabel(totalReviews) : 'reviews';
 ---
@@ -36,13 +34,26 @@ const countLabel =
           <WidgetTimestamp label="" state={widgetState} generatedAt={generatedAt} />
         )
       }
-      <a
-        class="widget-timestamp theatre-count-link"
-        id="theatreCount"
-        href="https://www.coasttocoastreviews.com"
-        target="_blank"
-        rel="noopener noreferrer">{countLabel}</a
-      >
+      {
+        /* The count link is the header label: live, stale and empty show it; the
+          states that show no label (unavailable, suppressed, loading) keep an
+          empty slot that updateTheatreReviews turns back into the link. */
+      }
+      {
+        showLabel ? (
+          <a
+            class="widget-timestamp theatre-count-link"
+            id="theatreCount"
+            href={THEATRE_SITE}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {countLabel}
+          </a>
+        ) : (
+          <span class="widget-timestamp theatre-count-link" id="theatreCount" />
+        )
+      }
     </div>
   </div>
   <div class="widget-body">

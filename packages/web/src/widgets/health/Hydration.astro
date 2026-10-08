@@ -6,17 +6,22 @@ import { HYDRATION } from '../../runtime/constants';
 import {
   formatMeasurement,
   isScaffoldHidden,
+  NO_READING,
   rendersData,
-  resolveWidgetState,
   stateRootAttrs,
 } from '../../runtime/widget-state';
+import { hydrationState } from '../../runtime/widget-rules';
 import type { HydrationProps } from './Hydration.types';
 
-const { health, state: requestedState, generatedAt } = Astro.props as HydrationProps;
-const widgetState = resolveWidgetState(requestedState, health?.hydration != null);
-// Hydration has no separate empty layout: with no measurement it renders the
-// vessels and the no-reading mark for each value.
-const showData = rendersData(widgetState) || widgetState === 'empty';
+const props = Astro.props as HydrationProps;
+const { health, generatedAt } = props;
+// One owner for the state: the same rule the view model applies.
+const widgetState = hydrationState(props);
+// Values only in a data state. Hydration has no separate empty layout: its
+// empty state shows the vessels with the no-reading mark and no input value,
+// like the Swift HydrationView empty case.
+const showData = rendersData(widgetState);
+const emptyMarks = widgetState === 'empty';
 const scaffoldHidden = isScaffoldHidden(widgetState);
 const hydration = showData ? health?.hydration : undefined;
 
@@ -43,8 +48,16 @@ const range = (lo: number, hi: number, max: number) => ({
 });
 const waterRange = range(waterRangeLo, waterRangeHi, waterMax);
 const caffeineRange = range(caffeineRangeLo, caffeineRangeHi, caffeineMax);
-const waterText = showData ? formatMeasurement(waterOz, (n) => `${n} oz`) : '';
-const caffeineText = showData ? formatMeasurement(caffeineMg, (n) => `${n} mg`) : '';
+const waterText = showData
+  ? formatMeasurement(waterOz, (n) => `${n} oz`)
+  : emptyMarks
+    ? NO_READING
+    : '';
+const caffeineText = showData
+  ? formatMeasurement(caffeineMg, (n) => `${n} mg`)
+  : emptyMarks
+    ? NO_READING
+    : '';
 ---
 
 <div

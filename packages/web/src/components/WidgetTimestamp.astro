@@ -3,8 +3,10 @@
 //
 // `stale` replaces the relative label ("live", "today") with an absolute
 // "as of" time in the owner's time zone, inside <time datetime>.
-// `unavailable` and `suppressed` show no label: nothing on the card is live.
-// Every other state keeps the widget's own label. Internal to @j0nathan-ll0yd/web.
+// `unavailable`, `suppressed` and `loading` show no label: nothing on the card
+// is live. A `stale` card with no valid timestamp shows no label either: it
+// never claims "live". `live` and `empty` keep the widget's own label.
+// Internal to @j0nathan-ll0yd/web.
 import { widgets } from '@j0nathan-ll0yd/copy';
 import { formatAsOf, type WidgetState } from '../runtime/widget-state';
 
@@ -17,7 +19,7 @@ interface Props {
 
 const { label, state, generatedAt, id } = Astro.props;
 const asOf = state === 'stale' ? formatAsOf(generatedAt) : null;
-const showLabel = state !== 'unavailable' && state !== 'suppressed';
+const showLabel = state === 'live' || state === 'empty';
 ---
 
 {

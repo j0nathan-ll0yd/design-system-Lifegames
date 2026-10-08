@@ -2,7 +2,8 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { devActivityLogState } from '../../runtime/widget-rules';
 import type { DevActivityLogProps } from './DevActivityLog.types';
 
 interface Event {
@@ -20,8 +21,9 @@ interface Event {
 
 type Props = Omit<DevActivityLogProps, 'events'> & { events?: Event[] };
 
-const { events: eventList, state: requestedState, generatedAt } = Astro.props;
-const widgetState = resolveWidgetState(requestedState, (eventList?.length ?? 0) > 0);
+const { events: eventList, generatedAt } = Astro.props;
+// One owner for the state: the same rule the view model applies.
+const widgetState = devActivityLogState(Astro.props as DevActivityLogProps);
 const showData = rendersData(widgetState);
 const events: Event[] = showData ? (eventList ?? []) : [];
 
