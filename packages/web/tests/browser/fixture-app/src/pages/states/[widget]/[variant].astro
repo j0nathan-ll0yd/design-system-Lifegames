@@ -1,0 +1,57 @@
+---
+import '../../../../../../../../tokens/dist/tokens.css';
+import '../../../../../../../src/styles/primitives.css';
+import '../../../../../../../src/styles/components.css';
+import '../../../../../../../src/styles/layout.css';
+import '../../../../../../../src/styles/a11y.css';
+import Bookshelf from '../../../../../../../src/widgets/reading/Bookshelf.astro';
+import DevActivityLog from '../../../../../../../src/widgets/github/DevActivityLog.astro';
+import HeartRate from '../../../../../../../src/widgets/health/HeartRate.astro';
+import Hydration from '../../../../../../../src/widgets/health/Hydration.astro';
+import MovementRings from '../../../../../../../src/widgets/health/MovementRings.astro';
+import NightSummary from '../../../../../../../src/widgets/health/NightSummary.astro';
+import ReadingFeed from '../../../../../../../src/widgets/reading/ReadingFeed.astro';
+import StarredRepoList from '../../../../../../../src/widgets/github/StarredRepoList.astro';
+import TheatreReviews from '../../../../../../../src/widgets/reading/TheatreReviews.astro';
+import Workouts from '../../../../../../../src/widgets/health/Workouts.astro';
+import { VARIANTS, WIDGETS, propsFor, widthFor } from '../../../lib/states';
+
+export function getStaticPaths() {
+  return WIDGETS.flatMap((w) =>
+    VARIANTS.map((variant) => ({ params: { widget: w.name, variant } })),
+  );
+}
+
+const components = {
+  Bookshelf,
+  DevActivityLog,
+  HeartRate,
+  Hydration,
+  MovementRings,
+  NightSummary,
+  ReadingFeed,
+  StarredRepoList,
+  TheatreReviews,
+  Workouts,
+};
+const { widget, variant } = Astro.params as {
+  widget: keyof typeof components;
+  variant: (typeof VARIANTS)[number];
+};
+const Widget = components[widget] as any;
+const vm = WIDGETS.find((w) => w.name === widget)!.vm;
+const props = propsFor(vm, variant);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{widget} {variant}</title>
+  </head>
+  <body style="background:#06060f;color:#fff;margin:0;padding:16px">
+    <section data-widget={widget} data-state={variant} style={`width:${widthFor(variant)}px`}>
+      <Widget {...props} />
+    </section>
+  </body>
+</html>
