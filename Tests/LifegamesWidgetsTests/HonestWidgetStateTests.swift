@@ -117,3 +117,17 @@ struct HonestWidgetStateTests {
         #expect(PendingCopy.WidgetStateStrings.noReading == "No reading")
     }
 }
+
+/// Hydration's empty state renders the no-reading mark, never "0 oz" (atlas decision 0160,
+/// P2 parity with the web Hydration empty state).
+@Suite struct HydrationEmptyValueTests {
+    @Test func measuredValuesKeepTheirUnit() {
+        #expect(HydrationPopulatedView.valueText(54, unit: "oz", measured: true) == "54 oz")
+        #expect(HydrationPopulatedView.valueText(0, unit: "mg", measured: true) == "0 mg")
+    }
+
+    @Test func unmeasuredValuesRenderTheNoReadingMark() {
+        #expect(HydrationPopulatedView.valueText(0, unit: "oz", measured: false) == "\u{2014}")
+        #expect(HydrationPopulatedView.valueText(0, unit: "mg", measured: false) == PendingCopy.WidgetStateStrings.noReadingMark)
+    }
+}

@@ -10,6 +10,8 @@ enum PendingCopy {
     enum WidgetStateStrings {
         /// Proposed key widgets.widgetState.noReading: accessible name of the no-reading mark.
         static let noReading = "No reading"
+        /// The visible no-reading mark (web `NO_READING`). A symbol, not copy.
+        static let noReadingMark = "\u{2014}"
         /// Proposed key widgets.widgetState.unavailable: notice when an export cannot be read.
         static let unavailable = "Data unavailable"
         /// Proposed key widgets.widgetState.suppressed: notice while a hiding focus mode is active.

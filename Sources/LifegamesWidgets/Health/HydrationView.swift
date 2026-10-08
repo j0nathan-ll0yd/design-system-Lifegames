@@ -35,7 +35,9 @@ public struct HydrationView: View {
             case .loading:
                 HydrationSkeletonView()
             case .empty:
-                HydrationPopulatedView(props: .zero)
+                // No measurement: empty vessels and the no-reading mark, never "0 oz"
+                // (atlas decision 0160; matches the web Hydration empty state).
+                HydrationPopulatedView(props: .zero, measured: false)
             case let .populated(props):
                 HydrationPopulatedView(props: props)
             case .unavailable, .suppressed:
@@ -48,18 +50,25 @@ public struct HydrationView: View {
 
 // MARK: - Populated
 
-private struct HydrationPopulatedView: View {
+struct HydrationPopulatedView: View {
     let props: HydrationProps
+    /// False when the values are not measurements (the empty state).
+    var measured = true
+
+    /// A vessel's value label: the measurement with its unit, or the no-reading mark.
+    static func valueText(_ value: Int, unit: String, measured: Bool) -> String {
+        measured ? "\(value) \(unit)" : PendingCopy.WidgetStateStrings.noReadingMark
+    }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 0) {
-            WaterBottleColumn(fillPercent: props.waterPercent, value: "\(props.waterOz) oz")
+            WaterBottleColumn(fillPercent: props.waterPercent, value: Self.valueText(props.waterOz, unit: "oz", measured: measured))
                 .frame(maxWidth: .infinity)
 
             VesselDivider()
                 .padding(.bottom, 28)
 
-            CoffeeMugColumn(fillPercent: props.caffeinePercent, value: "\(props.caffeineMg) mg")
+            CoffeeMugColumn(fillPercent: props.caffeinePercent, value: Self.valueText(props.caffeineMg, unit: "mg", measured: measured))
                 .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 18)
