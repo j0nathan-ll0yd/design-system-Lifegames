@@ -1,0 +1,19 @@
+{
+  "date": "2026-03-17",
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "quantities": {
+    "heartRate": { "value": 97, "unit": "count/min" },
+    "heartRateVariabilitySDNN": { "value": 69, "unit": "ms" },
+    "stepCount": { "value": 12345, "unit": "count" },
+    "distanceWalkingRunning": { "value": 8765, "unit": "m" },
+    "exerciseTime": { "value": 53, "unit": "min" },
+    "activeEnergyBurned": { "value": 613, "unit": "kcal" },
+    "basalEnergyBurned": { "value": 1721, "unit": "kcal" },
+    "dietaryWater": { "value": 1774, "unit": "mL" },
+    "dietaryCaffeine": { "value": 0.153, "unit": "g" },
+    "wristTemperatureDelta": { "value": -0.4, "unit": "degC" },
+    "sleepScore": { "value": 83, "unit": "score" }
+  },
+  "goals": { "moveKcal": 637, "exerciseMin": 57, "standHr": 7, "daylightMin": 33 },
+  "solar": { "sunriseHHmm": "05:41", "sunsetHHmm": "20:19", "currentProgressPct": 63.7 }
+}

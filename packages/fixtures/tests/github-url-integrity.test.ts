@@ -1,10 +1,18 @@
 import {describe, expect, it} from 'vitest'
 import {fixtures, rawFixtures} from '../src/index'
-import {githubCommitUrl, githubPullUrl, PUBLIC_GITHUB_COMMITS, PUBLIC_GITHUB_PULLS, PUBLIC_GITHUB_REPOSITORIES} from '../src/github-references'
+import {
+  githubCommitUrl,
+  githubPullUrl,
+  PUBLIC_GITHUB_COMMITS,
+  PUBLIC_GITHUB_PULLS,
+  PUBLIC_GITHUB_REPOSITORIES,
+  SSR_KNOWN_ANSWER_GITHUB_COMMITS,
+  SSR_KNOWN_ANSWER_GITHUB_PULLS
+} from '../src/github-references'
 
 const publicRepositories = new Set<string>(PUBLIC_GITHUB_REPOSITORIES)
-const publicCommitTargets = new Map(PUBLIC_GITHUB_COMMITS.map((ref) => [githubCommitUrl(ref), ref]))
-const publicPullTargets = new Map(PUBLIC_GITHUB_PULLS.map((ref) => [githubPullUrl(ref), ref]))
+const publicCommitTargets = new Map([...PUBLIC_GITHUB_COMMITS, ...SSR_KNOWN_ANSWER_GITHUB_COMMITS].map((ref) => [githubCommitUrl(ref), ref]))
+const publicPullTargets = new Map([...PUBLIC_GITHUB_PULLS, ...SSR_KNOWN_ANSWER_GITHUB_PULLS].map((ref) => [githubPullUrl(ref), ref]))
 
 describe('GitHub fixture URL integrity', () => {
   it('raw GitHub events only generate verified public commit and pull-request URLs', () => {

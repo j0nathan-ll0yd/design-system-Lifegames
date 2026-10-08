@@ -88,6 +88,42 @@ export const movementActive: HealthExport = createHealthFixture({
   solar: {sunriseHHmm: '05:39', sunsetHHmm: '20:24', currentProgressPct: 81.6}
 })
 
+// Sparse: the producer measured only heart rate, HRV, steps, distance and wrist
+// temperature. dietaryWater, dietaryCaffeine, exerciseTime, activeEnergyBurned,
+// basalEnergyBurned and sleepScore are ABSENT (not zero). sleepScore is not in
+// DEFAULT_QUANTITIES, so it is absent by construction. Decision 0160: a missing
+// measurement must render differently from a measured zero.
+export const sparse: HealthExport = createHealthFixture({}, [
+  'dietaryWater',
+  'dietaryCaffeine',
+  'exerciseTime',
+  'activeEnergyBurned',
+  'basalEnergyBurned',
+  'sleepScore'
+])
+
+// SSR known answer (decision 0160): every distinctive value is unique across all
+// fixtures, so a rendered value proves SSR read this payload. Synthetic values only.
+// 1774 mL = 60 oz (rounded); 0.153 g = 153 mg. standHr is 7 on purpose: every integer
+// from 10 to 32 already appears in another fixture.
+export const ssrKnownAnswer: HealthExport = createHealthFixture({
+  quantities: {
+    heartRate: {value: 97, unit: 'count/min'},
+    heartRateVariabilitySDNN: {value: 69, unit: 'ms'},
+    stepCount: {value: 12345, unit: 'count'},
+    distanceWalkingRunning: {value: 8765, unit: 'm'},
+    exerciseTime: {value: 53, unit: 'min'},
+    activeEnergyBurned: {value: 613, unit: 'kcal'},
+    basalEnergyBurned: {value: 1721, unit: 'kcal'},
+    dietaryWater: {value: 1774, unit: 'mL'},
+    dietaryCaffeine: {value: 0.153, unit: 'g'},
+    wristTemperatureDelta: {value: -0.4, unit: 'degC'},
+    sleepScore: {value: 83, unit: 'score'}
+  },
+  goals: {moveKcal: 637, exerciseMin: 57, standHr: 7, daylightMin: 33},
+  solar: {sunriseHHmm: '05:41', sunsetHHmm: '20:19', currentProgressPct: 63.7}
+})
+
 export const healthVariations = {
   baseline,
   bradycardia,
@@ -105,5 +141,7 @@ export const healthVariations = {
   pausedHrGap,
   pausedCharging,
   full,
-  movementActive
+  movementActive,
+  sparse,
+  ssrKnownAnswer
 }

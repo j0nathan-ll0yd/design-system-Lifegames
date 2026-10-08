@@ -2,8 +2,34 @@ import type {ArticlesExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createArticle, createArticlesFixture} from '../factories/articles'
 import {isoDate, isoTimestamp} from '../factories/helpers'
 
+// SSR known answer (decision 0160): createArticle defaults (sourceTitle, sourceUrl) are
+// shared, so every text and URL field is overridden. example-style hosts use .invalid.
+export const ssrKnownAnswer: ArticlesExport = createArticlesFixture({
+  articles: [
+    createArticle({
+      articleUrl: 'https://articles.known-answer-kappa-7731.invalid/first',
+      articleTitle: 'Known Answer Article Title Kappa-7731',
+      articleAuthor: 'Known Answer Writer Kappa-7731',
+      sourceTitle: 'Known Answer Source Kappa-7731',
+      sourceUrl: 'https://articles.known-answer-kappa-7731.invalid',
+      articlePublishedAt: isoDate(2),
+      savedAt: isoTimestamp(1)
+    }),
+    createArticle({
+      articleUrl: 'https://articles.known-answer-kappa-7731.invalid/second',
+      articleTitle: 'Known Answer Second Article Kappa-7731',
+      sourceTitle: 'Known Answer Source Kappa-7731',
+      sourceUrl: 'https://articles.known-answer-kappa-7731.invalid',
+      articlePublishedAt: isoDate(3),
+      savedAt: isoTimestamp(2)
+    })
+  ]
+})
+
 export const articlesVariations: Record<string, ArticlesExport> = {
   baseline: createArticlesFixture(),
+
+  ssrKnownAnswer,
 
   empty: createArticlesFixture({articles: []}),
 
