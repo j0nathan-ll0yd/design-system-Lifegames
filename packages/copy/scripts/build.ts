@@ -15,6 +15,7 @@ import addFormats from 'ajv-formats'
 import {compile} from 'json-schema-to-typescript'
 import jsonSchemaToZod from 'json-schema-to-zod'
 import * as prettier from 'prettier'
+import {designSystemPublicSwiftTypes, swiftShadowClashes} from './swift-shadow'
 
 async function formatWithPrettier(src: string, outPath: string, parser: 'typescript' | 'json'): Promise<string> {
   const cfg = await prettier.resolveConfig(outPath)
@@ -383,19 +384,19 @@ for (const {name, namespace} of swiftTopLevelNames) {
 // namespaces emitting a same-named struct redeclare it inside the single Swift
 // module. Assert every struct name (top-level + nested) is unique across
 // namespaces; the fix is a unique `title` on the colliding group in its schema.
-// Public type names of the OTHER Swift modules that import LifegamesCopy alongside
-// themselves. A copy struct with one of these names makes every such import
-// ambiguous (atlas decision 0160: widgets.widgetState generated `WidgetState`,
-// which shadowed LifegamesComponents.WidgetState<T>). Give the group a `title`.
-const RESERVED_SWIFT_NAMES = new Set(['WidgetState', 'WidgetStateNotice', 'WidgetHeaderView'])
-for (const {name, namespace} of swiftStructNames) {
-  if (RESERVED_SWIFT_NAMES.has(name)) {
-    console.error(
-      `copy:build — Swift struct "${name}" (namespace "${namespace}") shadows a public type of ` +
-        'another design-system Swift module. Give the group a unique `title` in its rich schema.'
-    )
-    process.exit(1)
-  }
+// A copy struct must not shadow a public type of another design-system Swift
+// module (scripts/swift-shadow.ts): widgets.widgetState once generated
+// `WidgetState`, which shadowed LifegamesComponents.WidgetState<T>. The
+// reserved set is derived from Sources/*, never hand-listed.
+const shadowClashes = swiftShadowClashes(swiftStructNames, designSystemPublicSwiftTypes(join(PKG_ROOT, '..', '..', 'Sources')))
+for (const {name, namespace, module} of shadowClashes) {
+  console.error(
+    `copy:build — Swift struct "${name}" (namespace "${namespace}") shadows the public type ${module}.${name}. ` +
+      'Give the group a unique `title` in its rich schema.'
+  )
+}
+if (shadowClashes.length > 0) {
+  process.exit(1)
 }
 
 const seenSwiftStructs = new Map<string, string>()
