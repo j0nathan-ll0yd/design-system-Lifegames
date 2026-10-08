@@ -84,6 +84,11 @@ interface Paint {
   animationName: string
   lineHeight: number
   right: number
+  left: number
+  top: number
+  bottom: number
+  /** Background colour alpha (0 = paints nothing). */
+  backgroundAlpha: number
   text: string
 }
 
@@ -104,6 +109,17 @@ function paint(locator: Locator): Promise<Paint> {
       animationName: cs.animationName,
       lineHeight: parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2,
       right: box.right,
+      left: box.left,
+      top: box.top,
+      bottom: box.bottom,
+      backgroundAlpha: (() => {
+        const m = cs.backgroundColor.match(/rgba?\(([^)]+)\)/)
+        if (!m) {
+          return 0
+        }
+        const parts = m[1]!.split(',').map((x) => parseFloat(x))
+        return parts.length === 4 ? parts[3]! : 1
+      })(),
       text: (el.textContent ?? '').trim()
     }
   })
@@ -131,14 +147,21 @@ async function painted(page: Page, selector: string): Promise<string[]> {
 describe('harness', () => {
   it('runs with page scripts disabled and still reads computed style', async () => {
     const page = await open('HeartRate', 'live')
-    const scriptsRan = await page.evaluate(() => typeof (window as any).__scriptProbe)
-    expect(scriptsRan).toBe('undefined')
-    // A <noscript> body is parsed as markup only when scripting is off.
-    const noscript = await page.evaluate(() => document.querySelectorAll('noscript').length)
-    expect(noscript).toBeGreaterThanOrEqual(0)
-    const ctxJs = await page.evaluate(() => navigator.userAgent.length)
-    expect(ctxJs).toBeGreaterThan(0)
+    // Control: the page source carries the inline probe script, so a context
+    // with JavaScript on WOULD set data-js. Here it must stay unset.
+    const html = await (await page.request.get(page.url())).text()
+    expect(html).toContain("setAttribute('data-js', 'ran')")
+    expect(await page.locator('html').getAttribute('data-js')).toBeNull()
+    // The isolated-world evaluate still reads computed style with page JS off.
+    expect(await page.locator('body').evaluate((el) => getComputedStyle(el).margin)).toBe('0px')
     await page.close()
+  })
+  it('the probe proves itself: with JavaScript on, the marker is set', async () => {
+    const jsContext = await browser.newContext({javaScriptEnabled: true})
+    const page = await jsContext.newPage()
+    await page.goto(`${baseUrl}/states/HeartRate/live/`)
+    expect(await page.locator('html').getAttribute('data-js')).toBe('ran')
+    await jsContext.close()
   })
   it('parses <noscript> content as elements (scripting off)', async () => {
     const page = await open('HeartRate', 'loading')
@@ -189,6 +212,15 @@ describe.each(WIDGETS)('$name with JavaScript disabled', (widget) => {
         const skeleton = await paint(page.locator(`#${id} .skeleton-state`).first())
         expect(skeleton.display, `skeleton: ${JSON.stringify(skeleton)}`).not.toBe('none')
         expect(skeleton.width * skeleton.height, 'skeleton box').toBeGreaterThan(0)
+        // The skeleton must PAINT bars, not only reserve an overlay box: every
+        // bar has a box and a visible background (tokens animations.css).
+        const bars = page.locator(`#${id} .skeleton-state .skeleton-bar, #${id} .skeleton-state .skeleton-circle`)
+        expect(await bars.count(), 'skeleton bars present').toBeGreaterThan(0)
+        for (let i = 0; i < (await bars.count()); i++) {
+          const b = await paint(bars.nth(i))
+          expect(b.width * b.height, `bar[${i}] box`).toBeGreaterThan(0)
+          expect(b.backgroundAlpha, `bar[${i}] paints a background: ${JSON.stringify(b)}`).toBeGreaterThan(0)
+        }
         const note = page.locator(`#${id} .widget-noscript`)
         expect(await note.count(), 'noscript note present').toBeGreaterThan(0)
         const n = await paint(note.first())
@@ -230,24 +262,71 @@ describe.each(WIDGETS)('$name with JavaScript disabled', (widget) => {
   })
 
   describe.each([380, 340])('stale header at %ipx', (width) => {
-    it('keeps the label on one line, matches the live header, and stays inside the card', async () => {
-      const suffix = width === 340 ? '-340' : ''
-      const header = async (variant: string) => {
-        const page = await open(name, variant)
-        const root = page.locator(`#${id}`)
-        const head = page.locator(`#${id} .widget-header`).first()
-        const label = page.locator(`#${id} .widget-label`).first()
-        const stamp = page.locator(`#${id} .widget-timestamp`).first()
-        const out = {head: await paint(head), label: await paint(label), stamp: await paint(stamp), card: await paint(root)}
-        await page.close()
-        return out
+    it('shows the full "as of" time on its own line, one-line title, nothing truncated or outside the card', async () => {
+      const page = await open(name, width === 340 ? 'stale-340' : 'stale')
+      const card = await paint(page.locator(`#${id}`))
+      const label = await paint(page.locator(`#${id} .widget-label`).first())
+      const time = page.locator(`#${id} time.widget-timestamp-stale`)
+      const t = await paint(time)
+      // The full time, never an ellipsis: "as of Mar 18, 5:00 AM PDT".
+      expect(t.text, 'full as-of time').toMatch(/^as of [A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2} [AP]M [A-Z]{2,4}$/)
+      const overflow = await time.evaluate((el) => ({scroll: el.scrollWidth, client: el.clientWidth, textOverflow: getComputedStyle(el).textOverflow}))
+      expect(overflow.scroll, `time not truncated: ${JSON.stringify(overflow)}`).toBeLessThanOrEqual(overflow.client + 1)
+      expect(label.height, `title one line: ${JSON.stringify(label)}`).toBeLessThanOrEqual(label.lineHeight * 1.5)
+      expect(t.height, `time one line: ${JSON.stringify(t)}`).toBeLessThanOrEqual(t.lineHeight * 1.5)
+      expect(t.left, 'time inside card (left)').toBeGreaterThanOrEqual(card.left - 0.5)
+      expect(t.right, 'time inside card (right)').toBeLessThanOrEqual(card.right + 0.5)
+      if (name === 'TheatreReviews') {
+        const count = await paint(page.locator('#theatreCount'))
+        expect(count.text).toMatch(/^\d+ reviews$/)
+        expect(count.height, `count one line: ${JSON.stringify(count)}`).toBeLessThanOrEqual(count.lineHeight * 1.5)
       }
-      const live = await header(`live${suffix}`)
-      const stale = await header(`stale${suffix}`)
-      expect(stale.stamp.text, 'stale shows an as-of label').toMatch(/as of/i)
-      expect(stale.label.height, `label one line: ${JSON.stringify(stale.label)}`).toBeLessThanOrEqual(stale.label.lineHeight * 1.5)
-      expect(Math.abs(stale.head.height - live.head.height), `header height stale ${stale.head.height} vs live ${live.head.height}`).toBeLessThanOrEqual(2)
-      expect(stale.stamp.right, `stale time right ${stale.stamp.right} vs card right ${stale.card.right}`).toBeLessThanOrEqual(stale.card.right + 0.5)
+      await page.close()
     })
+  })
+})
+
+// M-1 (WCAG 2.4.7): a keyboard focus ring in a card header paints in full. The
+// stale header once set overflow: hidden, which clipped all but the left bar
+// of the TheatreReviews count link's outline.
+describe.each(['live', 'stale', 'live-340', 'stale-340'])('TheatreReviews focus ring (%s)', (variant) => {
+  it("the focused count link's whole outline box is inside the card and no ancestor clips it", async () => {
+    const page = await open('TheatreReviews', variant)
+    await page.keyboard.press('Tab')
+    const r = await page.evaluate(() => {
+      const a = document.activeElement as HTMLElement
+      const cs = getComputedStyle(a)
+      const box = a.getBoundingClientRect()
+      const grow = (parseFloat(cs.outlineWidth) || 0) + Math.max(0, parseFloat(cs.outlineOffset) || 0)
+      const ring = {left: box.left - grow, right: box.right + grow, top: box.top - grow, bottom: box.bottom + grow}
+      const card = (a.closest('.tri-card') as HTMLElement).getBoundingClientRect()
+      const clippers: string[] = []
+      for (let n = a.parentElement; n && n !== document.body; n = n.parentElement) {
+        const ncs = getComputedStyle(n)
+        if (ncs.overflowX !== 'visible' || ncs.overflowY !== 'visible') {
+          const nb = n.getBoundingClientRect()
+          if (ring.left < nb.left - 0.5 || ring.right > nb.right + 0.5 || ring.top < nb.top - 0.5 || ring.bottom > nb.bottom + 0.5) {
+            clippers.push(`${n.tagName}.${n.className} overflow=${ncs.overflow}`)
+          }
+        }
+      }
+      return {
+        id: a.id,
+        outlineStyle: cs.outlineStyle,
+        outlineWidth: parseFloat(cs.outlineWidth),
+        ring,
+        card: {left: card.left, right: card.right, top: card.top, bottom: card.bottom},
+        clippers
+      }
+    })
+    expect(r.id, 'Tab reaches the count link').toBe('theatreCount')
+    expect(r.outlineStyle, 'a visible focus outline').not.toBe('none')
+    expect(r.outlineWidth).toBeGreaterThan(0)
+    expect(r.ring.left).toBeGreaterThanOrEqual(r.card.left - 0.5)
+    expect(r.ring.right).toBeLessThanOrEqual(r.card.right + 0.5)
+    expect(r.ring.top).toBeGreaterThanOrEqual(r.card.top - 0.5)
+    expect(r.ring.bottom).toBeLessThanOrEqual(r.card.bottom + 0.5)
+    expect(r.clippers, `no ancestor clips the ring: ${JSON.stringify(r)}`).toEqual([])
+    await page.close()
   })
 })

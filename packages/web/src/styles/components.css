@@ -261,20 +261,35 @@
     .tri-card [data-state-scaffold][hidden] {
       display: none !important;
     }
-    /* A stale "as of" time is long: it truncates; the title never wraps (M5). */
-    .tri-card[data-ssr-state='stale'] .widget-label {
-      white-space: nowrap;
-      flex-shrink: 0;
+    /* A stale card's "as of" time is too long to share the header line at
+       narrow widths. It wraps onto its own full-width line under the title,
+       in full: never truncated (a truncated time is no provenance) and never
+       clipped (no overflow: hidden, which clipped the focus ring of the
+       TheatreReviews count link, WCAG 2.4.7). The title and the count stay on
+       one line each. */
+    .tri-card[data-ssr-state='stale'] .widget-header {
+      flex-wrap: wrap;
+      column-gap: 8px;
+      row-gap: var(--space-4);
     }
+    /* The right-hand items join the header row: title, dot and count share
+       line 1; the time takes line 2. min-width: 0 lets items shrink. */
     .tri-card[data-ssr-state='stale'] .widget-header-right {
+      display: contents;
       min-width: 0;
-      overflow: hidden;
+    }
+    .tri-card[data-ssr-state='stale'] .widget-label {
+      margin-right: auto;
+    }
+    .tri-card[data-ssr-state='stale'] .widget-label,
+    .tri-card[data-ssr-state='stale'] .theatre-count-link {
+      white-space: nowrap;
     }
     .widget-timestamp-stale {
-      min-width: 0;
-      overflow: hidden;
+      order: 1;
+      flex-basis: 100%;
+      text-align: right;
       white-space: nowrap;
-      text-overflow: ellipsis;
     }
     .widget-noscript {
       margin: var(--space-8) 0 0;

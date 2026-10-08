@@ -1,5 +1,12 @@
 ---
+// The CSS stack a consumer loads (apps/portfolio Dashboard.astro, Storybook
+// preview): tokens, compat, animations (skeleton bars), effects, base, reset.
 import '../../../../../../../../tokens/dist/tokens.css';
+import '../../../../../../../../tokens/src/compat.css';
+import '../../../../../../../../tokens/src/animations.css';
+import '../../../../../../../../tokens/src/effects.css';
+import '../../../../../../../../tokens/src/base.css';
+import '../../../../../../../../tokens/src/reset.css';
 import '../../../../../../../src/styles/primitives.css';
 import '../../../../../../../src/styles/components.css';
 import '../../../../../../../src/styles/layout.css';
@@ -50,6 +57,10 @@ const props = propsFor(vm, variant);
     <title>{widget} {variant}</title>
   </head>
   <body style="background:#06060f;color:#fff;margin:0;padding:16px">
+    {/* Scripts-off probe: sets a marker only if page JavaScript runs. */}
+    <script is:inline>
+      document.documentElement.setAttribute('data-js', 'ran');
+    </script>
     <section data-widget={widget} data-state={variant} style={`width:${widthFor(variant)}px`}>
       <Widget {...props} />
     </section>
