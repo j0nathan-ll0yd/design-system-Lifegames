@@ -63,6 +63,11 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
 - A stale card with a missing or invalid `generatedAt` shows no label and no `data-generated-at`.
 - HeartRate renders a heart rate of 0 as `—` on server and client. Hydration's empty state shows
   the vessels with `—` and no input value.
-- StarredRepoList renders an `href` only for an https repository URL.
+- StarredRepoList, DevActivityLog and Workouts render an `href` only for an https URL, on server
+  and client.
+- A missing value carries no zone colour: HeartRate's BPM, zone badge and HRV render the
+  no-reading mark in the default colour.
+- A stale card's "as of" time wraps onto its own header line in full; the header never sets
+  `overflow: hidden`, so a focused header link's outline is never clipped.
 - The `#cardWorkouts[style*='none']` rebalance rules are removed from `layout.css`: Workouts never
   renders hidden.
