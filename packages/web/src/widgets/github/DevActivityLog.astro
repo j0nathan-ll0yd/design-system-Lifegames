@@ -1,11 +1,16 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
+import type { DevActivityLogProps } from './DevActivityLog.types';
 
 interface Event {
   type: 'commit' | 'pr_opened' | 'pr_closed' | 'pr_merged' | 'issue_opened' | 'issue_closed';
   repo: string;
   title: string;
   date: string;
+  datetime?: string;
   hash?: string;
   additions?: number;
   deletions?: number;
@@ -13,11 +18,12 @@ interface Event {
   url?: string;
 }
 
-interface Props {
-  events: Event[];
-}
+type Props = Omit<DevActivityLogProps, 'events'> & { events?: Event[] };
 
-const { events } = Astro.props;
+const { events: eventList, state: requestedState, generatedAt } = Astro.props;
+const widgetState = resolveWidgetState(requestedState, (eventList?.length ?? 0) > 0);
+const showData = rendersData(widgetState);
+const events: Event[] = showData ? (eventList ?? []) : [];
 
 const iconMap: Record<string, { symbol: string; color: string }> = {
   commit: { symbol: '\u2192', color: 'var(--lg-color-accent-green)' },
@@ -49,16 +55,33 @@ function getDetail(event: Event): string {
 }
 ---
 
-<div class="tri-card tri-card-accent-green" id="cardDevLog">
+<div
+  class={`tri-card tri-card-accent-green${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardDevLog"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.devLog.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">{widgets.devLog.timestampLive}</span>
+      <WidgetTimestamp
+        label={widgets.devLog.timestampLive}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
-    <div class="gh-dal-terminal">
+    <div class="skeleton-state">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="skeleton-bar" style="width: 100%; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 85%; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 92%; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 70%; height: 12px;"></div>
+      </div>
+    </div>
+    <WidgetStateNotice state={widgetState} empty={{ message: widgets.devLog.empty }} />
+    <div class="gh-dal-terminal" data-state-scaffold hidden={!showData}>
       {
         events.slice(0, 10).map((event: Event) => {
           const icon = getIcon(event.type);
@@ -77,7 +100,13 @@ function getDetail(event: Event): string {
               <span class="gh-dal-repo">{event.repo}</span>
               <span class="gh-dal-title">{event.title}</span>
               {detail && <span class="gh-dal-detail" set:html={detail} />}
-              <span class="gh-dal-date">{event.date}</span>
+              {event.datetime ? (
+                <time class="gh-dal-date" datetime={event.datetime}>
+                  {event.date}
+                </time>
+              ) : (
+                <span class="gh-dal-date">{event.date}</span>
+              )}
             </a>
           );
         })

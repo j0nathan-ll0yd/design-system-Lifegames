@@ -2,6 +2,9 @@
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import type {AdaptedHealth} from './adapters'
+import {pendingCopy} from './pending-copy'
+import {revealLiveData} from './updater-empty'
+import {formatMeasurement, NO_READING} from './widget-state'
 
 // Default goals — kept in sync with MovementRings.astro SSR defaults.
 const DEFAULT_MOVE_KCAL = 500
@@ -42,9 +45,10 @@ function setText(id: string, text: string): void {
 // template the SSR path uses (MovementRings.astro), so the two cannot drift.
 // Percentages are unclamped to match it: the centre readout clamps to 100%
 // because a ring cannot overdraw, but the ANNOUNCED value stays truthful at 107%.
-function ringsLabel(move: number, exercise: number, stand: number): string {
-  const pct = (fraction: number): string => String(Math.round(fraction * 100))
-  return a11y.movement.rings.replace('{calories}', pct(move)).replace('{exercise}', pct(exercise)).replace('{stand}', pct(stand))
+// A ring whose measurement the export did not carry reads "no reading".
+function ringsLabel(move: number | null, exercise: number | null, stand: number | null): string {
+  const pct = (fraction: number | null): string => (fraction == null ? pendingCopy.widgetState.noReading : Math.round(fraction * 100) + '%')
+  return a11y.movement.rings.replace('{calories}%', pct(move)).replace('{exercise}%', pct(exercise)).replace('{stand}%', pct(stand))
 }
 
 /**
@@ -61,6 +65,7 @@ export function updateMovementRings(data: AdaptedHealth): void {
   if (!card) {
     return
   }
+  revealLiveData(card)
 
   // Paused state: watch worn=false means the watch is off wrist or charging.
   // CSS controls visibility: is-paused on the card hides .mv-data and shows .mv-paused.
@@ -102,31 +107,34 @@ export function updateMovementRings(data: AdaptedHealth): void {
     daylightMin: data.goals?.daylightMin ?? DEFAULT_DAYLIGHT_MIN
   }
 
-  const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0)
-  const exerciseVal = Math.round(q.exerciseTime?.value ?? 0)
+  // A quantity the export did not carry is null — no reading, never 0.
+  const round = (v: number | undefined): number | null => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : null)
+  const moveVal = round(q.activeEnergyBurned?.value)
+  const exerciseVal = round(q.exerciseTime?.value)
 
   // Stand: prefer the achieved ring count (`standHours`, synced from
   // HKActivitySummary — the watch ring's own metric). Legacy payloads without
   // it fall back to standTime, where HealthKit ships minutes and the UI shows
   // hours (an approximation: minutes stood ≠ hours credited).
   const standRaw = q.standTime
-  const standHours = q.standHours
+  const standHours: number | null = q.standHours
     ? Math.floor(q.standHours.value)
     : standRaw
     ? standRaw.unit === 'min'
       ? Math.floor(standRaw.value / 60)
       : Math.floor(standRaw.value)
-    : 0
+    : null
 
-  const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0
-  const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0
-  const standPct = goals.standHr > 0 ? standHours / goals.standHr : 0
+  const frac = (v: number | null, goal: number): number | null => (v == null ? null : goal > 0 ? v / goal : 0)
+  const movePct = frac(moveVal, goals.moveKcal)
+  const exercisePct = frac(exerciseVal, goals.exerciseMin)
+  const standPct = frac(standHours, goals.standHr)
 
-  setRingProgress('ringMove', RING_RADII.move, movePct)
-  setRingProgress('ringExercise', RING_RADII.exercise, exercisePct)
-  setRingProgress('ringStand', RING_RADII.stand, standPct)
+  setRingProgress('ringMove', RING_RADII.move, movePct ?? 0)
+  setRingProgress('ringExercise', RING_RADII.exercise, exercisePct ?? 0)
+  setRingProgress('ringStand', RING_RADII.stand, standPct ?? 0)
 
-  setText('ringCenterPct', Math.round(Math.min(movePct, 1) * 100) + '%')
+  setText('ringCenterPct', movePct == null ? NO_READING : Math.round(Math.min(movePct, 1) * 100) + '%')
 
   // The ring group's accessible name carries the same three percentages the rings
   // draw, and it is the ONLY place a screen reader hears them. On an `output: 'static'`
@@ -139,52 +147,60 @@ export function updateMovementRings(data: AdaptedHealth): void {
   const ringsSvg = card.querySelector('.mv-rings svg[role="img"]')
   if (ringsSvg) {
     ringsSvg.setAttribute('aria-label', ringsLabel(movePct, exercisePct, standPct))
+    // The server hides the value-free rings from assistive tech; live values name them.
+    ringsSvg.removeAttribute('aria-hidden')
   }
 
   // Chips: steps · distance · flights
-  const steps = Math.round(q.stepCount?.value ?? 0)
-  const distanceKm = ((q.distanceWalkingRunning?.value ?? 0) / 1000).toFixed(1)
-  const flights = Math.round(q.flightsClimbed?.value ?? 0)
+  const steps = round(q.stepCount?.value)
+  const distanceM = q.distanceWalkingRunning?.value
+  const flights = round(q.flightsClimbed?.value)
 
   const stepsEl = card.querySelector<HTMLElement>('[data-mv-metric="steps"]')
   if (stepsEl) {
-    stepsEl.textContent = steps.toLocaleString()
+    stepsEl.textContent = formatMeasurement(steps, (n) => n.toLocaleString('en-US'))
   }
 
   const distEl = card.querySelector<HTMLElement>('[data-mv-metric="distance"]')
   if (distEl) {
     // Preserve the trailing unit span when we rewrite the value
-    distEl.innerHTML = distanceKm + '<span class="mv-chip-unit">km</span>'
+    distEl.innerHTML = formatMeasurement(distanceM, (n) => (n / 1000).toFixed(1)) + '<span class="mv-chip-unit">km</span>'
   }
 
   const flightsEl = card.querySelector<HTMLElement>('[data-mv-metric="flights"]')
   if (flightsEl) {
-    flightsEl.textContent = String(flights)
+    flightsEl.textContent = formatMeasurement(flights)
   }
 
-  // Legend totals
-  setText('legendMove', moveVal + '/' + goals.moveKcal)
-  setText('legendExercise', exerciseVal + '/' + goals.exerciseMin)
-  setText('legendStand', standHours + '/' + goals.standHr)
+  // Legend totals (goals are configuration; the measurement may be no reading)
+  setText('legendMove', formatMeasurement(moveVal) + '/' + goals.moveKcal)
+  setText('legendExercise', formatMeasurement(exerciseVal) + '/' + goals.exerciseMin)
+  setText('legendStand', formatMeasurement(standHours) + '/' + goals.standHr)
 
-  // Daylight caption — an absent timeInDaylight quantity means no daylight synced
-  // yet today, so render 0 rather than leaving the SSR fixture value on screen.
-  const daylightMin = q.timeInDaylight ? Math.round(q.timeInDaylight.value) : 0
-  setText('mvDaylightMin', String(daylightMin))
+  // Daylight caption — an absent timeInDaylight quantity is no reading, never 0.
+  const daylightMin = round(q.timeInDaylight?.value)
+  setText('mvDaylightMin', formatMeasurement(daylightMin))
   const daylightHitEl = document.getElementById('mvDaylightHit')
   if (daylightHitEl) {
-    daylightHitEl.hidden = daylightMin < goals.daylightMin
+    daylightHitEl.hidden = daylightMin == null || daylightMin < goals.daylightMin
   }
 
-  // Sun-arc footer — solar facts are server-computed; when absent (legacy payload)
-  // keep the SSR values since the client has nothing better to show.
+  // Sun-arc footer — solar facts are server-computed. When absent, nothing is
+  // invented: the times read as no reading and the sun dot is hidden.
+  const sunDot = document.getElementById('mvSunDot')
   if (data.solar) {
     setText('mvSunrise', data.solar.sunriseHHmm)
     setText('mvSunset', data.solar.sunsetHHmm)
-    const sunDot = document.getElementById('mvSunDot')
     if (sunDot) {
       const pct = Math.min(100, Math.max(0, data.solar.currentProgressPct))
       sunDot.style.left = pct + '%'
+      sunDot.style.display = ''
+    }
+  } else {
+    setText('mvSunrise', NO_READING)
+    setText('mvSunset', NO_READING)
+    if (sunDot) {
+      sunDot.style.display = 'none'
     }
   }
 

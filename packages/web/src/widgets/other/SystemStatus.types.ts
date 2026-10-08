@@ -4,9 +4,14 @@
 
 export interface SystemLine {
   key: string;
+  // HTML (rendered with set:html); composeSystemLines escapes every value.
   value: string;
   dotClass: string;
   valClass?: string;
+  // Source id ('health', 'githubEvents', ...) — composeSystemLines sets it.
+  source?: string;
+  // Full key class list; overrides the key-name colour map when present.
+  keyClass?: string;
 }
 
 export interface SystemStatusProps {

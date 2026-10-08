@@ -1,87 +1,143 @@
 {
   "type": "object",
   "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "description": "ISO-8601 `generatedAt` of the export (the OLDEST input for a multi-export card)."
+    },
     "health": {
-      "type": "object",
-      "properties": {
-        "quantities": {
+      "anyOf": [
+        {
           "type": "object",
           "properties": {
-            "heartRate": {
+            "quantities": {
               "type": "object",
               "properties": {
-                "value": {
-                  "type": "number"
+                "heartRate": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["value", "unit"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
-                "unit": {
-                  "type": "string"
-                }
-              },
-              "required": ["value", "unit"]
-            },
-            "hrvSDNN": {
-              "type": "object",
-              "properties": {
-                "value": {
-                  "type": "number"
+                "hrvSDNN": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["value", "unit"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 },
-                "unit": {
-                  "type": "string"
+                "restingHeartRate": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["value", "unit"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "respiratoryRate": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["value", "unit"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "wristTemperatureDelta": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number"
+                        },
+                        "unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["value", "unit"]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
-              },
-              "required": ["value", "unit"]
+              }
             },
-            "restingHeartRate": {
+            "watch": {
               "anyOf": [
                 {
                   "type": "object",
                   "properties": {
-                    "value": {
-                      "type": "number"
+                    "worn": {
+                      "type": "boolean"
                     },
-                    "unit": {
-                      "type": "string"
+                    "since": {
+                      "type": ["string", "null"]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": ["charging", "hrGap"]
                     }
                   },
-                  "required": ["value", "unit"]
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "respiratoryRate": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "value": {
-                      "type": "number"
-                    },
-                    "unit": {
-                      "type": "string"
-                    }
-                  },
-                  "required": ["value", "unit"]
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "wristTemperatureDelta": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "value": {
-                      "type": "number"
-                    },
-                    "unit": {
-                      "type": "string"
-                    }
-                  },
-                  "required": ["value", "unit"]
+                  "required": ["source", "worn"]
                 },
                 {
                   "type": "null"
@@ -89,14 +145,14 @@
               ]
             }
           },
-          "required": ["heartRate", "hrvSDNN"]
+          "required": ["quantities"]
         },
-        "watch": {}
-      },
-      "required": ["quantities"]
+        {
+          "type": "null"
+        }
+      ]
     }
   },
-  "required": ["health"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/heart-rate.json",
   "title": "HeartRateProps"

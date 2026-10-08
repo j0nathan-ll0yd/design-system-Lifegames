@@ -6,7 +6,8 @@
     "stars": 53920,
     "language": "JavaScript",
     "languageColor": "#f1e05a",
-    "starredAt": "2 days ago"
+    "starredAt": "2 days ago",
+    "datetime": "2026-03-16T12:00:00.000Z"
   },
   {
     "owner": "memvid",
@@ -15,7 +16,8 @@
     "stars": 465,
     "language": "TypeScript",
     "languageColor": "#3178c6",
-    "starredAt": "5 days ago"
+    "starredAt": "5 days ago",
+    "datetime": "2026-03-13T12:00:00.000Z"
   },
   {
     "owner": "alienplatform",
@@ -24,7 +26,8 @@
     "stars": 151,
     "language": "Shell",
     "languageColor": "#89e051",
-    "starredAt": "1 week ago"
+    "starredAt": "1 week ago",
+    "datetime": "2026-03-09T12:00:00.000Z"
   },
   {
     "owner": "macOS26",
@@ -33,7 +36,8 @@
     "stars": 380,
     "language": "HTML",
     "languageColor": "#e34c26",
-    "starredAt": "2 weeks ago"
+    "starredAt": "2 weeks ago",
+    "datetime": "2026-03-02T12:00:00.000Z"
   },
   {
     "owner": "modelcontextprotocol",
@@ -42,6 +46,7 @@
     "stars": 13228,
     "language": "TypeScript",
     "languageColor": "#3178c6",
-    "starredAt": "3 weeks ago"
+    "starredAt": "3 weeks ago",
+    "datetime": "2026-02-23T12:00:00.000Z"
   }
 ]

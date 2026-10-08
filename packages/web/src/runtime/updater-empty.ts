@@ -39,3 +39,24 @@ export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): voi
   }
   card.classList.remove('is-loading')
 }
+
+/**
+ * Reveal a widget's live data after a server-rendered non-data state
+ * (atlas decision 0160). The server renders `unavailable` and `suppressed`
+ * with the value-free scaffold hidden (`[data-state-scaffold][hidden]`) and a
+ * `[data-state-notice]` notice. An updater that writes live values into that
+ * scaffold calls this first: it removes the notices, un-hides the scaffold and
+ * records the card as live. A no-op for a card already showing data.
+ */
+export function revealLiveData(card: Element | null): void {
+  if (!card) {
+    return
+  }
+  card.querySelectorAll('[data-state-notice]').forEach((n) => n.remove())
+  card.querySelectorAll<HTMLElement>('[data-state-scaffold]').forEach((s) => {
+    s.hidden = false
+  })
+  if (card instanceof HTMLElement && card.dataset.ssrState !== undefined) {
+    card.dataset.ssrState = 'live'
+  }
+}

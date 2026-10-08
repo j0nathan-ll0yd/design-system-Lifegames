@@ -1,62 +1,98 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import {
+  formatMeasurement,
+  isScaffoldHidden,
+  NO_READING,
+  rendersData,
+  resolveWidgetState,
+  stateRootAttrs,
+} from '../../runtime/widget-state';
+import type { NightSummaryProps } from './NightSummary.types';
 
-const { health } = Astro.props;
-const sleepScore = health.sleepScore;
-const sleepDuration = health.sleepDurationFormatted;
-const phases = health.sleepPhaseFormatted;
-const derived = health.derived;
+const { health, state: requestedState, generatedAt } = Astro.props as NightSummaryProps;
+
+// Zero recorded sleep is the empty state (never "0h 0m" and a score of 0).
+const noSleep =
+  health != null && (health.isEmpty === true || health.sleepDurationFormatted.trim() === '');
+const widgetState = resolveWidgetState(requestedState, health != null && !noSleep);
+const showData = rendersData(widgetState);
+const scaffoldHidden = isScaffoldHidden(widgetState);
+const isEmpty = widgetState === 'empty';
+
+const sleepScore = showData ? (health?.sleepScore ?? null) : null;
+const sleepDuration = showData ? (health?.sleepDurationFormatted ?? '') : '';
+const phases = showData ? health?.sleepPhaseFormatted : undefined;
+const deepPct = showData ? (health?.derived.deepPct ?? null) : null;
+const remPct = showData ? (health?.derived.remPct ?? null) : null;
+
+// The empty state mirrors updateNightSummary's empty branch ('--' marks and the
+// copy's empty line), so server and client render the same markup.
+const EMPTY_MARK = '--';
+const scoreText = isEmpty ? EMPTY_MARK : showData ? formatMeasurement(sleepScore) : '';
+const scoreWidth = sleepScore != null ? Math.min(Math.max(sleepScore, 0), 100) : 0;
+const durationText = isEmpty ? EMPTY_MARK : sleepDuration;
+const phaseText = (phase: 'deep' | 'rem' | 'core' | 'awake'): string =>
+  isEmpty ? EMPTY_MARK : showData ? phases?.[phase] || NO_READING : '';
 
 // Restorative-sleep caption (D2-A): source the ICU template from copy and
 // interpolate the deep/REM percentages. The template is em-dash separated:
 // "{deep}% deep — {rem}% REM — restorative sleep". We split on the em-dash so
 // the web keeps its <span>-wrapped (purple-highlighted) percentage clauses.
+// Without both percentages there is no caption: nothing is invented.
 const restorativeClauses = widgets.nightSummary.restorative
   .split('—')
   .map((clause) => clause.trim());
-const restorativeDeepClause = (restorativeClauses[0] ?? '').replace(
-  '{deep}',
-  String(derived.deepPct),
-);
-const restorativeRemClause = (restorativeClauses[1] ?? '').replace('{rem}', String(derived.remPct));
+const hasCaption = showData && deepPct != null && remPct != null;
+const restorativeDeepClause = (restorativeClauses[0] ?? '').replace('{deep}', String(deepPct));
+const restorativeRemClause = (restorativeClauses[1] ?? '').replace('{rem}', String(remPct));
 const restorativeTailClause = restorativeClauses[2] ?? '';
 
 const pills = [
   {
     label: widgets.nightSummary.phaseDeep,
     phase: 'deep',
-    formatted: phases.deep,
+    formatted: phaseText('deep'),
     color: 'var(--lg-color-sleep-deep)',
   },
   {
     label: widgets.nightSummary.phaseRem,
     phase: 'rem',
-    formatted: phases.rem,
+    formatted: phaseText('rem'),
     color: 'var(--lg-color-sleep-rem)',
   },
   {
     label: widgets.nightSummary.phaseCore,
     phase: 'core',
-    formatted: phases.core,
+    formatted: phaseText('core'),
     color: 'var(--lg-color-sleep-core)',
   },
   {
     label: widgets.nightSummary.phaseAwake,
     phase: 'awake',
-    formatted: phases.awake,
+    formatted: phaseText('awake'),
     color: 'var(--lg-color-accent-amber)',
   },
 ];
 ---
 
-<div class="tri-card tri-card-accent-purple" id="cardSleep">
+<div
+  class={`tri-card tri-card-accent-purple${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardSleep"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.nightSummary.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-purple"></div>
-      <span class="widget-timestamp" id="sleepTimestamp"
-        >{widgets.nightSummary.timestampLastNight}</span
-      >
+      <WidgetTimestamp
+        id="sleepTimestamp"
+        label={widgets.nightSummary.timestampLastNight}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
@@ -73,7 +109,8 @@ const pills = [
         </div>
       </div>
     </div>
-    <div class="sleep-moon-top">
+    <WidgetStateNotice state={widgetState} />
+    <div class="sleep-moon-top" data-state-scaffold hidden={scaffoldHidden}>
       <div class="sleep-moon-wrap">
         <svg width="70" height="70" viewBox="0 0 80 80">
           <defs>
@@ -110,18 +147,18 @@ const pills = [
         </svg>
       </div>
       <div class="sleep-moon-info">
-        <div class="sleep-moon-hero" id="sleepDuration">{sleepDuration}</div>
+        <div class="sleep-moon-hero" id="sleepDuration">{durationText}</div>
         <div class="sleep-moon-score-row">
           <span class="sleep-moon-score-label">{widgets.nightSummary.score}</span>
           <div class="sleep-moon-score-track">
-            <div class="sleep-moon-score-fill" id="sleepScoreFill" style={`width: ${sleepScore}%`}>
+            <div class="sleep-moon-score-fill" id="sleepScoreFill" style={`width: ${scoreWidth}%`}>
             </div>
           </div>
-          <span class="sleep-moon-score-val" id="sleepScoreVal">{sleepScore}</span>
+          <span class="sleep-moon-score-val" id="sleepScoreVal">{scoreText}</span>
         </div>
       </div>
     </div>
-    <div class="sleep-moon-pills">
+    <div class="sleep-moon-pills" data-state-scaffold hidden={scaffoldHidden}>
       {
         pills.map((p, i) => (
           <div
@@ -137,9 +174,16 @@ const pills = [
         ))
       }
     </div>
-    <div class="sleep-moon-insight" id="sleepInsight">
-      <span>{restorativeDeepClause}</span> &mdash; <span>{restorativeRemClause}</span> &mdash; {
-        restorativeTailClause
+    <div class="sleep-moon-insight" id="sleepInsight" data-state-scaffold hidden={scaffoldHidden}>
+      {
+        isEmpty ? (
+          <span class="sleep-insight-empty">{widgets.nightSummary.empty}</span>
+        ) : hasCaption ? (
+          <>
+            <span>{restorativeDeepClause}</span> &mdash; <span>{restorativeRemClause}</span> &mdash;{' '}
+            {restorativeTailClause}
+          </>
+        ) : null
       }
     </div>
   </div>

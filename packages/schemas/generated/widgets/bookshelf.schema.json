@@ -1,206 +1,241 @@
 {
   "type": "object",
   "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "description": "ISO-8601 `generatedAt` of the export (the OLDEST input for a multi-export card)."
+    },
     "books": {
-      "type": "object",
-      "properties": {
-        "books": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "asin": {
-                "type": "string"
-              },
-              "isbn": {
-                "anyOf": [
-                  {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "books": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "asin": {
                     "type": "string"
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "title": {
-                "type": "string"
-              },
-              "author": {
-                "type": "string"
-              },
-              "status": {
-                "type": "string"
-              },
-              "rating": {
-                "anyOf": [
-                  {
-                    "type": "number"
+                  "isbn": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "progress": {
-                "anyOf": [
-                  {
-                    "type": "number"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "notes": {
-                "anyOf": [
-                  {
+                  "title": {
                     "type": "string"
                   },
-                  {
-                    "type": "null"
+                  "author": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "rating": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "progress": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "notes": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mainImage": {
+                    "type": ["string", "null"]
+                  },
+                  "mainImageThumb": {
+                    "type": ["string", "null"]
+                  },
+                  "mainImageCard": {
+                    "type": ["string", "null"]
+                  },
+                  "mainImageAvif": {
+                    "type": ["string", "null"]
+                  },
+                  "mainImageThumbAvif": {
+                    "type": ["string", "null"]
+                  },
+                  "mainImageCardAvif": {
+                    "type": ["string", "null"]
+                  },
+                  "finishedAt": {
+                    "type": ["string", "null"]
+                  },
+                  "startedAt": {
+                    "type": ["string", "null"]
                   }
-                ]
-              },
-              "mainImage": {
-                "type": ["string", "null"]
-              },
-              "mainImageThumb": {
-                "type": ["string", "null"]
-              },
-              "mainImageCard": {
-                "type": ["string", "null"]
-              },
-              "mainImageAvif": {
-                "type": ["string", "null"]
-              },
-              "mainImageThumbAvif": {
-                "type": ["string", "null"]
-              },
-              "mainImageCardAvif": {
-                "type": ["string", "null"]
-              },
-              "finishedAt": {
-                "type": ["string", "null"]
-              },
-              "startedAt": {
-                "type": ["string", "null"]
+                },
+                "required": ["asin", "title", "author", "status"]
               }
             },
-            "required": ["asin", "title", "author", "status"]
-          }
-        },
-        "bookMeta": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "object",
-            "properties": {
-              "seriesName": {
-                "anyOf": [
-                  {
-                    "type": "string"
+            "bookMeta": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "seriesName": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "seriesNumber": {
-                "anyOf": [
-                  {
-                    "type": "number"
+                  "seriesNumber": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "seriesTotal": {
-                "anyOf": [
-                  {
-                    "type": "number"
+                  "seriesTotal": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "pages": {
-                "anyOf": [
-                  {
-                    "type": "number"
+                  "pages": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "year": {
-                "anyOf": [
-                  {
-                    "type": "number"
+                  "year": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "publicationDate": {
-                "anyOf": [
-                  {
-                    "type": "string"
+                  "publicationDate": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "desc": {
-                "anyOf": [
-                  {
-                    "type": "string"
+                  "desc": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
-                  }
-                ]
-              },
-              "genres": {
-                "anyOf": [
-                  {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                  "genres": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   },
-                  {
-                    "type": "null"
+                  "cover": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
-                ]
-              },
-              "cover": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
+                }
+              }
+            },
+            "statusLabels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
               }
             }
-          }
+          },
+          "required": ["books", "bookMeta", "statusLabels"]
         },
-        "statusLabels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+        {
+          "type": "null"
         }
-      },
-      "required": ["books", "bookMeta", "statusLabels"]
+      ]
+    },
+    "localCovers": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Same-origin cover paths (`/images/...`) the consumer has mirrored into its static root, built at the consumer's build time. A contract cover URL whose path is listed renders from the same origin; any other cover renders from the contract URL with the W6 image fallback. The widget never reads the filesystem, so it renders on any server runtime (atlas decision 0160)."
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
-  "required": ["books"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/bookshelf.json",
   "title": "BookshelfProps"

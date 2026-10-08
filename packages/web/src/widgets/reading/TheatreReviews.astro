@@ -1,8 +1,30 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import { theatreCardsHtml, theatreCountLabel } from '../../runtime/updaters-theatre';
+import { rendersData, resolveWidgetState, stateRootAttrs } from '../../runtime/widget-state';
+import type { TheatreReviewsProps } from './TheatreReviews.types';
+
+// Cards render from props on the server, through the same markup function the
+// live update uses (atlas decision 0160, D5).
+const {
+  reviews: reviewList,
+  totalReviews,
+  state: requestedState,
+  generatedAt,
+} = Astro.props as TheatreReviewsProps;
+const widgetState = resolveWidgetState(requestedState, (reviewList?.length ?? 0) > 0);
+const showData = rendersData(widgetState);
+const cardsHtml = showData ? theatreCardsHtml(reviewList ?? []) : '';
+const countLabel =
+  showData && typeof totalReviews === 'number' ? theatreCountLabel(totalReviews) : 'reviews';
 ---
 
-<div class="tri-card tri-card-accent-yellow" id="cardTheatreReviews">
+<div
+  class={`tri-card tri-card-accent-yellow${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardTheatreReviews"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.theatreReviews.title}</h3>
     <div class="widget-header-right">
@@ -12,7 +34,7 @@ import { widgets } from '@j0nathan-ll0yd/copy';
         id="theatreCount"
         href="https://www.coasttocoastreviews.com"
         target="_blank"
-        rel="noopener noreferrer">reviews</a
+        rel="noopener noreferrer">{countLabel}</a
       >
     </div>
   </div>
@@ -36,7 +58,14 @@ import { widgets } from '@j0nathan-ll0yd/copy';
         </div>
       </div>
     </div>
-    <div id="theatreRow" class="theatre-row"></div>
+    <WidgetStateNotice state={widgetState} empty={{ message: widgets.theatreReviews.empty }} />
+    <div
+      id="theatreRow"
+      class="theatre-row"
+      data-state-scaffold
+      hidden={!showData}
+      set:html={cardsHtml}
+    />
   </div>
 </div>
 
@@ -143,3 +172,12 @@ import { widgets } from '@j0nathan-ll0yd/copy';
     transition: color 0.2s ease;
   }
 </style>
+
+<script>
+  // Server-rendered posters carry `data-fallback`; bind the W6 fallback at
+  // load time. Fallback wiring only (no carousel handlers), bundled and
+  // idempotent, mirroring Bookshelf.
+  import { initImageFallbacks } from '../../runtime/image-utils';
+
+  initImageFallbacks();
+</script>

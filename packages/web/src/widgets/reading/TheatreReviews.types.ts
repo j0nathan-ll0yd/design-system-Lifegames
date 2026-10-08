@@ -2,6 +2,8 @@
 // Fixture validation lives at @j0nathan-ll0yd/schemas (consumer-aggregate shapes).
 // Per-widget DS schemas are a deferred follow-up plan.
 
+import type { WidgetStateProps } from '../../runtime/widget-state';
+
 export interface TheatreReview {
   title: string;
   slug: string;
@@ -19,7 +21,8 @@ export interface TheatreReview {
   imageHeight: number | null;
 }
 
-export interface TheatreReviewsProps {
-  reviews: TheatreReview[];
-  totalReviews: number;
+export interface TheatreReviewsProps extends WidgetStateProps {
+  // Absent in the non-data states (unavailable, suppressed, loading).
+  reviews?: TheatreReview[];
+  totalReviews?: number;
 }

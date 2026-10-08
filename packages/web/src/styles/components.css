@@ -241,6 +241,36 @@
       font-size: var(--font-size-sm);
     }
 
+    /* Honest non-data states (atlas decision 0160). The notice reuses the
+       empty placeholder; the live dot stops pulsing because nothing is live. */
+    .widget-state-notice {
+      font-style: normal;
+      letter-spacing: 0.5px;
+    }
+    .tri-card[data-ssr-state='unavailable'] .live-dot,
+    .tri-card[data-ssr-state='suppressed'] .live-dot,
+    .tri-card[data-ssr-state='stale'] .live-dot {
+      animation: none;
+      box-shadow: none;
+      opacity: 0.35;
+    }
+    /* A widget's value-free scaffold, hidden behind an unavailable or
+       suppressed notice. !important beats each scaffold's own display rule. */
+    .tri-card [data-state-scaffold][hidden] {
+      display: none !important;
+    }
+    .widget-noscript {
+      margin: var(--space-8) 0 0;
+      color: var(--text-muted);
+      font-size: var(--font-size-sm);
+      text-align: center;
+    }
+    /* The <noscript> note must show over the loading skeleton overlay. */
+    .tri-card.is-loading .widget-body > noscript {
+      position: relative;
+      z-index: calc(var(--lg-z-raised) + 1);
+    }
+
     /* ===== 1. IDENTITY CARD ===== */
     .identity-card {
       background: var(--glass-bg);

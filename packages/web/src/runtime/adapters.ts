@@ -29,16 +29,24 @@ export interface HealthQuantity {
 // depending directly on the exports layer.
 export type { HealthExportWatch as WatchState }
 
+// Measured versus missing (atlas decision 0160, H03). Every measurement an
+// adapter derives is `number | null`: `null` means the export did not carry the
+// measurement, `0` means the export carried a zero. A quantity the export did
+// not carry is ABSENT from `quantities`; no adapter inserts a default. Goals,
+// ranges and maxima are configuration, never a stand-in for a measurement.
 export interface AdaptedHealth {
   date: string
   quantities: Record<string, HealthQuantity>
-  derived: {totalCalories: number; deepPct: number; remPct: number; corePct: number}
-  sleepScore: number
+  // totalCalories is null unless BOTH energy inputs exist; the sleep
+  // percentages are null when no sleep export was supplied.
+  derived: {totalCalories: number | null; deepPct: number | null; remPct: number | null; corePct: number | null}
+  sleepScore: number | null
+  // '' when no sleep export was supplied.
   sleepDurationFormatted: string
   sleepPhaseFormatted: Record<string, string>
   hydration: {
-    waterOz: number
-    caffeineMg: number
+    waterOz: number | null
+    caffeineMg: number | null
     waterMax: number
     caffeineMax: number
     waterRangeLo: number
@@ -60,7 +68,7 @@ export interface AdaptedHealth {
 export interface AdaptedSleep {
   isEmpty: boolean
   date: string
-  sleepScore: number
+  sleepScore: number | null
   sleepDurationFormatted: string
   sleepPhaseFormatted: Record<string, string>
   derived: {deepPct: number; remPct: number; corePct: number}
@@ -80,7 +88,10 @@ export interface AdaptedGithubEvent {
   type: string
   repo: string
   title: string
+  // Relative label ("2h ago") computed against `now`; `datetime` keeps the
+  // export's ISO timestamp for <time datetime> (atlas decision 0160).
   date: string
+  datetime?: string
   number?: number
   hash?: string
   additions?: number
@@ -92,7 +103,9 @@ export interface AdaptedArticle {
   title: string
   url: string
   source: string
+  // Relative label computed against `now`; `datetime` is the ISO `savedAt`.
   date: string
+  datetime?: string
   hasNotes: boolean
   noteText: string | null
 }
@@ -144,7 +157,9 @@ export interface AdaptedStarredRepo {
   stars: number
   language: string
   languageColor: string
+  // Relative label computed against `now`; `datetime` is the ISO `starredAt`.
   starredAt: string
+  datetime?: string
 }
 
 // ── Adapter functions ──────────────────────────────────────────────
@@ -158,23 +173,20 @@ export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | n
     delete q.heartRateVariabilitySDNN
   }
 
-  // 2. Default exerciseTime if missing
-  if (!q.exerciseTime) {
-    q.exerciseTime = {value: 0, unit: 'min'}
-  }
+  // 2. exerciseTime stays absent when the export omits it (no 0 default).
 
-  // 3. Convert dietaryWater mL → oz
-  const waterMl: number = q.dietaryWater?.value ?? 0
-  const waterOz = Math.round(waterMl / 29.5735)
+  // 3. Convert dietaryWater mL → oz (null when not measured)
+  const waterMl = q.dietaryWater?.value
+  const waterOz = typeof waterMl === 'number' ? Math.round(waterMl / 29.5735) : null
 
-  // 4. Convert dietaryCaffeine grams → mg
-  const caffeineG: number = q.dietaryCaffeine?.value ?? 0
-  const caffeineMg = Math.round(caffeineG * 1000)
+  // 4. Convert dietaryCaffeine grams → mg (null when not measured)
+  const caffeineG = q.dietaryCaffeine?.value
+  const caffeineMg = typeof caffeineG === 'number' ? Math.round(caffeineG * 1000) : null
 
-  // 5. Compute totalCalories
-  const activeEnergy: number = q.activeEnergyBurned?.value ?? 0
-  const basalEnergy: number = q.basalEnergyBurned?.value ?? 0
-  const totalCalories = Math.round(activeEnergy + basalEnergy)
+  // 5. Compute totalCalories: a sum is a measurement only when both inputs are.
+  const activeEnergy = q.activeEnergyBurned?.value
+  const basalEnergy = q.basalEnergyBurned?.value
+  const totalCalories = typeof activeEnergy === 'number' && typeof basalEnergy === 'number' ? Math.round(activeEnergy + basalEnergy) : null
 
   // 6. Build hydration object
   const hydration = {
@@ -189,12 +201,12 @@ export function adaptHealth(healthData: HealthExport, sleepData: SleepExport | n
   }
 
   // 7. Sleep fields
-  let sleepScore = q.sleepScore?.value ?? 0
+  const sleepScore = q.sleepScore?.value ?? null
   let sleepDurationFormatted = ''
   let sleepPhaseFormatted: Record<string, string> = {}
-  let deepPct = 0
-  let remPct = 0
-  let corePct = 0
+  let deepPct: number | null = null
+  let remPct: number | null = null
+  let corePct: number | null = null
 
   if (sleepData) {
     const rem = sleepData.rem as {seconds: number} | undefined
@@ -242,7 +254,7 @@ export function adaptSleep(sleepData: SleepExport, healthData: HealthExport | nu
   return {
     isEmpty,
     date: sleepData.date,
-    sleepScore: healthData?.quantities?.sleepScore?.value ?? 0,
+    sleepScore: healthData?.quantities?.sleepScore?.value ?? null,
     sleepDurationFormatted: formatDuration(totalSleepSeconds),
     sleepPhaseFormatted: {deep: formatPhase(phases.deep), rem: formatPhase(phases.rem), core: formatPhase(phases.core), awake: formatPhase(phases.awake)},
     derived: {deepPct: pcts.deepPct, remPct: pcts.remPct, corePct: pcts.corePct},
@@ -305,7 +317,7 @@ export function adaptGithubEvents(data: GithubEventsExport | null, now?: number)
       url = 'https://github.com/' + fullRepo + '/issues/' + e.number
     }
 
-    return {...e, date, repo, url}
+    return {...e, date, datetime: e.date && e.date.includes('T') ? e.date : undefined, repo, url}
   })
 }
 
@@ -387,7 +399,8 @@ export function adaptStarredRepos(data: GithubStarredReposExport, now?: number):
       stars: r.stargazersCount,
       language: lang,
       languageColor: LANG_COLORS[lang] || '#8b949e',
-      starredAt
+      starredAt,
+      datetime: r.starredAt
     }
   })
 }
@@ -419,6 +432,6 @@ export function adaptArticles(data: ArticlesExport | null, now?: number): Adapte
     const hasNotes = Array.isArray(a.notes) && a.notes.length > 0
     const noteText = hasNotes ? a.notes.map((n) => n.comment).join('\n') : null
 
-    return {title: a.articleTitle, url: a.articleUrl, source: a.sourceTitle || '', date, hasNotes, noteText}
+    return {title: a.articleTitle, url: a.articleUrl, source: a.sourceTitle || '', date, datetime: a.savedAt, hasNotes, noteText}
   })
 }

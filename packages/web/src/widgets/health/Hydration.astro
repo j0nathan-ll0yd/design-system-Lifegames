@@ -1,25 +1,66 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { HYDRATION } from '../../runtime/constants';
+import {
+  formatMeasurement,
+  isScaffoldHidden,
+  rendersData,
+  resolveWidgetState,
+  stateRootAttrs,
+} from '../../runtime/widget-state';
+import type { HydrationProps } from './Hydration.types';
 
-const { health } = Astro.props;
-const hydration = health.hydration;
-const waterPct = Math.min(hydration.waterOz / hydration.waterMax, 1) * 100;
-const caffeinePct = Math.min((hydration.caffeineMg ?? 0) / (hydration.caffeineMax ?? 500), 1) * 100;
-const waterRangeLo = hydration.waterRangeLo;
-const waterRangeHi = hydration.waterRangeHi;
-const waterMax = hydration.waterMax;
-const caffeineRangeLo = hydration.caffeineRangeLo ?? 200;
-const caffeineRangeHi = hydration.caffeineRangeHi ?? 400;
-const caffeineMax = hydration.caffeineMax ?? 500;
-const caffeineMg = hydration.caffeineMg ?? 0;
+const { health, state: requestedState, generatedAt } = Astro.props as HydrationProps;
+const widgetState = resolveWidgetState(requestedState, health?.hydration != null);
+// Hydration has no separate empty layout: with no measurement it renders the
+// vessels and the no-reading mark for each value.
+const showData = rendersData(widgetState) || widgetState === 'empty';
+const scaffoldHidden = isScaffoldHidden(widgetState);
+const hydration = showData ? health?.hydration : undefined;
+
+// Scale configuration (ranges and maxima) is not a measurement; it falls back
+// to the design-system constants. Measurements never fall back to a number.
+const waterMax = hydration?.waterMax ?? HYDRATION.waterMax;
+const waterRangeLo = hydration?.waterRangeLo ?? HYDRATION.waterRangeLo;
+const waterRangeHi = hydration?.waterRangeHi ?? HYDRATION.waterRangeHi;
+const caffeineMax = hydration?.caffeineMax ?? HYDRATION.caffeineMax;
+const caffeineRangeLo = hydration?.caffeineRangeLo ?? HYDRATION.caffeineRangeLo;
+const caffeineRangeHi = hydration?.caffeineRangeHi ?? HYDRATION.caffeineRangeHi;
+const waterOz = hydration?.waterOz ?? null;
+const caffeineMg = hydration?.caffeineMg ?? null;
+
+const fillPct = (value: number | null, max: number): number =>
+  value != null && max > 0 ? Math.min(Math.max(value / max, 0), 1) * 100 : 0;
+const waterPct = fillPct(waterOz, waterMax);
+const caffeinePct = fillPct(caffeineMg, caffeineMax);
+const clip = (pct: number): string => `clip-path: inset(${100 - pct}% 0 0 0)`;
+const range = (lo: number, hi: number, max: number) => ({
+  style: `bottom: ${(lo / max) * 100}%; height: ${((hi - lo) / max) * 100}%`,
+  lo: String(lo),
+  hi: String(hi),
+});
+const waterRange = range(waterRangeLo, waterRangeHi, waterMax);
+const caffeineRange = range(caffeineRangeLo, caffeineRangeHi, caffeineMax);
+const waterText = showData ? formatMeasurement(waterOz, (n) => `${n} oz`) : '';
+const caffeineText = showData ? formatMeasurement(caffeineMg, (n) => `${n} mg`) : '';
 ---
 
-<div class="tri-card tri-card-accent-pink is-loading" id="cardHydration">
+<div
+  class={`tri-card tri-card-accent-pink${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardHydration"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.hydration.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-pink"></div>
-      <span class="widget-timestamp">{widgets.hydration.timestampToday}</span>
+      <WidgetTimestamp
+        label={widgets.hydration.timestampToday}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
@@ -40,12 +81,29 @@ const caffeineMg = hydration.caffeineMg ?? 0;
         </div>
       </div>
     </div>
-    <div class="hydra-layout">
+    <WidgetStateNotice state={widgetState} />
+    <div class="hydra-layout" data-state-scaffold hidden={scaffoldHidden}>
       <div class="hydra-vessel hydra-vessel-water">
         <div class="hydra-bottle">
           <div class="hydra-bottle-cap"></div>
           <div class="hydra-bottle-body">
-            <div class="hydra-liquid hydra-liquid-water hydra-v3-liquid" id="hydraWaterLiq">
+            {
+              showData && (
+                <div class="hydra-range hydra-range-water" style={waterRange.style}>
+                  <div class="hydra-range-label hydra-range-label-top hydra-range-label-water">
+                    {waterRange.hi}
+                  </div>
+                  <div class="hydra-range-label hydra-range-label-bottom hydra-range-label-water">
+                    {waterRange.lo}
+                  </div>
+                </div>
+              )
+            }
+            <div
+              class="hydra-liquid hydra-liquid-water hydra-v3-liquid"
+              id="hydraWaterLiq"
+              style={clip(waterPct)}
+            >
               <div class="hydra-v3-gloss"></div>
               <div class="hydra-v3-bubbles">
                 <div class="hydra-v3-bubble" style="left:20%;animation-delay:0s;"></div>
@@ -63,7 +121,7 @@ const caffeineMg = hydration.caffeineMg ?? 0;
             </div>
           </div>
         </div>
-        <div class="hydra-val" id="hydraWaterVal">0</div>
+        <div class="hydra-val" id="hydraWaterVal">{waterText}</div>
         <div class="hydra-label">{widgets.hydration.water}</div>
       </div>
       <div class="hydra-divider"></div>
@@ -75,7 +133,23 @@ const caffeineMg = hydration.caffeineMg ?? 0;
             <div class="hydra-steam-line"></div>
           </div>
           <div class="hydra-mug-body">
-            <div class="hydra-liquid hydra-liquid-coffee hydra-v3-liquid" id="hydraCoffeeLiq">
+            {
+              showData && (
+                <div class="hydra-range hydra-range-coffee" style={caffeineRange.style}>
+                  <div class="hydra-range-label hydra-range-label-top hydra-range-label-coffee">
+                    {caffeineRange.hi}
+                  </div>
+                  <div class="hydra-range-label hydra-range-label-bottom hydra-range-label-coffee">
+                    {caffeineRange.lo}
+                  </div>
+                </div>
+              )
+            }
+            <div
+              class="hydra-liquid hydra-liquid-coffee hydra-v3-liquid"
+              id="hydraCoffeeLiq"
+              style={clip(caffeinePct)}
+            >
               <div class="hydra-v3-gloss"></div>
               <div class="hydra-v3-bubbles">
                 <div class="hydra-v3-bubble" style="left:25%;animation-delay:0.3s;"></div>
@@ -94,7 +168,7 @@ const caffeineMg = hydration.caffeineMg ?? 0;
           </div>
           <div class="hydra-mug-handle"></div>
         </div>
-        <div class="hydra-val" id="hydraCoffeeVal">0</div>
+        <div class="hydra-val" id="hydraCoffeeVal">{caffeineText}</div>
         <div class="hydra-label" id="hydraCoffeeLabel">{widgets.hydration.caffeine}</div>
       </div>
     </div>

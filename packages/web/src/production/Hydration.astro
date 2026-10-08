@@ -12,14 +12,25 @@
 // CSP `script-src 'self'` rejects inline script bodies in production, so the
 // old bridge silently failed and the widget stayed in its SSR skeleton
 // forever.
+//
+// Atlas decision 0160: the widget now renders its values in server markup, and
+// the carrier holds ONLY the hydration fields, and only in the data states
+// (live, stale). In unavailable, suppressed, empty and loading it is absent,
+// so no gated or unrelated health field can reach the HTML through it.
 import Hydration from '../widgets/health/Hydration.astro';
 import type { HydrationProps } from '../widgets/health/Hydration.types';
+import { rendersData, resolveWidgetState } from '../runtime/widget-state';
 
 const props = Astro.props as HydrationProps;
+const state = resolveWidgetState(props.state, props.health?.hydration != null);
+const carrier: HydrationProps | null =
+  rendersData(state) && props.health
+    ? { state, health: { hydration: { ...props.health.hydration } } }
+    : null;
 ---
 
 <Hydration {...props} />
-<div id="cardHydrationData" data-hydration-fixture={JSON.stringify(props)} hidden></div>
+{carrier && <div id="cardHydrationData" data-hydration-fixture={JSON.stringify(carrier)} hidden />}
 <script>
   import { initHydration } from '../runtime/hydration-init';
   const target = document.getElementById('cardHydration');

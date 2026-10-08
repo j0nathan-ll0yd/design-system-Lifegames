@@ -18,6 +18,11 @@ const PKG_ROOT = resolve(__dirname, '..')
 const REPO_ROOT = resolve(PKG_ROOT, '../..')
 const WEB_WIDGETS = join(REPO_ROOT, 'packages/web/src/widgets')
 const OUT_DIR = join(PKG_ROOT, 'generated/widgets')
+// Widget types compile under the web package's own tsconfig (bundler
+// resolution), the one they are written for. Under this package's NodeNext
+// config their extensionless relative imports never resolved: an imported
+// property type silently became `{}` and an imported base interface crashed.
+const WIDGET_TSCONFIG = join(REPO_ROOT, 'packages/web/tsconfig.json')
 
 mkdirSync(OUT_DIR, {recursive: true})
 
@@ -99,6 +104,14 @@ function makeOptionalsNullable(schema) {
 
 const CATEGORIES = ['github', 'health', 'identity', 'location', 'other', 'reading']
 
+// The optional render-state inputs every live widget accepts (atlas decision
+// 0160; packages/web/src/runtime/widget-state.ts WidgetStateProps). Generated
+// schemas get them from the TS Props; the hand-written schemas below spread them.
+const WIDGET_STATE_PROPERTIES = {
+  state: {anyOf: [{type: 'string', enum: ['live', 'stale', 'empty', 'unavailable', 'suppressed', 'loading']}, {type: 'null'}]},
+  generatedAt: {anyOf: [{type: 'string'}, {type: 'null'}]}
+}
+
 const MANUAL_SCHEMAS = {
   'movement-rings': {
     $schema: 'http://json-schema.org/draft-07/schema#',
@@ -106,6 +119,7 @@ const MANUAL_SCHEMAS = {
     title: 'MovementRingsProps',
     type: 'object',
     properties: {
+      ...WIDGET_STATE_PROPERTIES,
       health: {
         type: 'object',
         properties: {
@@ -171,6 +185,7 @@ const MANUAL_SCHEMAS = {
     title: 'DevActivityLogProps',
     type: 'object',
     properties: {
+      ...WIDGET_STATE_PROPERTIES,
       events: {
         type: 'array',
         items: {
@@ -180,6 +195,7 @@ const MANUAL_SCHEMAS = {
             repo: {type: 'string'},
             title: {type: 'string'},
             date: {type: 'string'},
+            datetime: {type: 'string'},
             hash: {type: 'string'},
             additions: {type: 'number'},
             deletions: {type: 'number'},
@@ -188,8 +204,9 @@ const MANUAL_SCHEMAS = {
           required: ['type', 'repo', 'title', 'date']
         }
       }
-    },
-    required: ['events']
+    }
+    // No top-level `required`: `events` is absent in the non-data states
+    // (unavailable, suppressed, loading).
   },
   'dev-activity-timeline': {
     $schema: 'http://json-schema.org/draft-07/schema#',
@@ -270,7 +287,9 @@ const MANUAL_SCHEMAS = {
   }
 }
 
-const EMPTY_WIDGETS = ['dnd-overlay', 'focus-overlay', 'book-modal', 'coming-soon']
+// The focus overlays left this list in atlas decision 0160: they now take
+// `currentFocus` and `now`, so their schemas generate from the TS Props.
+const EMPTY_WIDGETS = ['book-modal', 'coming-soon']
 
 function generateEmptySchema(slug) {
   const title = slug.split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join('') + 'Props'
@@ -278,7 +297,7 @@ function generateEmptySchema(slug) {
 }
 
 function generateFromTs(typesFile, typeName) {
-  const generator = createGenerator({path: typesFile, type: typeName, skipTypeCheck: true, tsconfig: join(PKG_ROOT, 'tsconfig.json')})
+  const generator = createGenerator({path: typesFile, type: typeName, skipTypeCheck: true, tsconfig: WIDGET_TSCONFIG})
   return generator.createSchema(typeName)
 }
 

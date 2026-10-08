@@ -496,3 +496,14 @@ audits/checks/d3-openspec-covers.mjs:marker:j0nathan-ll0yd
 audits/__tests__/d3-openspec-covers.test.mjs:marker:j0nathan-ll0yd
 # Changesets must name the scoped public package they release.
 .changeset/offline-record-repoint.md:marker:j0nathan-ll0yd
+# Atlas decision 0160 (honest widget states). These files import or name the
+# scoped packages they build on (@j0nathan-ll0yd/copy, @j0nathan-ll0yd/portal-contract,
+# @j0nathan-ll0yd/web). The marker is the mandated GitHub Packages namespace, a
+# public distribution scope, not personal data.
+packages/web/src/components/WidgetStateNotice.astro:marker:j0nathan-ll0yd
+packages/web/src/components/WidgetTimestamp.astro:marker:j0nathan-ll0yd
+packages/web/src/runtime/pending-copy.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/view-models.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/widget-state.ts:marker:j0nathan-ll0yd
+packages/web/src/widgets/other/DndOverlay.astro:marker:j0nathan-ll0yd
+packages/web/src/widgets/other/FocusOverlay.astro:marker:j0nathan-ll0yd

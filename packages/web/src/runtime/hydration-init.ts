@@ -1,4 +1,6 @@
 import type {HydrationProps} from '../widgets/health/Hydration.types'
+import {HYDRATION} from './constants'
+import {NO_READING} from './widget-state'
 
 function addRange(parent: Element, lo: number, hi: number, max: number, cssClass: string, labelClass: string, loLabel: string, hiLabel: string): void {
   const loPct = (lo / max) * 100
@@ -54,19 +56,44 @@ export function initHydration(container: HTMLElement, fixture: HydrationProps): 
   }
   container.dataset.hydrationInit = '1'
 
-  const hydration = fixture.health.hydration
+  const hydration = fixture.health?.hydration
+  if (!hydration) {
+    return
+  }
+  // Measurements stay null when the export did not carry them (atlas 0160, H03):
+  // the bar stays empty and no count-up runs. Scale configuration falls back to
+  // the design-system constants.
   const waterOz = hydration.waterOz
   const waterMax = hydration.waterMax
-  const waterPct = Math.min(waterOz / waterMax, 1) * 100
+  const waterPct = waterOz != null && waterMax > 0 ? Math.min(waterOz / waterMax, 1) * 100 : 0
 
-  const caffeineMg = hydration.caffeineMg ?? 0
-  const caffeineMax = hydration.caffeineMax ?? 500
-  const caffeinePct = caffeineMax > 0 ? Math.min(caffeineMg / caffeineMax, 1) * 100 : 0
+  const caffeineMg = hydration.caffeineMg
+  const caffeineMax = hydration.caffeineMax ?? HYDRATION.caffeineMax
+  const caffeinePct = caffeineMg != null && caffeineMax > 0 ? Math.min(caffeineMg / caffeineMax, 1) * 100 : 0
 
   const waterRangeLo = hydration.waterRangeLo
   const waterRangeHi = hydration.waterRangeHi
-  const caffeineRangeLo = hydration.caffeineRangeLo ?? 200
-  const caffeineRangeHi = hydration.caffeineRangeHi ?? 400
+  const caffeineRangeLo = hydration.caffeineRangeLo ?? HYDRATION.caffeineRangeLo
+  const caffeineRangeHi = hydration.caffeineRangeHi ?? HYDRATION.caffeineRangeHi
+
+  // The server already rendered these values (data-ssr-state live or stale):
+  // keep them. No count-up from 0 and no repaint; the value elements are marked
+  // as already updated so a later live update is the only writer.
+  const ssrState = container.dataset.ssrState
+  const serverRendered = ssrState === 'live' || ssrState === 'stale'
+
+  const waterValEl = container.querySelector<HTMLElement>('#hydraWaterVal')
+  const coffeeValEl = container.querySelector<HTMLElement>('#hydraCoffeeVal')
+  if (serverRendered) {
+    if (waterValEl) {
+      waterValEl.dataset.liveUpdated = '1'
+    }
+    if (coffeeValEl) {
+      coffeeValEl.dataset.liveUpdated = '1'
+    }
+    container.classList.remove('is-loading')
+    return
+  }
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -91,28 +118,32 @@ export function initHydration(container: HTMLElement, fixture: HydrationProps): 
     })
   }
 
-  // Skeleton/empty tiles opt out of range overlay via data-no-range
-  if (container.closest('[data-no-range]')) {
-    return
+  // Skeleton/empty tiles opt out of range overlay via data-no-range.
+  // A server-rendered range overlay is never duplicated.
+  if (!container.closest('[data-no-range]')) {
+    const bottleBody = container.querySelector<HTMLElement>('.hydra-bottle-body')
+    if (bottleBody && !bottleBody.querySelector('.hydra-range')) {
+      addRange(bottleBody, waterRangeLo, waterRangeHi, waterMax, 'hydra-range-water', 'hydra-range-label-water', String(waterRangeLo), String(waterRangeHi))
+    }
+
+    const mugBody = container.querySelector<HTMLElement>('.hydra-mug-body')
+    if (mugBody && !mugBody.querySelector('.hydra-range')) {
+      addRange(mugBody, caffeineRangeLo, caffeineRangeHi, caffeineMax, 'hydra-range-coffee', 'hydra-range-label-coffee', String(caffeineRangeLo),
+        String(caffeineRangeHi))
+    }
   }
 
-  // Range markers
-  const bottleBody = container.querySelector<HTMLElement>('.hydra-bottle-body')
-  if (bottleBody) {
-    addRange(bottleBody, waterRangeLo, waterRangeHi, waterMax, 'hydra-range-water', 'hydra-range-label-water', String(waterRangeLo), String(waterRangeHi))
+  // Count-up animation on value labels (a missing measurement shows the no-reading mark).
+  if (waterOz != null) {
+    countUp(waterValEl, waterOz, 'oz', prefersReducedMotion)
+  } else if (waterValEl) {
+    waterValEl.textContent = NO_READING
   }
-
-  const mugBody = container.querySelector<HTMLElement>('.hydra-mug-body')
-  if (mugBody) {
-    addRange(mugBody, caffeineRangeLo, caffeineRangeHi, caffeineMax, 'hydra-range-coffee', 'hydra-range-label-coffee', String(caffeineRangeLo),
-      String(caffeineRangeHi))
+  if (caffeineMg != null) {
+    countUp(coffeeValEl, caffeineMg, 'mg', prefersReducedMotion)
+  } else if (coffeeValEl) {
+    coffeeValEl.textContent = NO_READING
   }
-
-  // Count-up animation on value labels
-  const waterValEl = container.querySelector<HTMLElement>('#hydraWaterVal')
-  const coffeeValEl = container.querySelector<HTMLElement>('#hydraCoffeeVal')
-  countUp(waterValEl, waterOz, 'oz', prefersReducedMotion)
-  countUp(coffeeValEl, caffeineMg, 'mg', prefersReducedMotion)
 
   // Remove loading state. The container IS the .tri-card root (the widget
   // renders `<div class="tri-card ..." id="cardHydration">`), so target the

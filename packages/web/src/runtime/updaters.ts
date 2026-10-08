@@ -6,7 +6,9 @@ import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, Ad
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
 import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
-import {renderWidgetEmpty} from './updater-empty'
+import {renderWidgetEmpty, revealLiveData} from './updater-empty'
+import {composeSystemLines, formatAge} from './view-models'
+import {formatMeasurement, formatMonthYear, NO_READING} from './widget-state'
 
 const CATEGORY_COLORS: Record<string, string> = {
   Dining: 'var(--neon-orange, #ff6b00)',
@@ -57,6 +59,7 @@ export function updateHeartRate(data: AdaptedHealth): void {
   const hrvStyle = classifyHRV(hrv)
 
   const card = document.getElementById('cardHR')
+  revealLiveData(card)
 
   // Paused state: watch worn=false means the watch is off wrist or charging.
   // CSS controls visibility: is-paused on the card hides .hr-data and shows .hr-paused.
@@ -88,14 +91,14 @@ export function updateHeartRate(data: AdaptedHealth): void {
 
   const bpm = document.getElementById('pulseBpm')
   if (bpm) {
-    bpm.textContent = hasHr ? String(hr) : '—'
+    bpm.textContent = hasHr ? String(hr) : NO_READING
     bpm.style.color = zone.bpmColor
     bpm.style.textShadow = zone.bpmShadow
   }
 
   const badge = document.getElementById('hrZoneBadge')
   if (badge) {
-    badge.textContent = hasHr ? zone.zone : '—'
+    badge.textContent = hasHr ? zone.zone : NO_READING
     badge.style.color = zone.badgeColor
     badge.style.background = zone.badgeBg
     badge.style.border = '1px solid ' + zone.badgeBorder
@@ -103,7 +106,7 @@ export function updateHeartRate(data: AdaptedHealth): void {
 
   const hrvEl = document.getElementById('hrHrvValue')
   if (hrvEl) {
-    hrvEl.textContent = typeof hrvRaw === 'number' ? String(hrv) : '—'
+    hrvEl.textContent = typeof hrvRaw === 'number' ? String(hrv) : NO_READING
     hrvEl.style.color = hrvStyle.color
     hrvEl.style.textShadow = hrvStyle.shadow
   }
@@ -142,6 +145,7 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
   }
 
   card.style.display = ''
+  revealLiveData(card)
 
   function fmtDuration(seconds: number): string {
     const h = Math.floor(seconds / 3600)
@@ -176,14 +180,12 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
     html += '<div class="workout-stat"><div class="workout-stat-label">' +
       widgets.workouts.duration +
       '</div><div class="workout-stat-value">' +
-      fmtDuration(w.duration ?? 0) +
+      formatMeasurement(w.duration, fmtDuration) +
       '</div></div>'
     html += '<div class="workout-stat"><div class="workout-stat-label">' +
       widgets.workouts.calories +
       '</div><div class="workout-stat-value">' +
-      Math.round(w.energyBurned ?? 0) +
-      ' ' +
-      widgets.workouts.caloriesUnit +
+      formatMeasurement(w.energyBurned, (n) => Math.round(n) + ' ' + widgets.workouts.caloriesUnit) +
       '</div></div>'
     if (w.distance && w.distance > 0) {
       html += '<div class="workout-stat"><div class="workout-stat-label">' +
@@ -202,6 +204,7 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
 }
 
 export function updateNightSummary(data: AdaptedSleep): void {
+  revealLiveData(document.getElementById('cardSleep'))
   if (data.isEmpty) {
     const duration = document.getElementById('sleepDuration')
     if (duration) {
@@ -250,12 +253,13 @@ export function updateNightSummary(data: AdaptedSleep): void {
 
   const scoreVal = document.getElementById('sleepScoreVal')
   if (scoreVal) {
-    scoreVal.textContent = String(data.sleepScore)
+    // A score the health export did not carry is no reading, never 0.
+    scoreVal.textContent = formatMeasurement(data.sleepScore)
   }
 
   const scoreFill = document.getElementById('sleepScoreFill') as HTMLElement | null
   if (scoreFill) {
-    scoreFill.style.width = data.sleepScore + '%'
+    scoreFill.style.width = (data.sleepScore ?? 0) + '%'
   }
 
   const phases = ['deep', 'rem', 'core', 'awake']
@@ -289,31 +293,34 @@ export function updateNightSummary(data: AdaptedSleep): void {
 }
 
 export function updateHydration(data: AdaptedHealth): void {
+  revealLiveData(document.getElementById('cardHydration'))
+  // Measurements are null when the export did not carry them: the bar stays
+  // empty and the value reads as no reading, never 0 (atlas decision 0160).
   const waterOz = data.hydration.waterOz
   const caffeineMg = data.hydration.caffeineMg
 
   const waterLiq = document.getElementById('hydraWaterLiq')
   if (waterLiq) {
-    const waterPct = Math.min(waterOz / HYDRATION.waterMax, 1) * 100
+    const waterPct = waterOz != null ? Math.min(waterOz / HYDRATION.waterMax, 1) * 100 : 0
     waterLiq.style.clipPath = 'inset(' + (100 - waterPct) + '% 0 0 0)'
   }
 
   const waterVal = document.getElementById('hydraWaterVal') as HTMLElement | null
   if (waterVal) {
     waterVal.dataset.liveUpdated = '1'
-    waterVal.textContent = waterOz + ' oz'
+    waterVal.textContent = formatMeasurement(waterOz, (n) => n + ' oz')
   }
 
   const coffeeLiq = document.getElementById('hydraCoffeeLiq')
   if (coffeeLiq) {
-    const caffeinePct = Math.min(caffeineMg / HYDRATION.caffeineMax, 1) * 100
+    const caffeinePct = caffeineMg != null ? Math.min(caffeineMg / HYDRATION.caffeineMax, 1) * 100 : 0
     coffeeLiq.style.clipPath = 'inset(' + (100 - caffeinePct) + '% 0 0 0)'
   }
 
   const coffeeVal = document.getElementById('hydraCoffeeVal') as HTMLElement | null
   if (coffeeVal) {
     coffeeVal.dataset.liveUpdated = '1'
-    coffeeVal.textContent = caffeineMg + ' mg'
+    coffeeVal.textContent = formatMeasurement(caffeineMg, (n) => n + ' mg')
   }
 
   const coffeeLabel = document.getElementById('hydraCoffeeLabel')
@@ -322,6 +329,13 @@ export function updateHydration(data: AdaptedHealth): void {
   }
 
   document.getElementById('cardHydration')?.classList.remove('is-loading')
+}
+
+/** A relative date in <time datetime> when its ISO source is known. */
+function timeHtml(className: string, label: string, datetime: string | undefined): string {
+  return datetime
+    ? '<time class="' + className + '" datetime="' + esc(datetime) + '">' + esc(label) + '</time>'
+    : '<span class="' + className + '">' + esc(label) + '</span>'
 }
 
 export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
@@ -335,6 +349,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
     return
   }
 
+  revealLiveData(card)
   if (!events || events.length === 0) {
     body.innerHTML = '<div class="widget-empty">' + esc(widgets.devLog.empty) + '</div>'
     card.classList.remove('is-loading')
@@ -376,7 +391,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
     if (detail) {
       html += '<span class="gh-dal-detail">' + detail + '</span>'
     }
-    html += '<span class="gh-dal-date">' + esc(e.date) + '</span>'
+    html += timeHtml('gh-dal-date', e.date, e.datetime)
     html += '</a>'
   })
   html += '</div>'
@@ -404,6 +419,7 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
     return
   }
 
+  revealLiveData(card)
   if (!articles || articles.length === 0) {
     body.innerHTML = '<div class="widget-empty">' + esc(widgets.readingFeed.empty) + '</div>'
     card.classList.remove('is-loading')
@@ -452,7 +468,7 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
       if (a.title) {
         html += '<span class="article-list-source">(' + esc(a.source) + ')</span>'
       }
-      html += '<span class="article-list-date">' + esc(a.date) + '</span>'
+      html += timeHtml('article-list-date', a.date, a.datetime)
       html += '</li>'
     })
     html += '</ul>'
@@ -517,25 +533,20 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
   card.classList.remove('is-loading')
 }
 
-export function updateSystemStatus(timestamps: Record<string, string | null>): void {
+export function updateSystemStatus(timestamps: Record<string, string | null>, now: number = Date.now()): void {
   const container = document.getElementById('systemStatus')
   if (!container) {
     return
   }
 
-  var SOURCE_LINE_COLORS: Record<string, string> = {
-    health: 'red',
-    sleep: 'purple',
-    location: 'blue',
-    books: 'amber',
-    articles: 'amber',
-    theatreReviews: 'yellow'
-  }
+  // Same rows the SystemStatus template renders on the server (composeSystemLines).
+  const bySource = new Map(composeSystemLines(timestamps, now).map((l) => [l.source, l]))
 
   const lines = container.querySelectorAll('.sys-line')
   lines.forEach((line) => {
     const source = (line as HTMLElement).dataset.source
-    if (!source) {
+    const composed = source ? bySource.get(source) : undefined
+    if (!composed) {
       return
     }
 
@@ -546,27 +557,12 @@ export function updateSystemStatus(timestamps: Record<string, string | null>): v
       return
     }
 
-    const ts = timestamps[source]
-    if (ts) {
-      const ago = formatRelativeTime(ts)
-      const lineColor = SOURCE_LINE_COLORS[source] || 'green'
-      dot.className = 'sys-dot sys-dot-' + lineColor
-      if (keyEl) {
-        keyEl.className = 'sys-key sys-key-' + lineColor
-      }
-      valEl.className = 'sys-val-green'
-      // Copy stores natural case ('Active'); this site renders all-caps with no
-      // CSS transform, so uppercase at the call site to preserve the pixels.
-      valEl.innerHTML = widgets.systemStatus.valueActive.toUpperCase() + ' <span class="sys-val">(' + ago + ')</span>'
-    } else {
-      dot.className = 'sys-dot sys-dot-red'
-      if (keyEl) {
-        keyEl.className = 'sys-key'
-      }
-      valEl.className = 'sys-val-red'
-      // Copy stores natural case ('Offline'); uppercase at the call site (no CSS transform here).
-      valEl.textContent = widgets.systemStatus.valueOffline.toUpperCase()
+    dot.className = 'sys-dot ' + composed.dotClass
+    if (keyEl && composed.keyClass) {
+      keyEl.className = composed.keyClass
     }
+    valEl.className = composed.valClass ?? 'sys-val'
+    valEl.innerHTML = composed.value
   })
 }
 
@@ -635,22 +631,13 @@ export function updatePlaceLeaderboard(data: LocationExport): void {
   card.classList.remove('is-loading')
 }
 
+// Owner's time zone, never the host's (atlas decision 0160).
 export function formatFinishedDate(isoString: string): string {
-  return new Intl.DateTimeFormat('en-US', {month: 'short', year: 'numeric'}).format(new Date(isoString))
+  return formatMonthYear(isoString)
 }
 
-export function formatRelativeTime(isoString: string): string {
-  const msAgo = Date.now() - new Date(isoString).getTime()
-  const minutesAgo = Math.max(0, Math.floor(msAgo / 60000))
-  const hoursAgo = Math.floor(minutesAgo / 60)
-  const daysAgo = Math.floor(hoursAgo / 24)
-  if (daysAgo > 0) {
-    return daysAgo + 'd ago'
-  }
-  if (hoursAgo > 0) {
-    return hoursAgo + 'h ago'
-  }
-  return minutesAgo + 'm ago'
+export function formatRelativeTime(isoString: string, now: number = Date.now()): string {
+  return formatAge(isoString, now)
 }
 
 const buildTimeLocalCoverCandidates = new WeakMap<Element, ReadonlySet<string>>()
@@ -739,6 +726,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
     return
   }
 
+  revealLiveData(card)
   let shelfRow = document.getElementById('dashShelfRow')
   if (!shelfRow) {
     const body = card.querySelector('.widget-body')
@@ -975,6 +963,7 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
     return
   }
 
+  revealLiveData(card)
   if (!repos || repos.length === 0) {
     const body = card.querySelector('.widget-body')
     if (body) {
@@ -1001,7 +990,7 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
     html += '<span class="gh-sl-lang-dot" style="background: ' + color + ';"></span>'
     html += esc(repo.language)
     html += '</span>'
-    html += '<span class="gh-sl-date">' + esc(repo.starredAt) + '</span>'
+    html += timeHtml('gh-sl-date', repo.starredAt, repo.datetime)
     html += '</div>'
   })
   list.innerHTML = html

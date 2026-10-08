@@ -2,6 +2,8 @@
 // Fixture validation lives at @j0nathan-ll0yd/schemas (consumer-aggregate shapes).
 // Per-widget DS schemas are a deferred follow-up plan.
 
+import type { WidgetStateProps } from '../../runtime/widget-state';
+
 export interface BookEntry {
   asin: string;
   isbn?: string;
@@ -37,10 +39,19 @@ export interface BookMeta {
   cover?: string;
 }
 
-export interface BookshelfProps {
-  books: {
+export interface BookshelfProps extends WidgetStateProps {
+  // Absent in the non-data states (unavailable, suppressed, loading).
+  books?: {
     books: BookEntry[];
     bookMeta: Record<string, BookMeta>;
     statusLabels: Record<string, string>;
   };
+  /**
+   * Same-origin cover paths (`/images/...`) the consumer has mirrored into its
+   * static root, built at the consumer's build time. A contract cover URL whose
+   * path is listed renders from the same origin; any other cover renders from
+   * the contract URL with the W6 image fallback. The widget never reads the
+   * filesystem, so it renders on any server runtime (atlas decision 0160).
+   */
+  localCovers?: readonly string[];
 }

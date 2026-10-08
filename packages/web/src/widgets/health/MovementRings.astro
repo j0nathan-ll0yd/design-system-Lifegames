@@ -1,14 +1,26 @@
 ---
 import { widgets, a11y } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { pendingCopy } from '../../runtime/pending-copy';
+import {
+  formatMeasurement,
+  isScaffoldHidden,
+  NO_READING,
+  rendersData,
+  resolveWidgetState,
+  stateRootAttrs,
+} from '../../runtime/widget-state';
 import type { MovementRingsProps } from './MovementRings.types';
 
-const { health: rawHealth } = Astro.props as MovementRingsProps;
+const { health: rawHealth, state: requestedState, generatedAt } = Astro.props as MovementRingsProps;
 
 // Shape adapter: accept the flat `health.movement.*` shape (Swift Props
 // contract used by widget fixtures) in addition to the nested
 // `health.quantities.*` shape (HealthKit export contract used by the
-// runtime updater). The renderer continues to use the nested shape.
-const m = (rawHealth as any).movement as
+// runtime updater). The renderer continues to use the nested shape. A flat
+// field the fixture omits stays absent — never a 0 (atlas decision 0160).
+const m = (rawHealth as any)?.movement as
   | {
       moveKcal?: number;
       exerciseMin?: number;
@@ -17,77 +29,119 @@ const m = (rawHealth as any).movement as
       distanceMeters?: number;
       flights?: number;
       daylightMin?: number;
-      goals?: MovementRingsProps['health']['goals'];
-      solar?: MovementRingsProps['health']['solar'];
+      goals?: NonNullable<MovementRingsProps['health']>['goals'];
+      solar?: NonNullable<MovementRingsProps['health']>['solar'];
     }
   | undefined;
-const health: MovementRingsProps['health'] = (rawHealth as any).quantities
-  ? rawHealth
-  : ({
-      quantities: {
-        stepCount: { value: m?.steps ?? 0, unit: 'count' },
-        distanceWalkingRunning: { value: m?.distanceMeters ?? 0, unit: 'm' },
-        flightsClimbed: { value: m?.flights ?? 0, unit: 'count' },
-        activeEnergyBurned: { value: m?.moveKcal ?? 0, unit: 'kcal' },
-        exerciseTime: { value: m?.exerciseMin ?? 0, unit: 'min' },
-        standTime: { value: m?.standHr ?? 0, unit: 'hr' },
-        // Flat-shape standHr is achieved hours — exactly what standHours carries.
-        standHours: { value: m?.standHr ?? 0, unit: 'count' },
-        timeInDaylight: { value: m?.daylightMin ?? 0, unit: 'min' },
-      },
-      goals: m?.goals,
-      solar: m?.solar,
-      // Pass watch through from the flat fixture shape so the paused overlay renders.
-      watch: (rawHealth as any).watch,
-    } as MovementRingsProps['health']);
-const q = health.quantities;
+const qty = (value: number | undefined, unit: string) =>
+  typeof value === 'number' ? { value, unit } : undefined;
+const health: MovementRingsProps['health'] =
+  rawHealth == null
+    ? undefined
+    : (rawHealth as any).quantities
+      ? rawHealth
+      : ({
+          quantities: {
+            stepCount: qty(m?.steps, 'count'),
+            distanceWalkingRunning: qty(m?.distanceMeters, 'm'),
+            flightsClimbed: qty(m?.flights, 'count'),
+            activeEnergyBurned: qty(m?.moveKcal, 'kcal'),
+            exerciseTime: qty(m?.exerciseMin, 'min'),
+            standTime: qty(m?.standHr, 'hr'),
+            // Flat-shape standHr is achieved hours — exactly what standHours carries.
+            standHours: qty(m?.standHr, 'count'),
+            timeInDaylight: qty(m?.daylightMin, 'min'),
+          },
+          goals: m?.goals,
+          solar: m?.solar,
+          // Pass watch through from the flat fixture shape so the paused overlay renders.
+          watch: (rawHealth as any).watch,
+        } as MovementRingsProps['health']);
 
-// Default goals (can be overridden by health.goals)
+let widgetState = resolveWidgetState(requestedState, health != null);
+const showData = rendersData(widgetState);
+const scaffoldHidden = isScaffoldHidden(widgetState);
+const q = (showData ? health?.quantities : undefined) ?? {};
+
+// Goals are configuration, not measurements (server-synced; SSR defaults until
+// the device's first goals sync). They never stand in for a measurement.
 const goals = {
-  moveKcal: health.goals?.moveKcal ?? 500,
-  exerciseMin: health.goals?.exerciseMin ?? 30,
-  standHr: health.goals?.standHr ?? 12,
-  daylightMin: health.goals?.daylightMin ?? 20,
+  moveKcal: health?.goals?.moveKcal ?? 500,
+  exerciseMin: health?.goals?.exerciseMin ?? 30,
+  standHr: health?.goals?.standHr ?? 12,
+  daylightMin: health?.goals?.daylightMin ?? 20,
 };
+
+const round = (v: number | undefined): number | null =>
+  typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : null;
 
 // Stand: prefer the achieved ring count (`standHours`, HKActivitySummary — the
 // watch ring's own metric); legacy data falls back to standTime (min → hr).
-const standUnit = q.standTime?.unit ?? 'hr';
-const standHours = q.standHours
+const standHours: number | null = q.standHours
   ? Math.floor(q.standHours.value)
-  : standUnit === 'min'
-    ? Math.floor((q.standTime?.value ?? 0) / 60)
-    : Math.floor(q.standTime?.value ?? 0);
+  : q.standTime
+    ? q.standTime.unit === 'min'
+      ? Math.floor(q.standTime.value / 60)
+      : Math.floor(q.standTime.value)
+    : null;
 
-const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
-const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
+const moveVal = round(q.activeEnergyBurned?.value);
+const exerciseVal = round(q.exerciseTime?.value);
 
-// Ring progress fractions (allow >1 for over-fill visual; SVG clamps to 1 turn)
-const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;
-const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0;
-const standPct = goals.standHr > 0 ? standHours / goals.standHr : 0;
+// Ring progress fractions (allow >1 for over-fill visual; SVG clamps to 1 turn).
+// A missing measurement draws an empty ring and reads as no reading.
+const frac = (v: number | null, goal: number): number => (v != null && goal > 0 ? v / goal : 0);
+const movePct = frac(moveVal, goals.moveKcal);
+const exercisePct = frac(exerciseVal, goals.exerciseMin);
+const standPct = frac(standHours, goals.standHr);
 
-const centerPct = Math.round(Math.min(movePct, 1) * 100);
+const steps = round(q.stepCount?.value);
+const distanceM = q.distanceWalkingRunning?.value;
+const flights = round(q.flightsClimbed?.value);
 
-const steps = Math.round(q.stepCount?.value ?? 0);
-const distanceM = q.distanceWalkingRunning?.value ?? 0;
-const distanceKm = (distanceM / 1000).toFixed(1);
-const flights = Math.round(q.flightsClimbed?.value ?? 0);
+// Empty: no movement measurement at all, or every one of them a recorded zero.
+const measured = [steps, distanceM ?? null, moveVal, exerciseVal].filter((v) => v != null);
+if (showData && measured.every((v) => v === 0)) {
+  widgetState = 'empty';
+}
+const isEmpty = widgetState === 'empty';
 
-const isEmpty = steps === 0 && distanceM === 0 && moveVal === 0 && exerciseVal === 0;
+const txt = (v: number | null, format: (n: number) => string = String): string =>
+  showData ? formatMeasurement(v, format) : '';
+const stepsText = txt(steps, (n) => n.toLocaleString('en-US'));
+const distanceText = txt(distanceM ?? null, (n) => (n / 1000).toFixed(1));
+const flightsText = txt(flights);
+const centerText = showData
+  ? moveVal != null
+    ? `${Math.round(Math.min(movePct, 1) * 100)}%`
+    : NO_READING
+  : '';
+const legend = (v: number | null, goal: number): string =>
+  showData ? `${formatMeasurement(v)}/${goal}` : '';
+
+// Ring group accessible name. A missing ring reads "no reading" instead of a number.
+const ringPart = (v: number | null, frac: number) =>
+  v != null ? `${Math.round(frac * 100)}%` : pendingCopy.widgetState.noReading;
+const ringsLabel = a11y.movement.rings
+  .replace('{calories}%', ringPart(moveVal, movePct))
+  .replace('{exercise}%', ringPart(exerciseVal, exercisePct))
+  .replace('{stand}%', ringPart(standHours, standPct));
 
 // SSR paused: if build-data already has watch.worn===false, apply is-paused at SSR time
 // so the page is correct before the runtime updater fires.
-const ssrPaused = health.watch?.worn === false;
+const ssrPaused = showData && health?.watch?.worn === false;
 
-// Solar footer values (SSR placeholders if missing; updater overwrites from live data)
-const sunrise = health.solar?.sunriseHHmm ?? '06:30';
-const sunset = health.solar?.sunsetHHmm ?? '20:15';
+// Solar footer: server-computed facts. When `solar` is absent, nothing is
+// invented — the times read as no reading and the sun dot is not drawn.
+const solar = showData ? health?.solar : undefined;
+const sunrise = showData ? (solar?.sunriseHHmm ?? NO_READING) : '';
+const sunset = showData ? (solar?.sunsetHHmm ?? NO_READING) : '';
 // Clamp like the updater does — a contract-violating pct must not paint off-track.
-const sunPct = Math.min(100, Math.max(0, health.solar?.currentProgressPct ?? 60));
-// Absent daylight = none synced yet — render 0, never a mock value.
-const daylightMin = Math.round(q.timeInDaylight?.value ?? 0);
-const daylightHit = daylightMin >= goals.daylightMin;
+const sunPct = solar ? Math.min(100, Math.max(0, solar.currentProgressPct)) : null;
+// Absent daylight = not measured → the no-reading mark, never a mock or a 0.
+const daylightMin = round(q.timeInDaylight?.value);
+const daylightText = showData ? formatMeasurement(daylightMin) : '';
+const daylightHit = daylightMin != null && daylightMin >= goals.daylightMin;
 
 // SVG ring geometry (matches preview html)
 const RADII = { move: 60, exercise: 44, stand: 28 };
@@ -105,12 +159,20 @@ function offset(circ: number, pct: number): number {
 }
 ---
 
-<div class={`tri-card tri-card-accent-red${ssrPaused ? ' is-paused' : ''}`} id="cardMovement">
+<div
+  class={`tri-card tri-card-accent-red${ssrPaused ? ' is-paused' : ''}${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardMovement"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.movement.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-red"></div>
-      <span class="widget-timestamp">{widgets.movement.timestampToday}</span>
+      <WidgetTimestamp
+        label={widgets.movement.timestampToday}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
@@ -145,6 +207,7 @@ function offset(circ: number, pct: number): number {
         </div>
       )
     }
+    <WidgetStateNotice state={widgetState} />
     {/* Both states stay mounted so live updates can switch without exposing stale values. */}
     <div class="mv-paused" role="status" aria-live="polite" id="mvPaused">
       <svg
@@ -187,7 +250,7 @@ function offset(circ: number, pct: number): number {
     </div>
     {
       !isEmpty && (
-        <div class="mv-data">
+        <div class="mv-data" data-state-scaffold hidden={scaffoldHidden}>
           <div class="mv-layout">
             <div class="mv-rings">
               {/* The name belongs on the element carrying role="img", not on the
@@ -199,10 +262,8 @@ function offset(circ: number, pct: number): number {
               <svg
                 viewBox="0 0 144 144"
                 role="img"
-                aria-label={a11y.movement.rings
-                  .replace('{calories}', String(Math.round(movePct * 100)))
-                  .replace('{exercise}', String(Math.round(exercisePct * 100)))
-                  .replace('{stand}', String(Math.round(standPct * 100)))}
+                aria-label={showData ? ringsLabel : undefined}
+                aria-hidden={showData ? undefined : 'true'}
               >
                 <circle class="mv-ring-track mv-ring-track-move" cx="72" cy="72" r="60" />
                 <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" />
@@ -237,7 +298,7 @@ function offset(circ: number, pct: number): number {
               </svg>
               <div class="mv-rings-center">
                 <span class="mv-rings-center-pct" id="ringCenterPct">
-                  {centerPct}%
+                  {centerText}
                 </span>
                 <span class="mv-rings-center-cap">cal</span>
               </div>
@@ -246,20 +307,20 @@ function offset(circ: number, pct: number): number {
               <div class="mv-chip">
                 <span class="mv-chip-label">{widgets.movement.steps}</span>
                 <span class="mv-chip-value" data-mv-metric="steps">
-                  {steps.toLocaleString()}
+                  {stepsText}
                 </span>
               </div>
               <div class="mv-chip">
                 <span class="mv-chip-label">{widgets.movement.distance}</span>
                 <span class="mv-chip-value" data-mv-metric="distance">
-                  {distanceKm}
+                  {distanceText}
                   <span class="mv-chip-unit">{widgets.movement.distanceUnit}</span>
                 </span>
               </div>
               <div class="mv-chip">
                 <span class="mv-chip-label">{widgets.movement.flights}</span>
                 <span class="mv-chip-value" data-mv-metric="flights">
-                  {flights}
+                  {flightsText}
                 </span>
               </div>
             </div>
@@ -272,7 +333,7 @@ function offset(circ: number, pct: number): number {
                 <span class="mv-swatch-label-short">{widgets.movement.caloriesShort}</span>
               </span>
               <span class="mv-legend-val" id="legendMove">
-                {moveVal}/{goals.moveKcal}
+                {legend(moveVal, goals.moveKcal)}
               </span>
             </div>
             <div class="mv-legend-item">
@@ -282,7 +343,7 @@ function offset(circ: number, pct: number): number {
                 <span class="mv-swatch-label-short">{widgets.movement.exerciseShort}</span>
               </span>
               <span class="mv-legend-val" id="legendExercise">
-                {exerciseVal}/{goals.exerciseMin}
+                {legend(exerciseVal, goals.exerciseMin)}
               </span>
             </div>
             <div class="mv-legend-item">
@@ -292,7 +353,7 @@ function offset(circ: number, pct: number): number {
                 <span class="mv-swatch-label-short">{widgets.movement.stand}</span>
               </span>
               <span class="mv-legend-val" id="legendStand">
-                {standHours}/{goals.standHr}
+                {legend(standHours, goals.standHr)}
               </span>
             </div>
           </div>
@@ -306,7 +367,11 @@ function offset(circ: number, pct: number): number {
               </span>
               <div class="mv-sun-track" role="img" aria-label={a11y.movement.daylight}>
                 <div class="mv-sun-track-line" />
-                <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`} />
+                <div
+                  class="mv-sun-dot"
+                  id="mvSunDot"
+                  style={sunPct != null ? `left: ${sunPct}%` : 'display: none'}
+                />
               </div>
               <span class="mv-sun-time" id="mvSunset">
                 {sunset}
@@ -316,7 +381,7 @@ function offset(circ: number, pct: number): number {
               </span>
             </div>
             <p class="mv-sun-caption">
-              <span id="mvDaylightMin">{daylightMin}</span>
+              <span id="mvDaylightMin">{daylightText}</span>
               {widgets.movement.daylightCaption.replace('{minutes}', '')} &middot;{' '}
               {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}
               {/* Always in the DOM so the updater can toggle it as live daylight changes. */}

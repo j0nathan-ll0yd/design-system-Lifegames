@@ -2,9 +2,33 @@
 // Focus overlay — shown when currentFocus === 'Work' from the live API
 // Activation is handled by live-data.ts via updateFocusOverlay().
 // Starts hidden (display: none); JS sets display: flex when active.
+//
+// Atlas decision 0160: renders visible on the server when `currentFocus` names
+// this overlay's mode. The client runtime keeps owning later transitions: it
+// writes an inline `display` on every focus update, which overrides this one.
+import { FOCUS_MODES } from '@j0nathan-ll0yd/portal-contract/constants';
+import { DISPLAY_TIME_ZONE } from '../../runtime/widget-state';
+import type { FocusOverlayProps } from './FocusOverlay.types';
+
+const { currentFocus, now } = Astro.props as FocusOverlayProps;
+const active = currentFocus === FOCUS_MODES.work;
+const nowMs = now ? Date.parse(now) : NaN;
+const clockText = Number.isFinite(nowMs)
+  ? new Date(nowMs).toLocaleString('en-US', {
+      timeZone: DISPLAY_TIME_ZONE,
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+  : '--:--:--';
 ---
 
-<div id="focusOverlay">
+<div
+  id="focusOverlay"
+  style={active ? 'display: flex' : undefined}
+  data-ssr-state={active ? 'suppressed' : undefined}
+>
   <div class="shift-badge">
     <span class="dot"></span>
     Shift Active
@@ -18,7 +42,7 @@
     <div class="divider"></div>
     <div class="clock-section">
       <span class="clock-label">Current Time (PST)</span>
-      <span class="clock-time" id="focusClock">--:--:--</span>
+      <span class="clock-time" id="focusClock">{clockText}</span>
       <span class="clock-zone">Pacific Standard Time</span>
     </div>
     <div class="schedule">

@@ -4,6 +4,27 @@
   "title": "DevActivityLogProps",
   "type": "object",
   "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedAt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "events": {
       "type": "array",
       "items": {
@@ -19,6 +40,9 @@
             "type": "string"
           },
           "date": {
+            "type": "string"
+          },
+          "datetime": {
             "type": "string"
           },
           "hash": {
@@ -37,6 +61,5 @@
         "required": ["type", "repo", "title", "date"]
       }
     }
-  },
-  "required": ["events"]
+  }
 }
