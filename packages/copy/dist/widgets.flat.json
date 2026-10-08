@@ -227,5 +227,12 @@
     "beverageDrip": "drip",
     "beverageEspresso": "espresso",
     "beverageColdBrew": "cold brew"
+  },
+  "widgetState": {
+    "noReading": "No reading",
+    "unavailable": "Data unavailable",
+    "suppressed": "Hidden during focus",
+    "asOf": "as of {time}",
+    "needsJavaScript": "Live data needs JavaScript."
   }
 }

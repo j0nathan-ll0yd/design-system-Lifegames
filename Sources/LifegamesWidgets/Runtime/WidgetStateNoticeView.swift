@@ -1,4 +1,5 @@
 import LifegamesComponents
+import LifegamesCopy
 import LifegamesTokens
 import SwiftUI
 
@@ -9,8 +10,8 @@ enum WidgetStateNotice {
 
     var text: String {
         switch self {
-        case .unavailable: PendingCopy.WidgetStateStrings.unavailable
-        case .suppressed: PendingCopy.WidgetStateStrings.suppressed
+        case .unavailable: CopyLoader.widgets.widgetState.unavailable
+        case .suppressed: CopyLoader.widgets.widgetState.suppressed
         }
     }
 }

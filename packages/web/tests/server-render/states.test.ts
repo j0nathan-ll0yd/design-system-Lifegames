@@ -37,7 +37,6 @@ import Workouts from '../../src/widgets/health/Workouts.astro'
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {adaptHealth, adaptSleep} from '../../src/runtime/adapters'
 import {LANG_COLORS, STATUS_LABELS} from '../../src/runtime/constants'
-import {pendingCopy} from '../../src/runtime/pending-copy'
 import {type DashboardExports, type DashboardViewModels, type DomainInput, toDashboardViewModels} from '../../src/runtime/view-models'
 import {NO_READING, type WidgetState} from '../../src/runtime/widget-state'
 
@@ -320,7 +319,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const props = vmFor({}, vm)
     const r = await render(component, props, id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('unavailable')
-    expect(r.root.querySelector('[data-state-notice="unavailable"]')?.textContent?.trim()).toBe(pendingCopy.widgetState.unavailable)
+    expect(r.root.querySelector('[data-state-notice="unavailable"]')?.textContent?.trim()).toBe(widgets.widgetState.unavailable)
     await expectNoInputValue(r, component, id)
     // A caller that passes data WITH state unavailable still renders none of it.
     const forced = await render(component, {...vmFor(exportsFor(KNOWN_ANSWER), vm), state: 'unavailable'}, id)
@@ -334,7 +333,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     const props = vmFor(exports, vm)
     const r = await render(component, props, id)
     expect(r.root.getAttribute('data-ssr-state')).toBe('suppressed')
-    expect(r.root.querySelector('[data-state-notice="suppressed"]')?.textContent?.trim()).toBe(pendingCopy.widgetState.suppressed)
+    expect(r.root.querySelector('[data-state-notice="suppressed"]')?.textContent?.trim()).toBe(widgets.widgetState.suppressed)
     await expectNoInputValue(r, component, id)
     // Defense in depth: a caller that passes data WITH state suppressed still renders none of it.
     const forced = await render(component, {...vmFor(exportsFor(KNOWN_ANSWER), vm), state: 'suppressed'}, id)
@@ -347,7 +346,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     expect(r.root.getAttribute('data-ssr-state')).toBe('loading')
     expect(r.root.classList.contains('is-loading')).toBe(true)
     expect(r.root.querySelector('.skeleton-state')).not.toBeNull()
-    expect(r.html).toContain(pendingCopy.widgetState.needsJavaScript)
+    expect(r.html).toContain(widgets.widgetState.needsJavaScript)
     await expectNoInputValue(r, component, id)
   })
 

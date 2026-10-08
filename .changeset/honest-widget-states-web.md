@@ -22,7 +22,8 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
   `loading`) and `generatedAt` props; the pure mapper `resolveWidgetState` serves old calls. Card roots
   carry `data-ssr-state` and `data-generated-at`; `stale` shows an absolute "as of" time.
 - New runtime modules: `runtime/widget-state`, `runtime/view-models` (`toDashboardViewModels`,
-  `composeSystemLines`, `toWorkoutsList`, `toReadingArticles`), `runtime/pending-copy`.
+  `composeSystemLines`, `toWorkoutsList`, `toReadingArticles`). State strings come from the
+  `widgets.widgetState` copy keys (`@j0nathan-ll0yd/copy` minor).
 - `revealLiveData(card, state?)` in `runtime/updater-empty`: removes notices, reveals the hidden
   scaffold, restores the header's live label and records `live` or `empty`. `renderWidgetEmpty`
   records `empty`. `theatreCardsHtml` in `runtime/updaters-theatre`.

@@ -8,7 +8,7 @@
 // - loading: the caller keeps its skeleton; this adds the <noscript> note.
 //
 // Internal to @j0nathan-ll0yd/web: not exported from the components index.
-import { pendingCopy } from '../runtime/pending-copy';
+import { widgets } from '@j0nathan-ll0yd/copy';
 import type { WidgetState } from '../runtime/widget-state';
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const { state, empty } = Astro.props;
-const copy = pendingCopy.widgetState;
+const copy = widgets.widgetState;
 ---
 
 {

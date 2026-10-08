@@ -1,5 +1,5 @@
 import {html} from 'lit'
-import {pendingCopy} from '../../src/runtime/pending-copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 
 // Shared story render for the honest non-data states (atlas decision 0160).
 // Mirrors the markup the Astro widgets render for `unavailable` and
@@ -9,7 +9,7 @@ import {pendingCopy} from '../../src/runtime/pending-copy'
 export type NoticeState = 'unavailable' | 'suppressed'
 
 export function renderStateCard(opts: {id: string; title: string; accentClass?: string; state: NoticeState}) {
-  const notice = opts.state === 'unavailable' ? pendingCopy.widgetState.unavailable : pendingCopy.widgetState.suppressed
+  const notice = opts.state === 'unavailable' ? widgets.widgetState.unavailable : widgets.widgetState.suppressed
   return html`
     <div id=${opts.id} class="tri-card ${opts.accentClass ?? ''}" data-ssr-state=${opts.state}>
       <div class="widget-header">

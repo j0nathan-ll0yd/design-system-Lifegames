@@ -2,7 +2,6 @@
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import type {AdaptedHealth} from './adapters'
-import {pendingCopy} from './pending-copy'
 import {revealLiveData} from './updater-empty'
 import {formatMeasurement, NO_READING} from './widget-state'
 
@@ -47,7 +46,7 @@ function setText(id: string, text: string): void {
 // because a ring cannot overdraw, but the ANNOUNCED value stays truthful at 107%.
 // A ring whose measurement the export did not carry reads "no reading".
 function ringsLabel(move: number | null, exercise: number | null, stand: number | null): string {
-  const pct = (fraction: number | null): string => (fraction == null ? pendingCopy.widgetState.noReading : Math.round(fraction * 100) + '%')
+  const pct = (fraction: number | null): string => (fraction == null ? widgets.widgetState.noReading : Math.round(fraction * 100) + '%')
   return a11y.movement.rings.replace('{calories}%', pct(move)).replace('{exercise}%', pct(exercise)).replace('{stand}%', pct(stand))
 }
 

@@ -2,7 +2,6 @@
 import { widgets, a11y } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { pendingCopy } from '../../runtime/pending-copy';
 import {
   formatMeasurement,
   isScaffoldHidden,
@@ -126,7 +125,7 @@ const legend = (v: number | null, goal: number): string =>
 
 // Ring group accessible name. A missing ring reads "no reading" instead of a number.
 const ringPart = (v: number | null, frac: number) =>
-  v != null ? `${Math.round(frac * 100)}%` : pendingCopy.widgetState.noReading;
+  v != null ? `${Math.round(frac * 100)}%` : widgets.widgetState.noReading;
 const ringsLabel = a11y.movement.rings
   .replace('{calories}%', ringPart(moveVal, movePct))
   .replace('{exercise}%', ringPart(exerciseVal, exercisePct))

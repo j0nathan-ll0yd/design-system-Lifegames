@@ -22,7 +22,8 @@
     "bio",
     "systemStatus",
     "identityCard",
-    "coffee"
+    "coffee",
+    "widgetState"
   ],
   "properties": {
     "heartRate": {
@@ -101,12 +102,25 @@
           "type": "object",
           "description": "Paused-state badge strings for the Heart Rate widget (watch off or charging).",
           "additionalProperties": false,
-          "required": ["label", "labelCharging", "description", "descriptionCharging"],
+          "required": [
+            "label",
+            "labelCharging",
+            "description",
+            "descriptionCharging"
+          ],
           "properties": {
-            "label": { "$ref": "#/$defs/CopyString" },
-            "labelCharging": { "$ref": "#/$defs/CopyString" },
-            "description": { "$ref": "#/$defs/CopyString" },
-            "descriptionCharging": { "$ref": "#/$defs/CopyString" }
+            "label": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "labelCharging": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "description": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "descriptionCharging": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         }
       }
@@ -179,12 +193,25 @@
           "type": "object",
           "description": "Paused-state badge strings for the Movement Rings widget (watch off or charging).",
           "additionalProperties": false,
-          "required": ["label", "labelCharging", "description", "descriptionCharging"],
+          "required": [
+            "label",
+            "labelCharging",
+            "description",
+            "descriptionCharging"
+          ],
           "properties": {
-            "label": { "$ref": "#/$defs/CopyString" },
-            "labelCharging": { "$ref": "#/$defs/CopyString" },
-            "description": { "$ref": "#/$defs/CopyString" },
-            "descriptionCharging": { "$ref": "#/$defs/CopyString" }
+            "label": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "labelCharging": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "description": {
+              "$ref": "#/$defs/CopyString"
+            },
+            "descriptionCharging": {
+              "$ref": "#/$defs/CopyString"
+            }
           }
         }
       }
@@ -242,7 +269,12 @@
       "type": "object",
       "description": "Hydration widget — title, vessel labels, timestamp.",
       "additionalProperties": false,
-      "required": ["title", "water", "caffeine", "timestampToday"],
+      "required": [
+        "title",
+        "water",
+        "caffeine",
+        "timestampToday"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -307,7 +339,13 @@
       "type": "object",
       "description": "Exploration odometer widget — title + the four odometer stat labels.",
       "additionalProperties": false,
-      "required": ["title", "visits", "places", "cities", "states"],
+      "required": [
+        "title",
+        "visits",
+        "places",
+        "cities",
+        "states"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -330,7 +368,10 @@
       "type": "object",
       "description": "Top Places leaderboard widget — title + empty-state.",
       "additionalProperties": false,
-      "required": ["title", "empty"],
+      "required": [
+        "title",
+        "empty"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -344,7 +385,11 @@
       "type": "object",
       "description": "Reading Feed widget — title, empty-state, timestamp.",
       "additionalProperties": false,
-      "required": ["title", "empty", "timestampRecent"],
+      "required": [
+        "title",
+        "empty",
+        "timestampRecent"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -406,7 +451,10 @@
       "type": "object",
       "description": "Theatre Reviews widget — title + empty-state.",
       "additionalProperties": false,
-      "required": ["title", "empty"],
+      "required": [
+        "title",
+        "empty"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -461,7 +509,11 @@
       "type": "object",
       "description": "Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.",
       "additionalProperties": false,
-      "required": ["title", "empty", "timestampLive"],
+      "required": [
+        "title",
+        "empty",
+        "timestampLive"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -478,7 +530,11 @@
       "type": "object",
       "description": "Starred Repos production widget — title, empty-state, recent timestamp.",
       "additionalProperties": false,
-      "required": ["title", "empty", "timestampRecent"],
+      "required": [
+        "title",
+        "empty",
+        "timestampRecent"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -495,7 +551,11 @@
       "type": "object",
       "description": "Bio terminal widget — widget title, terminal title-bar text, shell timestamp badge (zsh, matching terminalTitle).",
       "additionalProperties": false,
-      "required": ["title", "terminalTitle", "timestampZsh"],
+      "required": [
+        "title",
+        "terminalTitle",
+        "timestampZsh"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -512,7 +572,13 @@
       "type": "object",
       "description": "System Status widget — title, per-source active/offline status values (canonical natural case; consumers may uppercase as display transform), realtime timestamp, and popover provenance prose.",
       "additionalProperties": false,
-      "required": ["title", "valueActive", "valueOffline", "timestampRealtime", "sources"],
+      "required": [
+        "title",
+        "valueActive",
+        "valueOffline",
+        "timestampRealtime",
+        "sources"
+      ],
       "properties": {
         "title": {
           "$ref": "#/$defs/CopyString"
@@ -544,7 +610,10 @@
               "type": "object",
               "title": "SystemStatusSourceHealth",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -553,12 +622,19 @@
                   "type": "object",
                   "title": "SystemStatusRefsHealth",
                   "additionalProperties": false,
-                  "required": ["watch", "water", "coffee"],
+                  "required": [
+                    "watch",
+                    "water",
+                    "coffee"
+                  ],
                   "properties": {
                     "watch": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -571,7 +647,10 @@
                     "water": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -584,7 +663,10 @@
                     "coffee": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -602,7 +684,10 @@
               "type": "object",
               "title": "SystemStatusSourceSleep",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -611,12 +696,17 @@
                   "type": "object",
                   "title": "SystemStatusRefsSleep",
                   "additionalProperties": false,
-                  "required": ["watch"],
+                  "required": [
+                    "watch"
+                  ],
                   "properties": {
                     "watch": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -634,7 +724,10 @@
               "type": "object",
               "title": "SystemStatusSourceBooks",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -652,7 +745,10 @@
               "type": "object",
               "title": "SystemStatusSourceArticles",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -661,12 +757,17 @@
                   "type": "object",
                   "title": "SystemStatusRefsArticles",
                   "additionalProperties": false,
-                  "required": ["feedly"],
+                  "required": [
+                    "feedly"
+                  ],
                   "properties": {
                     "feedly": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -684,7 +785,10 @@
               "type": "object",
               "title": "SystemStatusSourceGithubEvents",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -693,12 +797,17 @@
                   "type": "object",
                   "title": "SystemStatusRefsGithubEvents",
                   "additionalProperties": false,
-                  "required": ["github"],
+                  "required": [
+                    "github"
+                  ],
                   "properties": {
                     "github": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -716,7 +825,10 @@
               "type": "object",
               "title": "SystemStatusSourceStarredRepos",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -725,12 +837,17 @@
                   "type": "object",
                   "title": "SystemStatusRefsStarredRepos",
                   "additionalProperties": false,
-                  "required": ["github"],
+                  "required": [
+                    "github"
+                  ],
                   "properties": {
                     "github": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -748,7 +865,10 @@
               "type": "object",
               "title": "SystemStatusSourceTheatreReviews",
               "additionalProperties": false,
-              "required": ["body", "refs"],
+              "required": [
+                "body",
+                "refs"
+              ],
               "properties": {
                 "body": {
                   "$ref": "#/$defs/CopyString"
@@ -757,12 +877,17 @@
                   "type": "object",
                   "title": "SystemStatusRefsTheatreReviews",
                   "additionalProperties": false,
-                  "required": ["squarespace"],
+                  "required": [
+                    "squarespace"
+                  ],
                   "properties": {
                     "squarespace": {
                       "type": "object",
                       "additionalProperties": false,
-                      "required": ["label", "href"],
+                      "required": [
+                        "label",
+                        "href"
+                      ],
                       "properties": {
                         "label": {
                           "$ref": "#/$defs/CopyString"
@@ -784,7 +909,13 @@
       "type": "object",
       "description": "Identity card — the social/link pill labels.",
       "additionalProperties": false,
-      "required": ["github", "linkedin", "site", "mastodon", "bluesky"],
+      "required": [
+        "github",
+        "linkedin",
+        "site",
+        "mastodon",
+        "bluesky"
+      ],
       "properties": {
         "github": {
           "$ref": "#/$defs/CopyString"
@@ -872,6 +1003,36 @@
           "$ref": "#/$defs/CopyString"
         }
       }
+    },
+    "widgetState": {
+      "title": "WidgetStateCopy",
+      "type": "object",
+      "description": "Honest widget states shared by every live widget (atlas decision 0160) — the no-reading mark's accessible name, the unavailable and suppressed notices, the stale 'as of' prefix, and the loading-state noscript note. Titled WidgetStateCopy: the bare key would generate a Swift struct named WidgetState, which collides with LifegamesComponents.WidgetState<T> in every module that imports both.",
+      "additionalProperties": false,
+      "required": [
+        "noReading",
+        "unavailable",
+        "suppressed",
+        "asOf",
+        "needsJavaScript"
+      ],
+      "properties": {
+        "noReading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "unavailable": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "suppressed": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "asOf": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "needsJavaScript": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
     }
   },
   "$defs": {
@@ -879,7 +1040,14 @@
       "type": "object",
       "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
       "additionalProperties": false,
-      "required": ["description", "usage", "register", "audience", "owner", "lastReviewed"],
+      "required": [
+        "description",
+        "usage",
+        "register",
+        "audience",
+        "owner",
+        "lastReviewed"
+      ],
       "properties": {
         "description": {
           "type": "string",
@@ -895,12 +1063,24 @@
         },
         "register": {
           "type": "string",
-          "enum": ["atom", "label", "factual", "expressive", "machine", "brand", "consent"],
+          "enum": [
+            "atom",
+            "label",
+            "factual",
+            "expressive",
+            "machine",
+            "brand",
+            "consent"
+          ],
           "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
         },
         "audience": {
           "type": "string",
-          "enum": ["human", "machine", "dual"],
+          "enum": [
+            "human",
+            "machine",
+            "dual"
+          ],
           "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
         },
         "owner": {
@@ -934,7 +1114,10 @@
       "type": "object",
       "description": "A single customer-facing string (ICU MF1 syntax) plus its authoring context.",
       "additionalProperties": false,
-      "required": ["value", "_meta"],
+      "required": [
+        "value",
+        "_meta"
+      ],
       "properties": {
         "value": {
           "type": "string",
@@ -949,7 +1132,10 @@
       "type": "object",
       "description": "An ordered list of customer-facing strings (each ICU MF1) plus shared authoring context.",
       "additionalProperties": false,
-      "required": ["value", "_meta"],
+      "required": [
+        "value",
+        "_meta"
+      ],
       "properties": {
         "value": {
           "type": "array",
@@ -967,7 +1153,10 @@
       "type": "object",
       "description": "A section heading, authored as the BARE heading text plus its authoring context. The markdown level affix ('# ', '## ') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is un-rendered again by any consumer that models document structure (atlas decision 0128 P3a). The 'pattern' rejects a leaf that still carries the affix. Flattens to a plain string, so the consumer-facing type is the same as CopyString.",
       "additionalProperties": false,
-      "required": ["value", "_meta"],
+      "required": [
+        "value",
+        "_meta"
+      ],
       "properties": {
         "value": {
           "type": "string",
@@ -983,13 +1172,19 @@
       "type": "object",
       "description": "A link, authored as FIELDS plus its authoring context. The rendered markdown bullet ('- [label](url): notes') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is regex-parsed back into these same three fields by the consumer (atlas decision 0128 P3a). Each 'pattern' rejects a field that still carries an affix. Flattens to an object, hoisted into the derived flat schema's own $defs so every generator names ONE shared type instead of one structural copy per key.",
       "additionalProperties": false,
-      "required": ["value", "_meta"],
+      "required": [
+        "value",
+        "_meta"
+      ],
       "properties": {
         "value": {
           "type": "object",
           "description": "The link's fields. 'label' and 'notes' are authored prose; 'url' is the target.",
           "additionalProperties": false,
-          "required": ["label", "url"],
+          "required": [
+            "label",
+            "url"
+          ],
           "properties": {
             "label": {
               "type": "string",

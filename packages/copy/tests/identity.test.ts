@@ -85,7 +85,7 @@ const NAMESPACES: NamespaceFixture[] = [
   //     [connect/reconnect/finishCup/newCup] + badge ×3 [connect/connected/error]
   //     + beverage ×3 [drip/espresso/coldBrew]).
   //   heartRate and movement each gained +4 paused leaves (label/labelCharging/description/descriptionCharging).
-  {name: 'widgets', expectedLeaves: 146},
+  {name: 'widgets', expectedLeaves: 151},
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1
   //   + coffee 8 (mug/caffeineThisCup/dailyCaffeine + action ×5

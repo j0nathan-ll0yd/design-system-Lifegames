@@ -57,7 +57,7 @@ struct HydrationPopulatedView: View {
 
     /// A vessel's value label: the measurement with its unit, or the no-reading mark.
     static func valueText(_ value: Int, unit: String, measured: Bool) -> String {
-        measured ? "\(value) \(unit)" : PendingCopy.WidgetStateStrings.noReadingMark
+        measured ? "\(value) \(unit)" : NoReading.mark
     }
 
     var body: some View {

@@ -1,5 +1,6 @@
 import Foundation
 import LifegamesComponents
+import LifegamesCopy
 import SwiftUI
 import Testing
 @testable import LifegamesWidgets
@@ -111,10 +112,13 @@ struct HonestWidgetStateTests {
         #expect(Adapters.honestState(fromFixture: Data("not json".utf8)) as WidgetState<HeartRateProps>? == nil)
     }
 
-    @Test func noticeCopyMatchesWeb() {
-        #expect(WidgetStateNotice.unavailable.text == "Data unavailable")
-        #expect(WidgetStateNotice.suppressed.text == "Hidden during focus")
-        #expect(PendingCopy.WidgetStateStrings.noReading == "No reading")
+    /// P2 parity: the notices read the same `widgets.widgetState` copy keys the web reads
+    /// (packages/copy/src/widgets.en-US.json); no platform holds its own string.
+    @Test func noticeCopyComesFromTheSharedCopyKeys() {
+        let copy = CopyLoader.widgets.widgetState
+        #expect(WidgetStateNotice.unavailable.text == copy.unavailable)
+        #expect(WidgetStateNotice.suppressed.text == copy.suppressed)
+        #expect(!copy.unavailable.isEmpty && !copy.suppressed.isEmpty && !copy.noReading.isEmpty)
     }
 }
 
@@ -128,6 +132,6 @@ struct HonestWidgetStateTests {
 
     @Test func unmeasuredValuesRenderTheNoReadingMark() {
         #expect(HydrationPopulatedView.valueText(0, unit: "oz", measured: false) == "\u{2014}")
-        #expect(HydrationPopulatedView.valueText(0, unit: "mg", measured: false) == PendingCopy.WidgetStateStrings.noReadingMark)
+        #expect(HydrationPopulatedView.valueText(0, unit: "mg", measured: false) == NoReading.mark)
     }
 }

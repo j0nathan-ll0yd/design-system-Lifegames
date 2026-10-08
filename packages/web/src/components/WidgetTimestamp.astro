@@ -5,7 +5,7 @@
 // "as of" time in the owner's time zone, inside <time datetime>.
 // `unavailable` and `suppressed` show no label: nothing on the card is live.
 // Every other state keeps the widget's own label. Internal to @j0nathan-ll0yd/web.
-import { pendingCopy } from '../runtime/pending-copy';
+import { widgets } from '@j0nathan-ll0yd/copy';
 import { formatAsOf, type WidgetState } from '../runtime/widget-state';
 
 interface Props {
@@ -32,7 +32,7 @@ const showLabel = state !== 'unavailable' && state !== 'suppressed';
       datetime={generatedAt}
       data-live-label={label}
     >
-      {pendingCopy.widgetState.asOf.replace('{time}', asOf)}
+      {widgets.widgetState.asOf.replace('{time}', asOf)}
     </time>
   ) : (
     <span class="widget-timestamp" id={id} data-live-label={label}>
