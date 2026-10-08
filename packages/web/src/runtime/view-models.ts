@@ -79,7 +79,7 @@ export const SYSTEM_SOURCES = [
   {source: 'articles', key: 'Articles', color: 'amber'},
   {source: 'githubEvents', key: 'Github Events', color: 'green'},
   {source: 'starredRepos', key: 'Github Stars', color: 'green'},
-  {source: 'theatreReviews', key: 'Theatre Reviews', color: 'yellow'}
+  {source: 'theatreReviews', key: widgets.theatreReviews.title, color: 'yellow'}
 ] as const
 
 export type SystemSource = (typeof SYSTEM_SOURCES)[number]['source']
