@@ -383,7 +383,7 @@ describe('revealLiveData and suppression (M4)', () => {
     expect(el('c').dataset.ssrState).toBe('live')
   })
 
-  it('every updater skips writes on a suppressed card', () => {
+  it('the list updaters skip writes on a suppressed card (all eleven: tests/server-render/suppressed-updaters.test.ts)', () => {
     document.body.innerHTML = `
       <div id="cardReading" data-ssr-state="suppressed"><div class="widget-body"><span id="marker">kept</span></div></div>
       <div id="cardBooks" data-ssr-state="suppressed"><div class="widget-body"><span id="marker2">kept</span></div></div>`
