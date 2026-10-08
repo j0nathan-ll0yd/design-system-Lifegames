@@ -24,6 +24,10 @@ public struct WorkoutsView: View {
             WorkoutsRestDayView()
         case let .populated(props):
             WorkoutsPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: workoutsCopy.title, accent: LGColor.accentPink)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: workoutsCopy.title, accent: LGColor.accentPink)
         }
     }
 }
@@ -213,4 +217,18 @@ private struct StatPill: View {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Workouts — Unavailable") {
+    WorkoutsView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Workouts — Suppressed") {
+    WorkoutsView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }

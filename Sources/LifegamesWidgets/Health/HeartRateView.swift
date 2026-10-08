@@ -38,6 +38,10 @@ public struct HeartRateView: View {
             } else {
                 HeartRatePopulatedView(props: props, animateECG: animateECG)
             }
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: heartRateCopy.title, accent: LGColor.accentPink)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: heartRateCopy.title, accent: LGColor.accentPink)
         }
     }
 }
@@ -410,4 +414,18 @@ private struct HeartRatePausedView: View {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Unavailable") {
+    HeartRateView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Suppressed") {
+    HeartRateView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }

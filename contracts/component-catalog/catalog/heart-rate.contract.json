@@ -4,17 +4,21 @@
   "group": "health",
   "platforms": ["swift", "web"],
   "props": {
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
     "health": {
-      "type": "object",
-      "optional": false,
+      "type": ["object", "null"],
+      "optional": true,
       "properties": {
         "quantities": {
           "type": "object",
           "optional": false,
           "properties": {
             "heartRate": {
-              "type": "object",
-              "optional": false,
+              "type": ["object", "null"],
+              "optional": true,
               "properties": {
                 "unit": {
                   "type": "string",
@@ -27,8 +31,8 @@
               }
             },
             "hrvSDNN": {
-              "type": "object",
-              "optional": false,
+              "type": ["object", "null"],
+              "optional": true,
               "properties": {
                 "unit": {
                   "type": "string",
@@ -85,10 +89,28 @@
           }
         },
         "watch": {
-          "type": "unknown",
-          "optional": true
+          "type": ["object", "null"],
+          "optional": true,
+          "properties": {
+            "since": {
+              "type": ["string", "null"],
+              "optional": true
+            },
+            "source": {
+              "type": "string",
+              "optional": false
+            },
+            "worn": {
+              "type": "boolean",
+              "optional": false
+            }
+          }
         }
       }
+    },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/health/HeartRate.types.ts",
@@ -109,11 +131,13 @@
     "populated-max",
     "populated-min",
     "resting",
-    "skeleton"
+    "skeleton",
+    "suppressed",
+    "unavailable"
   ],
   "a11y": {
     "voiceOverLabel": true,
-    "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:315"
+    "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:319"
   },
   "conformance": {
     "behavioralTest": null

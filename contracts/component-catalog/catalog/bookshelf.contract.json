@@ -5,8 +5,8 @@
   "platforms": ["swift", "web"],
   "props": {
     "books": {
-      "type": "object",
-      "optional": false,
+      "type": ["object", "null"],
+      "optional": true,
       "properties": {
         "bookMeta": {
           "type": "object",
@@ -91,6 +91,22 @@
           "optional": false
         }
       }
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
+    "localCovers": {
+      "type": ["array", "null"],
+      "optional": true,
+      "items": {
+        "type": "string",
+        "optional": false
+      }
+    },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/reading/Bookshelf.types.ts",
@@ -107,7 +123,9 @@
     "mostly-empty",
     "populated-max",
     "populated-min",
-    "skeleton"
+    "skeleton",
+    "suppressed",
+    "unavailable"
   ],
   "a11y": {
     "voiceOverLabel": null,

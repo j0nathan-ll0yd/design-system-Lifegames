@@ -28,6 +28,10 @@ public struct MovementRingsView: View {
             } else {
                 MovementRingsPopulatedView(props: props)
             }
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: movementCopy.title, accent: LGColor.healthRed)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: movementCopy.title, accent: LGColor.healthRed)
         }
     }
 }
@@ -687,4 +691,18 @@ private func formatDistanceValue(_ meters: Double) -> String {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — Unavailable") {
+    MovementRingsView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — Suppressed") {
+    MovementRingsView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }

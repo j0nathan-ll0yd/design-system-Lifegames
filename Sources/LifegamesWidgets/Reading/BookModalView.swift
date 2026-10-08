@@ -24,7 +24,9 @@ public struct BookModalView: View {
         case .loading:
             BookModalSkeletonView(onDismiss: onDismiss)
                 .modalChrome()
-        case .empty:
+        case .empty, .unavailable, .suppressed:
+            // BookModal is not a live widget. The honest states show no book data, so they
+            // reuse the empty chrome, which keeps the dismiss control.
             BookModalEmptyView(onDismiss: onDismiss)
                 .modalChrome()
         case let .populated(props):

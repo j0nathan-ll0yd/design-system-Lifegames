@@ -24,6 +24,10 @@ public struct BookshelfView: View {
             BookshelfEmptyView()
         case let .populated(props):
             BookshelfPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: bookshelfCopy.title, accent: Color.colorAccentAmber)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: bookshelfCopy.title, accent: Color.colorAccentAmber)
         }
     }
 }
@@ -240,6 +244,20 @@ func previewCoverURL(_ name: String) -> String? {
 
 #Preview("Bookshelf — Empty") {
     BookshelfView(state: .empty)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Bookshelf — Unavailable") {
+    BookshelfView(state: .unavailable)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Bookshelf — Suppressed") {
+    BookshelfView(state: .suppressed)
         .padding()
         .background(Color.colorSurfaceBase)
         .preferredColorScheme(.dark)

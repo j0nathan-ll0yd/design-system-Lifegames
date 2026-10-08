@@ -17,6 +17,17 @@ public struct HydrationView: View {
     }
 
     public var body: some View {
+        switch state {
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: hydrationCopy.title, accent: LGColor.accentPink)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: hydrationCopy.title, accent: LGColor.accentPink)
+        case .loading, .empty, .populated:
+            dataCard
+        }
+    }
+
+    private var dataCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             WidgetHeaderView(label: hydrationCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: hydrationCopy.timestampToday)
 
@@ -27,6 +38,8 @@ public struct HydrationView: View {
                 HydrationPopulatedView(props: .zero)
             case let .populated(props):
                 HydrationPopulatedView(props: props)
+            case .unavailable, .suppressed:
+                EmptyView()
             }
         }
         .neonCard(accent: LGColor.accentPink)
@@ -441,4 +454,18 @@ private extension HydrationProps {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Hydration — Unavailable") {
+    HydrationView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Hydration — Suppressed") {
+    HydrationView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }
