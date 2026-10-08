@@ -2,6 +2,7 @@
 // a null measurement renders the no-reading mark, never 0; a server-rendered
 // unavailable or suppressed card recovers when live data arrives; relative
 // times render as <time datetime>.
+import {widgets} from '@j0nathan-ll0yd/copy'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {initHydration} from '../../src/runtime/hydration-init'
 import {releaseSuppression, revealLiveData} from '../../src/runtime/updater-empty'
@@ -514,5 +515,45 @@ describe('TheatreReviews header slot', () => {
     expect(link.tagName).toBe('A')
     expect(link.getAttribute('href')).toBe(THEATRE_SITE)
     expect(link.textContent).toBe('3 reviews')
+  })
+})
+
+// ── Verifier on PR #289, L-2: client half of the remaining null-as-0 slots ──
+
+describe('client: remaining null-as-0 slots, zone colours and links', () => {
+  it('MovementRings: a missing ring reads "no reading" in the ring group label, never 0%', () => {
+    document.body.innerHTML = '<div id="cardMovement"><div class="mv-rings"><svg role="img" aria-hidden="true"></svg></div></div>'
+    updateMovementRings({...health({}), quantities: {stepCount: {value: 12345, unit: 'count'}}})
+    const label = document.querySelector('.mv-rings svg')?.getAttribute('aria-label') ?? ''
+    expect(label).not.toMatch(/\d+%/)
+    expect(label.split(widgets.widgetState.noReading).length - 1).toBe(3)
+  })
+
+  it('HeartRate at a heart rate of 0: badge "—" and no zone colour on BPM or badge', () => {
+    document.body.innerHTML =
+      '<div id="cardHR"><span id="pulseBpm" style="color: red"></span><span id="hrZoneBadge" style="color: red"></span><span id="hrHrvValue"></span></div>'
+    updateHeartRate({...health({}), quantities: {heartRate: {value: 0, unit: 'count/min'}, hrvSDNN: {value: 40, unit: 'ms'}}})
+    expect(el('hrZoneBadge').textContent).toBe(NO_READING)
+    expect(el('pulseBpm').style.color).toBe('')
+    expect(el('hrZoneBadge').style.color).toBe('')
+    expect(el('hrZoneBadge').style.border).toBe('')
+  })
+
+  it('HeartRate without HRV: the HRV mark carries no low-HRV colour', () => {
+    document.body.innerHTML =
+      '<div id="cardHR"><span id="pulseBpm"></span><span id="hrZoneBadge"></span><span id="hrHrvValue" style="color: red"></span></div>'
+    updateHeartRate({...health({}), quantities: {heartRate: {value: 97, unit: 'count/min'}}})
+    expect(el('hrHrvValue').textContent).toBe(NO_READING)
+    expect(el('hrHrvValue').style.color).toBe('')
+    expect(el('pulseBpm').style.color).not.toBe('')
+  })
+
+  it('Dev Log and Workouts link only https URLs', () => {
+    document.body.innerHTML = '<div id="cardDevLog"><div class="widget-body"></div></div><div id="cardWorkouts"><div class="widget-body"></div></div>'
+    updateDevActivityLog([{type: 'pr_merged', repo: 'r', title: 't', date: '2h ago', number: 6, url: 'javascript:alert(1)'}])
+    expect(document.querySelector('.gh-dal-line')?.hasAttribute('href')).toBe(false)
+    updateWorkouts([{activityType: 'Run', activityUrl: 'javascript:alert(1)', duration: 60, energyBurned: 9, distance: null, source: 'watch'}])
+    expect(document.querySelector('a.workout-sub-type')).toBeNull()
+    expect(document.body.innerHTML).not.toContain('javascript:')
   })
 })

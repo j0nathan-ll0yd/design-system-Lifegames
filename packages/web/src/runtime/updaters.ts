@@ -101,23 +101,25 @@ export function updateHeartRate(data: AdaptedHealth): void {
   const bpm = document.getElementById('pulseBpm')
   if (bpm) {
     bpm.textContent = formatPositiveVital(hrRaw)
-    bpm.style.color = zone.bpmColor
-    bpm.style.textShadow = zone.bpmShadow
+    // A zone colour belongs to a reading; no reading carries none.
+    bpm.style.color = hasHr ? zone.bpmColor : ''
+    bpm.style.textShadow = hasHr ? zone.bpmShadow : ''
   }
 
   const badge = document.getElementById('hrZoneBadge')
   if (badge) {
     badge.textContent = hasHr ? zone.zone : NO_READING
-    badge.style.color = zone.badgeColor
-    badge.style.background = zone.badgeBg
-    badge.style.border = '1px solid ' + zone.badgeBorder
+    badge.style.color = hasHr ? zone.badgeColor : ''
+    badge.style.background = hasHr ? zone.badgeBg : ''
+    badge.style.border = hasHr ? '1px solid ' + zone.badgeBorder : ''
   }
 
   const hrvEl = document.getElementById('hrHrvValue')
   if (hrvEl) {
     hrvEl.textContent = formatHrv(hrvRaw)
-    hrvEl.style.color = hrvStyle.color
-    hrvEl.style.textShadow = hrvStyle.shadow
+    const hasHrv = typeof hrvRaw === 'number' && Number.isFinite(hrvRaw)
+    hrvEl.style.color = hasHrv ? hrvStyle.color : ''
+    hrvEl.style.textShadow = hasHrv ? hrvStyle.shadow : ''
   }
 
   // Update canvas ECG parameters
@@ -178,8 +180,10 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
     html += '<div class="workout-sub-card">'
     html += '<div class="workout-sub-top">'
     html += getIcon(w.activityType)
-    html += w.activityUrl
-      ? '<a class="workout-sub-type" href="' + esc(w.activityUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(w.activityType) + '</a>'
+    // Only an https activity link becomes an href (shared with the template).
+    const activityHref = safeHttpsUrl(w.activityUrl)
+    html += activityHref
+      ? '<a class="workout-sub-type" href="' + esc(activityHref) + '" target="_blank" rel="noopener noreferrer">' + esc(w.activityType) + '</a>'
       : '<div class="workout-sub-type">' + esc(w.activityType) + '</div>'
     html += '</div>'
     html += '<div class="workout-sub-stats">'
@@ -406,8 +410,10 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
       detail = '#' + Number(e.number)
     }
 
-    if (e.url) {
-      html += '<a class="gh-dal-line" href="' + esc(e.url) + '" target="_blank" rel="noopener noreferrer">'
+    // Only an https event URL becomes an href (shared with the template).
+    const eventHref = safeHttpsUrl(e.url)
+    if (eventHref) {
+      html += '<a class="gh-dal-line" href="' + esc(eventHref) + '" target="_blank" rel="noopener noreferrer">'
     } else {
       html += '<a class="gh-dal-line">'
     }

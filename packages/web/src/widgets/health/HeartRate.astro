@@ -38,6 +38,8 @@ const hrvRaw = showData ? q?.hrvSDNN?.value : undefined;
 const hr = isReading(hrRaw) && hrRaw > 0 ? Math.round(hrRaw) : 0;
 const hrv = isReading(hrvRaw) ? Math.round(hrvRaw) : 0;
 const state = classifyHeartRate(hr);
+// A zone colour belongs to a reading: a missing (or 0) heart rate and a
+// missing HRV render the no-reading mark in the default colour, never a zone's.
 const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
 
 // Every slot: the reading, the no-reading mark, or '' when the card shows no value.
@@ -167,7 +169,11 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
                     <span
                       class="pulse-bpm"
                       id="pulseBpm"
-                      style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}
+                      style={
+                        hr > 0
+                          ? `color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`
+                          : undefined
+                      }
                     >
                       {fmtBpm}
                     </span>
@@ -177,7 +183,11 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
                 <span
                   class="pulse-status-badge"
                   id="hrZoneBadge"
-                  style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}
+                  style={
+                    hr > 0
+                      ? `color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`
+                      : undefined
+                  }
                 >
                   {fmtZone}
                 </span>
@@ -187,7 +197,9 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
                 <span
                   class="hr-hrv-value"
                   id="hrHrvValue"
-                  style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}
+                  style={
+                    isReading(hrvRaw) ? `color: ${hrvColor}; text-shadow: ${hrvShadow}` : undefined
+                  }
                 >
                   {fmtHrv}
                 </span>

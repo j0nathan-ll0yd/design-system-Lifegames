@@ -4,6 +4,7 @@ import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { devActivityLogState } from '../../runtime/widget-rules';
+import { safeHttpsUrl } from '../../runtime/html-utils';
 import type { DevActivityLogProps } from './DevActivityLog.types';
 
 interface Event {
@@ -95,12 +96,14 @@ function getDetail(event: Event): string {
         events.slice(0, 10).map((event: Event) => {
           const icon = getIcon(event.type);
           const detail = getDetail(event);
+          // Only an https event URL becomes an href (shared with the updater).
+          const href = safeHttpsUrl(event.url) ?? undefined;
           return (
             <a
               class="gh-dal-line"
-              href={event.url || undefined}
-              target={event.url ? '_blank' : undefined}
-              rel={event.url ? 'noopener noreferrer' : undefined}
+              href={href}
+              target={href ? '_blank' : undefined}
+              rel={href ? 'noopener noreferrer' : undefined}
               data-sa-link-event="activity_click"
             >
               <span class="gh-dal-icon" style={`color: ${icon.color};`}>

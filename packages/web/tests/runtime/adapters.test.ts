@@ -1255,3 +1255,31 @@ describe('adaptStarredRepos', () => {
     expect(result[0].stars).toBe(42)
   })
 })
+
+// Verifier on PR #289, L-2: each asleep stage gates the total, and adaptHealth
+// carries the same rule as adaptSleep.
+describe('a missing sleep stage leaves the total unknown', () => {
+  const full = {
+    date: '2026-01-15',
+    generatedAt: '2026-01-15T08:00:00Z',
+    rem: {seconds: 5400},
+    deep: {seconds: 3600},
+    core: {seconds: 10800},
+    awake: {seconds: 600}
+  }
+  it.each(['rem', 'deep', 'core'] as const)('adaptSleep without %s: no total, no shares', (stage) => {
+    const {[stage]: _gone, ...partial} = full
+    const result = adaptSleep(partial as SleepExport, makeHealth())
+    expect(result.sleepDurationFormatted).toBe('')
+    expect(result.derived).toEqual({deepPct: null, remPct: null, corePct: null})
+    expect(result.isEmpty).toBe(false)
+  })
+  it.each(['rem', 'deep', 'core'] as const)('adaptHealth with a sleep export without %s: no total text', (stage) => {
+    const {[stage]: _gone, ...partial} = full
+    const result = adaptHealth(makeHealth(), partial as SleepExport)
+    expect(result.sleepDurationFormatted).toBe('')
+  })
+  it('a complete export still totals asleep time (awake excluded)', () => {
+    expect(adaptHealth(makeHealth(), full as SleepExport).sleepDurationFormatted).toBe('5h 30m')
+  })
+})

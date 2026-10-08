@@ -39,6 +39,7 @@ import {adaptHealth, adaptSleep} from '../../src/runtime/adapters'
 import {LANG_COLORS, STATUS_LABELS} from '../../src/runtime/constants'
 import {type DashboardExports, type DashboardViewModels, type DomainInput, toDashboardViewModels} from '../../src/runtime/view-models'
 import {NO_READING, type WidgetState} from '../../src/runtime/widget-state'
+import {heartRateState, hydrationState, movementRingsState, nightSummaryState, workoutsState} from '../../src/runtime/widget-rules'
 
 // ── Fixture inputs (read from the fixtures package's generated JSON) ──
 
@@ -761,4 +762,106 @@ describe('header timestamp', () => {
       }
     }
   )
+})
+
+// ── Verifier on PR #289, L-2: the remaining slots of the null-as-0 class ──
+
+describe('each template applies its own shared state rule (M2c)', () => {
+  const sleepProps = (over: Record<string, unknown>) => ({
+    health: {
+      sleepScore: 80,
+      sleepDurationFormatted: '7h 0m',
+      sleepPhaseFormatted: {deep: '1h', rem: '1h', core: '5h', awake: '0m'},
+      derived: {deepPct: 14, remPct: 14},
+      ...over
+    }
+  })
+  const CASES: [string, any, string, Record<string, unknown>, (p: any) => string, string][] = [
+    [
+      'HeartRate',
+      HeartRate,
+      'cardHR',
+      {health: {quantities: {heartRate: {value: 0, unit: 'count/min'}, hrvSDNN: {value: 0, unit: 'ms'}}}},
+      heartRateState,
+      'empty'
+    ],
+    ['HeartRate', HeartRate, 'cardHR', {health: {quantities: {hrvSDNN: {value: 40, unit: 'ms'}}}}, heartRateState, 'unavailable'],
+    ['MovementRings', MovementRings, 'cardMovement', {health: {quantities: {stepCount: {value: 0, unit: 'count'}}}}, movementRingsState, 'empty'],
+    ['MovementRings', MovementRings, 'cardMovement', {health: {movement: {steps: 0}}}, movementRingsState, 'empty'],
+    ['NightSummary', NightSummary, 'cardSleep', sleepProps({isEmpty: true}), nightSummaryState, 'empty'],
+    ['NightSummary', NightSummary, 'cardSleep', sleepProps({isEmpty: false, sleepDurationFormatted: ''}), nightSummaryState, 'live'],
+    ['Workouts', Workouts, 'cardWorkouts', {health: {workouts: []}}, workoutsState, 'empty'],
+    ['Hydration', Hydration, 'cardHydration', {}, hydrationState, 'empty']
+  ]
+  it.each(CASES)("%s: raw props without a state render the rule's state (%#)", async (_name, component, id, props, rule, expected) => {
+    expect(rule(props)).toBe(expected)
+    const r = await render(component, props, id)
+    expect(r.root.getAttribute('data-ssr-state')).toBe(expected)
+  })
+})
+
+describe('null-as-0 slots the earlier tests did not pin', () => {
+  it('MovementRings: a missing ring reads "no reading" in the ring group label, never 0%', async () => {
+    const r = await render(MovementRings, vmFor({health: {data: kaHealthWith(['stepCount'])}}, 'movementRings'), 'cardMovement')
+    const label = r.root.querySelector('.mv-rings svg[role="img"]')?.getAttribute('aria-label') ?? ''
+    expect(label).not.toMatch(/\d+%/)
+    expect(label.split(widgets.widgetState.noReading).length - 1).toBe(3)
+  })
+
+  it('HeartRate at a heart rate of 0: the zone badge reads "—" and neither BPM nor badge carries a zone colour', async () => {
+    // A live card (HRV present) whose heart rate reads 0.
+    const h = kaHealthWith(['heartRate', 'heartRateVariabilitySDNN'])
+    h.quantities.heartRate = {value: 0, unit: 'count/min'}
+    const r = await render(HeartRate, vmFor({health: {data: h}}, 'heartRate'), 'cardHR')
+    expect(r.root.getAttribute('data-ssr-state')).toBe('live')
+    expect(r.root.querySelector('#hrZoneBadge')?.textContent?.trim()).toBe(NO_READING)
+    for (const sel of ['#pulseBpm', '#hrZoneBadge']) {
+      expect(r.root.querySelector(sel)?.getAttribute('style'), `${sel} carries no zone colour`).toBeNull()
+    }
+  })
+
+  it('HeartRate with a heart rate but no HRV: the HRV mark carries no low-HRV colour', async () => {
+    const r = await render(HeartRate, vmFor({health: {data: kaHealthWith(['heartRate'])}}, 'heartRate'), 'cardHR')
+    expect(r.root.querySelector('#hrHrvValue')?.textContent?.trim()).toBe(NO_READING)
+    expect(r.root.querySelector('#hrHrvValue')?.getAttribute('style')).toBeNull()
+    expect(r.root.querySelector('#pulseBpm')?.getAttribute('style')).toMatch(/color:/)
+  })
+
+  it('NightSummary: one share present and one missing renders no caption', async () => {
+    const props = {
+      health: {
+        sleepScore: 80,
+        sleepDurationFormatted: '7h 0m',
+        sleepPhaseFormatted: {deep: '1h', rem: '1h', core: '5h', awake: '0m'},
+        derived: {deepPct: 14, remPct: null},
+        isEmpty: false
+      }
+    }
+    const r = await render(NightSummary, props, 'cardSleep')
+    expect(r.root.querySelector('#sleepInsight')?.textContent?.trim()).toBe('')
+  })
+
+  it('NightSummary: a missing REM or core stage also makes the total "—"', async () => {
+    for (const drop of ['rem', 'core']) {
+      const {[drop]: _gone, ...partial} = raw('sleep', KNOWN_ANSWER)
+      const r = await render(NightSummary, vmFor({health: {data: raw('health', KNOWN_ANSWER)}, sleep: {data: partial}}, 'nightSummary'), 'cardSleep')
+      expect(r.root.querySelector('#sleepDuration')?.textContent?.trim(), drop).toBe(NO_READING)
+    }
+  })
+
+  it('StarredRepoList, DevActivityLog and Workouts link only https URLs on the server', async () => {
+    const starred = await render(StarredRepoList, {
+      repos: [{owner: 'o', name: 'n', url: 'javascript:alert(1)', stars: 3, language: 'Go', languageColor: '#00ADD8', starredAt: '2 days ago'}]
+    }, 'cardStarredRepos')
+    expect(starred.root.querySelector('.gh-sl-name')?.hasAttribute('href')).toBe(false)
+    const devlog = await render(DevActivityLog, {
+      events: [{type: 'pr_merged', repo: 'r', title: 't', date: '2h ago', hash: '', number: 6, url: 'javascript:alert(1)'}]
+    }, 'cardDevLog')
+    expect(devlog.root.querySelector('.gh-dal-line')?.hasAttribute('href')).toBe(false)
+    const workouts = await render(Workouts, {
+      health: {workouts: [{activity_type: 'Run', duration: 60, energy_burned: 9, distance: null, link: 'javascript:alert(1)'}]}
+    }, 'cardWorkouts')
+    expect(workouts.root.querySelector('a.workout-sub-type')).toBeNull()
+    expect(workouts.html).not.toContain('javascript:')
+  })
 })
