@@ -11,8 +11,9 @@ export type WidgetEmptyOptions = {message: string} | {title: string; body: strin
  *
  * Resolves the card by id, replaces its `.widget-body` with a centered
  * `.widget-empty` placeholder, and clears the skeleton (`is-loading`). This is
- * the shared implementation behind the empty branches; bookshelf and theatre
- * adopt it (dev-log / reading / starred keep their inline copies for now).
+ * the shared implementation behind the empty branches of the bookshelf,
+ * theatre, dev-log, reading-feed and starred-repo updaters (Workouts has its
+ * own recovery-day markup, workouts-markup.ts).
  *
  * NOTE: replacing `.widget-body` destroys any child container that a widget's
  * populated path re-queries by id (e.g. `#dashShelfRow`, `#theatreRow`,
@@ -31,9 +32,10 @@ export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): voi
   }
   const body = card.querySelector('.widget-body')
   if (body) {
+    // The same markup WidgetStateNotice renders for the server's empty state.
     body.innerHTML = 'message' in opts
-      ? '<div class="widget-empty">' + esc(opts.message) + '</div>'
-      : '<div class="widget-empty widget-empty--stack">' +
+      ? '<div class="widget-empty" data-state-notice="empty">' + esc(opts.message) + '</div>'
+      : '<div class="widget-empty widget-empty--stack" data-state-notice="empty">' +
         '<span class="widget-empty-title">' +
         esc(opts.title) +
         '</span>' +

@@ -10,6 +10,7 @@ import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-emp
 import {composeSystemLines, formatAge} from './view-models'
 import {formatMeasurement, formatMonthYear, NO_READING} from './widget-state'
 import {formatHrv, formatPositiveVital, formatWorkoutDuration} from './widget-rules'
+import {workoutsRestHtml} from './workouts-markup'
 
 const CATEGORY_COLORS: Record<string, string> = {
   Dining: 'var(--neon-orange, #ff6b00)',
@@ -150,7 +151,9 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
     return
   }
 
-  if (!data || data.length === 0) {
+  // null: the export could not be read. The card keeps what it shows; the
+  // loader, not a failed read, decides when it becomes unavailable.
+  if (!data) {
     return
   }
 
@@ -160,6 +163,14 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
   }
 
   card.style.display = ''
+  // A successful export with no workouts is the recovery-day empty state:
+  // clear every previous workout and show the server's empty markup.
+  if (data.length === 0) {
+    revealLiveData(card, 'empty')
+    body.innerHTML = workoutsRestHtml()
+    card.classList.remove('is-loading')
+    return
+  }
   revealLiveData(card)
 
   // Shared with Workouts.astro, so server and client format the same.
@@ -378,12 +389,11 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
     return
   }
 
-  revealLiveData(card, !events || events.length === 0 ? 'empty' : 'live')
   if (!events || events.length === 0) {
-    body.innerHTML = '<div class="widget-empty">' + esc(widgets.devLog.empty) + '</div>'
-    card.classList.remove('is-loading')
+    renderWidgetEmpty('cardDevLog', {message: widgets.devLog.empty})
     return
   }
+  revealLiveData(card)
 
   const iconMap: Record<string, {symbol: string; color: string}> = {
     commit: {symbol: '\u2192', color: 'var(--neon-green)'},
@@ -455,12 +465,11 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
     return
   }
 
-  revealLiveData(card, !articles || articles.length === 0 ? 'empty' : 'live')
   if (!articles || articles.length === 0) {
-    body.innerHTML = '<div class="widget-empty">' + esc(widgets.readingFeed.empty) + '</div>'
-    card.classList.remove('is-loading')
+    renderWidgetEmpty('cardReading', {message: widgets.readingFeed.empty})
     return
   }
+  revealLiveData(card)
 
   const PAGE_SIZE = 10
   const totalPages = Math.ceil(articles.length / PAGE_SIZE)
@@ -642,7 +651,13 @@ export function updatePlaceLeaderboard(data: LocationExport): void {
   }
 
   const listEl = card.querySelector<HTMLElement>('[data-loc="leaderboard-list"]')
-  if (!listEl || data.topPlaces.length === 0) {
+  if (!listEl) {
+    card.classList.remove('is-loading')
+    return
+  }
+  // No places: clear the previous rows and say so, never keep them.
+  if (data.topPlaces.length === 0) {
+    listEl.innerHTML = '<div class="widget-empty">' + esc(widgets.topPlaces.empty) + '</div>'
     card.classList.remove('is-loading')
     return
   }
@@ -1007,17 +1022,24 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
     return
   }
 
-  revealLiveData(card, !repos || repos.length === 0 ? 'empty' : 'live')
+  // Empty state: the shared placeholder replaces `.widget-body` (destroying
+  // `.gh-starred-list`), so the populated path recreates the list on an
+  // empty -> populated transition.
   if (!repos || repos.length === 0) {
-    const body = card.querySelector('.widget-body')
-    if (body) {
-      body.innerHTML = '<div class="widget-empty">' + esc(widgets.starredRepos.empty) + '</div>'
-    }
-    card.classList.remove('is-loading')
+    renderWidgetEmpty('cardStarredRepos', {message: widgets.starredRepos.empty})
     return
   }
 
-  const list = card.querySelector('.gh-starred-list')
+  const body = card.querySelector('.widget-body')
+  if (!body) {
+    return
+  }
+  revealLiveData(card)
+  let list = card.querySelector('.gh-starred-list')
+  if (!list) {
+    body.innerHTML = '<div class="gh-starred-list"></div>'
+    list = card.querySelector('.gh-starred-list')
+  }
   if (!list) {
     return
   }

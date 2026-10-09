@@ -5,6 +5,7 @@ import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { formatMeasurement, rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { formatWorkoutDuration, workoutsState } from '../../runtime/widget-rules';
 import { safeHttpsUrl } from '../../runtime/html-utils';
+import { workoutsRestHtml } from '../../runtime/workouts-markup';
 import type { Workout, WorkoutsProps } from './Workouts.types';
 
 const props = Astro.props as WorkoutsProps;
@@ -171,48 +172,17 @@ const fmtDuration = formatWorkoutDuration;
           </div>
         ))
       ) : widgetState === 'empty' ? (
-        <div class="workout-rest-center" data-state-notice="empty">
-          <svg class="workout-rest-icon" viewBox="0 0 56 56" fill="none">
-            <circle
-              cx="28"
-              cy="20"
-              r="10"
-              stroke="var(--neon-pink)"
-              stroke-width="1.5"
-              opacity="0.7"
-            />
-            <path
-              d="M16 38 Q20 32 28 30 Q36 32 40 38"
-              stroke="var(--neon-pink)"
-              stroke-width="1.5"
-              opacity="0.5"
-              fill="none"
-            />
-            <path
-              d="M12 44 Q18 38 28 36 Q38 38 44 44"
-              stroke="var(--neon-blue)"
-              stroke-width="1"
-              opacity="0.3"
-              fill="none"
-            />
-            <circle cx="28" cy="20" r="3" fill="var(--neon-pink)" opacity="0.6" />
-            <path
-              d="M24 18 Q28 14 32 18"
-              stroke="rgba(255,255,255,0.3)"
-              stroke-width="0.8"
-              fill="none"
-            />
-          </svg>
-          <div class="workout-rest-heading">{widgets.workouts.recoveryDay}</div>
-          <div class="workout-rest-sub">{widgets.workouts.none}</div>
-          <div class="workout-rest-insight">{widgets.workouts.recoveryBody}</div>
-        </div>
+        <Fragment set:html={workoutsRestHtml()} />
       ) : null
     }
   </div>
 </div>
 
-<style>
+{
+  /* Global: updateWorkouts rebuilds these cards on the client, and client markup
+     carries no scoped-style attribute. The .workout-* names are this widget's own. */
+}
+<style is:global>
   @container (max-width: 380px) {
     .workout-sub-stats {
       grid-template-columns: repeat(2, 1fr);

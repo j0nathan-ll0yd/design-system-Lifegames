@@ -517,3 +517,5 @@ packages/fixtures/tests/post-adapter-health-drift.test.ts:marker:j0nathan-ll0yd
 # turbo.json names the web package's test task (@j0nathan-ll0yd/web#test) to add its inputs.
 turbo.json:marker:j0nathan-ll0yd
 packages/web/tests/runtime/updaters-honest-states.test.ts:marker:j0nathan-ll0yd
+# Review M02: the shared Workouts recovery-day markup imports @j0nathan-ll0yd/copy.
+packages/web/src/runtime/workouts-markup.ts:marker:j0nathan-ll0yd

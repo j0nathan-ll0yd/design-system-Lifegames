@@ -41,7 +41,8 @@ const KA = 'ssrKnownAnswer'
 
 const COMPONENTS = [HeartRate, MovementRings, Hydration, NightSummary, Workouts, DevActivityLog, StarredRepoList, ReadingFeed, Bookshelf, TheatreReviews]
 
-// The eleven guarded updaters, each called with known-answer data.
+// The eleven guarded updaters, each called with known-answer data, and the six
+// collection updaters again with a successful empty export.
 const UPDATERS: Record<string, () => void> = {
   updateHeartRate: () => updateHeartRate(adaptHealth(raw('health', KA), raw('sleep', KA))),
   updateHeartRateFooter: () => updateHeartRateFooter(adaptHealth(raw('health', KA), raw('sleep', KA))),
@@ -53,7 +54,14 @@ const UPDATERS: Record<string, () => void> = {
   updateStarredRepos: () => updateStarredRepos(adaptStarredRepos(raw('github-starred-repos', KA), NOW)),
   updateReadingFeed: () => updateReadingFeed(adaptArticles(raw('articles', KA), NOW)),
   updateBookshelf: () => updateBookshelf(adaptBooks(raw('books', KA))),
-  updateTheatreReviews: () => updateTheatreReviews(raw('theatre-reviews', KA))
+  updateTheatreReviews: () => updateTheatreReviews(raw('theatre-reviews', KA)),
+  // Review M02: each collection's successful-empty branch writes too, so it is guarded too.
+  'updateWorkouts (empty)': () => updateWorkouts(adaptWorkouts({...raw('workouts', KA), workouts: []})),
+  'updateDevActivityLog (empty)': () => updateDevActivityLog(adaptGithubEvents({...raw('github-events', KA), events: []}, NOW)),
+  'updateStarredRepos (empty)': () => updateStarredRepos(adaptStarredRepos({...raw('github-starred-repos', KA), repos: []}, NOW)),
+  'updateReadingFeed (empty)': () => updateReadingFeed(adaptArticles({...raw('articles', KA), articles: []}, NOW)),
+  'updateBookshelf (empty)': () => updateBookshelf(adaptBooks({...raw('books', KA), books: []})),
+  'updateTheatreReviews (empty)': () => updateTheatreReviews({...raw('theatre-reviews', KA), reviews: []})
 }
 
 const markup: Record<'suppressed' | 'unavailable', string> = {suppressed: '', unavailable: ''}
