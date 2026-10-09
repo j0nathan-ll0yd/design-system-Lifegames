@@ -19,9 +19,14 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
-        // Test-only: behavioral render assertions. Exact pin; 0.10.2+ carries the iOS 18.4
-        // accessibility-value fix and 0.10.3+ the iOS 26 inspection support.
-        .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.5"),
+        // Test-only: behavioral render assertions. A RANGE, never an exact pin: xcodebuild
+        // resolves this package's test-only dependencies in every consumer graph, and
+        // ios-LifegamesPortal pins ViewInspector `exact: "0.10.1"` (LifePortalFeatures
+        // Package.swift). An exact 0.10.5 here broke every iOS build (ios-LifegamesPortal#146).
+        // The lower bound is iOS's pin. Package.resolved holds 0.10.5 for this repo's own runs:
+        // 0.10.2+ carries the accessibility-value fix and 0.10.3+ the iOS 26 inspection support
+        // the behavioral suites need; 0.10.1 cannot read accessibility values on Xcode 26.
+        .package(url: "https://github.com/nalexn/ViewInspector", .upToNextMinor(from: "0.10.1")),
     ],
     targets: [
         .target(name: "LifegamesTokens", resources: [.process("Resources")]),
