@@ -164,7 +164,7 @@ const pills = [
           <div
             class="sleep-moon-pill"
             data-phase={p.phase}
-            style={`background: ${p.color}15; animation-delay: ${i * 0.1 + 0.3}s`}
+            style={`background: color-mix(in srgb, ${p.color} 8%, transparent); animation-delay: ${(i * 0.1 + 0.3).toFixed(1)}s`}
           >
             <div class="sleep-moon-pill-label">{p.label}</div>
             <div class="sleep-moon-pill-val" style={`color: ${p.color}`}>

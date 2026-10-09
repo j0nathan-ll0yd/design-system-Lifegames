@@ -57,7 +57,7 @@ function getIcon(type: string) {
                 <div class="gh-dat-meta">
                   <span
                     class="gh-dat-badge"
-                    style={`background: ${icon.color}15; border-color: ${icon.color}40; color: ${icon.color};`}
+                    style={`background: color-mix(in srgb, ${icon.color} 8%, transparent); border-color: color-mix(in srgb, ${icon.color} 25%, transparent); color: ${icon.color};`}
                   >
                     {icon.symbol} {icon.label}
                   </span>
