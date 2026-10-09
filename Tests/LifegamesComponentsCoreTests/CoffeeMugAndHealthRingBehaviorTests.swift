@@ -33,6 +33,16 @@ struct CoffeeMugAndHealthRingBehaviorTests {
         #expect(try drip.accessibilityValue().string() == espresso.accessibilityValue().string())
     }
 
+    @Test func mugHandleRendersOnlyWhenRequested() throws {
+        // mugCircularClip passes `showHandle: false` (Variation C): the handle arc is the one
+        // stroked shape the overlay adds, so hiding it removes exactly one shape from the tree.
+        let withHandle = try CoffeeMugView(fillPercent: 0.6, animated: false).inspect()
+            .findAll(ViewType.Shape.self).count
+        let withoutHandle = try CoffeeMugView(fillPercent: 0.6, animated: false, showHandle: false).inspect()
+            .findAll(ViewType.Shape.self).count
+        #expect(withHandle == withoutHandle + 1)
+    }
+
     // MARK: - HealthRingView (healthRingViewDefault)
 
     @Test func ringShowsValueAndLabelAndTrimsToProgress() throws {
