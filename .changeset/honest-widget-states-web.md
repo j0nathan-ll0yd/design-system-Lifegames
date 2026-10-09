@@ -77,3 +77,18 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
   `overflow: hidden`, so a focused header link's outline is never clipped.
 - The `#cardWorkouts[style*='none']` rebalance rules are removed from `layout.css`: Workouts never
   renders hidden.
+- A successful export with no items empties every collection card on the client (review M02):
+  `updateWorkouts([])` shows the recovery-day state, and `updateDevActivityLog`,
+  `updateStarredRepos`, `updateReadingFeed`, `updateBookshelf` and `updateTheatreReviews` show
+  their empty copy. Each clears the previous items and records `empty`, from a live card or an
+  unavailable one. `updateWorkouts(null)` (an unreadable export) still leaves the card as it is.
+  `renderWidgetEmpty` writes `data-state-notice="empty"`, the server's empty-notice markup.
+  `updateStarredRepos` recreates its list after an empty state, so a later populated export renders.
+  `updatePlaceLeaderboard` clears its rows and shows the empty copy when there are no places.
+  New: `workoutsRestHtml()` in `runtime/workouts-markup`, the recovery-day markup that
+  `Workouts.astro` and `updateWorkouts` share.
+- Workouts' container-query styles are global, so they also apply to cards the client renders.
+- Tinted backgrounds use `color-mix()`. NightSummary's phase pills, DevActivityCards' icons and
+  DevActivityTimeline's badges appended a hex alpha to a `var()` colour, which is invalid CSS, so
+  the browser dropped the tint. CommitTimeline's badge did the same to `repoColor`, which worked
+  only for a 6-digit hex colour; it now works for any colour.
