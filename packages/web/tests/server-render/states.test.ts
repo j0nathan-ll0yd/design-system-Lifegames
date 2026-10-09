@@ -9,7 +9,12 @@
 //     appear in rendered output, and no known-answer value may appear in a
 //     non-data state (unavailable, suppressed, loading, empty);
 //   - a null rendered as 0: the `sparse` health export must render the
-//     no-reading mark in every slot whose measurement it lacks.
+//     no-reading mark in every slot whose measurement it lacks;
+//   - a wrong or unnamed value in a data state: the known-answer render must
+//     equal its projection (known-answer-render.ts) in every text node,
+//     content attribute and inline style (review M01);
+//   - an unreviewed attribute in a non-data state: every attribute, inline
+//     styles included, must be on non-data-allowlist.json (review M01).
 //
 // Known-answer inputs are the raw `ssrKnownAnswer` variations of
 // @j0nathan-ll0yd/fixtures; their distinctive values appear in no other
@@ -40,6 +45,11 @@ import {LANG_COLORS, STATUS_LABELS} from '../../src/runtime/constants'
 import {type DashboardExports, type DashboardViewModels, type DomainInput, toDashboardViewModels} from '../../src/runtime/view-models'
 import {NO_READING, type WidgetState} from '../../src/runtime/widget-state'
 import {heartRateState, hydrationState, movementRingsState, nightSummaryState, workoutsState} from '../../src/runtime/widget-rules'
+import {JSON_ATTR, knownAnswerProjection, NON_CONTENT_ATTR, type Projection} from './known-answer-render'
+import NON_DATA_ALLOWLIST_JSON from './non-data-allowlist.json'
+
+// The reviewed non-data attribute allowlist (review M01), by widget name.
+const NON_DATA_ALLOWLIST = NON_DATA_ALLOWLIST_JSON as {widgets: Record<string, Record<string, string[]>>}
 
 // ── Fixture inputs (read from the fixtures package's generated JSON) ──
 
@@ -179,9 +189,10 @@ async function render(component: any, props: Record<string, unknown>, rootId: st
     throw new Error(`#${rootId} not rendered`)
   }
   // Rendered text plus every content-bearing attribute value (a value hidden
-  // in data-*, aria-label, href or alt still reaches every client). Structural
-  // and presentational attributes (class, id, style, SVG geometry) and the
-  // dev-only data-astro-* annotations are not content.
+  // in data-*, aria-label, href or alt still reaches every client), for the
+  // token scans below. Structural and presentational attributes (class, id,
+  // style, SVG geometry) and the dev-only data-astro-* annotations are left
+  // out here; the exact projection and the non-data allowlist check them.
   const attrs = [...root.querySelectorAll('*'), root].flatMap((el) =>
     [...el.attributes].filter((a) => CONTENT_ATTR.test(a.name) && !/^data-astro-/.test(a.name)).map((a) => a.value)
   )
@@ -208,22 +219,61 @@ function leakedLegacy(rendered: Rendered): string[] {
   return [...legacyTokens].filter((t) => contains(rendered.text, t) && !contains(authored, t))
 }
 
-// A data state must carry the known answer: the exact slot values for the
-// numeric health widgets, at least one distinctive string for the others.
-function expectKnownAnswer(r: Rendered, id: string, opts: {healthStale?: boolean} = {}): void {
-  const slots = SLOTS[id]
-  if (slots) {
-    const expected = slots()
-    // NightSummary (owner decision Q3): a stale health export lends no score.
-    if (id === 'cardSleep' && opts.healthStale) {
-      expected['#sleepScoreVal'] = NO_READING
+// A data state must carry the known answer EXACTLY (review M01): every text
+// node, every content attribute and every inline style beyond the widget's
+// non-data allowlist equals the projection of the known-answer exports
+// (known-answer-render.ts). A wrong value in any slot fails, and so does any
+// carrier the projection does not name.
+function observe(r: Rendered, name: string): Projection {
+  const permitted = new Set(Object.values(NON_DATA_ALLOWLIST.widgets[name] ?? {}).flat())
+  const text: string[] = []
+  const attrs: string[] = []
+  const styles: string[] = []
+  const json: Record<string, unknown[]> = {}
+  const walk = (n: Node): void => {
+    if (n.nodeType === 3) {
+      const t = (n.textContent ?? '').replace(/\s+/g, ' ').trim()
+      if (t) {
+        text.push(t)
+      }
+      return
     }
-    for (const [selector, value] of Object.entries(expected)) {
-      expect(r.root.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim(), selector).toBe(value)
+    if (n.nodeType !== 1) {
+      return
     }
-  } else {
-    expect(leaked(r, knownAnswerTokens).length).toBeGreaterThan(0)
+    const el = n as Element
+    // The header's live label and stale "as of" time: the state tests pin them.
+    if (el.matches('[data-live-label], time.widget-timestamp-stale')) {
+      return
+    }
+    const tag = el.tagName.toLowerCase()
+    for (const a of el.attributes) {
+      if (a.name === 'style') {
+        if (!permitted.has(`${tag} style=${a.value}`)) {
+          styles.push(`${tag} ${a.value}`)
+        }
+      } else if (JSON_ATTR.has(a.name)) {
+        attrs.push(`${a.name}=*`)
+        ;(json[a.name] ??= []).push(JSON.parse(a.value))
+      } else if (!NON_CONTENT_ATTR.test(a.name)) {
+        attrs.push(`${a.name}=${a.value}`)
+      }
+    }
+    el.childNodes.forEach(walk)
   }
+  walk(r.root)
+  return {text, attrs, styles, ...(Object.keys(json).length ? {json} : {})}
+}
+
+function expectKnownAnswer(r: Rendered, id: string, opts: {healthStale?: boolean} = {}): void {
+  const widget = LIVE_WIDGETS.find((w) => w.id === id)!
+  // NightSummary (owner decision Q3): a stale health export lends no score.
+  const expected = knownAnswerProjection(id, {healthLive: !opts.healthStale})
+  const actual = observe(r, widget.name)
+  expect(actual.text, `${id} text`).toEqual(expected.text)
+  expect(actual.attrs, `${id} attributes`).toEqual(expected.attrs)
+  expect(actual.styles, `${id} styles`).toEqual(expected.styles)
+  expect(actual.json, `${id} JSON attributes`).toEqual(expected.json)
 }
 
 // Whole-number match: "33" must not match inside "133" or "3.33".
@@ -609,6 +659,105 @@ describe.each(LIVE_WIDGETS)('$name: every non-data state is data-free', ({compon
     })
     expect(unreviewed).toEqual([])
     expect(r.text.replace(ALLOWED_DATA_FREE_DIGITS, '').match(/\d/g) ?? []).toEqual([])
+  })
+})
+
+// ── Review M01: every attribute of a non-data state is on a reviewed list ──
+//
+// The byte-identity check above compares a render with a data-free render of
+// the same template, so a carrier both renders share (a fabricated data-*
+// attribute, a CSS custom property holding a measurement) passes it. This check
+// compares every attribute with non-data-allowlist.json instead: a committed,
+// hand-reviewed list that does not come from the render under test. Inline
+// styles are attributes here like any other.
+
+type NonDataState = (typeof NON_DATA_STATES)[number]
+
+// Astro's hoisted component script: the only <script> a widget emits.
+const HOISTED_SCRIPT_SRC = /\.astro\?astro&type=script&index=\d+&lang\.ts$/
+
+function attributePairs(html: string): {pairs: Set<string>; scripts: string[]} {
+  const doc = new JSDOM(html).window.document
+  const pairs = new Set<string>()
+  const scripts: string[] = []
+  for (const el of doc.body.querySelectorAll('*')) {
+    const tag = el.tagName.toLowerCase()
+    if (tag === 'script') {
+      scripts.push(
+        [...el.attributes].map((a) => `${a.name}=${a.name === 'src' && HOISTED_SCRIPT_SRC.test(a.value) ? '<hoisted>' : a.value}`).sort().join(' ')
+      )
+      continue
+    }
+    for (const a of el.attributes) {
+      if (!a.name.startsWith('data-astro-')) {
+        pairs.add(`${tag} ${a.name}=${a.value}`)
+      }
+    }
+  }
+  return {pairs, scripts}
+}
+
+function permittedPairs(name: string, state: NonDataState): Set<string> {
+  const entry = NON_DATA_ALLOWLIST.widgets[name]
+  return new Set([...(entry?.all ?? []), ...(entry?.[state] ?? [])])
+}
+
+// covers: widget-contract#A live web widget renders real data or an honest state in its server markup
+describe.each(LIVE_WIDGETS)('$name: every non-data attribute is on the reviewed allowlist', ({name, component, id, vm}) => {
+  it.each(NON_DATA_STATES)('%s: no attribute outside the list, whatever the caller passes', async (state) => {
+    const permitted = permittedPairs(name, state)
+    const renders = {
+      dataFree: await container.renderToString(component, {props: {state}}),
+      forcedLive: await container.renderToString(component, {props: {...vmFor(exportsFor(KNOWN_ANSWER), vm), state}})
+    }
+    for (const [label, html] of Object.entries(renders)) {
+      const {pairs, scripts} = attributePairs(html)
+      expect([...pairs].filter((p) => !permitted.has(p)), `${id} ${state} ${label}: unlisted attributes`).toEqual([])
+      for (const script of scripts) {
+        expect(script, `${id} ${state} ${label}: only the hoisted component script`).toBe('src=<hoisted> type=module')
+      }
+    }
+  })
+
+  it('the list holds no entry a render does not use', async () => {
+    const entry = NON_DATA_ALLOWLIST.widgets[name]!
+    const used: Record<string, Set<string>> = {}
+    for (const state of NON_DATA_STATES) {
+      used[state] = attributePairs(await container.renderToString(component, {props: {state}})).pairs
+    }
+    // A shared entry is used in every state; a state entry in its state and not in all four.
+    expect(entry.all!.filter((p) => NON_DATA_STATES.some((s) => !used[s]!.has(p))), 'prunable shared entries').toEqual([])
+    for (const state of NON_DATA_STATES) {
+      expect((entry[state] ?? []).filter((p) => !used[state]!.has(p)), `prunable ${state} entries`).toEqual([])
+      expect((entry[state] ?? []).filter((p) => NON_DATA_STATES.every((s) => used[s]!.has(p))), `${state} entries that belong under all`).toEqual([])
+    }
+  })
+})
+
+describe('the non-data allowlist itself carries no input value', () => {
+  it('names exactly the live widgets and only the four non-data states', () => {
+    expect(Object.keys(NON_DATA_ALLOWLIST.widgets).sort()).toEqual(LIVE_WIDGETS.map((w) => w.name).sort())
+    for (const entry of Object.values(NON_DATA_ALLOWLIST.widgets)) {
+      expect(Object.keys(entry).sort()).toEqual(['all', ...NON_DATA_STATES].sort())
+    }
+  })
+
+  it('no entry holds a known-answer string, number or timestamp, or a CSS custom property', () => {
+    const entries = Object.values(NON_DATA_ALLOWLIST.widgets).flatMap((e) => Object.values(e).flat())
+    const text = entries.join('\n')
+    expect([...knownAnswerTokens].filter((t) => contains(text, t))).toEqual([])
+    // A known-answer number that collides with chrome geometry, reviewed by
+    // hand: each entry holding it must hold it only in that chrome form.
+    const CHROME_COLLISIONS: Record<string, string> = {'143': 'height: 143px'}
+    const values = entries.map((p) => p.slice(p.indexOf('=') + 1))
+    for (const n of [...knownAnswerNumbers].filter((k) => values.some((v) => containsNumber(v, k)))) {
+      const chrome = CHROME_COLLISIONS[n]
+      expect(chrome, `known-answer number ${n} in the allowlist`).toBeDefined()
+      expect(values.filter((v) => containsNumber(v.split(chrome!).join(''), n)), n).toEqual([])
+    }
+    expect([...knownAnswerTimestamps].filter((t) => text.includes(t))).toEqual([])
+    // A custom property may hold any value; only token references (var(--lg-*)) and none set inline.
+    expect(entries.filter((p) => / style=/.test(p) && /(^|[;\s])--[\w-]+\s*:/.test(p.slice(p.indexOf('=') + 1)))).toEqual([])
   })
 })
 
