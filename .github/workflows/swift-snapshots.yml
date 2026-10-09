@@ -1,0 +1,206 @@
+name: Swift Snapshots
+
+# Runs the Swift snapshot suites on a concrete, pinned iOS Simulator and gates their baselines.
+#
+# WHY A SIMULATOR LANE. Every snapshot suite under Tests/ is wrapped in `#if canImport(UIKit)`.
+# ci.yml's `test-swift` job runs `swift test` on the macOS host, where UIKit does not exist, so
+# those suites compile OUT and no job ever ran them. The baselines rotted unseen: by 2026-10-08
+# every committed image mismatched on a simulator, and one test file had not even compiled since
+# #37 moved HealthRingView into LifegamesComponentsCore.
+#
+# WHY NOT A WORKFLOW-LEVEL `paths:` FILTER. A workflow that a path filter suppresses reports no
+# check at all, so branch protection could never require it. The filter is a job here instead:
+# when no Swift input changed, `swift-snapshots` concludes `skipped` and still reports.
+#
+# FAIL-CLOSED. `swift-snapshots` runs whenever `swift-changes` did not give a clean "no Swift
+# change" answer: the filter failed, was skipped (fork PR, manual dispatch), or found a change.
+# A fork PR then reaches the refusal step and reports RED instead of a vacuous skip, the same rule
+# ci.yml's `package-version-drift` applies to fork code on self-hosted hardware.
+#
+# RE-RECORDING. Dispatch this workflow with `record: true` on the branch that changes the views.
+# The job re-records every image on the pinned simulator, fails on purpose (record mode always
+# fails a snapshot test), and uploads the new images as the `swift-snapshots-recorded-<run id>`
+# artifact. A human reviews each image against the old one and commits it. CI never commits.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    # Same trigger set as ci.yml: `ready_for_review` is not in the bare default.
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      record:
+        description: 'Re-record every snapshot baseline on the pinned simulator (commit the artifact manually)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swift-snapshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  swift-changes:
+    # Linux and cheap. The macOS lane is two runners wide and queue-bound, so the filter must not
+    # take a macOS slot just to decide that the macOS job is not needed.
+    if: github.event_name != 'workflow_dispatch' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: [self-hosted, linux, arm64, node]
+    outputs:
+      swift: ${{ steps.filter.outputs.swift }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Detect Swift source, test and resource changes
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          # Sources/** covers the views, the generated Swift tokens and the widget fixtures in
+          # Sources/LifegamesWidgets/Resources. Tests/** covers the suites and their baselines.
+          # Package.swift and Package.resolved decide what compiles and which
+          # swift-snapshot-testing renders. This file is listed so a change to the lane re-runs it.
+          filters: |
+            swift:
+              - 'Sources/**'
+              - 'Tests/**'
+              - 'Package.swift'
+              - 'Package.resolved'
+              - '.github/workflows/swift-snapshots.yml'
+
+  swift-snapshots:
+    name: swift-snapshots
+    needs: [swift-changes]
+    if: ${{ !cancelled() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}
+    runs-on: [self-hosted, macOS, arm64, xcode-26]
+    timeout-minutes: 30
+    env:
+      # THE PIN. The images are only reproducible on this exact device type and runtime. Changing
+      # either one means re-recording every baseline through the `record` dispatch, in the same PR.
+      # The runtime identifier names a minor version only (26.4 and 26.4.1 share iOS-26-4), so
+      # the build number is pinned too. Measured on the lane 2026-10-08: macOS 26.4 (25E246),
+      # Xcode 26.4.1 (17E202), one iOS runtime, "iOS 26.4 (26.4.1 - 23E254a)".
+      SIM_DEVICE_TYPE: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
+      SIM_RUNTIME: com.apple.CoreSimulator.SimRuntime.iOS-26-4
+      SIM_RUNTIME_BUILD: 23E254a
+      # The snapshot suites. The rest of the package is host-agnostic and already runs under
+      # `swift test` in ci.yml's `test-swift`; two of its tests read the repo checkout and the raw
+      # .xcassets directory, which a simulator bundle does not carry.
+      SNAPSHOT_SUITES: >-
+        LifegamesWidgetsTests/HealthWidgetSnapshotTests
+        LifegamesWidgetsTests/WatchSyncDiagnosticsSnapshotTests
+        LifegamesComponentsTests/SectionHeaderSnapshotTests
+        LifegamesComponentsCoreTests/CoffeeMugViewSnapshotTests
+        LifegamesComponentsWatchTests/HealthRingViewSnapshotTests
+      RESULTS_DIR: build/swift-snapshots
+      # xcodebuild forwards TEST_RUNNER_<NAME> into the test process as <NAME>. Without the prefix
+      # the simulator never sees these. `never` makes a mismatch or a missing image a failure,
+      # never a silent re-record.
+      TEST_RUNNER_SNAPSHOT_TESTING_RECORD: ${{ inputs.record && 'all' || 'never' }}
+      TEST_RUNNER_TZ: UTC
+    steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=swift-snapshots cannot evaluate a fork PR::This gate builds and runs the package on a self-hosted macOS runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Select Xcode 26
+        run: |
+          XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then
+            echo "::error::Xcode 26 not found. Available versions:"
+            ls /Applications/Xcode*.app
+            exit 1
+          fi
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
+          xcodebuild -version
+
+      # A fresh device per run: no state survives from an earlier job, and the device type and
+      # runtime are named by identifier, never by a display name that can match several devices.
+      # Booting it here, before xcodebuild, puts a boot failure in its own step with its own error.
+      # This step never installs a runtime: the runner image owns that (ci-runners-private).
+      - name: Create and boot the pinned simulator
+        run: |
+          set -euo pipefail
+          sw_vers
+          echo "--- installed iOS runtimes"
+          xcrun simctl list runtimes ios
+          # Exactly one available runtime may answer to the identifier, and it must be the pinned
+          # build. Two builds under one identifier would let simctl pick either one.
+          MATCHES=$(xcrun simctl list runtimes ios available | grep -F -- "- $SIM_RUNTIME" || true)
+          if [ "$(printf '%s' "$MATCHES" | grep -c .)" != 1 ] || ! printf '%s' "$MATCHES" | grep -qF -- "- $SIM_RUNTIME_BUILD)"; then
+            echo "::error title=Pinned simulator runtime missing::Need exactly one available $SIM_RUNTIME at build $SIM_RUNTIME_BUILD; found: ${MATCHES:-none}. Installing a runtime is a runner-image change (ci-runners-private). Re-pinning means re-recording every baseline."
+            exit 1
+          fi
+          UDID=$(xcrun simctl create "lg-swift-snapshots-$GITHUB_RUN_ID" "$SIM_DEVICE_TYPE" "$SIM_RUNTIME")
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID"
+          xcrun simctl list devices | grep "$UDID"
+
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      - name: swift-snapshots
+        run: |
+          set -o pipefail
+          mkdir -p "$RESULTS_DIR"
+          ONLY_TESTING=()
+          for suite in $SNAPSHOT_SUITES; do ONLY_TESTING+=("-only-testing:$suite"); done
+          # SNAPSHOT_ARTIFACTS is where swift-snapshot-testing writes the image it rendered when a
+          # comparison fails. The simulator shares the host filesystem, so a workspace path works.
+          export TEST_RUNNER_SNAPSHOT_ARTIFACTS="$GITHUB_WORKSPACE/$RESULTS_DIR/failures"
+          bash scripts/ci-heartbeat.sh xcodebuild test \
+            -scheme LifegamesDesignSystem-Package \
+            -destination "platform=iOS Simulator,id=$SIM_UDID" \
+            "${ONLY_TESTING[@]}" \
+            -testLanguage en \
+            -testRegion en_US \
+            -resultBundlePath "$RESULTS_DIR/swift-snapshots.xcresult" \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            2>&1 | tee "$RESULTS_DIR/xcodebuild.log" | { xcbeautify --renderer github-actions 2>/dev/null || cat; }
+
+      # The xcresult holds every attachment swift-snapshot-testing made for a failure: the
+      # reference, the new render and the difference image. Export them as plain files so a
+      # reviewer does not need Xcode to read them.
+      - name: Export failure attachments
+        if: failure()
+        run: |
+          if [ -d "$RESULTS_DIR/swift-snapshots.xcresult" ]; then
+            xcrun xcresulttool export attachments \
+              --path "$RESULTS_DIR/swift-snapshots.xcresult" \
+              --output-path "$RESULTS_DIR/attachments" || true
+          fi
+
+      - name: Upload xcresult and failure diffs
+        if: failure() && !inputs.record
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: swift-snapshots-failures-${{ github.run_id }}
+          path: |
+            build/swift-snapshots/swift-snapshots.xcresult
+            build/swift-snapshots/xcodebuild.log
+            build/swift-snapshots/failures/
+            build/swift-snapshots/attachments/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Upload re-recorded baselines (record mode)
+        if: always() && inputs.record
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: swift-snapshots-recorded-${{ github.run_id }}
+          path: |
+            Tests/**/__Snapshots__/
+            build/swift-snapshots/xcodebuild.log
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Delete the simulator
+        if: always() && env.SIM_UDID != ''
+        run: xcrun simctl delete "$SIM_UDID" || true
