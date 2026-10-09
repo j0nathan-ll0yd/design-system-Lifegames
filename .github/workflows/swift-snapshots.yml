@@ -84,14 +84,21 @@ jobs:
       SIM_DEVICE_TYPE: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
       SIM_RUNTIME: com.apple.CoreSimulator.SimRuntime.iOS-26-4
       SIM_RUNTIME_BUILD: 23E254a
-      # The snapshot suites. The rest of the package is host-agnostic and already runs under
-      # `swift test` in ci.yml's `test-swift`; two of its tests read the repo checkout and the raw
-      # .xcassets directory, which a simulator bundle does not carry.
+      # The snapshot suites, each followed by the behavioral suite that holds the same states.
+      # A re-recorded image is a self-minted baseline, so the lane proves the state it shows in
+      # the same build. The behavioral suites also run under `swift test` in ci.yml's
+      # `test-swift`. The rest of the package is host-agnostic and runs only there: two of its
+      # tests read the repo checkout and the raw .xcassets directory, which a simulator bundle
+      # does not carry.
       SNAPSHOT_SUITES: >-
         LifegamesWidgetsTests/HealthWidgetSnapshotTests
+        LifegamesWidgetsTests/HealthWidgetBehaviorTests
         LifegamesWidgetsTests/WatchSyncDiagnosticsSnapshotTests
+        LifegamesWidgetsTests/WatchSyncDiagnosticsBehaviorTests
         LifegamesComponentsTests/SectionHeaderSnapshotTests
+        LifegamesComponentsTests/SectionHeaderBehaviorTests
         LifegamesComponentsCoreTests/CoffeeMugViewSnapshotTests
+        LifegamesComponentsCoreTests/CoffeeMugAndHealthRingBehaviorTests
         LifegamesComponentsWatchTests/HealthRingViewSnapshotTests
       RESULTS_DIR: build/swift-snapshots
       # xcodebuild forwards TEST_RUNNER_<NAME> into the test process as <NAME>. Without the prefix
@@ -144,26 +151,34 @@ jobs:
           xcrun simctl list devices | grep "$UDID"
 
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
+      #
+      # The heartbeat wraps the WHOLE pipeline, not just xcodebuild. xcbeautify buffers its
+      # output when stdout is not a terminal (run 37869355099 printed 2m04s of build in one
+      # burst), so a beat routed through the same pipe would be held back with it, and a silent
+      # interval is what the self-hosted inactivity deadline kills. Run as a child, the heartbeat
+      # writes straight to the step log.
       - name: swift-snapshots
         run: |
-          set -o pipefail
           mkdir -p "$RESULTS_DIR"
-          ONLY_TESTING=()
-          for suite in $SNAPSHOT_SUITES; do ONLY_TESTING+=("-only-testing:$suite"); done
           # SNAPSHOT_ARTIFACTS is where swift-snapshot-testing writes the image it rendered when a
           # comparison fails. The simulator shares the host filesystem, so a workspace path works.
           export TEST_RUNNER_SNAPSHOT_ARTIFACTS="$GITHUB_WORKSPACE/$RESULTS_DIR/failures"
-          bash scripts/ci-heartbeat.sh xcodebuild test \
-            -scheme LifegamesDesignSystem-Package \
-            -destination "platform=iOS Simulator,id=$SIM_UDID" \
-            "${ONLY_TESTING[@]}" \
-            -testLanguage en \
-            -testRegion en_US \
-            -resultBundlePath "$RESULTS_DIR/swift-snapshots.xcresult" \
-            -skipPackagePluginValidation \
-            CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO \
-            2>&1 | tee "$RESULTS_DIR/xcodebuild.log" | { xcbeautify --renderer github-actions 2>/dev/null || cat; }
+          bash scripts/ci-heartbeat.sh bash -c '
+            set -o pipefail
+            only_testing=()
+            for suite in $SNAPSHOT_SUITES; do only_testing+=("-only-testing:$suite"); done
+            xcodebuild test \
+              -scheme LifegamesDesignSystem-Package \
+              -destination "platform=iOS Simulator,id=$SIM_UDID" \
+              "${only_testing[@]}" \
+              -testLanguage en \
+              -testRegion en_US \
+              -resultBundlePath "$RESULTS_DIR/swift-snapshots.xcresult" \
+              -skipPackagePluginValidation \
+              CODE_SIGNING_ALLOWED=NO \
+              COMPILER_INDEX_STORE_ENABLE=NO \
+              2>&1 | tee "$RESULTS_DIR/xcodebuild.log" | { xcbeautify --renderer github-actions 2>/dev/null || cat; }
+          '
 
       # The xcresult holds every attachment swift-snapshot-testing made for a failure: the
       # reference, the new render and the difference image. Export them as plain files so a
