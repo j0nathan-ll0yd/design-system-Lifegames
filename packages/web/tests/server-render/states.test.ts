@@ -210,10 +210,15 @@ function leakedLegacy(rendered: Rendered): string[] {
 
 // A data state must carry the known answer: the exact slot values for the
 // numeric health widgets, at least one distinctive string for the others.
-function expectKnownAnswer(r: Rendered, id: string): void {
+function expectKnownAnswer(r: Rendered, id: string, opts: {healthStale?: boolean} = {}): void {
   const slots = SLOTS[id]
   if (slots) {
-    for (const [selector, value] of Object.entries(slots())) {
+    const expected = slots()
+    // NightSummary (owner decision Q3): a stale health export lends no score.
+    if (id === 'cardSleep' && opts.healthStale) {
+      expected['#sleepScoreVal'] = NO_READING
+    }
+    for (const [selector, value] of Object.entries(expected)) {
       expect(r.root.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim(), selector).toBe(value)
     }
   } else {
@@ -313,7 +318,8 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     expect(asOf?.getAttribute('datetime')).toBe(props.generatedAt)
     expect(asOf?.textContent).toMatch(/^as of /)
     expect(leakedLegacy(r)).toEqual([])
-    expectKnownAnswer(r, id)
+    // Every export is stale here, health included.
+    expectKnownAnswer(r, id, {healthStale: true})
   })
 
   it('unavailable: a notice, no value', async () => {
@@ -442,14 +448,13 @@ describe('a null measurement renders as no reading, never 0', () => {
 // ── Card-specific contracts ──────────────────────────────────────────
 
 describe('card-specific contracts', () => {
-  it('NightSummary carries the OLDEST input generatedAt and the WORST input state', async () => {
+  it("NightSummary follows the sleep export alone: its state and generatedAt, never the health export's", async () => {
     const exports = exportsFor(KNOWN_ANSWER)
     exports.sleep = {data: raw('sleep', KNOWN_ANSWER), state: 'stale'}
+    exports.health = {data: {...raw('health', KNOWN_ANSWER), generatedAt: '2026-03-17T01:00:00.000Z'}}
     const vm = toDashboardViewModels(exports, NOW).nightSummary
-    const healthAt = Date.parse(raw('health', KNOWN_ANSWER).generatedAt)
-    const sleepAt = Date.parse(raw('sleep', KNOWN_ANSWER).generatedAt)
     expect(vm.state).toBe('stale')
-    expect(vm.generatedAt).toBe(healthAt <= sleepAt ? raw('health', KNOWN_ANSWER).generatedAt : raw('sleep', KNOWN_ANSWER).generatedAt)
+    expect(vm.generatedAt).toBe(raw('sleep', KNOWN_ANSWER).generatedAt)
   })
 
   it('Workouts is visible by default and carries its own generatedAt', async () => {
@@ -700,6 +705,30 @@ describe('the matrix covers every live widget', () => {
 // ── M2: the view model and the markup agree on the state, for every variation ──
 
 describe('the view-model state equals the rendered data-ssr-state', () => {
+  it('NightSummary: every sleep variation crossed with every health state agrees, and follows sleep', async () => {
+    const sleepVariations = readdirSync(join(GENERATED, DOMAIN_DIRS.sleep)).map((f) => f.replace(/\.json$/, ''))
+    const healthInputs: Record<string, DomainInput<any>> = {
+      live: {data: raw('health', KNOWN_ANSWER)},
+      stale: {data: raw('health', KNOWN_ANSWER), state: 'stale'},
+      unavailable: {data: null},
+      noScore: {data: kaHealthWith(['heartRate'])}
+    }
+    for (const variation of sleepVariations) {
+      for (const [healthName, healthInput] of Object.entries(healthInputs)) {
+        const sleepInput = {data: raw('sleep', variation)}
+        const vm = toDashboardViewModels({health: healthInput, sleep: sleepInput}, NOW).nightSummary
+        const sleepOnly = toDashboardViewModels({sleep: sleepInput, health: {data: raw('health', KNOWN_ANSWER)}}, NOW).nightSummary
+        const r = await render(NightSummary, vm as unknown as Record<string, unknown>, 'cardSleep')
+        const where = `sleep/${variation} × health/${healthName}`
+        expect(r.root.getAttribute('data-ssr-state'), where).toBe(vm.state)
+        expect(r.root.getAttribute('data-generated-at'), where).toBe(vm.generatedAt ?? null)
+        // The health export never changes the card's state or timestamp.
+        expect(vm.state, where).toBe(sleepOnly.state)
+        expect(vm.generatedAt, where).toBe(sleepOnly.generatedAt)
+      }
+    }
+  })
+
   const variations = (domain: Domain): string[] => readdirSync(join(GENERATED, DOMAIN_DIRS[domain])).map((f) => f.replace(/\.json$/, ''))
   const DOMAINS = (Object.keys(DOMAIN_DIRS) as Domain[]).filter((d) => d !== 'focus')
 

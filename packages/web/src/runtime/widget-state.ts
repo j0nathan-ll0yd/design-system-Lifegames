@@ -29,7 +29,7 @@ export const WIDGET_STATES: readonly WidgetState[] = ['live', 'stale', 'empty', 
 export interface WidgetStateProps {
   /** Render state. Omitted → derived from the data (see resolveWidgetState). */
   state?: WidgetState
-  /** ISO-8601 `generatedAt` of the export (the OLDEST input for a multi-export card). */
+  /** ISO-8601 `generatedAt` of the export the card's state follows. */
   generatedAt?: string | null
 }
 

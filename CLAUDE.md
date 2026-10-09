@@ -108,7 +108,7 @@ change. See `contracts/component-catalog/README.md`.
 
 Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
 `openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
-today: `widget-contract`** (14 requirements / 47 scenarios), which restates the widget contract already
+today: `widget-contract`** (14 requirements / 48 scenarios), which restates the widget contract already
 enforced by `governance-gates`, `test-swift`, `contract-ts` and `lint-web` — P3/F-015 purity, the
 fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7

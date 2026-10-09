@@ -55,6 +55,12 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
 - MovementRings invents no sunrise, sunset or sun position when `solar` is absent.
 - SystemStatus never renders the retired Location row, in any mode.
 - Every date renders in `America/Los_Angeles`.
+- NightSummary follows the sleep export alone (owner decision Q3): its state and `generatedAt` are
+  the sleep export's. The health export lends only the sleep score, and only while it is live; an
+  unavailable, stale or score-less health export renders the score as `—` and never takes the card
+  down. New in `runtime/widget-rules`: `nightSummaryDomain(sleep, health)` and
+  `sleepScoreSource(health, healthState)` (the client path:
+  `adaptSleep(sleep, sleepScoreSource(health, healthState))`).
 - NightSummary: a sleep export missing REM, deep or core has no total (`sleepDurationFormatted`
   is `''`, rendered as `—`), never a partial sum. `computeTotalSleepSeconds` returns `null` then.
 - A paused watch renders no value (the scaffold is value-free) and the paused copy renders only

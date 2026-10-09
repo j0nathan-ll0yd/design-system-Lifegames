@@ -593,8 +593,10 @@ Each live web widget (HeartRate, MovementRings, Hydration, NightSummary, Workout
 StarredRepoList, ReadingFeed, Bookshelf, TheatreReviews) SHALL render, in server markup and without
 client JavaScript, exactly one of six states: `live`, `stale`, `empty`, `unavailable`, `suppressed`
 or `loading`. Its card root SHALL carry the state as `data-ssr-state`. A data state SHALL carry the
-export's `generatedAt` as `data-generated-at`, and a card that reads two exports SHALL carry the oldest
-input timestamp and the worst input state. A measurement the export did not carry SHALL render as the
+export's `generatedAt` as `data-generated-at`. NightSummary reads two exports but SHALL follow the sleep
+export alone: its state and `data-generated-at` are the sleep export's, the health export lends only the
+sleep score and only while it is live, and only suppression (both exports sit behind one focus gate)
+covers the whole card (owner decision Q3, 2026-10-08). A measurement the export did not carry SHALL render as the
 no-reading mark, never as `0`. A non-data state SHALL carry no input value, and `suppressed` SHALL
 carry none even when a caller passes data (atlas decision 0160).
 
@@ -631,3 +633,11 @@ proves its provenance.
 - **WHEN** every live widget renders
 - **THEN** each SHALL render `suppressed` with its notice and no known-answer value, even when the
   caller also passes the data
+
+#### Scenario: NightSummary's health export is unavailable, stale or missing the score
+
+- **GIVEN** a live sleep export and a health export that is unavailable, stale, or carries no sleep score
+- **WHEN** NightSummary renders on the server and the client updates it
+- **THEN** the card SHALL stay in the sleep export's state with the sleep export's `generatedAt`, the score
+  slot SHALL carry the no-reading mark, and an unavailable sleep export SHALL make the card unavailable
+  whatever the health export is

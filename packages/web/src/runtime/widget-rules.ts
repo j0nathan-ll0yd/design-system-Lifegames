@@ -181,6 +181,38 @@ export function nightSummaryState(p: NightSummaryProps): WidgetState {
   return resolveWidgetState(p.state, h != null && !noSleep)
 }
 
+// ── NightSummary's two inputs (owner decision Q3, 2026-10-08) ─────────
+
+/** A domain as the page loader resolved it: its state and its export timestamp. */
+export interface DomainState {
+  state: WidgetState
+  generatedAt: string | null
+}
+
+/**
+ * NightSummary's state and "as of" time follow the SLEEP export alone. The
+ * health export lends only the sleep score (see sleepScoreSource); its
+ * unavailability or staleness never takes the card down. Suppression still
+ * covers the whole card: both exports sit behind the same focus gate. This
+ * replaces the worst-state, oldest-timestamp rule for NightSummary only.
+ */
+export function nightSummaryDomain(sleep: DomainState, health: DomainState): DomainState {
+  if (sleep.state === 'suppressed' || health.state === 'suppressed') {
+    return {state: 'suppressed', generatedAt: null}
+  }
+  return {state: sleep.state, generatedAt: rendersData(sleep.state) ? sleep.generatedAt : null}
+}
+
+/**
+ * The health export behind NightSummary's sleep score: only a LIVE health
+ * export lends it. Unavailable, missing or stale health yields null, and the
+ * score slot renders the no-reading mark. Shared by the server view model and
+ * the client path (adaptSleep(sleep, sleepScoreSource(health, healthState))).
+ */
+export function sleepScoreSource<T>(health: T | null | undefined, healthState: WidgetState): T | null {
+  return health != null && healthState === 'live' ? health : null
+}
+
 /** Workouts: no workouts is the recovery-day empty state. */
 export function workoutsState(p: WorkoutsProps): WidgetState {
   return listState(p.state, p.health?.workouts)

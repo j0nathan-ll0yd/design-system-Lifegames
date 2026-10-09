@@ -23,13 +23,15 @@ import {
   heartRateState,
   hydrationState,
   movementRingsState,
+  nightSummaryDomain,
   nightSummaryState,
   readingFeedState,
+  sleepScoreSource,
   starredRepoListState,
   theatreReviewsState,
   workoutsState
 } from './widget-rules'
-import {isHidingFocus, NO_READING, oldestGeneratedAt, rendersData, toEpochMs, type WidgetState, type WidgetStateProps, worstState} from './widget-state'
+import {isHidingFocus, NO_READING, rendersData, toEpochMs, type WidgetState, type WidgetStateProps} from './widget-state'
 import {widgets} from '@j0nathan-ll0yd/copy'
 import type {
   ArticlesExport,
@@ -224,8 +226,10 @@ function stateProps(r: {state: WidgetState; generatedAt: string | null}): Widget
  * loader owns that rule and passes `state: 'unavailable'` (or 'suppressed')
  * per domain. Freshness (`stale`) is likewise the loader's verdict.
  *
- * A card that reads two exports (NightSummary: health + sleep) carries the
- * WORST input state and the OLDEST input `generatedAt`.
+ * NightSummary reads two exports but follows the sleep export alone: its
+ * state and `generatedAt` are the sleep export's, and the health export lends
+ * only the sleep score while it is live (nightSummaryDomain, sleepScoreSource;
+ * owner decision Q3, 2026-10-08).
  */
 export function toDashboardViewModels(exports: DashboardExports, now: number | string | Date): DashboardViewModels {
   const nowMs = toEpochMs(now)
@@ -244,10 +248,10 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
 
   const adaptedHealth = health.data ? adaptHealth(health.data, sleep.data) : null
 
-  // NightSummary: score from health, phases from sleep.
-  const nightState = worstState(health.state, sleep.state)
-  const adaptedSleep = sleep.data && rendersData(nightState) ? adaptSleep(sleep.data, health.data) : null
-  const night = {state: nightState, generatedAt: oldestGeneratedAt(health.generatedAt, sleep.generatedAt)}
+  // NightSummary follows the sleep export alone (owner decision Q3): the
+  // health export lends only the score, and only while it is live.
+  const night = nightSummaryDomain(sleep, health)
+  const adaptedSleep = sleep.data && rendersData(night.state) ? adaptSleep(sleep.data, sleepScoreSource(health.data, health.state)) : null
 
   const adaptedEvents = events.data ? adaptGithubEvents(events.data, nowMs) : []
   const adaptedStarred = starred.data ? adaptStarredRepos(starred.data, nowMs) : []

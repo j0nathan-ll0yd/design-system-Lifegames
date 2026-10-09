@@ -6,8 +6,10 @@ import type { WidgetStateProps } from '../../runtime/widget-state';
 
 export interface NightSummaryProps extends WidgetStateProps {
   // Absent in the non-data states (unavailable, suppressed, loading). This card
-  // reads two exports (health for the score, sleep for the phases): the caller
-  // passes the WORST input state and the OLDEST input generatedAt.
+  // reads two exports but follows the SLEEP export alone: state and
+  // generatedAt are the sleep export's; the health export lends only the
+  // sleep score while it is live, else the score is null (owner decision Q3;
+  // nightSummaryDomain and sleepScoreSource in runtime/widget-rules).
   health?: {
     // null when the health export did not carry a sleep score (never 0).
     sleepScore: number | null;
