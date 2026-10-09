@@ -19,6 +19,9 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.0"),
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
+        // Test-only: behavioral render assertions. Exact pin; 0.10.2+ carries the iOS 18.4
+        // accessibility-value fix and 0.10.3+ the iOS 26 inspection support.
+        .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.5"),
     ],
     targets: [
         .target(name: "LifegamesTokens", resources: [.process("Resources")]),
@@ -38,15 +41,18 @@ let package = Package(
         .testTarget(name: "LifegamesComponentsTests", dependencies: [
             "LifegamesComponents",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            .product(name: "ViewInspector", package: "ViewInspector"),
         ]),
         .testTarget(name: "LifegamesComponentsCoreTests", dependencies: [
             "LifegamesComponentsCore",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            .product(name: "ViewInspector", package: "ViewInspector"),
         ]),
         .testTarget(name: "LifegamesWidgetsTests", dependencies: [
             "LifegamesWidgets",
             "LifegamesWidgetsWatch",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            .product(name: "ViewInspector", package: "ViewInspector"),
         ]),
         .testTarget(name: "LifegamesComponentsWatchTests", dependencies: [
             "LifegamesComponentsWatch",
