@@ -206,6 +206,12 @@ const CARDS: Card[] = [
     cases: {
       live: {input: {health: H, sleep: S}, state: 'live'},
       stale: {input: {health: aged('health', H), sleep: S}, state: 'stale'},
+      // One case per heart-rate zone: the accent, the dot and the zone colours.
+      'zone: bradycardia': {input: {health: raw('health', 'bradycardia')}, state: 'live'},
+      'zone: resting': {input: {health: raw('health', 'resting')}, state: 'live'},
+      'zone: normal': {input: {health: raw('health', 'normal')}, state: 'live'},
+      'zone: fat burn': {input: {health: raw('health', 'fatBurn')}, state: 'live'},
+      'zone: peak': {input: {health: raw('health', 'peak')}, state: 'live'},
       'paused (charging)': {input: {health: raw('health', 'pausedCharging')}, state: 'live'},
       'paused, stale': {input: {health: aged('health', PAUSED)}, state: 'stale'},
       'paused with no heart rate': {input: {health: {...PAUSED, quantities: PAUSED_NO_HR}}, state: 'live'},
