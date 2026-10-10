@@ -64,7 +64,8 @@
         @Test func mugCircularClip() {
             assertSnapshot(
                 of: wrap(
-                    CoffeeMugView(fillPercent: 0.6, animated: false)
+                    // Variation C hides the handle: it would protrude past the circular clip.
+                    CoffeeMugView(fillPercent: 0.6, animated: false, showHandle: false)
                         .frame(width: 120, height: 140)
                         .clipShape(Circle())
                 ),
