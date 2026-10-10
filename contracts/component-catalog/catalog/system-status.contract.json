@@ -35,6 +35,10 @@
                 "type": ["string", "null"],
                 "optional": true
               },
+              "suppressed": {
+                "type": ["boolean", "null"],
+                "optional": true
+              },
               "valClass": {
                 "type": ["string", "null"],
                 "optional": true
