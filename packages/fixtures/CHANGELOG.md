@@ -1,5 +1,26 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.4.0
+
+### Minor Changes
+
+- 7b4aecb: Known-answer and sparse raw fixtures for server-render tests (atlas decision 0160).
+  - `ssrKnownAnswer` raw variation for health, sleep, workouts, books, githubEvents, starredRepos,
+    articles, focus and theatreReviews (location is retired, decision 0012). Its distinctive values
+    appear in no other fixture; `tests/ssr-known-answer.test.ts` proves the disjointness.
+  - `sparse` raw health variation: a schema-valid export without dietaryWater, dietaryCaffeine,
+    exerciseTime, activeEnergyBurned, basalEnergyBurned and sleepScore.
+  - `ssrKnownAnswerFixtures` export in `./raw` with non-optional types.
+  - Post-adapter `starredRepos` carries `datetime` beside `starredAt` (it derives through
+    `adaptStarredRepos`).
+
+### Patch Changes
+
+- Updated dependencies [7b4aecb]
+- Updated dependencies [7b4aecb]
+  - @j0nathan-ll0yd/schemas@2.3.0
+  - @j0nathan-ll0yd/web@4.0.0
+
 ## 1.3.6
 
 ### Patch Changes
