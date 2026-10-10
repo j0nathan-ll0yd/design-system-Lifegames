@@ -137,7 +137,7 @@
   ],
   "a11y": {
     "voiceOverLabel": true,
-    "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:321"
+    "ref": "Sources/LifegamesWidgets/Health/HeartRateView.swift:355"
   },
   "conformance": {
     "behavioralTest": null
