@@ -70,7 +70,13 @@ interface NamespaceFixture {
 const NAMESPACES: NamespaceFixture[] = [
   // identity: person 21 (name/firstName/lastName/handle/jobTitle/rolePhrase/employer/employerUrl/alumniOf/alumniOfUrl/location/yearsExperience/philosophy/skills/interests/sameAs/shortBio/socialBio/longBio/flavorBio/experiencePhrase) + site 5 + seo 4 + a11y 2 + humansTxt 4 + feed 9 (title/description/author/copyright + sections.*5) + privacy 16 (title/lastUpdated/lastUpdatedLabel/backLink/whoHeading/dataDisplayedHeading/dataCollectedHeading/analyticsHeading/rightsHeading/changesHeading/who/dataDisplayed/dataCollected/analytics/rights/changes).
   //   person gained rolePhrase — the lowercase mid-sentence role noun phrase llm.full.systemFraming binds.
-  {name: 'identity', expectedLeaves: 61},
+  //   person gained email/contactType/addressLocality/addressRegion/addressCountry (Person JSON-LD
+  //   contactPoint + address), plus about 9 (title/metaDescription + 4 headings + 3 bodies; the
+  //   background body reuses person.longBio) and
+  //   contact 12 (title/metaDescription/intro/channelsHeading + 3 label/note pairs +
+  //   securityHeading/security) — atlas decision 0158.
+  //   privacy, about, and contact each gained lastModified (the sitemap <lastmod> date).
+  {name: 'identity', expectedLeaves: 90},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
@@ -103,8 +109,14 @@ const NAMESPACES: NamespaceFixture[] = [
   {name: 'profile', expectedLeaves: 6},
   // errors: validation 2 + client 2.
   {name: 'errors', expectedLeaves: 4},
-  // llm: txt 32 + full 102 + dashboard 3 + mcp 29 + agentDiscovery 13.
-  {name: 'llm', expectedLeaves: 179}
+  // llm: txt 39 + full 102 + dashboard 3 + mcp 32 + agentDiscovery 6 + developers 20 + notFound 6.
+  //   atlas decision 0158: txt gained linkSourceRepo + the When-to-use heading/body/4 links, mcp
+  //   gained serverTitle/serverCardDescription, agentDiscovery lost the 7 orphaned A2A leaves, and
+  //   developers (title/metaDescription/intro/apiSuppressedResponse + 8 heading/body
+  //   pairs) and notFound are new.
+  //   developers gained lastModified (the sitemap <lastmod> date). mcp gained coarsenedBandDesc
+  //   (the get_data_sources description for health, sleep, and workouts).
+  {name: 'llm', expectedLeaves: 209}
 ]
 
 for (const ns of NAMESPACES) {
@@ -189,7 +201,7 @@ describe('@j0nathan-ll0yd/copy llm txt surface', () => {
   it('every txt link ships as {label, url} fields', () => {
     const txt = (readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: Record<string, unknown>}).txt
     const links = Object.entries(txt).filter(([, v]) => v !== null && typeof v === 'object')
-    expect(links.length).toBe(17)
+    expect(links.length).toBe(22)
     for (const [key, value] of links) {
       expect({key, ...(value as object)}).toMatchObject({key, label: expect.any(String), url: expect.any(String)})
     }

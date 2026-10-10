@@ -14,6 +14,13 @@ public struct Identity: Codable, Sendable {
     /// Accessibility copy in the V1 identity slice (skip link + OG image alt). The rest of a11y
     /// is V2.
     public let a11Y: A11Y
+    /// About page copy (/about) — title, meta description, and headed sections. The background
+    /// section body reuses person.longBio.
+    public let about: IdentityAbout
+    /// Contact page copy (/contact) — title, meta description, intro, channel labels and notes,
+    /// and the security-report note. Addresses and profile URLs come from person.email and
+    /// person.sameAs.
+    public let contact: IdentityContact
     /// RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain
     /// section labels.
     public let feed: Feed
@@ -24,7 +31,8 @@ public struct Identity: Codable, Sendable {
     public let person: Person
     /// Privacy policy page copy — plain-English sections covering who operates the site, what
     /// data is displayed, what is collected from visitors, analytics, user rights, and change
-    /// notifications. Includes section headings, the last-updated label, and the back-link.
+    /// notifications. Includes section headings, the last-updated label and date, the
+    /// machine-readable lastModified date, and the back-link.
     public let privacy: Privacy
     /// SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in
     /// consumers.
@@ -34,11 +42,13 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case feed, humansTxt, person, privacy, seo, site
+        case about, contact, feed, humansTxt, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
+        self.about = about
+        self.contact = contact
         self.feed = feed
         self.humansTxt = humansTxt
         self.person = person
@@ -68,6 +78,8 @@ public extension Identity {
 
     func with(
         a11Y: A11Y? = nil,
+        about: IdentityAbout? = nil,
+        contact: IdentityContact? = nil,
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
         person: Person? = nil,
@@ -77,6 +89,8 @@ public extension Identity {
     ) -> Identity {
         return Identity(
             a11Y: a11Y ?? self.a11Y,
+            about: about ?? self.about,
+            contact: contact ?? self.contact,
             feed: feed ?? self.feed,
             humansTxt: humansTxt ?? self.humansTxt,
             person: person ?? self.person,
@@ -132,6 +146,167 @@ public extension A11Y {
         return A11Y(
             ogImageAlt: ogImageAlt ?? self.ogImageAlt,
             skipToMain: skipToMain ?? self.skipToMain
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// About page copy (/about) — title, meta description, and headed sections. The background
+/// section body reuses person.longBio.
+// MARK: - IdentityAbout
+public struct IdentityAbout: Codable, Sendable {
+    public let backgroundHeading, lastModified, metaDescription, outside: String
+    public let outsideHeading, site, siteHeading, title: String
+    public let work, workHeading: String
+
+    public init(backgroundHeading: String, lastModified: String, metaDescription: String, outside: String, outsideHeading: String, site: String, siteHeading: String, title: String, work: String, workHeading: String) {
+        self.backgroundHeading = backgroundHeading
+        self.lastModified = lastModified
+        self.metaDescription = metaDescription
+        self.outside = outside
+        self.outsideHeading = outsideHeading
+        self.site = site
+        self.siteHeading = siteHeading
+        self.title = title
+        self.work = work
+        self.workHeading = workHeading
+    }
+}
+
+// MARK: IdentityAbout convenience initializers and mutators
+
+public extension IdentityAbout {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(IdentityAbout.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        backgroundHeading: String? = nil,
+        lastModified: String? = nil,
+        metaDescription: String? = nil,
+        outside: String? = nil,
+        outsideHeading: String? = nil,
+        site: String? = nil,
+        siteHeading: String? = nil,
+        title: String? = nil,
+        work: String? = nil,
+        workHeading: String? = nil
+    ) -> IdentityAbout {
+        return IdentityAbout(
+            backgroundHeading: backgroundHeading ?? self.backgroundHeading,
+            lastModified: lastModified ?? self.lastModified,
+            metaDescription: metaDescription ?? self.metaDescription,
+            outside: outside ?? self.outside,
+            outsideHeading: outsideHeading ?? self.outsideHeading,
+            site: site ?? self.site,
+            siteHeading: siteHeading ?? self.siteHeading,
+            title: title ?? self.title,
+            work: work ?? self.work,
+            workHeading: workHeading ?? self.workHeading
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Contact page copy (/contact) — title, meta description, intro, channel labels and notes,
+/// and the security-report note. Addresses and profile URLs come from person.email and
+/// person.sameAs.
+// MARK: - IdentityContact
+public struct IdentityContact: Codable, Sendable {
+    public let channelsHeading, emailLabel, emailNote, githubLabel: String
+    public let githubNote, intro, lastModified, linkedinLabel: String
+    public let linkedinNote, metaDescription, security, securityHeading: String
+    public let title: String
+
+    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, lastModified: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityHeading: String, title: String) {
+        self.channelsHeading = channelsHeading
+        self.emailLabel = emailLabel
+        self.emailNote = emailNote
+        self.githubLabel = githubLabel
+        self.githubNote = githubNote
+        self.intro = intro
+        self.lastModified = lastModified
+        self.linkedinLabel = linkedinLabel
+        self.linkedinNote = linkedinNote
+        self.metaDescription = metaDescription
+        self.security = security
+        self.securityHeading = securityHeading
+        self.title = title
+    }
+}
+
+// MARK: IdentityContact convenience initializers and mutators
+
+public extension IdentityContact {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(IdentityContact.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        channelsHeading: String? = nil,
+        emailLabel: String? = nil,
+        emailNote: String? = nil,
+        githubLabel: String? = nil,
+        githubNote: String? = nil,
+        intro: String? = nil,
+        lastModified: String? = nil,
+        linkedinLabel: String? = nil,
+        linkedinNote: String? = nil,
+        metaDescription: String? = nil,
+        security: String? = nil,
+        securityHeading: String? = nil,
+        title: String? = nil
+    ) -> IdentityContact {
+        return IdentityContact(
+            channelsHeading: channelsHeading ?? self.channelsHeading,
+            emailLabel: emailLabel ?? self.emailLabel,
+            emailNote: emailNote ?? self.emailNote,
+            githubLabel: githubLabel ?? self.githubLabel,
+            githubNote: githubNote ?? self.githubNote,
+            intro: intro ?? self.intro,
+            lastModified: lastModified ?? self.lastModified,
+            linkedinLabel: linkedinLabel ?? self.linkedinLabel,
+            linkedinNote: linkedinNote ?? self.linkedinNote,
+            metaDescription: metaDescription ?? self.metaDescription,
+            security: security ?? self.security,
+            securityHeading: securityHeading ?? self.securityHeading,
+            title: title ?? self.title
         )
     }
 
@@ -324,8 +499,10 @@ public extension HumansTxt {
 /// Identity facts and biographical voices for Jonathan Lloyd.
 // MARK: - Person
 public struct Person: Codable, Sendable {
-    public let alumniOf, alumniOfURL, employer, employerURL: String
-    public let experiencePhrase, firstName, flavorBio, handle: String
+    public let addressCountry, addressLocality, addressRegion, alumniOf: String
+    public let alumniOfURL, contactType, email, employer: String
+    public let employerURL, experiencePhrase, firstName, flavorBio: String
+    public let handle: String
     public let interests: [String]
     public let jobTitle, lastName, location, longBio: String
     public let name, philosophy, rolePhrase: String
@@ -335,16 +512,21 @@ public struct Person: Codable, Sendable {
     public let socialBio, yearsExperience: String
 
     public enum CodingKeys: String, CodingKey {
-        case alumniOf
+        case addressCountry, addressLocality, addressRegion, alumniOf
         case alumniOfURL = "alumniOfUrl"
-        case employer
+        case contactType, email, employer
         case employerURL = "employerUrl"
         case experiencePhrase, firstName, flavorBio, handle, interests, jobTitle, lastName, location, longBio, name, philosophy, rolePhrase, sameAs, shortBio, skills, socialBio, yearsExperience
     }
 
-    public init(alumniOf: String, alumniOfURL: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, rolePhrase: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+    public init(addressCountry: String, addressLocality: String, addressRegion: String, alumniOf: String, alumniOfURL: String, contactType: String, email: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, rolePhrase: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+        self.addressCountry = addressCountry
+        self.addressLocality = addressLocality
+        self.addressRegion = addressRegion
         self.alumniOf = alumniOf
         self.alumniOfURL = alumniOfURL
+        self.contactType = contactType
+        self.email = email
         self.employer = employer
         self.employerURL = employerURL
         self.experiencePhrase = experiencePhrase
@@ -386,8 +568,13 @@ public extension Person {
     }
 
     func with(
+        addressCountry: String? = nil,
+        addressLocality: String? = nil,
+        addressRegion: String? = nil,
         alumniOf: String? = nil,
         alumniOfURL: String? = nil,
+        contactType: String? = nil,
+        email: String? = nil,
         employer: String? = nil,
         employerURL: String? = nil,
         experiencePhrase: String? = nil,
@@ -409,8 +596,13 @@ public extension Person {
         yearsExperience: String? = nil
     ) -> Person {
         return Person(
+            addressCountry: addressCountry ?? self.addressCountry,
+            addressLocality: addressLocality ?? self.addressLocality,
+            addressRegion: addressRegion ?? self.addressRegion,
             alumniOf: alumniOf ?? self.alumniOf,
             alumniOfURL: alumniOfURL ?? self.alumniOfURL,
+            contactType: contactType ?? self.contactType,
+            email: email ?? self.email,
             employer: employer ?? self.employer,
             employerURL: employerURL ?? self.employerURL,
             experiencePhrase: experiencePhrase ?? self.experiencePhrase,
@@ -444,15 +636,17 @@ public extension Person {
 
 /// Privacy policy page copy — plain-English sections covering who operates the site, what
 /// data is displayed, what is collected from visitors, analytics, user rights, and change
-/// notifications. Includes section headings, the last-updated label, and the back-link.
+/// notifications. Includes section headings, the last-updated label and date, the
+/// machine-readable lastModified date, and the back-link.
 // MARK: - Privacy
 public struct Privacy: Codable, Sendable {
     public let analytics, analyticsHeading, backLink, changes: String
     public let changesHeading, dataCollected, dataCollectedHeading, dataDisplayed: String
-    public let dataDisplayedHeading, lastUpdated, lastUpdatedLabel, rights: String
-    public let rightsHeading, title, who, whoHeading: String
+    public let dataDisplayedHeading, lastModified, lastUpdated, lastUpdatedLabel: String
+    public let rights, rightsHeading, title, who: String
+    public let whoHeading: String
 
-    public init(analytics: String, analyticsHeading: String, backLink: String, changes: String, changesHeading: String, dataCollected: String, dataCollectedHeading: String, dataDisplayed: String, dataDisplayedHeading: String, lastUpdated: String, lastUpdatedLabel: String, rights: String, rightsHeading: String, title: String, who: String, whoHeading: String) {
+    public init(analytics: String, analyticsHeading: String, backLink: String, changes: String, changesHeading: String, dataCollected: String, dataCollectedHeading: String, dataDisplayed: String, dataDisplayedHeading: String, lastModified: String, lastUpdated: String, lastUpdatedLabel: String, rights: String, rightsHeading: String, title: String, who: String, whoHeading: String) {
         self.analytics = analytics
         self.analyticsHeading = analyticsHeading
         self.backLink = backLink
@@ -462,6 +656,7 @@ public struct Privacy: Codable, Sendable {
         self.dataCollectedHeading = dataCollectedHeading
         self.dataDisplayed = dataDisplayed
         self.dataDisplayedHeading = dataDisplayedHeading
+        self.lastModified = lastModified
         self.lastUpdated = lastUpdated
         self.lastUpdatedLabel = lastUpdatedLabel
         self.rights = rights
@@ -500,6 +695,7 @@ public extension Privacy {
         dataCollectedHeading: String? = nil,
         dataDisplayed: String? = nil,
         dataDisplayedHeading: String? = nil,
+        lastModified: String? = nil,
         lastUpdated: String? = nil,
         lastUpdatedLabel: String? = nil,
         rights: String? = nil,
@@ -518,6 +714,7 @@ public extension Privacy {
             dataCollectedHeading: dataCollectedHeading ?? self.dataCollectedHeading,
             dataDisplayed: dataDisplayed ?? self.dataDisplayed,
             dataDisplayedHeading: dataDisplayedHeading ?? self.dataDisplayedHeading,
+            lastModified: lastModified ?? self.lastModified,
             lastUpdated: lastUpdated ?? self.lastUpdated,
             lastUpdatedLabel: lastUpdatedLabel ?? self.lastUpdatedLabel,
             rights: rights ?? self.rights,

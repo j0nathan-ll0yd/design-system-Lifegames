@@ -11,6 +11,11 @@
     "alumniOf": "California State University, Fullerton",
     "alumniOfUrl": "https://www.fullerton.edu",
     "location": "San Francisco, CA",
+    "email": "webmaster@lifegames.org",
+    "contactType": "general inquiries",
+    "addressLocality": "San Francisco",
+    "addressRegion": "CA",
+    "addressCountry": "US",
     "yearsExperience": "24+",
     "philosophy": "Enjoying the passage of time",
     "skills": [
@@ -104,7 +109,8 @@
   },
   "privacy": {
     "title": "Privacy Policy",
-    "lastUpdated": "June 2026",
+    "lastUpdated": "July 2026",
+    "lastModified": "2026-07-30",
     "lastUpdatedLabel": "Last updated:",
     "backLink": "Back to dashboard",
     "whoHeading": "Who runs this site",
@@ -119,5 +125,32 @@
     "analytics": "This site uses Simple Analytics — a cookieless analytics service that collects no personal data and tracks no individuals. No consent banner is required.",
     "rights": "Visitors in the EU and UK have rights under GDPR and UK GDPR. Because this site collects no visitor personal data, most of those rights have no practical application here. You are welcome to contact webmaster@lifegames.org with any questions.",
     "changes": "Material changes to this policy will be noted at the top of this page with an updated date."
+  },
+  "about": {
+    "title": "About Jonathan Lloyd",
+    "metaDescription": "Jonathan Lloyd is an engineering director and backend engineer in San Francisco with 24+ years of experience. His background, work, and site.",
+    "lastModified": "2026-10-07",
+    "backgroundHeading": "Background",
+    "workHeading": "Work",
+    "work": "Jonathan is Engineering Director at Squarespace. His skills include AWS, serverless, TypeScript, Go, Swift, and Perl. He studied at California State University, Fullerton.",
+    "siteHeading": "This site",
+    "site": "Human Datastream is a dashboard of his own data, published on purpose. Body: heart rate, sleep, activity, workouts, and hydration. Mind: GitHub activity, starred repositories, books, saved articles, and theatre reviews. The numbers move when the sources do.",
+    "outsideHeading": "Outside work",
+    "outside": "PC gaming, musical theatre, EDM, and conversation. Philosophy: enjoying the passage of time."
+  },
+  "contact": {
+    "title": "Contact",
+    "metaDescription": "Contact Jonathan Lloyd by email for general inquiries, or find him on LinkedIn and GitHub. Security reports go to the same email address.",
+    "lastModified": "2026-10-07",
+    "intro": "Jonathan Lloyd takes general inquiries by email. His professional history is on LinkedIn, and his public code is on GitHub.",
+    "channelsHeading": "Channels",
+    "emailLabel": "Email",
+    "emailNote": "General inquiries: questions about this site, the data it publishes, or his work.",
+    "linkedinLabel": "LinkedIn",
+    "linkedinNote": "Professional history and current role.",
+    "githubLabel": "GitHub",
+    "githubNote": "Public code, including the source of this site.",
+    "securityHeading": "Security reports",
+    "security": "Report a security issue on this site to webmaster@lifegames.org, the contact that /.well-known/security.txt publishes. Include the affected URL and the steps to reproduce."
   }
 }

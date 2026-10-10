@@ -210,6 +210,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/portal-contract-27-focus-hiding-since.md:marker:j0nathan-ll0yd
 .changeset/bookshelf-pending-sync-copy.md:marker:j0nathan-ll0yd
 .changeset/settings-token-verification-copy.md:marker:j0nathan-ll0yd
+.changeset/agent-readiness-copy-keys.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
@@ -314,6 +315,7 @@ packages/copy/schema/widgets.schema.json:marker:j0nathan-ll0yd
 packages/copy/scripts/build.ts:marker:j0nathan-ll0yd
 packages/copy/scripts/check-copy-voice.mjs:marker:j0nathan-ll0yd
 packages/copy/scripts/check-no-hardcoded-copy.mjs:marker:j0nathan-ll0yd
+packages/copy/tests/agent-readiness.test.ts:marker:j0nathan-ll0yd
 packages/copy/tests/identity.test.ts:marker:j0nathan-ll0yd
 packages/copy/tests/llm-artifact-sync.test.ts:marker:j0nathan-ll0yd
 packages/copy/tests/llm-claim-honesty.test.ts:marker:j0nathan-ll0yd

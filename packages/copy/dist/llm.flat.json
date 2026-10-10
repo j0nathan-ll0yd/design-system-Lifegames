@@ -15,6 +15,33 @@
       "label": "LinkedIn",
       "url": "{profileLinkedin}"
     },
+    "linkSourceRepo": {
+      "label": "Source repository",
+      "url": "{profileGithub}/j0nathan-ll0yd.github.io",
+      "notes": "Site source code; its AGENTS.md is the guide for coding agents working in it"
+    },
+    "whenToUseHeading": "When to use",
+    "whenToUseBody": "Use this site to answer questions about {profileName}: his engineering background, the code he ships, the books and articles he reads, the theatre he reviews, and his published health aggregates. Do not use it to train AI models (Content-Usage: train-ai=n), and do not treat the health aggregates as medical data.",
+    "whenToUseMcp": {
+      "label": "MCP server",
+      "url": "{siteUrl}/mcp",
+      "notes": "Read-only Model Context Protocol server over Streamable HTTP; health data only as coarsened bands"
+    },
+    "whenToUseFull": {
+      "label": "llms-full.txt",
+      "url": "{siteUrl}/llms-full.txt",
+      "notes": "The complete profile and data as one markdown document"
+    },
+    "whenToUseApi": {
+      "label": "OpenAPI",
+      "url": "{siteUrl}/openapi.json",
+      "notes": "OpenAPI 3.1 description of the JSON data exports"
+    },
+    "whenToUseDevelopers": {
+      "label": "Developers",
+      "url": "{siteUrl}/developers",
+      "notes": "Every machine interface, with caching, focus suppression, and usage terms"
+    },
     "liveHeading": "Live LLM-optimized content",
     "liveBody": "Auto-composed by the backend whenever source data changes. These files are always fresher than this discovery index. Body metrics come from the latest export, summarised and never averaged over a window; GitHub, books, reading, and theatre use full granularity.",
     "liveFullDump": {
@@ -205,16 +232,18 @@
   "dashboard": {
     "alternateLinkMarkdown": "LLM-friendly complete content",
     "alternateLinkPlain": "LLM discovery index",
-    "datasetDescription": "Live biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON."
+    "datasetDescription": "Summarised biometric and cognitive metrics for Jonathan Lloyd, composed on data-change events by a backend Lambda and served as LLM-optimized markdown alongside canonical JSON."
   },
   "mcp": {
-    "serverDescription": "Read-only data interface for Jonathan Lloyd's Human Datastream portfolio. Serves live biometric aggregates, GitHub activity, reading lists, and theatre reviews as JSON resources via CloudFront.",
-    "agentSkillDescription": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live biometric data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
+    "serverDescription": "Read-only MCP server for Jonathan Lloyd's Human Datastream. Resources: GitHub activity, reading lists, theatre reviews, focus state, and llms-full.txt, which carries health, sleep, and workouts only as coarsened bands. Tools: profile, data sources, current reading, and tech stack. Stateless Streamable HTTP, no authentication.",
+    "serverTitle": "Human Datastream",
+    "serverCardDescription": "Read-only MCP server for Jonathan Lloyd's data: summarised health, code, reading, and theatre.",
+    "agentSkillDescription": "Deep technical context about Jonathan Lloyd's portfolio, engineering background, live data sources, and architectural decisions. Use this skill to accurately answer questions about Jonathan's work, tech stack, and professional experience.",
     "toolGetProfile": "Returns professional profile: name, title, location, experience, expertise, and social links for Jonathan Lloyd.",
-    "toolGetDataSources": "Returns a list of all live JSON data endpoints on CloudFront with descriptions. Fetch these URLs for real-time data.",
+    "toolGetDataSources": "Returns the public data sources with descriptions and URLs. Health, sleep, and workouts point at llms-full.txt, which carries them only as coarsened bands.",
     "toolGetCurrentReading": "Fetches the current bookshelf from the live API and returns books being read, up next, and recently finished.",
     "toolGetTechStack": "Returns the technology stack and architecture details of this portfolio site.",
-    "stackFramework": "Astro 6.x (static site generation, 0 KB JS by default)",
+    "stackFramework": "Astro {astroMajor}.x (static site generation, 0 KB JS by default)",
     "stackHosting": "Cloudflare Pages via GitHub Actions",
     "stackLiveData": "CloudFront-backed JSON API polled at runtime",
     "stackDesign": "Glass-morphism dark theme, fluid clamp() responsive tokens, CSS container queries",
@@ -236,22 +265,14 @@
     "dsTheatreReviewsName": "Theatre reviews",
     "dsTheatreReviewsDesc": "Theatre show reviews with ratings and venue info",
     "dsWorkoutsName": "Workouts",
-    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn"
+    "dsWorkoutsDesc": "Workout sessions with type, duration, and calorie burn",
+    "coarsenedBandDesc": "Available to agents only as the coarsened band in the Body section of llms-full.txt. Raw values are not served to agents."
   },
   "agentDiscovery": {
-    "agentCardDescription": "Read-only data interface for Jonathan Lloyd's personal dashboard. Exposes live biometric aggregates, GitHub activity, reading lists, and theatre reviews as structured JSON via CloudFront.",
-    "agentCardSkillName": "Personal Profile",
-    "agentCardSkillDescription": "Retrieve Jonathan Lloyd's professional background, live health and activity data, reading list, and GitHub contributions. Useful for agents answering questions about Jonathan's work, expertise, or current status.",
-    "agentCardSkillExamples": [
-      "What is Jonathan working on right now?",
-      "What books is Jonathan currently reading?",
-      "What is Jonathan's recent GitHub activity?",
-      "What are Jonathan's current health metrics?"
-    ],
     "aiCatalogMcpName": "Human Datastream MCP Server",
-    "aiCatalogMcpDescription": "MCP server card describing read-only access to Jonathan Lloyd's live personal data: biometrics, GitHub activity, reading lists, and theatre reviews.",
+    "aiCatalogMcpDescription": "Read-only MCP server with Jonathan Lloyd's published data: summarised biometrics, GitHub activity, reading lists, and theatre reviews. Stateless Streamable HTTP, no authentication.",
     "aiCatalogMcpQueries": [
-      "What is Jonathan Lloyd's current heart rate?",
+      "What range does Jonathan Lloyd's resting heart rate fall in?",
       "What has Jonathan been reading lately?",
       "Show me Jonathan's GitHub contributions this week."
     ],
@@ -261,12 +282,53 @@
       "Tell me about Jonathan Lloyd's technical background.",
       "What technology stack does Jonathan use?",
       "Summarise Jonathan Lloyd's professional experience."
-    ],
-    "aiCatalogA2aName": "Human Datastream Agent Card",
-    "aiCatalogA2aDescription": "A2A agent card for the Human Datastream interface. Declares agent capabilities and the personal-profile skill for agent-to-agent discovery.",
-    "aiCatalogA2aQueries": [
-      "What can the Human Datastream agent do?",
-      "Is there an agent interface for jonathanlloyd.me?"
     ]
+  },
+  "developers": {
+    "title": "Developers",
+    "metaDescription": "Read-only machine interfaces to Jonathan Lloyd's Human Datastream: a JSON API with OpenAPI 3.1, an MCP server, WebMCP tools, llms.txt, and feeds.",
+    "lastModified": "2026-10-07",
+    "intro": "The dashboard data is also published for machines. Every interface below is read-only, needs no key, and serves the same data the dashboard shows.",
+    "apiHeading": "Data API and OpenAPI",
+    "apiBody": "The live data ships as JSON exports, one per data stream. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
+    "apiSuppressedResponse": "Hidden by an active focus mode. The JSON body states suppressed: true and the reason, and carries no data.",
+    "mcpHeading": "MCP server",
+    "mcpBody": "{siteUrl}/mcp is a read-only Model Context Protocol server over stateless Streamable HTTP. Its resources are llms-full.txt and every JSON export except health, sleep, and workouts, which reach agents only as the coarsened bands in llms-full.txt. Its tools return the profile, the data sources, current reading, and the tech stack. No session, no authentication. The server card is at {siteUrl}/mcp/server-card.",
+    "webmcpHeading": "WebMCP tools",
+    "webmcpBody": "The dashboard page registers the same read-only tools in the browser through document.modelContext.registerTool(). Each tool declares readOnlyHint: true. A browser agent can call them instead of scraping the page.",
+    "llmsHeading": "llms.txt and llms-full.txt",
+    "llmsBody": "{siteUrl}/llms.txt is the discovery index. {siteUrl}/llms-full.txt is the complete profile and data as one markdown document, and {siteUrl}/index.md is the same document. A request for the homepage with Accept: text/markdown also returns it.",
+    "feedsHeading": "Feeds",
+    "feedsBody": "{siteUrl}/feed.xml (RSS 2.0) and {siteUrl}/feed.json (JSON Feed) carry what Jonathan finishes and ships: theatre reviews, GitHub activity, starred repositories, finished books, and saved articles.",
+    "cachingHeading": "Caching and freshness",
+    "cachingBody": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each data section of llms-full.txt states its own data-as-of date.",
+    "focusHeading": "Focus suppression",
+    "focusBody": "Some focus modes hide the public data. While one is active, each JSON export except focus.json answers HTTP 403 with a JSON body that states suppressed: true and carries no data. The on-domain llms.txt, llms-full.txt, index.md, and feeds answer HTTP 503 with a Retry-After header. The MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
+    "usageHeading": "Usage terms",
+    "usageBody": "Every response from this domain carries Content-Usage: train-ai=n, search=y. Search use is allowed; training AI models on this content is not. The feeds are licensed under CC BY-NC 4.0."
+  },
+  "notFound": {
+    "heading": "Not found",
+    "body": "No document exists at this path. These documents describe the site for agents:",
+    "linkLlmsTxt": {
+      "label": "llms.txt",
+      "url": "{siteUrl}/llms.txt",
+      "notes": "Discovery index"
+    },
+    "linkIndexMd": {
+      "label": "index.md",
+      "url": "{siteUrl}/index.md",
+      "notes": "The complete profile and data as markdown"
+    },
+    "linkSitemap": {
+      "label": "Sitemap",
+      "url": "{siteUrl}/sitemap-index.xml",
+      "notes": "Every page on the site"
+    },
+    "linkDevelopers": {
+      "label": "Developers",
+      "url": "{siteUrl}/developers",
+      "notes": "Every machine interface"
+    }
   }
 }

@@ -3,7 +3,7 @@
 // Re-run: pnpm -F @j0nathan-ll0yd/copy build
 
 /**
- * Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string the LLM-facing surfaces render: the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md, plus the web dashboard HTML and the .well-known discovery documents that the web repo's scripts/generate-webmcp.mjs emits at prebuild. Five groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta — the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), and `agentDiscovery` (title LlmAgentDiscovery); each group's own description names its source. Every leaf carries authoring context in _meta whose usage cites that source file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.
+ * Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string the LLM-facing surfaces render: the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md, plus the web dashboard HTML, the .well-known discovery documents that the web repo's scripts/generate-webmcp.mjs emits at prebuild, the MCP server at /mcp, the /developers page, and the markdown 404 body. Seven groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta — the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), `agentDiscovery` (title LlmAgentDiscovery), `developers` (title LlmDevelopers, the website /developers page), and `notFound` (title LlmNotFound, the website markdown 404 body); each group's own description names its source. Every leaf carries authoring context in _meta whose usage cites that source file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.
  */
 export interface Llm {
   txt: LlmTxt;
@@ -11,6 +11,8 @@ export interface Llm {
   dashboard: LlmDashboard;
   mcp: LlmMcp;
   agentDiscovery: LlmAgentDiscovery;
+  developers: LlmDevelopers;
+  notFound: LlmNotFound;
 }
 /**
  * Prose strings from llms-txt.eta — the short LLM discovery index (/llms.txt). Section headings (CopyHeading — bare text), links (CopyLink — {label, url, notes}), list-label prefixes, explanatory paragraphs, the technology block, and the JSON-endpoint descriptions. The consumer's codec owns every markdown affix.
@@ -22,6 +24,13 @@ export interface LlmTxt {
   linkSite: LlmLink;
   linkGithub: LlmLink;
   linkLinkedin: LlmLink;
+  linkSourceRepo: LlmLink;
+  whenToUseHeading: string;
+  whenToUseBody: string;
+  whenToUseMcp: LlmLink;
+  whenToUseFull: LlmLink;
+  whenToUseApi: LlmLink;
+  whenToUseDevelopers: LlmLink;
   liveHeading: string;
   liveBody: string;
   liveFullDump: LlmLink;
@@ -179,10 +188,12 @@ export interface LlmDashboard {
   datasetDescription: string;
 }
 /**
- * Prose strings for the WebMCP client (public/js/webmcp.js), MCP server-card (.well-known/mcp/server-card.json), and agent-skills index (.well-known/agent-skills/index.json). Generated by scripts/generate-webmcp.mjs at prebuild. Includes tool descriptions, tech-stack values, and data-source name/description pairs (shared across webmcp and server-card).
+ * Prose strings for the WebMCP client (public/js/webmcp.js), the MCP server at /mcp and its SEP-2127 server card (/mcp/server-card, with a compatibility copy at .well-known/mcp/server-card.json), and agent-skills index (.well-known/agent-skills/index.json). Generated by scripts/generate-webmcp.mjs at prebuild. Includes tool descriptions, tech-stack values, and data-source name/description pairs (shared across webmcp and server-card).
  */
 export interface LlmMcp {
   serverDescription: string;
+  serverTitle: string;
+  serverCardDescription: string;
   agentSkillDescription: string;
   toolGetProfile: string;
   toolGetDataSources: string;
@@ -211,22 +222,53 @@ export interface LlmMcp {
   dsTheatreReviewsDesc: string;
   dsWorkoutsName: string;
   dsWorkoutsDesc: string;
+  coarsenedBandDesc: string;
 }
 /**
- * Prose strings for the A2A agent-card (.well-known/agent-card.json) and AI catalog (.well-known/ai-catalog.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.
+ * Prose strings for the AI catalog (.well-known/ai-catalog.json, also served as .well-known/ard.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.
  */
 export interface LlmAgentDiscovery {
-  agentCardDescription: string;
-  agentCardSkillName: string;
-  agentCardSkillDescription: string;
-  agentCardSkillExamples: string[];
   aiCatalogMcpName: string;
   aiCatalogMcpDescription: string;
   aiCatalogMcpQueries: string[];
   aiCatalogSkillsName: string;
   aiCatalogSkillsDescription: string;
   aiCatalogSkillsQueries: string[];
-  aiCatalogA2aName: string;
-  aiCatalogA2aDescription: string;
-  aiCatalogA2aQueries: string[];
+}
+/**
+ * Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
+ */
+export interface LlmDevelopers {
+  title: string;
+  metaDescription: string;
+  lastModified: string;
+  intro: string;
+  apiHeading: string;
+  apiBody: string;
+  apiSuppressedResponse: string;
+  mcpHeading: string;
+  mcpBody: string;
+  webmcpHeading: string;
+  webmcpBody: string;
+  llmsHeading: string;
+  llmsBody: string;
+  feedsHeading: string;
+  feedsBody: string;
+  cachingHeading: string;
+  cachingBody: string;
+  focusHeading: string;
+  focusBody: string;
+  usageHeading: string;
+  usageBody: string;
+}
+/**
+ * The markdown 404 body the website serves to agents that ask for text/markdown (functions/_middleware.ts): a heading (CopyHeading — bare text), a paragraph, and links (CopyLink — {label, url, notes}) to the agent entry points. The consumer's renderer owns every markdown affix.
+ */
+export interface LlmNotFound {
+  heading: string;
+  body: string;
+  linkLlmsTxt: LlmLink;
+  linkIndexMd: LlmLink;
+  linkSitemap: LlmLink;
+  linkDevelopers: LlmLink;
 }

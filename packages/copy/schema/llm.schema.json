@@ -2,10 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/copy.llm.schema.json",
   "title": "LifegamesCopyLlm",
-  "description": "Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string the LLM-facing surfaces render: the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md, plus the web dashboard HTML and the .well-known discovery documents that the web repo's scripts/generate-webmcp.mjs emits at prebuild. Five groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta — the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), and `agentDiscovery` (title LlmAgentDiscovery); each group's own description names its source. Every leaf carries authoring context in _meta whose usage cites that source file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+  "description": "Rich authoring schema for the llm slice of @j0nathan-ll0yd/copy. Every hardcoded English-prose string the LLM-facing surfaces render: the backend LLM-content Eta templates (src/lib/llm-content/templates/llms-txt.eta and llms-full.eta) that the ComposeLlmContent Lambda renders to the public /llms.txt, /llms-full.txt, and /index.md, plus the web dashboard HTML, the .well-known discovery documents that the web repo's scripts/generate-webmcp.mjs emits at prebuild, the MCP server at /mcp, the /developers page, and the markdown 404 body. Seven groups: `txt` (title LlmTxt, from llms-txt.eta — the short discovery index), `full` (title LlmFull, from llms-full.eta — the complete data dump), `dashboard` (title LlmDashboard), `mcp` (title LlmMcp), `agentDiscovery` (title LlmAgentDiscovery), `developers` (title LlmDevelopers, the website /developers page), and `notFound` (title LlmNotFound, the website markdown 404 body); each group's own description names its source. Every leaf carries authoring context in _meta whose usage cites that source file:line. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Values in the Eta-sourced groups (`txt`, `full`) are stored as the literal template line text with each Eta interpolation tag (<%= it.X %>) replaced by an ICU MessageFormat 1 placeholder ({x}), and all literal markdown markers/punctuation preserved verbatim — so the rendered template output stays byte-identical. EXCEPTION, the `txt` group's headings and links: they ship as FIELDS, not as rendered markdown (atlas decision 0128 P3a). Heading leaves are CopyHeading (bare text, no '#' affix) and link leaves are CopyLink ({label, url, notes}, no '- [](): ' affixes), because the consumer's llms.txt codec models exactly that structure and used to regex-parse the affixes straight back off before re-adding them. The `full` group keeps its rendered form on purpose: its consumer renders it through Eta verbatim and never re-parses it. Casing is the source's natural case. Every object group has a UNIQUE title (Llm*) so quicktype-derived Swift struct names never collide across namespaces. The $defs block is byte-identical to schema/identity.schema.json, schema/widgets.schema.json, schema/a11y.schema.json, schema/app.schema.json, schema/permissions.schema.json, and schema/errors.schema.json; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["txt", "full", "dashboard", "mcp", "agentDiscovery"],
+  "required": ["txt", "full", "dashboard", "mcp", "agentDiscovery", "developers", "notFound"],
   "properties": {
     "txt": {
       "type": "object",
@@ -19,6 +19,13 @@
         "linkSite",
         "linkGithub",
         "linkLinkedin",
+        "linkSourceRepo",
+        "whenToUseHeading",
+        "whenToUseBody",
+        "whenToUseMcp",
+        "whenToUseFull",
+        "whenToUseApi",
+        "whenToUseDevelopers",
         "liveHeading",
         "liveBody",
         "liveFullDump",
@@ -63,6 +70,27 @@
           "$ref": "#/$defs/CopyLink"
         },
         "linkLinkedin": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "linkSourceRepo": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "whenToUseHeading": {
+          "$ref": "#/$defs/CopyHeading"
+        },
+        "whenToUseBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "whenToUseMcp": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "whenToUseFull": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "whenToUseApi": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "whenToUseDevelopers": {
           "$ref": "#/$defs/CopyLink"
         },
         "liveHeading": {
@@ -584,10 +612,12 @@
     "mcp": {
       "type": "object",
       "title": "LlmMcp",
-      "description": "Prose strings for the WebMCP client (public/js/webmcp.js), MCP server-card (.well-known/mcp/server-card.json), and agent-skills index (.well-known/agent-skills/index.json). Generated by scripts/generate-webmcp.mjs at prebuild. Includes tool descriptions, tech-stack values, and data-source name/description pairs (shared across webmcp and server-card).",
+      "description": "Prose strings for the WebMCP client (public/js/webmcp.js), the MCP server at /mcp and its SEP-2127 server card (/mcp/server-card, with a compatibility copy at .well-known/mcp/server-card.json), and agent-skills index (.well-known/agent-skills/index.json). Generated by scripts/generate-webmcp.mjs at prebuild. Includes tool descriptions, tech-stack values, and data-source name/description pairs (shared across webmcp and server-card).",
       "additionalProperties": false,
       "required": [
         "serverDescription",
+        "serverTitle",
+        "serverCardDescription",
         "agentSkillDescription",
         "toolGetProfile",
         "toolGetDataSources",
@@ -615,10 +645,13 @@
         "dsTheatreReviewsName",
         "dsTheatreReviewsDesc",
         "dsWorkoutsName",
-        "dsWorkoutsDesc"
+        "dsWorkoutsDesc",
+        "coarsenedBandDesc"
       ],
       "properties": {
         "serverDescription": { "$ref": "#/$defs/CopyString" },
+        "serverTitle": { "$ref": "#/$defs/CopyString" },
+        "serverCardDescription": { "$ref": "#/$defs/CopyString" },
         "agentSkillDescription": { "$ref": "#/$defs/CopyString" },
         "toolGetProfile": { "$ref": "#/$defs/CopyString" },
         "toolGetDataSources": { "$ref": "#/$defs/CopyString" },
@@ -646,42 +679,24 @@
         "dsTheatreReviewsName": { "$ref": "#/$defs/CopyString" },
         "dsTheatreReviewsDesc": { "$ref": "#/$defs/CopyString" },
         "dsWorkoutsName": { "$ref": "#/$defs/CopyString" },
-        "dsWorkoutsDesc": { "$ref": "#/$defs/CopyString" }
+        "dsWorkoutsDesc": { "$ref": "#/$defs/CopyString" },
+        "coarsenedBandDesc": { "$ref": "#/$defs/CopyString" }
       }
     },
     "agentDiscovery": {
       "type": "object",
       "title": "LlmAgentDiscovery",
-      "description": "Prose strings for the A2A agent-card (.well-known/agent-card.json) and AI catalog (.well-known/ai-catalog.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.",
+      "description": "Prose strings for the AI catalog (.well-known/ai-catalog.json, also served as .well-known/ard.json). Generated by scripts/generate-webmcp.mjs at prebuild. Machine-facing discovery metadata only — no URLs, identifiers, or structural values.",
       "additionalProperties": false,
       "required": [
-        "agentCardDescription",
-        "agentCardSkillName",
-        "agentCardSkillDescription",
-        "agentCardSkillExamples",
         "aiCatalogMcpName",
         "aiCatalogMcpDescription",
         "aiCatalogMcpQueries",
         "aiCatalogSkillsName",
         "aiCatalogSkillsDescription",
-        "aiCatalogSkillsQueries",
-        "aiCatalogA2aName",
-        "aiCatalogA2aDescription",
-        "aiCatalogA2aQueries"
+        "aiCatalogSkillsQueries"
       ],
       "properties": {
-        "agentCardDescription": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "agentCardSkillName": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "agentCardSkillDescription": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "agentCardSkillExamples": {
-          "$ref": "#/$defs/CopyStringList"
-        },
         "aiCatalogMcpName": {
           "$ref": "#/$defs/CopyString"
         },
@@ -699,15 +714,134 @@
         },
         "aiCatalogSkillsQueries": {
           "$ref": "#/$defs/CopyStringList"
-        },
-        "aiCatalogA2aName": {
+        }
+      }
+    },
+    "developers": {
+      "type": "object",
+      "title": "LlmDevelopers",
+      "description": "Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "metaDescription",
+        "lastModified",
+        "intro",
+        "apiHeading",
+        "apiBody",
+        "apiSuppressedResponse",
+        "mcpHeading",
+        "mcpBody",
+        "webmcpHeading",
+        "webmcpBody",
+        "llmsHeading",
+        "llmsBody",
+        "feedsHeading",
+        "feedsBody",
+        "cachingHeading",
+        "cachingBody",
+        "focusHeading",
+        "focusBody",
+        "usageHeading",
+        "usageBody"
+      ],
+      "properties": {
+        "title": {
           "$ref": "#/$defs/CopyString"
         },
-        "aiCatalogA2aDescription": {
+        "metaDescription": {
           "$ref": "#/$defs/CopyString"
         },
-        "aiCatalogA2aQueries": {
-          "$ref": "#/$defs/CopyStringList"
+        "lastModified": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "intro": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "apiSuppressedResponse": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "mcpHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "mcpBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "webmcpHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "webmcpBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "llmsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "llmsBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "feedsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "feedsBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cachingHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "cachingBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "focusHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "focusBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "usageHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "usageBody": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
+    },
+    "notFound": {
+      "type": "object",
+      "title": "LlmNotFound",
+      "description": "The markdown 404 body the website serves to agents that ask for text/markdown (functions/_middleware.ts): a heading (CopyHeading — bare text), a paragraph, and links (CopyLink — {label, url, notes}) to the agent entry points. The consumer's renderer owns every markdown affix.",
+      "additionalProperties": false,
+      "required": [
+        "heading",
+        "body",
+        "linkLlmsTxt",
+        "linkIndexMd",
+        "linkSitemap",
+        "linkDevelopers"
+      ],
+      "properties": {
+        "heading": {
+          "$ref": "#/$defs/CopyHeading"
+        },
+        "body": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkLlmsTxt": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "linkIndexMd": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "linkSitemap": {
+          "$ref": "#/$defs/CopyLink"
+        },
+        "linkDevelopers": {
+          "$ref": "#/$defs/CopyLink"
         }
       }
     }
