@@ -87,17 +87,26 @@ export function theatreCardsHtml(reviews: readonly TheatreCardReview[]): string 
 export const THEATRE_SITE = 'https://www.coasttocoastreviews.com'
 
 /** The header count label ("12 reviews"). */
-export function theatreCountLabel(totalReviews: number): string {
-  return `${totalReviews} reviews`
+/**
+ * The header's count label. A card that shows no review data (the empty
+ * state) names no count: the bare "reviews" link, on server and client.
+ */
+export function theatreCountLabel(totalReviews: number | null | undefined): string {
+  return typeof totalReviews === 'number' ? `${totalReviews} reviews` : 'reviews'
 }
 
-export function updateTheatreReviews(data: TheatreReviewsExport): void {
+export function updateTheatreReviews(data: TheatreReviewsExport | null | undefined): void {
   const card = document.getElementById('cardTheatreReviews')
   if (!card) {
     return
   }
   // A suppressed card stays suppressed: only the focus gate releases it.
   if (isSuppressedCard(card)) {
+    return
+  }
+  // null or undefined: the export could not be read. The card keeps what it
+  // shows; only a successful empty result ([]) empties it.
+  if (data == null || data.reviews == null) {
     return
   }
 
@@ -114,7 +123,8 @@ export function updateTheatreReviews(data: TheatreReviewsExport): void {
     countEl = link
   }
   if (countEl) {
-    countEl.textContent = theatreCountLabel(data.totalReviews)
+    // An empty result shows the server's empty header: no count.
+    countEl.textContent = theatreCountLabel(data.reviews.length === 0 ? null : data.totalReviews)
   }
 
   // Empty state: render the shared placeholder. This replaces `.widget-body`

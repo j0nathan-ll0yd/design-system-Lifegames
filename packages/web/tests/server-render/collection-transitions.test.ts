@@ -43,6 +43,8 @@ interface Collection {
   /** Distinctive strings of each known-answer item. */
   itemText: (data: any) => string[]
   apply: (data: any) => void
+  /** The updater itself, for an unreadable (null or undefined) result. */
+  unreadable: (data: null | undefined) => void
 }
 
 const COLLECTIONS: Collection[] = [
@@ -56,7 +58,8 @@ const COLLECTIONS: Collection[] = [
     items: 'workouts',
     itemSelector: '.workout-sub-card',
     itemText: (d) => d.workouts.map((w: any) => w.activityType),
-    apply: (d) => updateWorkouts(adaptWorkouts(d))
+    apply: (d) => updateWorkouts(adaptWorkouts(d)),
+    unreadable: (d) => updateWorkouts(d)
   },
   {
     name: 'DevActivityLog',
@@ -68,7 +71,8 @@ const COLLECTIONS: Collection[] = [
     items: 'events',
     itemSelector: '.gh-dal-line',
     itemText: (d) => d.events.map((e: any) => e.title),
-    apply: (d) => updateDevActivityLog(adaptGithubEvents(d, NOW))
+    apply: (d) => updateDevActivityLog(adaptGithubEvents(d, NOW)),
+    unreadable: (d) => updateDevActivityLog(d)
   },
   {
     name: 'StarredRepoList',
@@ -80,7 +84,8 @@ const COLLECTIONS: Collection[] = [
     items: 'repos',
     itemSelector: '.gh-sl-row',
     itemText: (d) => d.repos.map((r: any) => r.name),
-    apply: (d) => updateStarredRepos(adaptStarredRepos(d, NOW))
+    apply: (d) => updateStarredRepos(adaptStarredRepos(d, NOW)),
+    unreadable: (d) => updateStarredRepos(d)
   },
   {
     name: 'ReadingFeed',
@@ -92,7 +97,8 @@ const COLLECTIONS: Collection[] = [
     items: 'articles',
     itemSelector: '.article-list-item',
     itemText: (d) => d.articles.map((a: any) => a.articleTitle),
-    apply: (d) => updateReadingFeed(adaptArticles(d, NOW))
+    apply: (d) => updateReadingFeed(adaptArticles(d, NOW)),
+    unreadable: (d) => updateReadingFeed(d)
   },
   {
     name: 'Bookshelf',
@@ -104,7 +110,8 @@ const COLLECTIONS: Collection[] = [
     items: 'books',
     itemSelector: '.shelf-book',
     itemText: (d) => d.books.map((b: any) => b.title),
-    apply: (d) => updateBookshelf(adaptBooks(d))
+    apply: (d) => updateBookshelf(adaptBooks(d)),
+    unreadable: (d) => updateBookshelf(d)
   },
   {
     name: 'TheatreReviews',
@@ -116,7 +123,8 @@ const COLLECTIONS: Collection[] = [
     items: 'reviews',
     itemSelector: '.theatre-card',
     itemText: (d) => d.reviews.map((r: any) => r.title),
-    apply: (d) => updateTheatreReviews(d)
+    apply: (d) => updateTheatreReviews(d),
+    unreadable: (d) => updateTheatreReviews(d)
   }
 ]
 
@@ -166,17 +174,17 @@ function canonical(n: Node): string {
   return `<${el.tagName.toLowerCase()} ${attrs.join(' ')}>${children.join('')}</${el.tagName.toLowerCase()}>`
 }
 
-/** The server's own empty notice for this widget. */
-async function serverEmptyNotice(c: Collection): Promise<string> {
+/** The server's own empty notice and header for this widget. */
+async function serverEmptyNotice(c: Collection): Promise<{notice: string; header: string}> {
   const html = await serverHtml(c, {[c.domain]: {data: emptied(c)}})
   const doc = new JSDOM(html).window.document
   expect(doc.getElementById(c.id)?.getAttribute('data-ssr-state'), `${c.name}: the server renders the emptied export as empty`).toBe('empty')
   const notice = doc.querySelector('[data-state-notice="empty"]')
   expect(notice, `${c.name}: the server renders an empty notice`).not.toBeNull()
-  return canonical(notice!)
+  return {notice: canonical(notice!), header: canonical(doc.querySelector('.widget-header')!)}
 }
 
-function expectHonestEmpty(doc: Document, c: Collection, serverNotice: string): void {
+function expectHonestEmpty(doc: Document, c: Collection, serverNotice: {notice: string; header: string}): void {
   const card = doc.getElementById(c.id)!
   expect(card.getAttribute('data-ssr-state'), 'state').toBe('empty')
   expect(card.hasAttribute('data-generated-at'), 'no data timestamp').toBe(false)
@@ -188,7 +196,10 @@ function expectHonestEmpty(doc: Document, c: Collection, serverNotice: string): 
   expect(card.querySelector('[data-state-notice="unavailable"]'), 'no unavailable notice').toBeNull()
   const notices = [...card.querySelectorAll('[data-state-notice="empty"]')]
   expect(notices.length, 'one empty notice').toBe(1)
-  expect(canonical(notices[0]!)).toBe(serverNotice)
+  expect(canonical(notices[0]!)).toBe(serverNotice.notice)
+  // The header too (final verification L7: the theatre count read "0 reviews"
+  // on the client and "reviews" on the server).
+  expect(canonical(card.querySelector('.widget-header')!), 'header').toBe(serverNotice.header)
 }
 
 // covers: widget-contract#A live web widget renders real data or an honest state in its server markup
@@ -226,12 +237,22 @@ describe.each(COLLECTIONS)('$name: a successful empty export', (c) => {
   })
 })
 
-describe('an unreadable result is not an empty one', () => {
-  it('Workouts: null leaves the card as it is', async () => {
-    const c = COLLECTIONS[0]!
+// Final verification L5: every collection updater treats an unreadable result
+// (null or undefined) the same way: the card keeps what it shows. Only a
+// successful empty result ([]) empties it (the cases above).
+describe.each(COLLECTIONS)('$name: an unreadable result is not an empty one', (c) => {
+  it.each([null, undefined])('%s leaves a live card as it is, and does not throw', async (value) => {
     const doc = mount(await serverHtml(c, {[c.domain]: {data: known(c)}}))
     const before = doc.body.innerHTML
-    updateWorkouts(null)
-    expect(doc.body.innerHTML).toBe(before)
+    expect(() => c.unreadable(value)).not.toThrow()
+    expect(doc.body.innerHTML === before, `${c.name}(${value}) changed the card`).toBe(true)
+  })
+
+  it.each([null, undefined])('%s leaves an unavailable card unavailable', async (value) => {
+    const doc = mount(await serverHtml(c, {}, 'unavailable'))
+    const before = doc.body.innerHTML
+    c.unreadable(value)
+    expect(doc.body.innerHTML === before).toBe(true)
+    expect(doc.getElementById(c.id)?.getAttribute('data-ssr-state')).toBe('unavailable')
   })
 })

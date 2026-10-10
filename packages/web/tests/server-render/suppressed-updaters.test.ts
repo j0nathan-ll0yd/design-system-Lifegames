@@ -20,6 +20,7 @@ import ReadingFeed from '../../src/widgets/reading/ReadingFeed.astro'
 import StarredRepoList from '../../src/widgets/github/StarredRepoList.astro'
 import TheatreReviews from '../../src/widgets/reading/TheatreReviews.astro'
 import Workouts from '../../src/widgets/health/Workouts.astro'
+import SystemStatus from '../../src/widgets/other/SystemStatus.astro'
 import {adaptArticles, adaptBooks, adaptGithubEvents, adaptHealth, adaptSleep, adaptStarredRepos, adaptWorkouts} from '../../src/runtime/adapters'
 import {
   updateBookshelf,
@@ -29,8 +30,11 @@ import {
   updateNightSummary,
   updateReadingFeed,
   updateStarredRepos,
+  updateSystemStatus,
   updateWorkouts
 } from '../../src/runtime/updaters'
+import {releaseSuppression} from '../../src/runtime/updater-empty'
+import {composeSystemLines} from '../../src/runtime/view-models'
 import {updateHeartRateFooter, updateMovementRings} from '../../src/runtime/updaters-movement'
 import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 
@@ -105,5 +109,56 @@ describe.each(Object.keys(UPDATERS))('%s', (name) => {
     const before = doc.body.innerHTML
     UPDATERS[name]!()
     expect(doc.body.innerHTML === before, `${name} wrote nothing (the test would be blind)`).toBe(false)
+  })
+})
+
+// Final verification M1 on PR #289: System Status rows. The server renders
+// every row "—" during a hiding focus mode; a client update with export
+// timestamps would turn them into ACTIVE or OFFLINE with ages, disclosing
+// export recency. A suppressed row takes no write until the focus gate
+// releases it.
+describe('updateSystemStatus', () => {
+  const TIMESTAMPS = {
+    health: raw('health', KA).generatedAt,
+    sleep: raw('sleep', KA).generatedAt,
+    books: null,
+    articles: raw('articles', KA).generatedAt,
+    githubEvents: raw('github-events', KA).generatedAt,
+    starredRepos: null,
+    theatreReviews: raw('theatre-reviews', KA).generatedAt
+  }
+  async function statusMarkup(suppressed: boolean): Promise<string> {
+    const container = await AstroContainer.create()
+    const lines = composeSystemLines({}, NOW, {suppressed})
+    return container.renderToString(SystemStatus, {props: {system: {lines}, compact: true}})
+  }
+
+  it('writes nothing to the server-rendered suppressed rows', async () => {
+    const doc = mount(await statusMarkup(true))
+    const rows = [...doc.querySelectorAll<HTMLElement>('.sys-line')]
+    expect(rows.length).toBe(7)
+    expect(rows.every((r) => r.dataset.ssrState === 'suppressed')).toBe(true)
+    const before = doc.body.innerHTML
+    updateSystemStatus(TIMESTAMPS, NOW)
+    expect(doc.body.innerHTML === before, 'updateSystemStatus mutated a suppressed row').toBe(true)
+    expect(doc.body.textContent).not.toMatch(/ACTIVE|OFFLINE|ago/)
+  })
+
+  it('control: writes to the same rows rendered unsuppressed', async () => {
+    const doc = mount(await statusMarkup(false))
+    expect(doc.querySelector('.sys-line[data-ssr-state]')).toBeNull()
+    const before = doc.body.innerHTML
+    updateSystemStatus(TIMESTAMPS, NOW)
+    expect(doc.body.innerHTML === before, 'updateSystemStatus wrote nothing (the test would be blind)').toBe(false)
+  })
+
+  it('a row the focus gate released takes the next update and drops its state', async () => {
+    const doc = mount(await statusMarkup(true))
+    doc.querySelectorAll('.sys-line').forEach((row) => releaseSuppression(row))
+    updateSystemStatus(TIMESTAMPS, NOW)
+    const health = doc.querySelector<HTMLElement>('.sys-line[data-source="health"]')!
+    expect(health.textContent).toMatch(/ACTIVE/)
+    expect(health.dataset.ssrState).toBeUndefined()
+    expect(doc.querySelector<HTMLElement>('.sys-line[data-source="books"]')!.textContent).toMatch(/OFFLINE/)
   })
 })

@@ -15,8 +15,8 @@ const widgetState = theatreReviewsState(Astro.props as TheatreReviewsProps);
 const showData = rendersData(widgetState);
 const cardsHtml = showData ? theatreCardsHtml(reviewList ?? []) : '';
 const showLabel = showData || widgetState === 'empty';
-const countLabel =
-  showData && typeof totalReviews === 'number' ? theatreCountLabel(totalReviews) : 'reviews';
+// The same label the client writes: a count only while the card shows data.
+const countLabel = theatreCountLabel(showData ? totalReviews : null);
 ---
 
 <div

@@ -127,7 +127,7 @@ export function composeSystemLines(
     if (opts.suppressed) {
       // A hiding focus mode: every row stays (so a later update can fill it)
       // but names no timestamp, age or status — the gate wins.
-      return {key, source, dotClass: '', keyClass: 'sys-key', valClass: 'sys-val', value: esc(NO_READING)}
+      return {key, source, dotClass: '', keyClass: 'sys-key', valClass: 'sys-val', value: esc(NO_READING), suppressed: true}
     }
     const ts = timestamps[source]
     const valid = typeof ts === 'string' && Number.isFinite(Date.parse(ts))

@@ -47,6 +47,16 @@
                     "type": "null"
                   }
                 ]
+              },
+              "suppressed": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             },
             "required": ["key", "value", "dotClass"]

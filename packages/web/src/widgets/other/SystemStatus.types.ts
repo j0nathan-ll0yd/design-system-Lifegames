@@ -12,6 +12,9 @@ export interface SystemLine {
   source?: string;
   // Full key class list; overrides the key-name colour map when present.
   keyClass?: string;
+  // A hiding focus mode: the row renders data-ssr-state="suppressed", and
+  // updateSystemStatus writes nothing to it until the focus gate releases it.
+  suppressed?: boolean;
 }
 
 export interface SystemStatusProps {

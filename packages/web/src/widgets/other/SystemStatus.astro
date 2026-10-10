@@ -49,7 +49,12 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
           const source = line.source ?? sourceMap[line.key] ?? '';
           const provenance = isSourceKey(source) ? widgets.systemStatus.sources[source] : undefined;
           return (
-            <div class="sys-line" data-source={source} style={`animation-delay: ${idx * 0.1}s`}>
+            <div
+              class="sys-line"
+              data-source={source}
+              data-ssr-state={line.suppressed ? 'suppressed' : undefined}
+              style={`animation-delay: ${idx * 0.1}s`}
+            >
               <div class={`sys-dot ${line.dotClass}`} style={`animation-delay: ${idx * 0.3}s`} />
               <span class={keyClass(line)}>{line.key}:</span>
               <span class={line.valClass || 'sys-val'} set:html={line.value} />
@@ -113,7 +118,12 @@ function isSourceKey(s: string): s is keyof typeof widgets.systemStatus.sources 
                 ? widgets.systemStatus.sources[source]
                 : undefined;
               return (
-                <div class="sys-line" data-source={source} style={`animation-delay: ${idx * 0.1}s`}>
+                <div
+                  class="sys-line"
+                  data-source={source}
+                  data-ssr-state={line.suppressed ? 'suppressed' : undefined}
+                  style={`animation-delay: ${idx * 0.1}s`}
+                >
                   <div
                     class={`sys-dot ${line.dotClass}`}
                     style={`animation-delay: ${idx * 0.3}s`}

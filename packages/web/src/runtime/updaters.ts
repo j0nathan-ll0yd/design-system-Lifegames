@@ -141,7 +141,7 @@ export function updateHeartRate(data: AdaptedHealth): void {
   }
 }
 
-export function updateWorkouts(data: WorkoutEntry[] | null): void {
+export function updateWorkouts(data: WorkoutEntry[] | null | undefined): void {
   const card = document.getElementById('cardWorkouts')
   if (!card) {
     return
@@ -151,9 +151,9 @@ export function updateWorkouts(data: WorkoutEntry[] | null): void {
     return
   }
 
-  // null: the export could not be read. The card keeps what it shows; the
-  // loader, not a failed read, decides when it becomes unavailable.
-  if (!data) {
+  // null or undefined: the export could not be read. The card keeps what it
+  // shows; only a successful empty result ([]) empties it.
+  if (data == null) {
     return
   }
 
@@ -374,7 +374,7 @@ function timeHtml(className: string, label: string, datetime: string | undefined
     : '<span class="' + className + '">' + esc(label) + '</span>'
 }
 
-export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
+export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undefined): void {
   const card = document.getElementById('cardDevLog')
   if (!card) {
     return
@@ -383,13 +383,18 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   if (isSuppressedCard(card)) {
     return
   }
+  // null or undefined: the export could not be read. The card keeps what it
+  // shows; only a successful empty result ([]) empties it.
+  if (events == null) {
+    return
+  }
 
   const body = card.querySelector('.widget-body')
   if (!body) {
     return
   }
 
-  if (!events || events.length === 0) {
+  if (events.length === 0) {
     renderWidgetEmpty('cardDevLog', {message: widgets.devLog.empty})
     return
   }
@@ -450,7 +455,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[]): void {
   card.classList.remove('is-loading')
 }
 
-export function updateReadingFeed(articles: AdaptedArticle[]): void {
+export function updateReadingFeed(input: AdaptedArticle[] | null | undefined): void {
   const card = document.getElementById('cardReading')
   if (!card) {
     return
@@ -459,13 +464,20 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
   if (isSuppressedCard(card)) {
     return
   }
+  // null or undefined: the export could not be read. The card keeps what it
+  // shows; only a successful empty result ([]) empties it.
+  if (input == null) {
+    return
+  }
+  // A const keeps the narrowing inside the page closure below.
+  const articles: AdaptedArticle[] = input
 
   const body = card.querySelector('.widget-body')
   if (!body) {
     return
   }
 
-  if (!articles || articles.length === 0) {
+  if (articles.length === 0) {
     renderWidgetEmpty('cardReading', {message: widgets.readingFeed.empty})
     return
   }
@@ -505,8 +517,10 @@ export function updateReadingFeed(articles: AdaptedArticle[]): void {
       // so the row never renders blank-left; the parenthetical source is then
       // suppressed to avoid duplicating it.
       const titleText = a.title || a.source
-      if (a.url) {
-        html += '<a class="article-list-title" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer">' + esc(titleText) + '</a>'
+      // Only an https article URL becomes an href, as in the other widgets.
+      const articleHref = safeHttpsUrl(a.url)
+      if (articleHref) {
+        html += '<a class="article-list-title" href="' + esc(articleHref) + '" target="_blank" rel="noopener noreferrer">' + esc(titleText) + '</a>'
       } else {
         html += '<span class="article-list-title">' + esc(titleText) + '</span>'
       }
@@ -587,9 +601,15 @@ export function updateSystemStatus(timestamps: Record<string, string | null>, no
   // Same rows the SystemStatus template renders on the server (composeSystemLines).
   const bySource = new Map(composeSystemLines(timestamps, now).map((l) => [l.source, l]))
 
-  const lines = container.querySelectorAll('.sys-line')
+  const lines = container.querySelectorAll<HTMLElement>('.sys-line')
   lines.forEach((line) => {
-    const source = (line as HTMLElement).dataset.source
+    // A row the server rendered suppressed (a hiding focus mode) stays as it
+    // is: an age or ACTIVE/OFFLINE would disclose export recency. Only the
+    // focus gate releases it (releaseSuppression).
+    if (isSuppressedCard(line)) {
+      return
+    }
+    const source = line.dataset.source
     const composed = source ? bySource.get(source) : undefined
     if (!composed) {
       return
@@ -608,6 +628,8 @@ export function updateSystemStatus(timestamps: Record<string, string | null>, no
     }
     valEl.className = composed.valClass ?? 'sys-val'
     valEl.innerHTML = composed.value
+    // A released row now shows live status: it carries no state of its own.
+    delete line.dataset.ssrState
   })
 }
 
@@ -762,7 +784,7 @@ function bookshelfCoverHtml(book: AdaptedBooks['books'][number], localCandidates
     : img
 }
 
-export function updateBookshelf(data: AdaptedBooks): void {
+export function updateBookshelf(data: AdaptedBooks | null | undefined): void {
   const card = document.getElementById('cardBooks')
   if (!card) {
     return
@@ -771,12 +793,17 @@ export function updateBookshelf(data: AdaptedBooks): void {
   if (isSuppressedCard(card)) {
     return
   }
+  // null or undefined: the export could not be read. The card keeps what it
+  // shows; only a successful empty result ([]) empties it.
+  if (data == null || data.books == null) {
+    return
+  }
   const localCandidates = localCoverCandidates(card)
 
   // Empty state: render the shared two-line placeholder. This replaces
   // `.widget-body` (destroying #dashShelfRow), so the populated path below
   // recreates the shelf row on an empty -> populated transition.
-  if (!data.books || data.books.length === 0) {
+  if (data.books.length === 0) {
     renderWidgetEmpty('cardBooks', {title: widgets.bookshelf.emptyTitle, body: widgets.bookshelf.emptyBody})
     return
   }
@@ -1012,7 +1039,7 @@ export function updateBookshelf(data: AdaptedBooks): void {
   document.getElementById('cardBooks')?.classList.remove('is-loading')
 }
 
-export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
+export function updateStarredRepos(repos: AdaptedStarredRepo[] | null | undefined): void {
   const card = document.getElementById('cardStarredRepos')
   if (!card) {
     return
@@ -1021,11 +1048,16 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[]): void {
   if (isSuppressedCard(card)) {
     return
   }
+  // null or undefined: the export could not be read. The card keeps what it
+  // shows; only a successful empty result ([]) empties it.
+  if (repos == null) {
+    return
+  }
 
   // Empty state: the shared placeholder replaces `.widget-body` (destroying
   // `.gh-starred-list`), so the populated path recreates the list on an
   // empty -> populated transition.
-  if (!repos || repos.length === 0) {
+  if (repos.length === 0) {
     renderWidgetEmpty('cardStarredRepos', {message: widgets.starredRepos.empty})
     return
   }

@@ -556,4 +556,15 @@ describe('client: remaining null-as-0 slots, zone colours and links', () => {
     expect(document.querySelector('a.workout-sub-type')).toBeNull()
     expect(document.body.innerHTML).not.toContain('javascript:')
   })
+
+  // Final verification L4: the reading feed linked any URL scheme.
+  it('Reading Feed links only https URLs, and still links an https one', () => {
+    document.body.innerHTML = '<div id="cardReading"><div class="widget-body"></div></div>'
+    const article = {title: 'T', source: 'S', date: '1d ago', datetime: '2026-03-17T12:00:00.000Z', hasNotes: false, noteText: null}
+    updateReadingFeed([{...article, url: 'javascript:alert(1)'}, {...article, title: 'U', url: 'https://example.com/a'}])
+    const titles = [...document.querySelectorAll('.article-list-title')]
+    expect(titles.map((t) => t.tagName)).toEqual(['SPAN', 'A'])
+    expect(titles[1]!.getAttribute('href')).toBe('https://example.com/a')
+    expect(document.body.innerHTML).not.toContain('javascript:')
+  })
 })
