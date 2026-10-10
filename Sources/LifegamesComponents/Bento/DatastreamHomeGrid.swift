@@ -133,8 +133,11 @@ public struct DatastreamHomeGrid: View {
                     HStack(spacing: 5) {
                         Text("steps ·")
                             .foregroundStyle(LGColor.textMuted)
-                        Text("\(data.restingHR) bpm")
+                        // A missing resting HR shows the mark and reads "No reading".
+                        let restingHR = NoReading.text(data.restingHR)
+                        Text("\(restingHR) bpm")
                             .foregroundStyle(LGColor.accentPink)
+                            .noReadingAccessibility(restingHR)
                         Text("resting")
                             .foregroundStyle(LGColor.textMuted)
                     }
@@ -149,7 +152,7 @@ public struct DatastreamHomeGrid: View {
                         metricDivider
                         metricColumn(value: data.exerciseValue, unit: "MIN", ring: "EXERCISE", color: LGColor.accentGreen)
                         metricDivider
-                        metricColumn(value: data.standValue, unit: "H", ring: "STAND", color: LGColor.accentBlue)
+                        metricColumn(value: data.standValue ?? NoReading.mark, unit: "H", ring: "STAND", color: LGColor.accentBlue)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -164,6 +167,7 @@ public struct DatastreamHomeGrid: View {
             Text(value)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(color)
+                .noReadingAccessibility(value)
             Text("\(unit)\n\(ring)")
                 .font(.system(size: 8.5, weight: .semibold))
                 .kerning(0.5)

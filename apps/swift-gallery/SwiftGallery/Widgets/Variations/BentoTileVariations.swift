@@ -63,7 +63,7 @@ enum BentoTileVariations {
                         progress: data.standProgress,
                         color: LGColor.accentBlue,
                         label: "Stand",
-                        value: data.standValue,
+                        value: data.standValue ?? NoReading.mark,
                         size: 64
                     )
                 }
@@ -77,9 +77,11 @@ enum BentoTileVariations {
                         .font(.system(size: 13))
                         .foregroundStyle(LGColor.textMuted)
                     Spacer()
-                    Text("\(data.restingHR) bpm resting")
+                    let restingHR = NoReading.text(data.restingHR)
+                    Text("\(restingHR) bpm resting")
                         .font(.system(size: 12))
                         .foregroundStyle(LGColor.textMuted)
+                        .noReadingAccessibility(restingHR)
                 }
             }
         }

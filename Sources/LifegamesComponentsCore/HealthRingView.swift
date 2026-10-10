@@ -38,6 +38,7 @@ public struct HealthRingView: View {
                 Text(value)
                     .font(.system(size: size * 0.22, weight: .semibold, design: .rounded))
                     .foregroundStyle(Color.colorTextTitle)
+                    .noReadingAccessibility(value)
             }
             .frame(width: size, height: size)
 
