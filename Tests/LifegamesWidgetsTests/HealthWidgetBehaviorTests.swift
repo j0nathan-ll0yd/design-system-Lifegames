@@ -68,11 +68,30 @@ struct HealthWidgetBehaviorTests {
         #expect(try renderedText(HydrationView(state: .loading)) == ["HYDRATION", "today"])
     }
 
-    @Test func hydrationEmptyRendersZeroReadings() throws {
-        // Today the empty state reuses the populated layout at zero. That is the behavior the
-        // snapshot shows; an explicit empty message would be a deliberate change to this test.
-        #expect(try renderedText(HydrationView(state: .empty))
-            == ["HYDRATION", "today", "0 oz", "Water", "0 mg", "Caffeine"])
+    @Test func hydrationEmptyRendersTheNoReadingMarkNotZero() throws {
+        // No measurement is not a measurement of zero (atlas decision 0160, #289): the empty
+        // state draws empty vessels and the no-reading mark, never "0 oz" / "0 mg".
+        let view = HydrationView(state: .empty)
+        let text = try renderedText(view)
+        #expect(text == ["HYDRATION", "today", NoReading.mark, "Water", NoReading.mark, "Caffeine"])
+        #expect(!text.contains("0 oz"))
+        #expect(!text.contains("0 mg"))
+        // VoiceOver reads the shared copy for the mark, never "dash".
+        let marks = try view.inspect().findAll(ViewType.Text.self).filter { try $0.string() == NoReading.mark }
+        #expect(marks.count == 2)
+        for mark in marks {
+            #expect(try mark.accessibilityLabel().string() == "No reading")
+        }
+    }
+
+    @Test func hydrationPopulatedValuesCarryNoNoReadingLabel() throws {
+        // The label is reserved for the mark: a real reading reads as itself.
+        let values = try HydrationView(props: HealthWidgetStates.hydrationNormal).inspect()
+            .findAll(ViewType.Text.self).filter { ["54 oz", "280 mg"].contains(try $0.string()) }
+        #expect(values.count == 2)
+        for value in values {
+            #expect((try? value.accessibilityLabel().string()) != "No reading")
+        }
     }
 
     @Test(arguments: [
