@@ -267,19 +267,37 @@ describe('updateHeartRateFooter', () => {
     `
   })
 
+  // The footer shows values only while the card does: a heart-rate reading,
+  // watch on the wrist (heartRateView, the server's rule).
+  const HR = {heartRate: {value: 64, unit: 'bpm'}}
+
   it('renders RHR value when present', () => {
-    const data = makeHealth({quantities: {...makeHealth().quantities, restingHeartRate: {value: 58, unit: 'bpm'}}})
+    const data = makeHealth({quantities: {...makeHealth().quantities, ...HR, restingHeartRate: {value: 58, unit: 'bpm'}}})
     updateHeartRateFooter(data)
     expect(el('hrFooterRhr').textContent).toBe('58')
   })
 
   it('renders dash when RHR is absent', () => {
-    updateHeartRateFooter(makeHealth())
+    updateHeartRateFooter(makeHealth({quantities: {...makeHealth().quantities, ...HR}}))
     expect(el('hrFooterRhr').textContent).toBe('—')
   })
 
+  it('renders nothing when the card shows no value (no heart rate: unavailable)', () => {
+    updateHeartRateFooter(makeHealth({quantities: {...makeHealth().quantities, restingHeartRate: {value: 58, unit: 'bpm'}}}))
+    expect(el('hrFooterRhr').textContent).toBe('')
+  })
+
+  it('renders nothing for a paused watch', () => {
+    const data = makeHealth({
+      quantities: {...makeHealth().quantities, ...HR, restingHeartRate: {value: 58, unit: 'bpm'}},
+      watch: {worn: false, source: 'charging'} as AdaptedHealth['watch']
+    })
+    updateHeartRateFooter(data)
+    expect(el('hrFooterRhr').textContent).toBe('')
+  })
+
   it('renders signed temp delta', () => {
-    const data = makeHealth({quantities: {...makeHealth().quantities, wristTemperatureDelta: {value: 0.2, unit: '°C'}}})
+    const data = makeHealth({quantities: {...makeHealth().quantities, ...HR, wristTemperatureDelta: {value: 0.2, unit: '°C'}}})
     updateHeartRateFooter(data)
     expect(el('hrFooterTemp').textContent).toBe('+0.2')
   })

@@ -1,4 +1,5 @@
 import {esc} from './html-utils'
+import {stateNoticeHtml, stateRootAttrs, type WidgetState, widgetTimestampView} from './widget-state'
 
 /**
  * Options for {@link renderWidgetEmpty}: either a single centered line, or a
@@ -63,45 +64,147 @@ export function releaseSuppression(card: Element | null): void {
   }
 }
 
+/** Options for {@link revealLiveData}. */
+export interface RevealOptions {
+  /** Only the focus gate's own transition may leave `suppressed`. */
+  leaveSuppressed?: boolean
+  /**
+   * The export's `generatedAt`. A data state names it in
+   * `data-generated-at` and a `stale` header shows it as "as of"; a missing
+   * or invalid value shows neither. Omitted → no timestamp (pre-0160 calls).
+   */
+  generatedAt?: string | null
+}
+
+/** Rewrite every header timestamp to the server's markup for `state`. */
+function writeHeaderTimestamps(card: Element, state: WidgetState, generatedAt: string | null | undefined): void {
+  card.querySelectorAll<HTMLElement>('.widget-timestamp[data-live-label]').forEach((ts) => {
+    const label = ts.dataset.liveLabel ?? ''
+    const view = widgetTimestampView(label, state, generatedAt)
+    const el = document.createElement(view.kind === 'asOf' ? 'time' : 'span')
+    el.className = view.kind === 'asOf' ? 'widget-timestamp widget-timestamp-stale' : 'widget-timestamp'
+    if (ts.id) {
+      el.id = ts.id
+    }
+    if (view.kind === 'asOf') {
+      el.setAttribute('datetime', view.datetime)
+    }
+    el.dataset.liveLabel = label
+    el.textContent = view.text
+    ts.replaceWith(el)
+  })
+}
+
+/** Record `state` (and its timestamp, in a data state) on the card root, as stateRootAttrs does. */
+function writeRootState(card: Element, state: WidgetState, generatedAt: string | null | undefined): void {
+  if (!(card instanceof HTMLElement) || card.dataset.ssrState === undefined) {
+    return
+  }
+  const attrs = stateRootAttrs(state, generatedAt)
+  card.dataset.ssrState = state
+  if (attrs['data-generated-at']) {
+    card.dataset.generatedAt = attrs['data-generated-at']
+  } else {
+    delete card.dataset.generatedAt
+  }
+}
+
+/** Drop every state notice, and the loading <noscript> note: the card has left `loading`. */
+function removeStateNotices(card: Element): void {
+  card.querySelectorAll('[data-state-notice], noscript').forEach((n) => n.remove())
+}
+
 /**
  * Reveal a widget's live data after a server-rendered non-data state
  * (atlas decision 0160). The server renders `unavailable` and `suppressed`
  * with the value-free scaffold hidden (`[data-state-scaffold][hidden]`) and a
  * `[data-state-notice]` notice, and `stale` with an "as of" header time. An
- * updater that writes fresh values calls this first: it removes the notices,
- * un-hides the scaffold, restores the header's live label and records the
- * card's new state (`live`, or `empty` from an empty branch).
+ * updater that writes fresh values calls this first: it removes the notices
+ * (and the loading <noscript> note), un-hides the scaffold, writes the header
+ * the server renders for the new state (the live label, or "as of" for
+ * `stale`, through `widgetTimestampView`) and records the state (`live`,
+ * `stale`, or `empty` from an empty branch) and, in a data state, the
+ * export's `generatedAt`.
  *
  * It REFUSES to leave `suppressed` and returns false: a hiding focus mode is
  * the gate's decision, never a data update's. The caller must then write
  * nothing. Pass `{leaveSuppressed: true}` only from the focus gate's own
  * transition (or call releaseSuppression first).
  */
-export function revealLiveData(card: Element | null, state: 'live' | 'empty' = 'live', opts: {leaveSuppressed?: boolean} = {}): boolean {
+export function revealLiveData(card: Element | null, state: 'live' | 'stale' | 'empty' = 'live', opts: RevealOptions = {}): boolean {
   if (!card) {
     return true
   }
   if (isSuppressedCard(card) && !opts.leaveSuppressed) {
     return false
   }
-  card.querySelectorAll('[data-state-notice]').forEach((n) => n.remove())
+  removeStateNotices(card)
   card.querySelectorAll<HTMLElement>('[data-state-scaffold]').forEach((s) => {
     s.hidden = false
   })
-  // A stale <time> or a blank notice-state label becomes the live label again.
-  card.querySelectorAll<HTMLElement>('.widget-timestamp[data-live-label]').forEach((ts) => {
-    const span = document.createElement('span')
-    span.className = 'widget-timestamp'
-    if (ts.id) {
-      span.id = ts.id
-    }
-    span.dataset.liveLabel = ts.dataset.liveLabel ?? ''
-    span.textContent = ts.dataset.liveLabel ?? ''
-    ts.replaceWith(span)
-  })
-  if (card instanceof HTMLElement && card.dataset.ssrState !== undefined) {
-    card.dataset.ssrState = state
-    delete card.dataset.generatedAt
+  writeHeaderTimestamps(card, state, opts.generatedAt)
+  writeRootState(card, state, opts.generatedAt)
+  return true
+}
+
+/**
+ * Insert a state notice where the templates render it: right after the
+ * body's skeleton, else first in the body, else first in the card.
+ */
+export function insertStateNotice(card: Element, html: string): void {
+  const body = card.querySelector('.widget-body')
+  const skeleton = body?.querySelector(':scope > .skeleton-state')
+  if (skeleton) {
+    skeleton.insertAdjacentHTML('afterend', html)
+  } else {
+    ;(body ?? card).insertAdjacentHTML('afterbegin', html)
   }
+}
+
+/**
+ * Put a card in the server's `unavailable` state: the notice from the
+ * `widgets.widgetState` copy (stateNoticeHtml, the markup WidgetStateNotice
+ * renders), the value-free scaffold hidden, no header label,
+ * `data-ssr-state="unavailable"`, no `data-generated-at`, no skeleton.
+ * Internal: the public entry point is renderWidgetUnavailable; an updater
+ * that has cleared its own values calls this for a readable export that
+ * lacks the card's primary measurement.
+ */
+export function enterUnavailable(card: HTMLElement): void {
+  removeStateNotices(card)
+  insertStateNotice(card, stateNoticeHtml('unavailable'))
+  card.querySelectorAll<HTMLElement>('[data-state-scaffold]').forEach((s) => {
+    s.hidden = true
+  })
+  writeHeaderTimestamps(card, 'unavailable', null)
+  writeRootState(card, 'unavailable', null)
+  card.classList.remove('is-loading', 'is-paused')
+}
+
+/**
+ * After a failed FIRST read of a card's export: render exactly the server's
+ * `unavailable` state (see enterUnavailable). Returns true when the card
+ * shows `unavailable`.
+ *
+ * It acts only on a card that has shown no data yet (`loading`), and is a
+ * no-op on a card already `unavailable`. It REFUSES, writes nothing and
+ * returns false for:
+ *   - a suppressed card: only the focus gate releases it;
+ *   - a card that shows a reading (`live`, `stale`, `empty`): a later failed
+ *     read keeps the last reading, as a null export does in every updater.
+ * A later successful read fills the card through its updater (revealLiveData).
+ */
+export function renderWidgetUnavailable(card: Element | null): boolean {
+  if (!(card instanceof HTMLElement)) {
+    return false
+  }
+  const state = card.dataset.ssrState
+  if (state === 'unavailable') {
+    return true
+  }
+  if (state !== 'loading') {
+    return false
+  }
+  enterUnavailable(card)
   return true
 }

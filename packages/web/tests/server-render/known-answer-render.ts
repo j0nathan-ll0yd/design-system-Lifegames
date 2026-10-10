@@ -52,7 +52,7 @@ export const NON_CONTENT_ATTR =
   /^(class|id|style|role|aria-hidden|aria-live|tabindex|target|rel|loading|decoding|referrerpolicy|type|hidden|focusable|viewBox|d|x|y|width|height|rx|x1|x2|y1|y2|cx|cy|r|stroke|stroke-width|stroke-linecap|stroke-linejoin|stroke-dasharray|fill|opacity|filter|stdDeviation|result|in|preserveAspectRatio|data-state-scaffold|data-ssr-state|data-generated-at|data-astro-.*)$/
 
 /** Attributes whose value is JSON, compared parsed. */
-export const JSON_ATTR = new Set(['data-book', 'data-local-cover'])
+export const JSON_ATTR = new Set(['data-book', 'data-local-covers'])
 
 const fixed = (n: number, digits: number): string => n.toFixed(digits)
 const or = (v: number | undefined, format: (n: number) => string): string => (typeof v === 'number' ? format(v) : NO_READING)
@@ -129,7 +129,8 @@ function movementRings(): Projection {
       h.solar.sunsetHHmm,
       '☾',
       or(q.timeInDaylight?.value, (n) => String(Math.round(n))),
-      `${c.daylightCaption.replace('{minutes}', '').trim()} · ${c.daylightGoal.replace('{minutes}', String(g.daylightMin))}`,
+      `${c.daylightCaption.replace('{minutes}', '').trim()} ·`,
+      c.daylightGoal.replace('{minutes}', String(g.daylightMin)),
       '✓'
     ],
     attrs: [
@@ -323,7 +324,6 @@ function bookshelf(): Projection {
   const attrs: string[] = []
   const styles: string[] = []
   const bookJson: unknown[] = []
-  const covers: unknown[] = []
   books.forEach((b: any, i: number) => {
     const progress = b.currentPage != null ? Math.round((b.currentPage / b.totalPages) * 100) : undefined
     bookJson.push({
@@ -351,8 +351,7 @@ function bookshelf(): Projection {
       mainImage: PLACEHOLDER_IMAGE_SRC,
       mainImageAvif: null
     })
-    covers.push([])
-    attrs.push('data-book=*', 'data-local-cover=*', `aria-label=${a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author)}`,
+    attrs.push('data-book=*', `aria-label=${a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author)}`,
       `src=${PLACEHOLDER_IMAGE_SRC}`, `srcset=${PLACEHOLDER_IMAGE_SRC} 1x, ${PLACEHOLDER_IMAGE_SRC} 2x`, `alt=${b.title}`)
     styles.push(`li animation-delay: ${i * 0.08}s`)
     text.push(b.title, b.author, adapted.statusLabels[b.status]!)
@@ -384,7 +383,7 @@ function bookshelf(): Projection {
       }
     }
   }
-  return {text, attrs, styles, classes: [...classes], json: {'data-book': bookJson, 'data-local-cover': covers}}
+  return {text, attrs, styles, classes: [...classes], json: {'data-book': bookJson}}
 }
 
 // The theatre grade colours, by grade letter.

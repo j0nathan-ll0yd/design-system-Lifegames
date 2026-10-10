@@ -2,62 +2,20 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { HYDRATION } from '../../runtime/constants';
-import {
-  formatMeasurement,
-  isScaffoldHidden,
-  NO_READING,
-  rendersData,
-  stateRootAttrs,
-} from '../../runtime/widget-state';
-import { hydrationState } from '../../runtime/widget-rules';
+import { hydrationRangeHtml } from '../../runtime/widget-markup';
+import { stateRootAttrs } from '../../runtime/widget-state';
+import { hydrationView } from '../../runtime/widget-views';
 import type { HydrationProps } from './Hydration.types';
 
 const props = Astro.props as HydrationProps;
-const { health, generatedAt } = props;
-// One owner for the state: the same rule the view model applies.
-const widgetState = hydrationState(props);
-// Values only in a data state. Hydration has no separate empty layout: its
+const { generatedAt } = props;
+// One owner for the state, the values and the target-range bands: the view
+// updateHydration writes too. Hydration has no separate empty layout: its
 // empty state shows the vessels with the no-reading mark and no input value,
 // like the Swift HydrationView empty case.
-const showData = rendersData(widgetState);
-const emptyMarks = widgetState === 'empty';
-const scaffoldHidden = isScaffoldHidden(widgetState);
-const hydration = showData ? health?.hydration : undefined;
-
-// Scale configuration (ranges and maxima) is not a measurement; it falls back
-// to the design-system constants. Measurements never fall back to a number.
-const waterMax = hydration?.waterMax ?? HYDRATION.waterMax;
-const waterRangeLo = hydration?.waterRangeLo ?? HYDRATION.waterRangeLo;
-const waterRangeHi = hydration?.waterRangeHi ?? HYDRATION.waterRangeHi;
-const caffeineMax = hydration?.caffeineMax ?? HYDRATION.caffeineMax;
-const caffeineRangeLo = hydration?.caffeineRangeLo ?? HYDRATION.caffeineRangeLo;
-const caffeineRangeHi = hydration?.caffeineRangeHi ?? HYDRATION.caffeineRangeHi;
-const waterOz = hydration?.waterOz ?? null;
-const caffeineMg = hydration?.caffeineMg ?? null;
-
-const fillPct = (value: number | null, max: number): number =>
-  value != null && max > 0 ? Math.min(Math.max(value / max, 0), 1) * 100 : 0;
-const waterPct = fillPct(waterOz, waterMax);
-const caffeinePct = fillPct(caffeineMg, caffeineMax);
+const view = hydrationView(props);
+const widgetState = view.state;
 const clip = (pct: number): string => `clip-path: inset(${100 - pct}% 0 0 0)`;
-const range = (lo: number, hi: number, max: number) => ({
-  style: `bottom: ${(lo / max) * 100}%; height: ${((hi - lo) / max) * 100}%`,
-  lo: String(lo),
-  hi: String(hi),
-});
-const waterRange = range(waterRangeLo, waterRangeHi, waterMax);
-const caffeineRange = range(caffeineRangeLo, caffeineRangeHi, caffeineMax);
-const waterText = showData
-  ? formatMeasurement(waterOz, (n) => `${n} oz`)
-  : emptyMarks
-    ? NO_READING
-    : '';
-const caffeineText = showData
-  ? formatMeasurement(caffeineMg, (n) => `${n} mg`)
-  : emptyMarks
-    ? NO_READING
-    : '';
 ---
 
 <div
@@ -95,27 +53,16 @@ const caffeineText = showData
       </div>
     </div>
     <WidgetStateNotice state={widgetState} />
-    <div class="hydra-layout" data-state-scaffold hidden={scaffoldHidden}>
+    <div class="hydra-layout" data-state-scaffold hidden={view.scaffoldHidden}>
       <div class="hydra-vessel hydra-vessel-water">
         <div class="hydra-bottle">
           <div class="hydra-bottle-cap"></div>
           <div class="hydra-bottle-body">
-            {
-              showData && (
-                <div class="hydra-range hydra-range-water" style={waterRange.style}>
-                  <div class="hydra-range-label hydra-range-label-top hydra-range-label-water">
-                    {waterRange.hi}
-                  </div>
-                  <div class="hydra-range-label hydra-range-label-bottom hydra-range-label-water">
-                    {waterRange.lo}
-                  </div>
-                </div>
-              )
-            }
+            {view.waterBand && <Fragment set:html={hydrationRangeHtml('water', view.waterBand)} />}
             <div
               class="hydra-liquid hydra-liquid-water hydra-v3-liquid"
               id="hydraWaterLiq"
-              style={clip(waterPct)}
+              style={clip(view.waterPct)}
             >
               <div class="hydra-v3-gloss"></div>
               <div class="hydra-v3-bubbles">
@@ -134,7 +81,7 @@ const caffeineText = showData
             </div>
           </div>
         </div>
-        <div class="hydra-val" id="hydraWaterVal">{waterText}</div>
+        <div class="hydra-val" id="hydraWaterVal">{view.waterText}</div>
         <div class="hydra-label">{widgets.hydration.water}</div>
       </div>
       <div class="hydra-divider"></div>
@@ -147,21 +94,14 @@ const caffeineText = showData
           </div>
           <div class="hydra-mug-body">
             {
-              showData && (
-                <div class="hydra-range hydra-range-coffee" style={caffeineRange.style}>
-                  <div class="hydra-range-label hydra-range-label-top hydra-range-label-coffee">
-                    {caffeineRange.hi}
-                  </div>
-                  <div class="hydra-range-label hydra-range-label-bottom hydra-range-label-coffee">
-                    {caffeineRange.lo}
-                  </div>
-                </div>
+              view.caffeineBand && (
+                <Fragment set:html={hydrationRangeHtml('coffee', view.caffeineBand)} />
               )
             }
             <div
               class="hydra-liquid hydra-liquid-coffee hydra-v3-liquid"
               id="hydraCoffeeLiq"
-              style={clip(caffeinePct)}
+              style={clip(view.caffeinePct)}
             >
               <div class="hydra-v3-gloss"></div>
               <div class="hydra-v3-bubbles">
@@ -181,7 +121,7 @@ const caffeineText = showData
           </div>
           <div class="hydra-mug-handle"></div>
         </div>
-        <div class="hydra-val" id="hydraCoffeeVal">{caffeineText}</div>
+        <div class="hydra-val" id="hydraCoffeeVal">{view.caffeineText}</div>
         <div class="hydra-label" id="hydraCoffeeLabel">{widgets.hydration.caffeine}</div>
       </div>
     </div>

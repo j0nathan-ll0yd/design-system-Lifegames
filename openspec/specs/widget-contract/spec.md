@@ -677,3 +677,61 @@ proves its provenance.
 - **WHEN** `updateSystemStatus` runs with export timestamps
 - **THEN** no row SHALL change, so no age and no ACTIVE or OFFLINE status discloses export recency,
   until the focus gate releases the row
+
+### Requirement: A live web widget's browser updater reaches the server's state for the same export
+
+Each live web widget's browser updater SHALL reach the state and visible text the server renders for
+the same export, through the same rule. The per-card views in `runtime/widget-views.ts` (HeartRate,
+MovementRings, Hydration, NightSummary) are rendered by the template and written by the updater. The
+live-versus-stale verdict is `runtime/freshness.ts` (the registry `audit.warn` age per export; a
+missing or invalid `generatedAt` is `stale` and names no time). `toDashboardViewModels` applies it to
+a domain read without an explicit state. Every data updater takes it as an optional trailing
+`freshness` argument, and `revealLiveData` writes the "as of" header `WidgetTimestamp` renders.
+A paused watch keeps the export's data state on HeartRate and MovementRings alike. After a failed
+first read, `renderWidgetUnavailable` SHALL leave a `loading` card exactly as the server renders
+`unavailable`. It SHALL refuse a suppressed card and a card that shows a reading, and a later
+successful read SHALL still fill the card. Hydration's target-range bands SHALL render on the client
+with the server's markup. Bookshelf SHALL carry its mirrored cover paths on the card in every state
+(`data-local-covers`), and both halves SHALL serve a cover same-origin only for an exact listed path.
+
+This is a **blocking** rule. `packages/web/tests/server-render/client-parity.test.ts` renders each
+card on the server from the view models and through its updater from the `loading` markup, for the
+same export, and compares `data-ssr-state`, `data-generated-at`, the paused and loading classes and
+every visible text node. `client-gaps.test.ts` and `tests/runtime/freshness.test.ts` hold the bands,
+the unavailable transition, the paused state, the mirrored covers and the freshness boundaries. All
+three run inside `pnpm --filter @j0nathan-ll0yd/web test` in the required `contract-ts` status
+context.
+
+#### Scenario: A browser updater fills a loading card
+
+- **GIVEN** a live widget rendered `loading` and an export read at a fixed time
+- **WHEN** the updater runs with the adapted export and `exportFreshness(domain, export, now)`
+- **THEN** the card SHALL carry the same `data-ssr-state`, `data-generated-at` and visible text the
+  server renders from `toDashboardViewModels` for the same export and time
+
+#### Scenario: An export is older than its audit.warn age
+
+- **GIVEN** an export whose `generatedAt` is one minute past its registry `audit.warn` age
+- **WHEN** the server and the browser render its card
+- **THEN** both SHALL record `stale` and show the same absolute "as of" time in the owner's time zone
+
+#### Scenario: The first read of an export fails
+
+- **GIVEN** a live widget rendered `loading`
+- **WHEN** `renderWidgetUnavailable` runs on its card
+- **THEN** the card SHALL equal the server's `unavailable` markup, and a later successful read SHALL
+  fill it; a suppressed card or a card showing a reading SHALL not change
+
+#### Scenario: The watch is off the wrist
+
+- **GIVEN** a health export whose watch reports `worn: false`
+- **WHEN** HeartRate and MovementRings render on the server and update in the browser
+- **THEN** both cards SHALL record the export's data state, show the paused copy and name no value
+
+#### Scenario: Bookshelf renders with a mirrored cover list
+
+- **GIVEN** a Bookshelf rendered `loading` with `localCovers`
+- **WHEN** `updateBookshelf` renders a book whose cover path is on the list, and one whose version
+  token differs from the mirrored file
+- **THEN** the first SHALL load from the same origin, the second from its contract URL with the W6
+  fallback

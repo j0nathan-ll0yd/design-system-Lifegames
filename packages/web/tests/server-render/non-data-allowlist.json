@@ -228,6 +228,7 @@
         "span id=legendExercise",
         "span id=legendMove",
         "span id=legendStand",
+        "span id=mvDaylightGoal",
         "span id=mvDaylightHit",
         "span id=mvDaylightMin",
         "span id=mvPausedDesc",

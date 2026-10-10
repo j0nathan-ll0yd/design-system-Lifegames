@@ -1,23 +1,15 @@
 import type {HydrationProps} from '../widgets/health/Hydration.types'
 import {HYDRATION} from './constants'
 import {NO_READING} from './widget-state'
+import {hydrationRangeHtml} from './widget-markup'
+import {rangeBand} from './widget-views'
 
-function addRange(parent: Element, lo: number, hi: number, max: number, cssClass: string, labelClass: string, loLabel: string, hiLabel: string): void {
-  const loPct = (lo / max) * 100
-  const hiPct = (hi / max) * 100
-  const zone = document.createElement('div')
-  zone.className = 'hydra-range ' + cssClass
-  zone.style.bottom = loPct + '%'
-  zone.style.height = hiPct - loPct + '%'
-  const topLbl = document.createElement('div')
-  topLbl.className = 'hydra-range-label hydra-range-label-top ' + labelClass
-  topLbl.textContent = hiLabel
-  zone.appendChild(topLbl)
-  const btmLbl = document.createElement('div')
-  btmLbl.className = 'hydra-range-label hydra-range-label-bottom ' + labelClass
-  btmLbl.textContent = loLabel
-  zone.appendChild(btmLbl)
-  parent.appendChild(zone)
+/** Draw a vessel's target-range band with the server's markup (hydrationRangeHtml). */
+function addRange(parent: Element, lo: number, hi: number, max: number, kind: 'water' | 'coffee'): void {
+  const band = rangeBand(lo, hi, max)
+  if (band) {
+    parent.insertAdjacentHTML('afterbegin', hydrationRangeHtml(kind, band))
+  }
 }
 
 function countUp(el: HTMLElement | null, target: number, unit: string, reducedMotion: boolean): void {
@@ -123,13 +115,12 @@ export function initHydration(container: HTMLElement, fixture: HydrationProps): 
   if (!container.closest('[data-no-range]')) {
     const bottleBody = container.querySelector<HTMLElement>('.hydra-bottle-body')
     if (bottleBody && !bottleBody.querySelector('.hydra-range')) {
-      addRange(bottleBody, waterRangeLo, waterRangeHi, waterMax, 'hydra-range-water', 'hydra-range-label-water', String(waterRangeLo), String(waterRangeHi))
+      addRange(bottleBody, waterRangeLo, waterRangeHi, waterMax, 'water')
     }
 
     const mugBody = container.querySelector<HTMLElement>('.hydra-mug-body')
     if (mugBody && !mugBody.querySelector('.hydra-range')) {
-      addRange(mugBody, caffeineRangeLo, caffeineRangeHi, caffeineMax, 'hydra-range-coffee', 'hydra-range-label-coffee', String(caffeineRangeLo),
-        String(caffeineRangeHi))
+      addRange(mugBody, caffeineRangeLo, caffeineRangeHi, caffeineMax, 'coffee')
     }
   }
 

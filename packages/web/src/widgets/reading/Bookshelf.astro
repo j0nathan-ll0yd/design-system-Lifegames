@@ -3,7 +3,7 @@ import { widgets, a11y } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import {
-  localizeImageUrl,
+  mirroredCoverUrl,
   PLACEHOLDER_IMAGE_SRC,
   sanitizeImageUrl,
 } from '../../runtime/image-utils';
@@ -34,25 +34,18 @@ const sanitizerOptions = { baseUrl: Astro.url, onReject: 'omit' as const };
 const mirrored = new Set(localCovers);
 
 // A contract cover renders same-origin only when the consumer's manifest of
-// mirrored covers lists its exact path. No filesystem probe (W6 fallback
-// covers every other case).
+// mirrored covers lists its exact path (mirroredCoverUrl, the rule
+// updateBookshelf applies too). No filesystem probe (W6 fallback covers every
+// other case).
 function localImageUrl(candidate: string | null): string | null {
-  if (!candidate) return null;
-  const localized = localizeImageUrl(candidate, sanitizerOptions);
-  if (!localized) return null;
-  try {
-    const pathname = decodeURIComponent(new URL(localized, Astro.url).pathname);
-    if (!pathname.startsWith('/images/')) return null;
-    return mirrored.has(pathname) ? localized : null;
-  } catch {
-    return null;
-  }
+  return mirroredCoverUrl(candidate, mirrored, sanitizerOptions);
 }
 ---
 
 <div
   class={`tri-card tri-card-accent-amber${widgetState === 'loading' ? ' is-loading' : ''}`}
   id="cardBooks"
+  data-local-covers={localCovers.length > 0 ? JSON.stringify(localCovers) : undefined}
   {...stateRootAttrs(widgetState, generatedAt)}
 >
   <div class="widget-header">
@@ -125,15 +118,6 @@ function localImageUrl(candidate: string | null): string | null {
             ]
               .filter(Boolean)
               .join(', ') || null;
-          // Capture exact candidates with committed files. URL identity, not an
-          // ASIN or inferred filename, determines whether a later live refresh
-          // may localize the candidate.
-          const localCoverCandidates = [
-            localCard ? contractCard : null,
-            localThumb ? contractThumb : null,
-            localAvifCard ? contractAvifCard : null,
-            localAvifThumb ? contractAvifThumb : null,
-          ].filter(Boolean);
           const fallbackAttr =
             imgSrc !== PLACEHOLDER_IMAGE_SRC || avifSrcset ? PLACEHOLDER_IMAGE_SRC : undefined;
           const meta = bookMeta[asin] || {};
@@ -166,7 +150,6 @@ function localImageUrl(candidate: string | null): string | null {
               class={`shelf-book${b.status === 'reading' ? ' shelf-book-active' : ''}`}
               style={`animation-delay: ${i * 0.08}s`}
               data-book={bookData}
-              data-local-cover={JSON.stringify(localCoverCandidates)}
               tabindex="0"
               aria-label={a11y.bookshelf.bookItem
                 .replace('{title}', b.title)

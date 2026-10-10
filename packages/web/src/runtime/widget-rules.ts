@@ -80,13 +80,23 @@ function listState(state: WidgetState | null | undefined, items: readonly unknow
 }
 
 /**
- * HeartRate: a data state without a heart-rate reading is `unavailable`
- * (the primary measurement); a recorded 0 for both heart rate and HRV is
- * `empty`.
+ * A paused watch: the export reports it off the wrist or charging. The card is
+ * a current reading of the watch state, so it keeps the export's data state
+ * (`live` or `stale`) and shows the paused copy and no value. HeartRate and
+ * MovementRings share this rule, on server and client.
+ */
+export function isWatchPaused(health: {watch?: {worn?: boolean} | null} | null | undefined): boolean {
+  return health?.watch?.worn === false
+}
+
+/**
+ * HeartRate: a paused watch keeps the data state (isWatchPaused). Otherwise a
+ * data state without a heart-rate reading is `unavailable` (the primary
+ * measurement); a recorded 0 for both heart rate and HRV is `empty`.
  */
 export function heartRateState(p: HeartRateProps): WidgetState {
   const state = resolveWidgetState(p.state, p.health != null)
-  if (!rendersData(state)) {
+  if (!rendersData(state) || isWatchPaused(p.health)) {
     return state
   }
   const quantities = p.health?.quantities ?? {}
@@ -158,11 +168,14 @@ export function isMovementEmpty(health: MovementHealth | undefined): boolean {
   return measured.every((m) => m?.value === 0)
 }
 
-/** MovementRings: a data state with no movement measured (or all zero) is `empty`. */
+/**
+ * MovementRings: a paused watch keeps the data state (isWatchPaused);
+ * otherwise a data state with no movement measured (or all zero) is `empty`.
+ */
 export function movementRingsState(p: MovementRingsProps): WidgetState {
   const health = normalizeMovementHealth(p.health)
   const state = resolveWidgetState(p.state, health != null)
-  return rendersData(state) && isMovementEmpty(health) ? 'empty' : state
+  return rendersData(state) && !isWatchPaused(health) && isMovementEmpty(health) ? 'empty' : state
 }
 
 /** Hydration: a data state needs the hydration object. */

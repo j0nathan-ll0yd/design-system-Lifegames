@@ -6,9 +6,10 @@
 // `unavailable`, `suppressed` and `loading` show no label: nothing on the card
 // is live. A `stale` card with no valid timestamp shows no label either: it
 // never claims "live". `live` and `empty` keep the widget's own label.
+// The rule is `widgetTimestampView`, which the browser's `revealLiveData`
+// applies too, so server and client render the same header.
 // Internal to @j0nathan-ll0yd/web.
-import { widgets } from '@j0nathan-ll0yd/copy';
-import { formatAsOf, type WidgetState } from '../runtime/widget-state';
+import { widgetTimestampView, type WidgetState } from '../runtime/widget-state';
 
 interface Props {
   label: string;
@@ -18,8 +19,7 @@ interface Props {
 }
 
 const { label, state, generatedAt, id } = Astro.props;
-const asOf = state === 'stale' ? formatAsOf(generatedAt) : null;
-const showLabel = state === 'live' || state === 'empty';
+const view = widgetTimestampView(label, state, generatedAt);
 ---
 
 {
@@ -27,18 +27,18 @@ const showLabel = state === 'live' || state === 'empty';
     or notice state, so a recovered card never keeps a dishonest header. */
 }
 {
-  asOf && generatedAt ? (
+  view.kind === 'asOf' ? (
     <time
       class="widget-timestamp widget-timestamp-stale"
       id={id}
-      datetime={generatedAt}
+      datetime={view.datetime}
       data-live-label={label}
     >
-      {widgets.widgetState.asOf.replace('{time}', asOf)}
+      {view.text}
     </time>
   ) : (
     <span class="widget-timestamp" id={id} data-live-label={label}>
-      {showLabel ? label : ''}
+      {view.text}
     </span>
   )
 }

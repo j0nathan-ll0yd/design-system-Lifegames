@@ -9,7 +9,7 @@
 //
 // Internal to @j0nathan-ll0yd/web: not exported from the components index.
 import { widgets } from '@j0nathan-ll0yd/copy';
-import type { WidgetState } from '../runtime/widget-state';
+import { stateNoticeHtml, type WidgetState } from '../runtime/widget-state';
 
 interface Props {
   state: WidgetState;
@@ -35,18 +35,10 @@ const copy = widgets.widgetState;
       </div>
     ))
 }
+{/* One markup with the browser's renderWidgetUnavailable (stateNoticeHtml). */}
 {
-  state === 'unavailable' && (
-    <div class="widget-empty widget-state-notice" data-state-notice="unavailable" role="status">
-      {copy.unavailable}
-    </div>
-  )
-}
-{
-  state === 'suppressed' && (
-    <div class="widget-empty widget-state-notice" data-state-notice="suppressed" role="status">
-      {copy.suppressed}
-    </div>
+  (state === 'unavailable' || state === 'suppressed') && (
+    <Fragment set:html={stateNoticeHtml(state)} />
   )
 }
 {

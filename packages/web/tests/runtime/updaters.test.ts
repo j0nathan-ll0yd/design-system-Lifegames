@@ -358,7 +358,7 @@ describe('updateNightSummary', () => {
         <div data-phase="core"><span class="sleep-moon-pill-val"></span></div>
         <div data-phase="awake"><span class="sleep-moon-pill-val"></span></div>
         <div id="sleepInsight"></div>
-        <div id="sleepTimestamp"></div>
+        <div class="widget-timestamp" id="sleepTimestamp" data-live-label="${widgets.nightSummary.timestampLastNight}"></div>
       </div>
     `
   }
@@ -988,12 +988,12 @@ describe('updateBookshelf', () => {
       expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
     })
 
-    it('localizes only the exact candidates captured from SSR', () => {
+    it('localizes only the exact paths the card lists in data-local-covers', () => {
       const covers = makeBookWithCovers()
       const cardUrl = covers.books[0]!.mainImageCard!
       document.body.innerHTML = `
-        <div id="cardBooks"><div id="dashShelfRow">
-          <div class="shelf-book" data-local-cover='["${cardUrl}"]'>
+        <div id="cardBooks" data-local-covers='["/images/books/B001TEST-card.webp"]'><div id="dashShelfRow">
+          <div class="shelf-book">
             <div class="shelf-cover-wrapper"><img src="${cardUrl}"></div>
             <div class="shelf-book-title"><span></span></div>
             <div class="shelf-book-author"></div>
