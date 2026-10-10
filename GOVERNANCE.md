@@ -319,7 +319,7 @@ Q3. ATOM / MOLECULE (primitive) or ORGANISM (composed widget)?
 - `eslint-local-rules/widget-props-extends-schema.js` → P3
 - `eslint-local-rules/copy-src-no-dependencies.js` → P3.1 (D9 copy leaf boundary)
 - `scripts/audit-fixtures.mjs` (consumer-side) → P3.2 (Invariant I2 — no consumer-side fixtures)
-- `packages/schemas/scripts/check-freshness.sh` → P3.1 + P3.2 + schemas (git-diff freshness over generated output)
+- `packages/schemas/scripts/check-freshness.sh` → P3.1 + P3.2 + schemas (git-diff freshness over generated output; byte-compares the shipped Swift model `Sources/LifegamesSchemas/WidgetModels.swift` with its codegen output `packages/schemas/swift/WidgetModels.swift`)
 - `audits/checks/d3-widget-compliance.mjs` → P2 (CI-wired in `governance-gates`)
 - `audits/checks/d3-widget-inventory.mjs --check` → P7 (extend for `status` field)
 - `audits/checks/d6-scan-personal-data.sh` → `.husky/pre-commit` (personal data, not governance)
