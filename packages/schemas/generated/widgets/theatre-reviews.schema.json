@@ -14,7 +14,7 @@
     },
     "generatedAt": {
       "type": ["string", "null"],
-      "description": "ISO-8601 `generatedAt` of the export (the OLDEST input for a multi-export card)."
+      "description": "ISO-8601 `generatedAt` of the export the card's state follows."
     },
     "reviews": {
       "anyOf": [
