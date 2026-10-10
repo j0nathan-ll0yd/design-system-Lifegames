@@ -70,37 +70,6 @@ export function resolveWidgetState(explicit: WidgetState | null | undefined, has
   return explicit ?? 'live'
 }
 
-// Severity for combining the states of a card that reads several exports.
-const SEVERITY: Record<WidgetState, number> = {live: 0, empty: 1, stale: 2, loading: 3, unavailable: 4, suppressed: 5}
-
-/** The worst of several input states (suppressed > unavailable > loading > stale > empty > live). */
-export function worstState(...states: (WidgetState | null | undefined)[]): WidgetState {
-  let worst: WidgetState = 'live'
-  for (const s of states) {
-    if (s && SEVERITY[s] > SEVERITY[worst]) {
-      worst = s
-    }
-  }
-  return worst
-}
-
-/** The oldest valid ISO timestamp among the inputs, or null when none is valid. */
-export function oldestGeneratedAt(...isos: (string | null | undefined)[]): string | null {
-  let oldest: string | null = null
-  let oldestMs = Infinity
-  for (const iso of isos) {
-    if (!iso) {
-      continue
-    }
-    const ms = Date.parse(iso)
-    if (Number.isFinite(ms) && ms < oldestMs) {
-      oldestMs = ms
-      oldest = iso
-    }
-  }
-  return oldest
-}
-
 /** True when `currentFocus` names a focus mode that hides the dashboard. */
 export function isHidingFocus(currentFocus: string | null | undefined): boolean {
   return typeof currentFocus === 'string' && (HIDING_FOCUS_MODES as readonly string[]).includes(currentFocus)

@@ -6,13 +6,11 @@ import {
   isHidingFocus,
   isScaffoldHidden,
   NO_READING,
-  oldestGeneratedAt,
   rendersData,
   resolveWidgetState,
   stateRootAttrs,
   toEpochMs,
-  WIDGET_STATES,
-  worstState
+  WIDGET_STATES
 } from '../../src/runtime/widget-state'
 
 describe('resolveWidgetState (the compatibility mapper)', () => {
@@ -50,24 +48,6 @@ describe('state predicates', () => {
     expect(isHidingFocus('Personal')).toBe(false)
     expect(isHidingFocus(null)).toBe(false)
     expect(isHidingFocus(undefined)).toBe(false)
-  })
-})
-
-describe('worstState and oldestGeneratedAt (multi-export cards)', () => {
-  it('orders suppressed > unavailable > loading > stale > empty > live', () => {
-    expect(worstState('live', 'stale')).toBe('stale')
-    expect(worstState('stale', 'unavailable')).toBe('unavailable')
-    expect(worstState('unavailable', 'suppressed', 'live')).toBe('suppressed')
-    expect(worstState('live', 'empty')).toBe('empty')
-    expect(worstState()).toBe('live')
-    expect(worstState(null, undefined)).toBe('live')
-  })
-
-  it('picks the oldest valid timestamp and ignores missing or invalid ones', () => {
-    expect(oldestGeneratedAt('2026-03-18T12:00:00Z', '2026-03-17T08:00:00Z')).toBe('2026-03-17T08:00:00Z')
-    expect(oldestGeneratedAt(null, 'not a date', '2026-03-18T12:00:00Z')).toBe('2026-03-18T12:00:00Z')
-    expect(oldestGeneratedAt()).toBeNull()
-    expect(oldestGeneratedAt(undefined, '')).toBeNull()
   })
 })
 
