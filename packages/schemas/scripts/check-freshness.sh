@@ -4,7 +4,9 @@
 #   - @j0nathan-ll0yd/schemas — the widget JSON schemas generated from the web
 #     package's Props types (generated/widgets), then TS+Swift widget types + fixture-map (raw export schemas
 #     come from @j0nathan-ll0yd/portal-contract, resolved from the package; no local
-#     vendored/ to sync).
+#     vendored/ to sync). codegen writes swift/WidgetModels.swift AND the SPM copy
+#     Sources/LifegamesSchemas/WidgetModels.swift, so both are diffed, and the pair is
+#     compared byte-for-byte before regeneration.
 #   - @j0nathan-ll0yd/copy — derived flat schema + flat JSON + TS/Zod + Swift
 #     (Identity.generated.swift) + bundled resource. The copy build writes into
 #     BOTH packages/copy/dist AND Sources/LifegamesCopy, so both are diffed.
@@ -15,6 +17,17 @@ set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
+
+# Compare the pair BEFORE regeneration: codegen overwrites both files, so a check run after it
+# would compare the generator with itself. This catches an unstaged edit to either copy.
+SWIFT_CODEGEN="packages/schemas/swift/WidgetModels.swift"
+SWIFT_SHIPPED="Sources/LifegamesSchemas/WidgetModels.swift"
+if ! cmp -s "$SWIFT_CODEGEN" "$SWIFT_SHIPPED"; then
+  echo "[freshness] FAIL: $SWIFT_SHIPPED has diverged from $SWIFT_CODEGEN."
+  diff -u "$SWIFT_CODEGEN" "$SWIFT_SHIPPED" | head -40 || true
+  echo "  Run \`pnpm -F @j0nathan-ll0yd/schemas codegen\` (it writes both files), then commit both."
+  exit 1
+fi
 
 echo "[freshness] Regenerating @j0nathan-ll0yd/schemas widget schemas from the web Props types..."
 pnpm -F @j0nathan-ll0yd/schemas generate:widgets
@@ -33,6 +46,7 @@ PATHS=(
   packages/schemas/generated/widgets
   packages/schemas/dist
   packages/schemas/swift
+  Sources/LifegamesSchemas
   packages/schemas/fixture-map.json
   packages/copy/dist
   Sources/LifegamesCopy
