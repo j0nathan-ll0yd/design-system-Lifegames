@@ -1,5 +1,12 @@
 # @j0nathan-ll0yd/web
 
+## 4.0.1
+
+### Patch Changes
+
+- Updated dependencies [7390266]
+  - @j0nathan-ll0yd/copy@3.3.0
+
 ## 4.0.0
 
 ### Major Changes

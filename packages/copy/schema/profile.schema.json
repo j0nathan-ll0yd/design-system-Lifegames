@@ -1,0 +1,221 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.profile.schema.json",
+  "title": "LifegamesCopyProfile",
+  "description": "Rich authoring schema for the profile slice of @j0nathan-ll0yd/copy: the authored identity content of the dashboard's IdentityCard and BioTerminal that the identity namespace does not already hold (atlas decision 0160 Step 1.7). The name, title, location, profile links and bio come from identity.person (name, jobTitle, location, sameAs, flavorBio); this namespace adds the tagline and the bio terminal's command blocks. Each terminal block is a CopyStringList whose FIRST string is the shell prompt line and whose remaining strings are its output lines, in display order; blocks render in key order, separated by a blank line, and the renderer appends the blinking cursor. Location is authored public identity copy only; no coordinates (decision 0160 D14). The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax (static passthrough, no interpolation). The $defs block is byte-identical to the other namespaces' schemas; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tagline",
+    "terminal"
+  ],
+  "properties": {
+    "tagline": {
+      "$ref": "#/$defs/CopyString"
+    },
+    "terminal": {
+      "type": "object",
+      "title": "ProfileTerminal",
+      "description": "The bio terminal's command blocks, in display order. Each block: [prompt line, ...output lines]. A prompt line starts with '$ ', an output line with '→ '.",
+      "additionalProperties": false,
+      "required": [
+        "gpg",
+        "stack",
+        "uptime",
+        "philosophy",
+        "interests"
+      ],
+      "properties": {
+        "gpg": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "stack": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "uptime": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "philosophy": {
+          "$ref": "#/$defs/CopyStringList"
+        },
+        "interests": {
+          "$ref": "#/$defs/CopyStringList"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "CopyMeta": {
+      "type": "object",
+      "description": "Authoring context attached to every copy leaf (D6). Drives auditing, reconciliation, and CI-lintable constraints.",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "usage",
+        "register",
+        "audience",
+        "owner",
+        "lastReviewed"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "What this string is and why it exists."
+        },
+        "usage": {
+          "type": "array",
+          "description": "Every render site / placement where this string appears (file:line or surface name). Makes duplication and placement visible for reconciliation (D11).",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "register": {
+          "type": "string",
+          "enum": [
+            "atom",
+            "label",
+            "factual",
+            "expressive",
+            "machine",
+            "brand",
+            "consent"
+          ],
+          "description": "Voice register (see packages/copy/VOICE.md): atom | label | factual | expressive | machine | brand | consent."
+        },
+        "audience": {
+          "type": "string",
+          "enum": [
+            "human",
+            "machine",
+            "dual"
+          ],
+          "description": "Primary audience: human | machine | dual. Drives the human↔AI arbitration rule (machine/dual surfaces stay literal/parseable)."
+        },
+        "owner": {
+          "type": "string",
+          "description": "Who owns this string's wording."
+        },
+        "lastReviewed": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO-8601 date (YYYY-MM-DD) the wording was last deliberately reviewed."
+        },
+        "constraints": {
+          "type": "object",
+          "description": "Optional machine-checkable constraints (CI-enforced).",
+          "additionalProperties": false,
+          "properties": {
+            "maxChars": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum rendered length. CI fails if value exceeds this."
+            }
+          }
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Optional: why this wording/variant exists distinctly (intent, history)."
+        }
+      }
+    },
+    "CopyString": {
+      "type": "object",
+      "description": "A single customer-facing string (ICU MF1 syntax) plus its authoring context.",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "_meta"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The string, authored in ICU MessageFormat 1 syntax."
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    },
+    "CopyStringList": {
+      "type": "object",
+      "description": "An ordered list of customer-facing strings (each ICU MF1) plus shared authoring context.",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "_meta"
+      ],
+      "properties": {
+        "value": {
+          "type": "array",
+          "description": "The strings, each authored in ICU MessageFormat 1 syntax.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    },
+    "CopyHeading": {
+      "type": "object",
+      "description": "A section heading, authored as the BARE heading text plus its authoring context. The markdown level affix ('# ', '## ') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is un-rendered again by any consumer that models document structure (atlas decision 0128 P3a). The 'pattern' rejects a leaf that still carries the affix. Flattens to a plain string, so the consumer-facing type is the same as CopyString.",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "_meta"
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The heading text, authored in ICU MessageFormat 1 syntax. Carries no leading markdown '#' affix and no leading whitespace.",
+          "pattern": "^[^#\\s]"
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    },
+    "CopyLink": {
+      "type": "object",
+      "description": "A link, authored as FIELDS plus its authoring context. The rendered markdown bullet ('- [label](url): notes') is a projection owned by the consumer's renderer, not part of the copy — a leaf that ships one is regex-parsed back into these same three fields by the consumer (atlas decision 0128 P3a). Each 'pattern' rejects a field that still carries an affix. Flattens to an object, hoisted into the derived flat schema's own $defs so every generator names ONE shared type instead of one structural copy per key.",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "_meta"
+      ],
+      "properties": {
+        "value": {
+          "type": "object",
+          "description": "The link's fields. 'label' and 'notes' are authored prose; 'url' is the target.",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "url"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "description": "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
+              "pattern": "^(?![-*+]\\s)[^\\[\\]]+$"
+            },
+            "url": {
+              "type": "string",
+              "description": "The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.",
+              "pattern": "^[^()\\s]+$"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Optional prose describing the target. Carries no leading ': ' separator.",
+              "pattern": "^[^:\\s]"
+            }
+          }
+        },
+        "_meta": {
+          "$ref": "#/$defs/CopyMeta"
+        }
+      }
+    }
+  }
+}

@@ -53,6 +53,8 @@ const NAMESPACES: Namespace[] = [
   {name: 'a11y', topLevelType: 'Accessibility', flatSchemaId: 'https://lifegames.org/schemas/copy.a11y.flat.schema.json'},
   {name: 'app', topLevelType: 'App', flatSchemaId: 'https://lifegames.org/schemas/copy.app.flat.schema.json'},
   {name: 'permissions', topLevelType: 'Permissions', flatSchemaId: 'https://lifegames.org/schemas/copy.permissions.flat.schema.json'},
+  // ProfileCopy, not Profile: the copy type reads as copy beside LifegamesSchemas' Profile model.
+  {name: 'profile', topLevelType: 'ProfileCopy', flatSchemaId: 'https://lifegames.org/schemas/copy.profile.flat.schema.json'},
   {name: 'errors', topLevelType: 'Errors', flatSchemaId: 'https://lifegames.org/schemas/copy.errors.flat.schema.json'},
   {name: 'llm', topLevelType: 'Llm', flatSchemaId: 'https://lifegames.org/schemas/copy.llm.flat.schema.json'}
 ]

@@ -199,6 +199,9 @@ importers:
 
   packages/fixtures:
     dependencies:
+      '@j0nathan-ll0yd/copy':
+        specifier: workspace:*
+        version: link:../copy
       '@j0nathan-ll0yd/portal-contract':
         specifier: ^2.5.0
         version: 2.7.0
@@ -209,9 +212,6 @@ importers:
         specifier: workspace:*
         version: link:../web
     devDependencies:
-      '@j0nathan-ll0yd/copy':
-        specifier: workspace:*
-        version: link:../copy
       '@typescript-eslint/parser':
         specifier: ^8.61.0
         version: 8.61.0(eslint@10.4.1(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.9.3)

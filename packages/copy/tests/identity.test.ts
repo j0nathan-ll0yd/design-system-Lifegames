@@ -99,6 +99,8 @@ const NAMESPACES: NamespaceFixture[] = [
   {name: 'app', expectedLeaves: 247},
   // permissions: health 2 + locationWhenInUse 2 + locationAlways 1 + motion 1.
   {name: 'permissions', expectedLeaves: 6},
+  // profile: tagline 1 + terminal 5 (gpg/stack/uptime/philosophy/interests).
+  {name: 'profile', expectedLeaves: 6},
   // errors: validation 2 + client 2.
   {name: 'errors', expectedLeaves: 4},
   // llm: txt 32 + full 102 + dashboard 3 + mcp 29 + agentDiscovery 13.

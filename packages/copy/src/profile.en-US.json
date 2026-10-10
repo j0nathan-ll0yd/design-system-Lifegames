@@ -1,0 +1,107 @@
+{
+  "tagline": {
+    "value": "Welcome to my human datastream.",
+    "_meta": {
+      "description": "Short subtitle under the name on the dashboard's identity card.",
+      "usage": [
+        "web:packages/web/src/widgets/identity/IdentityCard.astro (.id-tagline)",
+        "fixtures:packages/fixtures/src/post-adapter/profile.ts (baseline tagline)"
+      ],
+      "register": "expressive",
+      "audience": "human",
+      "owner": "jonathan",
+      "lastReviewed": "2026-10-10"
+    }
+  },
+  "terminal": {
+    "gpg": {
+      "value": [
+        "$ gpg -k",
+        "→ pub   rsa4096 2002-01-01 [SC]",
+        "→ uid   Jonathan Lloyd (Software Engineer)"
+      ],
+      "_meta": {
+        "description": "Bio terminal block 1: the owner's GnuPG key listing. First string is the prompt, the rest are output lines.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro (terminal lines)",
+          "fixtures:packages/fixtures/src/post-adapter/profile.ts (baseline terminalLines)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-10",
+        "rationale": "rsa4096 is period-accurate (RSA in GnuPG since 1999); an ed25519 key dated 2002 would be an anachronism (ECC keygen landed in GnuPG 2.1.8, 2015). `-k` is the documented `--list-keys` shorthand and prints no fingerprint line by default; the uid validity tag is deliberately omitted (`--list-options no-show-uid-validity` output) so the line fits unwrapped. Key date = career epoch, rhyming with the uptime line's 24+ years. The uid comment is deliberately \"Software Engineer\" — self-identity, NOT person.jobTitle (\"Engineering Director\", which the identity card shows). Owner decision 2026-07-17; do not \"align\" this back to jobTitle."
+      }
+    },
+    "stack": {
+      "value": [
+        "$ printenv STACK",
+        "→ aws typescript serverless swift go perl"
+      ],
+      "_meta": {
+        "description": "Bio terminal block 2: the working stack. `printenv` prints the value verbatim, so the output equals identity.person.skills in order (packages/fixtures/tests/interests-invariant.test.ts).",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro (terminal lines)",
+          "fixtures:packages/fixtures/src/post-adapter/profile.ts (baseline terminalLines)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-10"
+      }
+    },
+    "uptime": {
+      "value": [
+        "$ uptime",
+        "→ up 24+ years professionally and counting"
+      ],
+      "_meta": {
+        "description": "Bio terminal block 3: career length, phrased as `uptime` output.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro (terminal lines)",
+          "fixtures:packages/fixtures/src/post-adapter/profile.ts (baseline terminalLines)"
+        ],
+        "register": "expressive",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-10"
+      }
+    },
+    "philosophy": {
+      "value": [
+        "$ cat philosophy.txt",
+        "→ \"Creating things I'm proud of\"",
+        "→ \"Enjoying the passage of time\""
+      ],
+      "_meta": {
+        "description": "Bio terminal block 4: two personal maxims, one per output line.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro (terminal lines)",
+          "fixtures:packages/fixtures/src/post-adapter/profile.ts (baseline terminalLines)"
+        ],
+        "register": "expressive",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-10"
+      }
+    },
+    "interests": {
+      "value": [
+        "$ ls -m interests/",
+        "→ conversation, edm, musical theatre, pc gaming, programming"
+      ],
+      "_meta": {
+        "description": "Bio terminal block 5: interests, as `ls -m` output.",
+        "usage": [
+          "web:packages/web/src/widgets/identity/BioTerminal.astro (terminal lines)",
+          "fixtures:packages/fixtures/src/post-adapter/profile.ts (baseline terminalLines)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-10",
+        "rationale": "Listed alphabetically: `ls` always sorts. The order intentionally differs from identity.person.interests (curated; feeds llms-full.txt via llm-content/view.ts); the membership must not. Enforced by packages/fixtures/tests/interests-invariant.test.ts."
+      }
+    }
+  }
+}
