@@ -33,7 +33,10 @@ function getIcon(type: string) {
 
 function getDetail(event: Event): string {
   if (event.type === 'commit' && event.hash) {
-    return event.hash + ' +' + (event.additions || 0) + '/-' + (event.deletions || 0);
+    // Line counts only when the export carried both: no invented "+0/-0".
+    return typeof event.additions === 'number' && typeof event.deletions === 'number'
+      ? event.hash + ' +' + event.additions + '/-' + event.deletions
+      : event.hash;
   }
   if (event.number !== undefined) {
     return '#' + event.number;
