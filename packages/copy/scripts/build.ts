@@ -15,7 +15,7 @@ import addFormats from 'ajv-formats'
 import {compile} from 'json-schema-to-typescript'
 import jsonSchemaToZod from 'json-schema-to-zod'
 import * as prettier from 'prettier'
-import {designSystemPublicSwiftTypes, swiftShadowClashes} from './swift-shadow'
+import {reservedSwiftNames, swiftShadowClashes} from './swift-shadow'
 
 async function formatWithPrettier(src: string, outPath: string, parser: 'typescript' | 'json'): Promise<string> {
   const cfg = await prettier.resolveConfig(outPath)
@@ -384,16 +384,15 @@ for (const {name, namespace} of swiftTopLevelNames) {
 // namespaces emitting a same-named struct redeclare it inside the single Swift
 // module. Assert every struct name (top-level + nested) is unique across
 // namespaces; the fix is a unique `title` on the colliding group in its schema.
-// A copy struct must not shadow a public type of another design-system Swift
-// module (scripts/swift-shadow.ts): widgets.widgetState once generated
-// `WidgetState`, which shadowed LifegamesComponents.WidgetState<T>. The
-// reserved set is derived from Sources/*, never hand-listed.
-const shadowClashes = swiftShadowClashes(swiftStructNames, designSystemPublicSwiftTypes(join(PKG_ROOT, '..', '..', 'Sources')))
-for (const {name, namespace, module} of shadowClashes) {
-  console.error(
-    `copy:build — Swift struct "${name}" (namespace "${namespace}") shadows the public type ${module}.${name}. ` +
-      'Give the group a unique `title` in its rich schema.'
-  )
+// A copy struct must not shadow a Swift name the code beside it uses
+// (scripts/swift-shadow.ts): a public type of another design-system module
+// (widgets.widgetState once generated `WidgetState`, which shadowed
+// LifegamesComponents.WidgetState<T>), or a type a module that sees
+// LifegamesCopy references unqualified (SwiftUI's Color, Text, View, ...).
+// The reserved set is derived from Sources/* and Package.swift, never hand-listed.
+const shadowClashes = swiftShadowClashes(swiftStructNames, reservedSwiftNames(join(DS_ROOT, 'Sources'), join(DS_ROOT, 'Package.swift')))
+for (const {name, namespace, reason} of shadowClashes) {
+  console.error(`copy:build — Swift struct "${name}" (namespace "${namespace}") shadows ${reason}. ` + 'Give the group a unique `title` in its rich schema.')
 }
 if (shadowClashes.length > 0) {
   process.exit(1)
