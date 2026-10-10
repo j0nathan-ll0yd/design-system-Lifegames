@@ -6,7 +6,8 @@ import type {Freshness} from './freshness'
 import {esc} from './html-utils'
 import {insertStateNotice, isSuppressedCard, revealLiveData} from './updater-empty'
 import {movementEmptyHtml} from './widget-markup'
-import {type HeartRateView, heartRateView, movementView, type RingStroke} from './widget-views'
+import {writeHeartRateFooter} from './updaters'
+import {heartRateView, movementView, type RingStroke} from './widget-views'
 import type {MovementRingsProps} from '../widgets/health/MovementRings.types'
 
 function setText(id: string, text: string): void {
@@ -124,13 +125,6 @@ export function updateMovementRings(data: AdaptedHealth, freshness?: Freshness):
   }
 
   card.classList.remove('is-loading')
-}
-
-/** Write HeartRate's footer vitals (RHR · RR · Temp) from its view. */
-export function writeHeartRateFooter(view: HeartRateView): void {
-  setText('hrFooterRhr', view.rhrText)
-  setText('hrFooterRr', view.rrText)
-  setText('hrFooterTemp', view.tempText)
 }
 
 /**

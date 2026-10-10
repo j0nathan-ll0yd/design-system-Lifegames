@@ -10,7 +10,8 @@
 // updater with the adapted export and `exportFreshness(domain, export, NOW)`.
 //
 // The two must agree on `data-ssr-state`, `data-generated-at`, the paused and
-// loading classes, and every visible text node. "Visible" models the
+// loading classes, every visible text node, and every attribute of the
+// elements a reader or a stylesheet keys on (attributeMap). "Visible" models the
 // package's CSS: no `hidden` subtree, no skeleton, no <noscript>, and under
 // `.is-paused` the paused block instead of the value scaffold.
 import {experimental_AstroContainer as AstroContainer} from 'astro/container'
@@ -111,6 +112,41 @@ interface CardSnapshot {
   paused: boolean
   loading: boolean
   text: string[]
+  attrs: string[]
+}
+
+// Attributes that differ by design, not by rendering: Astro's dev-only source
+// markers, the client's "already written" flag, and the server's initial ECG
+// parameters (the browser hands them to the canvas through __ecgUpdate).
+const IGNORED_ATTR = /^(data-astro-|data-live-updated$|data-bpm$|data-hrv$|data-stroke$)/
+
+// A style attribute serialized by CSSOM, then sorted by declaration: the
+// browser writes styles through CSSOM (hex becomes rgb()), the server as text.
+const STYLE_PARSER = new JSDOM('<!doctype html><div></div>').window.document.querySelector('div') as HTMLElement
+function normalizeStyle(value: string): string {
+  STYLE_PARSER.style.cssText = value
+  return STYLE_PARSER.style.cssText.split(';').map((d: string) => d.trim()).filter(Boolean).sort().join('; ')
+}
+
+/**
+ * Every attribute of every element a reader or a stylesheet keys on: the
+ * card root, each element with an id, the dots, the ring group, the bands
+ * and the images. Inline styles cover ring offsets, fills, bars and the sun dot.
+ */
+function attributeMap(card: Element): string[] {
+  const out: string[] = []
+  const els = [card, ...card.querySelectorAll('[id], .live-dot, [role="img"], .hydra-range, img, source, time')]
+  els.forEach((el, i) => {
+    const key = `${i}:${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`
+    for (const a of [...el.attributes].sort((x, y) => x.name.localeCompare(y.name))) {
+      if (!IGNORED_ATTR.test(a.name)) {
+        // Class order carries no meaning; style serialization differs by writer.
+        const value = a.name === 'style' ? normalizeStyle(a.value) : a.name === 'class' ? a.value.split(/\s+/).filter(Boolean).sort().join(' ') : a.value
+        out.push(`${key} ${a.name}=${value}`)
+      }
+    }
+  })
+  return out
 }
 
 function snapshot(card: Element): CardSnapshot {
@@ -119,7 +155,8 @@ function snapshot(card: Element): CardSnapshot {
     generatedAt: card.getAttribute('data-generated-at'),
     paused: card.classList.contains('is-paused'),
     loading: card.classList.contains('is-loading'),
-    text: visibleText(card)
+    text: visibleText(card),
+    attrs: attributeMap(card)
   }
 }
 
@@ -314,10 +351,23 @@ async function serverCard(card: Card, input: Input): Promise<CardSnapshot> {
   return snapshot(doc.getElementById(card.id)!)
 }
 
-async function browserCard(card: Card, input: Input): Promise<CardSnapshot> {
+/** The browser half: the card rendered `loading`, or first filled by an earlier read (`from`). */
+async function browserCard(card: Card, input: Input, from?: Input): Promise<CardSnapshot> {
   const doc = mount(await container.renderToString(card.component as never, {props: {state: 'loading', ...card.extra}}))
+  if (from) {
+    card.apply(from)
+  }
   card.apply(input)
   return snapshot(doc.getElementById(card.id)!)
+}
+
+function expectSame(browser: CardSnapshot, server: CardSnapshot): void {
+  // Name the differing attributes first: a whole-snapshot diff truncates.
+  expect({extra: browser.attrs.filter((a) => !server.attrs.includes(a)), missing: server.attrs.filter((a) => !browser.attrs.includes(a))}).toEqual({
+    extra: [],
+    missing: []
+  })
+  expect(browser).toEqual(server)
 }
 
 // covers: widget-contract#A live web widget's browser updater reaches the server's state for the same export
@@ -326,6 +376,15 @@ describe.each(CARDS)('$name: server render and browser updater agree', (card) =>
     const server = await serverCard(card, c.input)
     const browser = await browserCard(card, c.input)
     expect(server.state, 'the server state the case names').toBe(c.state)
-    expect(browser).toEqual(server)
+    expectSame(browser, server)
+  })
+
+  // A later read over a card an earlier read filled (live → stale, live →
+  // paused, live → unavailable, live → empty, stale → live, …) reaches the
+  // same card as a server render of the later read alone.
+  it.each(Object.entries(card.cases))('after the live case: %s', async (_name, c) => {
+    const server = await serverCard(card, c.input)
+    const browser = await browserCard(card, c.input, card.cases.live!.input)
+    expectSame(browser, server)
   })
 })

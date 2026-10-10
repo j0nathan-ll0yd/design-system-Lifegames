@@ -8,7 +8,6 @@ import {enterUnavailable, insertStateNotice, isSuppressedCard, renderWidgetEmpty
 import type {Freshness} from './freshness'
 import {heartRateEmptyHtml, hydrationRangeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
-import {writeHeartRateFooter} from './updaters-movement'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
 import {composeSystemLines, formatAge} from './view-models'
 import {formatMeasurement, formatMonthYear} from './widget-state'
@@ -55,6 +54,13 @@ function heartRateProps(data: AdaptedHealth, freshness: Freshness | undefined): 
   return {state: freshness?.state, generatedAt: freshness?.generatedAt, health: {quantities: data.quantities, watch: data.watch}}
 }
 
+/** Drop a style attribute left empty after its colours were cleared (the server renders none). */
+function dropEmptyStyle(el: HTMLElement): void {
+  if (!el.getAttribute('style')) {
+    el.removeAttribute('style')
+  }
+}
+
 /** Write HeartRate's value slots from its view: a reading, the no-reading mark, or ''. */
 function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
   const {zone, showData} = view
@@ -65,6 +71,7 @@ function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
     // A zone colour belongs to a reading; no reading carries none.
     bpm.style.color = hasHr ? zone.bpmColor : ''
     bpm.style.textShadow = hasHr ? zone.bpmShadow : ''
+    dropEmptyStyle(bpm)
   }
   const badge = document.getElementById('hrZoneBadge')
   if (badge) {
@@ -72,12 +79,14 @@ function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
     badge.style.color = hasHr ? zone.badgeColor : ''
     badge.style.background = hasHr ? zone.badgeBg : ''
     badge.style.border = hasHr ? '1px solid ' + zone.badgeBorder : ''
+    dropEmptyStyle(badge)
   }
   const hrvEl = document.getElementById('hrHrvValue')
   if (hrvEl) {
     hrvEl.textContent = view.hrvText
     hrvEl.style.color = view.hasHrv ? view.hrvColor.color : ''
     hrvEl.style.textShadow = view.hasHrv ? view.hrvColor.shadow : ''
+    dropEmptyStyle(hrvEl)
   }
   writeHeartRateFooter(view)
   const labelEl = document.getElementById('hrPausedLabel')
@@ -103,6 +112,21 @@ function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
   }
   card.classList.remove(...ACCENT_CLASSES)
   card.classList.add(zone.accentClass)
+  // The header dot carries the zone's colour, as the server renders it.
+  const dot = card.querySelector('.widget-header .live-dot')
+  if (dot) {
+    dot.className = 'live-dot ' + zone.dotClass
+  }
+}
+
+/** Write HeartRate's footer vitals (RHR · RR · Temp) from its view. */
+export function writeHeartRateFooter(view: HeartRateView): void {
+  for (const [id, text] of [['hrFooterRhr', view.rhrText], ['hrFooterRr', view.rrText], ['hrFooterTemp', view.tempText]] as const) {
+    const el = document.getElementById(id)
+    if (el) {
+      el.textContent = text
+    }
+  }
 }
 
 /**

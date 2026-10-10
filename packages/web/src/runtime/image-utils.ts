@@ -182,11 +182,14 @@ export function pictureWithAvif(opts: {avifSrcset: string | null; imgAttrs: stri
  * Bookshelf's mirrored-cover rule, shared by `Bookshelf.astro` and
  * `updateBookshelf`. A contract cover URL renders from the same origin only
  * when its localized path (`/images/...`, see localizeImageUrl) is EXACTLY one
- * of the consumer's mirrored cover paths. Nothing is stripped, decoded or
- * guessed: the mirror keeps the manifest's names, version token included, so
- * an outdated mirrored file never stands in for a new version. Returns the
- * same-origin URL, or null (the caller keeps the contract URL and its W6
- * fallback).
+ * of the consumer's mirrored cover paths. The match is on the URL path as it
+ * appears in the contract URL, percent-encoding included: nothing is decoded
+ * or guessed. The query and fragment are not part of the path and do not take
+ * part in the match; the version token lives in the file name, so an
+ * outdated mirrored file never stands in for a new version. A candidate that
+ * does not localize to a same-origin `/images/` path (a non-CloudFront host,
+ * a same-origin absolute URL) never matches. Returns the same-origin URL, or
+ * null (the caller keeps the contract URL and its W6 fallback).
  */
 export function mirroredCoverUrl(candidate: string | null | undefined, mirrored: ReadonlySet<string>, options: ImageSanitizerOptions = {}): string | null {
   if (!candidate || mirrored.size === 0) {

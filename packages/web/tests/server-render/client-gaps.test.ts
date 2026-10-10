@@ -34,7 +34,7 @@ import {adaptArticles, adaptBooks, adaptGithubEvents, adaptHealth, adaptSleep, a
 import {CLOUDFRONT_BASE} from '../../src/runtime/constants'
 import {exportFreshness} from '../../src/runtime/freshness'
 import {PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
-import {renderWidgetUnavailable} from '../../src/runtime/updater-empty'
+import {releaseSuppression, renderWidgetUnavailable} from '../../src/runtime/updater-empty'
 import {
   updateBookshelf,
   updateDevActivityLog,
@@ -185,6 +185,16 @@ describe.each(LIVE_CARDS)('gap 2: renderWidgetUnavailable on $name', (card) => {
     expect(el.querySelector('[data-state-notice="unavailable"]')?.textContent).toBe(widgets.widgetState.unavailable)
     expect(el.dataset.ssrState).toBe('unavailable')
     expect(el.hasAttribute('data-generated-at')).toBe(false)
+  })
+
+  it('a card the focus gate released takes the unavailable markup too', async () => {
+    const server = new JSDOM(`<body>${await render(card.component, {state: 'unavailable'})}</body>`).window.document.getElementById(card.id)!
+    const doc = mount(await render(card.component, {state: 'suppressed'}))
+    const el = doc.getElementById(card.id)!
+    releaseSuppression(el)
+    expect(renderWidgetUnavailable(el)).toBe(true)
+    expect(canonical(el)).toBe(canonical(server))
+    expect(el.querySelector('[data-state-notice="suppressed"]')).toBeNull()
   })
 
   it('is a no-op on a card already unavailable', async () => {

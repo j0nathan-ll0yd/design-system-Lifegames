@@ -10,16 +10,17 @@ export type WidgetEmptyOptions = {message: string} | {title: string; body: strin
 /**
  * Render a widget's empty state.
  *
- * Resolves the card by id, replaces its `.widget-body` with a centered
- * `.widget-empty` placeholder, and clears the skeleton (`is-loading`). This is
+ * Resolves the card by id, shows the server's centered `.widget-empty`
+ * notice in place of the items, and clears the skeleton (`is-loading`). This is
  * the shared implementation behind the empty branches of the bookshelf,
  * theatre, dev-log, reading-feed and starred-repo updaters (Workouts has its
  * own recovery-day markup, workouts-markup.ts).
  *
- * NOTE: replacing `.widget-body` destroys any child container that a widget's
- * populated path re-queries by id (e.g. `#dashShelfRow`, `#theatreRow`,
- * `.gh-starred-list`). Callers whose active path targets such a child MUST
- * recreate it when absent so an empty -> populated transition still renders.
+ * The card keeps its server structure: the item scaffold (`[data-state-scaffold]`)
+ * is emptied and hidden, as the server renders `empty`. A body with no
+ * scaffold has its items replaced by the notice, so a populated path that
+ * re-queries a container by id (e.g. `#dashShelfRow`, `#theatreRow`,
+ * `.gh-starred-list`) MUST still recreate it when absent.
  */
 export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): void {
   const card = document.getElementById(cardId)
@@ -31,19 +32,30 @@ export function renderWidgetEmpty(cardId: string, opts: WidgetEmptyOptions): voi
   if (!revealLiveData(card, 'empty')) {
     return
   }
+  const html = 'message' in opts
+    ? '<div class="widget-empty" data-state-notice="empty">' + esc(opts.message) + '</div>'
+    : '<div class="widget-empty widget-empty--stack" data-state-notice="empty">' +
+      '<span class="widget-empty-title">' +
+      esc(opts.title) +
+      '</span>' +
+      '<span class="widget-empty-body">' +
+      esc(opts.body) +
+      '</span>' +
+      '</div>'
   const body = card.querySelector('.widget-body')
-  if (body) {
-    // The same markup WidgetStateNotice renders for the server's empty state.
-    body.innerHTML = 'message' in opts
-      ? '<div class="widget-empty" data-state-notice="empty">' + esc(opts.message) + '</div>'
-      : '<div class="widget-empty widget-empty--stack" data-state-notice="empty">' +
-        '<span class="widget-empty-title">' +
-        esc(opts.title) +
-        '</span>' +
-        '<span class="widget-empty-body">' +
-        esc(opts.body) +
-        '</span>' +
-        '</div>'
+  const scaffolds = card.querySelectorAll<HTMLElement>('[data-state-scaffold]')
+  if (scaffolds.length > 0) {
+    // The server's empty state: the item scaffold kept, emptied and hidden,
+    // and the notice WidgetStateNotice renders after the skeleton. The
+    // populated path finds its container again.
+    scaffolds.forEach((s) => {
+      s.innerHTML = ''
+      s.hidden = true
+    })
+    insertStateNotice(card, html)
+  } else if (body) {
+    // A body without a scaffold: the notice replaces the previous items.
+    body.innerHTML = html
   }
   card.classList.remove('is-loading')
 }
@@ -109,9 +121,18 @@ function writeRootState(card: Element, state: WidgetState, generatedAt: string |
   }
 }
 
-/** Drop every state notice, and the loading <noscript> note: the card has left `loading`. */
+/**
+ * Drop every state notice, and the loading <noscript> note: the card has left
+ * `loading`. Only the <noscript> that carries the loading note goes; with
+ * scripting on, its content is raw text, so the marker is matched as text.
+ */
 function removeStateNotices(card: Element): void {
-  card.querySelectorAll('[data-state-notice], noscript').forEach((n) => n.remove())
+  card.querySelectorAll('noscript').forEach((n) => {
+    if (n.querySelector('[data-state-notice="loading"]') || (n.textContent ?? '').includes('data-state-notice="loading"')) {
+      n.remove()
+    }
+  })
+  card.querySelectorAll('[data-state-notice]').forEach((n) => n.remove())
 }
 
 /**
@@ -186,8 +207,9 @@ export function enterUnavailable(card: HTMLElement): void {
  * `unavailable` state (see enterUnavailable). Returns true when the card
  * shows `unavailable`.
  *
- * It acts only on a card that has shown no data yet (`loading`), and is a
- * no-op on a card already `unavailable`. It REFUSES, writes nothing and
+ * It acts only on a card that has shown no data yet: `loading`, or a card the
+ * focus gate released (`unavailable` with the suppressed notice still shown).
+ * It is a no-op on a card that already shows the unavailable notice. It REFUSES, writes nothing and
  * returns false for:
  *   - a suppressed card: only the focus gate releases it;
  *   - a card that shows a reading (`live`, `stale`, `empty`): a later failed
@@ -199,10 +221,14 @@ export function renderWidgetUnavailable(card: Element | null): boolean {
     return false
   }
   const state = card.dataset.ssrState
-  if (state === 'unavailable') {
+  // A card the focus gate released (releaseSuppression) records `unavailable`
+  // but still shows the suppressed notice: it is not yet in the server's
+  // unavailable markup, so it is rendered like a loading card.
+  const showsUnavailable = state === 'unavailable' && card.querySelector('[data-state-notice="unavailable"]') !== null
+  if (showsUnavailable) {
     return true
   }
-  if (state !== 'loading') {
+  if (state !== 'loading' && state !== 'unavailable') {
     return false
   }
   enterUnavailable(card)
