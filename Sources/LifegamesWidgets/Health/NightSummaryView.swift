@@ -24,6 +24,10 @@ public struct NightSummaryView: View {
             NightSummaryEmptyView()
         case let .populated(props):
             NightSummaryPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: nightSummaryCopy.title, accent: LGColor.accentPurple)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: nightSummaryCopy.title, accent: LGColor.accentPurple)
         }
     }
 }
@@ -261,6 +265,20 @@ private struct NightSummaryEmptyView: View {
 
 #Preview("Night Summary — Empty") {
     NightSummaryView(state: .empty)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Night Summary — Unavailable") {
+    NightSummaryView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Night Summary — Suppressed") {
+    NightSummaryView(state: .suppressed)
         .padding()
         .background(LGColor.surfaceBase)
         .preferredColorScheme(.dark)

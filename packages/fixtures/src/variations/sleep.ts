@@ -22,4 +22,7 @@ export const longSleep: SleepExport = createSleepFixture({core: {seconds: 21600}
 // generatedAt are required). All stages at realistic high durations.
 export const full: SleepExport = createSleepFixture({awake: {seconds: 2400}, core: {seconds: 18000}, deep: {seconds: 9000}, rem: {seconds: 7200}})
 
-export const sleepVariations = {baseline, empty, deepDominant, remDominant, shortSleep, longSleep, full}
+// SSR known answer (decision 0160): stage durations unique across all fixtures.
+export const ssrKnownAnswer: SleepExport = createSleepFixture({core: {seconds: 18137}, deep: {seconds: 5791}, rem: {seconds: 6029}, awake: {seconds: 1213}})
+
+export const sleepVariations = {baseline, empty, deepDominant, remDominant, shortSleep, longSleep, full, ssrKnownAnswer}

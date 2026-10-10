@@ -1,0 +1,60 @@
+---
+// Body of a live widget in a non-data state (atlas decision 0160).
+//
+// - empty: the widget's own empty copy, in the same `.widget-empty` markup the
+//   runtime `renderWidgetEmpty` writes, so server and client never differ.
+// - unavailable / suppressed: chrome-level notice. The caller renders NO data
+//   alongside it; `suppressed` markup must not carry any gated value.
+// - loading: the caller keeps its skeleton; this adds the <noscript> note.
+//
+// Internal to @j0nathan-ll0yd/web: not exported from the components index.
+import { widgets } from '@j0nathan-ll0yd/copy';
+import type { WidgetState } from '../runtime/widget-state';
+
+interface Props {
+  state: WidgetState;
+  /** Empty-state copy: one line, or a stacked title and body. */
+  empty?: { message: string } | { title: string; body: string };
+}
+
+const { state, empty } = Astro.props;
+const copy = widgets.widgetState;
+---
+
+{
+  state === 'empty' &&
+    empty &&
+    ('message' in empty ? (
+      <div class="widget-empty" data-state-notice="empty">
+        {empty.message}
+      </div>
+    ) : (
+      <div class="widget-empty widget-empty--stack" data-state-notice="empty">
+        <span class="widget-empty-title">{empty.title}</span>
+        <span class="widget-empty-body">{empty.body}</span>
+      </div>
+    ))
+}
+{
+  state === 'unavailable' && (
+    <div class="widget-empty widget-state-notice" data-state-notice="unavailable" role="status">
+      {copy.unavailable}
+    </div>
+  )
+}
+{
+  state === 'suppressed' && (
+    <div class="widget-empty widget-state-notice" data-state-notice="suppressed" role="status">
+      {copy.suppressed}
+    </div>
+  )
+}
+{
+  state === 'loading' && (
+    <noscript>
+      <p class="widget-noscript" data-state-notice="loading">
+        {copy.needsJavaScript}
+      </p>
+    </noscript>
+  )
+}

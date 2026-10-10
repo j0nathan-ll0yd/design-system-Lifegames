@@ -319,4 +319,67 @@ export const full: BooksExport = createBooksFixture({
   ]
 })
 
-export const booksVariations = {baseline, empty, allReading, allCompleted, mixedStatus, withProgress, noCovers, seriesBooks, sixBooks, allFields, full}
+// SSR known answer (decision 0160): every identity, text and numeric field is overridden,
+// because createBook defaults (title, asin, isbn10, image keys, description, page counts)
+// are shared with other variations. Image keys use the reserved .invalid TLD.
+export const ssrKnownAnswer: BooksExport = createBooksFixture({
+  books: [
+    createBook({
+      asin: 'KA7731KAP1',
+      title: 'Known Answer Title Kappa-7731',
+      author: 'Known Answer Author Kappa-7731',
+      series: 'Known Answer Series Kappa-7731',
+      seriesNumber: 1,
+      seriesTotal: 2,
+      description: 'Known answer description Kappa-7731.',
+      publicationDate: '1993-06-17',
+      publishedYear: 1993,
+      isbn10: 'KA7731KAP1',
+      pageCount: 391,
+      mainImage: 'https://fixtures.invalid/images/books/known-answer-kappa-7731.webp',
+      mainImageThumb: 'https://fixtures.invalid/images/books/known-answer-kappa-7731-thumb.webp',
+      averageRating: '4.37',
+      category: 'Known Answer Category Kappa-7731',
+      status: 'reading',
+      currentPage: 137,
+      totalPages: 391,
+      rating: null
+    }),
+    createBook({
+      asin: 'KA7731KAP2',
+      title: 'Known Answer Finished Kappa-7731',
+      author: 'Known Answer Author Kappa-7731',
+      series: 'Known Answer Series Kappa-7731',
+      seriesNumber: 2,
+      seriesTotal: 2,
+      description: 'Known answer finished description Kappa-7731.',
+      publicationDate: '1996-03-09',
+      publishedYear: 1996,
+      isbn10: 'KA7731KAP2',
+      pageCount: 273,
+      mainImage: 'https://fixtures.invalid/images/books/known-answer-finished-kappa-7731.webp',
+      mainImageThumb: 'https://fixtures.invalid/images/books/known-answer-finished-kappa-7731-thumb.webp',
+      averageRating: '3.91',
+      category: 'Known Answer Category Kappa-7731',
+      status: 'finished',
+      currentPage: null,
+      totalPages: 273,
+      rating: 4
+    })
+  ]
+})
+
+export const booksVariations = {
+  baseline,
+  empty,
+  allReading,
+  allCompleted,
+  mixedStatus,
+  withProgress,
+  noCovers,
+  seriesBooks,
+  sixBooks,
+  allFields,
+  full,
+  ssrKnownAnswer
+}

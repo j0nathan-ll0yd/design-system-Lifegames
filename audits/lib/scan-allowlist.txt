@@ -496,3 +496,28 @@ audits/checks/d3-openspec-covers.mjs:marker:j0nathan-ll0yd
 audits/__tests__/d3-openspec-covers.test.mjs:marker:j0nathan-ll0yd
 # Changesets must name the scoped public package they release.
 .changeset/offline-record-repoint.md:marker:j0nathan-ll0yd
+# Atlas decision 0160 (honest widget states). These files import or name the
+# scoped packages they build on (@j0nathan-ll0yd/copy, @j0nathan-ll0yd/portal-contract,
+# @j0nathan-ll0yd/web). The marker is the mandated GitHub Packages namespace, a
+# public distribution scope, not personal data.
+packages/web/src/components/WidgetStateNotice.astro:marker:j0nathan-ll0yd
+packages/web/src/components/WidgetTimestamp.astro:marker:j0nathan-ll0yd
+packages/web/src/runtime/view-models.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/widget-state.ts:marker:j0nathan-ll0yd
+packages/web/src/widgets/other/DndOverlay.astro:marker:j0nathan-ll0yd
+packages/web/src/widgets/other/FocusOverlay.astro:marker:j0nathan-ll0yd
+packages/web/tests/server-render/server-safe.test.ts:marker:j0nathan-ll0yd
+.changeset/honest-widget-states-fixtures.md:marker:j0nathan-ll0yd
+.changeset/honest-widget-states-schemas.md:marker:j0nathan-ll0yd
+.changeset/honest-widget-states-web.md:marker:j0nathan-ll0yd
+packages/web/tests/server-render/states.test.ts:marker:j0nathan-ll0yd
+.changeset/widget-state-copy.md:marker:j0nathan-ll0yd
+packages/web/stories/production/state-notice.ts:marker:j0nathan-ll0yd
+packages/fixtures/tests/post-adapter-health-drift.test.ts:marker:j0nathan-ll0yd
+# turbo.json names the web package's test task (@j0nathan-ll0yd/web#test) to add its inputs.
+turbo.json:marker:j0nathan-ll0yd
+packages/web/tests/runtime/updaters-honest-states.test.ts:marker:j0nathan-ll0yd
+# Review M02: the shared Workouts recovery-day markup imports @j0nathan-ll0yd/copy.
+packages/web/src/runtime/workouts-markup.ts:marker:j0nathan-ll0yd
+# Review M01: the exact known-answer projection imports @j0nathan-ll0yd/copy.
+packages/web/tests/server-render/known-answer-render.ts:marker:j0nathan-ll0yd

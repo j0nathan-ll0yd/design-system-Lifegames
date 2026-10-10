@@ -2,14 +2,21 @@
 // Fixture validation lives at @j0nathan-ll0yd/schemas (consumer-aggregate shapes).
 // Per-widget DS schemas are a deferred follow-up plan.
 
+import type { WidgetStateProps } from '../../runtime/widget-state';
+
 export interface Article {
   title: string;
   source: string;
+  // Relative label computed against the page's `now`.
   date: string;
+  // ISO timestamp behind `date`, rendered as <time datetime>.
+  datetime?: string;
 }
 
-export interface ReadingFeedProps {
-  reading: {
+export interface ReadingFeedProps extends WidgetStateProps {
+  // Absent in the non-data states (unavailable, suppressed, loading).
+  // The server page passes at most 10 articles (toReadingArticles, one client page).
+  reading?: {
     articles: Article[];
   };
 }

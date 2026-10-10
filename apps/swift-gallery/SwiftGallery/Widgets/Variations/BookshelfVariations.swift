@@ -9,6 +9,8 @@ enum BookshelfVariations {
         case fixture(String)
         case skeleton
         case empty
+        case unavailable
+        case suppressed
     }
 
     struct State: Identifiable {
@@ -28,6 +30,8 @@ enum BookshelfVariations {
         .init(id: "mostly-empty", label: "Mostly Empty", kind: .fixture("bookshelf.mostly-empty")),
         .init(id: "skeleton", label: "Skeleton", kind: .skeleton),
         .init(id: "empty", label: "Empty", kind: .empty),
+        .init(id: "unavailable", label: "Unavailable", kind: .unavailable),
+        .init(id: "suppressed", label: "Suppressed", kind: .suppressed),
     ]
 
     static var entry: WidgetEntry {
@@ -50,6 +54,10 @@ enum BookshelfVariations {
             BookshelfView(state: .loading)
         case .empty:
             BookshelfView(state: .empty)
+        case .unavailable:
+            BookshelfView(state: .unavailable)
+        case .suppressed:
+            BookshelfView(state: .suppressed)
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "reading", name: name),
                let props = Adapters.bookshelf(fromFixture: data)

@@ -3,7 +3,16 @@
   "widget": "focus-overlay",
   "group": "other",
   "platforms": ["swift", "web"],
-  "props": {},
+  "props": {
+    "currentFocus": {
+      "type": ["string", "null"],
+      "optional": true
+    },
+    "now": {
+      "type": ["string", "null"],
+      "optional": true
+    }
+  },
   "propsRef": "packages/web/src/widgets/other/FocusOverlay.types.ts",
   "swiftPropsRef": "Sources/LifegamesWidgets/Other/FocusOverlayProps.swift",
   "states": ["dark", "default", "empty", "populated-max", "populated-min", "skeleton"],

@@ -3,33 +3,65 @@
   "cacheDir": ".turbo/cache",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", "swift/**", "vendored/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        "swift/**",
+        "vendored/**"
+      ]
     },
     "build:tokens": {
-      "outputs": ["dist/**", "../../Sources/LifegamesTokens/**/*.swift"]
+      "outputs": [
+        "dist/**",
+        "../../Sources/LifegamesTokens/**/*.swift"
+      ]
     },
     "lint": {},
     "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "@j0nathan-ll0yd/web#test": {
+      "dependsOn": [
+        "build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/packages/fixtures/src/generated/**"
+      ]
     },
     "storybook:build": {
-      "dependsOn": ["build"],
-      "outputs": ["storybook-static/**"]
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "storybook-static/**"
+      ]
     },
     "docs:build": {
-      "dependsOn": ["build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "docs:dev": {
       "cache": false,
       "persistent": true
     },
     "storybook:test": {
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "cache": false
     }
   }

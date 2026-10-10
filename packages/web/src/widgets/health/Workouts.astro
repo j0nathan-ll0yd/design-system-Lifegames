@@ -1,31 +1,56 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { formatMeasurement, rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { formatWorkoutDuration, workoutsState } from '../../runtime/widget-rules';
+import { safeHttpsUrl } from '../../runtime/html-utils';
+import { workoutsRestHtml } from '../../runtime/workouts-markup';
+import type { Workout, WorkoutsProps } from './Workouts.types';
 
-const { health } = Astro.props;
-const workouts = health.workouts || [];
-const hasWorkouts = workouts.length > 0;
-
-function fmtDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.round(seconds % 60);
-  if (h > 0) return h + 'h ' + m + 'm';
-  return m + 'm' + (s > 0 ? ' ' + s + 's' : '');
-}
+const props = Astro.props as WorkoutsProps;
+const { health, generatedAt } = props;
+// One owner for the state: the same rule the view model applies. No workouts
+// is the recovery-day empty state, which the widget always had.
+const widgetState = workoutsState(props);
+const showData = rendersData(widgetState);
+const workouts: Workout[] = showData ? (health?.workouts ?? []) : [];
+// Shared with updateWorkouts, so server and client format the same.
+const fmtDuration = formatWorkoutDuration;
 ---
 
-<div class="tri-card tri-card-accent-pink" id="cardWorkouts" style="display: none">
+{/* Visible by default (atlas decision 0160, D5): real workouts reach every client. */}
+<div
+  class={`tri-card tri-card-accent-pink${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardWorkouts"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.workouts.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-pink"></div>
-      <span class="widget-timestamp">{widgets.workouts.timestampToday}</span>
+      <WidgetTimestamp
+        label={widgets.workouts.timestampToday}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
+    <div class="skeleton-state">
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div class="skeleton-bar" style="width: 60%; height: 18px;"></div>
+        <div style="display: flex; gap: 8px;">
+          <div class="skeleton-bar" style="flex: 1; height: 32px; border-radius: 6px;"></div>
+          <div class="skeleton-bar" style="flex: 1; height: 32px; border-radius: 6px;"></div>
+          <div class="skeleton-bar" style="flex: 1; height: 32px; border-radius: 6px;"></div>
+        </div>
+      </div>
+    </div>
+    <WidgetStateNotice state={widgetState} />
     {
-      hasWorkouts ? (
-        workouts.map((w: any) => (
+      showData ? (
+        workouts.map((w) => (
           <div class="workout-sub-card">
             <div class="workout-sub-top">
               {w.activity_type === 'Outdoor Walk' ? (
@@ -108,8 +133,13 @@ function fmtDuration(seconds: number): string {
                   />
                 </svg>
               )}
-              {w.link ? (
-                <a class="workout-sub-type" href={w.link} target="_blank" rel="noopener noreferrer">
+              {safeHttpsUrl(w.link) ? (
+                <a
+                  class="workout-sub-type"
+                  href={safeHttpsUrl(w.link) ?? undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   {w.activity_type}
                 </a>
               ) : (
@@ -119,15 +149,18 @@ function fmtDuration(seconds: number): string {
             <div class="workout-sub-stats">
               <div class="workout-stat">
                 <div class="workout-stat-label">{widgets.workouts.duration}</div>
-                <div class="workout-stat-value">{fmtDuration(w.duration)}</div>
+                <div class="workout-stat-value">{formatMeasurement(w.duration, fmtDuration)}</div>
               </div>
               <div class="workout-stat">
                 <div class="workout-stat-label">{widgets.workouts.calories}</div>
                 <div class="workout-stat-value">
-                  {Math.round(w.energy_burned)} {widgets.workouts.caloriesUnit}
+                  {formatMeasurement(
+                    w.energy_burned,
+                    (n) => `${Math.round(n)} ${widgets.workouts.caloriesUnit}`,
+                  )}
                 </div>
               </div>
-              {w.distance > 0 && (
+              {w.distance != null && w.distance > 0 && (
                 <div class="workout-stat">
                   <div class="workout-stat-label">{widgets.workouts.distance}</div>
                   <div class="workout-stat-value">
@@ -138,49 +171,18 @@ function fmtDuration(seconds: number): string {
             </div>
           </div>
         ))
-      ) : (
-        <div class="workout-rest-center">
-          <svg class="workout-rest-icon" viewBox="0 0 56 56" fill="none">
-            <circle
-              cx="28"
-              cy="20"
-              r="10"
-              stroke="var(--neon-pink)"
-              stroke-width="1.5"
-              opacity="0.7"
-            />
-            <path
-              d="M16 38 Q20 32 28 30 Q36 32 40 38"
-              stroke="var(--neon-pink)"
-              stroke-width="1.5"
-              opacity="0.5"
-              fill="none"
-            />
-            <path
-              d="M12 44 Q18 38 28 36 Q38 38 44 44"
-              stroke="var(--neon-blue)"
-              stroke-width="1"
-              opacity="0.3"
-              fill="none"
-            />
-            <circle cx="28" cy="20" r="3" fill="var(--neon-pink)" opacity="0.6" />
-            <path
-              d="M24 18 Q28 14 32 18"
-              stroke="rgba(255,255,255,0.3)"
-              stroke-width="0.8"
-              fill="none"
-            />
-          </svg>
-          <div class="workout-rest-heading">{widgets.workouts.recoveryDay}</div>
-          <div class="workout-rest-sub">{widgets.workouts.none}</div>
-          <div class="workout-rest-insight">{widgets.workouts.recoveryBody}</div>
-        </div>
-      )
+      ) : widgetState === 'empty' ? (
+        <Fragment set:html={workoutsRestHtml()} />
+      ) : null
     }
   </div>
 </div>
 
-<style>
+{
+  /* Global: updateWorkouts rebuilds these cards on the client, and client markup
+     carries no scoped-style attribute. The .workout-* names are this widget's own. */
+}
+<style is:global>
   @container (max-width: 380px) {
     .workout-sub-stats {
       grid-template-columns: repeat(2, 1fr);

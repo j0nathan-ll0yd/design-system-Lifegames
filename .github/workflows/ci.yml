@@ -582,6 +582,9 @@ jobs:
   # identical to it -- which is how 3.0.0 shipped an image fallback that set
   # img.src correctly and still painted a broken glyph in every real browser.
   web-browser-runtime:
+    # The scripts-off suite renders the widgets with the real token CSS
+    # (packages/tokens/dist/tokens.css), so it needs the token build.
+    needs: build-tokens
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, playwright]
     timeout-minutes: 15
@@ -597,6 +600,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: web-browser-runtime
         run: pnpm --filter @j0nathan-ll0yd/web test:browser

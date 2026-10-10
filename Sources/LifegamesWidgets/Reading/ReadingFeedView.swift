@@ -24,6 +24,10 @@ public struct ReadingFeedView: View {
             ReadingFeedEmptyView()
         case let .populated(props):
             ReadingFeedPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: readingFeedCopy.title, accent: Color.colorAccentAmber)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: readingFeedCopy.title, accent: Color.colorAccentAmber)
         }
     }
 }
@@ -136,6 +140,20 @@ private struct ReadingFeedSkeletonView: View {
 
 #Preview("Reading Feed — Empty") {
     ReadingFeedView(state: .empty)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Reading Feed — Unavailable") {
+    ReadingFeedView(state: .unavailable)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Reading Feed — Suppressed") {
+    ReadingFeedView(state: .suppressed)
         .padding()
         .background(Color.colorSurfaceBase)
         .preferredColorScheme(.dark)

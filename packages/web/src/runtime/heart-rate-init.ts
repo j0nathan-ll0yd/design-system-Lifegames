@@ -1,5 +1,6 @@
 import {classifyHeartRate, classifyHRV, generateECGSamples} from './heart-rate'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
+import {NO_READING} from './widget-state'
 
 /**
  * Options for initHeartRateInline. All fields optional; defaults match the
@@ -336,8 +337,16 @@ export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): 
   }
   container.dataset.heartRateInit = '1'
 
-  const hr = Math.round(fixture.health.quantities.heartRate.value)
-  const hrv = Math.round(fixture.health.quantities.hrvSDNN.value)
+  // No heart-rate measurement → the widget rendered its unavailable state and
+  // there is nothing to animate (atlas decision 0160). A missing HRV keeps the
+  // no-reading mark the template rendered.
+  const hrRaw = fixture.health?.quantities.heartRate?.value
+  if (typeof hrRaw !== 'number') {
+    return
+  }
+  const hrvRaw = fixture.health?.quantities.hrvSDNN?.value
+  const hr = Math.round(hrRaw)
+  const hrv = typeof hrvRaw === 'number' ? Math.round(hrvRaw) : 0
   const zone = classifyHeartRate(hr)
   const hrvStyle = classifyHRV(hrv)
 
@@ -359,7 +368,7 @@ export function initHeartRate(container: HTMLElement, fixture: HeartRateProps): 
 
   const hrvEl = container.querySelector<HTMLElement>('#hrHrvValue')
   if (hrvEl) {
-    hrvEl.textContent = String(hrv)
+    hrvEl.textContent = typeof hrvRaw === 'number' ? String(hrv) : NO_READING
     hrvEl.style.color = hrvStyle.color
     hrvEl.style.textShadow = hrvStyle.shadow
   }

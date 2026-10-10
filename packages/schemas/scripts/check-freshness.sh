@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # CI/pre-commit guard: ensures generated artifacts are up to date with their
 # sources. Covers three producers:
-#   - @j0nathan-ll0yd/schemas — TS+Swift widget types + fixture-map (raw export schemas
+#   - @j0nathan-ll0yd/schemas — the widget JSON schemas generated from the web
+#     package's Props types (generated/widgets), then TS+Swift widget types + fixture-map (raw export schemas
 #     come from @j0nathan-ll0yd/portal-contract, resolved from the package; no local
 #     vendored/ to sync).
 #   - @j0nathan-ll0yd/copy — derived flat schema + flat JSON + TS/Zod + Swift
@@ -15,6 +16,9 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
+echo "[freshness] Regenerating @j0nathan-ll0yd/schemas widget schemas from the web Props types..."
+pnpm -F @j0nathan-ll0yd/schemas generate:widgets
+
 echo "[freshness] Regenerating @j0nathan-ll0yd/schemas codegen artifacts..."
 pnpm -F @j0nathan-ll0yd/schemas codegen
 
@@ -26,6 +30,7 @@ pnpm -F @j0nathan-ll0yd/fixtures generate
 
 echo "[freshness] Checking git diff..."
 PATHS=(
+  packages/schemas/generated/widgets
   packages/schemas/dist
   packages/schemas/swift
   packages/schemas/fixture-map.json
@@ -35,10 +40,18 @@ PATHS=(
   packages/fixtures/src/post-adapter
 )
 
-if ! git diff --exit-code -- "${PATHS[@]}"; then
+# A generator that writes a NEW file leaves no diff, only an untracked file.
+UNTRACKED="$(git ls-files --others --exclude-standard -- "${PATHS[@]}")"
+if [ -n "$UNTRACKED" ]; then
+  echo "[freshness] Untracked generated files:"
+  echo "$UNTRACKED"
+fi
+
+if ! git diff --exit-code -- "${PATHS[@]}" || [ -n "$UNTRACKED" ]; then
   echo ""
   echo "[freshness] FAIL: generated artifacts are out of date."
-  echo "  Run \`pnpm -F @j0nathan-ll0yd/schemas codegen\`, \`pnpm -F @j0nathan-ll0yd/copy build\`,"
+  echo "  Run \`pnpm -F @j0nathan-ll0yd/schemas generate:widgets\`, \`pnpm -F @j0nathan-ll0yd/schemas codegen\`,"
+  echo "  \`pnpm -F @j0nathan-ll0yd/copy build\`,"
   echo "  and \`pnpm -F @j0nathan-ll0yd/fixtures generate\` locally, then commit the"
   echo "  regenerated files."
   exit 1

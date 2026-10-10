@@ -10,6 +10,8 @@ enum TheatreReviewsVariations {
         case fixture(String)
         case skeleton
         case empty
+        case unavailable
+        case suppressed
     }
 
     struct State: Identifiable {
@@ -29,6 +31,8 @@ enum TheatreReviewsVariations {
         .init(id: "west-end-season", label: "West End Season", kind: .fixture("theatre-reviews.west-end-season")),
         .init(id: "skeleton", label: "Skeleton", kind: .skeleton),
         .init(id: "empty", label: "Empty", kind: .empty),
+        .init(id: "unavailable", label: "Unavailable", kind: .unavailable),
+        .init(id: "suppressed", label: "Suppressed", kind: .suppressed),
     ]
 
     static var entry: WidgetEntry {
@@ -51,6 +55,10 @@ enum TheatreReviewsVariations {
             TheatreReviewsView(state: .loading)
         case .empty:
             TheatreReviewsView(state: .empty)
+        case .unavailable:
+            TheatreReviewsView(state: .unavailable)
+        case .suppressed:
+            TheatreReviewsView(state: .suppressed)
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "reading", name: name),
                let props = Adapters.theatreReviews(fromFixture: data)

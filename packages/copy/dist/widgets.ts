@@ -217,6 +217,7 @@ export interface Widgets {
     bluesky: string;
   };
   coffee: WidgetsCoffee;
+  widgetState: WidgetStateCopy;
 }
 export interface SystemStatusSourceHealth {
   body: string;
@@ -310,4 +311,14 @@ export interface WidgetsCoffee {
   beverageDrip: string;
   beverageEspresso: string;
   beverageColdBrew: string;
+}
+/**
+ * Honest widget states shared by every live widget (atlas decision 0160) — the no-reading mark's accessible name, the unavailable and suppressed notices, the stale 'as of' prefix, and the loading-state noscript note. Titled WidgetStateCopy: the bare key would generate a Swift struct named WidgetState, which collides with LifegamesComponents.WidgetState<T> in every module that imports both.
+ */
+export interface WidgetStateCopy {
+  noReading: string;
+  unavailable: string;
+  suppressed: string;
+  asOf: string;
+  needsJavaScript: string;
 }

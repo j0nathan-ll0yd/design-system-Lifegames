@@ -1,50 +1,81 @@
 {
   "type": "object",
   "properties": {
-    "health": {
-      "type": "object",
-      "properties": {
-        "sleepScore": {
-          "type": "number"
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
         },
-        "sleepDurationFormatted": {
-          "type": "string"
-        },
-        "sleepPhaseFormatted": {
-          "type": "object",
-          "properties": {
-            "deep": {
-              "type": "string"
-            },
-            "rem": {
-              "type": "string"
-            },
-            "core": {
-              "type": "string"
-            },
-            "awake": {
-              "type": "string"
-            }
-          },
-          "required": ["deep", "rem", "core", "awake"]
-        },
-        "derived": {
-          "type": "object",
-          "properties": {
-            "deepPct": {
-              "type": "number"
-            },
-            "remPct": {
-              "type": "number"
-            }
-          },
-          "required": ["deepPct", "remPct"]
+        {
+          "type": "null"
         }
-      },
-      "required": ["sleepScore", "sleepDurationFormatted", "sleepPhaseFormatted", "derived"]
+      ]
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "description": "ISO-8601 `generatedAt` of the export the card's state follows."
+    },
+    "health": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "sleepScore": {
+              "type": ["number", "null"]
+            },
+            "sleepDurationFormatted": {
+              "type": "string"
+            },
+            "sleepPhaseFormatted": {
+              "type": "object",
+              "properties": {
+                "deep": {
+                  "type": "string"
+                },
+                "rem": {
+                  "type": "string"
+                },
+                "core": {
+                  "type": "string"
+                },
+                "awake": {
+                  "type": "string"
+                }
+              },
+              "required": ["deep", "rem", "core", "awake"]
+            },
+            "derived": {
+              "type": "object",
+              "properties": {
+                "deepPct": {
+                  "type": ["number", "null"]
+                },
+                "remPct": {
+                  "type": ["number", "null"]
+                }
+              },
+              "required": ["deepPct", "remPct"]
+            },
+            "isEmpty": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": ["sleepScore", "sleepDurationFormatted", "sleepPhaseFormatted", "derived"]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
-  "required": ["health"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/night-summary.json",
   "title": "NightSummaryProps"

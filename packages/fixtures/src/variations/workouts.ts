@@ -34,4 +34,13 @@ export const full: WorkoutsExport = createWorkoutsFixture({
   ]
 })
 
-export const workoutsVariations = {baseline, empty, barrysBootcamp, multiWorkout, noDistance, full}
+// SSR known answer (decision 0160): activityType is free-form in the raw schema, so the
+// distinctive label doubles as the rendered known answer.
+export const ssrKnownAnswer: WorkoutsExport = createWorkoutsFixture({
+  workouts: [
+    createWorkout({activityType: 'Rowing Kappa-7731', duration: 2461, energyBurned: 337, distance: 6173}),
+    createWorkout({activityType: 'Kayaking Kappa-7731', duration: 1957, energyBurned: 249, distance: 4381})
+  ]
+})
+
+export const workoutsVariations = {baseline, empty, barrysBootcamp, multiWorkout, noDistance, full, ssrKnownAnswer}

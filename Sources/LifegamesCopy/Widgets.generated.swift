@@ -55,10 +55,16 @@ public struct Widgets: Codable, Sendable {
     public let theatreReviews: TheatreReviews
     /// Top Places leaderboard widget — title + empty-state.
     public let topPlaces: TopPlaces
+    /// Honest widget states shared by every live widget (atlas decision 0160) — the no-reading
+    /// mark's accessible name, the unavailable and suppressed notices, the stale 'as of' prefix,
+    /// and the loading-state noscript note. Titled WidgetStateCopy: the bare key would generate
+    /// a Swift struct named WidgetState, which collides with LifegamesComponents.WidgetState<T>
+    /// in every module that imports both.
+    public let widgetState: WidgetStateCopy
     /// Workouts widget — title, recovery-day empty-state chrome, stat labels/units, timestamp.
     public let workouts: Workouts
 
-    public init(bio: Bio, bookModal: BookModal, bookshelf: Bookshelf, coffee: WidgetsCoffee, devLog: DevLog, exploration: Exploration, heartRate: HeartRate, hydration: Hydration, identityCard: IdentityCard, movement: Movement, nightSummary: NightSummary, readingFeed: ReadingFeed, starredRepos: StarredRepos, systemStatus: SystemStatus, theatreReviews: TheatreReviews, topPlaces: TopPlaces, workouts: Workouts) {
+    public init(bio: Bio, bookModal: BookModal, bookshelf: Bookshelf, coffee: WidgetsCoffee, devLog: DevLog, exploration: Exploration, heartRate: HeartRate, hydration: Hydration, identityCard: IdentityCard, movement: Movement, nightSummary: NightSummary, readingFeed: ReadingFeed, starredRepos: StarredRepos, systemStatus: SystemStatus, theatreReviews: TheatreReviews, topPlaces: TopPlaces, widgetState: WidgetStateCopy, workouts: Workouts) {
         self.bio = bio
         self.bookModal = bookModal
         self.bookshelf = bookshelf
@@ -75,6 +81,7 @@ public struct Widgets: Codable, Sendable {
         self.systemStatus = systemStatus
         self.theatreReviews = theatreReviews
         self.topPlaces = topPlaces
+        self.widgetState = widgetState
         self.workouts = workouts
     }
 }
@@ -114,6 +121,7 @@ public extension Widgets {
         systemStatus: SystemStatus? = nil,
         theatreReviews: TheatreReviews? = nil,
         topPlaces: TopPlaces? = nil,
+        widgetState: WidgetStateCopy? = nil,
         workouts: Workouts? = nil
     ) -> Widgets {
         return Widgets(
@@ -133,6 +141,7 @@ public extension Widgets {
             systemStatus: systemStatus ?? self.systemStatus,
             theatreReviews: theatreReviews ?? self.theatreReviews,
             topPlaces: topPlaces ?? self.topPlaces,
+            widgetState: widgetState ?? self.widgetState,
             workouts: workouts ?? self.workouts
         )
     }
@@ -2367,6 +2376,68 @@ public extension TopPlaces {
         return TopPlaces(
             empty: empty ?? self.empty,
             title: title ?? self.title
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Honest widget states shared by every live widget (atlas decision 0160) — the no-reading
+/// mark's accessible name, the unavailable and suppressed notices, the stale 'as of' prefix,
+/// and the loading-state noscript note. Titled WidgetStateCopy: the bare key would generate
+/// a Swift struct named WidgetState, which collides with LifegamesComponents.WidgetState<T>
+/// in every module that imports both.
+// MARK: - WidgetStateCopy
+public struct WidgetStateCopy: Codable, Sendable {
+    public let asOf, needsJavaScript, noReading, suppressed: String
+    public let unavailable: String
+
+    public init(asOf: String, needsJavaScript: String, noReading: String, suppressed: String, unavailable: String) {
+        self.asOf = asOf
+        self.needsJavaScript = needsJavaScript
+        self.noReading = noReading
+        self.suppressed = suppressed
+        self.unavailable = unavailable
+    }
+}
+
+// MARK: WidgetStateCopy convenience initializers and mutators
+
+public extension WidgetStateCopy {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(WidgetStateCopy.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        asOf: String? = nil,
+        needsJavaScript: String? = nil,
+        noReading: String? = nil,
+        suppressed: String? = nil,
+        unavailable: String? = nil
+    ) -> WidgetStateCopy {
+        return WidgetStateCopy(
+            asOf: asOf ?? self.asOf,
+            needsJavaScript: needsJavaScript ?? self.needsJavaScript,
+            noReading: noReading ?? self.noReading,
+            suppressed: suppressed ?? self.suppressed,
+            unavailable: unavailable ?? self.unavailable
         )
     }
 

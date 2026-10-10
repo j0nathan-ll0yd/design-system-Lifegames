@@ -586,3 +586,94 @@ rather than promising a tightening nobody can currently test.
 - **WHEN** the promotion gate evaluates it
 - **THEN** it SHALL be reported as an advisory note and SHALL NOT fail the gate, because the blocking
   threshold belongs to the `Stable` label rather than to the surface count alone
+
+### Requirement: A live web widget renders real data or an honest state in its server markup
+
+Each live web widget (HeartRate, MovementRings, Hydration, NightSummary, Workouts, DevActivityLog,
+StarredRepoList, ReadingFeed, Bookshelf, TheatreReviews) SHALL render, in server markup and without
+client JavaScript, exactly one of six states: `live`, `stale`, `empty`, `unavailable`, `suppressed`
+or `loading`. Its card root SHALL carry the state as `data-ssr-state`. A data state SHALL carry the
+export's `generatedAt` as `data-generated-at`. NightSummary reads two exports but SHALL follow the sleep
+export alone: its state and `data-generated-at` are the sleep export's, the health export lends only the
+sleep score and only while it is live, and only suppression (both exports sit behind one focus gate)
+covers the whole card (owner decision Q3, 2026-10-08). A measurement the export did not carry SHALL render as the
+no-reading mark, never as `0`. A non-data state SHALL carry no input value, and `suppressed` SHALL
+carry none even when a caller passes data (atlas decision 0160). A data state rendered from the
+known-answer exports SHALL equal their projection in every text node, content attribute and inline
+style, and a non-data state SHALL carry only the attributes `non-data-allowlist.json` lists for its
+widget and state. A collection widget's client updater SHALL treat a successful export with no items
+as `empty`: it clears the previous items and shows the server's empty notice.
+
+This is a **blocking** rule. `packages/web/tests/server-render/states.test.ts` renders every live
+widget in every state through the Astro Container API, from the same view models the server page uses,
+and runs inside `pnpm --filter @j0nathan-ll0yd/web test` in the required `contract-ts` status context.
+`collection-transitions.test.ts` and `suppressed-updaters.test.ts` drive the client updaters over
+that same server markup in the same run.
+Its known-answer inputs are the raw `ssrKnownAnswer` fixture variations, whose distinctive values
+appear in no other fixture (`packages/fixtures/tests/ssr-known-answer.test.ts`), so a rendered value
+proves its provenance.
+
+#### Scenario: A widget renders a value from another fixture
+
+- **GIVEN** a widget rendered from the known-answer exports
+- **WHEN** its markup carries a distinctive value of any other fixture variation that the widget does
+  not author itself
+- **THEN** the test SHALL fail, because that value did not come from the input
+
+#### Scenario: An adapter turns a missing measurement into zero
+
+- **GIVEN** the `sparse` health export, which omits water, caffeine, exercise, energy and sleep score
+- **WHEN** Hydration, MovementRings and NightSummary render it
+- **THEN** each slot for a missing measurement SHALL carry the no-reading mark, and the test SHALL fail
+  if it carries `0`
+
+#### Scenario: A widget loses a state
+
+- **GIVEN** any live widget and any of the six states
+- **WHEN** the widget renders without the matching `data-ssr-state` on its card root
+- **THEN** the test SHALL fail
+
+#### Scenario: A hiding focus mode is active
+
+- **GIVEN** the known-answer exports and a `currentFocus` of `Work`
+- **WHEN** every live widget renders
+- **THEN** each SHALL render `suppressed` with its notice and no known-answer value, even when the
+  caller also passes the data
+
+#### Scenario: NightSummary's health export is unavailable, stale or missing the score
+
+- **GIVEN** a live sleep export and a health export that is unavailable, stale, or carries no sleep score
+- **WHEN** NightSummary renders on the server and the client updates it
+- **THEN** the card SHALL stay in the sleep export's state with the sleep export's `generatedAt`, the score
+  slot SHALL carry the no-reading mark, and an unavailable sleep export SHALL make the card unavailable
+  whatever the health export is
+
+#### Scenario: A data state renders a wrong value or an unnamed carrier
+
+- **GIVEN** a widget rendered `live` or `stale` from the known-answer exports
+- **WHEN** any text node, content attribute or inline style differs from the projection of those
+  exports (a star count off by one), or the render carries one the projection does not name
+- **THEN** the test SHALL fail
+
+#### Scenario: A non-data state carries an attribute nobody reviewed
+
+- **GIVEN** a widget rendered `unavailable`, `suppressed`, `loading` or `empty`, with or without data
+  passed in
+- **WHEN** any element carries an attribute and value that `non-data-allowlist.json` does not list for
+  that widget and state, a fabricated `data-*` attribute or an inline custom property included
+- **THEN** the test SHALL fail, and it SHALL also fail on an allowlist entry no render uses
+
+#### Scenario: A successful export carries no items
+
+- **GIVEN** a collection widget server-rendered `live` or `unavailable`
+- **WHEN** its client updater receives a readable export with no items
+- **THEN** the card SHALL record `empty`, carry none of the previous items and show the same empty
+  notice the server renders, and a later populated export SHALL render its items again
+
+#### Scenario: A client update reaches System Status during a hiding focus mode
+
+- **GIVEN** System Status server-rendered during a hiding focus mode, every row reading the
+  no-reading mark and marked `data-ssr-state="suppressed"`
+- **WHEN** `updateSystemStatus` runs with export timestamps
+- **THEN** no row SHALL change, so no age and no ACTIVE or OFFLINE status discloses export recency,
+  until the focus gate releases the row

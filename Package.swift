@@ -50,6 +50,7 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesComponentsWatchTests", dependencies: [
             "LifegamesComponentsWatch",
+            "LifegamesComponentsCore",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
         ]),
         .testTarget(name: "LifegamesOnboardingTests", dependencies: [

@@ -224,7 +224,8 @@
       font-size: var(--font-size-base);
       font-style: italic;
       text-align: center;
-      opacity: 0.7;
+      /* No opacity: muted text at 0.7 measured 4.2:1 on the card (axe
+         color-contrast, WCAG 1.4.3 needs 4.5:1). Full --text-muted is 7.3:1. */
     }
 
     /* Two-line stacked empty state (title + body), e.g. bookshelf. The title
@@ -239,6 +240,67 @@
     }
     .widget-empty--stack .widget-empty-body {
       font-size: var(--font-size-sm);
+    }
+
+    /* Honest non-data states (atlas decision 0160). The notice reuses the
+       empty placeholder; the live dot stops pulsing because nothing is live. */
+    .widget-state-notice {
+      font-style: normal;
+      letter-spacing: 0.5px;
+    }
+    .tri-card[data-ssr-state='unavailable'] .live-dot,
+    .tri-card[data-ssr-state='suppressed'] .live-dot,
+    .tri-card[data-ssr-state='stale'] .live-dot,
+    .tri-card[data-ssr-state='loading'] .live-dot {
+      animation: none;
+      box-shadow: none;
+      opacity: 0.35;
+    }
+    /* A widget's value-free scaffold, hidden behind an unavailable or
+       suppressed notice. !important beats each scaffold's own display rule. */
+    .tri-card [data-state-scaffold][hidden] {
+      display: none !important;
+    }
+    /* A stale card's "as of" time is too long to share the header line at
+       narrow widths. It wraps onto its own full-width line under the title,
+       in full: never truncated (a truncated time is no provenance) and never
+       clipped (no overflow: hidden, which clipped the focus ring of the
+       TheatreReviews count link, WCAG 2.4.7). The title and the count stay on
+       one line each. */
+    .tri-card[data-ssr-state='stale'] .widget-header {
+      flex-wrap: wrap;
+      column-gap: 8px;
+      row-gap: var(--space-4);
+    }
+    /* The right-hand items join the header row: title, dot and count share
+       line 1; the time takes line 2. min-width: 0 lets items shrink. */
+    .tri-card[data-ssr-state='stale'] .widget-header-right {
+      display: contents;
+      min-width: 0;
+    }
+    .tri-card[data-ssr-state='stale'] .widget-label {
+      margin-right: auto;
+    }
+    .tri-card[data-ssr-state='stale'] .widget-label,
+    .tri-card[data-ssr-state='stale'] .theatre-count-link {
+      white-space: nowrap;
+    }
+    .widget-timestamp-stale {
+      order: 1;
+      flex-basis: 100%;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .widget-noscript {
+      margin: var(--space-8) 0 0;
+      color: var(--text-muted);
+      font-size: var(--font-size-sm);
+      text-align: center;
+    }
+    /* The <noscript> note must show over the loading skeleton overlay. */
+    .tri-card.is-loading .widget-body > noscript {
+      position: relative;
+      z-index: calc(var(--lg-z-raised) + 1);
     }
 
     /* ===== 1. IDENTITY CARD ===== */
@@ -2529,7 +2591,8 @@
     .tri-card.is-loading .widget-body {
       position: relative;
     }
-    .tri-card.is-loading .widget-body > *:not(.skeleton-state) {
+    /* The <noscript> note stays visible over the skeleton (atlas 0160, H2). */
+    .tri-card.is-loading .widget-body > *:not(.skeleton-state):not(noscript) {
       opacity: 0;
       pointer-events: none;
     }

@@ -1,35 +1,59 @@
 {
   "type": "object",
   "properties": {
-    "health": {
-      "type": "object",
-      "properties": {
-        "workouts": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "activity_type": {
-                "type": "string"
-              },
-              "duration": {
-                "type": "number"
-              },
-              "energy_burned": {
-                "type": "number"
-              },
-              "distance": {
-                "type": "number"
-              }
-            },
-            "required": ["activity_type", "duration", "energy_burned", "distance"]
-          }
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
         }
-      },
-      "required": ["workouts"]
+      ]
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "description": "ISO-8601 `generatedAt` of the export the card's state follows."
+    },
+    "health": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "workouts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "activity_type": {
+                    "type": "string"
+                  },
+                  "duration": {
+                    "type": ["number", "null"]
+                  },
+                  "energy_burned": {
+                    "type": ["number", "null"]
+                  },
+                  "distance": {
+                    "type": ["number", "null"]
+                  },
+                  "link": {
+                    "type": ["string", "null"]
+                  }
+                },
+                "required": ["activity_type", "duration", "energy_burned", "distance"]
+              }
+            }
+          },
+          "required": ["workouts"]
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
-  "required": ["health"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/workouts.json",
   "title": "WorkoutsProps"

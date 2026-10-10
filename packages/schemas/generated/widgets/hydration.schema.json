@@ -1,53 +1,74 @@
 {
   "type": "object",
   "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "description": "ISO-8601 `generatedAt` of the export the card's state follows."
+    },
     "health": {
-      "type": "object",
-      "properties": {
-        "hydration": {
+      "anyOf": [
+        {
           "type": "object",
           "properties": {
-            "waterOz": {
-              "type": "number"
-            },
-            "waterMax": {
-              "type": "number"
-            },
-            "waterRangeLo": {
-              "type": "number"
-            },
-            "waterRangeHi": {
-              "type": "number"
-            },
-            "caffeineMg": {
-              "type": ["number", "null"]
-            },
-            "caffeineMax": {
-              "type": ["number", "null"]
-            },
-            "caffeineRangeLo": {
-              "type": ["number", "null"]
-            },
-            "caffeineRangeHi": {
-              "type": ["number", "null"]
+            "hydration": {
+              "type": "object",
+              "properties": {
+                "waterOz": {
+                  "type": ["number", "null"]
+                },
+                "caffeineMg": {
+                  "type": ["number", "null"]
+                },
+                "waterMax": {
+                  "type": "number"
+                },
+                "waterRangeLo": {
+                  "type": "number"
+                },
+                "waterRangeHi": {
+                  "type": "number"
+                },
+                "caffeineMax": {
+                  "type": ["number", "null"]
+                },
+                "caffeineRangeLo": {
+                  "type": ["number", "null"]
+                },
+                "caffeineRangeHi": {
+                  "type": ["number", "null"]
+                }
+              },
+              "required": [
+                "waterOz",
+                "caffeineMg",
+                "waterMax",
+                "waterRangeLo",
+                "waterRangeHi",
+                "caffeineMax",
+                "caffeineRangeLo",
+                "caffeineRangeHi"
+              ]
             }
           },
-          "required": [
-            "waterOz",
-            "waterMax",
-            "waterRangeLo",
-            "waterRangeHi",
-            "caffeineMg",
-            "caffeineMax",
-            "caffeineRangeLo",
-            "caffeineRangeHi"
-          ]
+          "required": ["hydration"]
+        },
+        {
+          "type": "null"
         }
-      },
-      "required": ["hydration"]
+      ]
     }
   },
-  "required": ["health"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/hydration.json",
   "title": "HydrationProps"

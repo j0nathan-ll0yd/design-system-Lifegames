@@ -856,6 +856,17 @@ describe('updatePlaceLeaderboard', () => {
     expect(el('cardPlaceLeaderboard').classList.contains('is-loading')).toBe(false)
   })
 
+  // Review M02: no server template exists for this card, so the markup above
+  // stands in for it.
+  it('an empty result after places clears every previous row and says so', () => {
+    updatePlaceLeaderboard(makeLocation())
+    updatePlaceLeaderboard(makeLocation({topPlaces: []}))
+    const card = el('cardPlaceLeaderboard')
+    expect(card.querySelectorAll('.pl-row').length).toBe(0)
+    expect(card.textContent).not.toContain('Coffee Shop')
+    expect(card.querySelector('.widget-empty')?.textContent).toBe(widgets.topPlaces.empty)
+  })
+
   it('does not throw when card is missing', () => {
     document.body.innerHTML = ''
     expect(() => updatePlaceLeaderboard(makeLocation())).not.toThrow()

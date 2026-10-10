@@ -1,0 +1,44 @@
+---
+// Header timestamp of a live widget (atlas decision 0160).
+//
+// `stale` replaces the relative label ("live", "today") with an absolute
+// "as of" time in the owner's time zone, inside <time datetime>.
+// `unavailable`, `suppressed` and `loading` show no label: nothing on the card
+// is live. A `stale` card with no valid timestamp shows no label either: it
+// never claims "live". `live` and `empty` keep the widget's own label.
+// Internal to @j0nathan-ll0yd/web.
+import { widgets } from '@j0nathan-ll0yd/copy';
+import { formatAsOf, type WidgetState } from '../runtime/widget-state';
+
+interface Props {
+  label: string;
+  state: WidgetState;
+  generatedAt?: string | null;
+  id?: string;
+}
+
+const { label, state, generatedAt, id } = Astro.props;
+const asOf = state === 'stale' ? formatAsOf(generatedAt) : null;
+const showLabel = state === 'live' || state === 'empty';
+---
+
+{
+  /* data-live-label lets revealLiveData restore the live label after a stale
+    or notice state, so a recovered card never keeps a dishonest header. */
+}
+{
+  asOf && generatedAt ? (
+    <time
+      class="widget-timestamp widget-timestamp-stale"
+      id={id}
+      datetime={generatedAt}
+      data-live-label={label}
+    >
+      {widgets.widgetState.asOf.replace('{time}', asOf)}
+    </time>
+  ) : (
+    <span class="widget-timestamp" id={id} data-live-label={label}>
+      {showLabel ? label : ''}
+    </span>
+  )
+}

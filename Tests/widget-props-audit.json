@@ -21,12 +21,12 @@
   "NotFound": "props",
   "ExplorationOdometerV3": "static",
   "PlaceLeaderboardV3": "static",
-  "DndOverlay": "static",
-  "FocusOverlay": "static",
+  "DndOverlay": "props",
+  "FocusOverlay": "props",
   "GitHubHeatmap": "props",
   "SystemStatus": "props",
   "BookModal": "static",
   "Bookshelf": "props",
   "ReadingFeed": "props",
-  "TheatreReviews": "static"
+  "TheatreReviews": "props"
 }

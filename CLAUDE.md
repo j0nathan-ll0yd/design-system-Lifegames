@@ -108,11 +108,11 @@ change. See `contracts/component-catalog/README.md`.
 
 Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
 `openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
-today: `widget-contract`** (13 requirements / 32 scenarios), which restates the widget contract already
+today: `widget-contract`** (14 requirements / 52 scenarios), which restates the widget contract already
 enforced by `governance-gates`, `test-swift`, `contract-ts` and `lint-web` — P3/F-015 purity, the
 fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
-promotion bar. **Describe what is already enforced**; a requirement with no gate behind it is a wish
+promotion bar, and the honest server states of the live widgets (atlas 0160, `packages/web/tests/server-render/states.test.ts`). **Describe what is already enforced**; a requirement with no gate behind it is a wish
 with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
 `@j0nathan-ll0yd/estate-contracts` version declared in package.json; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
 shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins

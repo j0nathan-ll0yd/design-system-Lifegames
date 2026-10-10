@@ -5,10 +5,10 @@ import SwiftUI
 
 private let devLogCopy = CopyLoader.widgets.devLog
 
-public struct DevActivityLogView: View {
-    public let props: DevActivityProps
+private struct DevActivityLogPopulatedView: View {
+    let props: DevActivityProps
 
-    public init(props: DevActivityProps) {
+    init(props: DevActivityProps) {
         self.props = props
     }
 
@@ -41,4 +41,73 @@ public struct DevActivityLogView: View {
         }
         .neonCard(accent: Color.colorAccentGreen)
     }
+}
+
+public struct DevActivityLogView: View {
+    private let state: WidgetState<DevActivityProps>
+
+    public init(state: WidgetState<DevActivityProps>) {
+        self.state = state
+    }
+
+    public init(props: DevActivityProps) {
+        state = props.events.isEmpty ? .empty : .populated(props)
+    }
+
+    public var body: some View {
+        switch state {
+        case .loading:
+            DevActivityLogMessageView(message: nil)
+        case .empty:
+            DevActivityLogMessageView(message: devLogCopy.empty)
+        case let .populated(props):
+            DevActivityLogPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: devLogCopy.title, accent: Color.colorAccentGreen)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: devLogCopy.title, accent: Color.colorAccentGreen)
+        }
+    }
+}
+
+/// Loading (message nil) and empty chrome. Mirrors the other widgets' skeleton and empty cards.
+private struct DevActivityLogMessageView: View {
+    let message: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            WidgetHeaderView(label: devLogCopy.title.uppercased(), dotColor: Color.colorAccentGreen, timestamp: devLogCopy.timestampLive)
+
+            if let message {
+                Text(message)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.colorTextMuted)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 24)
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(0 ..< 4, id: \.self) { _ in
+                        SkeletonBar(width: 240, height: 10)
+                    }
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+            }
+        }
+        .neonCard(accent: Color.colorAccentGreen)
+    }
+}
+
+#Preview("Dev Activity Log — Unavailable") {
+    DevActivityLogView(state: .unavailable)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Dev Activity Log — Suppressed") {
+    DevActivityLogView(state: .suppressed)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
 }

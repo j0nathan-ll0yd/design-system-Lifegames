@@ -147,11 +147,11 @@ describe('updateMovementRings', () => {
   // ── daylight caption ───────────────────────────────────────────────────────
 
   describe('daylight caption', () => {
-    it('renders 0 when timeInDaylight is absent — never leaves SSR fixture text', () => {
+    it('renders no reading when timeInDaylight is absent — never 0, never SSR fixture text', () => {
       // Simulate SSR fixture bleed-through: the shell shipped "48" + a visible badge.
       el('mvDaylightMin').textContent = '48'
       updateMovementRings(makeHealth())
-      expect(el('mvDaylightMin').textContent).toBe('0')
+      expect(el('mvDaylightMin').textContent).toBe('—')
       expect(el('mvDaylightHit').hidden).toBe(true)
     })
 
@@ -183,12 +183,13 @@ describe('updateMovementRings', () => {
       expect(el('mvSunDot').style.left).toBe('100%')
     })
 
-    it('leaves SSR solar values untouched when solar is absent', () => {
+    it('invents no sunrise or sunset when solar is absent (atlas decision 0160)', () => {
       el('mvSunrise').textContent = '06:30'
       el('mvSunset').textContent = '20:15'
       updateMovementRings(makeHealth())
-      expect(el('mvSunrise').textContent).toBe('06:30')
-      expect(el('mvSunset').textContent).toBe('20:15')
+      expect(el('mvSunrise').textContent).toBe('—')
+      expect(el('mvSunset').textContent).toBe('—')
+      expect(el('mvSunDot').style.display).toBe('none')
     })
   })
 

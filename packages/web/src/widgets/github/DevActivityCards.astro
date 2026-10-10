@@ -33,7 +33,10 @@ function getIcon(type: string) {
 
 function getDetail(event: Event): string {
   if (event.type === 'commit' && event.hash) {
-    return event.hash + ' +' + (event.additions || 0) + '/-' + (event.deletions || 0);
+    // Line counts only when the export carried both: no invented "+0/-0".
+    return typeof event.additions === 'number' && typeof event.deletions === 'number'
+      ? event.hash + ' +' + event.additions + '/-' + event.deletions
+      : event.hash;
   }
   if (event.number !== undefined) {
     return '#' + event.number;
@@ -61,7 +64,7 @@ function getDetail(event: Event): string {
               <div class="gh-dac-header">
                 <span
                   class="gh-dac-icon"
-                  style={`color: ${icon.color}; background: ${icon.color}15;`}
+                  style={`color: ${icon.color}; background: color-mix(in srgb, ${icon.color} 8%, transparent);`}
                 >
                   {icon.symbol}
                 </span>

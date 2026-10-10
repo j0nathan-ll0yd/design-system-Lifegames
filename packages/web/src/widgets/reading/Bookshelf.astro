@@ -1,32 +1,41 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
 import { widgets, a11y } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import {
   localizeImageUrl,
   PLACEHOLDER_IMAGE_SRC,
   sanitizeImageUrl,
 } from '../../runtime/image-utils';
+import { formatMonthYear, rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { bookshelfState } from '../../runtime/widget-rules';
+import type { BookshelfProps } from './Bookshelf.types';
 
-const { books } = Astro.props;
-const bookList = books.books;
-const bookMeta = books.bookMeta;
-const statusLabels = books.statusLabels;
+const { books, localCovers = [], generatedAt } = Astro.props as BookshelfProps;
+// One owner for the state: the same rule the view model applies.
+const widgetState = bookshelfState(Astro.props as BookshelfProps);
+const showData = rendersData(widgetState);
+const bookList = showData ? (books?.books ?? []) : [];
+const bookMeta = books?.bookMeta ?? {};
+const statusLabels = books?.statusLabels ?? {};
 
 const statusOrder: Record<string, number> = { reading: 0, upNext: 1, finished: 2 };
+// Owner's time zone, never the host's: the same ISO renders the same month on
+// every server runtime.
 function formatFinishedDate(iso: string): string {
-  return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(
-    new Date(iso),
-  );
+  return formatMonthYear(iso);
 }
 const sortedBooks = bookList.slice().sort((a: any, b: any) => {
   return (statusOrder[a.status] ?? 99) - (statusOrder[b.status] ?? 99);
 });
 const displayBooks = sortedBooks.slice(0, 5);
 
-const publicDir = path.join(process.cwd(), 'public');
 const sanitizerOptions = { baseUrl: Astro.url, onReject: 'omit' as const };
+const mirrored = new Set(localCovers);
 
+// A contract cover renders same-origin only when the consumer's manifest of
+// mirrored covers lists its exact path. No filesystem probe (W6 fallback
+// covers every other case).
 function localImageUrl(candidate: string | null): string | null {
   if (!candidate) return null;
   const localized = localizeImageUrl(candidate, sanitizerOptions);
@@ -34,21 +43,27 @@ function localImageUrl(candidate: string | null): string | null {
   try {
     const pathname = decodeURIComponent(new URL(localized, Astro.url).pathname);
     if (!pathname.startsWith('/images/')) return null;
-    const file = path.resolve(publicDir, `.${pathname}`);
-    if (!file.startsWith(`${publicDir}${path.sep}`) || !fs.existsSync(file)) return null;
-    return localized;
+    return mirrored.has(pathname) ? localized : null;
   } catch {
     return null;
   }
 }
 ---
 
-<div class="tri-card tri-card-accent-amber" id="cardBooks">
+<div
+  class={`tri-card tri-card-accent-amber${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardBooks"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.bookshelf.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">{widgets.bookshelf.timestampLibrary}</span>
+      <WidgetTimestamp
+        label={widgets.bookshelf.timestampLibrary}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
@@ -71,7 +86,11 @@ function localImageUrl(candidate: string | null): string | null {
         </div>
       </div>
     </div>
-    <ul class="shelf-row" id="dashShelfRow" role="list">
+    <WidgetStateNotice
+      state={widgetState}
+      empty={{ title: widgets.bookshelf.emptyTitle, body: widgets.bookshelf.emptyBody }}
+    />
+    <ul class="shelf-row" id="dashShelfRow" role="list" data-state-scaffold hidden={!showData}>
       {
         displayBooks.map((b: any, i: number) => {
           const asin = b.asin || b.isbn;
