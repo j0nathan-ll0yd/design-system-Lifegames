@@ -669,3 +669,11 @@ proves its provenance.
 - **WHEN** its client updater receives a readable export with no items
 - **THEN** the card SHALL record `empty`, carry none of the previous items and show the same empty
   notice the server renders, and a later populated export SHALL render its items again
+
+#### Scenario: A client update reaches System Status during a hiding focus mode
+
+- **GIVEN** System Status server-rendered during a hiding focus mode, every row reading the
+  no-reading mark and marked `data-ssr-state="suppressed"`
+- **WHEN** `updateSystemStatus` runs with export timestamps
+- **THEN** no row SHALL change, so no age and no ACTIVE or OFFLINE status discloses export recency,
+  until the focus gate releases the row

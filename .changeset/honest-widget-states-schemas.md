@@ -30,7 +30,8 @@ measured with Ajv against the schemas at `17d203b` (the merge base) and at this 
   `starred-repo-list`, `theatre-reviews` and `workouts`; `bookshelf.localCovers` (string array or
   null); `dev-activity-log.events[].datetime` (string); `reading-feed.reading.articles[].datetime`
   and `starred-repo-list.repos[].datetime` (string or null); `night-summary.health.isEmpty`
-  (boolean or null); `system-status.system.lines[].source` and `keyClass` (string or null);
+  (boolean or null); `system-status.system.lines[].source` and `keyClass` (string or null) and
+  `suppressed` (boolean or null);
   `workouts.health.workouts[].link` (string or null); `currentFocus` (string or null) and `now`
   (string or null) in `focus-overlay` and `dnd-overlay`.
 

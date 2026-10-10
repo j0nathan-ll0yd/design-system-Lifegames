@@ -35,7 +35,14 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
   same text. `finalize(props, rule)` in `runtime/view-models`.
 - `revealLiveData` returns `false` and writes nothing for a suppressed card unless the caller
   passes `{leaveSuppressed: true}`; `releaseSuppression(card)` and `isSuppressedCard(card)` are
-  new. Every updater skips its writes on a suppressed card.
+  new. Every card updater skips its writes on a suppressed card. `updateSystemStatus` skips every
+  System Status row the server rendered suppressed: during a hiding focus mode
+  `composeSystemLines` marks each row `suppressed`, the template renders it with
+  `data-ssr-state="suppressed"`, and a client update with export timestamps no longer turns it
+  into ACTIVE or OFFLINE with an age. The focus gate releases a row with `releaseSuppression(row)`,
+  as it does a card; the next update fills it and drops the attribute. New optional
+  `SystemLine.suppressed`. The loader decides suppression page-wide, so every row is suppressed
+  or none is.
 - `safeHttpsUrl` in `runtime/html-utils`.
 - Adapted events, articles and starred repos carry `datetime` (ISO) beside their relative label.
 
@@ -81,7 +88,12 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
   `updateWorkouts([])` shows the recovery-day state, and `updateDevActivityLog`,
   `updateStarredRepos`, `updateReadingFeed`, `updateBookshelf` and `updateTheatreReviews` show
   their empty copy. Each clears the previous items and records `empty`, from a live card or an
-  unavailable one. `updateWorkouts(null)` (an unreadable export) still leaves the card as it is.
+  unavailable one. A null or undefined result (an unreadable export) leaves every collection card
+  as it is: `updateWorkouts`, `updateDevActivityLog`, `updateStarredRepos`, `updateReadingFeed`,
+  `updateBookshelf` and `updateTheatreReviews` now all accept `null | undefined` and write
+  nothing. Before, `updateBookshelf` and `updateTheatreReviews` threw on null, and the dev log,
+  starred-repo and reading-feed updaters treated null as empty. The adapters are unchanged:
+  `adaptGithubEvents`, `adaptStarredRepos` and `adaptArticles` still map a null export to `[]`.
   `renderWidgetEmpty` writes `data-state-notice="empty"`, the server's empty-notice markup.
   `updateStarredRepos` recreates its list after an empty state, so a later populated export renders.
   `updatePlaceLeaderboard` clears its rows and shows the empty copy when there are no places.
@@ -91,4 +103,15 @@ the design-system updaters and reads none of these fields (`src/lib/runtime/live
 - Tinted backgrounds use `color-mix()`. NightSummary's phase pills, DevActivityCards' icons and
   DevActivityTimeline's badges appended a hex alpha to a `var()` colour, which is invalid CSS, so
   the browser dropped the tint. CommitTimeline's badge did the same to `repoColor`, which worked
-  only for a 6-digit hex colour; it now works for any colour.
+  only for a 6-digit hex colour; it now works for any colour. DevActivityTimeline's badge border
+  changes from the solid event colour to 25% of it (`color-mix(in srgb, <colour> 25%,
+transparent)`), the alpha its `40` suffix intended.
+- DevActivityCards and DevActivityTimeline render no `+0 -0` for a commit whose export lacks line
+  counts; `additions` and `deletions` are optional in their Props, as in DevActivityLog.
+- The Reading Feed client links an article title only for an https URL (`safeHttpsUrl`, as in
+  the other widgets); before, a `javascript:` URL became the href.
+- TheatreReviews' header in the empty state reads `reviews` on the server and the client;
+  `theatreCountLabel(totalReviews)` takes `number | null | undefined` and names a count only for
+  a number. The client wrote `0 reviews` before.
+- `worstState` and `oldestGeneratedAt` are gone from `runtime/widget-state`: NightSummary no
+  longer combines two exports' states, and nothing else used them.

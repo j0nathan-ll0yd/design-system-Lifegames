@@ -8,4 +8,7 @@ Swift read them from here; no platform holds its own copy of these strings (GOVE
 
 The Swift struct for the group is `WidgetStateCopy` (a group `title`): the bare key would generate
 `WidgetState`, which shadows `LifegamesComponents.WidgetState<T>`. The build now fails on a copy
-struct that shadows a public type of another design-system Swift module.
+struct whose name the Swift code beside it uses: a public type declared in another design-system
+module, or a type that a module able to see `LifegamesCopy` references unqualified, framework
+types such as SwiftUI's `Color`, `Text` and `View` included. Both sets are derived from `Sources`
+and the target graph in `Package.swift`, never hand-listed.
