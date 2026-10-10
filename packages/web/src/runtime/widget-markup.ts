@@ -6,7 +6,7 @@ import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc} from './html-utils'
 import type {RangeBand} from './widget-views'
 
-/** HeartRate's empty notice ("No heart rate data"). */
+/** HeartRate's empty notice (copy key widgets.heartRate.empty). */
 export function heartRateEmptyHtml(): string {
   return '<div class="hr-empty" data-state-notice="empty"><span class="hr-empty-label">' + esc(widgets.heartRate.empty) + '</span></div>'
 }

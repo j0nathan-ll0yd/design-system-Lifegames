@@ -109,7 +109,7 @@ function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
  * Update HeartRate (cardHR) from adapter output. The card takes the state the
  * server renders for the same input (heartRateView, heartRateState):
  *   - a readable export with no heart rate: `unavailable` (notice, no value);
- *   - no quantity at all, or a recorded 0: `empty` ("No heart rate data");
+ *   - no quantity at all, or a recorded 0: `empty` (widgets.heartRate.empty);
  *   - a paused watch (off the wrist or charging): the data state, the paused
  *     copy and no value;
  *   - otherwise the data state (`live`, or `stale` from `freshness`).
