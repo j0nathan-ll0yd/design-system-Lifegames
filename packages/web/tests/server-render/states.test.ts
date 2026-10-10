@@ -196,7 +196,14 @@ async function render(component: any, props: Record<string, unknown>, rootId: st
   const attrs = [...root.querySelectorAll('*'), root].flatMap((el) =>
     [...el.attributes].filter((a) => CONTENT_ATTR.test(a.name) && !/^data-astro-/.test(a.name)).map((a) => a.value)
   )
-  return {html, doc, root, text: root.textContent + '\n' + attrs.join('\n')}
+  // Template content and comments are not textContent, yet they ship.
+  const hidden = [...root.querySelectorAll('template')].map((t) => t.content.textContent ?? '')
+  const comments: string[] = []
+  const walker = doc.createTreeWalker(root, doc.defaultView!.NodeFilter.SHOW_COMMENT)
+  for (let c = walker.nextNode(); c; c = walker.nextNode()) {
+    comments.push(c.textContent ?? '')
+  }
+  return {html, doc, root, text: [root.textContent, ...hidden, ...comments, ...attrs].join('\n')}
 }
 const CONTENT_ATTR = /^(aria-.*|alt|title|href|src|srcset|datetime|content|value|data-.*)$/
 
@@ -226,9 +233,12 @@ function leakedLegacy(rendered: Rendered): string[] {
 // carrier the projection does not name.
 function observe(r: Rendered, name: string): Projection {
   const permitted = new Set(Object.values(NON_DATA_ALLOWLIST.widgets[name] ?? {}).flat())
+  // Class tokens the non-data states already use; any other token is listed.
+  const chromeClasses = new Set([...permitted].filter((p) => / class=/.test(p)).flatMap((p) => p.slice(p.indexOf('=') + 1).split(/\s+/)))
   const text: string[] = []
   const attrs: string[] = []
   const styles: string[] = []
+  const classes = new Set<string>()
   const json: Record<string, unknown[]> = {}
   const walk = (n: Node): void => {
     if (n.nodeType === 3) {
@@ -236,6 +246,11 @@ function observe(r: Rendered, name: string): Projection {
       if (t) {
         text.push(t)
       }
+      return
+    }
+    // An HTML comment reaches every client: it is text here (final verification L2).
+    if (n.nodeType === 8) {
+      text.push(`<!--${(n.textContent ?? '').trim()}-->`)
       return
     }
     if (n.nodeType !== 1) {
@@ -252,6 +267,8 @@ function observe(r: Rendered, name: string): Projection {
         if (!permitted.has(`${tag} style=${a.value}`)) {
           styles.push(`${tag} ${a.value}`)
         }
+      } else if (a.name === 'class') {
+        a.value.split(/\s+/).filter((c) => c && !chromeClasses.has(c)).forEach((c) => classes.add(c))
       } else if (JSON_ATTR.has(a.name)) {
         attrs.push(`${a.name}=*`)
         ;(json[a.name] ??= []).push(JSON.parse(a.value))
@@ -260,9 +277,13 @@ function observe(r: Rendered, name: string): Projection {
       }
     }
     el.childNodes.forEach(walk)
+    // <template> content is a separate fragment, not childNodes, yet it ships.
+    if (el instanceof r.doc.defaultView!.HTMLTemplateElement) {
+      el.content.childNodes.forEach(walk)
+    }
   }
   walk(r.root)
-  return {text, attrs, styles, ...(Object.keys(json).length ? {json} : {})}
+  return {text, attrs, styles, classes: [...classes].sort(), ...(Object.keys(json).length ? {json} : {})}
 }
 
 function expectKnownAnswer(r: Rendered, id: string, opts: {healthStale?: boolean} = {}): void {
@@ -273,6 +294,7 @@ function expectKnownAnswer(r: Rendered, id: string, opts: {healthStale?: boolean
   expect(actual.text, `${id} text`).toEqual(expected.text)
   expect(actual.attrs, `${id} attributes`).toEqual(expected.attrs)
   expect(actual.styles, `${id} styles`).toEqual(expected.styles)
+  expect(actual.classes, `${id} classes beyond the non-data chrome`).toEqual([...expected.classes].sort())
   expect(actual.json, `${id} JSON attributes`).toEqual(expected.json)
 }
 
@@ -597,6 +619,9 @@ const REVIEWED_CHROME_TEXT = new Set(['—', '--', 'cal', 'reviews', '☀', '☾
 // The only digits a data-free render may carry: MovementRings' default daylight goal.
 const ALLOWED_DATA_FREE_DIGITS = /goal 20 min/g
 
+// Every text node, HTML comments and <template> content included: both ship
+// to every client (final verification L2). A comment reads "<!--text-->", so
+// it is never authored copy.
 function textNodes(root: Element): string[] {
   const out: string[] = []
   const walk = (n: Node): void => {
@@ -605,8 +630,13 @@ function textNodes(root: Element): string[] {
       if (t) {
         out.push(t)
       }
+    } else if (n.nodeType === 8) {
+      out.push(`<!--${(n.textContent ?? '').trim()}-->`)
     }
     n.childNodes.forEach(walk)
+    if (n.nodeName === 'TEMPLATE') {
+      ;(n as HTMLTemplateElement).content.childNodes.forEach(walk)
+    }
   }
   walk(root)
   return out
@@ -680,7 +710,21 @@ function attributePairs(html: string): {pairs: Set<string>; scripts: string[]} {
   const doc = new JSDOM(html).window.document
   const pairs = new Set<string>()
   const scripts: string[] = []
-  for (const el of doc.body.querySelectorAll('*')) {
+  // <template> content is a separate fragment that querySelectorAll does not
+  // enter, yet it ships; so do HTML comments (final verification L2). Each
+  // comment becomes a "#comment <text>" pair, which the list holds none of.
+  const roots: ParentNode[] = [doc.body]
+  for (let i = 0; i < roots.length; i++) {
+    roots[i]!.querySelectorAll('template').forEach((t) => roots.push(t.content))
+  }
+  const elements = roots.flatMap((root) => [...root.querySelectorAll('*')])
+  for (const root of roots) {
+    const comments = doc.createTreeWalker(root as Node, doc.defaultView!.NodeFilter.SHOW_COMMENT)
+    for (let c = comments.nextNode(); c; c = comments.nextNode()) {
+      pairs.add(`#comment ${(c.textContent ?? '').trim()}`)
+    }
+  }
+  for (const el of elements) {
     const tag = el.tagName.toLowerCase()
     if (tag === 'script') {
       scripts.push(

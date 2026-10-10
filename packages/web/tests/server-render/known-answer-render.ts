@@ -35,6 +35,8 @@ export interface Projection {
   attrs: string[]
   /** Every inline style the non-data allowlist does not permit, in document order. */
   styles: string[]
+  /** Every class token the non-data allowlist does not use, as a set. */
+  classes: string[]
   /** Parsed JSON attributes, compared as objects (key order is the template's). */
   json?: Record<string, unknown[]>
 }
@@ -85,7 +87,8 @@ function heartRate(): Projection {
       `span color: ${zone.bpmColor}; text-shadow: ${zone.bpmShadow}`,
       `span color: ${zone.badgeColor}; background: ${zone.badgeBg}; border: 1px solid ${zone.badgeBorder}`,
       `span color: ${hrvZone.color}; text-shadow: ${hrvZone.shadow}`
-    ]
+    ],
+    classes: []
   }
 }
 
@@ -144,7 +147,8 @@ function movementRings(): Projection {
       'data-mv-metric=flights',
       `aria-label=${a11y.movement.daylight}`
     ],
-    styles: [`div left: ${h.solar.currentProgressPct}%`]
+    styles: [`div left: ${h.solar.currentProgressPct}%`],
+    classes: []
   }
 }
 
@@ -171,6 +175,16 @@ function hydration(): Projection {
       clip(hy.waterOz!, hy.waterMax),
       range(hy.caffeineRangeLo, hy.caffeineRangeHi, hy.caffeineMax),
       clip(hy.caffeineMg!, hy.caffeineMax)
+    ],
+    classes: [
+      'hydra-range',
+      'hydra-range-coffee',
+      'hydra-range-label',
+      'hydra-range-label-bottom',
+      'hydra-range-label-coffee',
+      'hydra-range-label-top',
+      'hydra-range-label-water',
+      'hydra-range-water'
     ]
   }
 }
@@ -207,7 +221,8 @@ function nightSummary(opts: ProjectionOptions): Projection {
     ],
     attrs: ['data-phase=deep', 'data-phase=rem', 'data-phase=core', 'data-phase=awake'],
     // The score bar, when a score is shown; the pills' styles are chrome (allowlist).
-    styles: score == null ? [] : [`div width: ${score}%`]
+    styles: score == null ? [] : [`div width: ${score}%`],
+    classes: []
   }
 }
 
@@ -227,7 +242,17 @@ function workouts(): Projection {
       ])
     ],
     attrs: [],
-    styles: []
+    styles: [],
+    classes: [
+      'workout-stat',
+      'workout-stat-label',
+      'workout-stat-value',
+      'workout-sub-card',
+      'workout-sub-icon',
+      'workout-sub-stats',
+      'workout-sub-top',
+      'workout-sub-type'
+    ]
   }
 }
 
@@ -256,7 +281,7 @@ function devActivityLog(): Projection {
     text.push(r.date)
     attrs.push(`href=${e.url}`, 'data-sa-link-event=activity_click', `datetime=${r.date}`)
   })
-  return {text, attrs, styles}
+  return {text, attrs, styles, classes: ['gh-dal-date', 'gh-dal-detail', 'gh-dal-icon', 'gh-dal-line', 'gh-dal-repo', 'gh-dal-title']}
 }
 
 function starredRepoList(): Projection {
@@ -274,7 +299,8 @@ function starredRepoList(): Projection {
       ])
     ],
     attrs: repos.flatMap((r: any) => [`href=${r.htmlUrl}`, 'data-sa-link-event=repo_click', `datetime=${r.starredAt}`]),
-    styles: labels.map((r) => `span background: ${r.languageColor};`)
+    styles: labels.map((r) => `span background: ${r.languageColor};`),
+    classes: ['gh-sl-date', 'gh-sl-lang', 'gh-sl-lang-dot', 'gh-sl-name', 'gh-sl-owner', 'gh-sl-row', 'gh-sl-stars']
   }
 }
 
@@ -284,7 +310,8 @@ function readingFeed(): Projection {
   return {
     text: [widgets.readingFeed.title, ...articles.flatMap((a: any, i: number) => [a.articleTitle, `(${a.sourceTitle})`, labels[i]!.date])],
     attrs: articles.map((a: any) => `datetime=${a.savedAt}`),
-    styles: articles.map((_: unknown, i: number) => `li animation-delay: ${i * 0.07}s`)
+    styles: articles.map((_: unknown, i: number) => `li animation-delay: ${i * 0.07}s`),
+    classes: ['article-list-date', 'article-list-item', 'article-list-source', 'article-list-title']
   }
 }
 
@@ -339,7 +366,25 @@ function bookshelf(): Projection {
       }
     }
   })
-  return {text, attrs, styles, json: {'data-book': bookJson, 'data-local-cover': covers}}
+  // The row's chrome, plus the classes each book's status, progress and rating select.
+  const classes = new Set(['shelf-book', 'shelf-book-author', 'shelf-book-status', 'shelf-book-title', 'shelf-cover-wrapper'])
+  for (const b of books) {
+    classes.add(`shelf-status-${b.status}`)
+    if (b.status === 'reading') {
+      classes.add('shelf-book-active')
+    }
+    if (b.currentPage != null) {
+      ;['shelf-book-progress', 'shelf-book-progress-bar', 'shelf-book-progress-fill'].forEach((c) => classes.add(c))
+    }
+    if (b.rating != null) {
+      classes.add('shelf-book-stars')
+      classes.add('star-on')
+      if (b.rating < 5) {
+        classes.add('star-off')
+      }
+    }
+  }
+  return {text, attrs, styles, classes: [...classes], json: {'data-book': bookJson, 'data-local-cover': covers}}
 }
 
 // The theatre grade colours, by grade letter.
@@ -353,7 +398,8 @@ function theatreReviews(): Projection {
     styles: t.reviews.flatMap((r: any, i: number) => {
       const color = GRADE_COLOR[r.rating[0]]
       return [`a animation-delay: ${i * 0.08}s`, `span color:${color};border-color:${color}`]
-    })
+    }),
+    classes: ['theatre-card', 'theatre-grade', 'theatre-poster-wrap', 'theatre-title']
   }
 }
 
