@@ -4,7 +4,9 @@ import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, Ad
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
 import {imgFallbackAttrs, installImageFallbacks, mirroredCoverUrl, parseLocalCovers, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
-import {enterUnavailable, insertStateNotice, isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
+import {enterUnavailable, insertStateNotice} from '../internal/card-state'
+import {writeHeartRateFooter} from '../internal/heart-rate-footer'
+import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {Freshness} from './freshness'
 import {heartRateEmptyHtml, hydrationRangeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
@@ -116,16 +118,6 @@ function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
   const dot = card.querySelector('.widget-header .live-dot')
   if (dot) {
     dot.className = 'live-dot ' + zone.dotClass
-  }
-}
-
-/** Write HeartRate's footer vitals (RHR · RR · Temp) from its view. */
-export function writeHeartRateFooter(view: HeartRateView): void {
-  for (const [id, text] of [['hrFooterRhr', view.rhrText], ['hrFooterRr', view.rrText], ['hrFooterTemp', view.tempText]] as const) {
-    const el = document.getElementById(id)
-    if (el) {
-      el.textContent = text
-    }
   }
 }
 

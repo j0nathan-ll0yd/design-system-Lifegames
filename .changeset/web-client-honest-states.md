@@ -14,6 +14,18 @@ The browser reaches the same card the server renders (atlas decision 0160). Webs
 - `runtime/widget-markup`: `heartRateEmptyHtml`, `movementEmptyHtml` and `hydrationRangeHtml`, the markup that a template and an updater both write.
 - `isWatchPaused(health)` in `runtime/widget-rules`. `mirroredCoverUrl(candidate, mirrored, options?)` and `parseLocalCovers(value)` in `runtime/image-utils`.
 
+**The complete list of added named exports** (from `pnpm check:package-drift`; no name is removed):
+
+- `./runtime/freshness` (new): `EXPORT_FRESHNESS`, `exportDomainState`, `exportFreshness`, `freshnessState`, `isFreshnessDegraded`; types `Freshness`, `FreshnessDomain`, `FreshnessState`.
+- `./runtime/updater-empty`: `renderWidgetUnavailable`; type `RevealOptions`.
+- `./runtime/widget-state`: `stateNoticeHtml`, `widgetTimestampView`.
+- `./runtime/widget-rules`: `isWatchPaused`.
+- `./runtime/image-utils`: `mirroredCoverUrl`, `parseLocalCovers`.
+- `./runtime/widget-views` (new): `heartRateView`, `hydrationView`, `movementView`, `nightSummaryView`, `rangeBand`, `toNightSummaryHealth`, `MOVEMENT_DEFAULT_GOALS`, `MOVEMENT_RING_RADII`, `NIGHT_SUMMARY_EMPTY_MARK`, `SLEEP_PHASES`; types `HeartRateView`, `HydrationView`, `MovementView`, `NightSummaryView`, `RangeBand`, `RingStroke`, `SleepPhase`.
+- `./runtime/widget-markup` (new): `heartRateEmptyHtml`, `hydrationRangeHtml`, `movementEmptyHtml`.
+
+The package's own DOM helpers (`enterUnavailable`, `insertStateNotice`, `writeHeartRateFooter` and the header and state writers) live in `src/internal/`. No key of the exports map reaches that directory, so they are not public API.
+
 **Behaviour changes that consumers see.**
 
 - Hydration: `updateHydration` draws both target-range bands with the server's markup and positions. Before, only the server markup drew them, so a visitor with JavaScript saw no bands. The fill and the bands use the export's scale, as on the server. `initHydration` draws its bands with the same markup.
