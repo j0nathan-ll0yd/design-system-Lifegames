@@ -111,16 +111,17 @@ private struct MovementRingsPopulatedView: View {
                         MovementSwatch(
                             color: LGColor.accentBlue,
                             label: movementCopy.stand,
-                            value: Int(props.standHr.rounded()),
+                            value: props.standHr.map { Int($0.rounded()) },
                             goal: Int(props.goals.standHr.rounded())
                         )
                     }
                     .padding(.top, 12)
                 }
 
-                // Sun-arc footer always shown; resolvedSolar() provides defaults when nil
+                // Sun-arc footer: the track shows only with solar facts (never invented times);
+                // the daylight-minutes line always shows.
                 SunArcFooterView(
-                    solar: resolvedSolar(from: props.solar),
+                    solar: props.solar,
                     daylightMin: props.daylightMin,
                     goalDaylightMin: props.goals.daylightMin
                 )
@@ -133,30 +134,9 @@ private struct MovementRingsPopulatedView: View {
         .neonCard(accent: LGColor.healthRed)
     }
 
-    private func progress(_ value: Double, _ goal: Double) -> Double {
-        guard goal > 0 else { return 0 }
+    private func progress(_ value: Double?, _ goal: Double) -> Double {
+        guard let value, goal > 0 else { return 0 }
         return min(1.5, max(0, value / goal))
-    }
-
-    private func resolvedSolar(from solar: MovementRingsProps.Solar?) -> MovementRingsProps.Solar {
-        if let s = solar {
-            return s
-        }
-        let now = Date()
-        let calendar = Calendar.current
-        let comps = calendar.dateComponents([.hour, .minute], from: now)
-        let minutesNow = (comps.hour ?? 0) * 60 + (comps.minute ?? 0)
-        let sunriseMin = 6 * 60 + 30 // 06:30
-        let sunsetMin = 20 * 60 + 15 // 20:15
-        let pct: Double
-        if minutesNow < sunriseMin {
-            pct = 0
-        } else if minutesNow > sunsetMin {
-            pct = 100
-        } else {
-            pct = Double(minutesNow - sunriseMin) / Double(sunsetMin - sunriseMin) * 100
-        }
-        return .init(sunriseHHmm: "06:30", sunsetHHmm: "20:15", currentProgressPct: pct)
     }
 }
 
@@ -280,11 +260,17 @@ private struct MovementChip: View {
 
 // web: mv-legend-item — monospaced cap2, letter-spacing 0.08em, mixed-case label, bold value
 // swatch 8×8 border-radius:2px with colored glow
-private struct MovementSwatch: View {
+struct MovementSwatch: View {
     let color: Color
     let label: String
-    let value: Int
+    /// The measured value, nil when not measured (renders the no-reading mark).
+    let value: Int?
     let goal: Int
+
+    /// The value cell's text: the reading, or the no-reading mark.
+    static func valueText(_ value: Int?) -> String {
+        NoReading.text(value)
+    }
 
     var body: some View {
         HStack(spacing: 6) {
@@ -297,20 +283,42 @@ private struct MovementSwatch: View {
                 .font(.system(size: 10, design: .monospaced))
                 .kerning(0.8)
                 .foregroundStyle(LGColor.textMuted)
-            // web: mv-legend-val — color text-title, font-weight 600
-            Text("\(value)/\(goal)")
-                .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                .foregroundStyle(LGColor.textTitle)
+            // web: mv-legend-val — color text-title, font-weight 600. The value and the goal
+            // are separate Texts so VoiceOver reads the mark by its noReading copy, not "dash".
+            let valueText = Self.valueText(value)
+            HStack(spacing: 0) {
+                Text(valueText)
+                    .noReadingAccessibility(valueText)
+                Text("/\(goal)")
+            }
+            .font(.system(size: 10, weight: .semibold, design: .monospaced))
+            .foregroundStyle(LGColor.textTitle)
         }
     }
 }
 
 // MARK: - Sun Arc Footer
 
-private struct SunArcFooterView: View {
-    let solar: MovementRingsProps.Solar
-    let daylightMin: Double
+struct SunArcFooterView: View {
+    /// Identifies the sun track (icons, times, arc) so tests can assert its presence.
+    static let sunTrackIdentifier = "movementRings.sunTrack"
+
+    /// Sunrise/sunset facts, nil when the caller has none (the sun track is hidden).
+    let solar: MovementRingsProps.Solar?
+    /// Minutes in daylight, nil when not measured (renders the no-reading mark).
+    let daylightMin: Double?
     let goalDaylightMin: Double
+
+    /// The daylight minutes as display text, or the no-reading mark.
+    static func daylightText(_ daylightMin: Double?) -> String {
+        NoReading.text(daylightMin.map { Int($0) })
+    }
+
+    /// True only for a measured value at or past the goal: a missing value never hits it.
+    static func daylightHit(_ daylightMin: Double?, goal: Double) -> Bool {
+        guard let daylightMin else { return false }
+        return daylightMin >= goal
+    }
 
     @State private var pulseOpacity: Double = 0.6
 
@@ -321,69 +329,82 @@ private struct SunArcFooterView: View {
                 .fill(Color.white.opacity(0.06))
                 .frame(height: 1)
 
-            HStack(spacing: 8) {
-                Image(systemName: "sun.max.fill")
-                    .foregroundStyle(LGColor.accentAmber)
-                    .font(.system(size: 14))
-                    .shadow(color: LGColor.accentAmber.opacity(0.7), radius: 3)
+            // The sun track renders only with supplied solar facts. Without them it is hidden
+            // (owner decision, atlas 0160): never invented times, never a permanent pair of marks.
+            // The daylight-minutes line below stays either way.
+            if let solar {
+                HStack(spacing: 8) {
+                    Image(systemName: "sun.max.fill")
+                        .foregroundStyle(LGColor.accentAmber)
+                        .font(.system(size: 14))
+                        .shadow(color: LGColor.accentAmber.opacity(0.7), radius: 3)
 
-                // web: mv-sun-time 0.56rem ≈ 9pt, color text-subtle
-                Text(solar.sunriseHHmm)
-                    .font(.system(size: 9, design: .monospaced))
-                    .foregroundStyle(LGColor.textMuted)
+                    // web: mv-sun-time 0.56rem ≈ 9pt, color text-subtle
+                    Text(solar.sunriseHHmm)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(LGColor.textMuted)
 
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        // web: 5-stop gradient purple→amber→amber→amber→purple, height 4px
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.purple.opacity(0.4), location: 0.0),
-                                .init(color: LGColor.accentAmber.opacity(0.5), location: 0.2),
-                                .init(color: LGColor.accentAmber.opacity(0.7), location: 0.5),
-                                .init(color: LGColor.accentAmber.opacity(0.5), location: 0.8),
-                                .init(color: Color.purple.opacity(0.4), location: 1.0),
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                        .frame(height: 4)
-                        .frame(maxHeight: .infinity, alignment: .center)
-                        .clipShape(Capsule())
-
-                        // web: sun-dot 8×8px, dual shadow 0 0 8px rgba(0.9) + 0 0 16px rgba(0.45)
-                        Circle()
-                            .fill(LGColor.accentAmber)
-                            .frame(width: 8, height: 8)
-                            .shadow(color: LGColor.accentAmber.opacity(0.9), radius: 4, x: 0, y: 0)
-                            .shadow(color: LGColor.accentAmber.opacity(0.45), radius: 8, x: 0, y: 0)
-                            .opacity(pulseOpacity)
-                            .offset(x: dotX(in: geo.size.width))
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            // web: 5-stop gradient purple→amber→amber→amber→purple, height 4px
+                            LinearGradient(
+                                stops: [
+                                    .init(color: Color.purple.opacity(0.4), location: 0.0),
+                                    .init(color: LGColor.accentAmber.opacity(0.5), location: 0.2),
+                                    .init(color: LGColor.accentAmber.opacity(0.7), location: 0.5),
+                                    .init(color: LGColor.accentAmber.opacity(0.5), location: 0.8),
+                                    .init(color: Color.purple.opacity(0.4), location: 1.0),
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                            .frame(height: 4)
                             .frame(maxHeight: .infinity, alignment: .center)
+                            .clipShape(Capsule())
+
+                            // web: sun-dot 8×8px, dual shadow 0 0 8px rgba(0.9) + 0 0 16px rgba(0.45)
+                            Circle()
+                                .fill(LGColor.accentAmber)
+                                .frame(width: 8, height: 8)
+                                .shadow(color: LGColor.accentAmber.opacity(0.9), radius: 4, x: 0, y: 0)
+                                .shadow(color: LGColor.accentAmber.opacity(0.45), radius: 8, x: 0, y: 0)
+                                .opacity(pulseOpacity)
+                                .offset(x: Self.dotX(progressPct: solar.currentProgressPct, in: geo.size.width))
+                                .frame(maxHeight: .infinity, alignment: .center)
+                        }
                     }
+                    .frame(height: 14)
+
+                    Text(solar.sunsetHHmm)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(LGColor.textMuted)
+
+                    Image(systemName: "moon.fill")
+                        .foregroundStyle(LGColor.accentAmber.opacity(0.5))
+                        .font(.system(size: 14))
                 }
-                .frame(height: 14)
-
-                Text(solar.sunsetHHmm)
-                    .font(.system(size: 9, design: .monospaced))
-                    .foregroundStyle(LGColor.textMuted)
-
-                Image(systemName: "moon.fill")
-                    .foregroundStyle(LGColor.accentAmber.opacity(0.5))
-                    .font(.system(size: 14))
+                .accessibilityIdentifier(Self.sunTrackIdentifier)
             }
 
             // web: mv-sun-caption text-align:center, cap2 monospaced, letter-spacing 0.09em
             // hit checkmark uses health-green with glow
             HStack(spacing: 4) {
-                Text(movementCopy.daylightCaption.replacingOccurrences(of: "{minutes}", with: "\(Int(daylightMin))"))
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundStyle(LGColor.textMuted)
+                // web: the value is its own span, then the caption with `{minutes}` removed,
+                // so the mark carries its VoiceOver label.
+                let daylight = Self.daylightText(daylightMin)
+                HStack(spacing: 0) {
+                    Text(daylight)
+                        .noReadingAccessibility(daylight)
+                    Text(movementCopy.daylightCaption.replacingOccurrences(of: "{minutes}", with: ""))
+                }
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .foregroundStyle(LGColor.textMuted)
                 Text("·")
                     .foregroundStyle(LGColor.textMuted.opacity(0.5))
                 Text(movementCopy.daylightGoal.replacingOccurrences(of: "{minutes}", with: "\(Int(goalDaylightMin))"))
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(LGColor.textMuted)
-                if daylightMin >= goalDaylightMin {
+                if Self.daylightHit(daylightMin, goal: goalDaylightMin) {
                     Image(systemName: "checkmark")
                         .foregroundStyle(LGColor.healthGreen)
                         .neonGlow(LGColor.healthGreen, radius: 3)
@@ -398,8 +419,8 @@ private struct SunArcFooterView: View {
         }
     }
 
-    private func dotX(in width: CGFloat) -> CGFloat {
-        let clamped = min(100, max(0, solar.currentProgressPct))
+    private static func dotX(progressPct: Double, in width: CGFloat) -> CGFloat {
+        let clamped = min(100, max(0, progressPct))
         let pct = CGFloat(clamped / 100)
         return (width * pct) - 4
     }
@@ -630,6 +651,23 @@ private func formatDistanceValue(_ meters: Double) -> String {
         distanceMeters: 6200,
         flights: 14,
         daylightMin: 48,
+        goals: MovementRingsProps.Goals(),
+        solar: nil
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — No Stand or Daylight Reading") {
+    MovementRingsView(props: MovementRingsProps(
+        moveKcal: 380,
+        exerciseMin: 32,
+        standHr: nil,
+        steps: 8421,
+        distanceMeters: 6200,
+        flights: 14,
+        daylightMin: nil,
         goals: MovementRingsProps.Goals(),
         solar: nil
     ))

@@ -1,8 +1,11 @@
 import Foundation
 
 public struct HeartRateProps: Hashable, Codable, Sendable {
-    public let bpm: Int
-    public let hrv: Int
+    /// Current heart rate, nil when the export carried none. A missing (or 0) heart rate
+    /// renders the no-reading mark, never 0 (atlas decision 0160 F1).
+    public let bpm: Int?
+    /// HRV SDNN in ms, nil when the export carried none.
+    public let hrv: Int?
     public let zone: String
     public var restingHeartRate: Double?
     public var respiratoryRate: Double?
@@ -17,8 +20,8 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
     public var watchCharging: Bool
 
     public init(
-        bpm: Int,
-        hrv: Int,
+        bpm: Int?,
+        hrv: Int?,
         zone: String,
         restingHeartRate: Double? = nil,
         respiratoryRate: Double? = nil,
@@ -36,8 +39,17 @@ public struct HeartRateProps: Hashable, Codable, Sendable {
         self.watchCharging = watchCharging
     }
 
-    public var heartRateZone: HeartRateZone {
-        HeartRateZone.classify(bpm: bpm)
+    /// The heart rate as a reading: nil when missing or not positive. A heart rate of 0
+    /// is no reading (parity with the web `formatPositiveVital`).
+    public var bpmReading: Int? {
+        guard let bpm, bpm > 0 else { return nil }
+        return bpm
+    }
+
+    /// The zone of the current reading, nil when there is no reading. A zone belongs to
+    /// a reading: a missing heart rate has no zone colour.
+    public var heartRateZone: HeartRateZone? {
+        bpmReading.map { HeartRateZone.classify(bpm: $0) }
     }
 
     /// Legacy — kept for backward compatibility pending consumer audit

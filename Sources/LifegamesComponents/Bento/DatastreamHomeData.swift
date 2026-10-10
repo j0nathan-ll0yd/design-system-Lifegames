@@ -28,13 +28,14 @@ public struct DatastreamHomeData: Sendable {
 
     /// Stand ring fill (0–1).
     public var standProgress: Double
-    /// Stand ring display value (e.g. "11h").
-    public var standValue: String
+    /// Stand ring display value (e.g. "11h"), nil when stand hours were not measured.
+    /// A missing value renders the no-reading mark, never "0" (atlas decision 0160 F1).
+    public var standValue: String?
 
     // MARK: - Heart rate
 
-    /// Resting heart rate in BPM.
-    public var restingHR: Int
+    /// Resting heart rate in BPM, nil when not measured (renders the no-reading mark).
+    public var restingHR: Int?
 
     // MARK: - Caffeine
 
@@ -97,8 +98,8 @@ public struct DatastreamHomeData: Sendable {
         steps: Int,
         moveProgress: Double, moveValue: String,
         exerciseProgress: Double, exerciseValue: String,
-        standProgress: Double, standValue: String,
-        restingHR: Int,
+        standProgress: Double, standValue: String?,
+        restingHR: Int?,
         caffeineMg: Int, caffeineTarget: Int, cups: Int, lastBeverage: String,
         bookCoverURL: URL?, bookProgress: Double,
         booksUpdatedBadge: String? = nil,

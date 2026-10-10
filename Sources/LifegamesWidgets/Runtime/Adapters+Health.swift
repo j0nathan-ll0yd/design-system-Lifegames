@@ -18,7 +18,7 @@ public extension Adapters {
 
     /// Convenience: decode the full `health/night-summary*.json` envelope and return Props.
     ///
-    /// Wire shape: `{health: {sleepScore: Int, sleepDurationFormatted: String,
+    /// Wire shape: `{health: {sleepScore?: Int, sleepDurationFormatted: String,
     ///   sleepPhaseFormatted: {deep, rem, core, awake}, derived: {deepPct, remPct}}}`.
     ///
     /// The fixtures store pre-formatted strings and pre-computed percentages — both already
@@ -31,7 +31,9 @@ public extension Adapters {
             let health = json["health"] as? [String: Any]
         else { return nil }
 
-        let sleepScore = (health["sleepScore"] as? Int) ?? 0
+        // A missing score stays missing (nil), never 0: parity with the web adaptSleep
+        // (`sleepScore: number | null`, atlas decision 0160 H03).
+        let sleepScore = health["sleepScore"] as? Int
         let duration = (health["sleepDurationFormatted"] as? String) ?? "0m"
         let phases = health["sleepPhaseFormatted"] as? [String: Any] ?? [:]
         let derived = health["derived"] as? [String: Any] ?? [:]
@@ -72,7 +74,7 @@ public extension Adapters {
     ///
     /// Returns nil if the envelope is missing the `movement` sub-object. Missing inner fields
     /// fall back to zero / default Goals so partial fixtures (`{}` stubs) still produce a Props
-    /// value rather than failing the catalog test.
+    /// value rather than failing the catalog test; `standHr` and `daylightMin` stay nil.
     static func movementRings(fromFixture data: Data) -> MovementRingsProps? {
         guard
             let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -103,11 +105,13 @@ public extension Adapters {
         return MovementRingsProps(
             moveKcal: numberValue(movement["moveKcal"]) ?? 0,
             exerciseMin: numberValue(movement["exerciseMin"]) ?? 0,
-            standHr: numberValue(movement["standHr"]) ?? 0,
+            // standHr and daylightMin stay nil when absent: a missing measurement renders
+            // the no-reading mark, never 0 (atlas decision 0160 H03).
+            standHr: numberValue(movement["standHr"]),
             steps: Int(numberValue(movement["steps"]) ?? 0),
             distanceMeters: numberValue(movement["distanceMeters"]) ?? 0,
             flights: Int(numberValue(movement["flights"]) ?? 0),
-            daylightMin: numberValue(movement["daylightMin"]) ?? 0,
+            daylightMin: numberValue(movement["daylightMin"]),
             goals: goals,
             solar: solar
         )

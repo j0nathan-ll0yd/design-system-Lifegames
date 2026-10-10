@@ -49,15 +49,20 @@ struct HealthWidgetBehaviorTests {
     /// The zone comes from `bpm`, never from the legacy `zone` prop: 42 bpm is labelled
     /// "resting" in props and must still render as bradycardia.
     private func expectPopulatedHeartRate(_ props: HeartRateProps, zone: HeartRateZone) throws {
-        #expect(HeartRateZone.classify(bpm: props.bpm) == zone)
+        let bpm = try #require(props.bpm)
+        let hrv = try #require(props.hrv)
+        #expect(HeartRateZone.classify(bpm: bpm) == zone)
+        #expect(props.heartRateZone == zone)
         let text = try renderedText(HeartRateView(props: props, animateECG: false))
-        #expect(text.contains("\(props.bpm)"))
-        #expect(text.contains("\(props.hrv)"))
+        #expect(text.contains("\(bpm)"))
+        #expect(text.contains("\(hrv)"))
+        // A reading fills the bpm, zone and HRV slots; only the footer vitals may show the mark.
+        #expect(Array(text.prefix(8)) == ["HEART RATE", "live", "\(bpm)", "BPM", zone.name, "HRV", "\(hrv)", "ms"])
         #expect(text.contains(zone.name))
         let otherZones = [HeartRateZone.bradycardia, .restingZone, .normalZone, .fatBurn, .peakZone]
             .filter { $0 != zone }
         for other in otherZones {
-            #expect(!text.contains(other.name), "\(props.bpm) bpm must not render \(other.name)")
+            #expect(!text.contains(other.name), "\(bpm) bpm must not render \(other.name)")
         }
         #expect(!text.contains("No heart rate data"))
     }
@@ -136,7 +141,8 @@ struct HealthWidgetBehaviorTests {
     ])
     func nightSummaryPopulatedShowsScoreDurationAndPhases(props: NightSummaryProps) throws {
         let text = try renderedText(NightSummaryView(props: props))
-        #expect(Array(text.prefix(5)) == ["NIGHT SUMMARY", "last night", props.duration, "Score", "\(props.sleepScore)"])
+        let score = try #require(props.sleepScore)
+        #expect(Array(text.prefix(5)) == ["NIGHT SUMMARY", "last night", props.duration, "Score", "\(score)"])
         for phase in [props.deepFormatted, props.remFormatted, props.coreFormatted, props.awakeFormatted] {
             #expect(text.contains(phase))
         }
