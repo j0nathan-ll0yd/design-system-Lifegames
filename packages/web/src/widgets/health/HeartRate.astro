@@ -2,54 +2,36 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import { classifyHeartRate, classifyHRV } from '../../runtime/heart-rate';
-import {
-  formatHrv,
-  formatPositiveVital,
-  formatTempDelta,
-  heartRateState,
-  isReading,
-} from '../../runtime/widget-rules';
-import { isScaffoldHidden, rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { heartRateEmptyHtml } from '../../runtime/widget-markup';
+import { stateRootAttrs } from '../../runtime/widget-state';
+import { heartRateView } from '../../runtime/widget-views';
 import type { HeartRateProps } from './HeartRate.types';
 
 const props = Astro.props as HeartRateProps;
-const { health, generatedAt } = props;
-// One owner for the state: the same rule the view model applies.
-const widgetState = heartRateState(props);
-const q = rendersData(widgetState) ? health?.quantities : undefined;
-
+const { generatedAt } = props;
+// One owner for the state and every slot: the view updateHeartRate writes too.
+const view = heartRateView(props);
+const widgetState = view.state;
 // SSR paused: the export reports the watch off the wrist or charging. The
-// card is still a live reading of the watch state, but it shows no value:
+// card keeps its data state (a reading of the watch state) but shows no value:
 // the scaffold renders value-free, and only the paused copy names anything.
-const watch = rendersData(widgetState) ? health?.watch : undefined;
-const ssrPaused = watch?.worn === false;
-const charging = watch?.source === 'charging';
-const showData = rendersData(widgetState) && !ssrPaused;
-
+const ssrPaused = view.paused;
+const showData = view.showData;
 // The value-free scaffold the runtime updaters target. It renders in every
 // state, hidden behind the notice in empty, unavailable and suppressed, so a
 // later live update can reveal it (revealLiveData) without a reload.
-const scaffoldHidden = isScaffoldHidden(widgetState) || widgetState === 'empty';
-
-const hrRaw = showData ? q?.heartRate?.value : undefined;
-const hrvRaw = showData ? q?.hrvSDNN?.value : undefined;
-// A heart rate of 0 is no reading (server and client agree: formatPositiveVital).
-const hr = isReading(hrRaw) && hrRaw > 0 ? Math.round(hrRaw) : 0;
-const hrv = isReading(hrvRaw) ? Math.round(hrvRaw) : 0;
-const state = classifyHeartRate(hr);
+const scaffoldHidden = view.scaffoldHidden;
+const { hr, hrv, hasHrv } = view;
+const state = view.zone;
 // A zone colour belongs to a reading: a missing (or 0) heart rate and a
 // missing HRV render the no-reading mark in the default colour, never a zone's.
-const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
-
-// Every slot: the reading, the no-reading mark, or '' when the card shows no value.
-const slot = (text: string): string => (showData ? text : '');
-const fmtBpm = slot(formatPositiveVital(hrRaw));
-const fmtZone = slot(hr > 0 ? state.zone : formatPositiveVital(null));
-const fmtHrv = slot(formatHrv(hrvRaw));
-const fmtRhr = slot(formatPositiveVital(q?.restingHeartRate?.value));
-const fmtRr = slot(formatPositiveVital(q?.respiratoryRate?.value));
-const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
+const { color: hrvColor, shadow: hrvShadow } = view.hrvColor;
+const fmtBpm = view.bpmText;
+const fmtZone = view.zoneText;
+const fmtHrv = view.hrvText;
+const fmtRhr = view.rhrText;
+const fmtRr = view.rrText;
+const fmtTemp = view.tempText;
 ---
 
 <div
@@ -92,13 +74,7 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
         </div>
       </div>
     </div>
-    {
-      widgetState === 'empty' && (
-        <div class="hr-empty" data-state-notice="empty">
-          <span class="hr-empty-label">{widgets.heartRate.empty}</span>
-        </div>
-      )
-    }
+    {widgetState === 'empty' && <Fragment set:html={heartRateEmptyHtml()} />}
     <WidgetStateNotice state={widgetState} />
     {/* Both states stay mounted so live updates can switch without exposing stale values. */}
     {
@@ -128,24 +104,8 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
           stroke-width="1.5"
           stroke-linecap="round"></line>
       </svg>
-      <span class="hr-paused-label" id="hrPausedLabel">
-        {
-          ssrPaused
-            ? charging
-              ? widgets.heartRate.paused.labelCharging
-              : widgets.heartRate.paused.label
-            : ''
-        }
-      </span>
-      <span class="hr-paused-desc" id="hrPausedDesc">
-        {
-          ssrPaused
-            ? charging
-              ? widgets.heartRate.paused.descriptionCharging
-              : widgets.heartRate.paused.description
-            : ''
-        }
-      </span>
+      <span class="hr-paused-label" id="hrPausedLabel">{view.pausedLabel}</span>
+      <span class="hr-paused-desc" id="hrPausedDesc">{view.pausedDescription}</span>
     </div>
     {
       (
@@ -156,7 +116,7 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
                 class="ecg-canvas"
                 id="hrEcgCanvas"
                 data-bpm={showData && hr > 0 ? String(hr) : undefined}
-                data-hrv={showData && isReading(hrvRaw) ? String(hrv) : undefined}
+                data-hrv={showData && hasHrv ? String(hrv) : undefined}
                 data-stroke={showData ? state.ecgStroke : undefined}
                 width="400"
                 height="120"
@@ -197,9 +157,7 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
                 <span
                   class="hr-hrv-value"
                   id="hrHrvValue"
-                  style={
-                    isReading(hrvRaw) ? `color: ${hrvColor}; text-shadow: ${hrvShadow}` : undefined
-                  }
+                  style={hasHrv ? `color: ${hrvColor}; text-shadow: ${hrvShadow}` : undefined}
                 >
                   {fmtHrv}
                 </span>
@@ -240,13 +198,14 @@ const fmtTemp = slot(formatTempDelta(q?.wristTemperatureDelta?.value));
 </div>
 
 <style>
-  .hr-empty {
+  /* Global: updateHeartRate writes the empty notice (heartRateEmptyHtml). */
+  :global(.hr-empty) {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: var(--space-48);
   }
-  .hr-empty-label {
+  :global(.hr-empty-label) {
     font-size: var(--font-size-sm);
     color: var(--text-muted);
     letter-spacing: 1px;

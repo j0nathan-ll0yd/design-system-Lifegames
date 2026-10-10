@@ -531,3 +531,12 @@ packages/copy/dist/profile.ts:marker:j0nathan-ll0yd
 packages/copy/dist/profile.zod.ts:marker:j0nathan-ll0yd
 packages/copy/schema/profile.schema.json:marker:j0nathan-ll0yd
 packages/fixtures/tests/profile-from-copy.test.ts:marker:j0nathan-ll0yd
+# Atlas decision 0160, website PR 0a browser gaps: the shared views, markup and
+# freshness tests import @j0nathan-ll0yd/copy, and the changeset names the
+# @j0nathan-ll0yd/web package it releases. The marker is the mandated GitHub
+# Packages namespace, a public distribution scope, not personal data.
+packages/web/src/runtime/widget-markup.ts:marker:j0nathan-ll0yd
+packages/web/src/runtime/widget-views.ts:marker:j0nathan-ll0yd
+packages/web/tests/runtime/freshness.test.ts:marker:j0nathan-ll0yd
+packages/web/tests/server-render/client-gaps.test.ts:marker:j0nathan-ll0yd
+.changeset/web-client-honest-states.md:marker:j0nathan-ll0yd

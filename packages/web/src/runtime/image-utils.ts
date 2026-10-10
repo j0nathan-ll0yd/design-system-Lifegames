@@ -177,3 +177,38 @@ export function pictureWithAvif(opts: {avifSrcset: string | null; imgAttrs: stri
   }
   return '<img ' + opts.imgAttrs + '>'
 }
+
+/**
+ * Bookshelf's mirrored-cover rule, shared by `Bookshelf.astro` and
+ * `updateBookshelf`. A contract cover URL renders from the same origin only
+ * when its localized path (`/images/...`, see localizeImageUrl) is EXACTLY one
+ * of the consumer's mirrored cover paths. The match is on the URL path as it
+ * appears in the contract URL, percent-encoding included: nothing is decoded
+ * or guessed. The query and fragment are not part of the path and do not take
+ * part in the match; the version token lives in the file name, so an
+ * outdated mirrored file never stands in for a new version. A candidate that
+ * does not localize to a same-origin `/images/` path (a non-CloudFront host,
+ * a same-origin absolute URL) never matches. Returns the same-origin URL, or
+ * null (the caller keeps the contract URL and its W6 fallback).
+ */
+export function mirroredCoverUrl(candidate: string | null | undefined, mirrored: ReadonlySet<string>, options: ImageSanitizerOptions = {}): string | null {
+  if (!candidate || mirrored.size === 0) {
+    return null
+  }
+  const localized = localizeImageUrl(candidate, {...options, onReject: 'omit'})
+  if (!localized || !localized.startsWith('/images/')) {
+    return null
+  }
+  const path = localized.split(/[?#]/, 1)[0] ?? ''
+  return mirrored.has(path) ? localized : null
+}
+
+/** The mirrored cover paths a Bookshelf card carries (`data-local-covers`); empty when absent or malformed. */
+export function parseLocalCovers(value: string | null | undefined): ReadonlySet<string> {
+  try {
+    const parsed: unknown = JSON.parse(value || '[]')
+    return new Set(Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === 'string') : [])
+  } catch {
+    return new Set()
+  }
+}

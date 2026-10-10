@@ -1,38 +1,15 @@
 // Movement Rings widget + Heart Rate footer-vitals strip updaters.
 // Live-data dispatcher (live-data.ts) calls these from its `health` branch.
-import {a11y, widgets} from '@j0nathan-ll0yd/copy'
+import {widgets} from '@j0nathan-ll0yd/copy'
 import type {AdaptedHealth} from './adapters'
+import type {Freshness} from './freshness'
+import {esc} from './html-utils'
+import {insertStateNotice} from '../internal/card-state'
 import {isSuppressedCard, revealLiveData} from './updater-empty'
-import {formatPositiveVital, formatTempDelta, isMovementEmpty, standHoursFrom} from './widget-rules'
-import {formatMeasurement, NO_READING} from './widget-state'
-
-// Default goals — kept in sync with MovementRings.astro SSR defaults.
-const DEFAULT_MOVE_KCAL = 500
-const DEFAULT_EXERCISE_MIN = 30
-const DEFAULT_STAND_HR = 12
-const DEFAULT_DAYLIGHT_MIN = 20
-
-// SVG ring geometry — mirrors MovementRings.astro SSR (r=60/44/28).
-const RING_RADII = {move: 60, exercise: 44, stand: 28} as const
-
-function circumference(radius: number): number {
-  return 2 * Math.PI * radius
-}
-
-function offset(circ: number, pct: number): number {
-  const visual = Math.min(1, Math.max(0, pct))
-  return circ * (1 - visual)
-}
-
-function setRingProgress(id: string, radius: number, pct: number): void {
-  const el = document.getElementById(id)
-  if (!el) {
-    return
-  }
-  const circ = circumference(radius)
-  el.setAttribute('stroke-dasharray', circ.toFixed(2))
-  el.setAttribute('stroke-dashoffset', offset(circ, pct).toFixed(2))
-}
+import {movementEmptyHtml} from './widget-markup'
+import {writeHeartRateFooter} from '../internal/heart-rate-footer'
+import {heartRateView, movementView, type RingStroke} from './widget-views'
+import type {MovementRingsProps} from '../widgets/health/MovementRings.types'
 
 function setText(id: string, text: string): void {
   const el = document.getElementById(id)
@@ -41,168 +18,109 @@ function setText(id: string, text: string): void {
   }
 }
 
-// The ring group's accessible name, composed from the same `a11y.movement.rings`
-// template the SSR path uses (MovementRings.astro), so the two cannot drift.
-// Percentages are unclamped to match it: the centre readout clamps to 100%
-// because a ring cannot overdraw, but the ANNOUNCED value stays truthful at 107%.
-// A ring whose measurement the export did not carry reads "no reading".
-function ringsLabel(move: number | null, exercise: number | null, stand: number | null): string {
-  const pct = (fraction: number | null): string => (fraction == null ? widgets.widgetState.noReading : Math.round(fraction * 100) + '%')
-  return a11y.movement.rings.replace('{calories}%', pct(move)).replace('{exercise}%', pct(exercise)).replace('{stand}%', pct(stand))
+function setRing(id: string, stroke: RingStroke): void {
+  const el = document.getElementById(id)
+  if (el) {
+    el.setAttribute('stroke-dasharray', stroke.dasharray)
+    el.setAttribute('stroke-dashoffset', stroke.dashoffset)
+  }
+}
+
+/** MovementRings' props from adapter output and the export's freshness. */
+function movementProps(data: AdaptedHealth, freshness: Freshness | undefined): MovementRingsProps {
+  return {
+    state: freshness?.state,
+    generatedAt: freshness?.generatedAt,
+    health: {quantities: data.quantities, goals: data.goals, solar: data.solar, watch: data.watch}
+  }
 }
 
 /**
- * Update MovementRings widget (cardMovement) from AdaptedHealth.
- * Reads stepCount / distanceWalkingRunning / flightsClimbed,
- * activeEnergyBurned / exerciseTime / standTime; normalises Stand
- * min -> hr if HealthKit shipped minutes; computes ring progress
- * fractions against the server-synced goals (fallback: SSR defaults)
- * and applies via stroke-dashoffset. Also refreshes the daylight
- * caption (+ goal-met badge) and the solar sun-arc footer.
+ * Update MovementRings (cardMovement) from adapter output. The card takes the
+ * state and every slot the server renders for the same input (movementView):
+ * a paused watch keeps the data state with the paused copy and no value; no
+ * movement measured, or every measurement a recorded zero, is `empty`;
+ * otherwise the data state (`live`, or `stale` from `freshness`) with the
+ * rings against the server-synced goals (defaults until the first sync), the
+ * chips, the legend, the daylight caption and the sun-arc footer. A missing
+ * measurement reads as no reading, never 0. `freshness` is the health
+ * export's; omitted, the card records `live`.
  */
-export function updateMovementRings(data: AdaptedHealth): void {
+export function updateMovementRings(data: AdaptedHealth, freshness?: Freshness): void {
   const card = document.getElementById('cardMovement')
-  if (!card) {
-    return
-  }
   // A suppressed card stays suppressed: only the focus gate releases it.
-  if (isSuppressedCard(card)) {
+  if (!card || isSuppressedCard(card)) {
     return
   }
-  // Empty (no movement measured, or every measurement a recorded zero): a card
-  // the server rendered empty keeps its empty notice; nothing is revealed.
-  if (isMovementEmpty({quantities: data.quantities}) && card.querySelector('[data-state-notice="empty"]')) {
-    card.classList.remove('is-loading')
-    return
+  const view = movementView(movementProps(data, freshness))
+  if (view.isEmpty) {
+    revealLiveData(card, 'empty')
+    // The server's empty notice sits after the skeleton, before the paused block.
+    insertStateNotice(card, movementEmptyHtml())
+  } else {
+    revealLiveData(card, view.state === 'stale' ? 'stale' : 'live', {generatedAt: freshness?.generatedAt})
   }
-  revealLiveData(card)
+  card.querySelectorAll<HTMLElement>('[data-state-scaffold]').forEach((s) => {
+    s.hidden = view.scaffoldHidden
+  })
+  // CSS controls the paused block: .is-paused hides .mv-data and shows .mv-paused.
+  card.classList.toggle('is-paused', view.paused)
+  setText('mvPausedLabel', view.pausedLabel)
+  setText('mvPausedDesc', view.pausedDescription)
 
-  // Paused state: watch worn=false means the watch is off wrist or charging.
-  // CSS controls visibility: is-paused on the card hides .mv-data and shows .mv-paused.
-  // We still remove is-loading (D-SMOKE: hydration must complete regardless).
-  // Update copy in case source (charging vs hrGap) changes on re-poll.
-  const isPaused = data.watch?.worn === false
-  const isCharging = data.watch?.source === 'charging'
+  setRing('ringMove', view.rings.move)
+  setRing('ringExercise', view.rings.exercise)
+  setRing('ringStand', view.rings.stand)
+  setText('ringCenterPct', view.centerText)
 
-  if (isPaused) {
-    const labelEl = document.getElementById('mvPausedLabel')
-    if (labelEl) {
-      labelEl.textContent = isCharging
-        ? widgets.movement.paused.labelCharging
-        : widgets.movement.paused.label
-    }
-    const descEl = document.getElementById('mvPausedDesc')
-    if (descEl) {
-      descEl.textContent = isCharging
-        ? widgets.movement.paused.descriptionCharging
-        : widgets.movement.paused.description
-    }
-    card.classList.add('is-paused')
-    card.classList.remove('is-loading')
-    return
-  }
-
-  // Not paused — remove is-paused so CSS reveals the data content (recovery path).
-  card.classList.remove('is-paused')
-
-  const q = data.quantities
-
-  // Goals — server-synced values from health.json's `goals` object. The object is
-  // absent on legacy payloads and each field is null until the device's first
-  // goals sync, so fall back per-field to the SSR defaults.
-  const goals = {
-    moveKcal: data.goals?.moveKcal ?? DEFAULT_MOVE_KCAL,
-    exerciseMin: data.goals?.exerciseMin ?? DEFAULT_EXERCISE_MIN,
-    standHr: data.goals?.standHr ?? DEFAULT_STAND_HR,
-    daylightMin: data.goals?.daylightMin ?? DEFAULT_DAYLIGHT_MIN
-  }
-
-  // A quantity the export did not carry is null — no reading, never 0.
-  const round = (v: number | undefined): number | null => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v) : null)
-  const moveVal = round(q.activeEnergyBurned?.value)
-  const exerciseVal = round(q.exerciseTime?.value)
-
-  // Stand: prefer the achieved ring count (`standHours`, synced from
-  // HKActivitySummary — the watch ring's own metric). Legacy payloads without
-  // it fall back to standTime, where HealthKit ships minutes and the UI shows
-  // hours (an approximation: minutes stood ≠ hours credited).
-  const standHours = standHoursFrom(q.standHours, q.standTime)
-
-  const frac = (v: number | null, goal: number): number | null => (v == null ? null : goal > 0 ? v / goal : 0)
-  const movePct = frac(moveVal, goals.moveKcal)
-  const exercisePct = frac(exerciseVal, goals.exerciseMin)
-  const standPct = frac(standHours, goals.standHr)
-
-  setRingProgress('ringMove', RING_RADII.move, movePct ?? 0)
-  setRingProgress('ringExercise', RING_RADII.exercise, exercisePct ?? 0)
-  setRingProgress('ringStand', RING_RADII.stand, standPct ?? 0)
-
-  setText('ringCenterPct', movePct == null ? NO_READING : Math.round(Math.min(movePct, 1) * 100) + '%')
-
-  // The ring group's accessible name carries the same three percentages the rings
-  // draw, and it is the ONLY place a screen reader hears them. On an `output: 'static'`
-  // consumer the SSR label is frozen at BUILD time while these rings repaint on every
-  // poll, so leaving it alone announces stale numbers over live rings — worse than no
-  // name at all, because it is confidently wrong.
-  //
-  // Not needed on the paused path above: `#cardMovement.is-paused .mv-data` is
-  // `display: none`, so the rings leave the accessibility tree entirely.
+  // The ring group's accessible name carries the same three percentages the
+  // rings draw; a card that shows no value hides the value-free rings.
   const ringsSvg = card.querySelector('.mv-rings svg[role="img"]')
   if (ringsSvg) {
-    ringsSvg.setAttribute('aria-label', ringsLabel(movePct, exercisePct, standPct))
-    // The server hides the value-free rings from assistive tech; live values name them.
-    ringsSvg.removeAttribute('aria-hidden')
+    if (view.ringsLabel != null) {
+      ringsSvg.setAttribute('aria-label', view.ringsLabel)
+      ringsSvg.removeAttribute('aria-hidden')
+    } else {
+      ringsSvg.removeAttribute('aria-label')
+      ringsSvg.setAttribute('aria-hidden', 'true')
+    }
   }
-
-  // Chips: steps · distance · flights
-  const steps = round(q.stepCount?.value)
-  const distanceM = q.distanceWalkingRunning?.value
-  const flights = round(q.flightsClimbed?.value)
 
   const stepsEl = card.querySelector<HTMLElement>('[data-mv-metric="steps"]')
   if (stepsEl) {
-    stepsEl.textContent = formatMeasurement(steps, (n) => n.toLocaleString('en-US'))
+    stepsEl.textContent = view.stepsText
   }
-
   const distEl = card.querySelector<HTMLElement>('[data-mv-metric="distance"]')
   if (distEl) {
-    // Preserve the trailing unit span when we rewrite the value
-    distEl.innerHTML = formatMeasurement(distanceM, (n) => (n / 1000).toFixed(1)) + '<span class="mv-chip-unit">km</span>'
+    // Keep the trailing unit span when the value is rewritten.
+    distEl.innerHTML = esc(view.distanceText) + '<span class="mv-chip-unit">' + esc(widgets.movement.distanceUnit) + '</span>'
   }
-
   const flightsEl = card.querySelector<HTMLElement>('[data-mv-metric="flights"]')
   if (flightsEl) {
-    flightsEl.textContent = formatMeasurement(flights)
+    flightsEl.textContent = view.flightsText
   }
 
-  // Legend totals (goals are configuration; the measurement may be no reading)
-  setText('legendMove', formatMeasurement(moveVal) + '/' + goals.moveKcal)
-  setText('legendExercise', formatMeasurement(exerciseVal) + '/' + goals.exerciseMin)
-  setText('legendStand', formatMeasurement(standHours) + '/' + goals.standHr)
+  setText('legendMove', view.legendMove)
+  setText('legendExercise', view.legendExercise)
+  setText('legendStand', view.legendStand)
 
-  // Daylight caption — an absent timeInDaylight quantity is no reading, never 0.
-  const daylightMin = round(q.timeInDaylight?.value)
-  setText('mvDaylightMin', formatMeasurement(daylightMin))
+  setText('mvDaylightMin', view.daylightText)
+  setText('mvDaylightGoal', widgets.movement.daylightGoal.replace('{minutes}', String(view.goals.daylightMin)))
   const daylightHitEl = document.getElementById('mvDaylightHit')
   if (daylightHitEl) {
-    daylightHitEl.hidden = daylightMin == null || daylightMin < goals.daylightMin
+    daylightHitEl.hidden = !view.daylightHit
   }
 
-  // Sun-arc footer — solar facts are server-computed. When absent, nothing is
-  // invented: the times read as no reading and the sun dot is hidden.
+  // Sun-arc footer: solar facts are server-computed; absent solar draws no dot.
+  setText('mvSunrise', view.sunrise)
+  setText('mvSunset', view.sunset)
   const sunDot = document.getElementById('mvSunDot')
-  if (data.solar) {
-    setText('mvSunrise', data.solar.sunriseHHmm)
-    setText('mvSunset', data.solar.sunsetHHmm)
-    if (sunDot) {
-      const pct = Math.min(100, Math.max(0, data.solar.currentProgressPct))
-      sunDot.style.left = pct + '%'
+  if (sunDot) {
+    if (view.sunPct != null) {
+      sunDot.style.left = view.sunPct + '%'
       sunDot.style.display = ''
-    }
-  } else {
-    setText('mvSunrise', NO_READING)
-    setText('mvSunset', NO_READING)
-    if (sunDot) {
+    } else {
+      sunDot.style.left = ''
       sunDot.style.display = 'none'
     }
   }
@@ -211,33 +129,17 @@ export function updateMovementRings(data: AdaptedHealth): void {
 }
 
 /**
- * Update the HeartRate widget's 3-up footer vitals strip
- * (RHR · RR · Temp). Renders '—' when a field is absent or zero.
+ * Update the HeartRate widget's 3-up footer vitals strip (RHR · RR · Temp)
+ * with the slots the server renders for the same input (heartRateView): the
+ * reading or '—', and nothing while the card shows no value (paused, empty,
+ * unavailable). `freshness` is the health export's.
  */
-export function updateHeartRateFooter(data: AdaptedHealth): void {
+export function updateHeartRateFooter(data: AdaptedHealth, freshness?: Freshness): void {
   // A suppressed card stays suppressed: only the focus gate releases it.
   if (isSuppressedCard(document.getElementById('cardHR'))) {
     return
   }
-  const q = data.quantities
-
-  // Unit spans are static siblings in the DOM — only update the value text.
-  // Shared with HeartRate.astro, so server and client format the same.
-  const fmtRhr = formatPositiveVital(q.restingHeartRate?.value)
-  const rhrEl = document.getElementById('hrFooterRhr')
-  if (rhrEl) {
-    rhrEl.textContent = fmtRhr
-  }
-
-  const fmtRr = formatPositiveVital(q.respiratoryRate?.value)
-  const rrEl = document.getElementById('hrFooterRr')
-  if (rrEl) {
-    rrEl.textContent = fmtRr
-  }
-
-  const fmtTemp = formatTempDelta(q.wristTemperatureDelta?.value)
-  const tempEl = document.getElementById('hrFooterTemp')
-  if (tempEl) {
-    tempEl.textContent = fmtTemp
-  }
+  writeHeartRateFooter(
+    heartRateView({state: freshness?.state, generatedAt: freshness?.generatedAt, health: {quantities: data.quantities, watch: data.watch}})
+  )
 }

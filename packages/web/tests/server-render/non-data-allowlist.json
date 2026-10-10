@@ -3,7 +3,8 @@
     "Review M01 (adversarial review of the 0160 wave): every attribute a live widget may carry in a NON-DATA state (unavailable, suppressed, loading, empty), as \"<tag> <name>=<value>\".",
     "A pair under \"all\" is permitted in all four states; a pair under a state name only in that state. tests/server-render/states.test.ts fails on any attribute outside this list, and on any entry no render uses.",
     "This list is the reviewed reference, independent of the render under test: a new carrier fails until it is added here by hand, where the diff shows it. Never add a value from an export. The dev-only data-astro-* annotations are not listed.",
-    "Recorded at the 0160 review fix from the data-free renders and reviewed by hand: it holds structure, copy-free chrome, skeleton geometry and the state markers only."
+    "Recorded at the 0160 review fix from the data-free renders and reviewed by hand: it holds structure, copy-free chrome, skeleton geometry and the state markers only.",
+    "Bookshelf's data-local-covers is consumer build configuration, not export data: the site's mirrored cover paths, the same in every state. states.test.ts passes a manifest-form path (MIRRORED_COVERS), so the gate sees the attribute in every non-data state."
   ],
   "widgets": {
     "HeartRate": {
@@ -228,6 +229,7 @@
         "span id=legendExercise",
         "span id=legendMove",
         "span id=legendStand",
+        "span id=mvDaylightGoal",
         "span id=mvDaylightHit",
         "span id=mvDaylightMin",
         "span id=mvPausedDesc",
@@ -692,6 +694,7 @@
     },
     "Bookshelf": {
       "all": [
+        "div data-local-covers=[\"/images/books/080413717X-00d8d9c74e41f9c468de2699-card.webp\"]",
         "div class=live-dot",
         "div class=skeleton-bar",
         "div class=skeleton-state",

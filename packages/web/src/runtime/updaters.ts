@@ -1,15 +1,19 @@
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
-import {classifyHeartRate, classifyHRV} from './heart-rate'
-import {HYDRATION} from './constants'
 import {withViewTransition} from './view-transition'
 import type {AdaptedArticle, AdaptedBooks, AdaptedGithubEvent, AdaptedHealth, AdaptedSleep, AdaptedStarredRepo, BookMeta, WorkoutEntry} from './adapters'
 import {LANG_COLORS} from './constants'
 import type {LocationExport} from './location-types'
-import {imgFallbackAttrs, installImageFallbacks, localizeImageUrl, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
+import {imgFallbackAttrs, installImageFallbacks, mirroredCoverUrl, parseLocalCovers, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
+import {enterUnavailable, insertStateNotice} from '../internal/card-state'
+import {writeHeartRateFooter} from '../internal/heart-rate-footer'
 import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
+import type {Freshness} from './freshness'
+import {heartRateEmptyHtml, hydrationRangeHtml} from './widget-markup'
+import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
+import type {HeartRateProps} from '../widgets/health/HeartRate.types'
 import {composeSystemLines, formatAge} from './view-models'
-import {formatMeasurement, formatMonthYear, NO_READING} from './widget-state'
-import {formatHrv, formatPositiveVital, formatWorkoutDuration} from './widget-rules'
+import {formatMeasurement, formatMonthYear} from './widget-state'
+import {formatWorkoutDuration} from './widget-rules'
 import {workoutsRestHtml} from './workouts-markup'
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -47,101 +51,113 @@ const ACCENT_CLASSES = [
 import {esc, safeHttpsUrl} from './html-utils'
 export { esc }
 
-export function updateHeartRate(data: AdaptedHealth): void {
-  // Guard the quantity access: on an empty dashboard `quantities` is `{}`, so
-  // heartRate/hrvSDNN are absent. Unguarded `.value` here would throw and abort
-  // the whole health update chain (movement + hydration never run, leaving their
-  // SSR baseline). Absent data renders the no-data dash, matching the footer.
-  const hrRaw = data.quantities.heartRate?.value
-  const hrvRaw = data.quantities.hrvSDNN?.value
-  const hr = typeof hrRaw === 'number' ? Math.round(hrRaw) : 0
-  const hrv = typeof hrvRaw === 'number' ? Math.round(hrvRaw) : 0
-  const hasHr = hr > 0
-  const zone = classifyHeartRate(hr)
-  const hrvStyle = classifyHRV(hrv)
+/** HeartRate's props from adapter output and the export's freshness. */
+function heartRateProps(data: AdaptedHealth, freshness: Freshness | undefined): HeartRateProps {
+  return {state: freshness?.state, generatedAt: freshness?.generatedAt, health: {quantities: data.quantities, watch: data.watch}}
+}
 
-  const card = document.getElementById('cardHR')
-  // A suppressed card stays suppressed: only the focus gate releases it.
-  if (isSuppressedCard(card)) {
-    return
+/** Drop a style attribute left empty after its colours were cleared (the server renders none). */
+function dropEmptyStyle(el: HTMLElement): void {
+  if (!el.getAttribute('style')) {
+    el.removeAttribute('style')
   }
-  // Without a heart-rate measurement the server renders unavailable, and a
-  // recorded 0 renders empty; the client does not claim live for either.
-  if (typeof hrRaw === 'number' && hrRaw > 0) {
-    revealLiveData(card)
-  }
+}
 
-  // Paused state: watch worn=false means the watch is off wrist or charging.
-  // CSS controls visibility: is-paused on the card hides .hr-data and shows .hr-paused.
-  // We still remove is-loading (D-SMOKE: hydration must complete regardless).
-  // Update copy in case source (charging vs hrGap) changes on re-poll.
-  const isCharging = data.watch?.source === 'charging'
-  const isPaused = data.watch?.worn === false
-
-  if (isPaused) {
-    const labelEl = document.getElementById('hrPausedLabel')
-    if (labelEl) {
-      labelEl.textContent = isCharging
-        ? widgets.heartRate.paused.labelCharging
-        : widgets.heartRate.paused.label
-    }
-    const descEl = document.getElementById('hrPausedDesc')
-    if (descEl) {
-      descEl.textContent = isCharging
-        ? widgets.heartRate.paused.descriptionCharging
-        : widgets.heartRate.paused.description
-    }
-    card?.classList.add('is-paused')
-    card?.classList.remove('is-loading')
-    return
-  }
-
-  // Not paused — remove is-paused so CSS reveals the data content (recovery path).
-  card?.classList.remove('is-paused')
-
+/** Write HeartRate's value slots from its view: a reading, the no-reading mark, or ''. */
+function writeHeartRateSlots(card: HTMLElement, view: HeartRateView): void {
+  const {zone, showData} = view
+  const hasHr = view.hr > 0
   const bpm = document.getElementById('pulseBpm')
   if (bpm) {
-    bpm.textContent = formatPositiveVital(hrRaw)
+    bpm.textContent = view.bpmText
     // A zone colour belongs to a reading; no reading carries none.
     bpm.style.color = hasHr ? zone.bpmColor : ''
     bpm.style.textShadow = hasHr ? zone.bpmShadow : ''
+    dropEmptyStyle(bpm)
   }
-
   const badge = document.getElementById('hrZoneBadge')
   if (badge) {
-    badge.textContent = hasHr ? zone.zone : NO_READING
+    badge.textContent = view.zoneText
     badge.style.color = hasHr ? zone.badgeColor : ''
     badge.style.background = hasHr ? zone.badgeBg : ''
     badge.style.border = hasHr ? '1px solid ' + zone.badgeBorder : ''
+    dropEmptyStyle(badge)
   }
-
   const hrvEl = document.getElementById('hrHrvValue')
   if (hrvEl) {
-    hrvEl.textContent = formatHrv(hrvRaw)
-    const hasHrv = typeof hrvRaw === 'number' && Number.isFinite(hrvRaw)
-    hrvEl.style.color = hasHrv ? hrvStyle.color : ''
-    hrvEl.style.textShadow = hasHrv ? hrvStyle.shadow : ''
+    hrvEl.textContent = view.hrvText
+    hrvEl.style.color = view.hasHrv ? view.hrvColor.color : ''
+    hrvEl.style.textShadow = view.hasHrv ? view.hrvColor.shadow : ''
+    dropEmptyStyle(hrvEl)
   }
-
-  // Update canvas ECG parameters
-  const ecgUpdate = (window as any).__ecgUpdate
-  if (typeof ecgUpdate === 'function') {
-    ecgUpdate(hr, hrv, zone.ecgStroke)
+  writeHeartRateFooter(view)
+  const labelEl = document.getElementById('hrPausedLabel')
+  if (labelEl) {
+    labelEl.textContent = view.pausedLabel
   }
-
+  const descEl = document.getElementById('hrPausedDesc')
+  if (descEl) {
+    descEl.textContent = view.pausedDescription
+  }
+  // CSS controls the paused block: .is-paused hides .hr-data and shows .hr-paused.
+  card.classList.toggle('is-paused', view.paused)
+  if (showData) {
+    // Update canvas ECG parameters
+    const ecgUpdate = (window as any).__ecgUpdate
+    if (typeof ecgUpdate === 'function') {
+      ecgUpdate(view.hr, view.hrv, zone.ecgStroke)
+    }
+  }
   const ecgBg = document.getElementById('hrEcgBg')
   if (ecgBg) {
     ecgBg.style.opacity = String(zone.ecgOpacity)
   }
-
-  if (card) {
-    card.classList.remove(...ACCENT_CLASSES)
-    card.classList.add(zone.accentClass)
-    card.classList.remove('is-loading')
+  card.classList.remove(...ACCENT_CLASSES)
+  card.classList.add(zone.accentClass)
+  // The header dot carries the zone's colour, as the server renders it.
+  const dot = card.querySelector('.widget-header .live-dot')
+  if (dot) {
+    dot.className = 'live-dot ' + zone.dotClass
   }
 }
 
-export function updateWorkouts(data: WorkoutEntry[] | null | undefined): void {
+/**
+ * Update HeartRate (cardHR) from adapter output. The card takes the state the
+ * server renders for the same input (heartRateView, heartRateState):
+ *   - a readable export with no heart rate: `unavailable` (notice, no value);
+ *   - no quantity at all, or a recorded 0: `empty` (widgets.heartRate.empty);
+ *   - a paused watch (off the wrist or charging): the data state, the paused
+ *     copy and no value;
+ *   - otherwise the data state (`live`, or `stale` from `freshness`).
+ * `freshness` is the health export's (exportFreshness('health', export));
+ * omitted, the card records `live` with no timestamp.
+ */
+export function updateHeartRate(data: AdaptedHealth, freshness?: Freshness): void {
+  const card = document.getElementById('cardHR')
+  // A suppressed card stays suppressed: only the focus gate releases it.
+  if (!card || isSuppressedCard(card)) {
+    return
+  }
+  const view = heartRateView(heartRateProps(data, freshness))
+  writeHeartRateSlots(card, view)
+  if (view.state === 'unavailable') {
+    enterUnavailable(card)
+    return
+  }
+  if (view.state === 'empty') {
+    revealLiveData(card, 'empty')
+    // The server's empty notice sits after the skeleton, before the paused block.
+    insertStateNotice(card, heartRateEmptyHtml())
+  } else {
+    revealLiveData(card, view.state === 'stale' ? 'stale' : 'live', {generatedAt: freshness?.generatedAt})
+  }
+  card.querySelectorAll<HTMLElement>('[data-state-scaffold]').forEach((s) => {
+    s.hidden = view.scaffoldHidden
+  })
+  card.classList.remove('is-loading')
+}
+
+export function updateWorkouts(data: WorkoutEntry[] | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardWorkouts')
   if (!card) {
     return
@@ -171,7 +187,7 @@ export function updateWorkouts(data: WorkoutEntry[] | null | undefined): void {
     card.classList.remove('is-loading')
     return
   }
-  revealLiveData(card)
+  revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
 
   // Shared with Workouts.astro, so server and client format the same.
   const fmtDuration = formatWorkoutDuration
@@ -222,149 +238,120 @@ export function updateWorkouts(data: WorkoutEntry[] | null | undefined): void {
   })
 
   body.innerHTML = html
+  card.classList.remove('is-loading')
 }
 
-export function updateNightSummary(data: AdaptedSleep): void {
+/**
+ * Update NightSummary (cardSleep) from adapter output. The card follows the
+ * sleep export alone (owner decision Q3): `freshness` is the SLEEP export's
+ * (exportFreshness('sleep', sleep)). The health export lends only the score,
+ * and only while live: build `data` with
+ * adaptSleep(sleep, sleepScoreSource(health, exportDomainState('health', health).state)).
+ * Zero recorded sleep is `empty`. Omitting `freshness` records `live`.
+ */
+export function updateNightSummary(data: AdaptedSleep, freshness?: Freshness): void {
   const card = document.getElementById('cardSleep')
   // A suppressed card stays suppressed: only the focus gate releases it.
-  if (isSuppressedCard(card)) {
+  if (!card || isSuppressedCard(card)) {
     return
   }
-  revealLiveData(card, data.isEmpty ? 'empty' : 'live')
-  if (data.isEmpty) {
-    const duration = document.getElementById('sleepDuration')
-    if (duration) {
-      duration.textContent = '--'
-    }
-
-    const scoreVal = document.getElementById('sleepScoreVal')
-    if (scoreVal) {
-      scoreVal.textContent = '--'
-    }
-
-    const scoreFill = document.getElementById('sleepScoreFill') as HTMLElement | null
-    if (scoreFill) {
-      scoreFill.style.width = '0%'
-    }
-
-    const phases = ['deep', 'rem', 'core', 'awake']
-    phases.forEach((phase) => {
-      const pill = document.querySelector(`[data-phase="${phase}"]`)
-      if (pill) {
-        const val = pill.querySelector('.sleep-moon-pill-val')
-        if (val) {
-          val.textContent = '--'
-        }
-      }
-    })
-
-    const insight = document.getElementById('sleepInsight')
-    if (insight) {
-      insight.innerHTML = `<span class="sleep-insight-empty">${widgets.nightSummary.empty}</span>`
-    }
-
-    const timestamp = document.getElementById('sleepTimestamp')
-    if (timestamp) {
-      timestamp.textContent = 'no data'
-    }
-
-    document.getElementById('cardSleep')?.classList.remove('is-loading')
-    return
+  const view = nightSummaryView({state: freshness?.state, generatedAt: freshness?.generatedAt, health: toNightSummaryHealth(data)})
+  if (view.state === 'empty') {
+    revealLiveData(card, 'empty')
+  } else {
+    revealLiveData(card, view.state === 'stale' ? 'stale' : 'live', {generatedAt: freshness?.generatedAt})
   }
 
   const duration = document.getElementById('sleepDuration')
   if (duration) {
-    // '' is a total the export did not carry (a missing stage): no reading.
-    duration.textContent = data.sleepDurationFormatted || NO_READING
+    duration.textContent = view.durationText
   }
-
   const scoreVal = document.getElementById('sleepScoreVal')
   if (scoreVal) {
     // A score the health export did not carry is no reading, never 0.
-    scoreVal.textContent = formatMeasurement(data.sleepScore)
+    scoreVal.textContent = view.scoreText
   }
-
   const scoreFill = document.getElementById('sleepScoreFill') as HTMLElement | null
   if (scoreFill) {
-    scoreFill.style.width = (data.sleepScore ?? 0) + '%'
+    scoreFill.style.width = view.scoreWidth + '%'
   }
-
-  const phases = ['deep', 'rem', 'core', 'awake']
-  phases.forEach((phase) => {
-    const pill = document.querySelector(`[data-phase="${phase}"]`)
-    if (pill) {
-      const val = pill.querySelector('.sleep-moon-pill-val')
-      if (val) {
-        // '' marks a phase the export did not carry: no reading, never 0m.
-        val.textContent = data.sleepPhaseFormatted[phase] || NO_READING
-      }
+  SLEEP_PHASES.forEach((phase) => {
+    const val = card.querySelector(`[data-phase="${phase}"] .sleep-moon-pill-val`)
+    if (val) {
+      // '' marks a phase the export did not carry: no reading, never 0m.
+      val.textContent = view.phases[phase]
     }
   })
-
   const insight = document.getElementById('sleepInsight')
-  if (insight && (data.derived.deepPct == null || data.derived.remPct == null)) {
-    // Without both shares there is no caption: nothing is invented.
-    insight.innerHTML = ''
-  } else if (insight) {
-    // Source the words from copy; split the ICU template on the em-dash to keep
-    // the percentage clauses in their own styled <span>s (mirrors NightSummary.astro).
-    const clauses = widgets.nightSummary.restorative.split('—').map((c) => c.trim())
-    const deepClause = (clauses[0] ?? '').replace('{deep}', String(data.derived.deepPct))
-    const remClause = (clauses[1] ?? '').replace('{rem}', String(data.derived.remPct))
-    const tailClause = clauses[2] ?? ''
-    insight.innerHTML = '<span>' + deepClause + '</span> &mdash; <span>' + remClause + '</span> &mdash; ' + tailClause
+  if (insight) {
+    // The same markup NightSummary.astro renders for the empty notice and the caption.
+    insight.innerHTML = view.isEmpty
+      ? '<span class="sleep-insight-empty" data-state-notice="empty">' + esc(widgets.nightSummary.empty) + '</span>'
+      : view.caption
+      ? '<span>' + esc(view.caption.deep) + '</span> &mdash; <span>' + esc(view.caption.rem) + '</span> &mdash; ' + esc(view.caption.tail)
+      : ''
   }
-
-  const timestamp = document.getElementById('sleepTimestamp')
-  if (timestamp) {
-    timestamp.textContent = widgets.nightSummary.timestampLastNight
-  }
-
-  document.getElementById('cardSleep')?.classList.remove('is-loading')
+  card.classList.remove('is-loading')
 }
 
-export function updateHydration(data: AdaptedHealth): void {
+/**
+ * Update Hydration (cardHydration) from adapter output: the values, the
+ * liquid fill and the target-range bands the server renders for the same
+ * input (hydrationView). `freshness` is the health export's; omitted, the
+ * card records `live`.
+ */
+export function updateHydration(data: AdaptedHealth, freshness?: Freshness): void {
   const card = document.getElementById('cardHydration')
   // A suppressed card stays suppressed: only the focus gate releases it.
-  if (isSuppressedCard(card)) {
+  if (!card || isSuppressedCard(card)) {
     return
   }
-  revealLiveData(card)
+  const view = hydrationView({state: freshness?.state, generatedAt: freshness?.generatedAt, health: {hydration: data.hydration}})
+  if (view.state === 'empty') {
+    revealLiveData(card, 'empty')
+  } else {
+    revealLiveData(card, view.state === 'stale' ? 'stale' : 'live', {generatedAt: freshness?.generatedAt})
+  }
   // Measurements are null when the export did not carry them: the bar stays
   // empty and the value reads as no reading, never 0 (atlas decision 0160).
-  const waterOz = data.hydration.waterOz
-  const caffeineMg = data.hydration.caffeineMg
-
   const waterLiq = document.getElementById('hydraWaterLiq')
   if (waterLiq) {
-    const waterPct = waterOz != null ? Math.min(waterOz / HYDRATION.waterMax, 1) * 100 : 0
-    waterLiq.style.clipPath = 'inset(' + (100 - waterPct) + '% 0 0 0)'
+    waterLiq.style.clipPath = 'inset(' + (100 - view.waterPct) + '% 0 0 0)'
   }
-
   const waterVal = document.getElementById('hydraWaterVal') as HTMLElement | null
   if (waterVal) {
     waterVal.dataset.liveUpdated = '1'
-    waterVal.textContent = formatMeasurement(waterOz, (n) => n + ' oz')
+    waterVal.textContent = view.waterText
   }
-
   const coffeeLiq = document.getElementById('hydraCoffeeLiq')
   if (coffeeLiq) {
-    const caffeinePct = caffeineMg != null ? Math.min(caffeineMg / HYDRATION.caffeineMax, 1) * 100 : 0
-    coffeeLiq.style.clipPath = 'inset(' + (100 - caffeinePct) + '% 0 0 0)'
+    coffeeLiq.style.clipPath = 'inset(' + (100 - view.caffeinePct) + '% 0 0 0)'
   }
-
   const coffeeVal = document.getElementById('hydraCoffeeVal') as HTMLElement | null
   if (coffeeVal) {
     coffeeVal.dataset.liveUpdated = '1'
-    coffeeVal.textContent = formatMeasurement(caffeineMg, (n) => n + ' mg')
+    coffeeVal.textContent = view.caffeineText
   }
-
   const coffeeLabel = document.getElementById('hydraCoffeeLabel')
   if (coffeeLabel) {
     coffeeLabel.textContent = widgets.hydration.caffeine
   }
+  // The target-range bands: replaced on every update, drawn only with values.
+  writeHydrationBand(card.querySelector('.hydra-bottle-body'), 'water', view.waterBand)
+  writeHydrationBand(card.querySelector('.hydra-mug-body'), 'coffee', view.caffeineBand)
+  card.classList.remove('is-loading')
+}
 
-  document.getElementById('cardHydration')?.classList.remove('is-loading')
+/** Replace a vessel's band with the server's markup for `band` (none when null). */
+function writeHydrationBand(vessel: Element | null, kind: 'water' | 'coffee', band: RangeBand | null): void {
+  if (!vessel) {
+    return
+  }
+  vessel.querySelectorAll(':scope > .hydra-range').forEach((r) => r.remove())
+  if (band) {
+    // The server renders the band first in the vessel body, before the liquid.
+    vessel.insertAdjacentHTML('afterbegin', hydrationRangeHtml(kind, band))
+  }
 }
 
 /** A relative date in <time datetime> when its ISO source is known. */
@@ -374,7 +361,7 @@ function timeHtml(className: string, label: string, datetime: string | undefined
     : '<span class="' + className + '">' + esc(label) + '</span>'
 }
 
-export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undefined): void {
+export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardDevLog')
   if (!card) {
     return
@@ -398,7 +385,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undef
     renderWidgetEmpty('cardDevLog', {message: widgets.devLog.empty})
     return
   }
-  revealLiveData(card)
+  revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
 
   const iconMap: Record<string, {symbol: string; color: string}> = {
     commit: {symbol: '\u2192', color: 'var(--neon-green)'},
@@ -455,7 +442,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undef
   card.classList.remove('is-loading')
 }
 
-export function updateReadingFeed(input: AdaptedArticle[] | null | undefined): void {
+export function updateReadingFeed(input: AdaptedArticle[] | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardReading')
   if (!card) {
     return
@@ -481,7 +468,7 @@ export function updateReadingFeed(input: AdaptedArticle[] | null | undefined): v
     renderWidgetEmpty('cardReading', {message: widgets.readingFeed.empty})
     return
   }
-  revealLiveData(card)
+  revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
 
   const PAGE_SIZE = 10
   const totalPages = Math.ceil(articles.length / PAGE_SIZE)
@@ -713,47 +700,22 @@ export function formatRelativeTime(isoString: string, now: number = Date.now()):
   return formatAge(isoString, now)
 }
 
-const buildTimeLocalCoverCandidates = new WeakMap<Element, ReadonlySet<string>>()
-
-/** Capture the exact URLs with committed files before live updates mutate SSR. */
+/**
+ * The consumer's mirrored cover paths, from the card root's
+ * `data-local-covers` (Bookshelf.astro renders it in every state, loading
+ * included, from its `localCovers` prop).
+ */
 function localCoverCandidates(card: Element): ReadonlySet<string> {
-  const captured = buildTimeLocalCoverCandidates.get(card)
-  if (captured) {
-    return captured
-  }
-
-  const candidates = new Set<string>()
-  card.querySelectorAll<HTMLElement>('.shelf-book[data-local-cover]').forEach((book) => {
-    try {
-      const values: unknown = JSON.parse(book.dataset.localCover || '[]')
-      if (!Array.isArray(values)) {
-        return
-      }
-      values.forEach((value) => {
-        if (typeof value !== 'string') {
-          return
-        }
-        const sanitized = sanitizeImageUrl(value, {onReject: 'omit'})
-        if (sanitized) {
-          candidates.add(sanitized)
-        }
-      })
-    } catch {
-      // Malformed availability metadata means no candidate is assumed local.
-    }
-  })
-  buildTimeLocalCoverCandidates.set(card, candidates)
-  return candidates
+  return parseLocalCovers(card instanceof HTMLElement ? card.dataset.localCovers : null)
 }
 
+/** The cover URL to render: the same-origin mirror for an exact listed path, else the contract URL. */
 function displayCoverCandidate(candidate: string | null | undefined, localCandidates: ReadonlySet<string>): string | null {
   const sanitized = sanitizeImageUrl(candidate, {onReject: 'omit'})
   if (!sanitized) {
     return null
   }
-  return localCandidates.has(sanitized)
-    ? localizeImageUrl(sanitized, {onReject: 'omit'})
-    : sanitized
+  return mirroredCoverUrl(sanitized, localCandidates) ?? sanitized
 }
 
 /** One complete cover node, used by both updater branches for atomic swaps. */
@@ -784,7 +746,7 @@ function bookshelfCoverHtml(book: AdaptedBooks['books'][number], localCandidates
     : img
 }
 
-export function updateBookshelf(data: AdaptedBooks | null | undefined): void {
+export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardBooks')
   if (!card) {
     return
@@ -808,7 +770,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined): void {
     return
   }
 
-  revealLiveData(card)
+  revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
   let shelfRow = document.getElementById('dashShelfRow')
   if (!shelfRow) {
     const body = card.querySelector('.widget-body')
@@ -1039,7 +1001,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined): void {
   document.getElementById('cardBooks')?.classList.remove('is-loading')
 }
 
-export function updateStarredRepos(repos: AdaptedStarredRepo[] | null | undefined): void {
+export function updateStarredRepos(repos: AdaptedStarredRepo[] | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardStarredRepos')
   if (!card) {
     return
@@ -1066,7 +1028,7 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[] | null | undefine
   if (!body) {
     return
   }
-  revealLiveData(card)
+  revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
   let list = card.querySelector('.gh-starred-list')
   if (!list) {
     body.innerHTML = '<div class="gh-starred-list"></div>'

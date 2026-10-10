@@ -2,53 +2,25 @@
 import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
-import {
-  formatMeasurement,
-  isScaffoldHidden,
-  NO_READING,
-  rendersData,
-  stateRootAttrs,
-} from '../../runtime/widget-state';
-import { nightSummaryState } from '../../runtime/widget-rules';
+import { stateRootAttrs } from '../../runtime/widget-state';
+import { nightSummaryView } from '../../runtime/widget-views';
 import type { NightSummaryProps } from './NightSummary.types';
 
 const props = Astro.props as NightSummaryProps;
-const { health, generatedAt } = props;
-// One owner for the state: the same rule the view model applies. Zero
-// recorded sleep is the empty state (never "0h 0m" and a score of 0).
-const widgetState = nightSummaryState(props);
-const showData = rendersData(widgetState);
-const scaffoldHidden = isScaffoldHidden(widgetState);
-const isEmpty = widgetState === 'empty';
-
-const sleepScore = showData ? (health?.sleepScore ?? null) : null;
-const sleepDuration = showData ? (health?.sleepDurationFormatted ?? '') : '';
-const phases = showData ? health?.sleepPhaseFormatted : undefined;
-const deepPct = showData ? (health?.derived.deepPct ?? null) : null;
-const remPct = showData ? (health?.derived.remPct ?? null) : null;
-
-// The empty state mirrors updateNightSummary's empty branch ('--' marks and the
-// copy's empty line), so server and client render the same markup.
-const EMPTY_MARK = '--';
-const scoreText = isEmpty ? EMPTY_MARK : showData ? formatMeasurement(sleepScore) : '';
-const scoreWidth = sleepScore != null ? Math.min(Math.max(sleepScore, 0), 100) : 0;
-// '' is a total the export did not carry (a missing sleep stage): no reading.
-const durationText = isEmpty ? EMPTY_MARK : showData ? sleepDuration || NO_READING : '';
-const phaseText = (phase: 'deep' | 'rem' | 'core' | 'awake'): string =>
-  isEmpty ? EMPTY_MARK : showData ? phases?.[phase] || NO_READING : '';
-
-// Restorative-sleep caption (D2-A): source the ICU template from copy and
-// interpolate the deep/REM percentages. The template is em-dash separated:
-// "{deep}% deep — {rem}% REM — restorative sleep". We split on the em-dash so
-// the web keeps its <span>-wrapped (purple-highlighted) percentage clauses.
-// Without both percentages there is no caption: nothing is invented.
-const restorativeClauses = widgets.nightSummary.restorative
-  .split('—')
-  .map((clause) => clause.trim());
-const hasCaption = showData && deepPct != null && remPct != null;
-const restorativeDeepClause = (restorativeClauses[0] ?? '').replace('{deep}', String(deepPct));
-const restorativeRemClause = (restorativeClauses[1] ?? '').replace('{rem}', String(remPct));
-const restorativeTailClause = restorativeClauses[2] ?? '';
+const { generatedAt } = props;
+// One owner for the state and every slot: the view updateNightSummary writes
+// too. Zero recorded sleep is the empty state (never "0h 0m" and a score of 0).
+const view = nightSummaryView(props);
+const widgetState = view.state;
+const scaffoldHidden = view.scaffoldHidden;
+const isEmpty = view.isEmpty;
+const durationText = view.durationText;
+const scoreText = view.scoreText;
+const scoreWidth = view.scoreWidth;
+const phaseText = (phase: 'deep' | 'rem' | 'core' | 'awake'): string => view.phases[phase];
+// Restorative-sleep caption (D2-A): clauses from the copy template, kept in
+// their own <span>s. Without both percentages there is no caption.
+const caption = view.caption;
 
 const pills = [
   {
@@ -180,10 +152,9 @@ const pills = [
           <span class="sleep-insight-empty" data-state-notice="empty">
             {widgets.nightSummary.empty}
           </span>
-        ) : hasCaption ? (
+        ) : caption ? (
           <>
-            <span>{restorativeDeepClause}</span> &mdash; <span>{restorativeRemClause}</span> &mdash;{' '}
-            {restorativeTailClause}
+            <span>{caption.deep}</span> &mdash; <span>{caption.rem}</span> &mdash; {caption.tail}
           </>
         ) : null
       }

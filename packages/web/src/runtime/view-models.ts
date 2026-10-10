@@ -16,6 +16,7 @@ import {
   adaptWorkouts,
   type WorkoutEntry
 } from './adapters'
+import {type FreshnessDomain, freshnessState} from './freshness'
 import {esc} from './html-utils'
 import {
   bookshelfState,
@@ -32,6 +33,7 @@ import {
   workoutsState
 } from './widget-rules'
 import {isHidingFocus, NO_READING, rendersData, toEpochMs, type WidgetState, type WidgetStateProps} from './widget-state'
+import {toNightSummaryHealth} from './widget-views'
 import {widgets} from '@j0nathan-ll0yd/copy'
 import type {
   ArticlesExport,
@@ -159,8 +161,9 @@ export interface DomainInput<T> {
   /** The decoded export, or null when it could not be read. */
   data: T | null
   /**
-   * The loader's verdict (freshness against the registry thresholds, the
-   * focus gate). Omitted → `live` when data is present, `unavailable` when not.
+   * The loader's verdict (the focus gate, a failed read). Omitted → the shared
+   * freshness rule (`freshnessState`: `live` up to the registry `audit.warn`
+   * age, else `stale`) when data is present, `unavailable` when not.
    */
   state?: WidgetState
 }
@@ -201,15 +204,25 @@ interface Resolved<T> {
   generatedAt: string | null
 }
 
-function resolveDomain<T extends {generatedAt?: string}>(input: DomainInput<T> | undefined, suppressed: boolean): Resolved<T> {
+function resolveDomain<T extends {generatedAt?: string}>(
+  domain: FreshnessDomain,
+  input: DomainInput<T> | undefined,
+  suppressed: boolean,
+  nowMs: number
+): Resolved<T> {
   if (suppressed) {
     // The gate wins: no gated value survives into a view model.
     return {data: null, state: 'suppressed', generatedAt: null}
   }
   const data = input?.data ?? null
-  const state: WidgetState = input?.state ?? (data ? 'live' : 'unavailable')
-  if (!data || !rendersData(state)) {
-    return {data: null, state: rendersData(state) ? 'unavailable' : state, generatedAt: null}
+  if (!data) {
+    return {data: null, state: input?.state && !rendersData(input.state) ? input.state : 'unavailable', generatedAt: null}
+  }
+  // A read export without an explicit verdict takes the shared freshness rule
+  // (freshnessState): the same rule the browser updaters apply.
+  const state: WidgetState = input?.state ?? freshnessState(domain, data.generatedAt, nowMs)
+  if (!rendersData(state)) {
+    return {data: null, state, generatedAt: null}
   }
   return {data, state, generatedAt: data.generatedAt ?? null}
 }
@@ -224,7 +237,8 @@ function stateProps(r: {state: WidgetState; generatedAt: string | null}): Widget
  * Disclosure: a hiding `currentFocus` suppresses every gated domain and drops
  * its data. An unreadable focus export does NOT decide suppression here — the
  * loader owns that rule and passes `state: 'unavailable'` (or 'suppressed')
- * per domain. Freshness (`stale`) is likewise the loader's verdict.
+ * per domain. A domain read without an explicit state takes the shared
+ * freshness rule at `now` (runtime/freshness), as the browser updaters do.
  *
  * NightSummary reads two exports but follows the sleep export alone: its
  * state and `generatedAt` are the sleep export's, and the health export lends
@@ -237,14 +251,14 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
   const currentFocus = exports.focus?.data?.currentFocus ?? null
   const suppressed = isHidingFocus(currentFocus)
 
-  const health = resolveDomain(exports.health, suppressed)
-  const sleep = resolveDomain(exports.sleep, suppressed)
-  const workouts = resolveDomain(exports.workouts, suppressed)
-  const events = resolveDomain(exports.githubEvents, suppressed)
-  const starred = resolveDomain(exports.starredRepos, suppressed)
-  const articles = resolveDomain(exports.articles, suppressed)
-  const books = resolveDomain(exports.books, suppressed)
-  const theatre = resolveDomain(exports.theatreReviews, suppressed)
+  const health = resolveDomain('health', exports.health, suppressed, nowMs)
+  const sleep = resolveDomain('sleep', exports.sleep, suppressed, nowMs)
+  const workouts = resolveDomain('workouts', exports.workouts, suppressed, nowMs)
+  const events = resolveDomain('githubEvents', exports.githubEvents, suppressed, nowMs)
+  const starred = resolveDomain('starredRepos', exports.starredRepos, suppressed, nowMs)
+  const articles = resolveDomain('articles', exports.articles, suppressed, nowMs)
+  const books = resolveDomain('books', exports.books, suppressed, nowMs)
+  const theatre = resolveDomain('theatreReviews', exports.theatreReviews, suppressed, nowMs)
 
   const adaptedHealth = health.data ? adaptHealth(health.data, sleep.data) : null
 
@@ -281,20 +295,7 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
     nightSummary: {
       ...stateProps(night),
       ...(adaptedSleep
-        ? {
-          health: {
-            sleepScore: adaptedSleep.sleepScore,
-            sleepDurationFormatted: adaptedSleep.isEmpty ? '' : adaptedSleep.sleepDurationFormatted,
-            sleepPhaseFormatted: {
-              deep: adaptedSleep.sleepPhaseFormatted.deep ?? '',
-              rem: adaptedSleep.sleepPhaseFormatted.rem ?? '',
-              core: adaptedSleep.sleepPhaseFormatted.core ?? '',
-              awake: adaptedSleep.sleepPhaseFormatted.awake ?? ''
-            },
-            derived: {deepPct: adaptedSleep.derived.deepPct, remPct: adaptedSleep.derived.remPct},
-            isEmpty: adaptedSleep.isEmpty
-          }
-        }
+        ? {health: toNightSummaryHealth(adaptedSleep)}
         : {})
     },
     workouts: {...stateProps(workouts), ...(workouts.data ? {health: {workouts: toWorkoutsList(adaptWorkouts(workouts.data))}} : {})},

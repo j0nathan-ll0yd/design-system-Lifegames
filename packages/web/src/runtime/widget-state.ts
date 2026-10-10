@@ -19,6 +19,8 @@
 // `resolveWidgetState`, the pure compatibility mapper: data present → live,
 // no data → empty.
 import {HIDING_FOCUS_MODES} from '@j0nathan-ll0yd/portal-contract/constants'
+import {widgets} from '@j0nathan-ll0yd/copy'
+import {esc} from './html-utils'
 
 // A literal union (not `typeof` a const array): the widget schema generator
 // (packages/schemas/scripts/generate-widget-schemas.mjs) resolves it to an enum.
@@ -126,4 +128,33 @@ export function stateRootAttrs(state: WidgetState, generatedAt?: string | null):
   // Only a valid ISO timestamp: an unparseable value is no provenance at all.
   const valid = rendersData(state) && typeof generatedAt === 'string' && Number.isFinite(Date.parse(generatedAt))
   return {'data-ssr-state': state, 'data-generated-at': valid ? generatedAt : undefined}
+}
+
+/**
+ * A card's header timestamp in a given state, shared by `WidgetTimestamp.astro`
+ * and the browser (`revealLiveData`), so both render the same header.
+ * `stale` with a valid timestamp shows the absolute "as of" time in a
+ * `<time datetime>`; `live` and `empty` show the widget's own label; every
+ * other state, and a `stale` card without a valid timestamp, shows no label.
+ */
+export function widgetTimestampView(
+  label: string,
+  state: WidgetState,
+  generatedAt: string | null | undefined
+): {kind: 'asOf'; text: string; datetime: string} | {kind: 'label'; text: string} {
+  const asOf = state === 'stale' ? formatAsOf(generatedAt) : null
+  if (asOf && generatedAt) {
+    return {kind: 'asOf', text: widgets.widgetState.asOf.replace('{time}', asOf), datetime: generatedAt}
+  }
+  return {kind: 'label', text: state === 'live' || state === 'empty' ? label : ''}
+}
+
+/**
+ * The chrome-level notice of the `unavailable` and `suppressed` states. One
+ * markup for `WidgetStateNotice.astro` and the browser's
+ * `renderWidgetUnavailable`, so a card a failed read leaves unavailable reads
+ * exactly as the server renders it.
+ */
+export function stateNoticeHtml(state: 'unavailable' | 'suppressed'): string {
+  return '<div class="widget-empty widget-state-notice" data-state-notice="' + state + '" role="status">' + esc(widgets.widgetState[state]) + '</div>'
 }

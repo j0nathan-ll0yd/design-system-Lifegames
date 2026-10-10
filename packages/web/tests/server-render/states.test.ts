@@ -352,6 +352,9 @@ const SLOTS: Record<string, () => Record<string, string>> = {
 }
 
 // One entry per live widget: its component, card id, and view-model key.
+// A mirrored cover path in the site's manifest form (ASIN, 24-hex version token, size).
+const MIRRORED_COVERS = ['/images/books/080413717X-00d8d9c74e41f9c468de2699-card.webp']
+
 const LIVE_WIDGETS = [
   {name: 'HeartRate', component: HeartRate, id: 'cardHR', vm: 'heartRate'},
   {name: 'MovementRings', component: MovementRings, id: 'cardMovement', vm: 'movementRings'},
@@ -361,9 +364,14 @@ const LIVE_WIDGETS = [
   {name: 'DevActivityLog', component: DevActivityLog, id: 'cardDevLog', vm: 'devActivityLog'},
   {name: 'StarredRepoList', component: StarredRepoList, id: 'cardStarredRepos', vm: 'starredRepoList'},
   {name: 'ReadingFeed', component: ReadingFeed, id: 'cardReading', vm: 'readingFeed'},
-  {name: 'Bookshelf', component: Bookshelf, id: 'cardBooks', vm: 'bookshelf'},
+  // Bookshelf renders with the consumer's mirrored cover list, as the website
+  // passes it: the list rides on the card in every state (data-local-covers).
+  {name: 'Bookshelf', component: Bookshelf, id: 'cardBooks', vm: 'bookshelf', extra: {localCovers: MIRRORED_COVERS}},
   {name: 'TheatreReviews', component: TheatreReviews, id: 'cardTheatreReviews', vm: 'theatreReviews'}
-] as const satisfies readonly {name: string; component: unknown; id: string; vm: keyof DashboardViewModels}[]
+] as const satisfies readonly {name: string; component: unknown; id: string; vm: keyof DashboardViewModels; extra?: Record<string, unknown>}[]
+
+/** Consumer build configuration (not export data): the mirrored cover paths a site passes Bookshelf. */
+const extraOf = (w: (typeof LIVE_WIDGETS)[number]): Record<string, unknown> => ('extra' in w ? w.extra : {})
 
 function vmFor(exports: DashboardExports, key: keyof DashboardViewModels): Record<string, unknown> {
   return toDashboardViewModels(exports, NOW)[key] as unknown as Record<string, unknown>
@@ -747,12 +755,14 @@ function permittedPairs(name: string, state: NonDataState): Set<string> {
 }
 
 // covers: widget-contract#A live web widget renders real data or an honest state in its server markup
-describe.each(LIVE_WIDGETS)('$name: every non-data attribute is on the reviewed allowlist', ({name, component, id, vm}) => {
+describe.each(LIVE_WIDGETS)('$name: every non-data attribute is on the reviewed allowlist', (widget) => {
+  const {name, component, id, vm} = widget
+  const extra = extraOf(widget)
   it.each(NON_DATA_STATES)('%s: no attribute outside the list, whatever the caller passes', async (state) => {
     const permitted = permittedPairs(name, state)
     const renders = {
-      dataFree: await container.renderToString(component, {props: {state}}),
-      forcedLive: await container.renderToString(component, {props: {...vmFor(exportsFor(KNOWN_ANSWER), vm), state}})
+      dataFree: await container.renderToString(component, {props: {state, ...extra}}),
+      forcedLive: await container.renderToString(component, {props: {...vmFor(exportsFor(KNOWN_ANSWER), vm), state, ...extra}})
     }
     for (const [label, html] of Object.entries(renders)) {
       const {pairs, scripts} = attributePairs(html)
@@ -767,7 +777,7 @@ describe.each(LIVE_WIDGETS)('$name: every non-data attribute is on the reviewed 
     const entry = NON_DATA_ALLOWLIST.widgets[name]!
     const used: Record<string, Set<string>> = {}
     for (const state of NON_DATA_STATES) {
-      used[state] = attributePairs(await container.renderToString(component, {props: {state}})).pairs
+      used[state] = attributePairs(await container.renderToString(component, {props: {state, ...extra}})).pairs
     }
     // A shared entry is used in every state; a state entry in its state and not in all four.
     expect(entry.all!.filter((p) => NON_DATA_STATES.some((s) => !used[s]!.has(p))), 'prunable shared entries').toEqual([])

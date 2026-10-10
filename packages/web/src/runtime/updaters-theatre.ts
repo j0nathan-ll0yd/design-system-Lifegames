@@ -1,6 +1,7 @@
 import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc, safeHttpsUrl} from './html-utils'
 import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
+import type {Freshness} from './freshness'
 import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 
@@ -95,7 +96,26 @@ export function theatreCountLabel(totalReviews: number | null | undefined): stri
   return typeof totalReviews === 'number' ? `${totalReviews} reviews` : 'reviews'
 }
 
-export function updateTheatreReviews(data: TheatreReviewsExport | null | undefined): void {
+/**
+ * The count link is this card's header label; the template adds a separate
+ * timestamp slot beside it only in `stale`, for the "as of" time. Give the
+ * header that slot exactly when the card becomes stale (revealLiveData then
+ * writes its "as of" time) and drop it otherwise, as the server renders it.
+ */
+function syncStaleSlot(countEl: HTMLElement | null, state: 'live' | 'stale' | 'empty'): void {
+  const header = countEl?.parentElement
+  if (!countEl || !header) {
+    return
+  }
+  const slot = header.querySelector<HTMLElement>('.widget-timestamp[data-live-label]')
+  if (state === 'stale' && !slot) {
+    countEl.insertAdjacentHTML('beforebegin', '<span class="widget-timestamp" data-live-label=""></span>')
+  } else if (state !== 'stale') {
+    slot?.remove()
+  }
+}
+
+export function updateTheatreReviews(data: TheatreReviewsExport | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardTheatreReviews')
   if (!card) {
     return
@@ -131,11 +151,14 @@ export function updateTheatreReviews(data: TheatreReviewsExport | null | undefin
   // (destroying #theatreRow), so the populated path recreates it on an
   // empty -> populated transition.
   if (data.reviews.length === 0) {
+    syncStaleSlot(countEl, 'empty')
     renderWidgetEmpty('cardTheatreReviews', {message: widgets.theatreReviews.empty})
     return
   }
 
-  revealLiveData(card)
+  const state = freshness?.state ?? 'live'
+  syncStaleSlot(countEl, state)
+  revealLiveData(card, state, {generatedAt: freshness?.generatedAt})
   let row = document.getElementById('theatreRow')
   if (!row) {
     const body = card.querySelector('.widget-body')

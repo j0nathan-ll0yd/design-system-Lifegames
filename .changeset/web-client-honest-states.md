@@ -1,0 +1,44 @@
+---
+'@j0nathan-ll0yd/web': minor
+---
+
+The browser reaches the same card the server renders (atlas decision 0160). Website PR 0a prerenders `/` with every live card `loading`, and the browser fills each card. Five gaps in that browser path are closed. Each one now follows one rule that the server and the browser share.
+
+**New exports (why this is a minor).** Every existing call signature still compiles. The rendering changes below are honesty fixes.
+
+- `runtime/freshness`: the one live-versus-stale rule. `EXPORT_FRESHNESS` restates the registry `audit.warn` and `audit.error` ages per export: health 45 min and 3 h; sleep and workouts 12 h and 24 h; books, articles and GitHub events 7 d and 14 d; starred repositories and theatre reviews 18 h and 36 h. The module also exports `freshnessState(domain, generatedAt, nowMs)`, `isFreshnessDegraded(domain, generatedAt, nowMs)`, `exportFreshness(domain, data, nowMs?)` (returns a `Freshness`, `{state, generatedAt}`) and `exportDomainState(domain, data | null, nowMs?)`. An export is `live` up to its `audit.warn` age and `stale` beyond it. An export with a missing or invalid `generatedAt` is `stale`, and its card shows no "as of" label and no `data-generated-at`.
+- Every data updater takes an optional trailing `freshness` argument. The updaters are `updateHeartRate`, `updateHeartRateFooter`, `updateMovementRings`, `updateHydration`, `updateNightSummary`, `updateWorkouts`, `updateDevActivityLog`, `updateStarredRepos`, `updateReadingFeed`, `updateBookshelf` and `updateTheatreReviews`. With `freshness`, a stale export records `stale` and shows the absolute "as of" header that `WidgetTimestamp` renders. Without it, the card records `live` and names no timestamp, as before.
+- `revealLiveData(card, state, opts)` accepts `stale` and `opts.generatedAt`. It writes the server's header through the new shared `widgetTimestampView` (in `runtime/widget-state`) and removes the loading `<noscript>` note.
+- `renderWidgetUnavailable(card)` in `runtime/updater-empty`: after a failed first read, it leaves a `loading` card (or a card the focus gate released with `releaseSuppression`) exactly as the server renders `unavailable`. The output has the notice from the `widgets.widgetState` copy keys (`stateNoticeHtml`), the value-free scaffold hidden, no header label, `data-ssr-state="unavailable"` and no values. It returns `false` and writes nothing for a suppressed card, or for a card that shows a reading (`live`, `stale` or `empty`). A later successful read fills the card through its updater.
+- `runtime/widget-views`: `heartRateView`, `movementView`, `hydrationView` and `nightSummaryView` compute every slot of a health card from its props. The template renders the view, and the updater writes the same view. Also `toNightSummaryHealth`, `rangeBand`, `MOVEMENT_DEFAULT_GOALS` and `MOVEMENT_RING_RADII`.
+- `runtime/widget-markup`: `heartRateEmptyHtml`, `movementEmptyHtml` and `hydrationRangeHtml`, the markup that a template and an updater both write.
+- `isWatchPaused(health)` in `runtime/widget-rules`. `mirroredCoverUrl(candidate, mirrored, options?)` and `parseLocalCovers(value)` in `runtime/image-utils`.
+
+**The complete list of added named exports** (from `pnpm check:package-drift`; no name is removed):
+
+- `./runtime/freshness` (new): `EXPORT_FRESHNESS`, `exportDomainState`, `exportFreshness`, `freshnessState`, `isFreshnessDegraded`; types `Freshness`, `FreshnessDomain`, `FreshnessState`.
+- `./runtime/updater-empty`: `renderWidgetUnavailable`; type `RevealOptions`.
+- `./runtime/widget-state`: `stateNoticeHtml`, `widgetTimestampView`.
+- `./runtime/widget-rules`: `isWatchPaused`.
+- `./runtime/image-utils`: `mirroredCoverUrl`, `parseLocalCovers`.
+- `./runtime/widget-views` (new): `heartRateView`, `hydrationView`, `movementView`, `nightSummaryView`, `rangeBand`, `toNightSummaryHealth`, `MOVEMENT_DEFAULT_GOALS`, `MOVEMENT_RING_RADII`, `NIGHT_SUMMARY_EMPTY_MARK`, `SLEEP_PHASES`; types `HeartRateView`, `HydrationView`, `MovementView`, `NightSummaryView`, `RangeBand`, `RingStroke`, `SleepPhase`.
+- `./runtime/widget-markup` (new): `heartRateEmptyHtml`, `hydrationRangeHtml`, `movementEmptyHtml`.
+
+The package's own DOM helpers (`enterUnavailable`, `insertStateNotice`, `writeHeartRateFooter` and the header and state writers) live in `src/internal/`. No key of the exports map reaches that directory, so they are not public API.
+
+**Behaviour changes that consumers see.**
+
+- Hydration: `updateHydration` draws both target-range bands with the server's markup and positions. Before, only the server markup drew them, so a visitor with JavaScript saw no bands. The fill and the bands use the export's scale, as on the server. `initHydration` draws its bands with the same markup.
+- A paused watch (`watch.worn === false`) keeps the export's data state (`live` or `stale`) on HeartRate and MovementRings alike, on the server and in the browser. It shows the paused copy and no value. Before, a paused HeartRate card stayed `loading` in the browser while paused Movement recorded `live`. On the server, a paused export with no heart rate rendered `unavailable`, and one with no movement rendered `empty`. The HeartRate footer shows no vitals while paused, as the server renders it.
+- HeartRate in the browser follows `heartRateState`. An export with readings but no heart rate records `unavailable`. An export with no quantity at all, or a recorded 0, records `empty` with the server's empty notice. MovementRings records `empty` with its notice for no measured movement. The `.hr-empty` and `.mv-empty` styles are global, so they apply to notices that the browser writes.
+- NightSummary's browser empty state keeps the "last night" header label, as the server renders it. Before, it wrote `no data`. Its caption text is escaped.
+- MovementRings' daylight goal sits in `#mvDaylightGoal`, so the browser shows the owner's synced goal. Before, the browser kept the server default of 20 minutes.
+- `toDashboardViewModels` applies the freshness rule to a domain that the caller read without an explicit `state`. An old export renders `stale` with its "as of" time. Before, it rendered `live`. An explicit `state` still wins.
+- Bookshelf carries its `localCovers` list on the card root as `data-local-covers`, in every state, `loading` included. `updateBookshelf` reads the list from there. Before, it read per-book `data-local-cover` attributes, which a `loading` card never has, so every cover loaded from CloudFront. A cover loads from the same origin only when its exact localized path, version token included, is on the list. Nothing is stripped, decoded or guessed. Every other cover keeps its contract URL and the W6 fallback. The per-book `data-local-cover` attribute is gone. Theatre posters are unchanged.
+- `updateWorkouts` removes `is-loading` after it renders workouts.
+- `updateHeartRateFooter` writes no vitals whenever HeartRate shows no value: paused, `empty` or `unavailable` (no heart rate). Before, it wrote them in every case.
+- HeartRate's header dot takes the zone colour in the browser, as on the server. A cleared zone colour leaves no empty `style` attribute.
+- `renderWidgetEmpty` keeps the server's empty structure: the item scaffold stays, emptied and hidden, and the notice sits after the skeleton. Before, it replaced the whole `.widget-body`.
+- The loading `<noscript>` note is the only `<noscript>` a state change removes.
+- `mirroredCoverUrl` matches the contract URL's path as written. The server no longer percent-decodes the path before the match, and a same-origin absolute URL no longer matches. List mirrored covers by their URL path, percent-encoding included.
+- TheatreReviews' browser header shows the "as of" time for a stale export, as the server renders it.

@@ -303,12 +303,23 @@ describe('review fixes: header, state attribute and fabricated values', () => {
     expect(el('cardBooks').dataset.ssrState).toBe('empty')
   })
 
-  it('HeartRate stays unavailable when the update carries no heart rate', () => {
+  it('HeartRate stays unavailable when the update carries readings but no heart rate', () => {
+    document.body.innerHTML = `
+      <div id="cardHR" data-ssr-state="unavailable"><div data-state-notice="unavailable"></div><div class="hr-data" data-state-scaffold hidden><span id="pulseBpm"></span></div></div>`
+    updateHeartRate({...health({}), quantities: {hrvSDNN: {value: 40, unit: 'ms'}}})
+    expect(el('cardHR').dataset.ssrState).toBe('unavailable')
+    expect(document.querySelector('[data-state-notice="unavailable"]')).not.toBeNull()
+    expect((document.querySelector('.hr-data') as HTMLElement).hidden).toBe(true)
+  })
+
+  it('HeartRate with no quantity at all is empty, as the server renders it (heartRateState)', () => {
     document.body.innerHTML = `
       <div id="cardHR" data-ssr-state="unavailable"><div data-state-notice="unavailable"></div><div class="hr-data" data-state-scaffold hidden><span id="pulseBpm"></span></div></div>`
     updateHeartRate({...health({}), quantities: {}})
-    expect(el('cardHR').dataset.ssrState).toBe('unavailable')
-    expect(document.querySelector('[data-state-notice]')).not.toBeNull()
+    expect(el('cardHR').dataset.ssrState).toBe('empty')
+    expect(document.querySelector('[data-state-notice="empty"]')?.textContent).toBe(widgets.heartRate.empty)
+    expect((document.querySelector('.hr-data') as HTMLElement).hidden).toBe(true)
+    expect(el('pulseBpm').textContent).toBe('')
   })
 
   it('MovementRings keeps a server-rendered empty notice for an all-zero update', () => {
@@ -440,7 +451,8 @@ describe('client: a field the update omits renders the no-reading mark', () => {
 
   it('MovementRings without steps: the steps slot reads "—"', () => {
     document.body.innerHTML = '<div id="cardMovement"><span data-mv-metric="steps"></span><span data-mv-metric="flights"></span></div>'
-    updateMovementRings({...health({}), quantities: {flightsClimbed: {value: 12, unit: 'count'}}})
+    // Move is measured, so the card is not empty (isMovementEmpty); steps are not.
+    updateMovementRings({...health({}), quantities: {activeEnergyBurned: {value: 300, unit: 'kcal'}, flightsClimbed: {value: 12, unit: 'count'}}})
     expect(document.querySelector('[data-mv-metric="steps"]')?.textContent).toBe(NO_READING)
     expect(document.querySelector('[data-mv-metric="flights"]')?.textContent).toBe('12')
   })
