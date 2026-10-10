@@ -1,5 +1,12 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.5.1
+
+### Patch Changes
+
+- Updated dependencies [02cdae5]
+  - @j0nathan-ll0yd/web@4.1.0
+
 ## 1.5.0
 
 ### Minor Changes
