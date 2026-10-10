@@ -36,6 +36,10 @@ const PKG_ROOT = join(__dirname, '..')
 const DIST_TYPES = join(PKG_ROOT, 'dist', 'types')
 const SWIFT_DIR = join(PKG_ROOT, 'swift')
 const SWIFT_TEMP = join(SWIFT_DIR, 'temp')
+// The LifegamesSchemas SPM target compiles a byte-identical copy of swift/WidgetModels.swift.
+// codegen writes both so the shipped copy cannot drift; check-freshness.sh guards the pair.
+const DS_ROOT = join(PKG_ROOT, '..', '..')
+const SWIFT_SPM_TARGET = join(DS_ROOT, 'Sources', 'LifegamesSchemas')
 
 /**
  * Authoritative naming map — LP schemas lack title/$id/description so we
@@ -627,6 +631,7 @@ const aggregated = SWIFT_HEADER +
   (sharedHelpersBlock ? '// MARK: - Shared Helpers\n\n' + sharedHelpersBlock + '\n' : '')
 
 writeFileSync(join(SWIFT_DIR, 'WidgetModels.swift'), aggregated, 'utf-8')
+writeFileSync(join(SWIFT_SPM_TARGET, 'WidgetModels.swift'), aggregated, 'utf-8')
 
 // Clean up temp directory
 for (const f of readdirSync(SWIFT_TEMP)) {
@@ -679,5 +684,5 @@ writeFileSync(fixtureMapPath, await formatWithPrettier(sortedStringify(fixtureMa
 console.log('')
 console.log('codegen: complete.')
 console.log(`  TS types:    dist/types/ (${generatedNames.length} schemas + branded.ts + index.ts)`)
-console.log(`  Swift:       swift/WidgetModels.swift`)
+console.log(`  Swift:       swift/WidgetModels.swift (+ Sources/LifegamesSchemas/WidgetModels.swift)`)
 console.log(`  Fixture map: fixture-map.json`)
