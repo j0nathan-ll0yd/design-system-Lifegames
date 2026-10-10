@@ -284,7 +284,7 @@ struct MovementSwatch: View {
                 .kerning(0.8)
                 .foregroundStyle(LGColor.textMuted)
             // web: mv-legend-val — color text-title, font-weight 600. The value and the goal
-            // are separate Texts so VoiceOver reads the mark as "No reading", not "dash".
+            // are separate Texts so VoiceOver reads the mark by its noReading copy, not "dash".
             let valueText = Self.valueText(value)
             HStack(spacing: 0) {
                 Text(valueText)
