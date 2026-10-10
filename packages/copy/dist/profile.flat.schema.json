@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.org/schemas/copy.profile.flat.schema.json",
+  "type": "object",
+  "title": "ProfileCopy",
+  "description": "Rich authoring schema for the profile slice of @j0nathan-ll0yd/copy: the authored identity content of the dashboard's IdentityCard and BioTerminal that the identity namespace does not already hold (atlas decision 0160 Step 1.7). The name, title, location, profile links and bio come from identity.person (name, jobTitle, location, sameAs, flavorBio); this namespace adds the tagline and the bio terminal's command blocks. Each terminal block is a CopyStringList whose FIRST string is the shell prompt line and whose remaining strings are its output lines, in display order; blocks render in key order, separated by a blank line, and the renderer appends the blinking cursor. Location is authored public identity copy only; no coordinates (decision 0160 D14). The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax (static passthrough, no interpolation). The $defs block is byte-identical to the other namespaces' schemas; the $defs are inlined per schema file (no cross-file $ref), which the flat-schema derivation requires.",
+  "properties": {
+    "tagline": {
+      "type": "string"
+    },
+    "terminal": {
+      "type": "object",
+      "title": "ProfileTerminal",
+      "description": "The bio terminal's command blocks, in display order. Each block: [prompt line, ...output lines]. A prompt line starts with '$ ', an output line with '→ '.",
+      "properties": {
+        "gpg": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stack": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uptime": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "philosophy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interests": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["gpg", "stack", "uptime", "philosophy", "interests"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["tagline", "terminal"],
+  "additionalProperties": false
+}

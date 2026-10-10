@@ -521,3 +521,13 @@ packages/web/tests/runtime/updaters-honest-states.test.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/workouts-markup.ts:marker:j0nathan-ll0yd
 # Review M01: the exact known-answer projection imports @j0nathan-ll0yd/copy.
 packages/web/tests/server-render/known-answer-render.ts:marker:j0nathan-ll0yd
+# atlas 0160 Step 1.7: the copy profile namespace and the fixtures that read it name
+# the @j0nathan-ll0yd scope (a public distribution namespace, not personal data).
+.changeset/copy-profile-namespace.md:marker:j0nathan-ll0yd
+.changeset/fixtures-profile-from-copy.md:marker:j0nathan-ll0yd
+Sources/LifegamesCopy/ProfileCopy.generated.swift:marker:j0nathan-ll0yd
+packages/copy/dist/profile.flat.schema.json:marker:j0nathan-ll0yd
+packages/copy/dist/profile.ts:marker:j0nathan-ll0yd
+packages/copy/dist/profile.zod.ts:marker:j0nathan-ll0yd
+packages/copy/schema/profile.schema.json:marker:j0nathan-ll0yd
+packages/fixtures/tests/profile-from-copy.test.ts:marker:j0nathan-ll0yd

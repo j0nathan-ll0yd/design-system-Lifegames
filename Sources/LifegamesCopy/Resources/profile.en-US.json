@@ -1,0 +1,27 @@
+{
+  "tagline": "Welcome to my human datastream.",
+  "terminal": {
+    "gpg": [
+      "$ gpg -k",
+      "→ pub   rsa4096 2002-01-01 [SC]",
+      "→ uid   Jonathan Lloyd (Software Engineer)"
+    ],
+    "stack": [
+      "$ printenv STACK",
+      "→ aws typescript serverless swift go perl"
+    ],
+    "uptime": [
+      "$ uptime",
+      "→ up 24+ years professionally and counting"
+    ],
+    "philosophy": [
+      "$ cat philosophy.txt",
+      "→ \"Creating things I'm proud of\"",
+      "→ \"Enjoying the passage of time\""
+    ],
+    "interests": [
+      "$ ls -m interests/",
+      "→ conversation, edm, musical theatre, pc gaming, programming"
+    ]
+  }
+}
