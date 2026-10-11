@@ -739,16 +739,20 @@ context.
 ### Requirement: A Swift widget state rule returns the web rule's state for the same input
 
 A Swift consumer that derives a live widget's state SHALL use the Swift twin of that widget's web state
-rule, and the twin SHALL return the web rule's state for the same input. `WidgetRenderState` mirrors the
-web `WidgetState` union case for case, with the web strings as raw values, and `WidgetRenderState.resolve`
-mirrors `resolveWidgetState`. `WidgetRules.heartRateState` mirrors `heartRateState` in
-`packages/web/src/runtime/widget-rules.ts`: a paused watch keeps the data state, a data state without a
-heart-rate reading is `unavailable` when the export carries other quantities and `empty` when it carries
-none, and a recorded 0 for both heart rate and HRV is `empty` (atlas decision 0160).
+rule, and for any props the widget's schema accepts the twin SHALL return the web rule's state.
+`WidgetRenderState` mirrors the web `WidgetState` union case for case, with the web strings as raw
+values, and `WidgetRenderState.resolve` mirrors `resolveWidgetState`. `WidgetRules.heartRateState`
+mirrors `heartRateState` in `packages/web/src/runtime/widget-rules.ts`: a paused watch keeps the data
+state, a data state without a heart-rate reading is `unavailable` when the export carries other
+quantities and `empty` when it carries none, and a recorded 0 for both heart rate and HRV is `empty`
+(atlas decision 0160).
 
-This is a **blocking** rule. `WidgetRulesTests` runs inside `swift test` in the required `test-swift`
-status context. Every expected state in its table is the web rule's own output for the same JSON props,
-and every shared `heart-rate.*` fixture is pinned, so a new fixture without a known answer fails.
+This is a **blocking** rule, held from both sides by one file of known answers,
+`contracts/widget-rules/heart-rate-state.known-answers.json`. `WidgetRulesTests` runs the Swift twin
+over it inside `swift test` in the required `test-swift` status context.
+`contracts/widget-rules/heart-rate-state.test.ts` runs the web rule over it in the required
+`governance-gates` status context. Both suites also pin every shared `heart-rate.*` fixture, so a new
+fixture without a known answer fails.
 
 #### Scenario: The export carries other readings but no heart rate
 
@@ -763,11 +767,11 @@ and every shared `heart-rate.*` fixture is pinned, so a new fixture without a kn
 - **WHEN** the Swift twin resolves the HeartRate state
 - **THEN** it SHALL return `empty`, and the Swift card SHALL show the heart-rate empty copy
 
-#### Scenario: The twin drifts from the web rule
+#### Scenario: One rule changes and the other does not
 
-- **GIVEN** a known answer produced by the web `heartRateState`
-- **WHEN** the Swift twin returns a different state for the same JSON props
-- **THEN** `WidgetRulesTests` SHALL fail naming the input
+- **GIVEN** the shared known answers
+- **WHEN** the web rule or the Swift twin returns a state the file does not list for a case
+- **THEN** the suite for that side SHALL fail naming the case
 
 ### Requirement: A Swift health widget renders a missing measurement as the no-reading mark
 
@@ -786,6 +790,12 @@ This is a **blocking** rule. `MissingMeasurementTests` and `DatastreamHomeMissin
 - **WHEN** the card renders
 - **THEN** each of those slots and the ring centre SHALL show the labelled mark, and no slot SHALL
   show 0
+
+#### Scenario: MovementRings has nothing measured
+
+- **GIVEN** MovementRings in the `empty` state
+- **WHEN** the card renders
+- **THEN** it SHALL show the `movement.empty` notice and no value, as the web empty card does
 
 #### Scenario: A measured 0 reaches the widget
 

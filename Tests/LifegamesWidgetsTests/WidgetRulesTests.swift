@@ -8,67 +8,57 @@ import ViewInspector
 
 // covers: widget-contract#A Swift widget state rule returns the web rule's state for the same input
 /// The Swift twin of the web `heartRateState` (atlas decision 0160) returns the web state for the
-/// same input. Every expected state below is the web rule's own output, produced by running
-/// `heartRateState` from `packages/web/src/runtime/widget-rules.ts` over these exact JSON props.
-/// The four marked `web test` are also the web suite's own known answers.
+/// same input. The known answers live in `contracts/widget-rules/heart-rate-state.known-answers.json`,
+/// which `contracts/widget-rules/heart-rate-state.test.ts` also runs through the web rule itself, so a
+/// change on either side that the file does not reflect fails one of the two suites.
 @Suite("WidgetRules — the Swift twin of the web heartRateState")
 struct WidgetRulesTests {
     struct KnownAnswer: CustomTestStringConvertible, Sendable {
         let name: String
-        let json: String
-        let expected: WidgetRenderState
-
-        init(_ name: String, _ json: String, _ expected: WidgetRenderState) {
-            self.name = name
-            self.json = json
-            self.expected = expected
-        }
+        /// The web props as JSON text, re-serialized from the file's `props`.
+        let json: Data
+        let expected: WidgetRenderState?
+        let expectedRaw: String
 
         var testDescription: String { name }
 
         var props: [String: Any] {
-            (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [String: Any] ?? [:]
+            (try? JSONSerialization.jsonObject(with: json)) as? [String: Any] ?? [:]
         }
     }
 
-    // web test: states.test.ts "a readable export with no quantity at all is empty" ("empty quantities"),
-    // the M2c table ("hr 0 and hrv 0", "hrv only") and updaters-honest-states.test.ts ("empty quantities").
-    static let knownAnswers: [KnownAnswer] = [
-        KnownAnswer("no health", #"{}"#, .empty),
-        KnownAnswer("empty quantities", #"{"health":{"quantities":{}}}"#, .empty),
-        KnownAnswer("health without quantities", #"{"health":{}}"#, .empty),
-        KnownAnswer("hr 0 and hrv 0", #"{"health":{"quantities":{"heartRate":{"value":0,"unit":"count/min"},"hrvSDNN":{"value":0,"unit":"ms"}}}}"#, .empty),
-        KnownAnswer("hrv only", #"{"health":{"quantities":{"hrvSDNN":{"value":40,"unit":"ms"}}}}"#, .unavailable),
-        KnownAnswer("steps only", #"{"health":{"quantities":{"stepCount":{"value":5000,"unit":"count"}}}}"#, .unavailable),
-        KnownAnswer("hr 62 hrv 48", #"{"health":{"quantities":{"heartRate":{"value":62,"unit":"count/min"},"hrvSDNN":{"value":48,"unit":"ms"}}}}"#, .live),
-        KnownAnswer("hr 62 only", #"{"health":{"quantities":{"heartRate":{"value":62,"unit":"count/min"}}}}"#, .live),
-        KnownAnswer("hr 62 hrv 0", #"{"health":{"quantities":{"heartRate":{"value":62,"unit":"count/min"},"hrvSDNN":{"value":0,"unit":"ms"}}}}"#, .live),
-        KnownAnswer("hr 0 hrv 40", #"{"health":{"quantities":{"heartRate":{"value":0,"unit":"count/min"},"hrvSDNN":{"value":40,"unit":"ms"}}}}"#, .live),
-        KnownAnswer("hr 0 only", #"{"health":{"quantities":{"heartRate":{"value":0,"unit":"count/min"}}}}"#, .empty),
-        KnownAnswer("hr 0 and steps", #"{"health":{"quantities":{"heartRate":{"value":0,"unit":"count/min"},"stepCount":{"value":10,"unit":"count"}}}}"#, .empty),
-        KnownAnswer("hr 0.4 hrv 0", #"{"health":{"quantities":{"heartRate":{"value":0.4,"unit":"count/min"},"hrvSDNN":{"value":0,"unit":"ms"}}}}"#, .live),
-        KnownAnswer("hr null", #"{"health":{"quantities":{"heartRate":null}}}"#, .unavailable),
-        KnownAnswer("hr value null", #"{"health":{"quantities":{"heartRate":{"value":null}}}}"#, .unavailable),
-        KnownAnswer("hr value string", #"{"health":{"quantities":{"heartRate":{"value":"62"}}}}"#, .unavailable),
-        KnownAnswer("hr value boolean", #"{"health":{"quantities":{"heartRate":{"value":true}}}}"#, .unavailable),
-        KnownAnswer("paused, hrv only", #"{"health":{"quantities":{"hrvSDNN":{"value":40,"unit":"ms"}},"watch":{"worn":false,"since":null,"source":"hrGap"}}}"#, .live),
-        KnownAnswer("paused, no quantities", #"{"health":{"quantities":{},"watch":{"worn":false}}}"#, .live),
-        KnownAnswer("paused, hr 0 hrv 0", #"{"health":{"quantities":{"heartRate":{"value":0},"hrvSDNN":{"value":0}},"watch":{"worn":false}}}"#, .live),
-        KnownAnswer("worn true, hrv only", #"{"health":{"quantities":{"hrvSDNN":{"value":40}},"watch":{"worn":true}}}"#, .unavailable),
-        KnownAnswer("worn 0, hrv only", #"{"health":{"quantities":{"hrvSDNN":{"value":40}},"watch":{"worn":0}}}"#, .unavailable),
-        KnownAnswer("worn null, empty", #"{"health":{"quantities":{},"watch":{"worn":null}}}"#, .empty),
-        KnownAnswer("live, hr 62", #"{"state":"live","health":{"quantities":{"heartRate":{"value":62}}}}"#, .live),
-        KnownAnswer("stale, hr 62", #"{"state":"stale","health":{"quantities":{"heartRate":{"value":62}}}}"#, .stale),
-        KnownAnswer("stale, hrv only", #"{"state":"stale","health":{"quantities":{"hrvSDNN":{"value":40}}}}"#, .unavailable),
-        KnownAnswer("stale, no health", #"{"state":"stale"}"#, .empty),
-        KnownAnswer("stale, paused, no quantities", #"{"state":"stale","health":{"quantities":{},"watch":{"worn":false}}}"#, .stale),
-        KnownAnswer("live, no health", #"{"state":"live"}"#, .empty),
-        KnownAnswer("empty, hr 62", #"{"state":"empty","health":{"quantities":{"heartRate":{"value":62}}}}"#, .empty),
-        KnownAnswer("unavailable, hr 62", #"{"state":"unavailable","health":{"quantities":{"heartRate":{"value":62}}}}"#, .unavailable),
-        KnownAnswer("suppressed, hr 62", #"{"state":"suppressed","health":{"quantities":{"heartRate":{"value":62}}}}"#, .suppressed),
-        KnownAnswer("loading, no health", #"{"state":"loading"}"#, .loading),
-        KnownAnswer("suppressed, no health", #"{"state":"suppressed"}"#, .suppressed),
-    ]
+    static let knownAnswersURL = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        .appendingPathComponent("contracts/widget-rules/heart-rate-state.known-answers.json")
+
+    static func document() -> [String: Any] {
+        guard
+            let data = try? Data(contentsOf: knownAnswersURL),
+            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return [:] }
+        return json
+    }
+
+    static let knownAnswers: [KnownAnswer] = (document()["cases"] as? [[String: Any]] ?? []).map {
+        let raw = $0["expected"] as? String ?? ""
+        return KnownAnswer(
+            name: $0["name"] as? String ?? "",
+            json: (try? JSONSerialization.data(withJSONObject: $0["props"] ?? [String: Any]())) ?? Data(),
+            expected: WidgetRenderState(rawValue: raw),
+            expectedRaw: raw
+        )
+    }
+
+    static let fixtureAnswers: [String: String] = document()["fixtures"] as? [String: String] ?? [:]
+
+    /// The file loads and every expected state is a state the Swift enum names.
+    @Test func theKnownAnswersLoad() {
+        #expect(Self.knownAnswers.count >= 30, "missing or unreadable \(Self.knownAnswersURL.path)")
+        #expect(Self.fixtureAnswers.count >= 16)
+        for answer in Self.knownAnswers {
+            #expect(answer.expected != nil, "\(answer.name): unknown state \(answer.expectedRaw)")
+        }
+    }
 
     @Test(arguments: knownAnswers)
     func jsonPropsMatchTheWebRule(_ answer: KnownAnswer) {
@@ -82,41 +72,21 @@ struct WidgetRulesTests {
         #expect(WidgetRules.heartRateState(input) == answer.expected)
     }
 
-    /// Every shared `heart-rate.*` fixture: the web rule's state for the same file.
-    static let fixtureAnswers: [(String, WidgetRenderState)] = [
-        ("heart-rate.bradycardia", .live),
-        ("heart-rate.cardio", .live),
-        ("heart-rate.empty", .empty),
-        ("heart-rate.fat-burn", .live),
-        ("heart-rate", .live),
-        ("heart-rate.max", .live),
-        ("heart-rate.normal", .live),
-        ("heart-rate.paused-charging", .live),
-        ("heart-rate.paused", .live),
-        ("heart-rate.peak", .live),
-        ("heart-rate.populated-max", .live),
-        ("heart-rate.populated-min", .live),
-        ("heart-rate.resting", .live),
-        ("heart-rate.skeleton", .empty),
-        ("heart-rate.suppressed", .suppressed),
-        ("heart-rate.unavailable", .unavailable),
-    ]
-
     @Test func everyHeartRateFixtureMatchesTheWebRule() throws {
         for (slug, expected) in Self.fixtureAnswers {
             let data = try #require(WidgetFixtures.data(category: "health", name: slug), "missing fixture \(slug)")
             let props = try #require(try JSONSerialization.jsonObject(with: data) as? [String: Any])
-            #expect(WidgetRules.heartRateState(props: props) == expected, "\(slug)")
+            #expect(WidgetRules.heartRateState(props: props).rawValue == expected, "\(slug)")
         }
     }
 
-    /// A new `heart-rate.*` fixture must join the table, so no shared fixture goes unpinned.
+    /// A new `heart-rate.*` fixture must join the known answers, so no shared fixture goes unpinned.
     @Test func everyHeartRateFixtureIsListed() throws {
         let base = try #require(WidgetFixtures.url(category: "health", name: "heart-rate"))
         let names = try FileManager.default.contentsOfDirectory(atPath: base.deletingLastPathComponent().path)
         let onDisk = Set(names.filter { $0 == "heart-rate.json" || ($0.hasPrefix("heart-rate.") && $0.hasSuffix(".json")) }
             .map { String($0.dropLast(".json".count)) })
-        #expect(onDisk == Set(Self.fixtureAnswers.map(\.0)))
+        #expect(onDisk == Set(Self.fixtureAnswers.keys))
     }
 
     // MARK: - The compatibility mapper (web resolveWidgetState)
