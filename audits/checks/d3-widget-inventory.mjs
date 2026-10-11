@@ -10,6 +10,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
+import {readStorybookStoryFiles, storyStem} from '../lib/storybook-stories.mjs'
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
 const CHECK_MODE = process.argv.includes('--check')
@@ -68,18 +69,20 @@ const widgets = typeFiles.map((filePath) => {
 })
 
 // ── step 2: detect hasStory ───────────────────────────────────────────────────
-// A widget has a story if EITHER a *.stories.tsx sits co-located next to its
-// *.types.ts, OR a production story lives in the dedicated Storybook tree at
-// apps/storybook/src/production/<WidgetName>.stories.ts. The real production
-// stories live in the Storybook tree (e.g. MovementRings.stories.ts), so
-// checking only the co-located path produced a false hasStory:false for those
-// widgets (lp-audit D1 finding — MovementRings).
-const STORYBOOK_PRODUCTION = path.join(ROOT, 'apps/storybook/src/production')
+// A widget has a story when any story file Storybook loads is named after it.
+// The story roots come from apps/storybook/.storybook/main.ts, never a list
+// here: a hand-kept list (co-located *.stories.tsx plus
+// apps/storybook/src/production/) missed packages/web/stories/production/,
+// where most production stories live. An unreadable config exits non-zero.
+let storyStems
+try {
+  storyStems = new Set((await readStorybookStoryFiles()).map(storyStem))
+} catch (err) {
+  console.error(`ERROR: ${err.message}`)
+  process.exit(1)
+}
 for (const w of widgets) {
-  const dir = path.dirname(w.filePath)
-  const colocated = fileExists(path.join(dir, `${w.id}.stories.tsx`))
-  const storybookProduction = fileExists(path.join(STORYBOOK_PRODUCTION, `${w.id}.stories.ts`))
-  w.hasStory = colocated || storybookProduction
+  w.hasStory = storyStems.has(w.id)
 }
 
 // ── step 3: detect hasSwiftMirror ────────────────────────────────────────────

@@ -1,7 +1,14 @@
 // mantle-cli-output: test file, not a CLI script (marker satisfies scripts/-dir convention scan)
-import {describe, test} from 'node:test'
+import {after, describe, test} from 'node:test'
 import assert from 'node:assert/strict'
+import {execFileSync} from 'node:child_process'
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
 import {buildMatrix, canonicalize, sortFindings} from '../checks/d1-widget-matrix.mjs'
+import {readStorybookStoryFiles, storyGlobs, storyStem} from '../lib/storybook-stories.mjs'
+
+const ROOT = path.resolve(import.meta.dirname, '..', '..')
 
 // covers: widget-contract#The widget registries reconcile with each other and with the filesystem
 describe('canonicalize', () => {
@@ -248,5 +255,100 @@ describe('sortFindings', () => {
     const copy = [...input]
     sortFindings(input)
     assert.deepEqual(input, copy)
+  })
+})
+
+describe('storyGlobs — reads the stories field the way Storybook does', () => {
+  const configDir = '/repo/apps/storybook/.storybook'
+
+  test('resolves a glob string against the config directory', () => {
+    assert.deepEqual(storyGlobs({stories: ['../src/**/*.stories.ts', '../../../packages/web/stories/**/*.stories.{ts,js}']}, configDir), [
+      '/repo/apps/storybook/src/**/*.stories.ts',
+      '/repo/packages/web/stories/**/*.stories.{ts,js}'
+    ])
+  })
+
+  test("resolves a {directory, files} specifier, defaulting files to Storybook's own glob", () => {
+    assert.deepEqual(storyGlobs({stories: [{directory: '../src', files: '*.stories.ts'}, {directory: '../lib'}]}, configDir), [
+      '/repo/apps/storybook/src/*.stories.ts',
+      '/repo/apps/storybook/lib/**/*.@(mdx|stories.@(js|jsx|mjs|ts|tsx))'
+    ])
+  })
+
+  for (
+    const [label, config] of [
+      ['a config with no stories field', {}],
+      ['a missing config export', undefined],
+      ['an empty stories array', {stories: []}],
+      ['a stories function', {stories: () => []}],
+      ['a non-string entry', {stories: [42]}],
+      ['a negated glob entry', {stories: ['!../src/**']}],
+      ['a specifier without a directory', {stories: [{files: '*.stories.ts'}]}]
+    ]
+  ) {
+    test(`throws on ${label}, never reports every widget as story-less`, () => {
+      assert.throws(() => storyGlobs(config, configDir), /Storybook config/)
+    })
+  }
+})
+
+describe('readStorybookStoryFiles — loads the real main config', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'd1-storybook-'))
+  after(() => fs.rmSync(tmp, {recursive: true, force: true}))
+
+  function fixtureConfig(name, mainSource) {
+    const dir = path.join(tmp, name)
+    fs.mkdirSync(path.join(dir, '.storybook'), {recursive: true})
+    fs.mkdirSync(path.join(dir, 'a'), {recursive: true})
+    fs.mkdirSync(path.join(dir, 'b/nested'), {recursive: true})
+    fs.writeFileSync(path.join(dir, 'a/One.stories.ts'), '')
+    fs.writeFileSync(path.join(dir, 'b/nested/Two.stories.js'), '')
+    fs.writeFileSync(path.join(dir, 'b/nested/notes.md'), '')
+    if (mainSource !== null) {
+      fs.writeFileSync(path.join(dir, '.storybook/main.mjs'), mainSource)
+    }
+    return path.join(dir, '.storybook')
+  }
+
+  test('returns every story file under every configured root', async () => {
+    const configDir = fixtureConfig('ok', "export default {stories: ['../a/*.stories.ts', {directory: '../b'}]}\n")
+    const files = await readStorybookStoryFiles(configDir)
+    assert.deepEqual(files.map((f) => path.relative(path.dirname(configDir), f)), ['a/One.stories.ts', 'b/nested/Two.stories.js'])
+    assert.deepEqual(files.map(storyStem), ['One', 'Two'])
+  })
+
+  test('rejects when the config directory has no main config', async () => {
+    await assert.rejects(readStorybookStoryFiles(fixtureConfig('missing', null)), /no Storybook main config/)
+  })
+
+  test('rejects when the main config fails to load', async () => {
+    const configDir = fixtureConfig('broken', "throw new Error('boom')\n")
+    await assert.rejects(readStorybookStoryFiles(configDir), /cannot load Storybook config .*main\.mjs: boom/)
+  })
+
+  test('rejects when the main config has no stories', async () => {
+    await assert.rejects(readStorybookStoryFiles(fixtureConfig('empty', 'export default {}\n')), /no `stories` array/)
+  })
+
+  // The regression: D1 probed only apps/storybook/src/production/, so every widget whose
+  // story lives in packages/web/stories/production/ read as story-less.
+  test('the repo config reaches packages/web/stories/production as well as apps/storybook/src', async () => {
+    const stems = new Set((await readStorybookStoryFiles()).map(storyStem))
+    for (const widget of ['HeartRate', 'Hydration', 'NightSummary', 'Workouts', 'Bookshelf', 'MovementRings']) {
+      assert.ok(stems.has(widget), `expected a story for ${widget}; Storybook loads: ${[...stems].sort().join(', ')}`)
+    }
+  })
+})
+
+describe('d3-widget-compliance import side effects', () => {
+  // D1 imports toKebabName from the compliance runner. That import used to run the whole
+  // compliance report, print it into D1's output, and could process.exit(1) inside D1.
+  test('importing the compliance runner prints nothing and does not exit', () => {
+    const out = execFileSync(process.execPath, [
+      '--input-type=module',
+      '-e',
+      "await import('./audits/checks/d3-widget-compliance.mjs'); console.log('after-import')"
+    ], {cwd: ROOT, encoding: 'utf-8'})
+    assert.equal(out, 'after-import\n')
   })
 })

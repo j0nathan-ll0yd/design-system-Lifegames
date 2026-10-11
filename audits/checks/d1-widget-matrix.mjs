@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /**
  * Reconciles widget registries, component files, and story files so no registry can omit a
- * widget. IDs are canonicalized without V3 suffixes. Story coverage comes from actual story
- * exports because the generated inventory cannot prove a story exists. Default mode reports;
- * `--check` fails.
+ * widget. IDs are canonicalized without V3 suffixes. Story coverage comes from the story files
+ * Storybook's own main config loads (audits/lib/storybook-stories.mjs), because the generated
+ * inventory cannot prove a story exists. Default mode reports; `--check` fails. An unreadable
+ * Storybook config exits 2 in both modes.
  */
 
 import fs from 'node:fs'
 import path from 'node:path'
+import {pathToFileURL} from 'node:url'
+import {readStorybookStoryFiles, storyStem} from '../lib/storybook-stories.mjs'
 import {toKebabName} from './d3-widget-compliance.mjs'
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..')
@@ -221,7 +224,7 @@ export function buildMatrix({
         id: cid,
         severity: 'medium',
         message:
-          `docs/widget-inventory.json reports hasStory:${row.docsInventoryHasStory} for "${cid}", but the filesystem shows hasStorybookStory:${hasStorybookStory}. audits/checks/d3-widget-inventory.mjs looks for co-located *.stories.tsx next to *.types.ts, which cannot see apps/storybook/src/production/*.stories.ts.`
+          `docs/widget-inventory.json reports hasStory:${row.docsInventoryHasStory} for "${cid}", but the filesystem shows hasStorybookStory:${hasStorybookStory}. The inventory is stale: regenerate it with \`pnpm widget:inventory\`.`
       })
     }
 
@@ -229,7 +232,8 @@ export function buildMatrix({
       findings.push({
         id: cid,
         severity: 'low',
-        message: `"${cid}" is a production web widget with no Storybook story (apps/storybook/src/production) — ratchet target, not yet a hard requirement.`
+        message:
+          `"${cid}" is a production web widget with no Storybook story (in any root apps/storybook/.storybook/main.ts loads) — ratchet target, not yet a hard requirement.`
       })
     }
 
@@ -314,7 +318,7 @@ function walk(dir, filterFn) {
   return results
 }
 
-function loadRealSources() {
+async function loadRealSources() {
   const productionRegistry = readJSON('Sources/LifegamesWidgets/Resources/production-widgets.json') ?? []
   const manifest = readJSON('Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json')
   const manifestWidgets = manifest?.widgets ?? []
@@ -329,9 +333,7 @@ function loadRealSources() {
     )
   )
   const docPageStems = new Set(walk(path.join(ROOT, 'apps/docs/src/pages/widgets'), (n) => n.endsWith('.astro')).map((f) => path.basename(f, '.astro')))
-  const storyStems = new Set(
-    walk(path.join(ROOT, 'apps/storybook/src/production'), (n) => n.endsWith('.stories.ts')).map((f) => path.basename(f, '.stories.ts'))
-  )
+  const storyStems = new Set((await readStorybookStoryFiles()).map(storyStem))
   const snapshotBasenames = walk(path.join(ROOT, 'Tests/LifegamesWidgetsTests/__Snapshots__'), (n) => n.endsWith('.png')).map((f) =>
     path.basename(f).toLowerCase()
   )
@@ -410,8 +412,15 @@ function printReport({rows, findings}) {
   return sorted
 }
 
-function main() {
-  const sources = loadRealSources()
+async function main() {
+  let sources
+  try {
+    sources = await loadRealSources()
+  } catch (err) {
+    // Fails even in report mode: a matrix built without the story roots would under-report.
+    console.error(`D1: ${err.message}`)
+    process.exit(2)
+  }
   const {rows, findings} = buildMatrix(sources)
   const sorted = printReport({rows, findings})
 
@@ -421,7 +430,6 @@ function main() {
   process.exit(0)
 }
 
-const isMain = import.meta.url === `file://${process.argv[1]}`
-if (isMain) {
-  main()
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  await main()
 }

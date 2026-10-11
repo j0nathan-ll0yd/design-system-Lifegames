@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-18T06:24:25.929Z",
+  "generatedAt": "2026-10-11T18:17:10.922Z",
   "totalCount": 30,
-  "portfolioConsumedCount": 19,
+  "portfolioConsumedCount": 17,
   "widgets": [
     {
       "id": "ActivityFeed",
@@ -38,7 +38,7 @@
     {
       "id": "DevActivityLog",
       "category": "github",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -78,7 +78,7 @@
     {
       "id": "StarredRepoList",
       "category": "github",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -94,7 +94,7 @@
     {
       "id": "HeartRate",
       "category": "health",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -102,7 +102,7 @@
     {
       "id": "Hydration",
       "category": "health",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -118,7 +118,7 @@
     {
       "id": "NightSummary",
       "category": "health",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -126,7 +126,7 @@
     {
       "id": "Workouts",
       "category": "health",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -134,7 +134,7 @@
     {
       "id": "BioTerminal",
       "category": "identity",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -142,7 +142,7 @@
     {
       "id": "ComingSoon",
       "category": "identity",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": false
@@ -150,7 +150,7 @@
     {
       "id": "IdentityCard",
       "category": "identity",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -158,7 +158,7 @@
     {
       "id": "NotFound",
       "category": "identity",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": false,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -166,23 +166,23 @@
     {
       "id": "ExplorationOdometerV3",
       "category": "location",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": false,
       "schemaExempt": true,
-      "consumedByPortfolio": true
+      "consumedByPortfolio": false
     },
     {
       "id": "PlaceLeaderboardV3",
       "category": "location",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": false,
       "schemaExempt": true,
-      "consumedByPortfolio": true
+      "consumedByPortfolio": false
     },
     {
       "id": "DndOverlay",
       "category": "other",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -190,7 +190,7 @@
     {
       "id": "FocusOverlay",
       "category": "other",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -206,7 +206,7 @@
     {
       "id": "SystemStatus",
       "category": "other",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -214,7 +214,7 @@
     {
       "id": "BookModal",
       "category": "reading",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -222,7 +222,7 @@
     {
       "id": "Bookshelf",
       "category": "reading",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -230,7 +230,7 @@
     {
       "id": "ReadingFeed",
       "category": "reading",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
@@ -238,7 +238,7 @@
     {
       "id": "TheatreReviews",
       "category": "reading",
-      "hasStory": false,
+      "hasStory": true,
       "hasSwiftMirror": true,
       "schemaExempt": true,
       "consumedByPortfolio": true
