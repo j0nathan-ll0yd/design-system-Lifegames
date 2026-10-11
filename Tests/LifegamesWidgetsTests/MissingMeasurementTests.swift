@@ -1,10 +1,12 @@
 import Foundation
 import LifegamesComponents
+import LifegamesCopy
 import SwiftUI
 import Testing
 import ViewInspector
 @testable import LifegamesWidgets
 
+// covers: widget-contract#A Swift health widget renders a missing measurement as the no-reading mark
 /// A missing measurement renders as missing, never as 0 (atlas decision 0160 F1). The Swift
 /// props carry a missing value as nil; each view renders `NoReading.mark` for it, and VoiceOver
 /// reads the shared "No reading" copy. A measured 0 still renders as 0 wherever 0 is a reading.
@@ -190,6 +192,93 @@ struct MissingMeasurementTests {
         #expect(!SunArcFooterView.daylightHit(nil, goal: 0))
         #expect(SunArcFooterView.daylightHit(20, goal: 20))
         #expect(!SunArcFooterView.daylightHit(19, goal: 20))
+    }
+
+    private func counts(
+        moveKcal: Double?, exerciseMin: Double?, steps: Int?, distanceMeters: Double?, flights: Int?
+    ) -> MovementRingsProps {
+        MovementRingsProps(
+            moveKcal: moveKcal, exerciseMin: exerciseMin, standHr: 9, steps: steps,
+            distanceMeters: distanceMeters, flights: flights, daylightMin: 48
+        )
+    }
+
+    @Test func movementMissingCountsRenderTheLabelledMark() throws {
+        let view = MovementRingsView(props: counts(moveKcal: nil, exerciseMin: nil, steps: nil, distanceMeters: nil, flights: nil))
+        let text = try renderedText(view)
+        // Steps, distance and flights chips, the move and exercise swatches, and the ring
+        // centre: six marks. Stand (9) and daylight (48) are measured.
+        let found = try marks(in: view)
+        #expect(found.count == 6)
+        try expectLabelled(found)
+        #expect(!text.contains("0"))
+        #expect(!text.contains("0%"))
+        #expect(!text.contains("0.0"))
+        #expect(!text.contains("0/500"))
+        #expect(!text.contains("0/30"))
+        #expect(text.contains("/500"))
+        #expect(text.contains("/30"))
+        #expect(text.contains("9"))
+    }
+
+    @Test func movementMeasuredZeroCountsStayZero() throws {
+        let view = MovementRingsView(props: counts(moveKcal: 0, exerciseMin: 0, steps: 0, distanceMeters: 0, flights: 0))
+        let text = try renderedText(view)
+        #expect(try marks(in: view).isEmpty)
+        // Ring centre, steps, distance, flights, then the move and exercise swatch values.
+        #expect(text.contains("0%"))
+        #expect(text.contains("0.0"))
+        #expect(text.filter { $0 == "0" }.count == 4)
+    }
+
+    @Test func movementEmptyStateShowsTheNoticeAndNoValue() throws {
+        // Web parity: an empty card hides the values and shows the `movement.empty` notice.
+        let view = MovementRingsView(state: .empty)
+        let text = try renderedText(view)
+        #expect(text.contains(CopyLoader.widgets.movement.empty))
+        #expect(!text.contains { $0.contains("0") })
+        #expect(!text.contains(NoReading.mark))
+        let label = try view.inspect().find(MovementRingsEmptyView.self).vStack().accessibilityLabel().string()
+        #expect(label == "\(CopyLoader.widgets.movement.title). \(CopyLoader.widgets.movement.empty)")
+    }
+
+    @Test func movementCountFormatters() {
+        #expect(MovementRingsPopulatedView.stepsText(nil) == NoReading.mark)
+        #expect(MovementRingsPopulatedView.stepsText(0) == "0")
+        #expect(MovementRingsPopulatedView.distanceText(nil) == NoReading.mark)
+        #expect(MovementRingsPopulatedView.distanceText(0) == "0.0")
+        #expect(MovementRingsPopulatedView.distanceText(6249) == "6.2")
+        #expect(NoReading.text(Int?.none) == NoReading.mark)
+    }
+
+    @Test func movementRingCentreIsTheMarkWithoutMoveAndCapsAtTheGoal() {
+        // Web `centerText`: the mark without a move reading, else the percentage capped at 100%.
+        #expect(ConcentricRingsView.centerText(moveKcal: nil, goalMoveKcal: 500) == NoReading.mark)
+        #expect(ConcentricRingsView.centerText(moveKcal: 0, goalMoveKcal: 500) == "0%")
+        #expect(ConcentricRingsView.centerText(moveKcal: 250, goalMoveKcal: 500) == "50%")
+        #expect(ConcentricRingsView.centerText(moveKcal: 520, goalMoveKcal: 500) == "100%")
+        #expect(ConcentricRingsView.centerText(moveKcal: 100, goalMoveKcal: 0) == "0%")
+        // The kcal rounds before the division, as on the web: 4.5 of 1000 is 5 of 1000, 1%.
+        #expect(ConcentricRingsView.centerText(moveKcal: 4.5, goalMoveKcal: 1000) == "1%")
+        #expect(ConcentricRingsView.centerText(moveKcal: 4.4, goalMoveKcal: 1000) == "0%")
+    }
+
+    @Test func movementAdapterKeepsMissingCountsMissing() throws {
+        let json = #"{"health":{"movement":{"standHr":4}}}"#
+        let props = try #require(Adapters.movementRings(fromFixture: Data(json.utf8)))
+        #expect(props.moveKcal == nil)
+        #expect(props.exerciseMin == nil)
+        #expect(props.steps == nil)
+        #expect(props.distanceMeters == nil)
+        #expect(props.flights == nil)
+        #expect(props.standHr == 4)
+        let zeros = #"{"health":{"movement":{"moveKcal":0,"exerciseMin":0,"steps":0,"distanceMeters":0,"flights":0}}}"#
+        let measured = try #require(Adapters.movementRings(fromFixture: Data(zeros.utf8)))
+        #expect(measured.moveKcal == 0)
+        #expect(measured.exerciseMin == 0)
+        #expect(measured.steps == 0)
+        #expect(measured.distanceMeters == 0)
+        #expect(measured.flights == 0)
     }
 
     @Test func movementAdapterKeepsMissingStandAndDaylightMissing() throws {

@@ -106,6 +106,7 @@ step "package payload drift"   node audits/checks/c147-package-drift.mjs --lane=
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises
 # runtime behaviour of the updaters/adapters Props contract.
 step "web tests"               pnpm -F @j0nathan-ll0yd/web test
+step "widget-rule known answers" pnpm -F @j0nathan-ll0yd/web exec vitest run --config ../../contracts/widget-rules/vitest.config.mjs
 step "copy tests"              pnpm -F @j0nathan-ll0yd/copy test
 step "audit script tests"      pnpm test:scripts
 step "copy grep-gate"          pnpm -F @j0nathan-ll0yd/copy grep-gate
