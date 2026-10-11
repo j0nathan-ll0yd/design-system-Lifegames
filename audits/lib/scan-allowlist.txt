@@ -266,6 +266,7 @@ apps/docs/src/pages/widgets/starred-repo-list.astro:marker:j0nathan-ll0yd
 apps/docs/src/pages/widgets/system-status.astro:marker:j0nathan-ll0yd
 apps/docs/src/pages/widgets/theatre-reviews.astro:marker:j0nathan-ll0yd
 apps/docs/src/pages/widgets/workouts.astro:marker:j0nathan-ll0yd
+apps/docs/src/pages/widgets/movement-rings.astro:marker:j0nathan-ll0yd
 apps/portfolio/src/components/DashboardShowcase.astro:marker:j0nathan-ll0yd
 apps/portfolio/src/pages/index.astro:marker:j0nathan-ll0yd
 apps/portfolio/src/pages/og-images.astro:marker:j0nathan-ll0yd
