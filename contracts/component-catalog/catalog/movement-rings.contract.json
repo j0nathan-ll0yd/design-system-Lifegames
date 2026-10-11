@@ -119,7 +119,7 @@
   ],
   "a11y": {
     "voiceOverLabel": true,
-    "ref": "Sources/LifegamesWidgets/Health/MovementRingsView.swift:570"
+    "ref": "Sources/LifegamesWidgets/Health/MovementRingsView.swift:587"
   },
   "conformance": {
     "behavioralTest": null
