@@ -175,10 +175,11 @@ struct ConcentricRingsView: View {
     // web: mv-rings-center-cap 0.50rem ≈ 8pt letter-spacing 2.5px uppercase
     /// The move ring's centre text: the percentage of the goal, capped at 100% like the web
     /// `centerText`, or the no-reading mark when move was not measured.
+    /// Like the web, the kcal is rounded before it is divided by the goal.
     static func centerText(moveKcal: Double?, goalMoveKcal: Double) -> String {
         guard let moveKcal else { return NoReading.mark }
         guard goalMoveKcal > 0 else { return "0%" }
-        return "\(Int((min(moveKcal / goalMoveKcal, 1) * 100).rounded()))%"
+        return "\(Int((min(moveKcal.rounded() / goalMoveKcal, 1) * 100).rounded()))%"
     }
 
     var body: some View {
@@ -514,17 +515,41 @@ private struct MovementRingsSkeletonView: View {
     }
 }
 
-private struct MovementRingsEmptyView: View {
+/// Nothing measured today. Parity with the web empty state: the card shows the
+/// `movement.empty` notice and no value, never a ring set of invented zeros (atlas decision 0160).
+/// Same header strip and footprint as the paused card.
+struct MovementRingsEmptyView: View {
     var body: some View {
-        MovementRingsPopulatedView(props: MovementRingsProps(
-            moveKcal: 0,
-            exerciseMin: 0,
-            standHr: 0,
-            steps: 0,
-            distanceMeters: 0,
-            flights: 0,
-            daylightMin: 0
-        ))
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(LGColor.healthRed)
+                        .frame(width: 6, height: 6)
+                        .shadow(color: LGColor.healthRed.opacity(0.6), radius: 4)
+                    Text(movementCopy.timestampToday)
+                        .font(.system(size: 9, design: .monospaced))
+                        .kerning(1.5)
+                        .foregroundStyle(LGColor.textMuted)
+                }
+            }
+            .padding(.top, 12)
+            .padding(.horizontal, 18)
+
+            Text(movementCopy.empty)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(LGColor.textMuted)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .frame(height: 144)
+                .padding(.top, 14)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 16)
+        }
+        .neonCard(accent: LGColor.healthRed)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(movementCopy.title). \(movementCopy.empty)")
     }
 }
 

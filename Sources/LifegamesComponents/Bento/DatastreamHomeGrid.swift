@@ -117,9 +117,9 @@ public struct DatastreamHomeGrid: View {
         ) {
             HStack(alignment: .center, spacing: Spacing.s500) {
                 ActivityRingsView(
-                    move: data.moveProgress,
-                    exercise: data.exerciseProgress,
-                    stand: data.standProgress,
+                    move: Self.ringFill(data.moveProgress, value: data.moveValue),
+                    exercise: Self.ringFill(data.exerciseProgress, value: data.exerciseValue),
+                    stand: Self.ringFill(data.standProgress, value: data.standValue),
                     size: 128
                 )
 
@@ -161,6 +161,12 @@ public struct DatastreamHomeGrid: View {
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    /// A ring's fill: empty when its value was not measured, whatever progress the caller
+    /// passed, so a ring never fills beside the no-reading mark.
+    static func ringFill(_ progress: Double, value: String?) -> Double {
+        value == nil ? 0 : progress
     }
 
     /// The step count with grouping, or the no-reading mark when steps were not measured.

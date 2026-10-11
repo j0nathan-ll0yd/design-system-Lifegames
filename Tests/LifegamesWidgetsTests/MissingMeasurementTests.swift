@@ -1,5 +1,6 @@
 import Foundation
 import LifegamesComponents
+import LifegamesCopy
 import SwiftUI
 import Testing
 import ViewInspector
@@ -230,6 +231,17 @@ struct MissingMeasurementTests {
         #expect(text.filter { $0 == "0" }.count == 4)
     }
 
+    @Test func movementEmptyStateShowsTheNoticeAndNoValue() throws {
+        // Web parity: an empty card hides the values and shows the `movement.empty` notice.
+        let view = MovementRingsView(state: .empty)
+        let text = try renderedText(view)
+        #expect(text.contains(CopyLoader.widgets.movement.empty))
+        #expect(!text.contains { $0.contains("0") })
+        #expect(!text.contains(NoReading.mark))
+        let label = try view.inspect().find(MovementRingsEmptyView.self).vStack().accessibilityLabel().string()
+        #expect(label == "\(CopyLoader.widgets.movement.title). \(CopyLoader.widgets.movement.empty)")
+    }
+
     @Test func movementCountFormatters() {
         #expect(MovementRingsPopulatedView.stepsText(nil) == NoReading.mark)
         #expect(MovementRingsPopulatedView.stepsText(0) == "0")
@@ -246,6 +258,9 @@ struct MissingMeasurementTests {
         #expect(ConcentricRingsView.centerText(moveKcal: 250, goalMoveKcal: 500) == "50%")
         #expect(ConcentricRingsView.centerText(moveKcal: 520, goalMoveKcal: 500) == "100%")
         #expect(ConcentricRingsView.centerText(moveKcal: 100, goalMoveKcal: 0) == "0%")
+        // The kcal rounds before the division, as on the web: 4.5 of 1000 is 5 of 1000, 1%.
+        #expect(ConcentricRingsView.centerText(moveKcal: 4.5, goalMoveKcal: 1000) == "1%")
+        #expect(ConcentricRingsView.centerText(moveKcal: 4.4, goalMoveKcal: 1000) == "0%")
     }
 
     @Test func movementAdapterKeepsMissingCountsMissing() throws {

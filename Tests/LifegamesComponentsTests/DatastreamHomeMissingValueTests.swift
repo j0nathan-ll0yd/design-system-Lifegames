@@ -56,6 +56,9 @@ struct DatastreamHomeMissingValueTests {
         #expect(!strings.contains("0"))
         #expect(!strings.contains { $0.hasSuffix("% MOVE") })
         #expect(DatastreamHomeGrid.moveBadge(data) == nil)
+        // A missing value never fills its ring, whatever progress the caller passed.
+        #expect(DatastreamHomeGrid.ringFill(0.6, value: nil) == 0)
+        #expect(DatastreamHomeGrid.ringFill(0.6, value: "300") == 0.6)
         // Steps, move and exercise; resting HR (58) and stand ("11/12") are measured.
         let marks = all.filter { (try? $0.string()) == NoReading.mark }
         #expect(marks.count == 3)
