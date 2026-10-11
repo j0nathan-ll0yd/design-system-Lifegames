@@ -100,7 +100,7 @@ public enum WidgetRules {
             return state
         }
         guard isReading(health.heartRate), let heartRate = health.heartRate else {
-            // A readable export with no quantity at all is empty ("No heart rate data");
+            // A readable export with no quantity at all is empty (`heartRate.empty` copy);
             // one with other readings but no heart rate cannot render its primary
             // measurement: unavailable.
             return health.quantityCount == 0 ? .empty : .unavailable
