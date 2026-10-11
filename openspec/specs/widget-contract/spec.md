@@ -735,3 +735,60 @@ context.
   token differs from the mirrored file
 - **THEN** the first SHALL load from the same origin, the second from its contract URL with the W6
   fallback
+
+### Requirement: A Swift widget state rule returns the web rule's state for the same input
+
+A Swift consumer that derives a live widget's state SHALL use the Swift twin of that widget's web state
+rule, and the twin SHALL return the web rule's state for the same input. `WidgetRenderState` mirrors the
+web `WidgetState` union case for case, with the web strings as raw values, and `WidgetRenderState.resolve`
+mirrors `resolveWidgetState`. `WidgetRules.heartRateState` mirrors `heartRateState` in
+`packages/web/src/runtime/widget-rules.ts`: a paused watch keeps the data state, a data state without a
+heart-rate reading is `unavailable` when the export carries other quantities and `empty` when it carries
+none, and a recorded 0 for both heart rate and HRV is `empty` (atlas decision 0160).
+
+This is a **blocking** rule. `WidgetRulesTests` runs inside `swift test` in the required `test-swift`
+status context. Every expected state in its table is the web rule's own output for the same JSON props,
+and every shared `heart-rate.*` fixture is pinned, so a new fixture without a known answer fails.
+
+#### Scenario: The export carries other readings but no heart rate
+
+- **GIVEN** a health export with an HRV reading and no heart-rate quantity
+- **WHEN** the Swift twin and the web rule resolve the HeartRate state
+- **THEN** both SHALL return `unavailable`, and the Swift card SHALL show the unavailable notice and no
+  value
+
+#### Scenario: The export carries no quantity at all
+
+- **GIVEN** a readable health export whose quantities are empty
+- **WHEN** the Swift twin resolves the HeartRate state
+- **THEN** it SHALL return `empty`, and the Swift card SHALL show the heart-rate empty copy
+
+#### Scenario: The twin drifts from the web rule
+
+- **GIVEN** a known answer produced by the web `heartRateState`
+- **WHEN** the Swift twin returns a different state for the same JSON props
+- **THEN** `WidgetRulesTests` SHALL fail naming the input
+
+### Requirement: A Swift health widget renders a missing measurement as the no-reading mark
+
+A Swift health widget and the home bento grid SHALL carry a measurement the export did not carry as
+`nil` and render it as `NoReading.mark`, labelled for VoiceOver with the shared no-reading copy. A
+measured 0 SHALL still render as 0. This covers the HeartRate vitals, the NightSummary score, every
+MovementRings measurement (move, exercise, stand, steps, distance, flights and daylight) and the bento
+grid's steps, move, exercise, stand and resting heart rate (atlas decision 0160 F1).
+
+This is a **blocking** rule. `MissingMeasurementTests` and `DatastreamHomeMissingValueTests` run inside
+`swift test` in the required `test-swift` status context.
+
+#### Scenario: MovementRings receives no counts
+
+- **GIVEN** MovementRings props with no move, exercise, steps, distance or flights reading
+- **WHEN** the card renders
+- **THEN** each of those slots and the ring centre SHALL show the labelled mark, and no slot SHALL
+  show 0
+
+#### Scenario: A measured 0 reaches the widget
+
+- **GIVEN** MovementRings props whose counts are a measured 0
+- **WHEN** the card renders
+- **THEN** each slot SHALL show 0 and no slot SHALL show the mark

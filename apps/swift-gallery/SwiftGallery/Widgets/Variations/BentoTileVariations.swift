@@ -49,14 +49,14 @@ enum BentoTileVariations {
                         progress: data.moveProgress,
                         color: LGColor.accentPink,
                         label: "Move",
-                        value: data.moveValue,
+                        value: data.moveValue ?? NoReading.mark,
                         size: 64
                     )
                     HealthRingView(
                         progress: min(data.exerciseProgress, 1.0),
                         color: LGColor.accentGreen,
                         label: "Exercise",
-                        value: data.exerciseValue,
+                        value: data.exerciseValue ?? NoReading.mark,
                         size: 64
                     )
                     HealthRingView(
@@ -70,9 +70,11 @@ enum BentoTileVariations {
                 .frame(maxWidth: .infinity)
 
                 HStack {
-                    Text("\(data.steps)")
+                    let steps = NoReading.text(data.steps)
+                    Text(steps)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundStyle(LGColor.textTitle)
+                        .noReadingAccessibility(steps)
                     Text("steps")
                         .font(.system(size: 13))
                         .foregroundStyle(LGColor.textMuted)

@@ -3,6 +3,7 @@ import Testing
 import ViewInspector
 @testable import LifegamesComponents
 
+// covers: widget-contract#A Swift health widget renders a missing measurement as the no-reading mark
 /// A missing resting heart rate or stand value renders the no-reading mark, never 0
 /// (atlas decision 0160 F1), and VoiceOver reads "No reading" for it.
 @Suite("DatastreamHomeGrid — missing values")
@@ -41,5 +42,39 @@ struct DatastreamHomeMissingValueTests {
         for text in try all.filter({ try ["58 bpm", "11"].contains($0.string()) }) {
             #expect((try? text.accessibilityLabel().string()) != "No reading")
         }
+    }
+
+    @Test func missingStepsMoveAndExerciseRenderTheLabelledMarkAndHideTheBadge() throws {
+        var data = DatastreamHomeData.sample
+        data.steps = nil
+        data.moveValue = nil
+        data.moveProgress = 0
+        data.exerciseValue = nil
+        data.exerciseProgress = 0
+        let all = try texts(data)
+        let strings = try all.map { try $0.string() }
+        #expect(!strings.contains("0"))
+        #expect(!strings.contains { $0.hasSuffix("% MOVE") })
+        #expect(DatastreamHomeGrid.moveBadge(data) == nil)
+        // Steps, move and exercise; resting HR (58) and stand ("11/12") are measured.
+        let marks = all.filter { (try? $0.string()) == NoReading.mark }
+        #expect(marks.count == 3)
+        for mark in marks {
+            #expect(try mark.accessibilityLabel().string() == "No reading")
+        }
+    }
+
+    @Test func measuredZeroStepsMoveAndExerciseStayZero() throws {
+        var data = DatastreamHomeData.sample
+        data.steps = 0
+        data.moveValue = "0"
+        data.moveProgress = 0
+        data.exerciseValue = "0"
+        data.exerciseProgress = 0
+        let strings = try texts(data).map { try $0.string() }
+        #expect(strings.filter { $0 == "0" }.count == 3)
+        #expect(!strings.contains(NoReading.mark))
+        #expect(DatastreamHomeGrid.moveBadge(data) == "0% MOVE")
+        #expect(DatastreamHomeGrid.stepsText(8247) == 8247.formatted())
     }
 }

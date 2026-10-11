@@ -38,7 +38,7 @@ public struct MovementRingsView: View {
 
 // MARK: - Populated
 
-private struct MovementRingsPopulatedView: View {
+struct MovementRingsPopulatedView: View {
     let props: MovementRingsProps
 
     var body: some View {
@@ -78,9 +78,9 @@ private struct MovementRingsPopulatedView: View {
                     // web: mv-chips flex-direction:column; gap:8px (Spacing.s200)
                     // DISTANCE label carries "(km)" so the value side is just the number — prevents wrapping
                     VStack(alignment: .trailing, spacing: Spacing.s200) {
-                        MovementChip(label: movementCopy.steps.uppercased(), value: formatThousands(props.steps))
-                        MovementChip(label: "\(movementCopy.distance.uppercased()) (\(movementCopy.distanceUnit))", value: formatDistanceValue(props.distanceMeters))
-                        MovementChip(label: movementCopy.flights.uppercased(), value: "\(props.flights)")
+                        MovementChip(label: movementCopy.steps.uppercased(), value: Self.stepsText(props.steps))
+                        MovementChip(label: "\(movementCopy.distance.uppercased()) (\(movementCopy.distanceUnit))", value: Self.distanceText(props.distanceMeters))
+                        MovementChip(label: movementCopy.flights.uppercased(), value: NoReading.text(props.flights))
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
@@ -97,14 +97,14 @@ private struct MovementRingsPopulatedView: View {
                         MovementSwatch(
                             color: LGColor.healthRed,
                             label: movementCopy.caloriesShort,
-                            value: Int(props.moveKcal.rounded()),
+                            value: props.moveKcal.map { Int($0.rounded()) },
                             goal: Int(props.goals.moveKcal.rounded())
                         )
                         Spacer(minLength: 4)
                         MovementSwatch(
                             color: LGColor.accentGreen,
                             label: movementCopy.exercise,
-                            value: Int(props.exerciseMin.rounded()),
+                            value: props.exerciseMin.map { Int($0.rounded()) },
                             goal: Int(props.goals.exerciseMin.rounded())
                         )
                         Spacer(minLength: 4)
@@ -138,16 +138,27 @@ private struct MovementRingsPopulatedView: View {
         guard let value, goal > 0 else { return 0 }
         return min(1.5, max(0, value / goal))
     }
+
+    /// Steps with thousands grouping, or the no-reading mark when not measured.
+    static func stepsText(_ steps: Int?) -> String {
+        steps.map { $0.formatted(.number.grouping(.automatic)) } ?? NoReading.mark
+    }
+
+    /// Distance as kilometres to one decimal place (the chip label carries the unit), or the
+    /// no-reading mark when not measured (web `(n / 1000).toFixed(1)`).
+    static func distanceText(_ meters: Double?) -> String {
+        meters.map { String(format: "%.1f", $0 / 1000) } ?? NoReading.mark
+    }
 }
 
 // MARK: - Concentric Rings
 
-private struct ConcentricRingsView: View {
+struct ConcentricRingsView: View {
     let moveProgress: Double
     let exerciseProgress: Double
     let standProgress: Double
     // needed for center pct label
-    let moveKcal: Double
+    let moveKcal: Double?
     let goalMoveKcal: Double
 
     @State private var animatedMove: Double = 0
@@ -162,9 +173,12 @@ private struct ConcentricRingsView: View {
 
     // web: mv-rings-center-pct 0.92rem ≈ 15pt weight 700 letter-spacing -0.01em
     // web: mv-rings-center-cap 0.50rem ≈ 8pt letter-spacing 2.5px uppercase
-    private var movePct: Int {
-        guard goalMoveKcal > 0 else { return 0 }
-        return Int(round(moveKcal / goalMoveKcal * 100))
+    /// The move ring's centre text: the percentage of the goal, capped at 100% like the web
+    /// `centerText`, or the no-reading mark when move was not measured.
+    static func centerText(moveKcal: Double?, goalMoveKcal: Double) -> String {
+        guard let moveKcal else { return NoReading.mark }
+        guard goalMoveKcal > 0 else { return "0%" }
+        return "\(Int((min(moveKcal / goalMoveKcal, 1) * 100).rounded()))%"
     }
 
     var body: some View {
@@ -180,10 +194,12 @@ private struct ConcentricRingsView: View {
 
             // web: mv-rings-center — centered column, gap 2px
             VStack(spacing: 2) {
-                Text("\(movePct)%")
+                let center = Self.centerText(moveKcal: moveKcal, goalMoveKcal: goalMoveKcal)
+                Text(center)
                     .font(.system(size: 15, weight: .bold, design: .monospaced))
                     .tracking(-0.15)
                     .foregroundStyle(LGColor.textTitle)
+                    .noReadingAccessibility(center)
                 Text(movementCopy.caloriesShort.uppercased())
                     .font(.system(size: 8, weight: .medium, design: .monospaced))
                     .kerning(2.5)
@@ -241,6 +257,7 @@ private struct MovementChip: View {
                 .foregroundStyle(LGColor.textTitle)
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
+                .noReadingAccessibility(value)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
@@ -571,17 +588,6 @@ private struct MovementRingsPausedView: View {
     }
 }
 
-// MARK: - Formatters
-
-private func formatThousands(_ value: Int) -> String {
-    value.formatted(.number.grouping(.automatic))
-}
-
-/// Returns the numeric km string — no space; unit "km" is appended by the chip with spacing:0
-private func formatDistanceValue(_ meters: Double) -> String {
-    String(format: "%.1f", meters / 1000)
-}
-
 // MARK: - Previews
 
 #Preview("Movement Rings — Populated") {
@@ -668,6 +674,23 @@ private func formatDistanceValue(_ meters: Double) -> String {
         distanceMeters: 6200,
         flights: 14,
         daylightMin: nil,
+        goals: MovementRingsProps.Goals(),
+        solar: nil
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — No Counts Reading") {
+    MovementRingsView(props: MovementRingsProps(
+        moveKcal: nil,
+        exerciseMin: nil,
+        standHr: 9,
+        steps: nil,
+        distanceMeters: nil,
+        flights: nil,
+        daylightMin: 48,
         goals: MovementRingsProps.Goals(),
         solar: nil
     ))

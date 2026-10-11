@@ -33,14 +33,20 @@ public struct MovementRingsProps: Equatable, Sendable {
         }
     }
 
-    public var moveKcal: Double
-    public var exerciseMin: Double
+    /// Active energy today in kcal, nil when not measured. A missing value renders the
+    /// no-reading mark and an empty ring, never 0; a measured 0 stays 0 (atlas decision 0160 F1).
+    public var moveKcal: Double?
+    /// Exercise minutes today, nil when not measured (renders the no-reading mark).
+    public var exerciseMin: Double?
     /// Stand hours today (caller pre-converts from minutes), nil when not measured.
     /// A missing value renders the no-reading mark, never 0 (atlas decision 0160 F1).
     public var standHr: Double?
-    public var steps: Int
-    public var distanceMeters: Double
-    public var flights: Int
+    /// Steps today, nil when not measured (renders the no-reading mark).
+    public var steps: Int?
+    /// Walking and running distance today in meters, nil when not measured.
+    public var distanceMeters: Double?
+    /// Flights climbed today, nil when not measured.
+    public var flights: Int?
     /// Minutes in daylight today, nil when not measured (renders the no-reading mark).
     public var daylightMin: Double?
     public var goals: Goals
@@ -54,12 +60,12 @@ public struct MovementRingsProps: Equatable, Sendable {
     public var watchCharging: Bool
 
     public init(
-        moveKcal: Double,
-        exerciseMin: Double,
+        moveKcal: Double?,
+        exerciseMin: Double?,
         standHr: Double?,
-        steps: Int,
-        distanceMeters: Double,
-        flights: Int,
+        steps: Int?,
+        distanceMeters: Double?,
+        flights: Int?,
         daylightMin: Double?,
         goals: Goals = Goals(),
         solar: Solar? = nil,
