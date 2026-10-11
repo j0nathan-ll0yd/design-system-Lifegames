@@ -1,0 +1,477 @@
+{
+  "description": "Known answers for the HeartRate state rule (atlas decision 0160). The web rule heartRateState in packages/web/src/runtime/widget-rules.ts and its Swift twin WidgetRules.heartRateState in Sources/LifegamesWidgets/Runtime/WidgetRules.swift must both return `expected` for each case's `props`, and the listed state for each shared heart-rate fixture. heart-rate-state.test.ts holds the web side; WidgetRulesTests.swift holds the Swift side. Change a rule and this file together.",
+  "cases": [
+    {
+      "name": "no health",
+      "props": {},
+      "expected": "empty"
+    },
+    {
+      "name": "empty quantities",
+      "props": {
+        "health": {
+          "quantities": {}
+        }
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "health without quantities",
+      "props": {
+        "health": {}
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "hr 0 and hrv 0",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 0,
+              "unit": "count/min"
+            },
+            "hrvSDNN": {
+              "value": 0,
+              "unit": "ms"
+            }
+          }
+        }
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "hrv only",
+      "props": {
+        "health": {
+          "quantities": {
+            "hrvSDNN": {
+              "value": 40,
+              "unit": "ms"
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "steps only",
+      "props": {
+        "health": {
+          "quantities": {
+            "stepCount": {
+              "value": 5000,
+              "unit": "count"
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "hr 62 hrv 48",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62,
+              "unit": "count/min"
+            },
+            "hrvSDNN": {
+              "value": 48,
+              "unit": "ms"
+            }
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "hr 62 only",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62,
+              "unit": "count/min"
+            }
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "hr 62 hrv 0",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62,
+              "unit": "count/min"
+            },
+            "hrvSDNN": {
+              "value": 0,
+              "unit": "ms"
+            }
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "hr 0 hrv 40",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 0,
+              "unit": "count/min"
+            },
+            "hrvSDNN": {
+              "value": 40,
+              "unit": "ms"
+            }
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "hr 0 only",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 0,
+              "unit": "count/min"
+            }
+          }
+        }
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "hr 0 and steps",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 0,
+              "unit": "count/min"
+            },
+            "stepCount": {
+              "value": 10,
+              "unit": "count"
+            }
+          }
+        }
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "hr 0.4 hrv 0",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 0.4,
+              "unit": "count/min"
+            },
+            "hrvSDNN": {
+              "value": 0,
+              "unit": "ms"
+            }
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "hr null",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": null
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "hr value null",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": null
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "hr value string",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": "62"
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "hr value boolean",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": true
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "paused, hrv only",
+      "props": {
+        "health": {
+          "quantities": {
+            "hrvSDNN": {
+              "value": 40,
+              "unit": "ms"
+            }
+          },
+          "watch": {
+            "worn": false,
+            "since": null,
+            "source": "hrGap"
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "paused, no quantities",
+      "props": {
+        "health": {
+          "quantities": {},
+          "watch": {
+            "worn": false
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "paused, hr 0 hrv 0",
+      "props": {
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 0
+            },
+            "hrvSDNN": {
+              "value": 0
+            }
+          },
+          "watch": {
+            "worn": false
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "worn true, hrv only",
+      "props": {
+        "health": {
+          "quantities": {
+            "hrvSDNN": {
+              "value": 40
+            }
+          },
+          "watch": {
+            "worn": true
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "worn 0, hrv only",
+      "props": {
+        "health": {
+          "quantities": {
+            "hrvSDNN": {
+              "value": 40
+            }
+          },
+          "watch": {
+            "worn": 0
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "worn null, empty",
+      "props": {
+        "health": {
+          "quantities": {},
+          "watch": {
+            "worn": null
+          }
+        }
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "live, hr 62",
+      "props": {
+        "state": "live",
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62
+            }
+          }
+        }
+      },
+      "expected": "live"
+    },
+    {
+      "name": "stale, hr 62",
+      "props": {
+        "state": "stale",
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62
+            }
+          }
+        }
+      },
+      "expected": "stale"
+    },
+    {
+      "name": "stale, hrv only",
+      "props": {
+        "state": "stale",
+        "health": {
+          "quantities": {
+            "hrvSDNN": {
+              "value": 40
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "stale, no health",
+      "props": {
+        "state": "stale"
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "stale, paused, no quantities",
+      "props": {
+        "state": "stale",
+        "health": {
+          "quantities": {},
+          "watch": {
+            "worn": false
+          }
+        }
+      },
+      "expected": "stale"
+    },
+    {
+      "name": "live, no health",
+      "props": {
+        "state": "live"
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "empty, hr 62",
+      "props": {
+        "state": "empty",
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62
+            }
+          }
+        }
+      },
+      "expected": "empty"
+    },
+    {
+      "name": "unavailable, hr 62",
+      "props": {
+        "state": "unavailable",
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62
+            }
+          }
+        }
+      },
+      "expected": "unavailable"
+    },
+    {
+      "name": "suppressed, hr 62",
+      "props": {
+        "state": "suppressed",
+        "health": {
+          "quantities": {
+            "heartRate": {
+              "value": 62
+            }
+          }
+        }
+      },
+      "expected": "suppressed"
+    },
+    {
+      "name": "loading, no health",
+      "props": {
+        "state": "loading"
+      },
+      "expected": "loading"
+    },
+    {
+      "name": "suppressed, no health",
+      "props": {
+        "state": "suppressed"
+      },
+      "expected": "suppressed"
+    }
+  ],
+  "fixtures": {
+    "heart-rate.bradycardia": "live",
+    "heart-rate.cardio": "live",
+    "heart-rate.empty": "empty",
+    "heart-rate.fat-burn": "live",
+    "heart-rate": "live",
+    "heart-rate.max": "live",
+    "heart-rate.normal": "live",
+    "heart-rate.paused-charging": "live",
+    "heart-rate.paused": "live",
+    "heart-rate.peak": "live",
+    "heart-rate.populated-max": "live",
+    "heart-rate.populated-min": "live",
+    "heart-rate.resting": "live",
+    "heart-rate.skeleton": "empty",
+    "heart-rate.suppressed": "suppressed",
+    "heart-rate.unavailable": "unavailable"
+  }
+}

@@ -739,6 +739,13 @@ jobs:
           # run in .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to
           # merge a gate that no longer gates. ~0.3s.
           node --test audits/__tests__/d3-openspec-covers.test.mjs
+          # Widget-rule known answers, web side (atlas decision 0160). The Swift twin of a web state
+          # rule is held to one shared file, contracts/widget-rules/*.known-answers.json:
+          # WidgetRulesTests reads it in test-swift, and this run proves the web rule still returns
+          # every listed state. Without it a change to the web rule alone would leave both suites
+          # green while the platforms disagree. It runs here because governance-gates is a required
+          # status context and the file lives outside packages/web/tests. ~1s.
+          pnpm -F @j0nathan-ll0yd/web exec vitest run --config ../../contracts/widget-rules/vitest.config.mjs
           # SSR image-fallback gate: every .astro that server-renders a
           # data-fallback cover must bundle the load-time initImageFallbacks()
           # call. Mirrors the digest-conformance precedent above

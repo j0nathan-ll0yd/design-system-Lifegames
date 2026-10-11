@@ -72,9 +72,9 @@ public extension Adapters {
     ///   flights, daylightMin, goals: {moveKcal, exerciseMin, standHr, daylightMin},
     ///   solar?: {sunriseHHmm, sunsetHHmm, currentProgressPct}}}}`.
     ///
-    /// Returns nil if the envelope is missing the `movement` sub-object. Missing inner fields
-    /// fall back to zero / default Goals so partial fixtures (`{}` stubs) still produce a Props
-    /// value rather than failing the catalog test; `standHr` and `daylightMin` stay nil.
+    /// Returns nil if the envelope is missing the `movement` sub-object. A missing measurement
+    /// stays nil (the view renders the no-reading mark); missing goals fall back to the default
+    /// Goals, so partial fixtures (`{}` stubs) still produce a Props value.
     static func movementRings(fromFixture data: Data) -> MovementRingsProps? {
         guard
             let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -102,15 +102,15 @@ public extension Adapters {
             )
         }
 
+        // A field the fixture omits stays nil, never 0 (atlas decision 0160 H03): parity with
+        // the web normalizeMovementHealth, which leaves an omitted flat field absent.
         return MovementRingsProps(
-            moveKcal: numberValue(movement["moveKcal"]) ?? 0,
-            exerciseMin: numberValue(movement["exerciseMin"]) ?? 0,
-            // standHr and daylightMin stay nil when absent: a missing measurement renders
-            // the no-reading mark, never 0 (atlas decision 0160 H03).
+            moveKcal: numberValue(movement["moveKcal"]),
+            exerciseMin: numberValue(movement["exerciseMin"]),
             standHr: numberValue(movement["standHr"]),
-            steps: Int(numberValue(movement["steps"]) ?? 0),
-            distanceMeters: numberValue(movement["distanceMeters"]) ?? 0,
-            flights: Int(numberValue(movement["flights"]) ?? 0),
+            steps: numberValue(movement["steps"]).map { Int($0.rounded()) },
+            distanceMeters: numberValue(movement["distanceMeters"]),
+            flights: numberValue(movement["flights"]).map { Int($0.rounded()) },
             daylightMin: numberValue(movement["daylightMin"]),
             goals: goals,
             solar: solar
