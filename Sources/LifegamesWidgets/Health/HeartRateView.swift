@@ -38,19 +38,45 @@ public struct HeartRateView: View {
             } else {
                 HeartRatePopulatedView(props: props, animateECG: animateECG)
             }
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: heartRateCopy.title, accent: LGColor.accentPink)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: heartRateCopy.title, accent: LGColor.accentPink)
         }
     }
 }
 
-private struct HeartRatePopulatedView: View {
+struct HeartRatePopulatedView: View {
     let props: HeartRateProps
     var animateECG = true
 
-    private var zone: HeartRateZone {
+    private var zone: HeartRateZone? {
         props.heartRateZone
     }
 
-    private func hrvColor(_ hrv: Int) -> Color {
+    /// The zone's accent, or the muted default when there is no reading: a zone colour
+    /// belongs to a reading (parity with the web HeartRate widget).
+    private var accent: Color {
+        zone?.accentColor ?? LGColor.textMuted
+    }
+
+    /// The bpm as display text: the reading, or the no-reading mark for a missing or 0 rate.
+    static func bpmText(_ props: HeartRateProps) -> String {
+        NoReading.text(props.bpmReading)
+    }
+
+    /// The zone badge text: the zone's name, or the no-reading mark when there is no reading.
+    static func zoneText(_ props: HeartRateProps) -> String {
+        props.heartRateZone?.name ?? NoReading.mark
+    }
+
+    /// The HRV as display text: any value is a reading (parity with the web `formatHrv`).
+    static func hrvText(_ hrv: Int?) -> String {
+        NoReading.text(hrv)
+    }
+
+    private func hrvColor(_ hrv: Int?) -> Color {
+        guard let hrv else { return LGColor.textMuted }
         if hrv >= 40 {
             return LGColor.accentGreen
         }
@@ -62,27 +88,34 @@ private struct HeartRatePopulatedView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: zone.accentColor, timestamp: heartRateCopy.timestampLive)
+            WidgetHeaderView(label: heartRateCopy.title.uppercased(), dotColor: accent, timestamp: heartRateCopy.timestampLive)
 
             // widget-body padding: 14px top, 18px horizontal, 16px bottom
             VStack(alignment: .leading, spacing: 0) {
                 ZStack {
-                    ECGBackgroundView(color: zone.accentColor, bpm: Double(props.bpm), animated: animateECG)
-                        // web canvas height is 120px; min-height of hr-layout is 108px
-                        .frame(height: 108)
-                        .opacity(zone.ecgOpacity)
+                    // No reading, no trace: the web canvas draws only with a positive bpm.
+                    if let zone, let bpm = props.bpmReading {
+                        ECGBackgroundView(color: zone.accentColor, bpm: Double(bpm), animated: animateECG)
+                            // web canvas height is 120px; min-height of hr-layout is 108px
+                            .frame(height: 108)
+                            .opacity(zone.ecgOpacity)
+                    } else {
+                        Color.clear.frame(height: 108)
+                    }
 
                     HStack {
                         VStack(alignment: .leading, spacing: 6) {
                             HStack(alignment: .firstTextBaseline, spacing: 6) {
                                 // web: clamp(2.1rem,1.7rem+1.5vw,2.8rem) ≈ 38pt at 380px
                                 // letter-spacing: -0.02em → tracking(-0.76); dual glow shadows
-                                Text("\(props.bpm)")
+                                let bpmValue = Self.bpmText(props)
+                                Text(bpmValue)
                                     .font(.system(size: 38, weight: .bold, design: .monospaced))
                                     .tracking(-0.76)
-                                    .foregroundStyle(zone.accentColor)
-                                    .shadow(color: zone.accentColor.opacity(0.6), radius: 8, x: 0, y: 0)
-                                    .shadow(color: zone.accentColor.opacity(0.25), radius: 20, x: 0, y: 0)
+                                    .foregroundStyle(accent)
+                                    .shadow(color: accent.opacity(zone == nil ? 0 : 0.6), radius: 8, x: 0, y: 0)
+                                    .shadow(color: accent.opacity(zone == nil ? 0 : 0.25), radius: 20, x: 0, y: 0)
+                                    .noReadingAccessibility(bpmValue)
                                 // web: cap2 ≈ 10pt, letter-spacing 2px, weight 500, margin-left 6px
                                 Text(heartRateCopy.bpm)
                                     .font(.system(size: 10, weight: .medium, design: .monospaced))
@@ -91,19 +124,21 @@ private struct HeartRatePopulatedView: View {
                             }
 
                             // web: pulse-status-badge cap2 ≈ 10pt, weight 600, padding 3px 10px
-                            Text(zone.name)
+                            let zoneValue = Self.zoneText(props)
+                            Text(zoneValue)
                                 .font(.system(size: 10, weight: .semibold, design: .monospaced))
                                 .textCase(.uppercase)
                                 .kerning(2)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 3)
-                                .background(zone.accentColor.opacity(0.12))
+                                .background(accent.opacity(0.12))
                                 .overlay(
                                     Capsule()
-                                        .stroke(zone.accentColor.opacity(0.25), lineWidth: 1)
+                                        .stroke(accent.opacity(0.25), lineWidth: 1)
                                 )
-                                .foregroundStyle(zone.accentColor)
+                                .foregroundStyle(accent)
                                 .clipShape(Capsule())
+                                .noReadingAccessibility(zoneValue)
                         }
 
                         Spacer()
@@ -115,11 +150,13 @@ private struct HeartRatePopulatedView: View {
                                 .font(.system(size: 10, weight: .medium, design: .monospaced))
                                 .kerning(1.8)
                                 .foregroundStyle(LGColor.textMuted)
-                            Text("\(props.hrv)")
+                            let hrvValue = Self.hrvText(props.hrv)
+                            Text(hrvValue)
                                 .font(.system(size: 17, weight: .bold, design: .monospaced))
                                 .foregroundStyle(hrvColor(props.hrv))
-                                .shadow(color: hrvColor(props.hrv).opacity(0.5), radius: 6, x: 0, y: 0)
-                                .shadow(color: hrvColor(props.hrv).opacity(0.2), radius: 15, x: 0, y: 0)
+                                .shadow(color: hrvColor(props.hrv).opacity(props.hrv == nil ? 0 : 0.5), radius: 6, x: 0, y: 0)
+                                .shadow(color: hrvColor(props.hrv).opacity(props.hrv == nil ? 0 : 0.2), radius: 15, x: 0, y: 0)
+                                .noReadingAccessibility(hrvValue)
                             Text(heartRateCopy.hrvUnit)
                                 .font(.system(size: 10, design: .monospaced))
                                 .kerning(1.0)
@@ -139,32 +176,34 @@ private struct HeartRatePopulatedView: View {
             .padding(.horizontal, 18)
             .padding(.bottom, 16)
         }
-        .neonCard(accent: zone.accentColor)
+        // The card keeps the widget's pink accent without a reading (web: tri-card-accent-pink).
+        .neonCard(accent: zone?.accentColor ?? LGColor.accentPink)
     }
 }
 
 // MARK: - HR Footer — compact 3-up vitals ribbon (visual weight matches Movement swatch row)
 
-private struct DailyVitalsFooterView: View {
+struct DailyVitalsFooterView: View {
     let restingHeartRate: Double?
     let respiratoryRate: Double?
     let wristTemperatureDelta: Double?
 
-    private var rhrValue: String {
-        guard let rhr = restingHeartRate else { return "—" }
-        return "\(Int(rhr.rounded()))"
+    /// A whole-number vital, or the no-reading mark when the export omitted it.
+    static func vitalText(_ value: Double?) -> String {
+        guard let value else { return NoReading.mark }
+        return "\(Int(value.rounded()))"
     }
 
-    private var rrValue: String {
-        guard let rr = respiratoryRate else { return "—" }
-        return "\(Int(rr.rounded()))"
-    }
-
-    private var tempValue: String {
-        guard let delta = wristTemperatureDelta else { return "—" }
+    /// A signed temperature delta, or the no-reading mark when the export omitted it.
+    static func tempText(_ delta: Double?) -> String {
+        guard let delta else { return NoReading.mark }
         let sign = delta >= 0 ? "+" : ""
         return "\(sign)\(String(format: "%.1f", delta))"
     }
+
+    private var rhrValue: String { Self.vitalText(restingHeartRate) }
+    private var rrValue: String { Self.vitalText(respiratoryRate) }
+    private var tempValue: String { Self.tempText(wristTemperatureDelta) }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -201,6 +240,7 @@ private struct VitalRibbonCell: View {
                 Text(value)
                     .font(.system(size: 10, weight: .semibold, design: .monospaced))
                     .foregroundStyle(LGColor.textTitle)
+                    .noReadingAccessibility(value)
                 Text(unit)
                     .font(.system(size: 8, design: .monospaced))
                     .foregroundStyle(LGColor.textMuted.opacity(0.7))
@@ -376,6 +416,13 @@ private struct HeartRatePausedView: View {
     .preferredColorScheme(.dark)
 }
 
+#Preview("Heart Rate — No Reading") {
+    HeartRateView(props: HeartRateProps(bpm: nil, hrv: nil, zone: "", restingHeartRate: 58))
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
 #Preview("Heart Rate — Loading") {
     HeartRateView(state: .loading)
         .padding()
@@ -410,4 +457,18 @@ private struct HeartRatePausedView: View {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Unavailable") {
+    HeartRateView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Heart Rate — Suppressed") {
+    HeartRateView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }

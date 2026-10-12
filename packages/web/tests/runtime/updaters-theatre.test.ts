@@ -27,9 +27,31 @@ describe('updateTheatreReviews', () => {
     expect(() => updateTheatreReviews(makeExport())).not.toThrow()
   })
 
-  it('sets review count text', () => {
-    updateTheatreReviews(makeExport([]))
-    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews')
+  it('sets review count text from the export total', () => {
+    updateTheatreReviews({
+      ...makeExport([]),
+      totalReviews: 237,
+      reviews: [
+        {
+          title: 'T',
+          slug: 't',
+          url: 'https://example.com/t',
+          author: 'A',
+          publishedAt: '2026-01-01',
+          rating: 'A',
+          ratingNumeric: 4,
+          excerpt: 'e',
+          imageVersion: null,
+          imageUrl: null,
+          imageWidth: null,
+          imageHeight: null,
+          imageUrlAvif: null,
+          imageUrlCard: null,
+          imageUrlCardAvif: null
+        } as unknown as TheatreReviewsExport['reviews'][number]
+      ]
+    })
+    expect(document.getElementById('theatreCount')!.textContent).toBe('237 reviews')
   })
 
   it('removes is-loading when reviews is empty', () => {
@@ -217,9 +239,10 @@ describe('updateTheatreReviews with widget-body DOM', () => {
     expect(document.getElementById('cardTheatreReviews')!.classList.contains('is-loading')).toBe(false)
   })
 
-  it('sets header count to 0 reviews when reviews is empty', () => {
+  // Final verification L7: the empty header names no count, as on the server.
+  it('sets the header to the bare "reviews" label when reviews is empty', () => {
     updateTheatreReviews(makeExport([]))
-    expect(document.getElementById('theatreCount')!.textContent).toBe('0 reviews')
+    expect(document.getElementById('theatreCount')!.textContent).toBe('reviews')
   })
 
   it('recreates theatreRow and renders review title after empty-to-populated transition', () => {

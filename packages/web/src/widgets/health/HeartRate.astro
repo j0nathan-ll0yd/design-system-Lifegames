@@ -1,43 +1,53 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
-import { classifyHeartRate, classifyHRV } from '../../runtime/heart-rate';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { heartRateEmptyHtml } from '../../runtime/widget-markup';
+import { stateRootAttrs } from '../../runtime/widget-state';
+import { heartRateView } from '../../runtime/widget-views';
+import type { HeartRateProps } from './HeartRate.types';
 
-const { health } = Astro.props;
-const hr = Math.round(health.quantities.heartRate.value);
-const hrv = Math.round(health.quantities.hrvSDNN.value);
-const watch = health.watch;
-
-const isEmpty = hr === 0 && hrv === 0;
-// SSR paused: if build-data itself reports watch.worn===false, apply is-paused at
-// SSR time so the page is correct before the runtime updater fires.
-const ssrPaused = watch?.worn === false;
-const state = classifyHeartRate(hr);
-const { color: hrvColor, shadow: hrvShadow } = classifyHRV(hrv);
-
-// 3-up footer vitals — RHR / RR / Temp.
-// Render '—' for any field that is absent or zero (empty signal).
-const rhr = health.quantities.restingHeartRate;
-const rr = health.quantities.respiratoryRate;
-const tempDelta = health.quantities.wristTemperatureDelta;
-
-const fmtRhr = rhr && rhr.value > 0 ? String(Math.round(rhr.value)) : '—';
-const fmtRr = rr && rr.value > 0 ? String(Math.round(rr.value)) : '—';
-// Temp delta: show signed value to 1 decimal place (e.g. +0.2, -0.1)
-const fmtTemp = (() => {
-  if (!tempDelta) return '—';
-  const v = tempDelta.value;
-  if (!Number.isFinite(v)) return '—';
-  const sign = v > 0 ? '+' : '';
-  return sign + v.toFixed(1);
-})();
+const props = Astro.props as HeartRateProps;
+const { generatedAt } = props;
+// One owner for the state and every slot: the view updateHeartRate writes too.
+const view = heartRateView(props);
+const widgetState = view.state;
+// SSR paused: the export reports the watch off the wrist or charging. The
+// card keeps its data state (a reading of the watch state) but shows no value:
+// the scaffold renders value-free, and only the paused copy names anything.
+const ssrPaused = view.paused;
+const showData = view.showData;
+// The value-free scaffold the runtime updaters target. It renders in every
+// state, hidden behind the notice in empty, unavailable and suppressed, so a
+// later live update can reveal it (revealLiveData) without a reload.
+const scaffoldHidden = view.scaffoldHidden;
+const { hr, hrv, hasHrv } = view;
+const state = view.zone;
+// A zone colour belongs to a reading: a missing (or 0) heart rate and a
+// missing HRV render the no-reading mark in the default colour, never a zone's.
+const { color: hrvColor, shadow: hrvShadow } = view.hrvColor;
+const fmtBpm = view.bpmText;
+const fmtZone = view.zoneText;
+const fmtHrv = view.hrvText;
+const fmtRhr = view.rhrText;
+const fmtRr = view.rrText;
+const fmtTemp = view.tempText;
 ---
 
-<div class={`tri-card ${state.accentClass}${ssrPaused ? ' is-paused' : ''}`} id="cardHR">
+<div
+  class={`tri-card ${state.accentClass}${ssrPaused ? ' is-paused' : ''}${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardHR"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.heartRate.title}</h3>
     <div class="widget-header-right">
       <div class={`live-dot ${state.dotClass}`}></div>
-      <span class="widget-timestamp">{widgets.heartRate.timestampLive}</span>
+      <WidgetTimestamp
+        label={widgets.heartRate.timestampLive}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
@@ -64,14 +74,12 @@ const fmtTemp = (() => {
         </div>
       </div>
     </div>
-    {
-      isEmpty && (
-        <div class="hr-empty">
-          <span class="hr-empty-label">{widgets.heartRate.empty}</span>
-        </div>
-      )
-    }
+    {widgetState === 'empty' && <Fragment set:html={heartRateEmptyHtml()} />}
+    <WidgetStateNotice state={widgetState} />
     {/* Both states stay mounted so live updates can switch without exposing stale values. */}
+    {
+      /* The paused block names no value, so it renders in every state; CSS shows it only with .is-paused. */
+    }
     <div class="hr-paused" role="status" aria-live="polite" id="hrPaused">
       <svg
         class="hr-paused-icon"
@@ -96,32 +104,20 @@ const fmtTemp = (() => {
           stroke-width="1.5"
           stroke-linecap="round"></line>
       </svg>
-      <span class="hr-paused-label" id="hrPausedLabel">
-        {
-          watch?.source === 'charging'
-            ? widgets.heartRate.paused.labelCharging
-            : widgets.heartRate.paused.label
-        }
-      </span>
-      <span class="hr-paused-desc" id="hrPausedDesc">
-        {
-          watch?.source === 'charging'
-            ? widgets.heartRate.paused.descriptionCharging
-            : widgets.heartRate.paused.description
-        }
-      </span>
+      <span class="hr-paused-label" id="hrPausedLabel">{view.pausedLabel}</span>
+      <span class="hr-paused-desc" id="hrPausedDesc">{view.pausedDescription}</span>
     </div>
     {
-      !isEmpty && (
-        <div class="hr-data">
+      (
+        <div class="hr-data" data-state-scaffold hidden={scaffoldHidden}>
           <div class="hr-layout">
             <div class="hr-ecg-bg" id="hrEcgBg" style={`opacity: ${state.ecgOpacity}`}>
               <canvas
                 class="ecg-canvas"
                 id="hrEcgCanvas"
-                data-bpm={String(hr)}
-                data-hrv={String(hrv)}
-                data-stroke={state.ecgStroke}
+                data-bpm={showData && hr > 0 ? String(hr) : undefined}
+                data-hrv={showData && hasHrv ? String(hrv) : undefined}
+                data-stroke={showData ? state.ecgStroke : undefined}
                 width="400"
                 height="120"
               />
@@ -133,9 +129,13 @@ const fmtTemp = (() => {
                     <span
                       class="pulse-bpm"
                       id="pulseBpm"
-                      style={`color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`}
+                      style={
+                        hr > 0
+                          ? `color: ${state.bpmColor}; text-shadow: ${state.bpmShadow}`
+                          : undefined
+                      }
                     >
-                      {hr}
+                      {fmtBpm}
                     </span>
                     <span class="pulse-bpm-unit">{widgets.heartRate.bpm}</span>
                   </>
@@ -143,9 +143,13 @@ const fmtTemp = (() => {
                 <span
                   class="pulse-status-badge"
                   id="hrZoneBadge"
-                  style={`color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`}
+                  style={
+                    hr > 0
+                      ? `color: ${state.badgeColor}; background: ${state.badgeBg}; border: 1px solid ${state.badgeBorder}`
+                      : undefined
+                  }
                 >
-                  {state.zone}
+                  {fmtZone}
                 </span>
               </div>
               <div class="hr-overlay-right">
@@ -153,9 +157,9 @@ const fmtTemp = (() => {
                 <span
                   class="hr-hrv-value"
                   id="hrHrvValue"
-                  style={`color: ${hrvColor}; text-shadow: ${hrvShadow}`}
+                  style={hasHrv ? `color: ${hrvColor}; text-shadow: ${hrvShadow}` : undefined}
                 >
-                  {hrv}
+                  {fmtHrv}
                 </span>
                 <span class="hr-hrv-unit">{widgets.heartRate.hrvUnit}</span>
               </div>
@@ -194,13 +198,14 @@ const fmtTemp = (() => {
 </div>
 
 <style>
-  .hr-empty {
+  /* Global: updateHeartRate writes the empty notice (heartRateEmptyHtml). */
+  :global(.hr-empty) {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: var(--space-48);
   }
-  .hr-empty-label {
+  :global(.hr-empty-label) {
     font-size: var(--font-size-sm);
     color: var(--text-muted);
     letter-spacing: 1px;

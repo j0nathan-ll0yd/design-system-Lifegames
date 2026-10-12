@@ -1,19 +1,59 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { THEATRE_SITE, theatreCardsHtml, theatreCountLabel } from '../../runtime/updaters-theatre';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { theatreReviewsState } from '../../runtime/widget-rules';
+import type { TheatreReviewsProps } from './TheatreReviews.types';
+
+// Cards render from props on the server, through the same markup function the
+// live update uses (atlas decision 0160, D5).
+const { reviews: reviewList, totalReviews, generatedAt } = Astro.props as TheatreReviewsProps;
+// One owner for the state: the same rule the view model applies.
+const widgetState = theatreReviewsState(Astro.props as TheatreReviewsProps);
+const showData = rendersData(widgetState);
+const cardsHtml = showData ? theatreCardsHtml(reviewList ?? []) : '';
+const showLabel = showData || widgetState === 'empty';
+// The same label the client writes: a count only while the card shows data.
+const countLabel = theatreCountLabel(showData ? totalReviews : null);
 ---
 
-<div class="tri-card tri-card-accent-yellow" id="cardTheatreReviews">
+<div
+  class={`tri-card tri-card-accent-yellow${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardTheatreReviews"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.theatreReviews.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <a
-        class="widget-timestamp theatre-count-link"
-        id="theatreCount"
-        href="https://www.coasttocoastreviews.com"
-        target="_blank"
-        rel="noopener noreferrer">reviews</a
-      >
+      {/* The count link holds the usual timestamp slot; stale adds its "as of" time beside it. */}
+      {
+        widgetState === 'stale' && (
+          <WidgetTimestamp label="" state={widgetState} generatedAt={generatedAt} />
+        )
+      }
+      {
+        /* The count link is the header label: live, stale and empty show it; the
+          states that show no label (unavailable, suppressed, loading) keep an
+          empty slot that updateTheatreReviews turns back into the link. */
+      }
+      {
+        showLabel ? (
+          <a
+            class="widget-timestamp theatre-count-link"
+            id="theatreCount"
+            href={THEATRE_SITE}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {countLabel}
+          </a>
+        ) : (
+          <span class="widget-timestamp theatre-count-link" id="theatreCount" />
+        )
+      }
     </div>
   </div>
   <div class="widget-body">
@@ -36,7 +76,14 @@ import { widgets } from '@j0nathan-ll0yd/copy';
         </div>
       </div>
     </div>
-    <div id="theatreRow" class="theatre-row"></div>
+    <WidgetStateNotice state={widgetState} empty={{ message: widgets.theatreReviews.empty }} />
+    <div
+      id="theatreRow"
+      class="theatre-row"
+      data-state-scaffold
+      hidden={!showData}
+      set:html={cardsHtml}
+    />
   </div>
 </div>
 
@@ -143,3 +190,12 @@ import { widgets } from '@j0nathan-ll0yd/copy';
     transition: color 0.2s ease;
   }
 </style>
+
+<script>
+  // Server-rendered posters carry `data-fallback`; bind the W6 fallback at
+  // load time. Fallback wiring only (no carousel handlers), bundled and
+  // idempotent, mirroring Bookshelf.
+  import { initImageFallbacks } from '../../runtime/image-utils';
+
+  initImageFallbacks();
+</script>

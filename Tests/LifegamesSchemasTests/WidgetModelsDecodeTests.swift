@@ -59,4 +59,38 @@ struct WidgetModelsDecodeTests {
         #expect(export.books.count == 1)
         #expect(export.books[0].asin == "B08N5WRWNW")
     }
+
+    // The two tests below pin fields the shipped copy lacked while it drifted from codegen.
+    @Test func focusExportDecodesHidingSince() throws {
+        let json = """
+        {
+            "currentFocus": "Deep Work",
+            "generatedAt": "2026-06-06T12:00:00Z",
+            "hidingSince": "2026-06-06T11:00:00Z"
+        }
+        """
+        let data = try #require(json.data(using: .utf8))
+        let export = try JSONDecoder().decode(FocusExport.self, from: data)
+        #expect(export.hidingSince == "2026-06-06T11:00:00Z")
+    }
+
+    @Test func booksExportDecodesMainImageVersion() throws {
+        let json = """
+        {
+            "generatedAt": "2026-06-06T12:00:00Z",
+            "books": [
+                {
+                    "asin": "B08N5WRWNW",
+                    "author": "Test Author",
+                    "mainImageVersion": "v2",
+                    "title": "Test Book",
+                    "updatedAt": "2026-06-06T12:00:00Z"
+                }
+            ]
+        }
+        """
+        let data = try #require(json.data(using: .utf8))
+        let export = try JSONDecoder().decode(BooksExport.self, from: data)
+        #expect(export.books[0].mainImageVersion == "v2")
+    }
 }

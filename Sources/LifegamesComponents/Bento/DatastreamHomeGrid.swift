@@ -112,29 +112,34 @@ public struct DatastreamHomeGrid: View {
             title: "Health",
             accent: LGColor.accentPink,
             size: .hero,
-            badgeText: "\(Int((data.moveProgress * 100).rounded()))% MOVE",
+            badgeText: Self.moveBadge(data),
             badgeColor: LGColor.accentGreen
         ) {
             HStack(alignment: .center, spacing: Spacing.s500) {
                 ActivityRingsView(
-                    move: data.moveProgress,
-                    exercise: data.exerciseProgress,
-                    stand: data.standProgress,
+                    move: Self.ringFill(data.moveProgress, value: data.moveValue),
+                    exercise: Self.ringFill(data.exerciseProgress, value: data.exerciseValue),
+                    stand: Self.ringFill(data.standProgress, value: data.standValue),
                     size: 128
                 )
 
                 // Right column: big steps → one-line subtitle → divider → metrics
                 VStack(alignment: .leading, spacing: Spacing.s300) {
-                    Text(data.steps.formatted())
+                    let steps = Self.stepsText(data.steps)
+                    Text(steps)
                         .font(.system(size: 46, weight: .bold, design: .rounded))
                         .foregroundStyle(LGColor.textTitle)
+                        .noReadingAccessibility(steps)
 
                     // "steps · 58 bpm resting" — one muted line
                     HStack(spacing: 5) {
                         Text("steps ·")
                             .foregroundStyle(LGColor.textMuted)
-                        Text("\(data.restingHR) bpm")
+                        // A missing resting HR shows the mark and reads "No reading".
+                        let restingHR = NoReading.text(data.restingHR)
+                        Text("\(restingHR) bpm")
                             .foregroundStyle(LGColor.accentPink)
+                            .noReadingAccessibility(restingHR)
                         Text("resting")
                             .foregroundStyle(LGColor.textMuted)
                     }
@@ -145,11 +150,11 @@ public struct DatastreamHomeGrid: View {
                         .frame(height: 1)
 
                     HStack(spacing: 0) {
-                        metricColumn(value: data.moveValue, unit: "KCAL", ring: "MOVE", color: LGColor.accentPink)
+                        metricColumn(value: data.moveValue ?? NoReading.mark, unit: "KCAL", ring: "MOVE", color: LGColor.accentPink)
                         metricDivider
-                        metricColumn(value: data.exerciseValue, unit: "MIN", ring: "EXERCISE", color: LGColor.accentGreen)
+                        metricColumn(value: data.exerciseValue ?? NoReading.mark, unit: "MIN", ring: "EXERCISE", color: LGColor.accentGreen)
                         metricDivider
-                        metricColumn(value: data.standValue, unit: "H", ring: "STAND", color: LGColor.accentBlue)
+                        metricColumn(value: data.standValue ?? NoReading.mark, unit: "H", ring: "STAND", color: LGColor.accentBlue)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,12 +163,31 @@ public struct DatastreamHomeGrid: View {
         .frame(maxWidth: .infinity)
     }
 
+    /// A ring's fill: empty when its value was not measured, whatever progress the caller
+    /// passed, so a ring never fills beside the no-reading mark.
+    static func ringFill(_ progress: Double, value: String?) -> Double {
+        value == nil ? 0 : progress
+    }
+
+    /// The step count with grouping, or the no-reading mark when steps were not measured.
+    static func stepsText(_ steps: Int?) -> String {
+        steps.map { $0.formatted() } ?? NoReading.mark
+    }
+
+    /// The "% MOVE" badge, nil (hidden) when move was not measured: a percentage of a missing
+    /// value would invent "0% MOVE". The MOVE column still shows the labelled mark.
+    static func moveBadge(_ data: DatastreamHomeData) -> String? {
+        guard data.moveValue != nil else { return nil }
+        return "\(Int((data.moveProgress * 100).rounded()))% MOVE"
+    }
+
     /// A single movement metric column: colored value + two-line uppercase label.
     private func metricColumn(value: String, unit: String, ring: String, color: Color) -> some View {
         VStack(spacing: 3) {
             Text(value)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(color)
+                .noReadingAccessibility(value)
             Text("\(unit)\n\(ring)")
                 .font(.system(size: 8.5, weight: .semibold))
                 .kerning(0.5)

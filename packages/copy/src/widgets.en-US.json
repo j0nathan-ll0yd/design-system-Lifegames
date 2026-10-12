@@ -290,7 +290,9 @@
           "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-07-14",
-          "constraints": { "maxChars": 20 },
+          "constraints": {
+            "maxChars": 20
+          },
           "rationale": "Terse badge; full meaning carried by heartRate.paused.description. creative-license, tweakable."
         }
       },
@@ -306,7 +308,9 @@
           "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-07-14",
-          "constraints": { "maxChars": 20 },
+          "constraints": {
+            "maxChars": 20
+          },
           "rationale": "Separate from heartRate.paused.label so each source variant can evolve independently. creative-license, tweakable."
         }
       },
@@ -347,7 +351,9 @@
       "value": "Movement",
       "_meta": {
         "description": "Movement Rings widget title. Web renders an inner header; iOS drops the inner header (outer section header labels it).",
-        "usage": ["web:packages/web/src/widgets/health/MovementRings.astro:91 (.widget-label)"],
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:91 (.widget-label)"
+        ],
         "register": "atom",
         "audience": "human",
         "owner": "jonathan",
@@ -514,7 +520,9 @@
       "value": "No movement logged yet.",
       "_meta": {
         "description": "Empty-state message when no movement data is recorded for the day.",
-        "usage": ["web:packages/web/src/widgets/health/MovementRings.astro:120 (.mv-empty-label)"],
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro:120 (.mv-empty-label)"
+        ],
         "register": "expressive",
         "audience": "human",
         "owner": "jonathan",
@@ -580,7 +588,9 @@
           "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-07-14",
-          "constraints": { "maxChars": 20 },
+          "constraints": {
+            "maxChars": 20
+          },
           "rationale": "Terse badge; full meaning carried by movement.paused.description. creative-license, tweakable."
         }
       },
@@ -596,7 +606,9 @@
           "audience": "human",
           "owner": "jonathan",
           "lastReviewed": "2026-07-14",
-          "constraints": { "maxChars": 20 },
+          "constraints": {
+            "maxChars": 20
+          },
           "rationale": "Separate from movement.paused.label so each source variant can evolve independently. creative-license, tweakable."
         }
       },
@@ -1164,7 +1176,9 @@
       "value": "No articles yet",
       "_meta": {
         "description": "Empty-state when no reading articles are available.",
-        "usage": ["ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:77"],
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/ReadingFeedView.swift:77"
+        ],
         "register": "label",
         "audience": "dual",
         "owner": "jonathan",
@@ -1212,7 +1226,9 @@
       "value": "No Books Yet",
       "_meta": {
         "description": "Empty-state heading when the bookshelf has no books.",
-        "usage": ["ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:59"],
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:59"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -1224,7 +1240,9 @@
       "value": "Books you add will appear here",
       "_meta": {
         "description": "Empty-state body explaining how books appear once added.",
-        "usage": ["ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:63"],
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookshelfView.swift:63"
+        ],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
@@ -1355,7 +1373,9 @@
       "value": "No reviews yet",
       "_meta": {
         "description": "Empty-state when no theatre reviews are available.",
-        "usage": ["ios:Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift:58"],
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/TheatreReviewsView.swift:58"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -1386,7 +1406,9 @@
       "value": "No book selected",
       "_meta": {
         "description": "Book detail modal — empty-state when no book is selected.",
-        "usage": ["ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:240"],
+        "usage": [
+          "ios:Sources/LifegamesWidgets/Reading/BookModalView.swift:240"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -1516,7 +1538,9 @@
       "value": "No recent activity",
       "_meta": {
         "description": "Empty-state when no GitHub dev-log activity is available.",
-        "usage": ["web:packages/web/src/runtime/updaters.ts (updateDevActivityLog, .widget-empty)"],
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts (updateDevActivityLog, .widget-empty)"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -1568,7 +1592,9 @@
       "value": "No starred repositories",
       "_meta": {
         "description": "Empty-state when no starred repositories are available.",
-        "usage": ["web:packages/web/src/runtime/updaters.ts (updateStarredRepos, .widget-empty)"],
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts (updateStarredRepos, .widget-empty)"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -1673,7 +1699,9 @@
       "value": "Active",
       "_meta": {
         "description": "Per-source status value when a data source is reporting (e.g. Health, Sleep, Location). Web renders it all-caps ('ACTIVE') via the JS updater; stored canonical natural case 'Active' with display uppercasing applied by the consumer (D3).",
-        "usage": ["web:packages/web/src/runtime/updaters.ts:388 (sys-val 'ACTIVE')"],
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts:388 (sys-val 'ACTIVE')"
+        ],
         "register": "atom",
         "audience": "human",
         "owner": "jonathan",
@@ -1688,7 +1716,9 @@
       "value": "Offline",
       "_meta": {
         "description": "Per-source status value when a data source is not reporting. Web renders it all-caps ('OFFLINE') via the JS updater; stored canonical natural case 'Offline' (D3).",
-        "usage": ["web:packages/web/src/runtime/updaters.ts:395 (sys-val 'OFFLINE')"],
+        "usage": [
+          "web:packages/web/src/runtime/updaters.ts:395 (sys-val 'OFFLINE')"
+        ],
         "register": "atom",
         "audience": "human",
         "owner": "jonathan",
@@ -1722,7 +1752,9 @@
           "value": "Activity by my {watch} every ~15 minutes. Water powered by {water}. Caffeine powered by {coffee}.",
           "_meta": {
             "description": "Provenance tooltip body for the Health row: Apple Watch activity cadence, Larq water tracking, Acaia caffeine tracking. {watch}/{water}/{coffee} are link placeholders composed from refs.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -1821,7 +1853,9 @@
           "value": "Powered by my {watch}. True Apple Sleep Score, updated manually daily.",
           "_meta": {
             "description": "Provenance tooltip body for the Sleep row: Apple Watch sleep tracking, manual daily update cadence. {watch} is a link placeholder composed from refs.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -1864,7 +1898,9 @@
           "value": "Powered by a custom iOS App, hosted on AWS.",
           "_meta": {
             "description": "Provenance tooltip body for the Books row: custom iOS app and AWS backend. No links.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -1878,7 +1914,9 @@
           "value": "Powered by {feedly} as I mark articles to Read Later.",
           "_meta": {
             "description": "Provenance tooltip body for the Articles row: Feedly as the read-later source. {feedly} is a link placeholder composed from refs.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -1921,7 +1959,9 @@
           "value": "Powered by {github} as commits are made or pull requests are merged.",
           "_meta": {
             "description": "Provenance tooltip body for the Github Events row: GitHub event source for commits and pull requests. {github} is a link placeholder composed from refs.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -1964,7 +2004,9 @@
           "value": "Powered by {github} as new repositories are starred.",
           "_meta": {
             "description": "Provenance tooltip body for the Github Stars row: GitHub star event source. {github} is a link placeholder composed from refs.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -2007,7 +2049,9 @@
           "value": "Powered by {squarespace} as new reviews are posted.",
           "_meta": {
             "description": "Provenance tooltip body for the Theatre Reviews row: Squarespace as the publication platform. {squarespace} is a link placeholder composed from refs.",
-            "usage": ["web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"],
+            "usage": [
+              "web:packages/web/src/widgets/other/SystemStatus.astro (sys-info popover)"
+            ],
             "register": "factual",
             "audience": "human",
             "owner": "jonathan",
@@ -2086,7 +2130,9 @@
       "value": "Site",
       "_meta": {
         "description": "Identity card — personal-site link pill label. Web-only today; iOS identity card renders only GitHub + LinkedIn pills.",
-        "usage": ["web:packages/web/src/widgets/identity/IdentityCard.astro:22,65 (neon-pill)"],
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:22,65 (neon-pill)"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -2100,7 +2146,9 @@
       "value": "Mastodon",
       "_meta": {
         "description": "Identity card — Mastodon link pill label. Web-only today.",
-        "usage": ["web:packages/web/src/widgets/identity/IdentityCard.astro:23,66 (neon-pill)"],
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:23,66 (neon-pill)"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -2114,7 +2162,9 @@
       "value": "Bluesky",
       "_meta": {
         "description": "Identity card — Bluesky link pill label. Web-only today.",
-        "usage": ["web:packages/web/src/widgets/identity/IdentityCard.astro:24,67 (neon-pill)"],
+        "usage": [
+          "web:packages/web/src/widgets/identity/IdentityCard.astro:24,67 (neon-pill)"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
@@ -2320,6 +2370,96 @@
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-07-07"
+      }
+    }
+  },
+  "widgetState": {
+    "noReading": {
+      "value": "No reading",
+      "_meta": {
+        "description": "Accessible name of the no-reading mark (an em dash) that stands in for a measurement the export did not carry. Never a zero.",
+        "usage": [
+          "web:packages/web/src/widgets/health/MovementRings.astro (ring group aria-label)",
+          "web:packages/web/src/runtime/updaters-movement.ts (ringsLabel)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-08",
+        "constraints": {
+          "maxChars": 24
+        },
+        "rationale": "Atlas decision 0160 (honest widget states): a widget renders real data or an honest state in server markup, never a fabricated value."
+      }
+    },
+    "unavailable": {
+      "value": "Data unavailable",
+      "_meta": {
+        "description": "Notice a live widget shows when its export could not be read (failure, malformed, missing primary measurement). The card shows no value.",
+        "usage": [
+          "web:packages/web/src/components/WidgetStateNotice.astro (unavailable)",
+          "ios:Sources/LifegamesWidgets/Runtime/WidgetStateNoticeView.swift"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-08",
+        "constraints": {
+          "maxChars": 32
+        },
+        "rationale": "Atlas decision 0160 (honest widget states): a widget renders real data or an honest state in server markup, never a fabricated value."
+      }
+    },
+    "suppressed": {
+      "value": "Hidden during focus",
+      "_meta": {
+        "description": "Notice a live widget shows while a hiding focus mode (Work, Do Not Disturb) is active. The card carries no data at all.",
+        "usage": [
+          "web:packages/web/src/components/WidgetStateNotice.astro (suppressed)",
+          "ios:Sources/LifegamesWidgets/Runtime/WidgetStateNoticeView.swift"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-08",
+        "constraints": {
+          "maxChars": 32
+        },
+        "rationale": "Atlas decision 0160 (honest widget states): a widget renders real data or an honest state in server markup, never a fabricated value."
+      }
+    },
+    "asOf": {
+      "value": "as of {time}",
+      "_meta": {
+        "description": "Stale-state header prefix. ICU MF1 template; consumers interpolate an absolute time in America/Los_Angeles (e.g. 'Oct 7, 2:05 PM PDT'). Lowercase: it sits in the header timestamp slot beside lowercase labels such as 'live' and 'today'.",
+        "usage": [
+          "web:packages/web/src/components/WidgetTimestamp.astro (stale)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-08",
+        "constraints": {
+          "maxChars": 40
+        },
+        "rationale": "Atlas decision 0160 (honest widget states): a widget renders real data or an honest state in server markup, never a fabricated value."
+      }
+    },
+    "needsJavaScript": {
+      "value": "Live data needs JavaScript.",
+      "_meta": {
+        "description": "<noscript> note in a widget's loading state: the data-free page shell fills in only with client JavaScript.",
+        "usage": [
+          "web:packages/web/src/components/WidgetStateNotice.astro (loading noscript)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-08",
+        "constraints": {
+          "maxChars": 40
+        },
+        "rationale": "Atlas decision 0160 (honest widget states): a widget renders real data or an honest state in server markup, never a fabricated value."
       }
     }
   }

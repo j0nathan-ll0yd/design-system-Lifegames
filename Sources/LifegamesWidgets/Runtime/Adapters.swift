@@ -1,11 +1,13 @@
 import Foundation
+import LifegamesComponentsCore
 
 public enum Adapters {
     public static func adaptHeartRate(from raw: [String: Any]) -> HeartRateProps {
         let quantities = raw["quantities"] as? [String: [String: Any]] ?? [:]
-        let hr = (quantities["heartRate"]?["value"] as? Double).map { Int($0.rounded()) } ?? 0
-        let hrv = (quantities["hrvSDNN"]?["value"] as? Double).map { Int($0.rounded()) } ?? 0
-        let zone = classifyHeartRate(hr)
+        // A missing quantity stays nil, never 0 (atlas decision 0160 H03).
+        let hr = (quantities["heartRate"]?["value"] as? Double).map { Int($0.rounded()) }
+        let hrv = (quantities["hrvSDNN"]?["value"] as? Double).map { Int($0.rounded()) }
+        let zone = hr.map(classifyHeartRate) ?? NoReading.mark
         return HeartRateProps(bpm: hr, hrv: hrv, zone: zone)
     }
 

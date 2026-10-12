@@ -49,37 +49,41 @@ enum BentoTileVariations {
                         progress: data.moveProgress,
                         color: LGColor.accentPink,
                         label: "Move",
-                        value: data.moveValue,
+                        value: data.moveValue ?? NoReading.mark,
                         size: 64
                     )
                     HealthRingView(
                         progress: min(data.exerciseProgress, 1.0),
                         color: LGColor.accentGreen,
                         label: "Exercise",
-                        value: data.exerciseValue,
+                        value: data.exerciseValue ?? NoReading.mark,
                         size: 64
                     )
                     HealthRingView(
                         progress: data.standProgress,
                         color: LGColor.accentBlue,
                         label: "Stand",
-                        value: data.standValue,
+                        value: data.standValue ?? NoReading.mark,
                         size: 64
                     )
                 }
                 .frame(maxWidth: .infinity)
 
                 HStack {
-                    Text("\(data.steps)")
+                    let steps = NoReading.text(data.steps)
+                    Text(steps)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundStyle(LGColor.textTitle)
+                        .noReadingAccessibility(steps)
                     Text("steps")
                         .font(.system(size: 13))
                         .foregroundStyle(LGColor.textMuted)
                     Spacer()
-                    Text("\(data.restingHR) bpm resting")
+                    let restingHR = NoReading.text(data.restingHR)
+                    Text("\(restingHR) bpm resting")
                         .font(.system(size: 12))
                         .foregroundStyle(LGColor.textMuted)
+                        .noReadingAccessibility(restingHR)
                 }
             }
         }

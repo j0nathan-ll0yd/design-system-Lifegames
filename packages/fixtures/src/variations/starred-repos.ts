@@ -1,9 +1,54 @@
 import type {GithubStarredReposExport} from '@j0nathan-ll0yd/portal-contract/schemas'
-import {createStarredReposFixture} from '../factories/starred-repos'
+import {createStarredRepo, createStarredReposFixture} from '../factories/starred-repos'
 import {isoTimestamp} from '../factories/helpers'
+
+// SSR known answer (decision 0160): verified public docker-library repositories that no
+// other fixture references. Descriptions, topics and counts are synthetic and unique.
+export const ssrKnownAnswer: GithubStarredReposExport = createStarredReposFixture({
+  repos: [
+    createStarredRepo({
+      ownerLogin: 'docker-library',
+      ownerHtmlUrl: 'https://github.com/docker-library',
+      name: 'busybox',
+      htmlUrl: 'https://github.com/docker-library/busybox',
+      description: 'Known answer starred repository Kappa-7731',
+      forksCount: 3917,
+      stargazersCount: 2673,
+      watchersCount: 2673,
+      openIssuesCount: 46,
+      topics: ['ka-topic-kappa-7731'],
+      size: 7331,
+      licenseKey: 'mit',
+      licenseName: 'MIT License',
+      licenseSpdxId: 'MIT',
+      languages: [{language: 'Shell', lines: 8123}],
+      starredAt: isoTimestamp(4)
+    }),
+    createStarredRepo({
+      ownerLogin: 'docker-library',
+      ownerHtmlUrl: 'https://github.com/docker-library',
+      name: 'hello-world',
+      htmlUrl: 'https://github.com/docker-library/hello-world',
+      description: 'Known answer second starred repository Kappa-7731',
+      forksCount: 1489,
+      stargazersCount: 1861,
+      watchersCount: 1861,
+      openIssuesCount: 49,
+      topics: ['ka-topic-kappa-7732'],
+      size: 5419,
+      licenseKey: 'mit',
+      licenseName: 'MIT License',
+      licenseSpdxId: 'MIT',
+      languages: [{language: 'C', lines: 6247}],
+      starredAt: isoTimestamp(9)
+    })
+  ]
+})
 
 export const starredReposVariations: Record<string, GithubStarredReposExport> = {
   baseline: createStarredReposFixture(),
+
+  ssrKnownAnswer,
 
   empty: createStarredReposFixture({repos: []}),
 

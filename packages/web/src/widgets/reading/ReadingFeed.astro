@@ -1,26 +1,59 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { readingFeedState } from '../../runtime/widget-rules';
+import type { Article, ReadingFeedProps } from './ReadingFeed.types';
 
-const { reading } = Astro.props;
-const articles = reading.articles;
+const { reading, generatedAt } = Astro.props as ReadingFeedProps;
+const articleList = reading?.articles ?? [];
+// One owner for the state: the same rule the view model applies.
+const widgetState = readingFeedState(Astro.props as ReadingFeedProps);
+const showData = rendersData(widgetState);
+// The server page passes at most one client page (toReadingArticles caps it at
+// 10); the widget renders what it is given, so direct callers keep paginating.
+const articles: Article[] = showData ? articleList : [];
 ---
 
-<div class="tri-card tri-card-accent-amber" id="cardReading">
+<div
+  class={`tri-card tri-card-accent-amber${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardReading"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.readingFeed.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">{widgets.readingFeed.timestampRecent}</span>
+      <WidgetTimestamp
+        label={widgets.readingFeed.timestampRecent}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
-    <ul class="article-list">
+    <div class="skeleton-state">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="skeleton-bar" style="width: 100%; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 88%; height: 12px;"></div>
+        <div class="skeleton-bar" style="width: 94%; height: 12px;"></div>
+      </div>
+    </div>
+    <WidgetStateNotice state={widgetState} empty={{ message: widgets.readingFeed.empty }} />
+    <ul class="article-list" data-state-scaffold hidden={!showData}>
       {
-        articles.map((a: any, i: number) => (
+        articles.map((a, i) => (
           <li class="article-list-item" style={`animation-delay: ${i * 0.07}s`}>
             <span class="article-list-title">{a.title || a.source}</span>
             {a.title && <span class="article-list-source">({a.source})</span>}
-            <span class="article-list-date">{a.date}</span>
+            {a.datetime ? (
+              <time class="article-list-date" datetime={a.datetime}>
+                {a.date}
+              </time>
+            ) : (
+              <span class="article-list-date">{a.date}</span>
+            )}
           </li>
         ))
       }

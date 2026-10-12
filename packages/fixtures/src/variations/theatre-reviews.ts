@@ -2,8 +2,44 @@ import type {TheatreReviewsExport} from '@j0nathan-ll0yd/portal-contract/schemas
 import {createReview, createTheatreReviewsFixture} from '../factories/theatre-reviews'
 import {imageVersion, isoDate} from '../factories/helpers'
 
+// SSR known answer (decision 0160): every title, slug, URL, excerpt, numeric score and
+// image dimension is overridden so nothing is shared with the default review.
+export const ssrKnownAnswer: TheatreReviewsExport = (() => {
+  const reviews = [
+    createReview({
+      title: 'Known Answer Play Kappa-7731',
+      slug: 'known-answer-play-kappa-7731',
+      url: 'https://coasttocoastreviews.com/reviews/known-answer-play-kappa-7731',
+      author: 'Known Answer Critic Kappa-7731',
+      publishedAt: isoDate(2),
+      rating: 'A-',
+      ratingNumeric: 3.71,
+      excerpt: 'Known answer excerpt one Kappa-7731.',
+      imageUrl: 'https://coasttocoastreviews.com/images/known-answer-play-kappa-7731.jpg',
+      imageWidth: 1137,
+      imageHeight: 641
+    }),
+    createReview({
+      title: 'Known Answer Musical Kappa-7731',
+      slug: 'known-answer-musical-kappa-7731',
+      url: 'https://coasttocoastreviews.com/reviews/known-answer-musical-kappa-7731',
+      author: 'Known Answer Critic Kappa-7731',
+      publishedAt: isoDate(5),
+      rating: 'B-',
+      ratingNumeric: 2.69,
+      excerpt: 'Known answer excerpt two Kappa-7731.',
+      imageUrl: 'https://coasttocoastreviews.com/images/known-answer-musical-kappa-7731.jpg',
+      imageWidth: 1139,
+      imageHeight: 643
+    })
+  ]
+  return createTheatreReviewsFixture({reviews, totalReviews: 237})
+})()
+
 export const theatreReviewsVariations: Record<string, TheatreReviewsExport> = {
   baseline: createTheatreReviewsFixture(),
+
+  ssrKnownAnswer,
 
   empty: createTheatreReviewsFixture({reviews: [], totalReviews: 0}),
 

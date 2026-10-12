@@ -57,7 +57,8 @@ struct Article: Codable {
     let articleAuthor, articleBoards, articleCategories, articleEngagement: String?
     let articleEngagementRate, articleFirstComment, articleFirstHighlight, articleFirstImageURL: String?
     let articlePublishedAt: String?
-    let articleTitle, articleURL: String
+    let articleTitle: String
+    let articleURL: String
     let notes: [Note]
     let savedAt: String
     let sourceDomain, sourceFeedURL, sourceTitle, sourceURL: String?
@@ -232,14 +233,15 @@ extension BooksExport {
 
 // MARK: - Book
 struct Book: Codable {
-    let asin, author: String
+    let asin: String
+    let author: String
     let averageRating, category: String?
     let currentPage: Double?
     let description: String?
     let finishedAt: String?
     let images, isbn10, isbn13, mainImage: String?
     let mainImageAvif, mainImageCard, mainImageCardAvif, mainImageThumb: String?
-    let mainImageThumbAvif, notes: String?
+    let mainImageThumbAvif, mainImageVersion, notes: String?
     let pageCount: Double?
     let publicationDate: String?
     let publishedYear, rating: Double?
@@ -287,6 +289,7 @@ extension Book {
         mainImageCardAvif: String?? = nil,
         mainImageThumb: String?? = nil,
         mainImageThumbAvif: String?? = nil,
+        mainImageVersion: String?? = nil,
         notes: String?? = nil,
         pageCount: Double?? = nil,
         publicationDate: String?? = nil,
@@ -318,6 +321,7 @@ extension Book {
             mainImageCardAvif: mainImageCardAvif ?? self.mainImageCardAvif,
             mainImageThumb: mainImageThumb ?? self.mainImageThumb,
             mainImageThumbAvif: mainImageThumbAvif ?? self.mainImageThumbAvif,
+            mainImageVersion: mainImageVersion ?? self.mainImageVersion,
             notes: notes ?? self.notes,
             pageCount: pageCount ?? self.pageCount,
             publicationDate: publicationDate ?? self.publicationDate,
@@ -350,6 +354,7 @@ extension Book {
 // MARK: - FocusExport
 struct FocusExport: Codable {
     let currentFocus, generatedAt: String
+    let hidingSince: String?
 }
 
 // MARK: FocusExport convenience initializers and mutators
@@ -372,11 +377,13 @@ extension FocusExport {
 
     func with(
         currentFocus: String? = nil,
-        generatedAt: String? = nil
+        generatedAt: String? = nil,
+        hidingSince: String?? = nil
     ) -> FocusExport {
         return FocusExport(
             currentFocus: currentFocus ?? self.currentFocus,
-            generatedAt: generatedAt ?? self.generatedAt
+            generatedAt: generatedAt ?? self.generatedAt,
+            hidingSince: hidingSince ?? self.hidingSince
         )
     }
 
@@ -443,7 +450,8 @@ struct Event: Codable {
     let deletions: Double?
     let hash: String?
     let number: Double?
-    let repo, title, type: String
+    let repo: String
+    let title, type: String
 }
 
 // MARK: Event convenience initializers and mutators
@@ -551,7 +559,8 @@ struct Repo: Codable {
     let licenseKey, licenseName, licenseSpdxID: String?
     let name: String
     let openIssuesCount: Double
-    let ownerHTMLURL, ownerLogin: String
+    let ownerHTMLURL: String
+    let ownerLogin: String
     let size, stargazersCount: Double
     let starredAt: String
     let topics: [String]
@@ -1200,11 +1209,14 @@ struct Review: Codable {
     let author, excerpt: String
     let imageHeight: Double?
     let imageURL, imageURLAvif, imageURLCard, imageURLCardAvif: String?
+    let imageVersion: String?
     let imageWidth: Double?
     let publishedAt: String
     let rating: String?
     let ratingNumeric: Double?
-    let slug, title, url: String
+    let slug: String
+    let title: String
+    let url: String
 
     enum CodingKeys: String, CodingKey {
         case author, excerpt, imageHeight
@@ -1212,7 +1224,7 @@ struct Review: Codable {
         case imageURLAvif = "imageUrlAvif"
         case imageURLCard = "imageUrlCard"
         case imageURLCardAvif = "imageUrlCardAvif"
-        case imageWidth, publishedAt, rating, ratingNumeric, slug, title, url
+        case imageVersion, imageWidth, publishedAt, rating, ratingNumeric, slug, title, url
     }
 }
 
@@ -1242,6 +1254,7 @@ extension Review {
         imageURLAvif: String?? = nil,
         imageURLCard: String?? = nil,
         imageURLCardAvif: String?? = nil,
+        imageVersion: String?? = nil,
         imageWidth: Double?? = nil,
         publishedAt: String? = nil,
         rating: String?? = nil,
@@ -1258,6 +1271,7 @@ extension Review {
             imageURLAvif: imageURLAvif ?? self.imageURLAvif,
             imageURLCard: imageURLCard ?? self.imageURLCard,
             imageURLCardAvif: imageURLCardAvif ?? self.imageURLCardAvif,
+            imageVersion: imageVersion ?? self.imageVersion,
             imageWidth: imageWidth ?? self.imageWidth,
             publishedAt: publishedAt ?? self.publishedAt,
             rating: rating ?? self.rating,
@@ -3217,6 +3231,19 @@ struct DashboardBooksBook: Codable {
     let isbn: String?
     /// Affiliate or direct purchase URL.
     let link: String?
+    /// Full-size cover image URL from the books export (first-party CloudFront), or null when
+    /// the export has no cover.
+    let mainImage: String?
+    /// AVIF encoding of mainImage, or null when no AVIF was produced.
+    let mainImageAvif: String?
+    /// Card (1x shelf) cover URL from the books export, or null.
+    let mainImageCard: String?
+    /// AVIF encoding of mainImageCard, or null.
+    let mainImageCardAvif: String?
+    /// Thumbnail (2x shelf) cover URL from the books export, or null.
+    let mainImageThumb: String?
+    /// AVIF encoding of mainImageThumb, or null.
+    let mainImageThumbAvif: String?
     /// Reading progress as a percentage (0–100). 0 for unstarted, 100 for finished.
     let progress: Int?
     /// User rating 1–5 stars, or null if unrated.
@@ -3251,6 +3278,12 @@ extension DashboardBooksBook {
         finishedAt: Date?? = nil,
         isbn: String?? = nil,
         link: String?? = nil,
+        mainImage: String?? = nil,
+        mainImageAvif: String?? = nil,
+        mainImageCard: String?? = nil,
+        mainImageCardAvif: String?? = nil,
+        mainImageThumb: String?? = nil,
+        mainImageThumbAvif: String?? = nil,
         progress: Int?? = nil,
         rating: Int?? = nil,
         status: Status? = nil,
@@ -3262,6 +3295,12 @@ extension DashboardBooksBook {
             finishedAt: finishedAt ?? self.finishedAt,
             isbn: isbn ?? self.isbn,
             link: link ?? self.link,
+            mainImage: mainImage ?? self.mainImage,
+            mainImageAvif: mainImageAvif ?? self.mainImageAvif,
+            mainImageCard: mainImageCard ?? self.mainImageCard,
+            mainImageCardAvif: mainImageCardAvif ?? self.mainImageCardAvif,
+            mainImageThumb: mainImageThumb ?? self.mainImageThumb,
+            mainImageThumbAvif: mainImageThumbAvif ?? self.mainImageThumbAvif,
             progress: progress ?? self.progress,
             rating: rating ?? self.rating,
             status: status ?? self.status,

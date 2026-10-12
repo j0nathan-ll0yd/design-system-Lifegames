@@ -1,7 +1,9 @@
 import Foundation
 
 public struct NightSummaryProps: Hashable, Codable, Sendable {
-    public let sleepScore: Int
+    /// The night's sleep score, nil when no score was recorded. A missing score renders
+    /// the no-reading mark, never 0 (atlas decision 0160 F1).
+    public let sleepScore: Int?
     public let duration: String
     public let deepFormatted: String
     public let remFormatted: String
@@ -11,7 +13,7 @@ public struct NightSummaryProps: Hashable, Codable, Sendable {
     public let remPct: Int
 
     public init(
-        sleepScore: Int, duration: String,
+        sleepScore: Int?, duration: String,
         deepFormatted: String, remFormatted: String,
         coreFormatted: String, awakeFormatted: String,
         deepPct: Int, remPct: Int
@@ -36,7 +38,7 @@ public extension NightSummaryProps {
     /// design gallery, screenshots) must go through this factory so the rule
     /// can't drift.
     static func from(
-        sleepScore: Int,
+        sleepScore: Int?,
         coreSeconds: TimeInterval,
         deepSeconds: TimeInterval,
         remSeconds: TimeInterval,

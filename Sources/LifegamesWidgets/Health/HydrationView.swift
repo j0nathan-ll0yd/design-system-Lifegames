@@ -17,6 +17,17 @@ public struct HydrationView: View {
     }
 
     public var body: some View {
+        switch state {
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: hydrationCopy.title, accent: LGColor.accentPink)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: hydrationCopy.title, accent: LGColor.accentPink)
+        case .loading, .empty, .populated:
+            dataCard
+        }
+    }
+
+    private var dataCard: some View {
         VStack(alignment: .leading, spacing: 0) {
             WidgetHeaderView(label: hydrationCopy.title.uppercased(), dotColor: LGColor.accentPink, timestamp: hydrationCopy.timestampToday)
 
@@ -24,9 +35,13 @@ public struct HydrationView: View {
             case .loading:
                 HydrationSkeletonView()
             case .empty:
-                HydrationPopulatedView(props: .zero)
+                // No measurement: empty vessels and the no-reading mark, never "0 oz"
+                // (atlas decision 0160; matches the web Hydration empty state).
+                HydrationPopulatedView(props: .zero, measured: false)
             case let .populated(props):
                 HydrationPopulatedView(props: props)
+            case .unavailable, .suppressed:
+                EmptyView()
             }
         }
         .neonCard(accent: LGColor.accentPink)
@@ -35,18 +50,25 @@ public struct HydrationView: View {
 
 // MARK: - Populated
 
-private struct HydrationPopulatedView: View {
+struct HydrationPopulatedView: View {
     let props: HydrationProps
+    /// False when the values are not measurements (the empty state).
+    var measured = true
+
+    /// A vessel's value label: the measurement with its unit, or the no-reading mark.
+    static func valueText(_ value: Int, unit: String, measured: Bool) -> String {
+        measured ? "\(value) \(unit)" : NoReading.mark
+    }
 
     var body: some View {
         HStack(alignment: .bottom, spacing: 0) {
-            WaterBottleColumn(fillPercent: props.waterPercent, value: "\(props.waterOz) oz")
+            WaterBottleColumn(fillPercent: props.waterPercent, value: Self.valueText(props.waterOz, unit: "oz", measured: measured))
                 .frame(maxWidth: .infinity)
 
             VesselDivider()
                 .padding(.bottom, 28)
 
-            CoffeeMugColumn(fillPercent: props.caffeinePercent, value: "\(props.caffeineMg) mg")
+            CoffeeMugColumn(fillPercent: props.caffeinePercent, value: Self.valueText(props.caffeineMg, unit: "mg", measured: measured))
                 .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 18)
@@ -155,6 +177,7 @@ private struct VesselReadout: View {
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(color)
                 .neonGlow(color, radius: 3)
+                .noReadingAccessibility(value)
 
             Text(label)
                 .font(.system(size: 9, weight: .medium))
@@ -441,4 +464,18 @@ private extension HydrationProps {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Hydration — Unavailable") {
+    HydrationView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Hydration — Suppressed") {
+    HydrationView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }

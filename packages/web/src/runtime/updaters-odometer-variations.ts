@@ -1,9 +1,10 @@
-import {esc} from './updaters'
 import type {LocationExport} from './location-types'
 
 // ─── V3: Gradient Text with Home Icon ────────────────────────────────────────
 
-const TRACKING_START = new Date('2026-03-02T00:00:00').getTime()
+// Midnight 2 March 2026 in the owner's time zone (DISPLAY_TIME_ZONE, PST that
+// day). An offset-less string parses in the viewer's zone and shifts the count.
+const TRACKING_START = new Date('2026-03-02T00:00:00-08:00').getTime()
 
 export function updateExplorationOdometerV3(data: LocationExport): void {
   const card = document.getElementById('cardExplorationOdometerV3')
@@ -32,7 +33,8 @@ export function updateExplorationOdometerV3(data: LocationExport): void {
   }
 
   if (city) {
-    city.textContent = data.currentCity ? esc(data.currentCity) : ''
+    // textContent takes the raw string; escaping it would show the entities.
+    city.textContent = data.currentCity ?? ''
   }
 
   if (days) {

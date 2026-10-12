@@ -4,9 +4,13 @@
   "group": "health",
   "platforms": ["swift", "web"],
   "props": {
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
     "health": {
-      "type": "object",
-      "optional": false,
+      "type": ["object", "null"],
+      "optional": true,
       "properties": {
         "workouts": {
           "type": "array",
@@ -20,21 +24,29 @@
                 "optional": false
               },
               "distance": {
-                "type": "number",
+                "type": ["number", "null"],
                 "optional": false
               },
               "duration": {
-                "type": "number",
+                "type": ["number", "null"],
                 "optional": false
               },
               "energy_burned": {
-                "type": "number",
+                "type": ["number", "null"],
                 "optional": false
+              },
+              "link": {
+                "type": ["string", "null"],
+                "optional": true
               }
             }
           }
         }
       }
+    },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/health/Workouts.types.ts",
@@ -50,7 +62,9 @@
     "multi-link",
     "populated-max",
     "populated-min",
-    "skeleton"
+    "skeleton",
+    "suppressed",
+    "unavailable"
   ],
   "a11y": {
     "voiceOverLabel": null,

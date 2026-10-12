@@ -88,7 +88,7 @@ describe('hiding-mode payloads without hidingSince are REJECTED (the 1.3.4 regre
 
 describe('every committed generated focus fixture satisfies the published schema', () => {
   it('found the committed fixtures (guards against a vacuous suite)', () => {
-    expect(committedFixtures.map((f) => f.name)).toEqual(['baseline.json', 'dnd.json', 'empty.json', 'full.json', 'personal.json'])
+    expect(committedFixtures.map((f) => f.name)).toEqual(['baseline.json', 'dnd.json', 'empty.json', 'full.json', 'personal.json', 'ssrKnownAnswer.json'])
   })
 
   it.each(committedFixtures.map((f) => f.name))('%s validates', (name: string) => {

@@ -10,6 +10,8 @@ enum HydrationVariations {
         case fixture(String)
         case skeleton
         case empty
+        case unavailable
+        case suppressed
     }
 
     struct State: Identifiable {
@@ -31,6 +33,8 @@ enum HydrationVariations {
         .init(id: "overhydrated", label: "Overhydrated", kind: .fixture("hydration.overhydrated")),
         .init(id: "skeleton", label: "Skeleton", kind: .skeleton),
         .init(id: "empty", label: "Empty", kind: .empty),
+        .init(id: "unavailable", label: "Unavailable", kind: .unavailable),
+        .init(id: "suppressed", label: "Suppressed", kind: .suppressed),
     ]
 
     static var entry: WidgetEntry {
@@ -53,6 +57,10 @@ enum HydrationVariations {
             HydrationView(state: .loading)
         case .empty:
             HydrationView(state: .empty)
+        case .unavailable:
+            HydrationView(state: .unavailable)
+        case .suppressed:
+            HydrationView(state: .suppressed)
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "health", name: name),
                let props = Adapters.hydration(fromFixture: data)

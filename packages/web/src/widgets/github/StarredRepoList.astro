@@ -1,5 +1,11 @@
 ---
 import { widgets } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
+import { starredRepoListState } from '../../runtime/widget-rules';
+import { safeHttpsUrl } from '../../runtime/html-utils';
+import type { StarredRepoListProps } from './StarredRepoList.types';
 
 interface Repo {
   owner: string;
@@ -9,31 +15,50 @@ interface Repo {
   language: string;
   languageColor: string;
   starredAt: string;
+  datetime?: string;
 }
 
-interface Props {
-  repos: Repo[];
-}
+type Props = Omit<StarredRepoListProps, 'repos'> & { repos?: Repo[] };
 
-const { repos } = Astro.props;
+const { repos: repoList, generatedAt } = Astro.props;
+// One owner for the state: the same rule the view model applies.
+const widgetState = starredRepoListState(Astro.props as StarredRepoListProps);
+const showData = rendersData(widgetState);
+const repos: Repo[] = showData ? (repoList ?? []) : [];
 ---
 
-<div class="tri-card tri-card-accent-green" id="cardStarredRepos">
+<div
+  class={`tri-card tri-card-accent-green${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardStarredRepos"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.starredRepos.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot"></div>
-      <span class="widget-timestamp">{widgets.starredRepos.timestampRecent}</span>
+      <WidgetTimestamp
+        label={widgets.starredRepos.timestampRecent}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
-    <div class="gh-starred-list">
+    <div class="skeleton-state">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="skeleton-bar" style="width: 100%; height: 14px;"></div>
+        <div class="skeleton-bar" style="width: 90%; height: 14px;"></div>
+        <div class="skeleton-bar" style="width: 95%; height: 14px;"></div>
+      </div>
+    </div>
+    <WidgetStateNotice state={widgetState} empty={{ message: widgets.starredRepos.empty }} />
+    <div class="gh-starred-list" data-state-scaffold hidden={!showData}>
       {
         repos.map((repo: Repo) => (
           <div class="gh-sl-row">
             <a
               class="gh-sl-name"
-              href={repo.url}
+              href={safeHttpsUrl(repo.url) ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
               data-sa-link-event="repo_click"
@@ -41,12 +66,18 @@ const { repos } = Astro.props;
               <span class="gh-sl-owner">{repo.owner}/</span>
               {repo.name}
             </a>
-            <span class="gh-sl-stars">★ {repo.stars.toLocaleString()}</span>
+            <span class="gh-sl-stars">★ {repo.stars.toLocaleString('en-US')}</span>
             <span class="gh-sl-lang">
               <span class="gh-sl-lang-dot" style={`background: ${repo.languageColor};`} />
               {repo.language}
             </span>
-            <span class="gh-sl-date">{repo.starredAt}</span>
+            {repo.datetime ? (
+              <time class="gh-sl-date" datetime={repo.datetime}>
+                {repo.starredAt}
+              </time>
+            ) : (
+              <span class="gh-sl-date">{repo.starredAt}</span>
+            )}
           </div>
         ))
       }

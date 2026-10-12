@@ -100,6 +100,12 @@ jobs:
       # never regenerates it), so the unit suite runs in the same job as its subject.
       - name: Contract-lock model unit suite
         run: node --test packages/schemas/scripts/contract-lock.test.mjs
+      # validate.ts keys every schema through schemaUrn; a raw `urn:` key throws
+      # on fast-uri >= 3.1.6 in every consumer prebuild. The build below catches an
+      # invalid key end to end, but not a key site that bypasses the helper or a
+      # module missing from `files`, so this suite runs in CI, not only pre-push.
+      - name: Schema URN unit suite
+        run: node --test packages/schemas/scripts/schema-urn.test.mjs
       - run: pnpm check:schemas-freshness
       - name: Verify schema contract
         if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"
@@ -582,6 +588,9 @@ jobs:
   # identical to it -- which is how 3.0.0 shipped an image fallback that set
   # img.src correctly and still painted a broken glyph in every real browser.
   web-browser-runtime:
+    # The scripts-off suite renders the widgets with the real token CSS
+    # (packages/tokens/dist/tokens.css), so it needs the token build.
+    needs: build-tokens
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, playwright]
     timeout-minutes: 15
@@ -597,6 +606,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: token-dist
+          path: packages/tokens/dist/
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md)
       - name: web-browser-runtime
         run: pnpm --filter @j0nathan-ll0yd/web test:browser
@@ -732,6 +745,13 @@ jobs:
           # run in .husky/pre-push and no workflow, so DS_SKIP_PREPUSH=1 would be enough to
           # merge a gate that no longer gates. ~0.3s.
           node --test audits/__tests__/d3-openspec-covers.test.mjs
+          # Widget-rule known answers, web side (atlas decision 0160). The Swift twin of a web state
+          # rule is held to one shared file, contracts/widget-rules/*.known-answers.json:
+          # WidgetRulesTests reads it in test-swift, and this run proves the web rule still returns
+          # every listed state. Without it a change to the web rule alone would leave both suites
+          # green while the platforms disagree. It runs here because governance-gates is a required
+          # status context and the file lives outside packages/web/tests. ~1s.
+          pnpm -F @j0nathan-ll0yd/web exec vitest run --config ../../contracts/widget-rules/vitest.config.mjs
           # SSR image-fallback gate: every .astro that server-renders a
           # data-fallback cover must bundle the load-time initImageFallbacks()
           # call. Mirrors the digest-conformance precedent above

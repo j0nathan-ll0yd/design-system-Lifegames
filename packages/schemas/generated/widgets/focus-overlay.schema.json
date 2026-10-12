@@ -1,6 +1,23 @@
 {
+  "type": "object",
+  "properties": {
+    "currentFocus": {
+      "type": ["string", "null"],
+      "description": "The focus export's `currentFocus`. When it names this overlay's focus mode, the overlay renders VISIBLE in server markup, so a client without JavaScript sees it too (atlas decision 0160). Omitted → hidden until the client runtime (updateFocusOverlay) shows it."
+    },
+    "now": {
+      "anyOf": [
+        {
+          "type": "string",
+          "description": "ISO time of the render; seeds the clock in the owner's time zone."
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/focus-overlay.json",
-  "title": "FocusOverlayProps",
-  "type": "object"
+  "title": "FocusOverlayProps"
 }

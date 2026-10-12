@@ -29,94 +29,50 @@ struct WatchSyncDiagnosticsSnapshotTests {
     // MARK: - SyncStatusView (45mm)
 
     @Test func testSyncStatus_idleConfigured_45mm() {
-        let props = SyncStatusProps(
-            status: .idle,
-            lastSyncDate: Date(timeIntervalSinceReferenceDate: 760_000_000),
-            referenceDate: Date(timeIntervalSinceReferenceDate: 760_003_600),
-            primaryActionLabel: "SYNC"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.idleConfigured, onPrimaryTap: {})),
             as: .image(layout: layout45mm)
         )
     }
 
     @Test func testSyncStatus_syncing_45mm() {
-        let props = SyncStatusProps(
-            status: .syncing,
-            lastSyncDate: Date(timeIntervalSinceReferenceDate: 760_003_580),
-            referenceDate: Date(timeIntervalSinceReferenceDate: 760_003_600),
-            primaryActionLabel: "SYNCING…"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.syncing, onPrimaryTap: {})),
             as: .image(layout: layout45mm)
         )
     }
 
     @Test func testSyncStatus_syncedRecent_45mm() {
-        let reference = Date(timeIntervalSinceReferenceDate: 760_003_600)
-        let props = SyncStatusProps(
-            status: .syncedRecent,
-            lastSyncDate: reference.addingTimeInterval(-120),
-            referenceDate: reference,
-            primaryActionLabel: "SYNC"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.syncedRecent, onPrimaryTap: {})),
             as: .image(layout: layout45mm)
         )
     }
 
     @Test func testSyncStatus_needsSetup_45mm() {
-        let props = SyncStatusProps(
-            status: .needsSetup,
-            lastSyncDate: nil,
-            referenceDate: Date(timeIntervalSinceReferenceDate: 760_003_600),
-            primaryActionLabel: "OPEN IPHONE"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.needsSetup, onPrimaryTap: {})),
             as: .image(layout: layout45mm)
         )
     }
 
     @Test func testSyncStatus_authRequired_45mm() {
-        let props = SyncStatusProps(
-            status: .authRequired,
-            lastSyncDate: nil,
-            referenceDate: Date(timeIntervalSinceReferenceDate: 760_003_600),
-            primaryActionLabel: "AUTHORIZE"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.authRequired, onPrimaryTap: {})),
             as: .image(layout: layout45mm)
         )
     }
 
     @Test func testSyncStatus_error_45mm() {
-        let props = SyncStatusProps(
-            status: .error,
-            lastSyncDate: Date(timeIntervalSinceReferenceDate: 760_000_000),
-            referenceDate: Date(timeIntervalSinceReferenceDate: 760_003_600),
-            errorMessage: "Network timeout",
-            primaryActionLabel: "RETRY"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.error, onPrimaryTap: {})),
             as: .image(layout: layout45mm)
         )
     }
 
     @Test func testSyncStatus_syncing_41mm() {
-        let props = SyncStatusProps(
-            status: .syncing,
-            lastSyncDate: Date(timeIntervalSinceReferenceDate: 760_003_580),
-            referenceDate: Date(timeIntervalSinceReferenceDate: 760_003_600),
-            primaryActionLabel: "SYNCING…"
-        )
         assertSnapshot(
-            of: wrap(SyncStatusView(props: props, onPrimaryTap: {})),
+            of: wrap(SyncStatusView(props: WatchSyncDiagnosticsStates.syncing, onPrimaryTap: {})),
             as: .image(layout: layout41mm)
         )
     }

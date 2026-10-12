@@ -10,6 +10,8 @@ enum NightSummaryVariations {
         case fixture(String)
         case skeleton
         case empty
+        case unavailable
+        case suppressed
     }
 
     struct State: Identifiable {
@@ -31,6 +33,8 @@ enum NightSummaryVariations {
         .init(id: "restless", label: "Restless", kind: .fixture("night-summary.restless")),
         .init(id: "skeleton", label: "Skeleton", kind: .skeleton),
         .init(id: "empty", label: "Empty", kind: .empty),
+        .init(id: "unavailable", label: "Unavailable", kind: .unavailable),
+        .init(id: "suppressed", label: "Suppressed", kind: .suppressed),
     ]
 
     static var entry: WidgetEntry {
@@ -53,6 +57,10 @@ enum NightSummaryVariations {
             NightSummaryView(state: .loading)
         case .empty:
             NightSummaryView(state: .empty)
+        case .unavailable:
+            NightSummaryView(state: .unavailable)
+        case .suppressed:
+            NightSummaryView(state: .suppressed)
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "health", name: name),
                let props = Adapters.nightSummary(fromFixture: data)

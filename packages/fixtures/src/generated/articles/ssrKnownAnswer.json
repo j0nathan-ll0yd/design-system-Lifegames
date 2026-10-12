@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "articles": [
+    {
+      "articleUrl": "https://articles.known-answer-kappa-7731.invalid/first",
+      "articleTitle": "Known Answer Article Title Kappa-7731",
+      "articleAuthor": "Known Answer Writer Kappa-7731",
+      "articleFirstImageUrl": null,
+      "articlePublishedAt": "2026-03-16",
+      "articleBoards": null,
+      "articleCategories": null,
+      "sourceTitle": "Known Answer Source Kappa-7731",
+      "sourceUrl": "https://articles.known-answer-kappa-7731.invalid",
+      "sourceFeedUrl": null,
+      "sourceDomain": null,
+      "articleEngagement": null,
+      "articleEngagementRate": null,
+      "articleFirstHighlight": null,
+      "articleFirstComment": null,
+      "savedAt": "2026-03-17T12:00:00.000Z",
+      "notes": []
+    },
+    {
+      "articleUrl": "https://articles.known-answer-kappa-7731.invalid/second",
+      "articleTitle": "Known Answer Second Article Kappa-7731",
+      "articleAuthor": null,
+      "articleFirstImageUrl": null,
+      "articlePublishedAt": "2026-03-15",
+      "articleBoards": null,
+      "articleCategories": null,
+      "sourceTitle": "Known Answer Source Kappa-7731",
+      "sourceUrl": "https://articles.known-answer-kappa-7731.invalid",
+      "sourceFeedUrl": null,
+      "sourceDomain": null,
+      "articleEngagement": null,
+      "articleEngagementRate": null,
+      "articleFirstHighlight": null,
+      "articleFirstComment": null,
+      "savedAt": "2026-03-16T12:00:00.000Z",
+      "notes": []
+    }
+  ]
+}

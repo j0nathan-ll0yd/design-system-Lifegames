@@ -15,6 +15,7 @@ import addFormats from 'ajv-formats'
 import {compile} from 'json-schema-to-typescript'
 import jsonSchemaToZod from 'json-schema-to-zod'
 import * as prettier from 'prettier'
+import {reservedSwiftNames, swiftShadowClashes} from './swift-shadow'
 
 async function formatWithPrettier(src: string, outPath: string, parser: 'typescript' | 'json'): Promise<string> {
   const cfg = await prettier.resolveConfig(outPath)
@@ -52,6 +53,8 @@ const NAMESPACES: Namespace[] = [
   {name: 'a11y', topLevelType: 'Accessibility', flatSchemaId: 'https://lifegames.org/schemas/copy.a11y.flat.schema.json'},
   {name: 'app', topLevelType: 'App', flatSchemaId: 'https://lifegames.org/schemas/copy.app.flat.schema.json'},
   {name: 'permissions', topLevelType: 'Permissions', flatSchemaId: 'https://lifegames.org/schemas/copy.permissions.flat.schema.json'},
+  // ProfileCopy, not Profile: the copy type reads as copy beside LifegamesSchemas' Profile model.
+  {name: 'profile', topLevelType: 'ProfileCopy', flatSchemaId: 'https://lifegames.org/schemas/copy.profile.flat.schema.json'},
   {name: 'errors', topLevelType: 'Errors', flatSchemaId: 'https://lifegames.org/schemas/copy.errors.flat.schema.json'},
   {name: 'llm', topLevelType: 'Llm', flatSchemaId: 'https://lifegames.org/schemas/copy.llm.flat.schema.json'}
 ]
@@ -383,6 +386,20 @@ for (const {name, namespace} of swiftTopLevelNames) {
 // namespaces emitting a same-named struct redeclare it inside the single Swift
 // module. Assert every struct name (top-level + nested) is unique across
 // namespaces; the fix is a unique `title` on the colliding group in its schema.
+// A copy struct must not shadow a Swift name the code beside it uses
+// (scripts/swift-shadow.ts): a public type of another design-system module
+// (widgets.widgetState once generated `WidgetState`, which shadowed
+// LifegamesComponents.WidgetState<T>), or a type a module that sees
+// LifegamesCopy references unqualified (SwiftUI's Color, Text, View, ...).
+// The reserved set is derived from Sources/* and Package.swift, never hand-listed.
+const shadowClashes = swiftShadowClashes(swiftStructNames, reservedSwiftNames(join(DS_ROOT, 'Sources'), join(DS_ROOT, 'Package.swift')))
+for (const {name, namespace, reason} of shadowClashes) {
+  console.error(`copy:build — Swift struct "${name}" (namespace "${namespace}") shadows ${reason}. ` + 'Give the group a unique `title` in its rich schema.')
+}
+if (shadowClashes.length > 0) {
+  process.exit(1)
+}
+
 const seenSwiftStructs = new Map<string, string>()
 for (const {name, namespace} of swiftStructNames) {
   const prior = seenSwiftStructs.get(name)

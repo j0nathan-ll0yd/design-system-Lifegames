@@ -9,7 +9,14 @@ import {isoTimestamp} from '../factories/helpers'
 // distinct offset so the three stay distinguishable on disk; the non-hiding
 // variations ('' and 'Personal') must NOT carry it, because the producer only stamps
 // it on entering a hiding mode. See the factory for the producer citation.
+// SSR known answer (decision 0160): a NON-hiding mode, so the focus widget is visible and
+// the label is the rendered known answer. No hidingSince (producer stamps it only for
+// hiding modes).
+export const ssrKnownAnswer: FocusExport = createFocusFixture({currentFocus: 'Reading Time Kappa-7731'})
+
 export const focusVariations: Record<string, FocusExport> = {
+  ssrKnownAnswer,
+
   baseline: createFocusFixture({currentFocus: 'Work', hidingSince: isoTimestamp(1)}),
 
   empty: createFocusFixture({currentFocus: ''}),

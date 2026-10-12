@@ -20,6 +20,7 @@ public enum CopyLoader {
     private static let a11yResource = "a11y.en-US"
     private static let appResource = "app.en-US"
     private static let permissionsResource = "permissions.en-US"
+    private static let profileResource = "profile.en-US"
     private static let errorsResource = "errors.en-US"
     private static let llmResource = "llm.en-US"
 
@@ -212,6 +213,39 @@ public enum CopyLoader {
             return try loadErrors()
         } catch {
             fatalError("LifegamesCopy: bundled \(errorsResource).json failed to load: \(error)")
+        }
+    }()
+
+    /// Decodes the bundled profile copy (en-US, flat values): the identity card's
+    /// tagline and the bio terminal's command blocks (atlas decision 0160).
+    ///
+    /// - Throws: ``CopyError/resourceNotFound(name:)`` if the bundled JSON is
+    ///   missing, or ``CopyError/decodingFailed(name:underlying:)`` if it cannot
+    ///   be decoded into ``ProfileCopy``.
+    public static func loadProfile() throws -> ProfileCopy {
+        guard let url = Bundle.module.url(forResource: profileResource, withExtension: "json") else {
+            throw CopyError.resourceNotFound(name: "\(profileResource).json")
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(ProfileCopy.self, from: data)
+        } catch {
+            throw CopyError.decodingFailed(name: "\(profileResource).json", underlying: error)
+        }
+    }
+
+    /// The bundled profile copy, force-loaded once.
+    ///
+    /// Safe to force-load: the JSON ships in this module's resource bundle and is
+    /// validated by `LifegamesCopyTests` + the design-system freshness gate, so it
+    /// cannot be missing or malformed in a built product. Use this where a throwing
+    /// call is impractical; use ``loadProfile()`` where you want to handle failure
+    /// explicitly.
+    public static let profile: ProfileCopy = {
+        do {
+            return try loadProfile()
+        } catch {
+            fatalError("LifegamesCopy: bundled \(profileResource).json failed to load: \(error)")
         }
     }()
 

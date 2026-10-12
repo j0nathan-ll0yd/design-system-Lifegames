@@ -27,6 +27,18 @@
                 "type": "string",
                 "optional": false
               },
+              "keyClass": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "source": {
+                "type": ["string", "null"],
+                "optional": true
+              },
+              "suppressed": {
+                "type": ["boolean", "null"],
+                "optional": true
+              },
               "valClass": {
                 "type": ["string", "null"],
                 "optional": true

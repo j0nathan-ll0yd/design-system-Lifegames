@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite'
 import {html} from 'lit'
+import {renderStateCard} from '../../../../packages/web/stories/production/state-notice'
 
 interface MovementRingsArgs {
   moveKcal: number | null
@@ -429,3 +430,12 @@ export const Skeleton: Story = {
 }
 
 export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}
+
+// Honest non-data states (atlas decision 0160): chrome plus a notice, no data.
+export const Unavailable: Story = {
+  render: () => renderStateCard({id: 'cardMovement', title: 'Movement', accentClass: 'tri-card-accent-red', state: 'unavailable'})
+}
+
+export const Suppressed: Story = {
+  render: () => renderStateCard({id: 'cardMovement', title: 'Movement', accentClass: 'tri-card-accent-red', state: 'suppressed'})
+}

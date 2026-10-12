@@ -18,7 +18,9 @@ Moving a runner without updating that block reds `check-surfaces` in atlas.
 
 ## The check ids
 
-**`d1`** — D1, widget completeness matrix. `d1-widget-matrix.mjs`, scheduled in `audit-ds.yml`.
+**`d1`** — D1, widget completeness matrix. `d1-widget-matrix.mjs`, scheduled in `audit-ds.yml`. Its
+story column reads the story roots from Storybook's own `apps/storybook/.storybook/main.ts` through
+`lib/storybook-stories.mjs`, which `d3-widget-inventory.mjs` shares. An unreadable config fails both.
 
 **`d2`** — D2, visual-baseline staleness. `d2-baseline-age.mjs`, scheduled in `audit-ds.yml`.
 

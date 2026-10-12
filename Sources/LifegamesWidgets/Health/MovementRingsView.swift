@@ -28,13 +28,17 @@ public struct MovementRingsView: View {
             } else {
                 MovementRingsPopulatedView(props: props)
             }
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: movementCopy.title, accent: LGColor.healthRed)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: movementCopy.title, accent: LGColor.healthRed)
         }
     }
 }
 
 // MARK: - Populated
 
-private struct MovementRingsPopulatedView: View {
+struct MovementRingsPopulatedView: View {
     let props: MovementRingsProps
 
     var body: some View {
@@ -74,9 +78,9 @@ private struct MovementRingsPopulatedView: View {
                     // web: mv-chips flex-direction:column; gap:8px (Spacing.s200)
                     // DISTANCE label carries "(km)" so the value side is just the number — prevents wrapping
                     VStack(alignment: .trailing, spacing: Spacing.s200) {
-                        MovementChip(label: movementCopy.steps.uppercased(), value: formatThousands(props.steps))
-                        MovementChip(label: "\(movementCopy.distance.uppercased()) (\(movementCopy.distanceUnit))", value: formatDistanceValue(props.distanceMeters))
-                        MovementChip(label: movementCopy.flights.uppercased(), value: "\(props.flights)")
+                        MovementChip(label: movementCopy.steps.uppercased(), value: Self.stepsText(props.steps))
+                        MovementChip(label: "\(movementCopy.distance.uppercased()) (\(movementCopy.distanceUnit))", value: Self.distanceText(props.distanceMeters))
+                        MovementChip(label: movementCopy.flights.uppercased(), value: NoReading.text(props.flights))
                     }
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
@@ -93,30 +97,31 @@ private struct MovementRingsPopulatedView: View {
                         MovementSwatch(
                             color: LGColor.healthRed,
                             label: movementCopy.caloriesShort,
-                            value: Int(props.moveKcal.rounded()),
+                            value: props.moveKcal.map { Int($0.rounded()) },
                             goal: Int(props.goals.moveKcal.rounded())
                         )
                         Spacer(minLength: 4)
                         MovementSwatch(
                             color: LGColor.accentGreen,
                             label: movementCopy.exercise,
-                            value: Int(props.exerciseMin.rounded()),
+                            value: props.exerciseMin.map { Int($0.rounded()) },
                             goal: Int(props.goals.exerciseMin.rounded())
                         )
                         Spacer(minLength: 4)
                         MovementSwatch(
                             color: LGColor.accentBlue,
                             label: movementCopy.stand,
-                            value: Int(props.standHr.rounded()),
+                            value: props.standHr.map { Int($0.rounded()) },
                             goal: Int(props.goals.standHr.rounded())
                         )
                     }
                     .padding(.top, 12)
                 }
 
-                // Sun-arc footer always shown; resolvedSolar() provides defaults when nil
+                // Sun-arc footer: the track shows only with solar facts (never invented times);
+                // the daylight-minutes line always shows.
                 SunArcFooterView(
-                    solar: resolvedSolar(from: props.solar),
+                    solar: props.solar,
                     daylightMin: props.daylightMin,
                     goalDaylightMin: props.goals.daylightMin
                 )
@@ -129,41 +134,31 @@ private struct MovementRingsPopulatedView: View {
         .neonCard(accent: LGColor.healthRed)
     }
 
-    private func progress(_ value: Double, _ goal: Double) -> Double {
-        guard goal > 0 else { return 0 }
+    private func progress(_ value: Double?, _ goal: Double) -> Double {
+        guard let value, goal > 0 else { return 0 }
         return min(1.5, max(0, value / goal))
     }
 
-    private func resolvedSolar(from solar: MovementRingsProps.Solar?) -> MovementRingsProps.Solar {
-        if let s = solar {
-            return s
-        }
-        let now = Date()
-        let calendar = Calendar.current
-        let comps = calendar.dateComponents([.hour, .minute], from: now)
-        let minutesNow = (comps.hour ?? 0) * 60 + (comps.minute ?? 0)
-        let sunriseMin = 6 * 60 + 30 // 06:30
-        let sunsetMin = 20 * 60 + 15 // 20:15
-        let pct: Double
-        if minutesNow < sunriseMin {
-            pct = 0
-        } else if minutesNow > sunsetMin {
-            pct = 100
-        } else {
-            pct = Double(minutesNow - sunriseMin) / Double(sunsetMin - sunriseMin) * 100
-        }
-        return .init(sunriseHHmm: "06:30", sunsetHHmm: "20:15", currentProgressPct: pct)
+    /// Steps with thousands grouping, or the no-reading mark when not measured.
+    static func stepsText(_ steps: Int?) -> String {
+        steps.map { $0.formatted(.number.grouping(.automatic)) } ?? NoReading.mark
+    }
+
+    /// Distance as kilometres to one decimal place (the chip label carries the unit), or the
+    /// no-reading mark when not measured (web `(n / 1000).toFixed(1)`).
+    static func distanceText(_ meters: Double?) -> String {
+        meters.map { String(format: "%.1f", $0 / 1000) } ?? NoReading.mark
     }
 }
 
 // MARK: - Concentric Rings
 
-private struct ConcentricRingsView: View {
+struct ConcentricRingsView: View {
     let moveProgress: Double
     let exerciseProgress: Double
     let standProgress: Double
     // needed for center pct label
-    let moveKcal: Double
+    let moveKcal: Double?
     let goalMoveKcal: Double
 
     @State private var animatedMove: Double = 0
@@ -178,9 +173,13 @@ private struct ConcentricRingsView: View {
 
     // web: mv-rings-center-pct 0.92rem ≈ 15pt weight 700 letter-spacing -0.01em
     // web: mv-rings-center-cap 0.50rem ≈ 8pt letter-spacing 2.5px uppercase
-    private var movePct: Int {
-        guard goalMoveKcal > 0 else { return 0 }
-        return Int(round(moveKcal / goalMoveKcal * 100))
+    /// The move ring's centre text: the percentage of the goal, capped at 100% like the web
+    /// `centerText`, or the no-reading mark when move was not measured.
+    /// Like the web, the kcal is rounded before it is divided by the goal.
+    static func centerText(moveKcal: Double?, goalMoveKcal: Double) -> String {
+        guard let moveKcal else { return NoReading.mark }
+        guard goalMoveKcal > 0 else { return "0%" }
+        return "\(Int((min(moveKcal.rounded() / goalMoveKcal, 1) * 100).rounded()))%"
     }
 
     var body: some View {
@@ -196,10 +195,12 @@ private struct ConcentricRingsView: View {
 
             // web: mv-rings-center — centered column, gap 2px
             VStack(spacing: 2) {
-                Text("\(movePct)%")
+                let center = Self.centerText(moveKcal: moveKcal, goalMoveKcal: goalMoveKcal)
+                Text(center)
                     .font(.system(size: 15, weight: .bold, design: .monospaced))
                     .tracking(-0.15)
                     .foregroundStyle(LGColor.textTitle)
+                    .noReadingAccessibility(center)
                 Text(movementCopy.caloriesShort.uppercased())
                     .font(.system(size: 8, weight: .medium, design: .monospaced))
                     .kerning(2.5)
@@ -257,6 +258,7 @@ private struct MovementChip: View {
                 .foregroundStyle(LGColor.textTitle)
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
+                .noReadingAccessibility(value)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
@@ -276,11 +278,17 @@ private struct MovementChip: View {
 
 // web: mv-legend-item — monospaced cap2, letter-spacing 0.08em, mixed-case label, bold value
 // swatch 8×8 border-radius:2px with colored glow
-private struct MovementSwatch: View {
+struct MovementSwatch: View {
     let color: Color
     let label: String
-    let value: Int
+    /// The measured value, nil when not measured (renders the no-reading mark).
+    let value: Int?
     let goal: Int
+
+    /// The value cell's text: the reading, or the no-reading mark.
+    static func valueText(_ value: Int?) -> String {
+        NoReading.text(value)
+    }
 
     var body: some View {
         HStack(spacing: 6) {
@@ -293,20 +301,42 @@ private struct MovementSwatch: View {
                 .font(.system(size: 10, design: .monospaced))
                 .kerning(0.8)
                 .foregroundStyle(LGColor.textMuted)
-            // web: mv-legend-val — color text-title, font-weight 600
-            Text("\(value)/\(goal)")
-                .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                .foregroundStyle(LGColor.textTitle)
+            // web: mv-legend-val — color text-title, font-weight 600. The value and the goal
+            // are separate Texts so VoiceOver reads the mark by its noReading copy, not "dash".
+            let valueText = Self.valueText(value)
+            HStack(spacing: 0) {
+                Text(valueText)
+                    .noReadingAccessibility(valueText)
+                Text("/\(goal)")
+            }
+            .font(.system(size: 10, weight: .semibold, design: .monospaced))
+            .foregroundStyle(LGColor.textTitle)
         }
     }
 }
 
 // MARK: - Sun Arc Footer
 
-private struct SunArcFooterView: View {
-    let solar: MovementRingsProps.Solar
-    let daylightMin: Double
+struct SunArcFooterView: View {
+    /// Identifies the sun track (icons, times, arc) so tests can assert its presence.
+    static let sunTrackIdentifier = "movementRings.sunTrack"
+
+    /// Sunrise/sunset facts, nil when the caller has none (the sun track is hidden).
+    let solar: MovementRingsProps.Solar?
+    /// Minutes in daylight, nil when not measured (renders the no-reading mark).
+    let daylightMin: Double?
     let goalDaylightMin: Double
+
+    /// The daylight minutes as display text, or the no-reading mark.
+    static func daylightText(_ daylightMin: Double?) -> String {
+        NoReading.text(daylightMin.map { Int($0) })
+    }
+
+    /// True only for a measured value at or past the goal: a missing value never hits it.
+    static func daylightHit(_ daylightMin: Double?, goal: Double) -> Bool {
+        guard let daylightMin else { return false }
+        return daylightMin >= goal
+    }
 
     @State private var pulseOpacity: Double = 0.6
 
@@ -317,69 +347,82 @@ private struct SunArcFooterView: View {
                 .fill(Color.white.opacity(0.06))
                 .frame(height: 1)
 
-            HStack(spacing: 8) {
-                Image(systemName: "sun.max.fill")
-                    .foregroundStyle(LGColor.accentAmber)
-                    .font(.system(size: 14))
-                    .shadow(color: LGColor.accentAmber.opacity(0.7), radius: 3)
+            // The sun track renders only with supplied solar facts. Without them it is hidden
+            // (owner decision, atlas 0160): never invented times, never a permanent pair of marks.
+            // The daylight-minutes line below stays either way.
+            if let solar {
+                HStack(spacing: 8) {
+                    Image(systemName: "sun.max.fill")
+                        .foregroundStyle(LGColor.accentAmber)
+                        .font(.system(size: 14))
+                        .shadow(color: LGColor.accentAmber.opacity(0.7), radius: 3)
 
-                // web: mv-sun-time 0.56rem ≈ 9pt, color text-subtle
-                Text(solar.sunriseHHmm)
-                    .font(.system(size: 9, design: .monospaced))
-                    .foregroundStyle(LGColor.textMuted)
+                    // web: mv-sun-time 0.56rem ≈ 9pt, color text-subtle
+                    Text(solar.sunriseHHmm)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(LGColor.textMuted)
 
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        // web: 5-stop gradient purple→amber→amber→amber→purple, height 4px
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.purple.opacity(0.4), location: 0.0),
-                                .init(color: LGColor.accentAmber.opacity(0.5), location: 0.2),
-                                .init(color: LGColor.accentAmber.opacity(0.7), location: 0.5),
-                                .init(color: LGColor.accentAmber.opacity(0.5), location: 0.8),
-                                .init(color: Color.purple.opacity(0.4), location: 1.0),
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                        .frame(height: 4)
-                        .frame(maxHeight: .infinity, alignment: .center)
-                        .clipShape(Capsule())
-
-                        // web: sun-dot 8×8px, dual shadow 0 0 8px rgba(0.9) + 0 0 16px rgba(0.45)
-                        Circle()
-                            .fill(LGColor.accentAmber)
-                            .frame(width: 8, height: 8)
-                            .shadow(color: LGColor.accentAmber.opacity(0.9), radius: 4, x: 0, y: 0)
-                            .shadow(color: LGColor.accentAmber.opacity(0.45), radius: 8, x: 0, y: 0)
-                            .opacity(pulseOpacity)
-                            .offset(x: dotX(in: geo.size.width))
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            // web: 5-stop gradient purple→amber→amber→amber→purple, height 4px
+                            LinearGradient(
+                                stops: [
+                                    .init(color: Color.purple.opacity(0.4), location: 0.0),
+                                    .init(color: LGColor.accentAmber.opacity(0.5), location: 0.2),
+                                    .init(color: LGColor.accentAmber.opacity(0.7), location: 0.5),
+                                    .init(color: LGColor.accentAmber.opacity(0.5), location: 0.8),
+                                    .init(color: Color.purple.opacity(0.4), location: 1.0),
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                            .frame(height: 4)
                             .frame(maxHeight: .infinity, alignment: .center)
+                            .clipShape(Capsule())
+
+                            // web: sun-dot 8×8px, dual shadow 0 0 8px rgba(0.9) + 0 0 16px rgba(0.45)
+                            Circle()
+                                .fill(LGColor.accentAmber)
+                                .frame(width: 8, height: 8)
+                                .shadow(color: LGColor.accentAmber.opacity(0.9), radius: 4, x: 0, y: 0)
+                                .shadow(color: LGColor.accentAmber.opacity(0.45), radius: 8, x: 0, y: 0)
+                                .opacity(pulseOpacity)
+                                .offset(x: Self.dotX(progressPct: solar.currentProgressPct, in: geo.size.width))
+                                .frame(maxHeight: .infinity, alignment: .center)
+                        }
                     }
+                    .frame(height: 14)
+
+                    Text(solar.sunsetHHmm)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(LGColor.textMuted)
+
+                    Image(systemName: "moon.fill")
+                        .foregroundStyle(LGColor.accentAmber.opacity(0.5))
+                        .font(.system(size: 14))
                 }
-                .frame(height: 14)
-
-                Text(solar.sunsetHHmm)
-                    .font(.system(size: 9, design: .monospaced))
-                    .foregroundStyle(LGColor.textMuted)
-
-                Image(systemName: "moon.fill")
-                    .foregroundStyle(LGColor.accentAmber.opacity(0.5))
-                    .font(.system(size: 14))
+                .accessibilityIdentifier(Self.sunTrackIdentifier)
             }
 
             // web: mv-sun-caption text-align:center, cap2 monospaced, letter-spacing 0.09em
             // hit checkmark uses health-green with glow
             HStack(spacing: 4) {
-                Text(movementCopy.daylightCaption.replacingOccurrences(of: "{minutes}", with: "\(Int(daylightMin))"))
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundStyle(LGColor.textMuted)
+                // web: the value is its own span, then the caption with `{minutes}` removed,
+                // so the mark carries its VoiceOver label.
+                let daylight = Self.daylightText(daylightMin)
+                HStack(spacing: 0) {
+                    Text(daylight)
+                        .noReadingAccessibility(daylight)
+                    Text(movementCopy.daylightCaption.replacingOccurrences(of: "{minutes}", with: ""))
+                }
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .foregroundStyle(LGColor.textMuted)
                 Text("·")
                     .foregroundStyle(LGColor.textMuted.opacity(0.5))
                 Text(movementCopy.daylightGoal.replacingOccurrences(of: "{minutes}", with: "\(Int(goalDaylightMin))"))
                     .font(.system(size: 10, weight: .medium, design: .monospaced))
                     .foregroundStyle(LGColor.textMuted)
-                if daylightMin >= goalDaylightMin {
+                if Self.daylightHit(daylightMin, goal: goalDaylightMin) {
                     Image(systemName: "checkmark")
                         .foregroundStyle(LGColor.healthGreen)
                         .neonGlow(LGColor.healthGreen, radius: 3)
@@ -394,8 +437,8 @@ private struct SunArcFooterView: View {
         }
     }
 
-    private func dotX(in width: CGFloat) -> CGFloat {
-        let clamped = min(100, max(0, solar.currentProgressPct))
+    private static func dotX(progressPct: Double, in width: CGFloat) -> CGFloat {
+        let clamped = min(100, max(0, progressPct))
         let pct = CGFloat(clamped / 100)
         return (width * pct) - 4
     }
@@ -472,17 +515,41 @@ private struct MovementRingsSkeletonView: View {
     }
 }
 
-private struct MovementRingsEmptyView: View {
+/// Nothing measured today. Parity with the web empty state: the card shows the
+/// `movement.empty` notice and no value, never a ring set of invented zeros (atlas decision 0160).
+/// Same header strip and footprint as the paused card.
+struct MovementRingsEmptyView: View {
     var body: some View {
-        MovementRingsPopulatedView(props: MovementRingsProps(
-            moveKcal: 0,
-            exerciseMin: 0,
-            standHr: 0,
-            steps: 0,
-            distanceMeters: 0,
-            flights: 0,
-            daylightMin: 0
-        ))
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Spacer()
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(LGColor.healthRed)
+                        .frame(width: 6, height: 6)
+                        .shadow(color: LGColor.healthRed.opacity(0.6), radius: 4)
+                    Text(movementCopy.timestampToday)
+                        .font(.system(size: 9, design: .monospaced))
+                        .kerning(1.5)
+                        .foregroundStyle(LGColor.textMuted)
+                }
+            }
+            .padding(.top, 12)
+            .padding(.horizontal, 18)
+
+            Text(movementCopy.empty)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(LGColor.textMuted)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .frame(height: 144)
+                .padding(.top, 14)
+                .padding(.horizontal, 18)
+                .padding(.bottom, 16)
+        }
+        .neonCard(accent: LGColor.healthRed)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(movementCopy.title). \(movementCopy.empty)")
     }
 }
 
@@ -544,17 +611,6 @@ private struct MovementRingsPausedView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(movementCopy.title). \(label). \(pausedDescription)")
     }
-}
-
-// MARK: - Formatters
-
-private func formatThousands(_ value: Int) -> String {
-    value.formatted(.number.grouping(.automatic))
-}
-
-/// Returns the numeric km string — no space; unit "km" is appended by the chip with spacing:0
-private func formatDistanceValue(_ meters: Double) -> String {
-    String(format: "%.1f", meters / 1000)
 }
 
 // MARK: - Previews
@@ -634,6 +690,40 @@ private func formatDistanceValue(_ meters: Double) -> String {
     .preferredColorScheme(.dark)
 }
 
+#Preview("Movement Rings — No Stand or Daylight Reading") {
+    MovementRingsView(props: MovementRingsProps(
+        moveKcal: 380,
+        exerciseMin: 32,
+        standHr: nil,
+        steps: 8421,
+        distanceMeters: 6200,
+        flights: 14,
+        daylightMin: nil,
+        goals: MovementRingsProps.Goals(),
+        solar: nil
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — No Counts Reading") {
+    MovementRingsView(props: MovementRingsProps(
+        moveKcal: nil,
+        exerciseMin: nil,
+        standHr: 9,
+        steps: nil,
+        distanceMeters: nil,
+        flights: nil,
+        daylightMin: 48,
+        goals: MovementRingsProps.Goals(),
+        solar: nil
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Movement Rings — Empty State") {
     MovementRingsView(state: .empty)
         .padding()
@@ -687,4 +777,18 @@ private func formatDistanceValue(_ meters: Double) -> String {
     .padding()
     .background(LGColor.surfaceBase)
     .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — Unavailable") {
+    MovementRingsView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Movement Rings — Suppressed") {
+    MovementRingsView(state: .suppressed)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
 }

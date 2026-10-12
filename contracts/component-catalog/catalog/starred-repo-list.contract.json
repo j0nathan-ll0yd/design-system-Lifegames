@@ -4,13 +4,21 @@
   "group": "github",
   "platforms": ["swift", "web"],
   "props": {
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
     "repos": {
-      "type": "array",
-      "optional": false,
+      "type": ["array", "null"],
+      "optional": true,
       "items": {
         "type": "object",
         "optional": false,
         "properties": {
+          "datetime": {
+            "type": ["string", "null"],
+            "optional": true
+          },
           "language": {
             "type": "string",
             "optional": false
@@ -37,6 +45,10 @@
           }
         }
       }
+    },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/github/StarredRepoList.types.ts",
@@ -53,7 +65,9 @@
     "polyglot",
     "populated-max",
     "populated-min",
-    "skeleton"
+    "skeleton",
+    "suppressed",
+    "unavailable"
   ],
   "a11y": {
     "voiceOverLabel": null,

@@ -57,7 +57,7 @@ function getIcon(type: string) {
                 <div class="gh-dat-meta">
                   <span
                     class="gh-dat-badge"
-                    style={`background: ${icon.color}15; border-color: ${icon.color}40; color: ${icon.color};`}
+                    style={`background: color-mix(in srgb, ${icon.color} 8%, transparent); border-color: color-mix(in srgb, ${icon.color} 25%, transparent); color: ${icon.color};`}
                   >
                     {icon.symbol} {icon.label}
                   </span>
@@ -67,8 +67,13 @@ function getIcon(type: string) {
                 {event.type === 'commit' && event.hash && (
                   <div class="gh-dat-commit-detail">
                     <span class="gh-dat-hash">{event.hash}</span>
-                    <span class="gh-dat-additions">+{event.additions || 0}</span>
-                    <span class="gh-dat-deletions">-{event.deletions || 0}</span>
+                    {/* Line counts only when the export carried both: no invented "+0 -0". */}
+                    {typeof event.additions === 'number' && typeof event.deletions === 'number' && (
+                      <>
+                        <span class="gh-dat-additions">+{event.additions}</span>
+                        <span class="gh-dat-deletions">-{event.deletions}</span>
+                      </>
+                    )}
                   </div>
                 )}
                 {event.type !== 'commit' && event.number !== undefined && (

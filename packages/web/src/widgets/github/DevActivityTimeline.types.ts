@@ -9,7 +9,8 @@ export interface DevActivityTimelineProps {
     title: string;
     date: string;
     hash: string;
-    additions: number;
-    deletions: number;
+    // Absent when the export carries no line counts: nothing renders, never +0 -0.
+    additions?: number;
+    deletions?: number;
   }[];
 }

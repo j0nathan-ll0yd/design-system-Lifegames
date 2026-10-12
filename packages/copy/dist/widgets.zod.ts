@@ -288,6 +288,18 @@ export const widgetsSchema = z
       .describe(
         'Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.',
       ),
+    widgetState: z
+      .object({
+        noReading: z.string(),
+        unavailable: z.string(),
+        suppressed: z.string(),
+        asOf: z.string(),
+        needsJavaScript: z.string(),
+      })
+      .strict()
+      .describe(
+        "Honest widget states shared by every live widget (atlas decision 0160) — the no-reading mark's accessible name, the unavailable and suppressed notices, the stale 'as of' prefix, and the loading-state noscript note. Titled WidgetStateCopy: the bare key would generate a Swift struct named WidgetState, which collides with LifegamesComponents.WidgetState<T> in every module that imports both.",
+      ),
   })
   .strict()
   .describe(

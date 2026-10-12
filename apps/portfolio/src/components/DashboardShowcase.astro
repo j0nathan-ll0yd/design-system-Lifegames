@@ -102,16 +102,6 @@ const { theatre, focus } = data;
         for (var i = 0; i < loading.length; i++) {
           loading[i].classList.remove('is-loading');
         }
-        // Workouts SSRs with inline `display:none` and is normally un-hidden by
-        // its runtime updater (updaters.ts updateWorkouts) ONLY when workout data
-        // arrives. On this static build the populated content is already SSR'd,
-        // so mirror that exact behaviour: clear the inline hide iff the card has
-        // at least one workout sub-card (stays hidden in the empty scenario, just
-        // like production).
-        var workouts = document.getElementById('cardWorkouts');
-        if (workouts && workouts.querySelector('.workout-sub-card')) {
-          workouts.style.display = '';
-        }
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', revealCards);

@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "source": "coasttocoastreviews.com",
+  "totalReviews": 237,
+  "reviews": [
+    {
+      "title": "Known Answer Play Kappa-7731",
+      "slug": "known-answer-play-kappa-7731",
+      "url": "https://coasttocoastreviews.com/reviews/known-answer-play-kappa-7731",
+      "author": "Known Answer Critic Kappa-7731",
+      "publishedAt": "2026-03-16",
+      "rating": "A-",
+      "ratingNumeric": 3.71,
+      "excerpt": "Known answer excerpt one Kappa-7731.",
+      "imageVersion": null,
+      "imageUrl": "https://coasttocoastreviews.com/images/known-answer-play-kappa-7731.jpg",
+      "imageWidth": 1137,
+      "imageHeight": 641,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
+    },
+    {
+      "title": "Known Answer Musical Kappa-7731",
+      "slug": "known-answer-musical-kappa-7731",
+      "url": "https://coasttocoastreviews.com/reviews/known-answer-musical-kappa-7731",
+      "author": "Known Answer Critic Kappa-7731",
+      "publishedAt": "2026-03-13",
+      "rating": "B-",
+      "ratingNumeric": 2.69,
+      "excerpt": "Known answer excerpt two Kappa-7731.",
+      "imageVersion": null,
+      "imageUrl": "https://coasttocoastreviews.com/images/known-answer-musical-kappa-7731.jpg",
+      "imageWidth": 1139,
+      "imageHeight": 643,
+      "imageUrlAvif": null,
+      "imageUrlCard": null,
+      "imageUrlCardAvif": null
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import LifegamesComponents
 import LifegamesWidgets
 import SwiftUI
 
@@ -21,6 +22,8 @@ enum StarredRepoListVariations {
         .init(id: "polyglot", label: "Polyglot", fixtureName: "starred-repo-list.polyglot"),
         .init(id: "skeleton", label: "Skeleton", fixtureName: "starred-repo-list.skeleton"),
         .init(id: "empty", label: "Empty", fixtureName: "starred-repo-list.empty"),
+        .init(id: "unavailable", label: "Unavailable", fixtureName: "starred-repo-list.unavailable"),
+        .init(id: "suppressed", label: "Suppressed", fixtureName: "starred-repo-list.suppressed"),
     ]
 
     static var entry: WidgetEntry {
@@ -38,7 +41,12 @@ enum StarredRepoListVariations {
 
     @ViewBuilder
     private static func render(state: State) -> some View {
-        if let props: StarredRepoListProps = FixtureLoader.load(category: "github", name: state.fixtureName) {
+        // Honest-state fixtures carry no data envelope, so they map to a WidgetState directly.
+        if let data = FixtureLoader.data(category: "github", name: state.fixtureName),
+           let honest: WidgetState<StarredRepoListProps> = Adapters.honestState(fromFixture: data)
+        {
+            StarredRepoListView(state: honest)
+        } else if let props: StarredRepoListProps = FixtureLoader.load(category: "github", name: state.fixtureName) {
             StarredRepoListView(props: props)
         } else {
             Text("Missing fixture: \(state.fixtureName)")

@@ -34,7 +34,7 @@
 
 ## Schema Validation
 
-Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). Consumer-side invocation: `LIFEGAMES_VALIDATE_CWD=$PWD pnpm ... validate` (Phase D1+).
+Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). Consumer-side invocation: `LIFEGAMES_VALIDATE_CWD=$PWD pnpm ... validate` (Phase D1+). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
 
 ## Cross-Repo Consumption
 
@@ -108,11 +108,11 @@ change. See `contracts/component-catalog/README.md`.
 
 Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
 `openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
-today: `widget-contract`** (13 requirements / 32 scenarios), which restates the widget contract already
+today: `widget-contract`** (17 requirements / 63 scenarios), which restates the widget contract already
 enforced by `governance-gates`, `test-swift`, `contract-ts` and `lint-web` — P3/F-015 purity, the
 fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
-promotion bar. **Describe what is already enforced**; a requirement with no gate behind it is a wish
+promotion bar, and the honest server states of the live widgets (atlas 0160, `packages/web/tests/server-render/states.test.ts`). **Describe what is already enforced**; a requirement with no gate behind it is a wish
 with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
 `@j0nathan-ll0yd/estate-contracts` version declared in package.json; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
 shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins
@@ -139,7 +139,7 @@ This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audi
 
 **Layout (atlas decision 0111 phase 2c).** Every audit runner sits under `audits/checks/`, id-prefixed
 (`d1-`, `d2-`, `d3-`, `d6-`, `c147-`); known-answer suites in `audits/__tests__/` carry their runner's
-id; repo-local check data in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
+id; repo-local check data and shared helpers in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
 catalog row over the whole `ci.yml#governance-gates` lane, so `d3-` prefixes all ten of that job's
 runners — the catalog registers the JOB, not a single script. `scripts/` keeps this repo's build and
 authoring tooling (token builds, generators, scaffolds, the worktree provisioner) plus two

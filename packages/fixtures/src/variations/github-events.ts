@@ -1,7 +1,14 @@
 import type {GithubEventsExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {createEvent, createGithubEventsFixture} from '../factories/github-events'
 import {isoDate, isoTimestamp} from '../factories/helpers'
-import {PUBLIC_GITHUB_COMMITS, PUBLIC_GITHUB_PULLS, type PublicGithubCommitReference, type PublicGithubPullReference} from '../github-references'
+import {
+  PUBLIC_GITHUB_COMMITS,
+  PUBLIC_GITHUB_PULLS,
+  type PublicGithubCommitReference,
+  type PublicGithubPullReference,
+  SSR_KNOWN_ANSWER_GITHUB_COMMITS,
+  SSR_KNOWN_ANSWER_GITHUB_PULLS
+} from '../github-references'
 
 type GithubEvent = GithubEventsExport['events'][number]
 
@@ -19,8 +26,19 @@ function pullEvent(
   return createEvent({type, repo: ref.repository, title: ref.title, date: isoDate(), number: ref.number, hash: commit?.hash, additions, deletions})
 }
 
+// SSR known answer (decision 0160): events target octocat/Hello-World, a verified public
+// repository that no other fixture references, so the URL-integrity test still holds.
+export const ssrKnownAnswer: GithubEventsExport = createGithubEventsFixture({
+  events: [
+    commitEvent(SSR_KNOWN_ANSWER_GITHUB_COMMITS[0], 1713, 291),
+    pullEvent('pr_merged', SSR_KNOWN_ANSWER_GITHUB_PULLS[0], 877, 143, SSR_KNOWN_ANSWER_GITHUB_COMMITS[0])
+  ]
+})
+
 export const githubEventsVariations: Record<string, GithubEventsExport> = {
   baseline: createGithubEventsFixture(),
+
+  ssrKnownAnswer,
 
   empty: createGithubEventsFixture({events: []}),
 

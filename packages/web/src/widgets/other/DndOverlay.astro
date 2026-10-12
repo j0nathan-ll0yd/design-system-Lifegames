@@ -2,9 +2,33 @@
 // DND Privacy overlay — shown when currentFocus === 'Do Not Disturb' from the live API
 // Activation is handled by live-data.ts via updateFocusOverlay().
 // Starts hidden (display: none); JS sets display: flex when active.
+//
+// Atlas decision 0160: renders visible on the server when `currentFocus` names
+// this overlay's mode. The client runtime keeps owning later transitions: it
+// writes an inline `display` on every focus update, which overrides this one.
+import { FOCUS_MODES } from '@j0nathan-ll0yd/portal-contract/constants';
+import { DISPLAY_TIME_ZONE } from '../../runtime/widget-state';
+import type { DndOverlayProps } from './DndOverlay.types';
+
+const { currentFocus, now } = Astro.props as DndOverlayProps;
+const active = currentFocus === FOCUS_MODES.doNotDisturb;
+const nowMs = now ? Date.parse(now) : NaN;
+const clockText = Number.isFinite(nowMs)
+  ? new Date(nowMs).toLocaleString('en-US', {
+      timeZone: DISPLAY_TIME_ZONE,
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    })
+  : '--:--:--';
 ---
 
-<div id="dndOverlay">
+<div
+  id="dndOverlay"
+  style={active ? 'display: flex' : undefined}
+  data-ssr-state={active ? 'suppressed' : undefined}
+>
   <div class="dnd-badge">
     <span class="dot"></span>
     Privacy Mode
@@ -20,34 +44,24 @@
     redacted to protect privacy during this session.
   </div>
 
-  <div class="data-rows">
-    <div class="data-row">
-      <div class="data-row-text">Heart Rate: 72 BPM</div>
-      <div class="data-row-blur"></div>
-    </div>
-    <div class="data-row">
-      <div class="data-row-text">Location: San Francisco, CA</div>
-      <div class="data-row-blur"></div>
-    </div>
-    <div class="data-row">
-      <div class="data-row-text">Daily Steps: 8,421</div>
-      <div class="data-row-blur"></div>
-    </div>
-    <div class="data-row">
-      <div class="data-row-text">Sleep Duration: 7h 23m</div>
-      <div class="data-row-blur"></div>
-    </div>
-    <div class="data-row">
-      <div class="data-row-text">Status: Online</div>
-      <div class="data-row-blur"></div>
-    </div>
+  {
+    /* Text-free placeholder rows (atlas decision 0160). The overlay renders
+      during hiding focus modes, so it must carry no value — not even a sample
+      one. These bars only suggest redacted content. */
+  }
+  <div class="data-rows" aria-hidden="true">
+    <div class="data-row"><div class="data-row-bar" style="width: 72%"></div></div>
+    <div class="data-row"><div class="data-row-bar" style="width: 58%"></div></div>
+    <div class="data-row"><div class="data-row-bar" style="width: 66%"></div></div>
+    <div class="data-row"><div class="data-row-bar" style="width: 81%"></div></div>
+    <div class="data-row"><div class="data-row-bar" style="width: 49%"></div></div>
   </div>
 
   <div class="divider"></div>
 
   <div class="clock-section">
     <span class="clock-label">Current Time (PST)</span>
-    <span class="clock-time" id="dndClock">--:--:--</span>
+    <span class="clock-time" id="dndClock">{clockText}</span>
     <span class="clock-zone">Pacific Standard Time</span>
   </div>
 </div>
@@ -139,24 +153,16 @@
   .data-row {
     position: relative;
     margin-bottom: 6px;
-  }
-
-  .data-row-text {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.3);
-    padding: 10px 16px;
+    padding: 14px 16px;
     background: rgba(255, 255, 255, 0.03);
     border-radius: 6px;
+    border: 1px solid rgba(0, 212, 255, 0.1);
   }
 
-  .data-row-blur {
-    position: absolute;
-    inset: 0;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    background: rgba(0, 212, 255, 0.04);
-    border-radius: 6px;
-    border: 1px solid rgba(0, 212, 255, 0.1);
+  .data-row-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(0, 212, 255, 0.12);
   }
 
   .divider {
@@ -219,9 +225,6 @@
   @media (max-width: 600px) {
     .heading {
       font-size: 1.1rem;
-    }
-    .data-row-text {
-      font-size: 0.7rem;
     }
     #dndOverlay {
       padding: 24px 16px;

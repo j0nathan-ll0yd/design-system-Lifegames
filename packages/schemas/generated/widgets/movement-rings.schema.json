@@ -4,6 +4,27 @@
   "title": "MovementRingsProps",
   "type": "object",
   "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedAt": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "health": {
       "type": "object",
       "properties": {

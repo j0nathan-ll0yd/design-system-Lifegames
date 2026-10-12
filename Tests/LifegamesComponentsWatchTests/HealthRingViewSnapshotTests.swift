@@ -1,4 +1,5 @@
 #if canImport(UIKit)
+import LifegamesComponentsCore
 import LifegamesTokens
 import SnapshotTesting
 import SwiftUI

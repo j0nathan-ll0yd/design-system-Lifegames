@@ -13,28 +13,32 @@ import SwiftUI
 public struct DatastreamHomeData: Sendable {
     // MARK: - Activity rings
 
-    /// Raw step count for today.
-    public var steps: Int
+    /// Raw step count for today, nil when steps were not measured. A missing value renders
+    /// the no-reading mark, never "0"; a measured 0 stays 0 (atlas decision 0160 F1).
+    public var steps: Int?
 
-    /// Move ring fill (0–1; may exceed 1 if goal surpassed).
+    /// Move ring fill (0–1; may exceed 1 if goal surpassed). 0 when move was not measured.
     public var moveProgress: Double
-    /// Move ring display value (e.g. "487").
-    public var moveValue: String
+    /// Move ring display value (e.g. "487"), nil when active energy was not measured.
+    /// A missing value renders the no-reading mark and hides the "% MOVE" badge.
+    public var moveValue: String?
 
-    /// Exercise ring fill (0–1).
+    /// Exercise ring fill (0–1). 0 when exercise was not measured.
     public var exerciseProgress: Double
-    /// Exercise ring display value (e.g. "45m").
-    public var exerciseValue: String
+    /// Exercise ring display value (e.g. "45m"), nil when exercise was not measured
+    /// (renders the no-reading mark).
+    public var exerciseValue: String?
 
     /// Stand ring fill (0–1).
     public var standProgress: Double
-    /// Stand ring display value (e.g. "11h").
-    public var standValue: String
+    /// Stand ring display value (e.g. "11h"), nil when stand hours were not measured.
+    /// A missing value renders the no-reading mark, never "0" (atlas decision 0160 F1).
+    public var standValue: String?
 
     // MARK: - Heart rate
 
-    /// Resting heart rate in BPM.
-    public var restingHR: Int
+    /// Resting heart rate in BPM, nil when not measured (renders the no-reading mark).
+    public var restingHR: Int?
 
     // MARK: - Caffeine
 
@@ -94,11 +98,11 @@ public struct DatastreamHomeData: Sendable {
     // MARK: - Init
 
     public init(
-        steps: Int,
-        moveProgress: Double, moveValue: String,
-        exerciseProgress: Double, exerciseValue: String,
-        standProgress: Double, standValue: String,
-        restingHR: Int,
+        steps: Int?,
+        moveProgress: Double, moveValue: String?,
+        exerciseProgress: Double, exerciseValue: String?,
+        standProgress: Double, standValue: String?,
+        restingHR: Int?,
         caffeineMg: Int, caffeineTarget: Int, cups: Int, lastBeverage: String,
         bookCoverURL: URL?, bookProgress: Double,
         booksUpdatedBadge: String? = nil,

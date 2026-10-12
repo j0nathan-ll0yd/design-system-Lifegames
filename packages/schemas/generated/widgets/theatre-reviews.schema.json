@@ -1,77 +1,105 @@
 {
   "type": "object",
   "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": ["live", "stale", "empty", "unavailable", "suppressed", "loading"]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "description": "ISO-8601 `generatedAt` of the export the card's state follows."
+    },
     "reviews": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "slug": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          },
-          "author": {
-            "type": "string"
-          },
-          "publishedAt": {
-            "type": "string"
-          },
-          "rating": {
-            "type": ["string", "null"]
-          },
-          "ratingNumeric": {
-            "type": ["number", "null"]
-          },
-          "excerpt": {
-            "type": "string"
-          },
-          "imageUrl": {
-            "type": ["string", "null"]
-          },
-          "imageUrlAvif": {
-            "type": ["string", "null"]
-          },
-          "imageUrlCard": {
-            "type": ["string", "null"]
-          },
-          "imageUrlCardAvif": {
-            "type": ["string", "null"]
-          },
-          "imageWidth": {
-            "type": ["number", "null"]
-          },
-          "imageHeight": {
-            "type": ["number", "null"]
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "author": {
+                "type": "string"
+              },
+              "publishedAt": {
+                "type": "string"
+              },
+              "rating": {
+                "type": ["string", "null"]
+              },
+              "ratingNumeric": {
+                "type": ["number", "null"]
+              },
+              "excerpt": {
+                "type": "string"
+              },
+              "imageUrl": {
+                "type": ["string", "null"]
+              },
+              "imageUrlAvif": {
+                "type": ["string", "null"]
+              },
+              "imageUrlCard": {
+                "type": ["string", "null"]
+              },
+              "imageUrlCardAvif": {
+                "type": ["string", "null"]
+              },
+              "imageWidth": {
+                "type": ["number", "null"]
+              },
+              "imageHeight": {
+                "type": ["number", "null"]
+              }
+            },
+            "required": [
+              "title",
+              "slug",
+              "url",
+              "author",
+              "publishedAt",
+              "rating",
+              "ratingNumeric",
+              "excerpt",
+              "imageUrl",
+              "imageUrlAvif",
+              "imageUrlCard",
+              "imageUrlCardAvif",
+              "imageWidth",
+              "imageHeight"
+            ]
           }
         },
-        "required": [
-          "title",
-          "slug",
-          "url",
-          "author",
-          "publishedAt",
-          "rating",
-          "ratingNumeric",
-          "excerpt",
-          "imageUrl",
-          "imageUrlAvif",
-          "imageUrlCard",
-          "imageUrlCardAvif",
-          "imageWidth",
-          "imageHeight"
-        ]
-      }
+        {
+          "type": "null"
+        }
+      ]
     },
     "totalReviews": {
-      "type": "number"
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
-  "required": ["reviews", "totalReviews"],
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://lifegames.org/schemas/widget/theatre-reviews.json",
   "title": "TheatreReviewsProps"

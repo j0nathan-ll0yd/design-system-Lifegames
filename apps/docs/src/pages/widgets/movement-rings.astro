@@ -1,0 +1,318 @@
+---
+import '@j0nathan-ll0yd/tokens/fonts';
+import '@j0nathan-ll0yd/tokens/css';
+import '@j0nathan-ll0yd/tokens/compat';
+import '@styles/components.css';
+import '@j0nathan-ll0yd/tokens/effects';
+import '@styles/layout.css';
+import '@j0nathan-ll0yd/tokens/base';
+import '@docs-styles/docs-chrome.css';
+
+import MovementRings from '@widgets/health/MovementRings.astro';
+import fixture from '@fixtures/health/movement-rings.json';
+import StateMatrix from '../../components/StateMatrix.astro';
+import VariationGrid from '../../components/VariationGrid.astro';
+import ResponsiveDemo from '../../components/ResponsiveDemo.astro';
+import WidgetPageScript from '../../components/WidgetPageScript.astro';
+import fixture_empty from '@fixtures/health/movement-rings.empty.json';
+import fixture_populated_min from '@fixtures/health/movement-rings.populated-min.json';
+import fixture_populated_max from '@fixtures/health/movement-rings.populated-max.json';
+import fixture_unavailable from '@fixtures/health/movement-rings.unavailable.json';
+import fixture_suppressed from '@fixtures/health/movement-rings.suppressed.json';
+import var_all_rings_closed from '@fixtures/health/movement-rings.all-rings-closed.json';
+import var_stand_only from '@fixtures/health/movement-rings.stand-only.json';
+import var_paused from '@fixtures/health/movement-rings.paused.json';
+import var_paused_charging from '@fixtures/health/movement-rings.paused-charging.json';
+
+// The honest states (atlas decision 0160) set `state` and `generatedAt` on the
+// base fixture. `stale` shows the absolute "as of" time in America/Los_Angeles.
+const state_live = { ...fixture, state: 'live', generatedAt: '2026-10-11T16:40:00Z' };
+const state_stale = { ...fixture, state: 'stale', generatedAt: '2026-10-10T21:30:00Z' };
+// The skeleton is the honest `loading` state: the data-free shell with its
+// <noscript> note. The all-zero skeleton fixture resolves to `empty` instead.
+const state_loading = { state: 'loading' };
+
+// Data-derived variations with no fixture file: the base export without its
+// solar block, and without its exercise measurement.
+const { solar: _solar, ...movementWithoutSolar } = fixture.health.movement;
+const var_no_solar = { health: { movement: movementWithoutSolar } };
+const { exerciseMin: _exerciseMin, ...movementWithoutExercise } = fixture.health.movement;
+const var_missing_exercise = { health: { movement: movementWithoutExercise } };
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MovementRings — Lifegames Design System</title>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg, #06060f);
+        color: var(--text, #e4e4e7);
+        font-family: var(--font-family, 'Space Grotesk', sans-serif);
+        min-height: 100vh;
+      }
+      .wd-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--space-32);
+      }
+      .wd-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-16);
+        margin-bottom: var(--space-32);
+        flex-wrap: wrap;
+      }
+      .wd-back {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        text-decoration: none;
+        letter-spacing: 1px;
+        transition: color 0.18s ease;
+      }
+      .wd-back:hover {
+        color: var(--text);
+      }
+      .wd-title {
+        font-size: var(--font-size-hero);
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 1px;
+      }
+      .wd-badge {
+        font-size: var(--font-size-xs);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: var(--space-2) var(--space-8);
+        border-radius: var(--radius-sm);
+      }
+      .wd-badge--shipped {
+        background: rgba(6, 214, 160, 0.12);
+        color: var(--neon-green);
+        border: 1px solid rgba(6, 214, 160, 0.25);
+      }
+      .wd-badge--dev {
+        background: rgba(245, 158, 11, 0.08);
+        color: var(--neon-amber);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+      }
+      .wd-cat {
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .wd-section {
+        margin-bottom: var(--space-32);
+      }
+      .wd-section-title {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        margin: 0 0 var(--space-16);
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: var(--space-8);
+      }
+      .wd-demo {
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-xl);
+        background: var(--card-bg);
+        padding: var(--space-20);
+        overflow: hidden;
+      }
+      .wd-text {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+      .wd-code {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--card-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-16);
+        font-size: var(--font-size-sm);
+        overflow-x: auto;
+        color: var(--text-muted);
+      }
+      .wd-code code {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .wd-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .wd-list li {
+        font-size: var(--font-size-sm);
+        color: var(--text-muted);
+        padding: var(--space-6) 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .wd-list li:last-child {
+        border-bottom: none;
+      }
+      .wd-list code {
+        font-size: var(--font-size-xs);
+        background: rgba(255, 255, 255, 0.06);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-sm);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wd-page">
+      <a class="wd-back" href="/">&#8592; Back to production mirror</a>
+
+      <div class="wd-header">
+        <h1 class="wd-title">MovementRings</h1>
+        <span class="wd-badge wd-badge--shipped">Shipped</span>
+        <span class="wd-cat">health</span>
+      </div>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">Live Demo</h2>
+        <ResponsiveDemo
+          widgetName="MovementRings"
+          category="health"
+          fixture={fixture}
+          Comp={MovementRings}
+        />
+      </section>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">Data</h2>
+        <p class="wd-text">
+          Source: the health export (HealthKit day totals from the owner's Apple Watch). The widget
+          reads move (active kcal), exercise (min), stand (hours), steps, distance, flights, time in
+          daylight, the synced ring goals, the server-computed solar block, and the watch state.
+        </p>
+        <p class="wd-text">
+          Transformation: <code>movementView</code> in
+          <code>packages/web/src/runtime/widget-views.ts</code> computes every slot, and the browser
+          updater <code>updateMovementRings</code> writes the same view.
+          <code>normalizeMovementHealth</code> maps the flat fixture shape and the nested HealthKit shape
+          to one shape. Each ring is its value over its goal; the centre reads the move ring, capped
+          at 100%. A goal the device has not synced uses its default (500 kcal, 30 min, 12 h, 20 min
+          of daylight). A missing measurement reads as the no-reading mark (&mdash;), never 0. <code
+            >movementRingsState</code
+          > picks the state: no movement measured, or all zero, is <code>empty</code>; a watch off
+          the wrist or charging keeps the data state but shows the paused notice and no values.
+        </p>
+      </section>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">State Matrix</h2>
+        <StateMatrix
+          widgetName="MovementRings"
+          category="health"
+          states={[
+            { state: 'skeleton', fixture: state_loading },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'populated-min', fixture: fixture_populated_min },
+            { state: 'populated-max', fixture: fixture_populated_max },
+          ]}
+        />
+      </section>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">Honest States</h2>
+        <p class="wd-text">
+          The six render states of atlas decision 0160, rendered on the server with no client
+          JavaScript. See <code>packages/web/src/runtime/widget-state.ts</code>.
+        </p>
+        <StateMatrix
+          widgetName="MovementRings"
+          category="health"
+          states={[
+            { state: 'live', fixture: state_live },
+            { state: 'stale', fixture: state_stale },
+            { state: 'empty', fixture: fixture_empty },
+            { state: 'unavailable', fixture: fixture_unavailable },
+            { state: 'suppressed', fixture: fixture_suppressed },
+            { state: 'loading', fixture: state_loading },
+          ]}
+        />
+      </section>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">Variations</h2>
+        <VariationGrid
+          widgetName="MovementRings"
+          category="health"
+          variations={[
+            {
+              label: 'all-rings-closed',
+              fixture: var_all_rings_closed,
+              caption: 'Every ring at or past its goal; the daylight goal is met.',
+            },
+            {
+              label: 'stand-only',
+              fixture: var_stand_only,
+              caption: 'Stand ring closed; move and exercise well short.',
+            },
+            {
+              label: 'paused',
+              fixture: var_paused,
+              caption: 'Watch off the wrist (heart-rate gap): paused notice, no values.',
+            },
+            {
+              label: 'paused-charging',
+              fixture: var_paused_charging,
+              caption: 'Watch on its charger: the charging notice, no values.',
+            },
+            {
+              label: 'no-solar',
+              fixture: var_no_solar,
+              caption:
+                'No solar block: sunrise and sunset read the no-reading mark and the sun dot is hidden. No position is invented.',
+            },
+            {
+              label: 'missing-exercise',
+              fixture: var_missing_exercise,
+              caption:
+                'Exercise not carried: the exercise ring is empty and its legend reads the no-reading mark, never 0.',
+            },
+          ]}
+        />
+      </section>
+      <section class="wd-section">
+        <h2 class="wd-section-title">Props</h2>
+        <p class="wd-text">
+          See <code>packages/web/src/widgets/health/MovementRings.types.ts</code> for the full interface.
+        </p>
+      </section>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">Usage</h2>
+        <pre
+          class="wd-code"><code>---
+import MovementRings from '@j0nathan-ll0yd/web/widgets/health/MovementRings.astro';
+---
+&lt;MovementRings &#123;...data&#125; /&gt;</code></pre>
+      </section>
+
+      <section class="wd-section">
+        <h2 class="wd-section-title">Cross-Platform</h2>
+        <ul class="wd-list">
+          <li>
+            <strong>Web:</strong>
+            <code>packages/web/src/widgets/health/MovementRings.astro</code>
+          </li>
+          <li>
+            <strong>iOS:</strong>
+            <code>Sources/LifegamesWidgets/Health/MovementRingsView.swift</code>
+          </li>
+          <li>
+            <strong>Fixture:</strong>
+            <code>Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.json</code>
+          </li>
+        </ul>
+      </section>
+    </div>
+    <WidgetPageScript />
+  </body>
+</html>

@@ -32,6 +32,12 @@ import type { Permissions } from './permissions';
 export type { Permissions } from './permissions';
 
 export const permissions: Permissions = permissionsData;
+import profileData from './profile.flat.json';
+import type { ProfileCopy } from './profile';
+
+export type { ProfileCopy } from './profile';
+
+export const profile: ProfileCopy = profileData;
 import errorsData from './errors.flat.json';
 import type { Errors } from './errors';
 

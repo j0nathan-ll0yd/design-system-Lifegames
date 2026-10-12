@@ -1,0 +1,20 @@
+{
+  "date": "2026-03-17",
+  "generatedAt": "2026-03-18T12:00:00.000Z",
+  "workouts": [
+    {
+      "activityType": "Rowing Kappa-7731",
+      "duration": 2461,
+      "energyBurned": 337,
+      "distance": 6173,
+      "source": "Apple Watch"
+    },
+    {
+      "activityType": "Kayaking Kappa-7731",
+      "duration": 1957,
+      "energyBurned": 249,
+      "distance": 4381,
+      "source": "Apple Watch"
+    }
+  ]
+}

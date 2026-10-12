@@ -868,6 +868,30 @@
         "beverageColdBrew"
       ],
       "additionalProperties": false
+    },
+    "widgetState": {
+      "type": "object",
+      "title": "WidgetStateCopy",
+      "description": "Honest widget states shared by every live widget (atlas decision 0160) — the no-reading mark's accessible name, the unavailable and suppressed notices, the stale 'as of' prefix, and the loading-state noscript note. Titled WidgetStateCopy: the bare key would generate a Swift struct named WidgetState, which collides with LifegamesComponents.WidgetState<T> in every module that imports both.",
+      "properties": {
+        "noReading": {
+          "type": "string"
+        },
+        "unavailable": {
+          "type": "string"
+        },
+        "suppressed": {
+          "type": "string"
+        },
+        "asOf": {
+          "type": "string"
+        },
+        "needsJavaScript": {
+          "type": "string"
+        }
+      },
+      "required": ["noReading", "unavailable", "suppressed", "asOf", "needsJavaScript"],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -887,7 +911,8 @@
     "bio",
     "systemStatus",
     "identityCard",
-    "coffee"
+    "coffee",
+    "widgetState"
   ],
   "additionalProperties": false
 }

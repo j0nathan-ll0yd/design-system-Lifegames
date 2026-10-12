@@ -1,5 +1,6 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite'
 import {html} from 'lit'
+import {renderStateCard} from './state-notice'
 
 // DS-internal fixture: github/starred-repo-list.json
 const defaultRepos = [
@@ -98,3 +99,12 @@ export const Empty: Story = {args: {repos: []}}
 export const Loading: Story = {args: {repos: []}}
 
 export const Dark: Story = {...Default, globals: {backgrounds: {value: 'dark'}}}
+
+// Honest non-data states (atlas decision 0160): chrome plus a notice, no data.
+export const Unavailable: Story = {
+  render: () => renderStateCard({id: 'cardStarredRepos', title: 'Starred Repos', accentClass: 'tri-card-accent-green', state: 'unavailable'})
+}
+
+export const Suppressed: Story = {
+  render: () => renderStateCard({id: 'cardStarredRepos', title: 'Starred Repos', accentClass: 'tri-card-accent-green', state: 'suppressed'})
+}

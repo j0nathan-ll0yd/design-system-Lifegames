@@ -1,5 +1,67 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.5.3
+
+### Patch Changes
+
+- Updated dependencies [9c241c6]
+  - @j0nathan-ll0yd/schemas@2.3.1
+
+## 1.5.2
+
+### Patch Changes
+
+- Updated dependencies [7f4aba7]
+  - @j0nathan-ll0yd/web@4.1.1
+
+## 1.5.1
+
+### Patch Changes
+
+- Updated dependencies [02cdae5]
+  - @j0nathan-ll0yd/web@4.1.0
+
+## 1.5.0
+
+### Minor Changes
+
+- 7390266: The `profile` baseline is read from `@j0nathan-ll0yd/copy` (atlas decision 0160 Step 1.7): name,
+  title, location, the LinkedIn and GitHub links and the bio from `identity.person`, the tagline and
+  the terminal from the new `profile` namespace. Every string and the terminal line order are
+  unchanged. `@j0nathan-ll0yd/copy` moves from devDependencies to dependencies. New:
+  `terminalLinesFromCopy(terminal)` in `./post-adapter/profile`.
+
+  The `baseline` and `full` variations no longer carry `coordinates` (decision 0160 D14: live and
+  derived location data, coordinates included, is out of scope; no widget renders them). The
+  `Profile` schema still allows the optional field, so the type is unchanged.
+
+### Patch Changes
+
+- Updated dependencies [7390266]
+  - @j0nathan-ll0yd/copy@3.3.0
+  - @j0nathan-ll0yd/web@4.0.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 7b4aecb: Known-answer and sparse raw fixtures for server-render tests (atlas decision 0160).
+  - `ssrKnownAnswer` raw variation for health, sleep, workouts, books, githubEvents, starredRepos,
+    articles, focus and theatreReviews (location is retired, decision 0012). Its distinctive values
+    appear in no other fixture; `tests/ssr-known-answer.test.ts` proves the disjointness.
+  - `sparse` raw health variation: a schema-valid export without dietaryWater, dietaryCaffeine,
+    exerciseTime, activeEnergyBurned, basalEnergyBurned and sleepScore.
+  - `ssrKnownAnswerFixtures` export in `./raw` with non-optional types.
+  - Post-adapter `starredRepos` carries `datetime` beside `starredAt` (it derives through
+    `adaptStarredRepos`).
+
+### Patch Changes
+
+- Updated dependencies [7b4aecb]
+- Updated dependencies [7b4aecb]
+  - @j0nathan-ll0yd/schemas@2.3.0
+  - @j0nathan-ll0yd/web@4.0.0
+
 ## 1.3.6
 
 ### Patch Changes

@@ -21,6 +21,15 @@ import {
   theatreReviewsVariations,
   workoutsVariations
 } from './variations/index'
+import {ssrKnownAnswer as articlesSsrKnownAnswer} from './variations/articles'
+import {ssrKnownAnswer as booksSsrKnownAnswer} from './variations/books'
+import {ssrKnownAnswer as focusSsrKnownAnswer} from './variations/focus'
+import {ssrKnownAnswer as githubEventsSsrKnownAnswer} from './variations/github-events'
+import {ssrKnownAnswer as healthSsrKnownAnswer} from './variations/health'
+import {ssrKnownAnswer as sleepSsrKnownAnswer} from './variations/sleep'
+import {ssrKnownAnswer as starredReposSsrKnownAnswer} from './variations/starred-repos'
+import {ssrKnownAnswer as theatreReviewsSsrKnownAnswer} from './variations/theatre-reviews'
+import {ssrKnownAnswer as workoutsSsrKnownAnswer} from './variations/workouts'
 
 /**
  * Raw pre-adapter fixtures keyed by domain then variation. Domain keys are the
@@ -38,6 +47,25 @@ export const rawFixtures = {
   articles: articlesVariations,
   focus: focusVariations,
   theatreReviews: theatreReviewsVariations
+} as const
+
+/**
+ * Non-optional typed accessor for the `ssrKnownAnswer` variation of every raw domain
+ * (decision 0160). The `Record<string, T>` domain maps type `rawFixtures.<d>.ssrKnownAnswer`
+ * as possibly undefined under `noUncheckedIndexedAccess`; this object does not. There is
+ * no `location` entry: location is retired (decision 0012). The same payloads are also
+ * reachable as `rawFixtures.<domain>.ssrKnownAnswer`.
+ */
+export const ssrKnownAnswerFixtures = {
+  health: healthSsrKnownAnswer,
+  sleep: sleepSsrKnownAnswer,
+  workouts: workoutsSsrKnownAnswer,
+  books: booksSsrKnownAnswer,
+  githubEvents: githubEventsSsrKnownAnswer,
+  starredRepos: starredReposSsrKnownAnswer,
+  articles: articlesSsrKnownAnswer,
+  focus: focusSsrKnownAnswer,
+  theatreReviews: theatreReviewsSsrKnownAnswer
 } as const
 
 export {

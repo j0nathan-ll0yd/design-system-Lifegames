@@ -4,9 +4,13 @@
   "group": "reading",
   "platforms": ["swift", "web"],
   "props": {
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
     "reviews": {
-      "type": "array",
-      "optional": false,
+      "type": ["array", "null"],
+      "optional": true,
       "items": {
         "type": "object",
         "optional": false,
@@ -70,9 +74,13 @@
         }
       }
     },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
+    },
     "totalReviews": {
-      "type": "number",
-      "optional": false
+      "type": ["number", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/reading/TheatreReviews.types.ts",
@@ -89,6 +97,8 @@
     "single-show",
     "skeleton",
     "subscription-season",
+    "suppressed",
+    "unavailable",
     "west-end-season"
   ],
   "a11y": {

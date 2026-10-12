@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/schemas",
-  "version": "2.2.1",
+  "version": "2.3.1",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -16,6 +16,7 @@
     "generated",
     "scripts/validate.ts",
     "scripts/portal-contract-source.mjs",
+    "scripts/schema-urn.mjs",
     "fixture-map.json"
   ],
   "scripts": {

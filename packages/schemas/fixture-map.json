@@ -198,6 +198,14 @@
       "schema": "DevActivityLogProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.suppressed.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-log.unavailable.json": {
+      "schema": "DevActivityLogProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/github/dev-activity-timeline.empty.json": {
       "schema": "DevActivityTimelineProps",
       "strategy": "single"
@@ -366,6 +374,14 @@
       "schema": "StarredRepoListProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.suppressed.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/github/starred-repo-list.unavailable.json": {
+      "schema": "StarredRepoListProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/github/weekly-pulse.empty.json": {
       "schema": "WeeklyPulseProps",
       "strategy": "single"
@@ -454,6 +470,14 @@
       "schema": "HeartRateProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.suppressed.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/heart-rate.unavailable.json": {
+      "schema": "HeartRateProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/health/hydration.caffeine-crash.json": {
       "schema": "HydrationProps",
       "strategy": "single"
@@ -502,6 +526,14 @@
       "schema": "HydrationProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.suppressed.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/hydration.unavailable.json": {
+      "schema": "HydrationProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.all-rings-closed.json": {
       "schema": "MovementRingsProps",
       "strategy": "single"
@@ -535,6 +567,14 @@
       "strategy": "single"
     },
     "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.stand-only.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.suppressed.json": {
+      "schema": "MovementRingsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/movement-rings.unavailable.json": {
       "schema": "MovementRingsProps",
       "strategy": "single"
     },
@@ -586,6 +626,14 @@
       "schema": "NightSummaryProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.suppressed.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/night-summary.unavailable.json": {
+      "schema": "NightSummaryProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/health/workouts.barrys-only.json": {
       "schema": "WorkoutsProps",
       "strategy": "single"
@@ -619,6 +667,14 @@
       "strategy": "single"
     },
     "Sources/LifegamesWidgets/Resources/widgets/health/workouts.skeleton.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.suppressed.json": {
+      "schema": "WorkoutsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/health/workouts.unavailable.json": {
       "schema": "WorkoutsProps",
       "strategy": "single"
     },
@@ -1094,6 +1150,14 @@
       "schema": "BookshelfProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.suppressed.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.unavailable.json": {
+      "schema": "BookshelfProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.binge-week.json": {
       "schema": "ReadingFeedProps",
       "strategy": "single"
@@ -1134,6 +1198,14 @@
       "schema": "ReadingFeedProps",
       "strategy": "single"
     },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.suppressed.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/reading-feed.unavailable.json": {
+      "schema": "ReadingFeedProps",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.empty.json": {
       "schema": "TheatreReviewsProps",
       "strategy": "single"
@@ -1167,6 +1239,14 @@
       "strategy": "single"
     },
     "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.subscription-season.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.suppressed.json": {
+      "schema": "TheatreReviewsProps",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/reading/theatre-reviews.unavailable.json": {
       "schema": "TheatreReviewsProps",
       "strategy": "single"
     },

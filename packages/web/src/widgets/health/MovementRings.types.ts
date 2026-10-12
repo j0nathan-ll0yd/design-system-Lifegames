@@ -3,28 +3,34 @@
 // Per-widget DS schemas are a deferred follow-up plan.
 
 import type { WatchState } from '../../runtime/adapters';
+import type { WidgetStateProps } from '../../runtime/widget-state';
 export type { WatchState };
 
-export interface MovementRingsProps {
-  health: {
+export interface MovementRingsProps extends WidgetStateProps {
+  // Absent in the non-data states (unavailable, suppressed, loading).
+  health?: {
+    // Each quantity is absent when the export did not carry it; the widget
+    // renders the no-reading mark for it, never 0 (atlas decision 0160, H03).
     quantities: {
-      stepCount: { value: number; unit: string };
-      distanceWalkingRunning: { value: number; unit: string };
-      flightsClimbed: { value: number; unit: string };
-      activeEnergyBurned: { value: number; unit: string };
-      exerciseTime: { value: number; unit: string };
+      stepCount?: { value: number; unit: string };
+      distanceWalkingRunning?: { value: number; unit: string };
+      flightsClimbed?: { value: number; unit: string };
+      activeEnergyBurned?: { value: number; unit: string };
+      exerciseTime?: { value: number; unit: string };
       // Stand may arrive as min (HealthKit) or hr — see updater normalisation.
-      standTime: { value: number; unit: string };
+      standTime?: { value: number; unit: string };
       // Achieved stand-hours ring count (HKActivitySummary); preferred over
       // standTime-derived hours when present.
       standHours?: { value: number; unit: string };
       timeInDaylight?: { value: number; unit: string };
     };
+    // Configuration, never a measurement. Each field is null until the
+    // device's first goals sync; the widget then uses its default.
     goals?: {
-      moveKcal: number; // default 500
-      exerciseMin: number; // default 30
-      standHr: number; // default 12
-      daylightMin: number; // default 20
+      moveKcal: number | null; // default 500
+      exerciseMin: number | null; // default 30
+      standHr: number | null; // default 12
+      daylightMin: number | null; // default 20
     };
     solar?: {
       sunriseHHmm: string; // "06:30"

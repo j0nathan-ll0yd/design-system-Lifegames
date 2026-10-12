@@ -6,7 +6,7 @@
   "props": {
     "events": {
       "type": "array",
-      "optional": false,
+      "optional": true,
       "items": {
         "type": "object",
         "optional": false,
@@ -18,6 +18,10 @@
           "date": {
             "type": "string",
             "optional": false
+          },
+          "datetime": {
+            "type": "string",
+            "optional": true
           },
           "deletions": {
             "type": "number",
@@ -45,6 +49,14 @@
           }
         }
       }
+    },
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/github/DevActivityLog.types.ts",
@@ -61,7 +73,9 @@
     "populated-min",
     "pr-burst",
     "quiet-day",
-    "skeleton"
+    "skeleton",
+    "suppressed",
+    "unavailable"
   ],
   "a11y": {
     "voiceOverLabel": null,

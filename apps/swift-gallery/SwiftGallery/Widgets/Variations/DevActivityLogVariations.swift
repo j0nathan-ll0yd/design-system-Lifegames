@@ -1,3 +1,4 @@
+import LifegamesComponents
 import LifegamesWidgets
 import SwiftUI
 
@@ -21,6 +22,8 @@ enum DevActivityLogVariations {
         .init(id: "quiet-day", label: "Quiet Day", fixtureName: "dev-activity-log.quiet-day"),
         .init(id: "skeleton", label: "Skeleton", fixtureName: "dev-activity-log.skeleton"),
         .init(id: "empty", label: "Empty", fixtureName: "dev-activity-log.empty"),
+        .init(id: "unavailable", label: "Unavailable", fixtureName: "dev-activity-log.unavailable"),
+        .init(id: "suppressed", label: "Suppressed", fixtureName: "dev-activity-log.suppressed"),
     ]
 
     static var entry: WidgetEntry {
@@ -38,7 +41,12 @@ enum DevActivityLogVariations {
 
     @ViewBuilder
     private static func render(state: State) -> some View {
-        if let props: DevActivityProps = FixtureLoader.load(category: "github", name: state.fixtureName) {
+        // Honest-state fixtures carry no data envelope, so they map to a WidgetState directly.
+        if let data = FixtureLoader.data(category: "github", name: state.fixtureName),
+           let honest: WidgetState<DevActivityProps> = Adapters.honestState(fromFixture: data)
+        {
+            DevActivityLogView(state: honest)
+        } else if let props: DevActivityProps = FixtureLoader.load(category: "github", name: state.fixtureName) {
             DevActivityLogView(props: props)
         } else {
             Text("Missing fixture: \(state.fixtureName)")

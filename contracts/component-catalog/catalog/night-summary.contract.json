@@ -4,23 +4,31 @@
   "group": "health",
   "platforms": ["swift", "web"],
   "props": {
+    "generatedAt": {
+      "type": ["string", "null"],
+      "optional": true
+    },
     "health": {
-      "type": "object",
-      "optional": false,
+      "type": ["object", "null"],
+      "optional": true,
       "properties": {
         "derived": {
           "type": "object",
           "optional": false,
           "properties": {
             "deepPct": {
-              "type": "number",
+              "type": ["number", "null"],
               "optional": false
             },
             "remPct": {
-              "type": "number",
+              "type": ["number", "null"],
               "optional": false
             }
           }
+        },
+        "isEmpty": {
+          "type": ["boolean", "null"],
+          "optional": true
         },
         "sleepDurationFormatted": {
           "type": "string",
@@ -49,10 +57,14 @@
           }
         },
         "sleepScore": {
-          "type": "number",
+          "type": ["number", "null"],
           "optional": false
         }
       }
+    },
+    "state": {
+      "type": ["string", "null"],
+      "optional": true
     }
   },
   "propsRef": "packages/web/src/widgets/health/NightSummary.types.ts",
@@ -71,7 +83,9 @@
     "populated-max",
     "populated-min",
     "restless",
-    "skeleton"
+    "skeleton",
+    "suppressed",
+    "unavailable"
   ],
   "a11y": {
     "voiceOverLabel": null,

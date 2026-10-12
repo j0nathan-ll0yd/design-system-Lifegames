@@ -24,6 +24,10 @@ public struct TheatreReviewsView: View {
             TheatreReviewsEmptyView()
         case let .populated(props):
             TheatreReviewsPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: theatreReviewsCopy.title, accent: Color.colorAccentAmber)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: theatreReviewsCopy.title, accent: Color.colorAccentAmber)
         }
     }
 }
@@ -175,6 +179,20 @@ private struct ReviewCard: View {
 
 #Preview("Theatre Reviews — Empty") {
     TheatreReviewsView(state: .empty)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Theatre Reviews — Unavailable") {
+    TheatreReviewsView(state: .unavailable)
+        .padding()
+        .background(Color.colorSurfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Theatre Reviews — Suppressed") {
+    TheatreReviewsView(state: .suppressed)
         .padding()
         .background(Color.colorSurfaceBase)
         .preferredColorScheme(.dark)

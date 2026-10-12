@@ -147,11 +147,11 @@ describe('updateMovementRings', () => {
   // ── daylight caption ───────────────────────────────────────────────────────
 
   describe('daylight caption', () => {
-    it('renders 0 when timeInDaylight is absent — never leaves SSR fixture text', () => {
+    it('renders no reading when timeInDaylight is absent — never 0, never SSR fixture text', () => {
       // Simulate SSR fixture bleed-through: the shell shipped "48" + a visible badge.
       el('mvDaylightMin').textContent = '48'
       updateMovementRings(makeHealth())
-      expect(el('mvDaylightMin').textContent).toBe('0')
+      expect(el('mvDaylightMin').textContent).toBe('—')
       expect(el('mvDaylightHit').hidden).toBe(true)
     })
 
@@ -183,12 +183,13 @@ describe('updateMovementRings', () => {
       expect(el('mvSunDot').style.left).toBe('100%')
     })
 
-    it('leaves SSR solar values untouched when solar is absent', () => {
+    it('invents no sunrise or sunset when solar is absent (atlas decision 0160)', () => {
       el('mvSunrise').textContent = '06:30'
       el('mvSunset').textContent = '20:15'
       updateMovementRings(makeHealth())
-      expect(el('mvSunrise').textContent).toBe('06:30')
-      expect(el('mvSunset').textContent).toBe('20:15')
+      expect(el('mvSunrise').textContent).toBe('—')
+      expect(el('mvSunset').textContent).toBe('—')
+      expect(el('mvSunDot').style.display).toBe('none')
     })
   })
 
@@ -266,19 +267,37 @@ describe('updateHeartRateFooter', () => {
     `
   })
 
+  // The footer shows values only while the card does: a heart-rate reading,
+  // watch on the wrist (heartRateView, the server's rule).
+  const HR = {heartRate: {value: 64, unit: 'bpm'}}
+
   it('renders RHR value when present', () => {
-    const data = makeHealth({quantities: {...makeHealth().quantities, restingHeartRate: {value: 58, unit: 'bpm'}}})
+    const data = makeHealth({quantities: {...makeHealth().quantities, ...HR, restingHeartRate: {value: 58, unit: 'bpm'}}})
     updateHeartRateFooter(data)
     expect(el('hrFooterRhr').textContent).toBe('58')
   })
 
   it('renders dash when RHR is absent', () => {
-    updateHeartRateFooter(makeHealth())
+    updateHeartRateFooter(makeHealth({quantities: {...makeHealth().quantities, ...HR}}))
     expect(el('hrFooterRhr').textContent).toBe('—')
   })
 
+  it('renders nothing when the card shows no value (no heart rate: unavailable)', () => {
+    updateHeartRateFooter(makeHealth({quantities: {...makeHealth().quantities, restingHeartRate: {value: 58, unit: 'bpm'}}}))
+    expect(el('hrFooterRhr').textContent).toBe('')
+  })
+
+  it('renders nothing for a paused watch', () => {
+    const data = makeHealth({
+      quantities: {...makeHealth().quantities, ...HR, restingHeartRate: {value: 58, unit: 'bpm'}},
+      watch: {worn: false, source: 'charging'} as AdaptedHealth['watch']
+    })
+    updateHeartRateFooter(data)
+    expect(el('hrFooterRhr').textContent).toBe('')
+  })
+
   it('renders signed temp delta', () => {
-    const data = makeHealth({quantities: {...makeHealth().quantities, wristTemperatureDelta: {value: 0.2, unit: '°C'}}})
+    const data = makeHealth({quantities: {...makeHealth().quantities, ...HR, wristTemperatureDelta: {value: 0.2, unit: '°C'}}})
     updateHeartRateFooter(data)
     expect(el('hrFooterTemp').textContent).toBe('+0.2')
   })

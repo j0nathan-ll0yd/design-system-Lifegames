@@ -116,16 +116,23 @@ describe('adaptHealth', () => {
     expect(result.quantities).not.toHaveProperty('hrvSDNN')
   })
 
-  it('defaults exerciseTime to 0 min when missing', () => {
+  // Measured versus missing (atlas decision 0160, H03): an absent measurement
+  // stays absent or null; only a recorded zero is 0.
+  it('leaves exerciseTime absent when the export omits it (no 0 default)', () => {
     const health = makeHealth()
     delete (health.quantities as any).exerciseTime
     const result = adaptHealth(health, makeSleep())
+    expect(result.quantities).not.toHaveProperty('exerciseTime')
+  })
+
+  it('keeps a recorded exerciseTime of 0 as a measured zero', () => {
+    const result = adaptHealth(makeHealth({exerciseTime: {value: 0, unit: 'min'}}), makeSleep())
     expect(result.quantities.exerciseTime).toEqual({value: 0, unit: 'min'})
   })
 
   it('does not override exerciseTime when already present', () => {
     const result = adaptHealth(makeHealth(), makeSleep())
-    expect(result.quantities.exerciseTime.value).toBe(30)
+    expect(result.quantities.exerciseTime?.value).toBe(30)
   })
 
   it('converts dietaryWater mL to oz (÷29.5735, rounded)', () => {
@@ -134,10 +141,15 @@ describe('adaptHealth', () => {
     expect(result.hydration.waterOz).toBe(96)
   })
 
-  it('returns 0 waterOz when dietaryWater is absent', () => {
+  it('returns null waterOz when dietaryWater is absent (missing, not zero)', () => {
     const health = makeHealth()
     delete (health.quantities as any).dietaryWater
     const result = adaptHealth(health, makeSleep())
+    expect(result.hydration.waterOz).toBeNull()
+  })
+
+  it('returns 0 waterOz for a recorded zero dietaryWater', () => {
+    const result = adaptHealth(makeHealth({dietaryWater: {value: 0, unit: 'mL'}}), makeSleep())
     expect(result.hydration.waterOz).toBe(0)
   })
 
@@ -147,11 +159,11 @@ describe('adaptHealth', () => {
     expect(result.hydration.caffeineMg).toBe(280)
   })
 
-  it('returns 0 caffeineMg when dietaryCaffeine is absent', () => {
+  it('returns null caffeineMg when dietaryCaffeine is absent (missing, not zero)', () => {
     const health = makeHealth()
     delete (health.quantities as any).dietaryCaffeine
     const result = adaptHealth(health, makeSleep())
-    expect(result.hydration.caffeineMg).toBe(0)
+    expect(result.hydration.caffeineMg).toBeNull()
   })
 
   it('computes totalCalories = activeEnergyBurned + basalEnergyBurned', () => {
@@ -166,12 +178,25 @@ describe('adaptHealth', () => {
     expect(result.derived.totalCalories).toBe(2251)
   })
 
-  it('defaults totalCalories to 0 when energy fields absent', () => {
+  it('returns null totalCalories when both energy fields are absent', () => {
     const health = makeHealth()
     delete (health.quantities as any).activeEnergyBurned
     delete (health.quantities as any).basalEnergyBurned
     const result = adaptHealth(health, makeSleep())
-    expect(result.derived.totalCalories).toBe(0)
+    expect(result.derived.totalCalories).toBeNull()
+  })
+
+  it('returns null totalCalories when only one energy input exists (no partial sum)', () => {
+    const health = makeHealth()
+    delete (health.quantities as any).basalEnergyBurned
+    const result = adaptHealth(health, makeSleep())
+    expect(result.derived.totalCalories).toBeNull()
+  })
+
+  it('returns null sleepScore when the health export omits it', () => {
+    const health = makeHealth()
+    delete (health.quantities as any).sleepScore
+    expect(adaptHealth(health, makeSleep()).sleepScore).toBeNull()
   })
 
   it('includes HYDRATION constants in hydration object', () => {
@@ -198,11 +223,11 @@ describe('adaptHealth', () => {
     expect(result.derived.corePct).toBe(55)
   })
 
-  it('returns zero sleep percentages when sleepData is null', () => {
+  it('returns null sleep percentages when sleepData is null (missing, not zero)', () => {
     const result = adaptHealth(makeHealth(), null)
-    expect(result.derived.deepPct).toBe(0)
-    expect(result.derived.remPct).toBe(0)
-    expect(result.derived.corePct).toBe(0)
+    expect(result.derived.deepPct).toBeNull()
+    expect(result.derived.remPct).toBeNull()
+    expect(result.derived.corePct).toBeNull()
   })
 
   it('returns empty sleepDurationFormatted when sleepData is null', () => {
@@ -273,9 +298,9 @@ describe('adaptSleep', () => {
     expect(result.sleepScore).toBe(82)
   })
 
-  it('returns sleepScore 0 when healthData is null', () => {
+  it('returns null sleepScore when healthData is null (missing, not zero)', () => {
     const result = adaptSleep(makeSleep(), null)
-    expect(result.sleepScore).toBe(0)
+    expect(result.sleepScore).toBeNull()
   })
 
   it('formats sleepDurationFormatted correctly', () => {
@@ -308,12 +333,29 @@ describe('adaptSleep', () => {
     expect(result.phases.awake).toBe(900)
   })
 
-  it('returns zero percentages when all phases are absent', () => {
+  it('returns null percentages and an empty sleep when all phases are absent (missing, not zero)', () => {
     const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z'}
     const result = adaptSleep(sleep, makeHealth())
+    expect(result.isEmpty).toBe(true)
+    expect(result.derived).toEqual({deepPct: null, remPct: null, corePct: null})
+    expect(result.phases).toEqual({rem: null, deep: null, core: null, awake: null})
+    expect(result.sleepPhaseFormatted).toEqual({deep: '', rem: '', core: '', awake: ''})
+  })
+
+  it('keeps a missing phase missing: no 0m pill and no share of a partial total', () => {
+    const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z', rem: {seconds: 5400}, core: {seconds: 10800}}
+    const result = adaptSleep(sleep, makeHealth())
+    expect(result.isEmpty).toBe(false)
+    expect(result.sleepPhaseFormatted.deep).toBe('')
+    expect(result.sleepPhaseFormatted.rem).toBe('1h 30m')
+    expect(result.derived).toEqual({deepPct: null, remPct: null, corePct: null})
+  })
+
+  it('keeps a recorded zero phase as a measured zero', () => {
+    const sleep: SleepExport = {date: '2026-01-15', generatedAt: '2026-01-15T08:00:00Z', rem: {seconds: 5400}, core: {seconds: 10800}, deep: {seconds: 0}}
+    const result = adaptSleep(sleep, makeHealth())
+    expect(result.sleepPhaseFormatted.deep).toBe('0m')
     expect(result.derived.deepPct).toBe(0)
-    expect(result.derived.remPct).toBe(0)
-    expect(result.derived.corePct).toBe(0)
   })
 })
 
@@ -1211,5 +1253,33 @@ describe('adaptStarredRepos', () => {
     expect(result[0].name).toBe('hello-world')
     expect(result[0].url).toBe('https://github.com/octocat/hello-world')
     expect(result[0].stars).toBe(42)
+  })
+})
+
+// Verifier on PR #289, L-2: each asleep stage gates the total, and adaptHealth
+// carries the same rule as adaptSleep.
+describe('a missing sleep stage leaves the total unknown', () => {
+  const full = {
+    date: '2026-01-15',
+    generatedAt: '2026-01-15T08:00:00Z',
+    rem: {seconds: 5400},
+    deep: {seconds: 3600},
+    core: {seconds: 10800},
+    awake: {seconds: 600}
+  }
+  it.each(['rem', 'deep', 'core'] as const)('adaptSleep without %s: no total, no shares', (stage) => {
+    const {[stage]: _gone, ...partial} = full
+    const result = adaptSleep(partial as SleepExport, makeHealth())
+    expect(result.sleepDurationFormatted).toBe('')
+    expect(result.derived).toEqual({deepPct: null, remPct: null, corePct: null})
+    expect(result.isEmpty).toBe(false)
+  })
+  it.each(['rem', 'deep', 'core'] as const)('adaptHealth with a sleep export without %s: no total text', (stage) => {
+    const {[stage]: _gone, ...partial} = full
+    const result = adaptHealth(makeHealth(), partial as SleepExport)
+    expect(result.sleepDurationFormatted).toBe('')
+  })
+  it('a complete export still totals asleep time (awake excluded)', () => {
+    expect(adaptHealth(makeHealth(), full as SleepExport).sleepDurationFormatted).toBe('5h 30m')
   })
 })

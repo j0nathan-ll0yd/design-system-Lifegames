@@ -358,7 +358,7 @@ describe('updateNightSummary', () => {
         <div data-phase="core"><span class="sleep-moon-pill-val"></span></div>
         <div data-phase="awake"><span class="sleep-moon-pill-val"></span></div>
         <div id="sleepInsight"></div>
-        <div id="sleepTimestamp"></div>
+        <div class="widget-timestamp" id="sleepTimestamp" data-live-label="${widgets.nightSummary.timestampLastNight}"></div>
       </div>
     `
   }
@@ -856,6 +856,17 @@ describe('updatePlaceLeaderboard', () => {
     expect(el('cardPlaceLeaderboard').classList.contains('is-loading')).toBe(false)
   })
 
+  // Review M02: no server template exists for this card, so the markup above
+  // stands in for it.
+  it('an empty result after places clears every previous row and says so', () => {
+    updatePlaceLeaderboard(makeLocation())
+    updatePlaceLeaderboard(makeLocation({topPlaces: []}))
+    const card = el('cardPlaceLeaderboard')
+    expect(card.querySelectorAll('.pl-row').length).toBe(0)
+    expect(card.textContent).not.toContain('Coffee Shop')
+    expect(card.querySelector('.widget-empty')?.textContent).toBe(widgets.topPlaces.empty)
+  })
+
   it('does not throw when card is missing', () => {
     document.body.innerHTML = ''
     expect(() => updatePlaceLeaderboard(makeLocation())).not.toThrow()
@@ -977,12 +988,12 @@ describe('updateBookshelf', () => {
       expect(img.dataset.fallback).toBe(PLACEHOLDER_IMAGE_SRC)
     })
 
-    it('localizes only the exact candidates captured from SSR', () => {
+    it('localizes only the exact paths the card lists in data-local-covers', () => {
       const covers = makeBookWithCovers()
       const cardUrl = covers.books[0]!.mainImageCard!
       document.body.innerHTML = `
-        <div id="cardBooks"><div id="dashShelfRow">
-          <div class="shelf-book" data-local-cover='["${cardUrl}"]'>
+        <div id="cardBooks" data-local-covers='["/images/books/B001TEST-card.webp"]'><div id="dashShelfRow">
+          <div class="shelf-book">
             <div class="shelf-cover-wrapper"><img src="${cardUrl}"></div>
             <div class="shelf-book-title"><span></span></div>
             <div class="shelf-book-author"></div>

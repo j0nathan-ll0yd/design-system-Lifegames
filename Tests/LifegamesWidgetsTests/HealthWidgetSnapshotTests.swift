@@ -36,31 +36,31 @@ struct HealthWidgetSnapshotTests {
 
     @Test func heartRateBradycardia() {
         assertSnapshot(of: wrap(HeartRateView(
-            props: HeartRateProps(bpm: 42, hrv: 58, zone: "resting"), animateECG: false
+            props: HealthWidgetStates.heartRateBradycardia, animateECG: false
         )), as: .image(layout: layout))
     }
 
     @Test func heartRateResting() {
         assertSnapshot(of: wrap(HeartRateView(
-            props: HeartRateProps(bpm: 55, hrv: 45, zone: "resting"), animateECG: false
+            props: HealthWidgetStates.heartRateResting, animateECG: false
         )), as: .image(layout: layout))
     }
 
     @Test func heartRateNormal() {
         assertSnapshot(of: wrap(HeartRateView(
-            props: HeartRateProps(bpm: 72, hrv: 32, zone: "moderate"), animateECG: false
+            props: HealthWidgetStates.heartRateNormal, animateECG: false
         )), as: .image(layout: layout))
     }
 
     @Test func heartRateFatBurn() {
         assertSnapshot(of: wrap(HeartRateView(
-            props: HeartRateProps(bpm: 128, hrv: 24, zone: "elevated"), animateECG: false
+            props: HealthWidgetStates.heartRateFatBurn, animateECG: false
         )), as: .image(layout: layout))
     }
 
     @Test func heartRatePeak() {
         assertSnapshot(of: wrap(HeartRateView(
-            props: HeartRateProps(bpm: 165, hrv: 14, zone: "high"), animateECG: false
+            props: HealthWidgetStates.heartRatePeak, animateECG: false
         )), as: .image(layout: layout))
     }
 
@@ -75,24 +75,15 @@ struct HealthWidgetSnapshotTests {
     }
 
     @Test func hydrationNormal() {
-        assertSnapshot(of: wrap(HydrationView(props: HydrationProps(
-            waterOz: 54, caffeineMg: 280, waterMax: 100, caffeineMax: 500,
-            waterRangeLo: 64, waterRangeHi: 80, caffeineRangeLo: 200, caffeineRangeHi: 400
-        ))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(HydrationView(props: HealthWidgetStates.hydrationNormal)), as: .image(layout: layout))
     }
 
     @Test func hydrationDehydrated() {
-        assertSnapshot(of: wrap(HydrationView(props: HydrationProps(
-            waterOz: 12, caffeineMg: 80, waterMax: 100, caffeineMax: 500,
-            waterRangeLo: 64, waterRangeHi: 80, caffeineRangeLo: 200, caffeineRangeHi: 400
-        ))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(HydrationView(props: HealthWidgetStates.hydrationDehydrated)), as: .image(layout: layout))
     }
 
     @Test func hydrationOverhydrated() {
-        assertSnapshot(of: wrap(HydrationView(props: HydrationProps(
-            waterOz: 100, caffeineMg: 480, waterMax: 100, caffeineMax: 500,
-            waterRangeLo: 64, waterRangeHi: 80, caffeineRangeLo: 200, caffeineRangeHi: 400
-        ))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(HydrationView(props: HealthWidgetStates.hydrationOverhydrated)), as: .image(layout: layout))
     }
 
     // MARK: - NightSummary
@@ -106,30 +97,15 @@ struct HealthWidgetSnapshotTests {
     }
 
     @Test func nightSummaryGood() {
-        assertSnapshot(of: wrap(NightSummaryView(props: NightSummaryProps(
-            sleepScore: 78, duration: "7h 24m",
-            deepFormatted: "1h 12m", remFormatted: "1h 48m",
-            coreFormatted: "3h 32m", awakeFormatted: "0h 52m",
-            deepPct: 16, remPct: 24
-        ))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(NightSummaryView(props: HealthWidgetStates.nightSummaryGood)), as: .image(layout: layout))
     }
 
     @Test func nightSummaryExcellent() {
-        assertSnapshot(of: wrap(NightSummaryView(props: NightSummaryProps(
-            sleepScore: 94, duration: "8h 12m",
-            deepFormatted: "1h 48m", remFormatted: "2h 06m",
-            coreFormatted: "3h 54m", awakeFormatted: "0h 24m",
-            deepPct: 22, remPct: 26
-        ))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(NightSummaryView(props: HealthWidgetStates.nightSummaryExcellent)), as: .image(layout: layout))
     }
 
     @Test func nightSummaryPoor() {
-        assertSnapshot(of: wrap(NightSummaryView(props: NightSummaryProps(
-            sleepScore: 42, duration: "4h 18m",
-            deepFormatted: "0h 22m", remFormatted: "0h 44m",
-            coreFormatted: "2h 30m", awakeFormatted: "1h 22m",
-            deepPct: 9, remPct: 17
-        ))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(NightSummaryView(props: HealthWidgetStates.nightSummaryPoor)), as: .image(layout: layout))
     }
 
     // MARK: - Workouts
@@ -143,16 +119,11 @@ struct HealthWidgetSnapshotTests {
     }
 
     @Test func workoutsSingle() {
-        assertSnapshot(of: wrap(WorkoutsView(props: WorkoutsProps(workouts: [
-            WorkoutsProps.Workout(activityType: "Running", duration: 1800, energyBurned: 320, distance: 5200),
-        ]))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(WorkoutsView(props: HealthWidgetStates.workoutsSingle)), as: .image(layout: layout))
     }
 
     @Test func workoutsMulti() {
-        assertSnapshot(of: wrap(WorkoutsView(props: WorkoutsProps(workouts: [
-            WorkoutsProps.Workout(activityType: "Running", duration: 1800, energyBurned: 320, distance: 5200),
-            WorkoutsProps.Workout(activityType: "Strength Training", duration: 2700, energyBurned: 240, distance: 0),
-        ]))), as: .image(layout: layout))
+        assertSnapshot(of: wrap(WorkoutsView(props: HealthWidgetStates.workoutsMulti)), as: .image(layout: layout))
     }
 }
 #endif

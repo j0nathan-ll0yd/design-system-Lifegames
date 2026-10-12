@@ -10,6 +10,8 @@ enum MovementRingsVariations {
         case fixture(String)
         case skeleton
         case empty
+        case unavailable
+        case suppressed
     }
 
     struct State: Identifiable {
@@ -26,6 +28,8 @@ enum MovementRingsVariations {
         .init(id: "stand-only", label: "Stand Only", kind: .fixture("movement-rings.stand-only")),
         .init(id: "skeleton", label: "Skeleton", kind: .skeleton),
         .init(id: "empty", label: "Empty", kind: .empty),
+        .init(id: "unavailable", label: "Unavailable", kind: .unavailable),
+        .init(id: "suppressed", label: "Suppressed", kind: .suppressed),
     ]
 
     static var entry: WidgetEntry {
@@ -48,6 +52,10 @@ enum MovementRingsVariations {
             MovementRingsView(state: .loading)
         case .empty:
             MovementRingsView(state: .empty)
+        case .unavailable:
+            MovementRingsView(state: .unavailable)
+        case .suppressed:
+            MovementRingsView(state: .suppressed)
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "health", name: name),
                let props = Adapters.movementRings(fromFixture: data)

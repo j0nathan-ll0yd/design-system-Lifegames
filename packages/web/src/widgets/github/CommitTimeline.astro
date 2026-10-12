@@ -37,7 +37,7 @@ const { commits } = Astro.props;
               <div class="gh-tl-meta">
                 <span
                   class="gh-tl-repo-badge"
-                  style={`background: ${c.repoColor}20; border-color: ${c.repoColor}40; color: ${c.repoColor};`}
+                  style={`background: color-mix(in srgb, ${c.repoColor} 12.5%, transparent); border-color: color-mix(in srgb, ${c.repoColor} 25%, transparent); color: ${c.repoColor};`}
                 >
                   {c.repo}
                 </span>

@@ -11,14 +11,14 @@
     for (var s2 = 0; s2 < skels.length; s2++) {
       skels[s2].classList.add('is-loading');
     }
+    // No updater runs on a docs page, so a card that hardcodes is-loading would
+    // stay a skeleton forever. A card the server rendered in the honest
+    // `loading` state (data-ssr-state, atlas decision 0160) keeps it.
     var loading = document.querySelectorAll('.tri-card.is-loading');
     for (var k = 0; k < loading.length; k++) {
       if (loading[k].closest('[data-state="skeleton"]')) continue;
+      if (loading[k].getAttribute('data-ssr-state') === 'loading') continue;
       loading[k].classList.remove('is-loading');
-    }
-    var wks = document.querySelectorAll('#cardWorkouts');
-    for (var w = 0; w < wks.length; w++) {
-      wks[w].style.display = '';
     }
   })();
 </script>

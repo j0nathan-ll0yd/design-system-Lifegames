@@ -1,6 +1,15 @@
 // Post-adapter display fixtures for the health widgets (HeartRate, MovementRings,
 // Workouts, Hydration, NightSummary).
 //
+// SHOWCASE-ONLY (atlas decision 0160, plan Step 1.6, owner decision Q1). These
+// values are hand-written for the showcase surfaces (apps/portfolio, the docs
+// site, the site's pre-SSR fixture shell). They are NOT derived from the raw
+// exports and must never stand in for production data: the server render
+// builds health props from the live exports through the adapters
+// (toDashboardViewModels in @j0nathan-ll0yd/web). tests/post-adapter-health-drift.test.ts
+// keeps the fields this shape shares with adapter output in the adapter's names
+// and types, so the showcase cannot drift from what production renders.
+//
 // DashboardHealth is a DS-owned display shape that is RICHER than the runtime
 // adapter output: it carries ranges, derived metrics, hydration ranges, and
 // sampleWorkouts that adaptHealth() does NOT produce (adaptHealth feeds the runtime

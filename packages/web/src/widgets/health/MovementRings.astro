@@ -1,116 +1,41 @@
 ---
 import { widgets, a11y } from '@j0nathan-ll0yd/copy';
+import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
+import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
+import { movementEmptyHtml } from '../../runtime/widget-markup';
+import { stateRootAttrs } from '../../runtime/widget-state';
+import { movementView } from '../../runtime/widget-views';
 import type { MovementRingsProps } from './MovementRings.types';
 
-const { health: rawHealth } = Astro.props as MovementRingsProps;
-
-// Shape adapter: accept the flat `health.movement.*` shape (Swift Props
-// contract used by widget fixtures) in addition to the nested
-// `health.quantities.*` shape (HealthKit export contract used by the
-// runtime updater). The renderer continues to use the nested shape.
-const m = (rawHealth as any).movement as
-  | {
-      moveKcal?: number;
-      exerciseMin?: number;
-      standHr?: number;
-      steps?: number;
-      distanceMeters?: number;
-      flights?: number;
-      daylightMin?: number;
-      goals?: MovementRingsProps['health']['goals'];
-      solar?: MovementRingsProps['health']['solar'];
-    }
-  | undefined;
-const health: MovementRingsProps['health'] = (rawHealth as any).quantities
-  ? rawHealth
-  : ({
-      quantities: {
-        stepCount: { value: m?.steps ?? 0, unit: 'count' },
-        distanceWalkingRunning: { value: m?.distanceMeters ?? 0, unit: 'm' },
-        flightsClimbed: { value: m?.flights ?? 0, unit: 'count' },
-        activeEnergyBurned: { value: m?.moveKcal ?? 0, unit: 'kcal' },
-        exerciseTime: { value: m?.exerciseMin ?? 0, unit: 'min' },
-        standTime: { value: m?.standHr ?? 0, unit: 'hr' },
-        // Flat-shape standHr is achieved hours — exactly what standHours carries.
-        standHours: { value: m?.standHr ?? 0, unit: 'count' },
-        timeInDaylight: { value: m?.daylightMin ?? 0, unit: 'min' },
-      },
-      goals: m?.goals,
-      solar: m?.solar,
-      // Pass watch through from the flat fixture shape so the paused overlay renders.
-      watch: (rawHealth as any).watch,
-    } as MovementRingsProps['health']);
-const q = health.quantities;
-
-// Default goals (can be overridden by health.goals)
-const goals = {
-  moveKcal: health.goals?.moveKcal ?? 500,
-  exerciseMin: health.goals?.exerciseMin ?? 30,
-  standHr: health.goals?.standHr ?? 12,
-  daylightMin: health.goals?.daylightMin ?? 20,
-};
-
-// Stand: prefer the achieved ring count (`standHours`, HKActivitySummary — the
-// watch ring's own metric); legacy data falls back to standTime (min → hr).
-const standUnit = q.standTime?.unit ?? 'hr';
-const standHours = q.standHours
-  ? Math.floor(q.standHours.value)
-  : standUnit === 'min'
-    ? Math.floor((q.standTime?.value ?? 0) / 60)
-    : Math.floor(q.standTime?.value ?? 0);
-
-const moveVal = Math.round(q.activeEnergyBurned?.value ?? 0);
-const exerciseVal = Math.round(q.exerciseTime?.value ?? 0);
-
-// Ring progress fractions (allow >1 for over-fill visual; SVG clamps to 1 turn)
-const movePct = goals.moveKcal > 0 ? moveVal / goals.moveKcal : 0;
-const exercisePct = goals.exerciseMin > 0 ? exerciseVal / goals.exerciseMin : 0;
-const standPct = goals.standHr > 0 ? standHours / goals.standHr : 0;
-
-const centerPct = Math.round(Math.min(movePct, 1) * 100);
-
-const steps = Math.round(q.stepCount?.value ?? 0);
-const distanceM = q.distanceWalkingRunning?.value ?? 0;
-const distanceKm = (distanceM / 1000).toFixed(1);
-const flights = Math.round(q.flightsClimbed?.value ?? 0);
-
-const isEmpty = steps === 0 && distanceM === 0 && moveVal === 0 && exerciseVal === 0;
-
-// SSR paused: if build-data already has watch.worn===false, apply is-paused at SSR time
-// so the page is correct before the runtime updater fires.
-const ssrPaused = health.watch?.worn === false;
-
-// Solar footer values (SSR placeholders if missing; updater overwrites from live data)
-const sunrise = health.solar?.sunriseHHmm ?? '06:30';
-const sunset = health.solar?.sunsetHHmm ?? '20:15';
-// Clamp like the updater does — a contract-violating pct must not paint off-track.
-const sunPct = Math.min(100, Math.max(0, health.solar?.currentProgressPct ?? 60));
-// Absent daylight = none synced yet — render 0, never a mock value.
-const daylightMin = Math.round(q.timeInDaylight?.value ?? 0);
-const daylightHit = daylightMin >= goals.daylightMin;
-
-// SVG ring geometry (matches preview html)
-const RADII = { move: 60, exercise: 44, stand: 28 };
-const CIRC = {
-  move: 2 * Math.PI * RADII.move,
-  exercise: 2 * Math.PI * RADII.exercise,
-  stand: 2 * Math.PI * RADII.stand,
-};
-
-// Compute initial stroke-dashoffset (animated to target by updater on load).
-// SSR renders the final state so unhydrated pages still look correct.
-function offset(circ: number, pct: number): number {
-  const visual = Math.min(1, Math.max(0, pct));
-  return circ * (1 - visual);
-}
+const props = Astro.props as MovementRingsProps;
+const { generatedAt } = props;
+// One owner for the state and every slot: the view updateMovementRings writes
+// too. The flat Swift-fixture shape and the nested HealthKit shape normalize
+// to one shape; a field the input omits stays absent, never 0.
+const view = movementView(props);
+const widgetState = view.state;
+const isEmpty = view.isEmpty;
+// SSR paused: the export reports the watch off the wrist or charging. The card
+// keeps its data state (a reading of the watch state) but shows no value.
+const ssrPaused = view.paused;
+const renderValues = view.renderValues;
+const goals = view.goals;
 ---
 
-<div class={`tri-card tri-card-accent-red${ssrPaused ? ' is-paused' : ''}`} id="cardMovement">
+<div
+  class={`tri-card tri-card-accent-red${ssrPaused ? ' is-paused' : ''}${widgetState === 'loading' ? ' is-loading' : ''}`}
+  id="cardMovement"
+  {...stateRootAttrs(widgetState, generatedAt)}
+>
   <div class="widget-header">
     <h3 class="widget-label">{widgets.movement.title}</h3>
     <div class="widget-header-right">
       <div class="live-dot live-dot-red"></div>
-      <span class="widget-timestamp">{widgets.movement.timestampToday}</span>
+      <WidgetTimestamp
+        label={widgets.movement.timestampToday}
+        state={widgetState}
+        generatedAt={generatedAt}
+      />
     </div>
   </div>
   <div class="widget-body">
@@ -138,13 +63,8 @@ function offset(circ: number, pct: number): number {
         <div class="skeleton-bar" style="width: 14px; height: 14px;"></div>
       </div>
     </div>
-    {
-      isEmpty && (
-        <div class="mv-empty">
-          <span class="mv-empty-label">{widgets.movement.empty}</span>
-        </div>
-      )
-    }
+    {isEmpty && <Fragment set:html={movementEmptyHtml()} />}
+    <WidgetStateNotice state={widgetState} />
     {/* Both states stay mounted so live updates can switch without exposing stale values. */}
     <div class="mv-paused" role="status" aria-live="polite" id="mvPaused">
       <svg
@@ -170,24 +90,13 @@ function offset(circ: number, pct: number): number {
           stroke-width="1.5"
           stroke-linecap="round"></line>
       </svg>
-      <span class="mv-paused-label" id="mvPausedLabel">
-        {
-          health.watch?.source === 'charging'
-            ? widgets.movement.paused.labelCharging
-            : widgets.movement.paused.label
-        }
-      </span>
-      <span class="mv-paused-desc" id="mvPausedDesc">
-        {
-          health.watch?.source === 'charging'
-            ? widgets.movement.paused.descriptionCharging
-            : widgets.movement.paused.description
-        }
-      </span>
+      <span class="mv-paused-label" id="mvPausedLabel">{view.pausedLabel}</span>
+      <span class="mv-paused-desc" id="mvPausedDesc">{view.pausedDescription}</span>
     </div>
+    {/* Rendered in every state (hidden behind any notice) so a later live update can reveal it. */}
     {
-      !isEmpty && (
-        <div class="mv-data">
+      (
+        <div class="mv-data" data-state-scaffold hidden={view.scaffoldHidden}>
           <div class="mv-layout">
             <div class="mv-rings">
               {/* The name belongs on the element carrying role="img", not on the
@@ -199,10 +108,8 @@ function offset(circ: number, pct: number): number {
               <svg
                 viewBox="0 0 144 144"
                 role="img"
-                aria-label={a11y.movement.rings
-                  .replace('{calories}', String(Math.round(movePct * 100)))
-                  .replace('{exercise}', String(Math.round(exercisePct * 100)))
-                  .replace('{stand}', String(Math.round(standPct * 100)))}
+                aria-label={view.ringsLabel ?? undefined}
+                aria-hidden={renderValues ? undefined : 'true'}
               >
                 <circle class="mv-ring-track mv-ring-track-move" cx="72" cy="72" r="60" />
                 <circle class="mv-ring-track mv-ring-track-exercise" cx="72" cy="72" r="44" />
@@ -213,8 +120,8 @@ function offset(circ: number, pct: number): number {
                   cx="72"
                   cy="72"
                   r="60"
-                  stroke-dasharray={CIRC.move.toFixed(2)}
-                  stroke-dashoffset={offset(CIRC.move, movePct).toFixed(2)}
+                  stroke-dasharray={view.rings.move.dasharray}
+                  stroke-dashoffset={view.rings.move.dashoffset}
                 />
                 <circle
                   class="mv-ring-progress mv-ring-exercise"
@@ -222,8 +129,8 @@ function offset(circ: number, pct: number): number {
                   cx="72"
                   cy="72"
                   r="44"
-                  stroke-dasharray={CIRC.exercise.toFixed(2)}
-                  stroke-dashoffset={offset(CIRC.exercise, exercisePct).toFixed(2)}
+                  stroke-dasharray={view.rings.exercise.dasharray}
+                  stroke-dashoffset={view.rings.exercise.dashoffset}
                 />
                 <circle
                   class="mv-ring-progress mv-ring-stand"
@@ -231,13 +138,13 @@ function offset(circ: number, pct: number): number {
                   cx="72"
                   cy="72"
                   r="28"
-                  stroke-dasharray={CIRC.stand.toFixed(2)}
-                  stroke-dashoffset={offset(CIRC.stand, standPct).toFixed(2)}
+                  stroke-dasharray={view.rings.stand.dasharray}
+                  stroke-dashoffset={view.rings.stand.dashoffset}
                 />
               </svg>
               <div class="mv-rings-center">
                 <span class="mv-rings-center-pct" id="ringCenterPct">
-                  {centerPct}%
+                  {view.centerText}
                 </span>
                 <span class="mv-rings-center-cap">cal</span>
               </div>
@@ -246,20 +153,20 @@ function offset(circ: number, pct: number): number {
               <div class="mv-chip">
                 <span class="mv-chip-label">{widgets.movement.steps}</span>
                 <span class="mv-chip-value" data-mv-metric="steps">
-                  {steps.toLocaleString()}
+                  {view.stepsText}
                 </span>
               </div>
               <div class="mv-chip">
                 <span class="mv-chip-label">{widgets.movement.distance}</span>
                 <span class="mv-chip-value" data-mv-metric="distance">
-                  {distanceKm}
+                  {view.distanceText}
                   <span class="mv-chip-unit">{widgets.movement.distanceUnit}</span>
                 </span>
               </div>
               <div class="mv-chip">
                 <span class="mv-chip-label">{widgets.movement.flights}</span>
                 <span class="mv-chip-value" data-mv-metric="flights">
-                  {flights}
+                  {view.flightsText}
                 </span>
               </div>
             </div>
@@ -272,7 +179,7 @@ function offset(circ: number, pct: number): number {
                 <span class="mv-swatch-label-short">{widgets.movement.caloriesShort}</span>
               </span>
               <span class="mv-legend-val" id="legendMove">
-                {moveVal}/{goals.moveKcal}
+                {view.legendMove}
               </span>
             </div>
             <div class="mv-legend-item">
@@ -282,7 +189,7 @@ function offset(circ: number, pct: number): number {
                 <span class="mv-swatch-label-short">{widgets.movement.exerciseShort}</span>
               </span>
               <span class="mv-legend-val" id="legendExercise">
-                {exerciseVal}/{goals.exerciseMin}
+                {view.legendExercise}
               </span>
             </div>
             <div class="mv-legend-item">
@@ -292,7 +199,7 @@ function offset(circ: number, pct: number): number {
                 <span class="mv-swatch-label-short">{widgets.movement.stand}</span>
               </span>
               <span class="mv-legend-val" id="legendStand">
-                {standHours}/{goals.standHr}
+                {view.legendStand}
               </span>
             </div>
           </div>
@@ -302,25 +209,31 @@ function offset(circ: number, pct: number): number {
                 ☀
               </span>
               <span class="mv-sun-time" id="mvSunrise">
-                {sunrise}
+                {view.sunrise}
               </span>
               <div class="mv-sun-track" role="img" aria-label={a11y.movement.daylight}>
                 <div class="mv-sun-track-line" />
-                <div class="mv-sun-dot" id="mvSunDot" style={`left: ${sunPct}%`} />
+                <div
+                  class="mv-sun-dot"
+                  id="mvSunDot"
+                  style={view.sunPct != null ? `left: ${view.sunPct}%` : 'display: none'}
+                />
               </div>
               <span class="mv-sun-time" id="mvSunset">
-                {sunset}
+                {view.sunset}
               </span>
               <span class="mv-sun-glyph mv-sun-glyph-moon" aria-hidden="true">
                 ☾
               </span>
             </div>
             <p class="mv-sun-caption">
-              <span id="mvDaylightMin">{daylightMin}</span>
+              <span id="mvDaylightMin">{view.daylightText}</span>
               {widgets.movement.daylightCaption.replace('{minutes}', '')} &middot;{' '}
-              {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}
+              <span id="mvDaylightGoal">
+                {widgets.movement.daylightGoal.replace('{minutes}', String(goals.daylightMin))}
+              </span>
               {/* Always in the DOM so the updater can toggle it as live daylight changes. */}
-              <span class="mv-sun-caption-hit" id="mvDaylightHit" hidden={!daylightHit}>
+              <span class="mv-sun-caption-hit" id="mvDaylightHit" hidden={!view.daylightHit}>
                 &#10003;
               </span>
             </p>
@@ -338,14 +251,15 @@ function offset(circ: number, pct: number): number {
     container-name: card-movement;
   }
 
-  .mv-empty {
+  /* Global: updateMovementRings writes the empty notice (movementEmptyHtml). */
+  :global(.mv-empty) {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: var(--space-48);
     padding: var(--lg-space-600) 0;
   }
-  .mv-empty-label {
+  :global(.mv-empty-label) {
     font-size: var(--lg-font-size-caption);
     color: var(--lg-color-text-muted);
     letter-spacing: 1px;

@@ -24,6 +24,10 @@ public struct NightSummaryView: View {
             NightSummaryEmptyView()
         case let .populated(props):
             NightSummaryPopulatedView(props: props)
+        case .unavailable:
+            WidgetStateNoticeCard(notice: .unavailable, title: nightSummaryCopy.title, accent: LGColor.accentPurple)
+        case .suppressed:
+            WidgetStateNoticeCard(notice: .suppressed, title: nightSummaryCopy.title, accent: LGColor.accentPurple)
         }
     }
 }
@@ -37,8 +41,20 @@ private struct PhaseInfo: Identifiable {
     let color: Color
 }
 
-private struct NightSummaryPopulatedView: View {
+struct NightSummaryPopulatedView: View {
     let props: NightSummaryProps
+
+    /// The score as display text, or the no-reading mark when no score was recorded.
+    static func scoreText(_ score: Int?) -> String {
+        NoReading.text(score)
+    }
+
+    /// The score bar's fill fraction, 0 for a missing score (an empty bar, mirroring
+    /// the web `scoreWidth`), clamped to 0...1.
+    static func scoreFraction(_ score: Int?) -> Double {
+        guard let score else { return 0 }
+        return min(max(Double(score), 0), 100) / 100.0
+    }
 
     private var phases: [PhaseInfo] {
         [
@@ -74,14 +90,16 @@ private struct NightSummaryPopulatedView: View {
                                         .frame(height: 4)
                                     Capsule()
                                         .fill(LGColor.accentPurple)
-                                        .frame(width: geo.size.width * Double(props.sleepScore) / 100.0, height: 4)
+                                        .frame(width: geo.size.width * Self.scoreFraction(props.sleepScore), height: 4)
                                 }
                             }
                             .frame(height: 4)
 
-                            Text("\(props.sleepScore)")
+                            let scoreValue = Self.scoreText(props.sleepScore)
+                            Text(scoreValue)
                                 .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                .foregroundStyle(LGColor.accentPurple)
+                                .foregroundStyle(props.sleepScore == nil ? LGColor.textMuted : LGColor.accentPurple)
+                                .noReadingAccessibility(scoreValue)
                         }
                     }
                 }
@@ -252,6 +270,18 @@ private struct NightSummaryEmptyView: View {
     .preferredColorScheme(.dark)
 }
 
+#Preview("Night Summary — No Score") {
+    NightSummaryView(props: NightSummaryProps(
+        sleepScore: nil, duration: "7h 24m",
+        deepFormatted: "1h 12m", remFormatted: "1h 48m",
+        coreFormatted: "3h 32m", awakeFormatted: "0h 52m",
+        deepPct: 16, remPct: 24
+    ))
+    .padding()
+    .background(LGColor.surfaceBase)
+    .preferredColorScheme(.dark)
+}
+
 #Preview("Night Summary — Loading") {
     NightSummaryView(state: .loading)
         .padding()
@@ -261,6 +291,20 @@ private struct NightSummaryEmptyView: View {
 
 #Preview("Night Summary — Empty") {
     NightSummaryView(state: .empty)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Night Summary — Unavailable") {
+    NightSummaryView(state: .unavailable)
+        .padding()
+        .background(LGColor.surfaceBase)
+        .preferredColorScheme(.dark)
+}
+
+#Preview("Night Summary — Suppressed") {
+    NightSummaryView(state: .suppressed)
         .padding()
         .background(LGColor.surfaceBase)
         .preferredColorScheme(.dark)

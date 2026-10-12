@@ -316,11 +316,6 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
               inner[n].classList.add('visible');
             }
           }
-          /* Issue 1: Workouts widget has hardcoded display:none — strip it */
-          var workouts = wrapper.querySelector('#cardWorkouts');
-          if (workouts) {
-            workouts.style.display = '';
-          }
           /* Issue 2: Hydration skeleton — remove is-loading so active state shows */
           var hydration = wrapper.querySelector('.tri-card.is-loading');
           if (hydration) {

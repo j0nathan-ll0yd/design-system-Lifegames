@@ -10,6 +10,8 @@ enum WorkoutsVariations {
         case fixture(String)
         case skeleton
         case empty
+        case unavailable
+        case suppressed
     }
 
     struct State: Identifiable {
@@ -28,6 +30,8 @@ enum WorkoutsVariations {
         .init(id: "multi-link", label: "Multi Link", kind: .fixture("workouts.multi-link")),
         .init(id: "skeleton", label: "Skeleton", kind: .skeleton),
         .init(id: "empty", label: "Empty", kind: .empty),
+        .init(id: "unavailable", label: "Unavailable", kind: .unavailable),
+        .init(id: "suppressed", label: "Suppressed", kind: .suppressed),
     ]
 
     static var entry: WidgetEntry {
@@ -50,6 +54,10 @@ enum WorkoutsVariations {
             WorkoutsView(state: .loading)
         case .empty:
             WorkoutsView(state: .empty)
+        case .unavailable:
+            WorkoutsView(state: .unavailable)
+        case .suppressed:
+            WorkoutsView(state: .suppressed)
         case let .fixture(name):
             if let data = FixtureLoader.data(category: "health", name: name),
                let props = Adapters.workouts(fromFixture: data)
