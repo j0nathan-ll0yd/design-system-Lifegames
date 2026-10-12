@@ -100,7 +100,7 @@ export const EXPORT_SURFACE_CONFORMANCE_SHA256 = 'c4a3d37b54c93626a60decbf878d66
  * which is exactly why the two numbers are independent: they moved for two different causes
  * and each says which.
  */
-export const EXPORT_EXTRACT_CONFORMANCE_SHA256 = '09ff0fe255c3e139ba9df1012be55dbb0073531cf0580a6a2ffbe58cc1bcfb64'
+export const EXPORT_EXTRACT_CONFORMANCE_SHA256 = 'ae3346d05eb24f1e4181ba45aa17e43c0a74bbf2e9204fae28c3cf7dbf0d2635'
 
 /**
  * The verdict-ladder contract version this engine implements — the DECISION (`decideVerdict`) and
@@ -4353,7 +4353,7 @@ function writeMutatedScript(id, dir) {
  * — so a mutation to any of those three would not reach the extractor's view of them. (Before the
  * migration off vendored copies the same asymmetry held for a different reason: the copy's adapter
  * re-exported from the PRISTINE engine.) No mutant in the table targets those three, and adding one
- * that does would need this noted; the extractor's own behaviour is pinned by the 39 shared extract
+ * that does would need this noted; the extractor's own behaviour is pinned by the 67 shared extract
  * vectors, not by this harness.
  */
 function absolutizeOwnImports(source) {
