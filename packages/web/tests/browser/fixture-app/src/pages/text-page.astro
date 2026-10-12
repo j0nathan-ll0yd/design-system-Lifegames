@@ -8,11 +8,11 @@ import { LINKS, SECTIONS } from '../lib/text-page';
 <DashboardShell title="Text page">
   <TextPage
     title="Fixture text page"
+    updated={{ label: 'Updated', date: 'October 2026', datetime: '2026-10-12' }}
     lede="Fixture lede paragraph."
     back={{ href: '/', label: 'Back' }}
     links={LINKS}
   >
-    <Fragment slot="meta">Updated <time>October 2026</time></Fragment>
     {
       SECTIONS.map((s) => (
         <TextPageSection heading={s.heading} id={s.id}>
@@ -25,7 +25,7 @@ import { LINKS, SECTIONS } from '../lib/text-page';
     <TextPageSection heading="Fixture list" id="list">
       <p>Fixture list intro.</p>
       <ul>
-        <li><strong>Label</strong> <a href="/">value</a><small>Fixture note</small></li>
+        <li><b>Label</b> <a href="/">value</a><small>Fixture note</small></li>
       </ul>
     </TextPageSection>
   </TextPage>

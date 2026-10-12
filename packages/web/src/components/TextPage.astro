@@ -1,9 +1,10 @@
 ---
 // Text-page layout (atlas decision 0158): one glass card with the page heading, an
-// optional meta line and lede, the page's sections in the default slot, and a footer of
-// page links. The consumer passes copy-driven strings and owns the document shell (head,
-// skip link). This component owns every style; the rules live in primitives.css, which
-// also turns viewport scrolling back on where a dashboard layout locks it.
+// optional last-updated line and lede, the page's sections in the default slot, and a
+// footer of page links. The consumer passes copy-driven strings and owns the document
+// shell (head, skip link). This component owns every style; the rules live in
+// primitives.css, which also turns viewport scrolling back on where a dashboard layout
+// locks it.
 import '../styles/primitives.css';
 
 interface TextPageLink {
@@ -16,6 +17,11 @@ interface TextPageLink {
 interface Props {
   /** Page heading, rendered as the page's only h1. */
   title: string;
+  /**
+   * Last-updated line under the heading: `label`, a space, then `date` in a <time>.
+   * `datetime` is the machine-readable ISO date for that <time>.
+   */
+  updated?: { label: string; date: string; datetime?: string };
   /** Intro paragraph, rendered before the default slot. */
   lede?: string;
   /** Footer link back to the home page. */
@@ -24,8 +30,7 @@ interface Props {
   links?: readonly TextPageLink[];
 }
 
-const { title, lede, back, links = [] } = Astro.props;
-const hasMeta = Astro.slots.has('meta');
+const { title, updated, lede, back, links = [] } = Astro.props;
 const hasFooter = back !== undefined || links.length > 0;
 ---
 
@@ -34,9 +39,10 @@ const hasFooter = back !== undefined || links.length > 0;
     <header class="lg-text-page-header">
       <h1 id="lg-text-page-title" class="lg-text-page-title">{title}</h1>
       {
-        hasMeta && (
+        updated && (
           <p class="lg-text-page-meta">
-            <slot name="meta" />
+            <span>{updated.label}</span>
+            <time datetime={updated.datetime}>{updated.date}</time>
           </p>
         )
       }

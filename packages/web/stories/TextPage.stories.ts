@@ -15,7 +15,7 @@ const meta: Meta = {
       <article class="lg-text-page-card" aria-labelledby="story-text-page-title">
         <header class="lg-text-page-header">
           <h1 id="story-text-page-title" class="lg-text-page-title">Page title</h1>
-          <p class="lg-text-page-meta">Last updated <time>October 2026</time></p>
+          <p class="lg-text-page-meta"><span>Last updated:</span> <time datetime="2026-10-12">October 2026</time></p>
         </header>
         <div class="lg-text-page-body">
           <p class="lg-text-page-lede">An intro paragraph that sets out what the page covers.</p>
@@ -30,7 +30,7 @@ const meta: Meta = {
             <h2 id="story-second-heading" class="lg-text-page-section-heading">Second section</h2>
             <div class="lg-text-page-section-body">
               <ul>
-                <li><strong>Label</strong> <a href="#">value</a><small>A note under the item.</small></li>
+                <li><b>Label</b> <a href="#">value</a><small>A note under the item.</small></li>
                 <li><a href="#">Another item</a><small>Its note.</small></li>
               </ul>
             </div>

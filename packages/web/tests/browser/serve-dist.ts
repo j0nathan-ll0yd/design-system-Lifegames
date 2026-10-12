@@ -15,7 +15,13 @@ export interface DistServer {
 
 export async function serveDist(): Promise<DistServer> {
   const server: Server = createServer(async (req, res) => {
-    const path = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname)
+    let path: string
+    try {
+      path = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname)
+    } catch {
+      res.statusCode = 400
+      return res.end()
+    }
     const file = normalize(join(DIST, path.endsWith('/') ? `${path}index.html` : path))
     if (!file.startsWith(DIST)) {
       res.statusCode = 403

@@ -1,6 +1,6 @@
 ---
 // One headed section of a TextPage. The default slot is the body: paragraphs, and lists
-// whose items may hold a <strong> label and a <small> note. TextPage's rules in
+// whose items may hold a <b> label and a <small> note. TextPage's rules in
 // primitives.css style those elements, so the consumer writes plain markup.
 import '../styles/primitives.css';
 
@@ -11,7 +11,9 @@ interface Props {
   id?: string;
 }
 
-const { heading, id } = Astro.props;
+const { heading } = Astro.props;
+// An empty string is no id: it would render an invalid id="" attribute.
+const id = Astro.props.id || undefined;
 const headingId = id ? `${id}-heading` : undefined;
 ---
 

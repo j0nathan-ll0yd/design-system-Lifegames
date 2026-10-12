@@ -16,7 +16,8 @@ import {afterAll, beforeAll, describe, expect, it} from 'vitest'
 import {type DistServer, serveDist} from './serve-dist'
 
 const DESKTOP = {width: 1400, height: 900}
-const MOBILE = {width: 390, height: 844}
+// A narrow desktop Chromium context: no isMobile or touch emulation.
+const NARROW = {width: 390, height: 844}
 const LAST_FOOTER_LINK = 'footer.lg-text-page-footer nav a:last-child'
 
 let server: DistServer
@@ -66,7 +67,7 @@ describe('TextPage scrolls under the dashboard lock', () => {
   for (
     const [name, viewport] of [
       ['desktop 1400x900', DESKTOP],
-      ['mobile 390x844', MOBILE]
+      ['narrow 390x844', NARROW]
     ] as const
   ) {
     it(`${name}: a mouse wheel brings the last footer link into view`, async () => {
@@ -107,6 +108,51 @@ describe('TextPage scrolls under the dashboard lock', () => {
       await page.waitForTimeout(500)
       expect(await page.evaluate(() => window.scrollY)).toBe(0)
       expect(await inViewport(page, '#control-last')).toBe(false)
+    } finally {
+      await page.close()
+    }
+  })
+
+  it('desktop 1400x900, no :has(): the shipped @supports fallback makes the page its own scroll box', async () => {
+    // Chromium supports :has(), so this test plays an older browser. It deletes every
+    // :has() rule, which is what a browser that cannot parse them does, then applies the
+    // body of the shipped `@supports not selector(:has(*))` block, which such a browser
+    // would match. Both come from the served stylesheet, not from this file.
+    const page = await open('/text-page/', DESKTOP)
+    try {
+      const fallback = await page.evaluate(() => {
+        const sheets = [...document.styleSheets]
+        const all = (list: CSSRuleList): CSSRule[] =>
+          [...list].flatMap((rule) => ('cssRules' in rule ? [rule, ...all((rule as CSSGroupingRule).cssRules)] : [rule]))
+        const supports = sheets.flatMap((sheet) => all(sheet.cssRules)).find((rule): rule is CSSSupportsRule =>
+          rule instanceof CSSSupportsRule && rule.conditionText.includes('selector(:has(')
+        )
+        if (!supports) {
+          return null
+        }
+        const body = [...supports.cssRules].map((rule) => rule.cssText).join('\n')
+        for (const sheet of sheets) {
+          for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+            const rule = sheet.cssRules[i]
+            if (rule instanceof CSSStyleRule && rule.selectorText.includes(':has(')) {
+              sheet.deleteRule(i)
+            }
+          }
+        }
+        return body
+      })
+      expect(fallback).toMatch(/\.lg-text-page/)
+
+      // Premise: with the :has() rules gone, the dashboard lock is back.
+      expect(await overflow(page)).toEqual({html: 'hidden', body: 'hidden'})
+
+      await page.addStyleTag({content: fallback!})
+      await wheelToBottom(page)
+      await page.waitForFunction((selector) => {
+        const box = document.querySelector(selector)!.getBoundingClientRect()
+        return box.bottom > 0 && box.top < window.innerHeight
+      }, LAST_FOOTER_LINK, {timeout: 5_000})
+      expect(await page.locator('.lg-text-page').evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
     } finally {
       await page.close()
     }
@@ -161,33 +207,76 @@ describe('TextPage renders its card at desktop 1400x900', () => {
     const styles = await page.evaluate(() => {
       const card = getComputedStyle(document.querySelector('.lg-text-page-card')!)
       const heading = getComputedStyle(document.querySelector('.lg-text-page-section-heading')!)
-      const root = getComputedStyle(document.documentElement)
+      // The token's own computed colour, from a probe, so a retuned token cannot red this test.
+      const probe = document.createElement('span')
+      probe.style.color = 'var(--lg-color-accent-cyan)'
+      document.body.append(probe)
+      const cyan = getComputedStyle(probe).color
+      probe.remove()
       return {
         maxWidth: card.maxWidth,
         borderTopStyle: card.borderTopStyle,
         background: card.backgroundColor,
         headingTransform: heading.textTransform,
         headingColor: heading.color,
-        cyan: root.getPropertyValue('--lg-color-accent-cyan').trim()
+        cyan
       }
     })
     expect(styles.maxWidth).toBe('720px')
     expect(styles.borderTopStyle).toBe('solid')
     expect(styles.background).not.toBe('rgba(0, 0, 0, 0)')
     expect(styles.headingTransform).toBe('uppercase')
-    expect(styles.cyan).toBe('#00d4ff')
-    expect(styles.headingColor).toBe('rgb(0, 212, 255)')
+    expect(styles.cyan).toMatch(/^rgb/)
+    expect(styles.headingColor).toBe(styles.cyan)
+  })
+
+  it('takes the prefers-contrast raise from a11y.css whichever stylesheet loads last', async () => {
+    const contrastPage = await browser.newPage({viewport: DESKTOP})
+    try {
+      await contrastPage.emulateMedia({contrast: 'more'})
+      await contrastPage.goto(`${server.baseUrl}/text-page/`)
+      const alpha = (rgba: string): number => {
+        const parts = rgba.match(/[\d.]+/g)!.map(Number)
+        return parts.length === 4 ? parts[3]! : 1
+      }
+      const cardBackground = () => contrastPage.locator('.lg-text-page-card').evaluate((el) => getComputedStyle(el).backgroundColor)
+
+      // The raise reaches the card: a11y.css's 0.85 black, far more opaque than the 0.05 default.
+      const raised = await cardBackground()
+      expect(alpha(raised)).toBeGreaterThan(0.5)
+
+      // Worst-case order: re-append the shipped default rule after every stylesheet, as if
+      // primitives.css loaded after a11y.css. At zero specificity it must still lose.
+      const appended = await contrastPage.evaluate(() => {
+        const all = (list: CSSRuleList): CSSRule[] =>
+          [...list].flatMap((rule) => ('cssRules' in rule ? [rule, ...all((rule as CSSGroupingRule).cssRules)] : [rule]))
+        const rule = [...document.styleSheets].flatMap((sheet) => all(sheet.cssRules)).find((r): r is CSSStyleRule =>
+          r instanceof CSSStyleRule && r.parentRule === null && r.style.getPropertyValue('--lg-card-background') !== ''
+        )
+        if (!rule) {
+          return null
+        }
+        const style = document.createElement('style')
+        style.textContent = rule.cssText
+        document.head.append(style)
+        return rule.selectorText
+      })
+      expect(appended).not.toBeNull()
+      expect(await cardBackground()).toBe(raised)
+    } finally {
+      await contrastPage.close()
+    }
   })
 
   it('styles a list item: no bullet, and the note on its own line', async () => {
     const list = await page.evaluate(() => {
       const ul = document.querySelector('#list ul')!
-      const strong = ul.querySelector('li > strong')!.getBoundingClientRect()
+      const label = ul.querySelector('li > b')!.getBoundingClientRect()
       const small = ul.querySelector('li > small')!
       return {
         listStyle: getComputedStyle(ul).listStyleType,
         noteDisplay: getComputedStyle(small).display,
-        noteBelowLabel: small.getBoundingClientRect().top >= strong.bottom
+        noteBelowLabel: small.getBoundingClientRect().top >= label.bottom
       }
     })
     expect(list).toEqual({listStyle: 'none', noteDisplay: 'block', noteBelowLabel: true})

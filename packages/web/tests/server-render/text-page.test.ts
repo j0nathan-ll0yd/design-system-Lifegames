@@ -66,14 +66,24 @@ describe('TextPage', () => {
     expect(without.querySelector('.lg-text-page-lede')).toBeNull()
   })
 
-  it('wraps the meta slot under the heading, and omits the wrapper when the slot is empty', async () => {
-    const withMeta = await render(TextPage, {title: 'T'}, {meta: 'Updated <time>July 2026</time>'})
-    const meta = withMeta.querySelector('.lg-text-page-header > p.lg-text-page-meta')!
-    expect(text(meta)).toBe('Updated July 2026')
-    expect(text(meta.querySelector('time'))).toBe('July 2026')
+  it('renders the last-updated line under the heading, with a space between label and date', async () => {
+    const doc = await render(TextPage, {title: 'T', updated: {label: 'Last updated:', date: 'July 2026', datetime: '2026-07-30'}})
 
+    const meta = doc.querySelector('.lg-text-page-header > p.lg-text-page-meta')!
+    // Astro drops whitespace between an expression and a following element, which is how a
+    // `{label} <time>` slot rendered "Last updated:July 2026". Hold the space in the output.
+    expect(text(meta)).toBe('Last updated: July 2026')
+    const time = meta.querySelector('time')!
+    expect(text(time)).toBe('July 2026')
+    expect(time.getAttribute('datetime')).toBe('2026-07-30')
+  })
+
+  it('omits the last-updated line when not passed, and the datetime attribute when not given', async () => {
     const without = await render(TextPage, {title: 'T'})
     expect(without.querySelector('.lg-text-page-meta')).toBeNull()
+
+    const noDatetime = await render(TextPage, {title: 'T', updated: {label: 'Updated', date: 'July 2026'}})
+    expect(noDatetime.querySelector('.lg-text-page-meta time')!.hasAttribute('datetime')).toBe(false)
   })
 
   it('renders the back link and the page links, and marks only the current page', async () => {
@@ -121,6 +131,15 @@ describe('TextPageSection', () => {
     expect(section.getAttribute('aria-labelledby')).toBe('api-heading')
     expect(section.hasAttribute('aria-label')).toBe(false)
     expect(text(doc.getElementById('api-heading'))).toBe('API')
+  })
+
+  it('treats an empty id as no id: no id="" attribute, and the aria-label branch', async () => {
+    const doc = await render(TextPageSection, {heading: 'Who', id: ''})
+
+    const section = doc.querySelector('section')!
+    expect(section.hasAttribute('id')).toBe(false)
+    expect(section.getAttribute('aria-label')).toBe('Who')
+    expect(section.querySelector('h2')!.hasAttribute('id')).toBe(false)
   })
 
   it('names the section by aria-label when no id is passed', async () => {

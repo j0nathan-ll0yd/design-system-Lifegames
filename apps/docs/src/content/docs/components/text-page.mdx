@@ -14,6 +14,7 @@ import { TextPage, TextPageSection } from '@j0nathan-ll0yd/web/components';
 
 <TextPage
   title={copy.title}
+  updated={{ label: copy.lastUpdatedLabel, date: copy.lastUpdated, datetime: copy.lastModified }}
   lede={copy.intro}
   back={{ href: '/', label: copy.backLink }}
   links={[
@@ -21,25 +22,27 @@ import { TextPage, TextPageSection } from '@j0nathan-ll0yd/web/components';
     { href: '/contact', label: copy.contactTitle },
   ]}
 >
-  <Fragment slot="meta">{copy.lastUpdatedLabel} <time>{copy.lastUpdated}</time></Fragment>
   <TextPageSection heading={copy.workHeading} id="work">
     <p>{copy.work}</p>
   </TextPageSection>
 </TextPage>
 ```
 
-Render `TextPage` inside the document shell (the website's `Dashboard.astro`). It renders `<main id="main-content">`, the skip-link target.
+Render `TextPage` inside the document shell (the website's `Dashboard.astro`), once per document. It renders `<main id="main-content">`, the skip-link target, and its heading carries a fixed id.
 
 ## TextPage props
 
-| Prop    | Type                                                            | Default | Description                                               |
-| ------- | --------------------------------------------------------------- | ------- | --------------------------------------------------------- |
-| `title` | `string`                                                        | --      | Page heading. Renders as the only `h1` and names the card |
-| `lede`  | `string`                                                        | --      | Intro paragraph before the sections                       |
-| `back`  | `{ href: string; label: string }`                               | --      | Footer link back to the home page                         |
-| `links` | `readonly { href: string; label: string; current?: boolean }[]` | `[]`    | Footer navigation. `current` sets `aria-current="page"`   |
+| Prop      | Type                                                            | Default | Description                                                                                      |
+| --------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `title`   | `string`                                                        | --      | Page heading. Renders as the only `h1` and names the card                                        |
+| `updated` | `{ label: string; date: string; datetime?: string }`            | --      | Last-updated line under the heading: `label`, a space, then `date` in a `<time>` with `datetime` |
+| `lede`    | `string`                                                        | --      | Intro paragraph before the sections                                                              |
+| `back`    | `{ href: string; label: string }`                               | --      | Footer link back to the home page                                                                |
+| `links`   | `readonly { href: string; label: string; current?: boolean }[]` | `[]`    | Footer navigation. `current` sets `aria-current="page"`                                          |
 
-Slots: the default slot holds the sections. The `meta` slot renders under the heading, for example a last-updated date. The footer renders only when `back` or `links` is set.
+The default slot holds the sections. The footer renders only when `back` or `links` is set.
+
+`updated` is a prop, not a slot, on purpose. Astro drops the whitespace between an expression and a following element, so markup such as `{label} <time>` renders `Last updated:June 2026`. The component writes the label and the date as two elements with a space between them.
 
 ## TextPageSection props
 
@@ -48,11 +51,11 @@ Slots: the default slot holds the sections. The `meta` slot renders under the he
 | `heading` | `string` | --      | Section heading, rendered as an `h2`                                                               |
 | `id`      | `string` | --      | Fragment target. The heading takes `${id}-heading` and names the section; without it, `aria-label` |
 
-The default slot is the section body. It styles `p`, `ul`, `li`, `a`, a `strong` label, and a `small` note inside a list item, so the consumer writes no classes.
+The default slot is the section body. It styles `p`, `ul`, `li`, `a`, a `b` label, and a `small` note inside a list item. Use `b`, not `strong`: a channel label is a keyword, not text of extra importance, so the consumer writes no classes.
 
 ## Scrolling
 
-The website's dashboard layout locks viewport scroll at 1100px and up (`html, body { overflow: hidden }`). `primitives.css` turns document scrolling back on for any page that renders `.lg-text-page`. It scopes the override with `html:has(.lg-text-page)`, so the stylesheet never unlocks the dashboard. Browsers without `:has()` (Firefox before 121) keep the lock.
+The website's dashboard layout locks viewport scroll at 1100px and up (`html, body { overflow: hidden }`). `primitives.css` turns document scrolling back on for any page that renders `.lg-text-page`. It scopes the override with `html:has(.lg-text-page)`, so the stylesheet never unlocks the dashboard. A browser without `:has()` (Firefox before 121, Safari before 15.4, Chrome before 105) keeps the lock. There an `@supports not selector(:has(*))` rule makes `.lg-text-page` a 100dvh scroll box, so the footer stays reachable.
 
 ## Accessibility
 
@@ -60,4 +63,4 @@ The website's dashboard layout locks viewport scroll at 1100px and up (`html, bo
 - The current page link carries `aria-current="page"`.
 - Colors and the card surface come from `--lg-card-*` tokens, which `a11y.css` raises under `prefers-contrast: more`.
 - The entrance animation runs only under `prefers-reduced-motion: no-preference`.
-- `a11y.css` gives the card an opaque background where `backdrop-filter` is unsupported.
+- The card turns opaque where `backdrop-filter` is unsupported.
