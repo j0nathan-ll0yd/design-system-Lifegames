@@ -100,6 +100,12 @@ jobs:
       # never regenerates it), so the unit suite runs in the same job as its subject.
       - name: Contract-lock model unit suite
         run: node --test packages/schemas/scripts/contract-lock.test.mjs
+      # validate.ts keys every schema through schemaUrn; a raw `urn:` key throws
+      # on fast-uri >= 3.1.6 in every consumer prebuild. The build below catches an
+      # invalid key end to end, but not a key site that bypasses the helper or a
+      # module missing from `files`, so this suite runs in CI, not only pre-push.
+      - name: Schema URN unit suite
+        run: node --test packages/schemas/scripts/schema-urn.test.mjs
       - run: pnpm check:schemas-freshness
       - name: Verify schema contract
         if: "!contains(github.event.pull_request.labels.*.name, 'skip-contract-check')"

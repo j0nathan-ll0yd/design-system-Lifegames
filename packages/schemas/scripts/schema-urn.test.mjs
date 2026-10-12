@@ -13,7 +13,9 @@ import {Ajv} from 'ajv'
 import {schemaUrn} from './schema-urn.mjs'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
-const TITLE = 'PinnedRepos Widget #1/ü?'
+// A space, URN-reserved characters, a non-ASCII letter and `~`, which
+// encodeURIComponent leaves raw but fast-uri's URN pattern rejects.
+const TITLE = 'PinnedRepos Widget #1/\u00fc?~'
 const schema = () => ({
   $schema: 'http://json-schema.org/draft-07/schema#',
   title: TITLE,
@@ -35,8 +37,8 @@ test('a title with a space and reserved characters registers and resolves by its
 test('the raw, unencoded URN throws on the fast-uri Ajv resolves (the pre-fix failure)', () => {
   const fastUriVersion = createRequire(createRequire(import.meta.url).resolve('ajv')).resolve('fast-uri/package.json')
   const version = JSON.parse(readFileSync(fastUriVersion, 'utf8')).version
-  const [major, minor, patch] = version.split('.').map(Number)
-  assert.ok(major > 3 || (major === 3 && (minor > 1 || patch >= 6)), `fast-uri ${version} predates the strict URN serializer`)
+  const [major, minor, patch] = version.split('-')[0].split('.').map(Number)
+  assert.ok(major > 3 || (major === 3 && (minor > 1 || (minor === 1 && patch >= 6))), `fast-uri ${version} predates the strict URN serializer`)
   const ajv = new Ajv({strict: false})
   assert.throws(() => ajv.addSchema(schema(), `urn:authored:${TITLE}`), /URN/)
 })
@@ -51,16 +53,29 @@ test('titles the old resolver truncated to one key stay distinct', () => {
 
 test('every schema key site builds its URN through schemaUrn', () => {
   for (const file of ['validate.ts', 'baseline-validate.mjs']) {
-    const source = readFileSync(join(HERE, file), 'utf8')
-    assert.doesNotMatch(source, /`urn:[a-z]+:\$\{/, `${file} builds a raw urn: key`)
-    assert.match(source, /from '\.\/schema-urn\.mjs'/, `${file} does not import schemaUrn`)
+    // Comment lines may name the namespaces; code may not spell a urn: string.
+    const code = readFileSync(join(HERE, file), 'utf8').split('\n').filter((line) => !line.trim().startsWith('//')).join('\n')
+    assert.doesNotMatch(code, /['"`]urn:/, `${file} builds a urn: key outside schemaUrn`)
+    assert.match(code, /from '\.\/schema-urn\.mjs'/, `${file} does not import schemaUrn`)
   }
 })
 
-test('the published package ships every module validate.ts imports', () => {
+test('the published package ships every module validate.ts reaches', () => {
   const pkg = JSON.parse(readFileSync(join(HERE, '../package.json'), 'utf8'))
-  const source = readFileSync(join(HERE, 'validate.ts'), 'utf8')
-  for (const [, rel] of source.matchAll(/from '\.\/([^']+)'/g)) {
-    assert.ok(pkg.files.includes(`scripts/${rel}`), `scripts/${rel} is imported by validate.ts but not listed in files`)
+  const seen = new Set()
+  const walk = (file) => {
+    if (seen.has(file)) {
+      return
+    }
+    seen.add(file)
+    const source = readFileSync(join(HERE, file), 'utf8')
+    for (const [, rel] of source.matchAll(/(?:from|import\()\s*['"]\.\/([^'"]+)['"]/g)) {
+      walk(rel)
+    }
   }
+  walk('validate.ts')
+  for (const file of seen) {
+    assert.ok(pkg.files.includes(`scripts/${file}`), `scripts/${file} is reached from validate.ts but not listed in files`)
+  }
+  assert.ok(seen.has('schema-urn.mjs'), 'validate.ts no longer reaches schema-urn.mjs')
 })
