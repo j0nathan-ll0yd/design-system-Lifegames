@@ -2376,14 +2376,15 @@
       }
     },
     "cachingBody": {
-      "value": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each data section of llms-full.txt states its own data-as-of date.",
+      "value": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, index.md, and the feeds are served with Cache-Control: no-store. Each data section of llms-full.txt states its own data-as-of date.",
       "_meta": {
-        "description": "Section body — when the LLM documents are recomposed and how each on-domain route is cached. Mirrors llm.full.freshnessNote and the website proxy cache policies (functions/_lib/proxy.ts).",
+        "description": "Section body — when the LLM documents are recomposed and how each on-domain route is cached. Mirrors llm.full.freshnessNote, the backend schedule (mantle-LifegamesPortal src/lambdas/eventbridge/ComposeLlmContent/index.ts, rate(30 minutes)), and the website proxy, which makes every gated route no-store, the feeds included (functions/_lib/proxy.ts, website PR #351).",
         "usage": ["web:src/pages/developers.astro (cachingBody)"],
         "register": "factual",
         "audience": "dual",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-12",
+        "rationale": "Corrected 2026-10-12: the value said \"The feeds allow a 60-second shared cache.\" Website PR #351 made the feeds no-store; live /feed.xml and /feed.json answer Cache-Control: no-store and CDN-Cache-Control: no-store (curl -sI, 2026-10-12)."
       }
     },
     "focusHeading": {

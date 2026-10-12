@@ -283,7 +283,7 @@
     "feedsHeading": "Feeds",
     "feedsBody": "{siteUrl}/feed.xml (RSS 2.0) and {siteUrl}/feed.json (JSON Feed) carry what Jonathan finishes and ships: theatre reviews, GitHub activity, starred repositories, finished books, and saved articles.",
     "cachingHeading": "Caching and freshness",
-    "cachingBody": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, and index.md are served with Cache-Control: no-store. The feeds allow a 60-second shared cache. Each data section of llms-full.txt states its own data-as-of date.",
+    "cachingBody": "The backend recomposes the LLM documents after every source update, with a 30-minute safety-net run. llms.txt, llms-full.txt, index.md, and the feeds are served with Cache-Control: no-store. Each data section of llms-full.txt states its own data-as-of date.",
     "focusHeading": "Focus suppression",
     "focusBody": "Some focus modes hide the public data. While one is active, each JSON export except focus.json answers HTTP 403 with a JSON body that states suppressed: true and carries no data. The on-domain llms.txt, llms-full.txt, index.md, and feeds answer HTTP 503 with a Retry-After header. The MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
     "usageHeading": "Usage terms",
