@@ -139,7 +139,7 @@ This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audi
 
 **Layout (atlas decision 0111 phase 2c).** Every audit runner sits under `audits/checks/`, id-prefixed
 (`d1-`, `d2-`, `d3-`, `d6-`, `c147-`); known-answer suites in `audits/__tests__/` carry their runner's
-id; repo-local check data in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
+id; repo-local check data and shared helpers in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
 catalog row over the whole `ci.yml#governance-gates` lane, so `d3-` prefixes all ten of that job's
 runners — the catalog registers the JOB, not a single script. `scripts/` keeps this repo's build and
 authoring tooling (token builds, generators, scaffolds, the worktree provisioner) plus two

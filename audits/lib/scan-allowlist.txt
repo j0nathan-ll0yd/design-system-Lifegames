@@ -266,6 +266,7 @@ apps/docs/src/pages/widgets/starred-repo-list.astro:marker:j0nathan-ll0yd
 apps/docs/src/pages/widgets/system-status.astro:marker:j0nathan-ll0yd
 apps/docs/src/pages/widgets/theatre-reviews.astro:marker:j0nathan-ll0yd
 apps/docs/src/pages/widgets/workouts.astro:marker:j0nathan-ll0yd
+apps/docs/src/pages/widgets/movement-rings.astro:marker:j0nathan-ll0yd
 apps/portfolio/src/components/DashboardShowcase.astro:marker:j0nathan-ll0yd
 apps/portfolio/src/pages/index.astro:marker:j0nathan-ll0yd
 apps/portfolio/src/pages/og-images.astro:marker:j0nathan-ll0yd
@@ -540,3 +541,8 @@ packages/web/src/runtime/widget-views.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/freshness.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/server-render/client-gaps.test.ts:marker:j0nathan-ll0yd
 .changeset/web-client-honest-states.md:marker:j0nathan-ll0yd
+# W13 variation-updater tests and the odometer fix: the leaderboard test imports
+# @j0nathan-ll0yd/copy, and the changeset names the @j0nathan-ll0yd/web package it
+# releases. The marker is the mandated GitHub Packages namespace, not personal data.
+packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nathan-ll0yd
+.changeset/odometer-city-and-day-count.md:marker:j0nathan-ll0yd

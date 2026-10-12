@@ -1,6 +1,8 @@
 import type {LocationExport} from './location-types'
 
-const TRACKING_START = new Date('2026-03-02T00:00:00').getTime()
+// Midnight 2 March 2026 in the owner's time zone (DISPLAY_TIME_ZONE, PST that
+// day). An offset-less string parses in the viewer's zone and shifts the count.
+const TRACKING_START = new Date('2026-03-02T00:00:00-08:00').getTime()
 
 export function initExplorationOdometerV3(container: HTMLElement, data: LocationExport): void {
   if (container.dataset.odoInit === '1') {

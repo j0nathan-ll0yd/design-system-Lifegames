@@ -10,8 +10,6 @@
     "BioTerminal",
     "IdentityCard",
     "NotFound",
-    "ExplorationOdometerV3",
-    "PlaceLeaderboardV3",
     "DndOverlay",
     "FocusOverlay",
     "SystemStatus",
@@ -266,5 +264,5 @@
       "plannedSurface": null
     }
   ],
-  "generatedAt": "2026-07-18T06:24:25.930Z"
+  "generatedAt": "2026-10-11T18:17:10.925Z"
 }
