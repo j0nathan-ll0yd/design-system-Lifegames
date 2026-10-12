@@ -546,3 +546,6 @@ packages/web/tests/server-render/client-gaps.test.ts:marker:j0nathan-ll0yd
 # releases. The marker is the mandated GitHub Packages namespace, not personal data.
 packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nathan-ll0yd
 .changeset/odometer-city-and-day-count.md:marker:j0nathan-ll0yd
+# The schemas URN-encoding fix: the changeset names the @j0nathan-ll0yd/schemas
+# package it releases. The marker is the mandated GitHub Packages namespace.
+.changeset/schemas-validate-urn-encoding.md:marker:j0nathan-ll0yd

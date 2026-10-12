@@ -29,3 +29,14 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+
+overrides:
+  # Security: fast-uri 3.x below 3.1.8 carries eight advisories (GHSA-4c8g-83qw-93j6,
+  # GHSA-v2hh-gcrm-f6hx, GHSA-7p8r-x3mc-p8w7, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf,
+  # GHSA-jqff-g426-hqxp, GHSA-qw65-cvwx-89v3, GHSA-hrr3-gc8f-f4qj). Pulled by ajv
+  # 8.20.0 (schemas, copy, fixtures, ajv-cli, workbox-build), whose `^3.0.1` already
+  # admits the fix, but `pnpm update --depth Infinity fast-uri` keeps the locked
+  # 3.1.2. 3.1.6+ rejects an invalid URN, so it is also the build-time proof that
+  # packages/schemas/scripts/schema-urn.mjs keys are valid. Drop once
+  # `pnpm why fast-uri` resolves >=3.1.8 without this entry.
+  fast-uri@<3.1.8: ^3.1.8
