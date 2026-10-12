@@ -425,8 +425,11 @@ html:has(.lg-text-page) body {
   overflow: visible;
 }
 
+/* 100vh first: Chrome before 108 and Safari before 15.4 lack dvh as well as
+   :has(), drop the dvh line, and would leave the page box unbounded. */
 @supports not selector(:has(*)) {
   .lg-text-page {
+    height: 100vh;
     height: 100dvh;
     overflow-y: auto;
   }

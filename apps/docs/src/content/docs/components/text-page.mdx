@@ -55,7 +55,7 @@ The default slot is the section body. It styles `p`, `ul`, `li`, `a`, a `b` labe
 
 ## Scrolling
 
-The website's dashboard layout locks viewport scroll at 1100px and up (`html, body { overflow: hidden }`). `primitives.css` turns document scrolling back on for any page that renders `.lg-text-page`. It scopes the override with `html:has(.lg-text-page)`, so the stylesheet never unlocks the dashboard. A browser without `:has()` (Firefox before 121, Safari before 15.4, Chrome before 105) keeps the lock. There an `@supports not selector(:has(*))` rule makes `.lg-text-page` a 100dvh scroll box, so the footer stays reachable.
+The website's dashboard layout locks viewport scroll at 1100px and up (`html, body { overflow: hidden }`). `primitives.css` turns document scrolling back on for any page that renders `.lg-text-page`. It scopes the override with `html:has(.lg-text-page)`, so the stylesheet never unlocks the dashboard. A browser without `:has()` (Firefox before 121, Safari before 15.4, Chrome before 105) keeps the lock. There an `@supports not selector(:has(*))` rule makes `.lg-text-page` a viewport-high scroll box, so the footer stays reachable. It sets `100vh` before `100dvh` for the browsers that also lack `dvh`.
 
 ## Accessibility
 

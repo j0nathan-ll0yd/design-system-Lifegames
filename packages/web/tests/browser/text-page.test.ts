@@ -113,50 +113,54 @@ describe('TextPage scrolls under the dashboard lock', () => {
     }
   })
 
-  it('desktop 1400x900, no :has(): the shipped @supports fallback makes the page its own scroll box', async () => {
-    // Chromium supports :has(), so this test plays an older browser. It deletes every
-    // :has() rule, which is what a browser that cannot parse them does, then applies the
-    // body of the shipped `@supports not selector(:has(*))` block, which such a browser
-    // would match. Both come from the served stylesheet, not from this file.
-    const page = await open('/text-page/', DESKTOP)
-    try {
-      const fallback = await page.evaluate(() => {
-        const sheets = [...document.styleSheets]
-        const all = (list: CSSRuleList): CSSRule[] =>
-          [...list].flatMap((rule) => ('cssRules' in rule ? [rule, ...all((rule as CSSGroupingRule).cssRules)] : [rule]))
-        const supports = sheets.flatMap((sheet) => all(sheet.cssRules)).find((rule): rule is CSSSupportsRule =>
-          rule instanceof CSSSupportsRule && rule.conditionText.includes('selector(:has(')
-        )
-        if (!supports) {
-          return null
-        }
-        const body = [...supports.cssRules].map((rule) => rule.cssText).join('\n')
-        for (const sheet of sheets) {
-          for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
-            const rule = sheet.cssRules[i]
-            if (rule instanceof CSSStyleRule && rule.selectorText.includes(':has(')) {
-              sheet.deleteRule(i)
+  // Chrome before 108 and Safari before 15.4 also lack dvh. They drop every dvh
+  // declaration, which is what the second pass does to the fallback body.
+  for (const dvh of [true, false]) {
+    it(`desktop 1400x900, no :has(), dvh ${dvh ? 'supported' : 'unsupported'}: the shipped @supports fallback makes the page its own scroll box`, async () => {
+      // Chromium supports :has(), so this test plays an older browser. It deletes every
+      // :has() rule, which is what a browser that cannot parse them does, then applies the
+      // body of the shipped `@supports not selector(:has(*))` block, which such a browser
+      // would match. Both come from the served stylesheet, not from this file.
+      const page = await open('/text-page/', DESKTOP)
+      try {
+        // Raw stylesheet text, not CSSOM: Chromium serializes only the last valid
+        // `height`, so the CSSOM never shows the 100vh line an older browser would use.
+        const fallback = await page.evaluate(async () => {
+          const texts = await Promise.all(
+            [...document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]')].map((link) => fetch(link.href).then((r) => r.text()))
+          )
+          texts.push(...[...document.querySelectorAll('style')].map((style) => style.textContent ?? ''))
+          const match = texts.join('\n').match(/@supports not selector\(:has\(\*\)\)\s*\{([\s\S]*?\})\s*\}/)
+          for (const sheet of [...document.styleSheets]) {
+            for (let i = sheet.cssRules.length - 1; i >= 0; i--) {
+              const rule = sheet.cssRules[i]
+              if (rule instanceof CSSStyleRule && rule.selectorText.includes(':has(')) {
+                sheet.deleteRule(i)
+              }
             }
           }
-        }
-        return body
-      })
-      expect(fallback).toMatch(/\.lg-text-page/)
+          return match ? match[1]! : null
+        })
+        expect(fallback).toMatch(/\.lg-text-page/)
+        expect(fallback).toMatch(/100vh/)
 
-      // Premise: with the :has() rules gone, the dashboard lock is back.
-      expect(await overflow(page)).toEqual({html: 'hidden', body: 'hidden'})
+        // Premise: with the :has() rules gone, the dashboard lock is back.
+        expect(await overflow(page)).toEqual({html: 'hidden', body: 'hidden'})
 
-      await page.addStyleTag({content: fallback!})
-      await wheelToBottom(page)
-      await page.waitForFunction((selector) => {
-        const box = document.querySelector(selector)!.getBoundingClientRect()
-        return box.bottom > 0 && box.top < window.innerHeight
-      }, LAST_FOOTER_LINK, {timeout: 5_000})
-      expect(await page.locator('.lg-text-page').evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
-    } finally {
-      await page.close()
-    }
-  })
+        const applied = dvh ? fallback! : fallback!.replace(/[^;{}]*dvh[^;{}]*;?/g, '')
+        expect(applied.includes('dvh')).toBe(dvh)
+        await page.addStyleTag({content: applied})
+        await wheelToBottom(page)
+        await page.waitForFunction((selector) => {
+          const box = document.querySelector(selector)!.getBoundingClientRect()
+          return box.bottom > 0 && box.top < window.innerHeight
+        }, LAST_FOOTER_LINK, {timeout: 5_000})
+        expect(await page.locator('.lg-text-page').evaluate((el) => el.scrollTop)).toBeGreaterThan(0)
+      } finally {
+        await page.close()
+      }
+    })
+  }
 })
 
 describe('TextPage renders its card at desktop 1400x900', () => {
