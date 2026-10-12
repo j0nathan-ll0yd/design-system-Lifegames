@@ -16,6 +16,7 @@
     "generated",
     "scripts/validate.ts",
     "scripts/portal-contract-source.mjs",
+    "scripts/schema-urn.mjs",
     "fixture-map.json"
   ],
   "scripts": {

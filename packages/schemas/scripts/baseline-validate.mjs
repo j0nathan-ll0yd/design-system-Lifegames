@@ -7,6 +7,7 @@ import addFormats from 'ajv-formats'
 import {readdirSync, readFileSync} from 'node:fs'
 import {join} from 'node:path'
 import {RAW_SCHEMAS_DIR} from './portal-contract-source.mjs'
+import {schemaUrn} from './schema-urn.mjs'
 
 const DS = '/Users/jlloyd/Repositories/design-system-Lifegames'
 const CONSUMER = '/Users/jlloyd/Repositories/j0nathan-ll0yd.github.io'
@@ -39,7 +40,7 @@ for (const f of authored) {
   const schema = JSON.parse(raw)
   const name = f.replace('.schema.json', '')
   authoredById[name] = schema
-  ajv.addSchema(schema, `urn:authored:${name}`)
+  ajv.addSchema(schema, schemaUrn('authored', name))
 }
 
 // Fixture mapping
@@ -71,7 +72,7 @@ for (const m of mapping) {
   if (m.schemaId) {
     validate = ajv.getSchema(m.schemaId)
   } else {
-    validate = ajv.getSchema(`urn:authored:${m.schema}`)
+    validate = ajv.getSchema(schemaUrn('authored', m.schema))
   }
   if (!validate) {
     results.push({...m, error: `SCHEMA_NOT_FOUND: ${m.schema || m.schemaId}`, mismatches: []})
@@ -130,7 +131,7 @@ for (const f of dsFixtures) {
     dsResults.push({...f, error: `READ_FAIL: ${e.message}`})
     continue
   }
-  const validate = ajv.getSchema(`urn:authored:${schema}`)
+  const validate = ajv.getSchema(schemaUrn('authored', schema))
   if (!validate) {
     dsResults.push({...f, error: `SCHEMA_NOT_FOUND: ${schema}`})
     continue
