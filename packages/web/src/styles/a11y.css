@@ -100,7 +100,8 @@
 /* ===== @SUPPORTS FALLBACKS ===== */
 @supports not (backdrop-filter: blur(1px)) {
   .lg-card,
-  .lg-modal {
+  .lg-modal,
+  .lg-text-page-card {
     background: rgba(6, 6, 15, 0.95);
   }
 }

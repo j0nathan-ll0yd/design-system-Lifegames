@@ -1,0 +1,32 @@
+---
+import DashboardShell from '../layouts/DashboardShell.astro';
+import TextPage from '../../../../../src/components/TextPage.astro';
+import TextPageSection from '../../../../../src/components/TextPageSection.astro';
+import { LINKS, SECTIONS } from '../lib/text-page';
+---
+
+<DashboardShell title="Text page">
+  <TextPage
+    title="Fixture text page"
+    lede="Fixture lede paragraph."
+    back={{ href: '/', label: 'Back' }}
+    links={LINKS}
+  >
+    <Fragment slot="meta">Updated <time>October 2026</time></Fragment>
+    {
+      SECTIONS.map((s) => (
+        <TextPageSection heading={s.heading} id={s.id}>
+          {s.paragraphs.map((p) => (
+            <p>{p}</p>
+          ))}
+        </TextPageSection>
+      ))
+    }
+    <TextPageSection heading="Fixture list" id="list">
+      <p>Fixture list intro.</p>
+      <ul>
+        <li><strong>Label</strong> <a href="/">value</a><small>Fixture note</small></li>
+      </ul>
+    </TextPageSection>
+  </TextPage>
+</DashboardShell>

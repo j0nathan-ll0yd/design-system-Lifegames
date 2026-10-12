@@ -1,0 +1,73 @@
+---
+// Text-page layout (atlas decision 0158): one glass card with the page heading, an
+// optional meta line and lede, the page's sections in the default slot, and a footer of
+// page links. The consumer passes copy-driven strings and owns the document shell (head,
+// skip link). This component owns every style; the rules live in primitives.css, which
+// also turns viewport scrolling back on where a dashboard layout locks it.
+import '../styles/primitives.css';
+
+interface TextPageLink {
+  href: string;
+  label: string;
+  /** True for the link to the page being rendered: it carries aria-current="page". */
+  current?: boolean;
+}
+
+interface Props {
+  /** Page heading, rendered as the page's only h1. */
+  title: string;
+  /** Intro paragraph, rendered before the default slot. */
+  lede?: string;
+  /** Footer link back to the home page. */
+  back?: { href: string; label: string };
+  /** Footer navigation between the text pages. */
+  links?: readonly TextPageLink[];
+}
+
+const { title, lede, back, links = [] } = Astro.props;
+const hasMeta = Astro.slots.has('meta');
+const hasFooter = back !== undefined || links.length > 0;
+---
+
+<main id="main-content" class="lg-text-page">
+  <article class="lg-text-page-card" aria-labelledby="lg-text-page-title">
+    <header class="lg-text-page-header">
+      <h1 id="lg-text-page-title" class="lg-text-page-title">{title}</h1>
+      {
+        hasMeta && (
+          <p class="lg-text-page-meta">
+            <slot name="meta" />
+          </p>
+        )
+      }
+    </header>
+    <div class="lg-text-page-body">
+      {lede && <p class="lg-text-page-lede">{lede}</p>}
+      <slot />
+    </div>
+    {
+      hasFooter && (
+        <footer class="lg-text-page-footer">
+          {back && (
+            <a href={back.href} class="lg-text-page-back">
+              {back.label}
+            </a>
+          )}
+          {links.length > 0 && (
+            <nav class="lg-text-page-nav">
+              {links.map((link) => (
+                <a
+                  href={link.href}
+                  class="lg-text-page-nav-link"
+                  aria-current={link.current ? 'page' : undefined}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          )}
+        </footer>
+      )
+    }
+  </article>
+</main>

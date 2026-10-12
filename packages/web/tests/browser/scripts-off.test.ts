@@ -9,14 +9,8 @@
 // runs in its own isolated world, so it still works with page JS off; the
 // sanity test below proves that rather than assuming it.
 import {type Browser, type BrowserContext, chromium, type Locator, type Page} from 'playwright'
-import {createServer, type Server} from 'node:http'
-import {readFile} from 'node:fs/promises'
-import {extname, join, normalize} from 'node:path'
-import {fileURLToPath} from 'node:url'
 import {afterAll, beforeAll, describe, expect, it} from 'vitest'
-
-const DIST = fileURLToPath(new URL('./fixture-app/dist/', import.meta.url))
-const MIME: Record<string, string> = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml'}
+import {type DistServer, serveDist} from './serve-dist'
 
 const WIDGETS = [
   {name: 'HeartRate', id: 'cardHR'},
@@ -34,37 +28,21 @@ const WIDGETS = [
 ] as const
 const VARIANTS = ['live', 'stale', 'empty', 'unavailable', 'suppressed', 'loading', 'unavailable-forced', 'suppressed-forced', 'loading-forced'] as const
 
-let server: Server
+let server: DistServer
 let baseUrl: string
 let browser: Browser
 let context: BrowserContext
 
 beforeAll(async () => {
-  server = createServer(async (req, res) => {
-    const path = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname)
-    const file = normalize(join(DIST, path.endsWith('/') ? `${path}index.html` : path))
-    if (!file.startsWith(DIST)) {
-      res.statusCode = 403
-      return res.end()
-    }
-    try {
-      res.setHeader('Content-Type', MIME[extname(file)] ?? 'application/octet-stream')
-      res.end(await readFile(file))
-    } catch {
-      res.statusCode = 404
-      res.end()
-    }
-  })
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
-  const address = server.address()
-  baseUrl = `http://127.0.0.1:${typeof address === 'object' && address ? address.port : 0}`
+  server = await serveDist()
+  baseUrl = server.baseUrl
   browser = await chromium.launch()
   context = await browser.newContext({javaScriptEnabled: false, viewport: {width: 420, height: 900}})
 }, 60_000)
 
 afterAll(async () => {
   await browser?.close()
-  await new Promise((resolve) => server?.close(resolve))
+  await server?.close()
 })
 
 async function open(widget: string, variant: string): Promise<Page> {

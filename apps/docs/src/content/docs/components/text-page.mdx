@@ -1,0 +1,63 @@
+---
+title: TextPage
+description: Text-page layout for the about, contact, developers, and privacy pages
+---
+
+`TextPage` renders one glass card with the page heading, an optional meta line and lede, the page's sections, and a footer of page links. `TextPageSection` renders one headed section inside it. The consumer passes copy-driven strings and plain markup. The components own every style.
+
+## Usage
+
+```astro
+---
+import { TextPage, TextPageSection } from '@j0nathan-ll0yd/web/components';
+---
+
+<TextPage
+  title={copy.title}
+  lede={copy.intro}
+  back={{ href: '/', label: copy.backLink }}
+  links={[
+    { href: '/about', label: copy.aboutTitle, current: true },
+    { href: '/contact', label: copy.contactTitle },
+  ]}
+>
+  <Fragment slot="meta">{copy.lastUpdatedLabel} <time>{copy.lastUpdated}</time></Fragment>
+  <TextPageSection heading={copy.workHeading} id="work">
+    <p>{copy.work}</p>
+  </TextPageSection>
+</TextPage>
+```
+
+Render `TextPage` inside the document shell (the website's `Dashboard.astro`). It renders `<main id="main-content">`, the skip-link target.
+
+## TextPage props
+
+| Prop    | Type                                                            | Default | Description                                               |
+| ------- | --------------------------------------------------------------- | ------- | --------------------------------------------------------- |
+| `title` | `string`                                                        | --      | Page heading. Renders as the only `h1` and names the card |
+| `lede`  | `string`                                                        | --      | Intro paragraph before the sections                       |
+| `back`  | `{ href: string; label: string }`                               | --      | Footer link back to the home page                         |
+| `links` | `readonly { href: string; label: string; current?: boolean }[]` | `[]`    | Footer navigation. `current` sets `aria-current="page"`   |
+
+Slots: the default slot holds the sections. The `meta` slot renders under the heading, for example a last-updated date. The footer renders only when `back` or `links` is set.
+
+## TextPageSection props
+
+| Prop      | Type     | Default | Description                                                                                        |
+| --------- | -------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `heading` | `string` | --      | Section heading, rendered as an `h2`                                                               |
+| `id`      | `string` | --      | Fragment target. The heading takes `${id}-heading` and names the section; without it, `aria-label` |
+
+The default slot is the section body. It styles `p`, `ul`, `li`, `a`, a `strong` label, and a `small` note inside a list item, so the consumer writes no classes.
+
+## Scrolling
+
+The website's dashboard layout locks viewport scroll at 1100px and up (`html, body { overflow: hidden }`). `primitives.css` turns document scrolling back on for any page that renders `.lg-text-page`. It scopes the override with `html:has(.lg-text-page)`, so the stylesheet never unlocks the dashboard. Browsers without `:has()` (Firefox before 121) keep the lock.
+
+## Accessibility
+
+- The card is an `article` named by its `h1`. Each section is a named region.
+- The current page link carries `aria-current="page"`.
+- Colors and the card surface come from `--lg-card-*` tokens, which `a11y.css` raises under `prefers-contrast: more`.
+- The entrance animation runs only under `prefers-reduced-motion: no-preference`.
+- `a11y.css` gives the card an opaque background where `backdrop-filter` is unsupported.
