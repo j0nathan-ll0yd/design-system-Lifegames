@@ -249,7 +249,7 @@ test('surface conformance: a wrong SURFACE_SPEC_VERSION short-circuits with exac
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EXTRACTOR conformance vectors (extract spec v2 — atlas decisions 0028 + 0030)
+// EXTRACTOR conformance vectors (extract spec v3 — atlas decisions 0028, 0030 and 0160)
 //
 // TWO FIXTURES, TWO NUMBERS, THREE CASE-ZEROS. `export-surface-conformance.json` above pins
 // the RULE, keyed by SURFACE_SPEC_VERSION; this one pins the EXTRACTOR, keyed by
@@ -280,8 +280,8 @@ test('extract conformance: THE CHURN ISOLATION — the two fixtures carry two IN
   assert.equal(extractConformance.specVersion, undefined, 'the EXTRACTOR fixture must not be keyed by the rule version')
 })
 
-test('extract conformance: all 39 shared vectors pass under the SHARED runner', () => {
-  assert.equal(extractConformance.cases.length, 39)
+test('extract conformance: all 67 shared vectors pass under the SHARED runner', () => {
+  assert.equal(extractConformance.cases.length, 67)
   const failures = runExtractConformance({
     fixture: extractConformance,
     extractSpecVersion: EXTRACT_SPEC_VERSION,
@@ -307,7 +307,7 @@ test('extract conformance: a wrong EXTRACT_SPEC_VERSION short-circuits with exac
     ts
   })
   assert.equal(failures.length, 1)
-  assert.match(failures[0], /^EXTRACT_SPEC_VERSION: implementation is 3, fixture is 2$/)
+  assert.match(failures[0], /^EXTRACT_SPEC_VERSION: implementation is 4, fixture is 3$/)
 })
 
 test('extract conformance: THE SET ITSELF IS PINNED — an implementation that widens it fails', () => {
@@ -331,7 +331,7 @@ test('extract conformance: THE SET ITSELF IS PINNED — an implementation that w
 
 test('extract conformance: THE TOOLCHAIN CASE-ZERO — a typescript OUTSIDE the verified set fails', () => {
   // X3/X7 applied to a DEPENDENCY. A version nobody measured can extract differently on a
-  // construct absent from these 39 vectors, pass its own conformance, and then disagree on a REAL
+  // construct absent from these 67 vectors, pass its own conformance, and then disagree on a REAL
   // verdict. The set is closed and measured; membership is what is asserted, not a range.
   const failures = runExtractConformance({
     fixture: extractConformance,
