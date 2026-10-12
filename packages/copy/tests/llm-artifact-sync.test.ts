@@ -77,7 +77,15 @@ describe('@j0nathan-ll0yd/copy llm endpoint/stream/data-source sync', () => {
     dataSourceRoles.set(stem, roles)
   }
 
-  /** Raw health exports no LLM-facing file may link (owner decision 2026-10-12). */
+  /**
+   * The LLM-channel policy, spelled literally so a reclassification turns this suite red (owner
+   * decision 2026-10-12, atlas decision 0158). Mirrors mantle-LifegamesPortal
+   * src/lib/llm-content/channelPolicy.ts LLM_CHANNEL_POLICY and the website's MCP resource list:
+   *   - AGENT_EXPOSED: exports LLM-facing files may link (llms.txt, llms-full.txt, MCP, WebMCP).
+   *   - AGENT_EXCLUDED: raw health exports no LLM-facing file may link; agents get them only as the
+   *     coarsened bands in llms-full.txt. The developer API (/openapi.json) still documents them.
+   */
+  const AGENT_EXPOSED = ['articles.json', 'books.json', 'focus.json', 'github-events.json', 'github-starred-repos.json', 'theatre-reviews.json']
   const AGENT_EXCLUDED = ['health.json', 'sleep.json', 'workouts.json']
 
   const endpointArtifacts = endpoints.map((row) => row.artifact)
@@ -111,6 +119,12 @@ describe('@j0nathan-ll0yd/copy llm endpoint/stream/data-source sync', () => {
       `${stem}: only ${[...roles].sort().join(', ')}`
     )
     expect(halfPairs).toEqual([])
+  })
+
+  it('the LLM-facing families link exactly the agent-exposed exports', () => {
+    expect([...endpointArtifacts].sort()).toEqual([...AGENT_EXPOSED].sort())
+    expect([...streamArtifacts].sort()).toEqual([...AGENT_EXPOSED].sort())
+    expect(AGENT_EXPOSED.filter((a) => AGENT_EXCLUDED.includes(a))).toEqual([])
   })
 
   it('no LLM-facing family links a raw health export', () => {
