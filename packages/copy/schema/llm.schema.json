@@ -32,15 +32,12 @@
         "liveIndexAlias",
         "canonicalHeading",
         "canonicalBody",
-        "endpointHealth",
-        "endpointSleep",
         "endpointFocus",
         "endpointGithubEvents",
         "endpointStarred",
         "endpointBooks",
         "endpointArticles",
         "endpointTheatre",
-        "endpointWorkouts",
         "technologyHeading",
         "technologyFramework",
         "technologyHosting",
@@ -111,12 +108,6 @@
         "canonicalBody": {
           "$ref": "#/$defs/CopyString"
         },
-        "endpointHealth": {
-          "$ref": "#/$defs/CopyLink"
-        },
-        "endpointSleep": {
-          "$ref": "#/$defs/CopyLink"
-        },
         "endpointFocus": {
           "$ref": "#/$defs/CopyLink"
         },
@@ -133,9 +124,6 @@
           "$ref": "#/$defs/CopyLink"
         },
         "endpointTheatre": {
-          "$ref": "#/$defs/CopyLink"
-        },
-        "endpointWorkouts": {
           "$ref": "#/$defs/CopyLink"
         },
         "technologyHeading": {
@@ -272,15 +260,12 @@
         "freshnessNote",
         "streamsHeading",
         "streamsBody",
-        "streamHealth",
-        "streamSleep",
         "streamFocus",
         "streamGithubEvents",
         "streamStarred",
         "streamBooks",
         "streamArticles",
-        "streamTheatre",
-        "streamWorkouts"
+        "streamTheatre"
       ],
       "properties": {
         "systemFraming": {
@@ -562,12 +547,6 @@
         "streamsBody": {
           "$ref": "#/$defs/CopyString"
         },
-        "streamHealth": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "streamSleep": {
-          "$ref": "#/$defs/CopyString"
-        },
         "streamFocus": {
           "$ref": "#/$defs/CopyString"
         },
@@ -584,9 +563,6 @@
           "$ref": "#/$defs/CopyString"
         },
         "streamTheatre": {
-          "$ref": "#/$defs/CopyString"
-        },
-        "streamWorkouts": {
           "$ref": "#/$defs/CopyString"
         }
       }

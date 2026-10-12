@@ -259,44 +259,15 @@
       }
     },
     "canonicalBody": {
-      "value": "The backend composes the markdown variants from these live JSON sources. LLMs that prefer raw machine-readable data can fetch them directly:",
+      "value": "The backend composes the markdown variants from live JSON sources. Health, sleep, and workouts reach agents only as coarsened bands in llms-full.txt. LLMs that prefer raw machine-readable data can fetch the other sources directly:",
       "_meta": {
         "description": "Canonical-JSON explanatory paragraph (static).",
         "usage": ["llms-txt.eta:22"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "endpointHealth": {
-      "value": {
-        "label": "health.json",
-        "url": "{cloudfrontBase}/health.json",
-        "notes": "biometrics (heart rate, HRV, activity, workouts)"
-      },
-      "_meta": {
-        "description": "health.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
-        "usage": ["llms-txt.eta:24"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "endpointSleep": {
-      "value": {
-        "label": "sleep.json",
-        "url": "{cloudfrontBase}/sleep.json",
-        "notes": "sleep phases and efficiency"
-      },
-      "_meta": {
-        "description": "sleep.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
-        "usage": ["llms-txt.eta:25"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-10-12",
+        "rationale": "Reworded 2026-10-12: with the health, sleep, and workouts links removed, \"from these live JSON sources\" would have read as the complete source list. Owner decision 2026-10-12 (atlas decision 0158, PR #288 checkpoint item 2): no LLM-facing file links the raw health.json, sleep.json, or workouts.json. This covers MCP, WebMCP, SKILL.md, llms.txt, and llms-full.txt. Developer documentation (/developers, /openapi.json) stays linkable."
       }
     },
     "endpointFocus": {
@@ -383,21 +354,6 @@
       "_meta": {
         "description": "theatre-reviews.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
         "usage": ["llms-txt.eta:31"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "endpointWorkouts": {
-      "value": {
-        "label": "workouts.json",
-        "url": "{cloudfrontBase}/workouts.json",
-        "notes": "workout sessions"
-      },
-      "_meta": {
-        "description": "workouts.json endpoint link + description. ICU MF1; consumer substitutes the CloudFront base URL.",
-        "usage": ["llms-txt.eta:32"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
@@ -850,14 +806,15 @@
       }
     },
     "bodyAggregateNote": {
-      "value": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. For dated raw values, see the JSON endpoints linked in the Streams section.",
+      "value": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. This document links no raw health values; the public data API is documented at\n{siteUrl}/developers.",
       "_meta": {
-        "description": "Body latest-export + privacy note (3 lines). Static — no ICU placeholder: the former {bodyEndingDate} substitution is REDUNDANT, not wrong. LP render.ts binds bodyDataAsOf from the same view.body.dataAsOf value, and full.bodyDataAsOf already publishes it one line earlier as '**Data as of:** {bodyDataAsOf}', so the note was restating a date the document states above it. (Historical note for anyone re-deriving this: before LP PR #356 the binding WAS the compose instant — view.ts endingDate: formatDate(inputs.composedAt) — and the reason to drop it was that it could not honestly date the values at all. #356 repointed it at the health export's own date, so the honesty objection is gone and only the duplication remains.) Newlines and em-dash preserved.",
-        "usage": ["llms-full.eta:53-55"],
+        "description": "Body latest-export + privacy note (4 lines). ICU MF1; the consumer substitutes {siteUrl} for the developer-page link. The former {bodyEndingDate} substitution is REDUNDANT, not wrong. LP render.ts binds bodyDataAsOf from the same view.body.dataAsOf value, and full.bodyDataAsOf already publishes it one line earlier as '**Data as of:** {bodyDataAsOf}', so the note was restating a date the document states above it. (Historical note for anyone re-deriving this: before LP PR #356 the binding WAS the compose instant — view.ts endingDate: formatDate(inputs.composedAt) — and the reason to drop it was that it could not honestly date the values at all. #356 repointed it at the health export's own date, so the honesty objection is gone and only the duplication remains.) Newlines and em-dash preserved.",
+        "usage": ["llms-full.eta:50"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-09-22"
+        "lastReviewed": "2026-10-12",
+        "rationale": "Reworded 2026-10-12: the last sentence said \"For dated raw values, see the JSON endpoints linked in the Streams section\", which sent agents to raw health values. It now points to the developer page for the public API. Owner decision 2026-10-12 (atlas decision 0158, PR #288 checkpoint item 2): no LLM-facing file links the raw health.json, sleep.json, or workouts.json. This covers MCP, WebMCP, SKILL.md, llms.txt, and llms-full.txt. Developer documentation (/developers, /openapi.json) stays linkable."
       }
     },
     "cardioHeading": {
@@ -1567,28 +1524,6 @@
         "lastReviewed": "2026-06-11"
       }
     },
-    "streamHealth": {
-      "value": "- {cloudfrontBase}/health.json — biometrics (heart rate, HRV, activity, workouts)",
-      "_meta": {
-        "description": "Streams — health.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
-        "usage": ["llms-full.eta:293"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "streamSleep": {
-      "value": "- {cloudfrontBase}/sleep.json — sleep phases and efficiency",
-      "_meta": {
-        "description": "Streams — sleep.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
-        "usage": ["llms-full.eta:294"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
     "streamFocus": {
       "value": "- {cloudfrontBase}/focus.json — focus / Do Not Disturb state",
       "_meta": {
@@ -1649,17 +1584,6 @@
       "_meta": {
         "description": "Streams — theatre-reviews.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
         "usage": ["llms-full.eta:300"],
-        "register": "machine",
-        "audience": "machine",
-        "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
-      }
-    },
-    "streamWorkouts": {
-      "value": "- {cloudfrontBase}/workouts.json — workout sessions",
-      "_meta": {
-        "description": "Streams — workouts.json endpoint + description. ICU MF1; consumer substitutes the CloudFront base URL. Em-dash preserved.",
-        "usage": ["llms-full.eta:301"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",

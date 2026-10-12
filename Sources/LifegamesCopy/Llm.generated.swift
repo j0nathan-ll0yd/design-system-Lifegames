@@ -393,14 +393,13 @@ public struct LlmFull: Codable, Sendable {
     public let sleepEfficiencyLabel, sleepEmpty, sleepHeading, sleepRemLabel: String
     public let sleepTotalLabel, starredDataAsOf, starredEmpty, starredHeading: String
     public let starredSummary, starredTopics, streamArticles, streamBooks: String
-    public let streamFocus, streamGithubEvents, streamHealth, streamsBody: String
-    public let streamsHeading, streamSleep, streamStarred, streamTheatre: String
-    public let streamWorkouts, systemFraming, systemHeading, theatreByLine: String
-    public let theatreDataAsOf, theatreEmpty, theatreHeading, theatreSource: String
-    public let titleHeading, workoutsActivityTypes, workoutsAvgDuration, workoutsAvgEnergy: String
-    public let workoutsEmpty, workoutsHeading: String
+    public let streamFocus, streamGithubEvents, streamsBody, streamsHeading: String
+    public let streamStarred, streamTheatre, systemFraming, systemHeading: String
+    public let theatreByLine, theatreDataAsOf, theatreEmpty, theatreHeading: String
+    public let theatreSource, titleHeading, workoutsActivityTypes, workoutsAvgDuration: String
+    public let workoutsAvgEnergy, workoutsEmpty, workoutsHeading: String
 
-    public init(activityHeading: String, articlesColumns: String, articlesDataAsOf: String, articlesEmpty: String, articlesHeading: String, bodyAggregateNote: String, bodyDataAsOf: String, bodyHeading: String, bookshelfByAuthor: String, bookshelfDataAsOf: String, bookshelfEmpty: String, bookshelfFinishedHeading: String, bookshelfHeading: String, bookshelfIsbnLabel: String, bookshelfNotesLabel: String, bookshelfReadingHeading: String, bookshelfStatAvgRating: String, bookshelfStatBooksRead: String, bookshelfStatReading: String, bookshelfStatsHeading: String, bookshelfStatUpNext: String, bookshelfUpNextHeading: String, cardioColumns: String, cardioEmpty: String, cardioHeading: String, cardioHrvLabel: String, cardioRestingLabel: String, contentsBody: String, contentsHeading: String, contentsMind: String, contentsProfile: String, contentsStreams: String, contentsSystem: String, expertiseHeading: String, freshnessColumns: String, freshnessHeading: String, freshnessNote: String, githubActiveRepos: String, githubDataAsOf: String, githubEmpty: String, githubHeading: String, githubRecentCommitsHeading: String, githubRecentEvents: String, githubRecentPrsHeading: String, githubStarredCount: String, hydrationCaffeine: String, hydrationHeading: String, hydrationWater: String, intro: String, linkGithub: String, linkLinkedin: String, linksHeading: String, linkSite: String, metaGenerated: String, metaLastUpdated: String, metaSource: String, mindHeading: String, profileBio: String, profileCurrentFocus: String, profileExperience: String, profileHeading: String, profileInterests: String, profileLocation: String, profileNameLine: String, profilePhilosophy: String, profileSkills: String, sleepColumns: String, sleepDeepLabel: String, sleepEfficiencyLabel: String, sleepEmpty: String, sleepHeading: String, sleepRemLabel: String, sleepTotalLabel: String, starredDataAsOf: String, starredEmpty: String, starredHeading: String, starredSummary: String, starredTopics: String, streamArticles: String, streamBooks: String, streamFocus: String, streamGithubEvents: String, streamHealth: String, streamsBody: String, streamsHeading: String, streamSleep: String, streamStarred: String, streamTheatre: String, streamWorkouts: String, systemFraming: String, systemHeading: String, theatreByLine: String, theatreDataAsOf: String, theatreEmpty: String, theatreHeading: String, theatreSource: String, titleHeading: String, workoutsActivityTypes: String, workoutsAvgDuration: String, workoutsAvgEnergy: String, workoutsEmpty: String, workoutsHeading: String) {
+    public init(activityHeading: String, articlesColumns: String, articlesDataAsOf: String, articlesEmpty: String, articlesHeading: String, bodyAggregateNote: String, bodyDataAsOf: String, bodyHeading: String, bookshelfByAuthor: String, bookshelfDataAsOf: String, bookshelfEmpty: String, bookshelfFinishedHeading: String, bookshelfHeading: String, bookshelfIsbnLabel: String, bookshelfNotesLabel: String, bookshelfReadingHeading: String, bookshelfStatAvgRating: String, bookshelfStatBooksRead: String, bookshelfStatReading: String, bookshelfStatsHeading: String, bookshelfStatUpNext: String, bookshelfUpNextHeading: String, cardioColumns: String, cardioEmpty: String, cardioHeading: String, cardioHrvLabel: String, cardioRestingLabel: String, contentsBody: String, contentsHeading: String, contentsMind: String, contentsProfile: String, contentsStreams: String, contentsSystem: String, expertiseHeading: String, freshnessColumns: String, freshnessHeading: String, freshnessNote: String, githubActiveRepos: String, githubDataAsOf: String, githubEmpty: String, githubHeading: String, githubRecentCommitsHeading: String, githubRecentEvents: String, githubRecentPrsHeading: String, githubStarredCount: String, hydrationCaffeine: String, hydrationHeading: String, hydrationWater: String, intro: String, linkGithub: String, linkLinkedin: String, linksHeading: String, linkSite: String, metaGenerated: String, metaLastUpdated: String, metaSource: String, mindHeading: String, profileBio: String, profileCurrentFocus: String, profileExperience: String, profileHeading: String, profileInterests: String, profileLocation: String, profileNameLine: String, profilePhilosophy: String, profileSkills: String, sleepColumns: String, sleepDeepLabel: String, sleepEfficiencyLabel: String, sleepEmpty: String, sleepHeading: String, sleepRemLabel: String, sleepTotalLabel: String, starredDataAsOf: String, starredEmpty: String, starredHeading: String, starredSummary: String, starredTopics: String, streamArticles: String, streamBooks: String, streamFocus: String, streamGithubEvents: String, streamsBody: String, streamsHeading: String, streamStarred: String, streamTheatre: String, systemFraming: String, systemHeading: String, theatreByLine: String, theatreDataAsOf: String, theatreEmpty: String, theatreHeading: String, theatreSource: String, titleHeading: String, workoutsActivityTypes: String, workoutsAvgDuration: String, workoutsAvgEnergy: String, workoutsEmpty: String, workoutsHeading: String) {
         self.activityHeading = activityHeading
         self.articlesColumns = articlesColumns
         self.articlesDataAsOf = articlesDataAsOf
@@ -483,13 +482,10 @@ public struct LlmFull: Codable, Sendable {
         self.streamBooks = streamBooks
         self.streamFocus = streamFocus
         self.streamGithubEvents = streamGithubEvents
-        self.streamHealth = streamHealth
         self.streamsBody = streamsBody
         self.streamsHeading = streamsHeading
-        self.streamSleep = streamSleep
         self.streamStarred = streamStarred
         self.streamTheatre = streamTheatre
-        self.streamWorkouts = streamWorkouts
         self.systemFraming = systemFraming
         self.systemHeading = systemHeading
         self.theatreByLine = theatreByLine
@@ -607,13 +603,10 @@ public extension LlmFull {
         streamBooks: String? = nil,
         streamFocus: String? = nil,
         streamGithubEvents: String? = nil,
-        streamHealth: String? = nil,
         streamsBody: String? = nil,
         streamsHeading: String? = nil,
-        streamSleep: String? = nil,
         streamStarred: String? = nil,
         streamTheatre: String? = nil,
-        streamWorkouts: String? = nil,
         systemFraming: String? = nil,
         systemHeading: String? = nil,
         theatreByLine: String? = nil,
@@ -711,13 +704,10 @@ public extension LlmFull {
             streamBooks: streamBooks ?? self.streamBooks,
             streamFocus: streamFocus ?? self.streamFocus,
             streamGithubEvents: streamGithubEvents ?? self.streamGithubEvents,
-            streamHealth: streamHealth ?? self.streamHealth,
             streamsBody: streamsBody ?? self.streamsBody,
             streamsHeading: streamsHeading ?? self.streamsHeading,
-            streamSleep: streamSleep ?? self.streamSleep,
             streamStarred: streamStarred ?? self.streamStarred,
             streamTheatre: streamTheatre ?? self.streamTheatre,
-            streamWorkouts: streamWorkouts ?? self.streamWorkouts,
             systemFraming: systemFraming ?? self.systemFraming,
             systemHeading: systemHeading ?? self.systemHeading,
             theatreByLine: theatreByLine ?? self.theatreByLine,
@@ -1027,8 +1017,7 @@ public struct LlmTxt: Codable, Sendable {
     public let canonicalBody: String
     public let canonicalHeading: String
     public let endpointArticles, endpointBooks, endpointFocus, endpointGithubEvents: LlmLink
-    public let endpointHealth, endpointSleep, endpointStarred, endpointTheatre: LlmLink
-    public let endpointWorkouts: LlmLink
+    public let endpointStarred, endpointTheatre: LlmLink
     public let expertiseHeading: String
     public let linkGithub, linkLinkedin, linkSite, linkSourceRepo: LlmLink
     public let liveBody: String
@@ -1048,14 +1037,14 @@ public struct LlmTxt: Codable, Sendable {
     public let whenToUseMCP, wikiArchitecture, wikiBrand, wikiSpec: LlmLink
 
     public enum CodingKeys: String, CodingKey {
-        case aboutBody, aboutHeading, canonicalBody, canonicalHeading, endpointArticles, endpointBooks, endpointFocus, endpointGithubEvents, endpointHealth, endpointSleep, endpointStarred, endpointTheatre, endpointWorkouts, expertiseHeading, linkGithub, linkLinkedin, linkSite, linkSourceRepo, liveBody, liveFullDump, liveHeading, liveIndexAlias, optionalBody, optionalHeading, technologyDesign, technologyFramework, technologyHeading, technologyHosting, technologyLiveData, titleHeading
+        case aboutBody, aboutHeading, canonicalBody, canonicalHeading, endpointArticles, endpointBooks, endpointFocus, endpointGithubEvents, endpointStarred, endpointTheatre, expertiseHeading, linkGithub, linkLinkedin, linkSite, linkSourceRepo, liveBody, liveFullDump, liveHeading, liveIndexAlias, optionalBody, optionalHeading, technologyDesign, technologyFramework, technologyHeading, technologyHosting, technologyLiveData, titleHeading
         case whenToUseAPI = "whenToUseApi"
         case whenToUseBody, whenToUseDevelopers, whenToUseFull, whenToUseHeading
         case whenToUseMCP = "whenToUseMcp"
         case wikiArchitecture, wikiBrand, wikiSpec
     }
 
-    public init(aboutBody: String, aboutHeading: String, canonicalBody: String, canonicalHeading: String, endpointArticles: LlmLink, endpointBooks: LlmLink, endpointFocus: LlmLink, endpointGithubEvents: LlmLink, endpointHealth: LlmLink, endpointSleep: LlmLink, endpointStarred: LlmLink, endpointTheatre: LlmLink, endpointWorkouts: LlmLink, expertiseHeading: String, linkGithub: LlmLink, linkLinkedin: LlmLink, linkSite: LlmLink, linkSourceRepo: LlmLink, liveBody: String, liveFullDump: LlmLink, liveHeading: String, liveIndexAlias: LlmLink, optionalBody: String, optionalHeading: String, technologyDesign: String, technologyFramework: String, technologyHeading: String, technologyHosting: String, technologyLiveData: String, titleHeading: String, whenToUseAPI: LlmLink, whenToUseBody: String, whenToUseDevelopers: LlmLink, whenToUseFull: LlmLink, whenToUseHeading: String, whenToUseMCP: LlmLink, wikiArchitecture: LlmLink, wikiBrand: LlmLink, wikiSpec: LlmLink) {
+    public init(aboutBody: String, aboutHeading: String, canonicalBody: String, canonicalHeading: String, endpointArticles: LlmLink, endpointBooks: LlmLink, endpointFocus: LlmLink, endpointGithubEvents: LlmLink, endpointStarred: LlmLink, endpointTheatre: LlmLink, expertiseHeading: String, linkGithub: LlmLink, linkLinkedin: LlmLink, linkSite: LlmLink, linkSourceRepo: LlmLink, liveBody: String, liveFullDump: LlmLink, liveHeading: String, liveIndexAlias: LlmLink, optionalBody: String, optionalHeading: String, technologyDesign: String, technologyFramework: String, technologyHeading: String, technologyHosting: String, technologyLiveData: String, titleHeading: String, whenToUseAPI: LlmLink, whenToUseBody: String, whenToUseDevelopers: LlmLink, whenToUseFull: LlmLink, whenToUseHeading: String, whenToUseMCP: LlmLink, wikiArchitecture: LlmLink, wikiBrand: LlmLink, wikiSpec: LlmLink) {
         self.aboutBody = aboutBody
         self.aboutHeading = aboutHeading
         self.canonicalBody = canonicalBody
@@ -1064,11 +1053,8 @@ public struct LlmTxt: Codable, Sendable {
         self.endpointBooks = endpointBooks
         self.endpointFocus = endpointFocus
         self.endpointGithubEvents = endpointGithubEvents
-        self.endpointHealth = endpointHealth
-        self.endpointSleep = endpointSleep
         self.endpointStarred = endpointStarred
         self.endpointTheatre = endpointTheatre
-        self.endpointWorkouts = endpointWorkouts
         self.expertiseHeading = expertiseHeading
         self.linkGithub = linkGithub
         self.linkLinkedin = linkLinkedin
@@ -1125,11 +1111,8 @@ public extension LlmTxt {
         endpointBooks: LlmLink? = nil,
         endpointFocus: LlmLink? = nil,
         endpointGithubEvents: LlmLink? = nil,
-        endpointHealth: LlmLink? = nil,
-        endpointSleep: LlmLink? = nil,
         endpointStarred: LlmLink? = nil,
         endpointTheatre: LlmLink? = nil,
-        endpointWorkouts: LlmLink? = nil,
         expertiseHeading: String? = nil,
         linkGithub: LlmLink? = nil,
         linkLinkedin: LlmLink? = nil,
@@ -1166,11 +1149,8 @@ public extension LlmTxt {
             endpointBooks: endpointBooks ?? self.endpointBooks,
             endpointFocus: endpointFocus ?? self.endpointFocus,
             endpointGithubEvents: endpointGithubEvents ?? self.endpointGithubEvents,
-            endpointHealth: endpointHealth ?? self.endpointHealth,
-            endpointSleep: endpointSleep ?? self.endpointSleep,
             endpointStarred: endpointStarred ?? self.endpointStarred,
             endpointTheatre: endpointTheatre ?? self.endpointTheatre,
-            endpointWorkouts: endpointWorkouts ?? self.endpointWorkouts,
             expertiseHeading: expertiseHeading ?? self.expertiseHeading,
             linkGithub: linkGithub ?? self.linkGithub,
             linkLinkedin: linkLinkedin ?? self.linkLinkedin,

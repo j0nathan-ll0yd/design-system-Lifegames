@@ -72,12 +72,6 @@
         "canonicalBody": {
           "type": "string"
         },
-        "endpointHealth": {
-          "$ref": "#/$defs/LlmLink"
-        },
-        "endpointSleep": {
-          "$ref": "#/$defs/LlmLink"
-        },
         "endpointFocus": {
           "$ref": "#/$defs/LlmLink"
         },
@@ -94,9 +88,6 @@
           "$ref": "#/$defs/LlmLink"
         },
         "endpointTheatre": {
-          "$ref": "#/$defs/LlmLink"
-        },
-        "endpointWorkouts": {
           "$ref": "#/$defs/LlmLink"
         },
         "technologyHeading": {
@@ -156,15 +147,12 @@
         "liveIndexAlias",
         "canonicalHeading",
         "canonicalBody",
-        "endpointHealth",
-        "endpointSleep",
         "endpointFocus",
         "endpointGithubEvents",
         "endpointStarred",
         "endpointBooks",
         "endpointArticles",
         "endpointTheatre",
-        "endpointWorkouts",
         "technologyHeading",
         "technologyFramework",
         "technologyHosting",
@@ -463,12 +451,6 @@
         "streamsBody": {
           "type": "string"
         },
-        "streamHealth": {
-          "type": "string"
-        },
-        "streamSleep": {
-          "type": "string"
-        },
         "streamFocus": {
           "type": "string"
         },
@@ -485,9 +467,6 @@
           "type": "string"
         },
         "streamTheatre": {
-          "type": "string"
-        },
-        "streamWorkouts": {
           "type": "string"
         }
       },
@@ -585,15 +564,12 @@
         "freshnessNote",
         "streamsHeading",
         "streamsBody",
-        "streamHealth",
-        "streamSleep",
         "streamFocus",
         "streamGithubEvents",
         "streamStarred",
         "streamBooks",
         "streamArticles",
-        "streamTheatre",
-        "streamWorkouts"
+        "streamTheatre"
       ],
       "additionalProperties": false
     },

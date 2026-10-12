@@ -109,14 +109,16 @@ const NAMESPACES: NamespaceFixture[] = [
   {name: 'profile', expectedLeaves: 6},
   // errors: validation 2 + client 2.
   {name: 'errors', expectedLeaves: 4},
-  // llm: txt 39 + full 102 + dashboard 3 + mcp 32 + agentDiscovery 6 + developers 20 + notFound 6.
+  // llm: txt 36 + full 99 + dashboard 3 + mcp 32 + agentDiscovery 6 + developers 21 + notFound 6.
   //   atlas decision 0158: txt gained linkSourceRepo + the When-to-use heading/body/4 links, mcp
   //   gained serverTitle/serverCardDescription, agentDiscovery lost the 7 orphaned A2A leaves, and
   //   developers (title/metaDescription/intro/apiSuppressedResponse + 8 heading/body
   //   pairs) and notFound are new.
   //   developers gained lastModified (the sitemap <lastmod> date). mcp gained coarsenedBandDesc
   //   (the get_data_sources description for health, sleep, and workouts).
-  {name: 'llm', expectedLeaves: 209}
+  //   Owner decision 2026-10-12: txt lost endpointHealth/endpointSleep/endpointWorkouts and full
+  //   lost streamHealth/streamSleep/streamWorkouts — no LLM-facing file links the raw health exports.
+  {name: 'llm', expectedLeaves: 203}
 ]
 
 for (const ns of NAMESPACES) {
@@ -201,7 +203,7 @@ describe('@j0nathan-ll0yd/copy llm txt surface', () => {
   it('every txt link ships as {label, url} fields', () => {
     const txt = (readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: Record<string, unknown>}).txt
     const links = Object.entries(txt).filter(([, v]) => v !== null && typeof v === 'object')
-    expect(links.length).toBe(22)
+    expect(links.length).toBe(19)
     for (const [key, value] of links) {
       expect({key, ...(value as object)}).toMatchObject({key, label: expect.any(String), url: expect.any(String)})
     }

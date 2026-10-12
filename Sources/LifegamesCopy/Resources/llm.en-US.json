@@ -55,17 +55,7 @@
       "notes": "Markdown alias of llms-full.txt for agents expecting .md extensions"
     },
     "canonicalHeading": "Canonical JSON",
-    "canonicalBody": "The backend composes the markdown variants from these live JSON sources. LLMs that prefer raw machine-readable data can fetch them directly:",
-    "endpointHealth": {
-      "label": "health.json",
-      "url": "{cloudfrontBase}/health.json",
-      "notes": "biometrics (heart rate, HRV, activity, workouts)"
-    },
-    "endpointSleep": {
-      "label": "sleep.json",
-      "url": "{cloudfrontBase}/sleep.json",
-      "notes": "sleep phases and efficiency"
-    },
+    "canonicalBody": "The backend composes the markdown variants from live JSON sources. Health, sleep, and workouts reach agents only as coarsened bands in llms-full.txt. LLMs that prefer raw machine-readable data can fetch the other sources directly:",
     "endpointFocus": {
       "label": "focus.json",
       "url": "{cloudfrontBase}/focus.json",
@@ -95,11 +85,6 @@
       "label": "theatre-reviews.json",
       "url": "{cloudfrontBase}/theatre-reviews.json",
       "notes": "theatre reviews"
-    },
-    "endpointWorkouts": {
-      "label": "workouts.json",
-      "url": "{cloudfrontBase}/workouts.json",
-      "notes": "workout sessions"
     },
     "technologyHeading": "Technology",
     "technologyFramework": "- Framework: Astro (static site generation, 0 KB JS by default)",
@@ -154,7 +139,7 @@
     "linkLinkedin": "- LinkedIn: {profileLinkedin}",
     "bodyHeading": "## Body '{#body}'",
     "bodyDataAsOf": "**Data as of:** {bodyDataAsOf}",
-    "bodyAggregateNote": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. For dated raw values, see the JSON endpoints linked in the Streams section.",
+    "bodyAggregateNote": "Each body metric is a single value from the latest export — never an average over a\nwindow. Values are summarised as ranges, shares, or goal status rather than published\nraw. This document links no raw health values; the public data API is documented at\n{siteUrl}/developers.",
     "cardioHeading": "### Cardiovascular (latest export)",
     "cardioEmpty": "_No cardiovascular data available._",
     "cardioColumns": "| Metric | Range | Trend | Interpretation |",
@@ -219,15 +204,12 @@
     "freshnessNote": "Composition triggered by EventBridge BroadcastUpdate events (after each source JSON\nupdate) plus a 30-minute safety-net schedule. Composer reads all source JSON from S3\nand writes `llms.txt`, `llms-full.txt`, and `index.md` to CloudFront origin.",
     "streamsHeading": "## Streams '{#streams}'",
     "streamsBody": "Canonical JSON endpoints for agents preferring raw machine-readable data:",
-    "streamHealth": "- {cloudfrontBase}/health.json — biometrics (heart rate, HRV, activity, workouts)",
-    "streamSleep": "- {cloudfrontBase}/sleep.json — sleep phases and efficiency",
     "streamFocus": "- {cloudfrontBase}/focus.json — focus / Do Not Disturb state",
     "streamGithubEvents": "- {cloudfrontBase}/github-events.json — GitHub commits, PRs, issues",
     "streamStarred": "- {cloudfrontBase}/github-starred-repos.json — starred repositories",
     "streamBooks": "- {cloudfrontBase}/books.json — bookshelf with status, ratings, progress",
     "streamArticles": "- {cloudfrontBase}/articles.json — saved articles",
-    "streamTheatre": "- {cloudfrontBase}/theatre-reviews.json — theatre reviews",
-    "streamWorkouts": "- {cloudfrontBase}/workouts.json — workout sessions"
+    "streamTheatre": "- {cloudfrontBase}/theatre-reviews.json — theatre reviews"
   },
   "dashboard": {
     "alternateLinkMarkdown": "LLM-friendly complete content",

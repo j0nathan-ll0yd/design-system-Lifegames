@@ -37,15 +37,12 @@ export interface LlmTxt {
   liveIndexAlias: LlmLink;
   canonicalHeading: string;
   canonicalBody: string;
-  endpointHealth: LlmLink;
-  endpointSleep: LlmLink;
   endpointFocus: LlmLink;
   endpointGithubEvents: LlmLink;
   endpointStarred: LlmLink;
   endpointBooks: LlmLink;
   endpointArticles: LlmLink;
   endpointTheatre: LlmLink;
-  endpointWorkouts: LlmLink;
   technologyHeading: string;
   technologyFramework: string;
   technologyHosting: string;
@@ -169,15 +166,12 @@ export interface LlmFull {
   freshnessNote: string;
   streamsHeading: string;
   streamsBody: string;
-  streamHealth: string;
-  streamSleep: string;
   streamFocus: string;
   streamGithubEvents: string;
   streamStarred: string;
   streamBooks: string;
   streamArticles: string;
   streamTheatre: string;
-  streamWorkouts: string;
 }
 /**
  * LLM-facing strings used in the web dashboard HTML (Dashboard.astro) — alternate link titles and JSON-LD Dataset prose.

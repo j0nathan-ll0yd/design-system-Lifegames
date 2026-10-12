@@ -227,48 +227,6 @@ export const llmSchema = z
           .strict(),
         canonicalHeading: z.string().regex(new RegExp('^[^#\\s]')),
         canonicalBody: z.string(),
-        endpointHealth: z
-          .object({
-            label: z
-              .string()
-              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
-              .describe(
-                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
-              ),
-            url: z
-              .string()
-              .regex(new RegExp('^[^()\\s]+$'))
-              .describe(
-                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
-              ),
-            notes: z
-              .string()
-              .regex(new RegExp('^[^:\\s]'))
-              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
-              .optional(),
-          })
-          .strict(),
-        endpointSleep: z
-          .object({
-            label: z
-              .string()
-              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
-              .describe(
-                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
-              ),
-            url: z
-              .string()
-              .regex(new RegExp('^[^()\\s]+$'))
-              .describe(
-                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
-              ),
-            notes: z
-              .string()
-              .regex(new RegExp('^[^:\\s]'))
-              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
-              .optional(),
-          })
-          .strict(),
         endpointFocus: z
           .object({
             label: z
@@ -375,27 +333,6 @@ export const llmSchema = z
           })
           .strict(),
         endpointTheatre: z
-          .object({
-            label: z
-              .string()
-              .regex(new RegExp('^(?![-*+]\\s)[^\\[\\]]+$'))
-              .describe(
-                "The link's visible text, authored in ICU MessageFormat 1 syntax. Carries no list-bullet affix and no markdown link brackets.",
-              ),
-            url: z
-              .string()
-              .regex(new RegExp('^[^()\\s]+$'))
-              .describe(
-                'The link target, authored in ICU MessageFormat 1 syntax — a {placeholder} base the consumer substitutes, plus any literal path. Carries no surrounding markdown parentheses and no whitespace.',
-              ),
-            notes: z
-              .string()
-              .regex(new RegExp('^[^:\\s]'))
-              .describe("Optional prose describing the target. Carries no leading ': ' separator.")
-              .optional(),
-          })
-          .strict(),
-        endpointWorkouts: z
           .object({
             label: z
               .string()
@@ -587,15 +524,12 @@ export const llmSchema = z
         freshnessNote: z.string(),
         streamsHeading: z.string(),
         streamsBody: z.string(),
-        streamHealth: z.string(),
-        streamSleep: z.string(),
         streamFocus: z.string(),
         streamGithubEvents: z.string(),
         streamStarred: z.string(),
         streamBooks: z.string(),
         streamArticles: z.string(),
         streamTheatre: z.string(),
-        streamWorkouts: z.string(),
       })
       .strict()
       .describe(
