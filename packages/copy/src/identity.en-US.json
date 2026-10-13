@@ -491,14 +491,14 @@
       }
     },
     "hosting": {
-      "value": "Cloudflare Pages",
+      "value": "Cloudflare Workers",
       "_meta": {
-        "description": "Hosting provider for humans.txt SITE section.",
-        "usage": ["web:humans.txt.ts (SITE section, Hosting line)"],
+        "description": "Hosting provider for humans.txt SITE section. Names the platform that serves the site after the move to Workers (atlas decision 0160).",
+        "usage": ["web:src/pages/humans.txt.ts (SITE section, Hosting line)"],
         "register": "label",
         "audience": "dual",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-17"
+        "lastReviewed": "2026-10-13"
       }
     },
     "standards": {

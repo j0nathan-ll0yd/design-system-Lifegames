@@ -210,6 +210,30 @@ describe('@j0nathan-ll0yd/copy llm txt surface', () => {
   })
 })
 
+/**
+ * The hosting strings name Cloudflare Workers (atlas decision 0160 Step 1.7). Readers: website
+ * src/pages/humans.txt.ts and scripts/generate-webmcp.mjs; LP render.ts and llms-txt.eta.
+ */
+describe('@j0nathan-ll0yd/copy hosting strings', () => {
+  const identity = readJson(join(PKG, 'dist', 'identity.flat.json')) as {humansTxt: {hosting: string}}
+  const llm = readJson(join(PKG, 'dist', 'llm.flat.json')) as {txt: {technologyHosting: string}; mcp: {stackHosting: string}}
+
+  it('every hosting string names Cloudflare Workers', () => {
+    expect(identity.humansTxt.hosting).toBe('Cloudflare Workers')
+    expect(llm.txt.technologyHosting).toBe('- Hosting: Cloudflare Workers via GitHub Actions')
+    expect(llm.mcp.stackHosting).toBe('Cloudflare Workers via GitHub Actions')
+  })
+
+  it('no identity or llm string still claims Cloudflare Pages', () => {
+    for (const name of ['identity', 'llm']) {
+      const leaves: Leaf[] = []
+      collectLeaves(readJson(join(PKG, 'src', `${name}.en-US.json`)), '', leaves)
+      const offenders = leaves.filter((l) => l.values.some((v) => /Cloudflare Pages/.test(v))).map((l) => `${name}.${l.path}`)
+      expect(offenders).toEqual([])
+    }
+  })
+})
+
 describe('@j0nathan-ll0yd/copy cross-namespace invariants', () => {
   it('the $defs block is byte-identical across every schema (inlined per file, no cross-file $ref)', () => {
     const defs = NAMESPACES.map((ns) => {

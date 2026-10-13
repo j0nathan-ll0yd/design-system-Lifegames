@@ -1,0 +1,21 @@
+---
+'@j0nathan-ll0yd/copy': patch
+---
+
+The hosting strings name Cloudflare Workers, not Cloudflare Pages (atlas decision 0160 Step 1.7).
+
+- `identity.humansTxt.hosting`: "Cloudflare Pages" becomes "Cloudflare Workers".
+- `llm.txt.technologyHosting`: "- Hosting: Cloudflare Pages via GitHub Actions" becomes "- Hosting: Cloudflare Workers via GitHub Actions".
+- `llm.mcp.stackHosting`: "Cloudflare Pages via GitHub Actions" becomes "Cloudflare Workers via GitHub Actions".
+
+The deploy path stays GitHub Actions: the site's `deploy.yml` runs `wrangler deploy` after the move (decision 0160 Step 3.5).
+
+**PATCH, not minor or major.** Three string values change. No key is added, removed, or renamed, and no exported type changes. GOVERNANCE §6: patch is "no API changes". Precedent: 27dfe68 changed three `llm.txt` link values as a patch.
+
+**Timing.** The new values describe the site after it moves to Workers. Do not bump to this release before that move:
+
+- Website: take it in the Workers PR (decision 0160 PR A, Step 3.1), so `humans.txt` and the WebMCP manifest change with the platform. The website pins copy exactly, so it does not take this release by accident.
+- mantle-LifegamesPortal: take it only right after the production cutover (Step 8.7), in a PR that also updates `test/llm-content/__snapshots__/llms.txt` line 37. LP pins copy exactly.
+- iOS: no change. No iOS code reads these keys.
+
+The authored profile content left `@j0nathan-ll0yd/fixtures` in 3.3.0 (the `profile` namespace plus `identity.person`). This release does not move it again.

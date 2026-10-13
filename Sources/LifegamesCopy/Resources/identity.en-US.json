@@ -82,7 +82,7 @@
       "Astro",
       "TypeScript"
     ],
-    "hosting": "Cloudflare Pages",
+    "hosting": "Cloudflare Workers",
     "standards": "HTML5, CSS3, RSS, JSON-LD, OpenAPI",
     "thanks": [
       "Astro",
