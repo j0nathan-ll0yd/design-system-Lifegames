@@ -131,6 +131,66 @@
         "lastReviewed": "2026-06-11"
       }
     },
+    "email": {
+      "value": "webmaster@lifegames.org",
+      "_meta": {
+        "description": "Public contact email address — the same address /.well-known/security.txt publishes (Contact: mailto:). Locale-invariant. The source of truth for the address: the web layer maps it into the Person JSON-LD contactPoint and the contact page. Prose leaves that name the address (privacy.who, privacy.rights, contact.security) inline it, and the identity tests hold each of them equal to this value.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Person JSON-LD contactPoint.email)",
+          "web:src/pages/contact.astro (email channel link text and mailto: href)"
+        ],
+        "register": "atom",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "contactType": {
+      "value": "general inquiries",
+      "_meta": {
+        "description": "schema.org ContactPoint contactType for the Person contact point. Lowercase free text, the form schema.org examples use.",
+        "usage": ["web:src/layouts/Dashboard.astro (Person JSON-LD contactPoint.contactType)"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "addressLocality": {
+      "value": "San Francisco",
+      "_meta": {
+        "description": "City of residence — the locality half of person.location. schema.org PostalAddress addressLocality.",
+        "usage": ["web:src/layouts/Dashboard.astro (Person JSON-LD address.addressLocality)"],
+        "register": "atom",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "rationale": "Split out of person.location (\"San Francisco, CA\", also public in humans.txt) because PostalAddress wants the parts. The identity tests hold \"{addressLocality}, {addressRegion}\" equal to person.location so the two forms cannot drift."
+      }
+    },
+    "addressRegion": {
+      "value": "CA",
+      "_meta": {
+        "description": "State of residence as its two-letter postal code — the region half of person.location. schema.org PostalAddress addressRegion.",
+        "usage": ["web:src/layouts/Dashboard.astro (Person JSON-LD address.addressRegion)"],
+        "register": "atom",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "addressCountry": {
+      "value": "US",
+      "_meta": {
+        "description": "Country of residence as an ISO 3166-1 alpha-2 code. schema.org PostalAddress addressCountry.",
+        "usage": ["web:src/layouts/Dashboard.astro (Person JSON-LD address.addressCountry)"],
+        "register": "atom",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "rationale": "Not a new fact: \"CA\" in person.location is a US state code. schema.org recommends the two-letter ISO 3166-1 code for addressCountry."
+      }
+    },
     "yearsExperience": {
       "value": "24+",
       "_meta": {
@@ -232,7 +292,10 @@
       "value": "Engineering director and backend engineer with 24+ years of experience. Built this portfolio as a living data dashboard — real biometrics and constant updates of body (health, activity, hydration) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
       "_meta": {
         "description": "Person JSON-LD description — the long, structured-data biography. Names experience ('24+ years') and the AI-centric framing.",
-        "usage": ["web:Dashboard.astro:102 (Person JSON-LD description)"],
+        "usage": [
+          "web:Dashboard.astro:102 (Person JSON-LD description)",
+          "web:src/pages/about.astro (Background section body)"
+        ],
         "register": "factual",
         "audience": "dual",
         "owner": "jonathan",
@@ -607,14 +670,26 @@
       }
     },
     "lastUpdated": {
-      "value": "June 2026",
+      "value": "July 2026",
       "_meta": {
         "description": "Month and year of the last material change to the privacy policy. Updated when the policy prose changes meaningfully.",
         "usage": ["web:src/pages/privacy.astro (last-updated dateline)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-07",
+        "rationale": "Corrected 2026-10-07 from \"June 2026\". Commit 1a23ee2 (PR #148, 2026-07-30) removed \"location check-ins\" from privacy.dataDisplayed. Narrowing the data displayed is a material change, and privacy.changes promises an updated date for one, so the page showed a stale date from 2026-07-30. The identity tests hold this string to the month and year of privacy.lastModified."
+      }
+    },
+    "lastModified": {
+      "value": "2026-07-30",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The privacy text entered this package in commit a2b8c3f (PR #80, 2026-06-24) and last changed in commit 1a23ee2 (PR #148, 2026-07-30), which removed \"location check-ins\" from privacy.dataDisplayed. A hash of the privacy section's values is unchanged from a2b8c3f through f698fee, changes at 1a23ee2, and is unchanged from there through this change. privacy.lastUpdated is the display form; the identity tests hold the two to the same month and year.",
+        "usage": ["web:sitemap <lastmod> for /privacy"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
       }
     },
     "lastUpdatedLabel": {
@@ -769,6 +844,270 @@
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-06-23"
+      }
+    }
+  },
+  "about": {
+    "title": {
+      "value": "About Jonathan Lloyd",
+      "_meta": {
+        "description": "Page title for the /about route. Composed (person + page) and stored whole per D7.",
+        "usage": ["web:src/pages/about.astro (<title> and h1)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "metaDescription": {
+      "value": "Jonathan Lloyd is an engineering director and backend engineer in San Francisco with 24+ years of experience. His background, work, and site.",
+      "_meta": {
+        "description": "SEO meta description for /about. States role, city, and experience. The identity tests hold it to person.rolePhrase, person.addressLocality, and person.yearsExperience.",
+        "usage": ["web:src/pages/about.astro (description prop → meta description)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "constraints": {
+          "maxChars": 160
+        }
+      }
+    },
+    "lastModified": {
+      "value": "2026-10-07",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /about text entered this package on this date (atlas decision 0158). Bump it with any change to a value in this group.",
+        "usage": ["web:sitemap <lastmod> for /about"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "backgroundHeading": {
+      "value": "Background",
+      "_meta": {
+        "description": "Section heading for the background section of /about. The section body is identity.person.longBio, reused rather than restated.",
+        "usage": ["web:src/pages/about.astro (sections[0].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "workHeading": {
+      "value": "Work",
+      "_meta": {
+        "description": "Section heading for the work section of /about.",
+        "usage": ["web:src/pages/about.astro (sections[1].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "work": {
+      "value": "Jonathan is Engineering Director at Squarespace. His skills include AWS, serverless, TypeScript, Go, Swift, and Perl. He studied at California State University, Fullerton.",
+      "_meta": {
+        "description": "Work section body for /about: current role, employer, skills, and education. Restates identity.person jobTitle, employer, skills, and alumniOf without adding roles or claims; the identity tests hold every one of them, including each skill token, to those leaves.",
+        "usage": ["web:src/pages/about.astro (sections[1].body)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "siteHeading": {
+      "value": "This site",
+      "_meta": {
+        "description": "Section heading for the about-the-site section of /about.",
+        "usage": ["web:src/pages/about.astro (sections[2].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "site": {
+      "value": "Human Datastream is a dashboard of his own data, published on purpose. Body: heart rate, sleep, activity, workouts, and hydration. Mind: GitHub activity, starred repositories, books, saved articles, and theatre reviews. The numbers move when the sources do.",
+      "_meta": {
+        "description": "About-the-site section body for /about. Names the two domains and the sources each shows, the same set the llm endpoint family lists.",
+        "usage": ["web:src/pages/about.astro (sections[2].body)"],
+        "register": "expressive",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "rationale": "One dry closing beat (\"The numbers move when the sources do\") states that the data is live without a freshness claim the sources cannot back."
+      }
+    },
+    "outsideHeading": {
+      "value": "Outside work",
+      "_meta": {
+        "description": "Section heading for the interests section of /about.",
+        "usage": ["web:src/pages/about.astro (sections[3].heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "outside": {
+      "value": "PC gaming, musical theatre, EDM, and conversation. Philosophy: enjoying the passage of time.",
+      "_meta": {
+        "description": "Interests section body for /about. Restates person.interests and person.philosophy as one human-readable line.",
+        "usage": ["web:src/pages/about.astro (sections[3].body)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    }
+  },
+  "contact": {
+    "title": {
+      "value": "Contact",
+      "_meta": {
+        "description": "Page title for the /contact route.",
+        "usage": ["web:src/pages/contact.astro (<title> and h1)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "metaDescription": {
+      "value": "Contact Jonathan Lloyd by email for general inquiries, or find him on LinkedIn and GitHub. Security reports go to the same email address.",
+      "_meta": {
+        "description": "SEO meta description for /contact.",
+        "usage": ["web:src/pages/contact.astro (description prop → meta description)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07",
+        "constraints": {
+          "maxChars": 160
+        }
+      }
+    },
+    "lastModified": {
+      "value": "2026-10-07",
+      "_meta": {
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /contact text entered this package on this date (atlas decision 0158). Bump it with any change to a value in this group.",
+        "usage": ["web:sitemap <lastmod> for /contact"],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "intro": {
+      "value": "Jonathan Lloyd takes general inquiries by email. His professional history is on LinkedIn, and his public code is on GitHub.",
+      "_meta": {
+        "description": "Opening paragraph of /contact. Names the three channels and what each is for.",
+        "usage": ["web:src/pages/contact.astro (intro paragraph)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "channelsHeading": {
+      "value": "Channels",
+      "_meta": {
+        "description": "Section heading above the channel list on /contact.",
+        "usage": ["web:src/pages/contact.astro (channels section heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "emailLabel": {
+      "value": "Email",
+      "_meta": {
+        "description": "Label for the email channel on /contact. The link text and href come from identity.person.email.",
+        "usage": ["web:src/pages/contact.astro (channels[0].label)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "emailNote": {
+      "value": "General inquiries: questions about this site, the data it publishes, or his work.",
+      "_meta": {
+        "description": "Note under the email channel on /contact. Matches identity.person.contactType (\"general inquiries\").",
+        "usage": ["web:src/pages/contact.astro (channels[0].note)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "linkedinLabel": {
+      "value": "LinkedIn",
+      "_meta": {
+        "description": "Label for the LinkedIn channel on /contact. The href is identity.person.sameAs[0].",
+        "usage": ["web:src/pages/contact.astro (channels[1].label)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "linkedinNote": {
+      "value": "Professional history and current role.",
+      "_meta": {
+        "description": "Note under the LinkedIn channel on /contact.",
+        "usage": ["web:src/pages/contact.astro (channels[1].note)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "githubLabel": {
+      "value": "GitHub",
+      "_meta": {
+        "description": "Label for the GitHub channel on /contact. The href is identity.person.sameAs[1].",
+        "usage": ["web:src/pages/contact.astro (channels[2].label)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "githubNote": {
+      "value": "Public code, including the source of this site.",
+      "_meta": {
+        "description": "Note under the GitHub channel on /contact.",
+        "usage": ["web:src/pages/contact.astro (channels[2].note)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "securityHeading": {
+      "value": "Security reports",
+      "_meta": {
+        "description": "Section heading for the security-report note on /contact.",
+        "usage": ["web:src/pages/contact.astro (security section heading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
+      }
+    },
+    "security": {
+      "value": "Report a security issue on this site to webmaster@lifegames.org, the contact that /.well-known/security.txt publishes. Include the affected URL and the steps to reproduce.",
+      "_meta": {
+        "description": "Security-report note on /contact. Same address as /.well-known/security.txt; the identity tests hold the address to identity.person.email.",
+        "usage": ["web:src/pages/contact.astro (security section body)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-07"
       }
     }
   }

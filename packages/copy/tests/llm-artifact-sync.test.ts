@@ -7,15 +7,21 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const PKG = join(HERE, '..')
 
 /**
- * The llm namespace describes the same set of public CloudFront JSON artifacts three times:
+ * The llm namespace describes the public CloudFront JSON artifacts in three families:
  *
  *   - `txt.endpoint*`     — the llms.txt discovery index (CopyLink: {label, url, notes})
  *   - `full.stream*`      — the llms-full.txt Streams list (one rendered markdown bullet)
- *   - `mcp.ds*Name/Desc`  — the WebMCP + server-card data-source rows
+ *   - `mcp.ds*Name/Desc`  — the data-source rows (/openapi.json and the MCP get_data_sources names)
  *
  * Nothing linked them, so a leaf could be added to one family and forgotten in the other two —
  * which is how `location.json` survived in all three long after the object stopped existing at
- * origin (atlas decision 0142 D1). These tests hold the three families to one artifact set.
+ * origin (atlas decision 0142 D1). These tests hold the families to one artifact set.
+ *
+ * The two LLM-facing families (endpoint, stream) deliberately exclude the raw health exports:
+ * owner decision 2026-10-12 (atlas decision 0158) — no LLM-facing file links health.json,
+ * sleep.json, or workouts.json; agents get them only as the coarsened bands in llms-full.txt. The
+ * data-source family still covers them, because the developer API documents all nine. So the
+ * assertion is exact: data sources = LLM-facing artifacts + AGENT_EXCLUDED, disjointly.
  *
  * The families are deliberately NOT spelled alike: `endpointStarred` / `streamStarred` /
  * `dsStarredReposName` all describe `github-starred-repos.json`. So the key spelling is never
@@ -71,6 +77,17 @@ describe('@j0nathan-ll0yd/copy llm endpoint/stream/data-source sync', () => {
     dataSourceRoles.set(stem, roles)
   }
 
+  /**
+   * The LLM-channel policy, spelled literally so a reclassification turns this suite red (owner
+   * decision 2026-10-12, atlas decision 0158). Mirrors mantle-LifegamesPortal
+   * src/lib/llm-content/channelPolicy.ts LLM_CHANNEL_POLICY and the website's MCP resource list:
+   *   - AGENT_EXPOSED: exports LLM-facing files may link (llms.txt, llms-full.txt, MCP, WebMCP).
+   *   - AGENT_EXCLUDED: raw health exports no LLM-facing file may link; agents get them only as the
+   *     coarsened bands in llms-full.txt. The developer API (/openapi.json) still documents them.
+   */
+  const AGENT_EXPOSED = ['articles.json', 'books.json', 'focus.json', 'github-events.json', 'github-starred-repos.json', 'theatre-reviews.json']
+  const AGENT_EXCLUDED = ['health.json', 'sleep.json', 'workouts.json']
+
   const endpointArtifacts = endpoints.map((row) => row.artifact)
   const streamArtifacts = streams.map((row) => row.artifact)
 
@@ -104,11 +121,40 @@ describe('@j0nathan-ll0yd/copy llm endpoint/stream/data-source sync', () => {
     expect(halfPairs).toEqual([])
   })
 
-  it('the data-source family covers the same artifacts as the endpoint family', () => {
+  it('the LLM-facing families link exactly the agent-exposed exports', () => {
+    expect([...endpointArtifacts].sort()).toEqual([...AGENT_EXPOSED].sort())
+    expect([...streamArtifacts].sort()).toEqual([...AGENT_EXPOSED].sort())
+    expect(AGENT_EXPOSED.filter((a) => AGENT_EXCLUDED.includes(a))).toEqual([])
+  })
+
+  it('no LLM-facing family links a raw health export', () => {
+    expect(endpointArtifacts.filter((a) => a !== null && AGENT_EXCLUDED.includes(a))).toEqual([])
+    expect(streamArtifacts.filter((a) => a !== null && AGENT_EXCLUDED.includes(a))).toEqual([])
+  })
+
+  it('no txt or full leaf names a raw health export anywhere in its text', () => {
+    // Catches a link outside the endpoint/stream families too (a prose sentence, a new key).
+    const RAW_HEALTH_RE = new RegExp(`\\b(?:${AGENT_EXCLUDED.map((a) => a.replace('.', '\\.')).join('|')})\\b`)
+    const offenders: string[] = []
+    for (const [group, leaves] of [['txt', llm.txt], ['full', llm.full]] as const) {
+      for (const [key, value] of Object.entries(leaves)) {
+        const text = typeof value === 'string' ? value : JSON.stringify(value)
+        if (RAW_HEALTH_RE.test(text)) {
+          offenders.push(`${group}.${key}`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  it('the data-source family covers the LLM-facing artifacts plus exactly the agent-excluded set', () => {
     // A stem matches the artifact basename it is a suffix of, on a `-` boundary: `starred-repos`
     // matches `github-starred-repos.json`. Exactly one match is required in each direction, so an
     // ambiguous stem fails here rather than silently pairing with the wrong artifact.
-    const bases = endpointArtifacts.filter((a): a is string => a !== null).map((artifact) => ({artifact, base: artifact.replace(/\.json$/, '')}))
+    const bases = [...endpointArtifacts.filter((a): a is string => a !== null), ...AGENT_EXCLUDED].map((artifact) => ({
+      artifact,
+      base: artifact.replace(/\.json$/, '')
+    }))
     const ambiguous: string[] = []
     const paired = new Map<string, string>()
     for (const stem of [...dataSourceRoles.keys()].sort()) {
@@ -124,6 +170,6 @@ describe('@j0nathan-ll0yd/copy llm endpoint/stream/data-source sync', () => {
       paired.set(stem, matches[0]!.artifact)
     }
     expect(ambiguous).toEqual([])
-    expect([...paired.values()].sort()).toEqual([...endpointArtifacts].sort())
+    expect([...paired.values()].sort()).toEqual([...endpointArtifacts, ...AGENT_EXCLUDED].sort())
   })
 })
