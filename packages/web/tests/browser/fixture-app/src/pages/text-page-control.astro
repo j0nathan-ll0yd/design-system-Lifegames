@@ -1,0 +1,27 @@
+---
+// Control for tests/browser/text-page.test.ts: the same shell, the same tall content,
+// and primitives.css loaded through Card, but no TextPage. The dashboard lock must hold
+// here, which proves the shell reproduces it and that primitives.css alone does not
+// unlock a dashboard page.
+import DashboardShell from '../layouts/DashboardShell.astro';
+import Card from '../../../../../src/components/Card.astro';
+import { SECTIONS } from '../lib/text-page';
+---
+
+<DashboardShell title="Text page control">
+  <main id="main-content">
+    <Card>
+      {
+        SECTIONS.map((s) => (
+          <section>
+            <h2>{s.heading}</h2>
+            {s.paragraphs.map((p) => (
+              <p>{p}</p>
+            ))}
+          </section>
+        ))
+      }
+      <a id="control-last" href="/">Last</a>
+    </Card>
+  </main>
+</DashboardShell>

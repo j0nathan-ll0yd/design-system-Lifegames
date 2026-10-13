@@ -4,6 +4,8 @@ export { default as Pill } from './components/Pill.astro'
 export { default as Modal } from './components/Modal.astro'
 export { default as PollStatus } from './components/PollStatus.astro'
 export { default as Skeleton } from './components/Skeleton.astro'
+export { default as TextPage } from './components/TextPage.astro'
+export { default as TextPageSection } from './components/TextPageSection.astro'
 
 // Widget re-exports from category barrels
 export * from './widgets/github/index'

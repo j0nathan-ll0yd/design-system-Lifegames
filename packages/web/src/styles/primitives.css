@@ -25,8 +25,10 @@
    both resolved to nothing: the background fell back to transparent and the
    `border: 1px solid var(--lg-card-border)` declaration was invalid-at-
    computed-value-time and dropped. .lg-card was an unstyled box everywhere,
-   not just in Storybook. Defaults mirror the glass surface .tri-card uses. */
-:root {
+   not just in Storybook. Defaults mirror the glass surface .tri-card uses.
+   :where() drops the selector to zero specificity, so the prefers-contrast
+   override in a11y.css wins whichever stylesheet loads first. */
+:where(:root) {
   --lg-card-background: var(--lg-color-surface-raised);
   --lg-card-border: var(--lg-color-border-subtle);
 }
@@ -396,5 +398,211 @@
 @media (prefers-reduced-motion: reduce) {
   .lg-skeleton-bar::after {
     animation: none;
+  }
+}
+
+/* ===== TEXT PAGE =====
+   TextPage.astro and TextPageSection.astro: the about, contact, developers and
+   privacy pages (atlas decision 0158). Styles slotted markup by element (p, ul,
+   li, b, small, a), so the consumer writes no classes of its own.
+
+   A text page is taller than the viewport. The website's dashboard layout locks
+   viewport scroll at 1100px and up (`html, body { overflow: hidden }`) so the
+   bento grid fits 100dvh, and the text pages share that layout. These two rules
+   turn scrolling back on. :has() confines them to a document that renders a
+   text page, so this sheet can load beside the dashboard without unlocking it.
+   Their specificity (0,1,1 and 0,1,2) outranks a bare `html` or `body` rule in
+   either source order. A browser without :has() (Firefox before 121, Safari
+   before 15.4, Chrome before 105) keeps the lock, so the @supports block
+   below makes the page its own scroll box there instead. */
+html:has(.lg-text-page) {
+  overflow-y: auto;
+}
+
+html:has(.lg-text-page) body {
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+}
+
+/* 100vh first: Chrome before 108 and Safari before 15.4 lack dvh as well as
+   :has(), drop the dvh line, and would leave the page box unbounded. */
+@supports not selector(:has(*)) {
+  .lg-text-page {
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+  }
+}
+
+/* No token exists for a reading measure or for caps tracking. */
+:where(:root) {
+  --lg-text-page-measure: 720px;
+  --lg-text-page-caps-tracking: 0.05em;
+}
+
+.lg-text-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--lg-space-1000) var(--lg-space-600);
+  background: var(--lg-color-surface-base);
+}
+
+/* --lg-card-* rather than the raw surface tokens: a11y.css raises both under
+   prefers-contrast: more. */
+.lg-text-page-card {
+  width: 100%;
+  max-width: var(--lg-text-page-measure);
+  background: var(--lg-card-background);
+  border: 1px solid var(--lg-card-border);
+  border-radius: var(--lg-radius-lg);
+  padding: var(--lg-space-1000);
+  backdrop-filter: blur(var(--lg-blur-md));
+  -webkit-backdrop-filter: blur(var(--lg-blur-md));
+}
+
+/* Opaque where backdrop-filter is unsupported. It sits here, after the card
+   rule in the same sheet, so it wins without depending on the order in which
+   a consumer loads a11y.css and this file. */
+@supports not (backdrop-filter: blur(1px)) {
+  .lg-text-page-card {
+    background: var(--lg-color-surface-base);
+  }
+}
+
+.lg-text-page-header {
+  margin-bottom: var(--lg-space-700);
+  padding-bottom: var(--lg-space-500);
+  border-bottom: 1px solid var(--lg-card-border);
+}
+
+.lg-text-page-title {
+  margin: 0 0 var(--lg-space-200);
+  font-size: var(--lg-font-size-headline);
+  font-weight: var(--lg-font-weight-bold);
+  line-height: var(--lg-line-height-tight);
+  color: var(--lg-color-text-primary);
+}
+
+.lg-text-page-meta {
+  margin: 0;
+  font-size: var(--lg-font-size-caption);
+  color: var(--lg-color-text-muted);
+}
+
+.lg-text-page-lede,
+.lg-text-page-section-body p {
+  font-size: var(--lg-font-size-body);
+  line-height: var(--lg-line-height-looser);
+  color: var(--lg-color-text-primary);
+}
+
+.lg-text-page-lede {
+  margin: 0 0 var(--lg-space-700);
+}
+
+.lg-text-page-section {
+  margin-bottom: var(--lg-space-700);
+}
+
+.lg-text-page-section-heading {
+  margin: 0 0 var(--lg-space-250);
+  font-size: var(--lg-font-size-caption);
+  font-weight: var(--lg-font-weight-semibold);
+  letter-spacing: var(--lg-text-page-caps-tracking);
+  text-transform: uppercase;
+  color: var(--lg-color-accent-cyan);
+}
+
+.lg-text-page-section-body > * {
+  margin: 0;
+}
+
+.lg-text-page-section-body > * + * {
+  margin-top: var(--lg-space-250);
+}
+
+.lg-text-page-section-body ul {
+  display: grid;
+  gap: var(--lg-space-300);
+  padding: 0;
+  list-style: none;
+}
+
+.lg-text-page-section-body li {
+  font-size: var(--lg-font-size-body);
+  line-height: var(--lg-line-height-relaxed);
+  color: var(--lg-color-text-primary);
+}
+
+.lg-text-page-section-body li > b {
+  font-weight: var(--lg-font-weight-semibold);
+}
+
+.lg-text-page-section-body li > small {
+  display: block;
+  font-size: var(--lg-font-size-caption);
+  color: var(--lg-color-text-muted);
+}
+
+.lg-text-page-body a {
+  color: var(--lg-color-accent-cyan);
+  overflow-wrap: anywhere;
+}
+
+.lg-text-page-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--lg-space-300);
+  margin-top: var(--lg-space-1000);
+  padding-top: var(--lg-space-500);
+  border-top: 1px solid var(--lg-card-border);
+}
+
+.lg-text-page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lg-space-400);
+}
+
+.lg-text-page-back,
+.lg-text-page-nav-link {
+  font-size: var(--lg-font-size-caption);
+  letter-spacing: var(--lg-text-page-caps-tracking);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--lg-color-accent-cyan);
+}
+
+.lg-text-page-nav-link {
+  color: var(--lg-color-text-muted);
+}
+
+.lg-text-page-nav-link[aria-current='page'] {
+  color: var(--lg-color-text-primary);
+}
+
+.lg-text-page-back:hover,
+.lg-text-page-nav-link:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lg-text-page-card {
+    animation: textPageFadeIn var(--lg-motion-duration-normal) var(--lg-motion-easing-decelerate);
+  }
+}
+
+@keyframes textPageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(var(--lg-space-300));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

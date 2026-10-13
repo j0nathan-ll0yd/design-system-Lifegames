@@ -1,0 +1,66 @@
+---
+title: TextPage
+description: Text-page layout for the about, contact, developers, and privacy pages
+---
+
+`TextPage` renders one glass card with the page heading, an optional meta line and lede, the page's sections, and a footer of page links. `TextPageSection` renders one headed section inside it. The consumer passes copy-driven strings and plain markup. The components own every style.
+
+## Usage
+
+```astro
+---
+import { TextPage, TextPageSection } from '@j0nathan-ll0yd/web/components';
+---
+
+<TextPage
+  title={copy.title}
+  updated={{ label: copy.lastUpdatedLabel, date: copy.lastUpdated, datetime: copy.lastModified }}
+  lede={copy.intro}
+  back={{ href: '/', label: copy.backLink }}
+  links={[
+    { href: '/about', label: copy.aboutTitle, current: true },
+    { href: '/contact', label: copy.contactTitle },
+  ]}
+>
+  <TextPageSection heading={copy.workHeading} id="work">
+    <p>{copy.work}</p>
+  </TextPageSection>
+</TextPage>
+```
+
+Render `TextPage` inside the document shell (the website's `Dashboard.astro`), once per document. It renders `<main id="main-content">`, the skip-link target, and its heading carries a fixed id.
+
+## TextPage props
+
+| Prop      | Type                                                            | Default | Description                                                                                      |
+| --------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
+| `title`   | `string`                                                        | --      | Page heading. Renders as the only `h1` and names the card                                        |
+| `updated` | `{ label: string; date: string; datetime?: string }`            | --      | Last-updated line under the heading: `label`, a space, then `date` in a `<time>` with `datetime` |
+| `lede`    | `string`                                                        | --      | Intro paragraph before the sections                                                              |
+| `back`    | `{ href: string; label: string }`                               | --      | Footer link back to the home page                                                                |
+| `links`   | `readonly { href: string; label: string; current?: boolean }[]` | `[]`    | Footer navigation. `current` sets `aria-current="page"`                                          |
+
+The default slot holds the sections. The footer renders only when `back` or `links` is set.
+
+`updated` is a prop, not a slot, on purpose. Astro drops the whitespace between an expression and a following element, so markup such as `{label} <time>` renders `Last updated:June 2026`. The component writes the label and the date as two elements with a space between them.
+
+## TextPageSection props
+
+| Prop      | Type     | Default | Description                                                                                        |
+| --------- | -------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `heading` | `string` | --      | Section heading, rendered as an `h2`                                                               |
+| `id`      | `string` | --      | Fragment target. The heading takes `${id}-heading` and names the section; without it, `aria-label` |
+
+The default slot is the section body. It styles `p`, `ul`, `li`, `a`, a `b` label, and a `small` note inside a list item. Use `b`, not `strong`: a channel label is a keyword, not text of extra importance, so the consumer writes no classes.
+
+## Scrolling
+
+The website's dashboard layout locks viewport scroll at 1100px and up (`html, body { overflow: hidden }`). `primitives.css` turns document scrolling back on for any page that renders `.lg-text-page`. It scopes the override with `html:has(.lg-text-page)`, so the stylesheet never unlocks the dashboard. A browser without `:has()` (Firefox before 121, Safari before 15.4, Chrome before 105) keeps the lock. There an `@supports not selector(:has(*))` rule makes `.lg-text-page` a viewport-high scroll box, so the footer stays reachable. It sets `100vh` before `100dvh` for the browsers that also lack `dvh`.
+
+## Accessibility
+
+- The card is an `article` named by its `h1`. Each section is a named region.
+- The current page link carries `aria-current="page"`.
+- Colors and the card surface come from `--lg-card-*` tokens, which `a11y.css` raises under `prefers-contrast: more`.
+- The entrance animation runs only under `prefers-reduced-motion: no-preference`.
+- The card turns opaque where `backdrop-filter` is unsupported.
