@@ -5,7 +5,7 @@
   "description": "Rich authoring schema for the identity slice of @j0nathan-ll0yd/copy. Every customer-facing identity string is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy"],
+  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy", "about", "contact"],
   "properties": {
     "person": {
       "type": "object",
@@ -23,6 +23,11 @@
         "alumniOf",
         "alumniOfUrl",
         "location",
+        "email",
+        "contactType",
+        "addressLocality",
+        "addressRegion",
+        "addressCountry",
         "yearsExperience",
         "philosophy",
         "skills",
@@ -66,6 +71,21 @@
           "$ref": "#/$defs/CopyString"
         },
         "location": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "email": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contactType": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "addressLocality": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "addressRegion": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "addressCountry": {
           "$ref": "#/$defs/CopyString"
         },
         "yearsExperience": {
@@ -222,11 +242,12 @@
     },
     "privacy": {
       "type": "object",
-      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label, and the back-link.",
+      "description": "Privacy policy page copy — plain-English sections covering who operates the site, what data is displayed, what is collected from visitors, analytics, user rights, and change notifications. Includes section headings, the last-updated label and date, the machine-readable lastModified date, and the back-link.",
       "additionalProperties": false,
       "required": [
         "title",
         "lastUpdated",
+        "lastModified",
         "lastUpdatedLabel",
         "backLink",
         "whoHeading",
@@ -247,6 +268,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "lastUpdated": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
           "$ref": "#/$defs/CopyString"
         },
         "lastUpdatedLabel": {
@@ -289,6 +313,118 @@
           "$ref": "#/$defs/CopyString"
         },
         "changes": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
+    },
+    "about": {
+      "type": "object",
+      "title": "IdentityAbout",
+      "description": "About page copy (/about) — title, meta description, and headed sections. The background section body reuses person.longBio.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "metaDescription",
+        "lastModified",
+        "backgroundHeading",
+        "workHeading",
+        "work",
+        "siteHeading",
+        "site",
+        "outsideHeading",
+        "outside"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "metaDescription": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "backgroundHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "workHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "work": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "siteHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "site": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "outsideHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "outside": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "title": "IdentityContact",
+      "description": "Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "metaDescription",
+        "lastModified",
+        "intro",
+        "channelsHeading",
+        "emailLabel",
+        "emailNote",
+        "linkedinLabel",
+        "linkedinNote",
+        "githubLabel",
+        "githubNote",
+        "securityHeading",
+        "security"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "metaDescription": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "lastModified": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "intro": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "channelsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "emailLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "emailNote": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkedinLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "linkedinNote": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubLabel": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "githubNote": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "security": {
           "$ref": "#/$defs/CopyString"
         }
       }

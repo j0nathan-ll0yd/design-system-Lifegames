@@ -92,6 +92,38 @@ describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
     return found.sort()
   }
 
+  /**
+   * No point-in-time health reading reaches an LLM channel (SKILL.md decision 4, atlas decision
+   * 0096). Health, sleep, and workouts reach agents only as the coarsened bands in llms-full.txt.
+   * "What is Jonathan Lloyd's current heart rate?" invited exactly that answer from the AI catalog.
+   * Scoped per SENTENCE, so "Fetches the current bookshelf" (no health term) stays legal, and
+   * "latest export" stays legal: it is the honest provenance of a summarised value, not a reading.
+   */
+  const HEALTH_TERM_RE = /\b(?:heart rate|hrv|biometrics?|health|sleep|workouts?|hydration|caffeine|calories?|vitals?|pulse|bpm)\b/i
+  const POINT_IN_TIME_RE = /\b(?:current(?:ly)?|right now|real[- ]time|today|at the moment|this (?:morning|minute|hour))\b/i
+
+  it('no sentence pairs a health term with a point-in-time word', () => {
+    const found: string[] = []
+    for (const leaf of leaves) {
+      for (const value of leaf.values) {
+        for (const sentence of value.split(/(?<=[.?!])\s+|\n/)) {
+          if (HEALTH_TERM_RE.test(sentence) && POINT_IN_TIME_RE.test(sentence)) {
+            found.push(`${leaf.path}: ${JSON.stringify(sentence)}`)
+          }
+        }
+      }
+    }
+    expect(found).toEqual([])
+  })
+
+  it('no AI-catalog query asks for a health trend the data cannot carry', () => {
+    // The trend cell renders the unavailable marker: no input holds the history a trend needs
+    // (mantle-LifegamesPortal src/lib/llm-content/aggregate.ts:10-15).
+    const queries = leaves.filter((leaf) => /^agentDiscovery\..*Queries$/.test(leaf.path)).flatMap((leaf) => leaf.values)
+    expect(queries.length).toBeGreaterThan(0)
+    expect(queries.filter((q) => HEALTH_TERM_RE.test(q) && /\btrend/i.test(q))).toEqual([])
+  })
+
   it('the namespace is non-empty, so a silent collection failure cannot read as a pass', () => {
     expect(leaves.length).toBeGreaterThan(0)
   })
