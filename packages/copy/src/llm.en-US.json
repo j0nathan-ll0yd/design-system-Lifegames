@@ -386,7 +386,7 @@
       "value": "- Hosting: Cloudflare Workers via GitHub Actions",
       "_meta": {
         "description": "Technology block — Hosting line (static). Names the platform that serves the site after the move to Workers (atlas decision 0160).",
-        "usage": ["llms-txt.eta:37", "render.ts:202 (buildLlmsTxtDoc technology prose)"],
+        "usage": ["backend:src/lib/llm-content/templates/llms-txt.eta:37", "backend:src/lib/llm-content/render.ts:202 (buildLlmsTxtDoc technology prose)"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",

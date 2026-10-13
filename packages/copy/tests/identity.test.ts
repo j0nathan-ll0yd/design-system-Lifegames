@@ -224,11 +224,12 @@ describe('@j0nathan-ll0yd/copy hosting strings', () => {
     expect(llm.mcp.stackHosting).toBe('Cloudflare Workers via GitHub Actions')
   })
 
-  it('no identity or llm string still claims Cloudflare Pages', () => {
-    for (const name of ['identity', 'llm']) {
+  it('no copy string in any namespace still claims Cloudflare Pages', () => {
+    for (const ns of NAMESPACES) {
       const leaves: Leaf[] = []
-      collectLeaves(readJson(join(PKG, 'src', `${name}.en-US.json`)), '', leaves)
-      const offenders = leaves.filter((l) => l.values.some((v) => /Cloudflare Pages/.test(v))).map((l) => `${name}.${l.path}`)
+      collectLeaves(readJson(join(PKG, 'src', `${ns.name}.en-US.json`)), '', leaves)
+      expect(leaves.length).toBeGreaterThan(0)
+      const offenders = leaves.filter((l) => l.values.some((v) => /cloudflare\s+pages|pages\.dev/i.test(v))).map((l) => `${ns.name}.${l.path}`)
       expect(offenders).toEqual([])
     }
   })
