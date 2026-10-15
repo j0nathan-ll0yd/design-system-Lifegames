@@ -1,5 +1,13 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.5.5
+
+### Patch Changes
+
+- Updated dependencies [22e0dfe]
+  - @j0nathan-ll0yd/copy@4.0.1
+  - @j0nathan-ll0yd/web@4.2.1
+
 ## 1.5.4
 
 ### Patch Changes
