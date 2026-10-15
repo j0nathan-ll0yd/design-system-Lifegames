@@ -383,14 +383,14 @@
       }
     },
     "technologyHosting": {
-      "value": "- Hosting: Cloudflare Pages via GitHub Actions",
+      "value": "- Hosting: Cloudflare Workers via GitHub Actions",
       "_meta": {
-        "description": "Technology block — Hosting line (static).",
-        "usage": ["llms-txt.eta:38"],
+        "description": "Technology block — Hosting line (static). Names the platform that serves the site after the move to Workers (atlas decision 0160).",
+        "usage": ["backend:src/lib/llm-content/templates/llms-txt.eta:37", "backend:src/lib/llm-content/render.ts:202 (buildLlmsTxtDoc technology prose)"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-10-13"
       }
     },
     "technologyLiveData": {
@@ -1768,14 +1768,14 @@
       }
     },
     "stackHosting": {
-      "value": "Cloudflare Pages via GitHub Actions",
+      "value": "Cloudflare Workers via GitHub Actions",
       "_meta": {
-        "description": "get_tech_stack tool response — hosting field value.",
+        "description": "get_tech_stack tool response — hosting field value. Names the platform that serves the site after the move to Workers (atlas decision 0160).",
         "usage": ["web:public/js/webmcp.js (stack.hosting)", "web:scripts/generate-webmcp.mjs"],
         "register": "machine",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-24"
+        "lastReviewed": "2026-10-13"
       }
     },
     "stackLiveData": {

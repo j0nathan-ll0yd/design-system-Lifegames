@@ -553,3 +553,6 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 # The schemas URN-encoding fix: the changeset names the @j0nathan-ll0yd/schemas
 # package it releases. The marker is the mandated GitHub Packages namespace.
 .changeset/schemas-validate-urn-encoding.md:marker:j0nathan-ll0yd
+# The copy hosting-string patch (decision 0160 Step 1.7): the changeset names the
+# @j0nathan-ll0yd/copy package it releases.
+.changeset/copy-workers-hosting.md:marker:j0nathan-ll0yd
