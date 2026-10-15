@@ -209,8 +209,8 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
 })
 
 /**
- * A section that carries a display date (`lastUpdated`, "July 2026") and a machine date
- * (`lastModified`, "2026-07-30") states the same fact twice. The privacy page showed "June 2026"
+ * A section that carries a display date (`lastUpdated`, "October 2026") and a machine date
+ * (`lastModified`, "2026-10-14") states the same fact twice. The privacy page showed "June 2026"
  * for two months after commit 1a23ee2 (PR #148, 2026-07-30) changed its text, because nothing tied
  * the display string to the change. This holds every such pair to one month and year, and every
  * `lastModified` to a real calendar date the website's sitemap can emit.
@@ -267,5 +267,11 @@ describe('@j0nathan-ll0yd/copy content dates', () => {
       return s.fields['lastUpdated'] === expected ? [] : [`${s.path}: lastUpdated ${JSON.stringify(s.fields['lastUpdated'])} != ${JSON.stringify(expected)}`]
     })
     expect(drift).toEqual([])
+  })
+
+  it('the privacy page reads October 2026 (owner decision 2026-10-14)', () => {
+    const privacy = dated.find((s) => s.path === 'identity.privacy')
+    expect(privacy?.fields['lastUpdated']).toBe('October 2026')
+    expect(privacy?.fields['lastModified']).toBe('2026-10-14')
   })
 })
