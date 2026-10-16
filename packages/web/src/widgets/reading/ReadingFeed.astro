@@ -4,7 +4,7 @@ import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { readingFeedState } from '../../runtime/widget-rules';
-import { articleRowHtml } from '../../runtime/widget-markup';
+import { articleItemHtml } from '../../runtime/widget-markup';
 import type { Article, ReadingFeedProps } from './ReadingFeed.types';
 
 const { reading, generatedAt } = Astro.props as ReadingFeedProps;
@@ -12,10 +12,10 @@ const articleList = reading?.articles ?? [];
 // One owner for the state: the same rule the view model applies.
 const widgetState = readingFeedState(Astro.props as ReadingFeedProps);
 const showData = rendersData(widgetState);
-// The server page passes at most one client page (toReadingArticles caps it at
-// 10) and renders no pager: a no-JS reader has no handler for it. The updater
-// re-renders the list with the full feed and adds the pager. Each row is the
-// updater's row (articleRowHtml), so the first page matches it byte for byte.
+// The view model caps the list at one client page (toReadingArticles) and the
+// server renders no pager: a no-JS reader has no handler for it. A direct
+// caller's list renders whole. The updater re-renders the list with the full
+// feed and adds the pager. Each row is the updater's row (articleItemHtml).
 const articles: Article[] = showData ? articleList : [];
 ---
 
@@ -44,16 +44,12 @@ const articles: Article[] = showData ? articleList : [];
       </div>
     </div>
     <WidgetStateNotice state={widgetState} empty={{ message: widgets.readingFeed.empty }} />
-    <ul class="article-list" aria-live="polite" data-state-scaffold hidden={!showData}>
-      {
-        articles.map((a, i) => (
-          <li
-            class="article-list-item"
-            style={`animation-delay: ${i * 0.07}s`}
-            set:html={articleRowHtml(a)}
-          />
-        ))
-      }
-    </ul>
+    <ul
+      class="article-list"
+      aria-live="polite"
+      data-state-scaffold
+      hidden={!showData}
+      set:html={articles.map(articleItemHtml).join('')}
+    />
   </div>
 </div>

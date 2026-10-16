@@ -9,8 +9,9 @@ import {
 } from '../../runtime/image-utils';
 import { formatMonthYear, rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { bookshelfState } from '../../runtime/widget-rules';
-// The updater's star markup: no whitespace text nodes between the stars.
-import { ratingStarsHtml } from '../../runtime/widget-markup';
+// The updater's star markup (no whitespace text nodes between the stars) and modal payload.
+import { bookDataJson, ratingStarsHtml } from '../../runtime/widget-markup';
+import { amazonBookUrl } from '../../runtime/adapters';
 import type { BookshelfProps } from './Bookshelf.types';
 
 const { books, localCovers = [], generatedAt } = Astro.props as BookshelfProps;
@@ -123,27 +124,8 @@ function localImageUrl(candidate: string | null): string | null {
           const fallbackAttr =
             imgSrc !== PLACEHOLDER_IMAGE_SRC || avifSrcset ? PLACEHOLDER_IMAGE_SRC : undefined;
           const meta = bookMeta[asin] || {};
-          const bookData = JSON.stringify({
-            title: b.title,
-            author: b.author,
-            asin: asin,
-            status: b.status,
-            statusLabel: statusLabels[b.status],
-            rating: b.rating,
-            progress: b.progress,
-            link: `https://www.amazon.com/dp/${asin}?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl`,
-            notes: b.notes || null,
-            finishedAt: b.finishedAt || null,
-            startedAt: b.startedAt || null,
-            series: meta.seriesName || null,
-            seriesNumber: meta.seriesNumber || null,
-            seriesTotal: meta.seriesTotal || null,
-            pages: meta.pages || null,
-            year: meta.year || null,
-            publicationDate: meta.publicationDate || null,
-            desc: meta.desc || null,
-            genres: meta.genres || [],
-            // Contract field names — BookModal reads `mainImage*` from here.
+          const bookData = bookDataJson(b, meta, statusLabels[b.status], {
+            link: amazonBookUrl(asin),
             mainImage: sanitizeImageUrl(b.mainImage, { baseUrl: Astro.url }),
             mainImageAvif: sanitizeImageUrl(b.mainImageAvif, sanitizerOptions),
           });
@@ -208,9 +190,9 @@ function localImageUrl(candidate: string | null): string | null {
                   <div class={`shelf-book-status shelf-status-${b.status}`}>
                     {statusLabels[b.status]}
                   </div>
-                  {b.rating && (
+                  {b.rating ? (
                     <div class="shelf-book-stars" set:html={ratingStarsHtml(b.rating)} />
-                  )}
+                  ) : null}
                   {b.status === 'finished' && b.finishedAt && (
                     <div class="shelf-book-finished-date">
                       {widgets.bookshelf.finishedDate.replace(

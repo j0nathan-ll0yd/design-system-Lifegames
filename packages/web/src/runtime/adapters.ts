@@ -344,7 +344,7 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
       status: mappedStatus,
       rating: b.rating ?? null,
       progress,
-      link: 'https://www.amazon.com/dp/' + b.asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl',
+      link: amazonBookUrl(b.asin),
       // Sanitize at the contract boundary. Renderers repeat the check at the
       // point of use because they also accept fixture and DOM-sourced data.
       // Rejected raster URLs paint the committed placeholder; rejected AVIF
@@ -410,6 +410,11 @@ export function adaptStarredRepos(data: GithubStarredReposExport, now?: number):
       datetime: r.starredAt
     }
   })
+}
+
+/** A book's Amazon link: the one URL the adapter, the Bookshelf template and the modal payload use. */
+export function amazonBookUrl(asin: string): string {
+  return 'https://www.amazon.com/dp/' + asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl'
 }
 
 export function adaptArticles(data: ArticlesExport | null, now?: number): AdaptedArticle[] {

@@ -8,10 +8,10 @@ import {enterUnavailable, insertStateNotice} from '../internal/card-state'
 import {writeHeartRateFooter} from '../internal/heart-rate-footer'
 import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {Freshness} from './freshness'
-import {articleRowHtml, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
+import {articleItemHtml, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
-import {composeSystemLines, formatAge} from './view-models'
+import {composeSystemLines, formatAge, READING_SERVER_PAGE_SIZE} from './view-models'
 import {formatMeasurement, formatMonthYear} from './widget-state'
 import {formatWorkoutDuration} from './widget-rules'
 import {workoutsRestHtml} from './workouts-markup'
@@ -459,15 +459,13 @@ export function updateReadingFeed(input: AdaptedArticle[] | null | undefined, fr
   }
 
   if (articles.length === 0) {
-    // renderWidgetEmpty hides the list (the scaffold) in place; the pager is
-    // not part of it and the server's empty card has none.
-    body.querySelector(':scope > .article-pagination')?.remove()
     renderWidgetEmpty('cardReading', {message: widgets.readingFeed.empty})
     return
   }
   revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
 
-  const PAGE_SIZE = 10
+  // One client page is the page the server renders.
+  const PAGE_SIZE = READING_SERVER_PAGE_SIZE
   const totalPages = Math.ceil(articles.length / PAGE_SIZE)
   const bodyEl = body as HTMLElement
 
@@ -489,12 +487,13 @@ export function updateReadingFeed(input: AdaptedArticle[] | null | undefined, fr
     // in place (renderWidgetEmpty), as the server renders `empty`.
     let html = '<ul class="article-list" aria-live="polite" data-state-scaffold>'
     pageArticles.forEach((a: AdaptedArticle, i: number) => {
-      html += '<li class="article-list-item" style="animation-delay: ' + i * 0.07 + 's">' + articleRowHtml(a) + '</li>'
+      html += articleItemHtml(a, i)
     })
     html += '</ul>'
 
     if (totalPages > 1) {
-      html += '<div class="article-pagination">'
+      // A scaffold too: an empty or unavailable card hides the pager with the list.
+      html += '<div class="article-pagination" data-state-scaffold>'
       for (let p = 1; p <= totalPages; p++) {
         const activeClass = p === page ? ' article-page-active' : ''
         const ariaCurrent = p === page ? ' aria-current="page"' : ''
@@ -778,29 +777,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
         return
       }
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      el.setAttribute('data-book',
-        JSON.stringify({
-          title: b.title,
-          author: b.author,
-          asin: b.asin,
-          status: b.status,
-          statusLabel: statusLabels[b.status],
-          rating: b.rating,
-          progress: b.progress,
-          link: b.link,
-          mainImage: b.mainImage,
-          mainImageAvif: b.mainImageAvif,
-          series: meta.seriesName || null,
-          seriesNumber: meta.seriesNumber || null,
-          seriesTotal: meta.seriesTotal || null,
-          pages: meta.pages || null,
-          year: meta.year || null,
-          desc: meta.desc || null,
-          genres: meta.genres || [],
-          notes: b.notes || null,
-          finishedAt: b.finishedAt || null,
-          startedAt: b.startedAt || null
-        }))
+      el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
       el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
 
@@ -907,36 +884,15 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
     let html = ''
     displayBooks.forEach((b, i: number) => {
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      const bookData = JSON.stringify({
-        title: b.title,
-        author: b.author,
-        asin: b.asin,
-        status: b.status,
-        statusLabel: statusLabels[b.status],
-        rating: b.rating,
-        progress: b.progress,
-        link: b.link,
-        mainImage: b.mainImage,
-        mainImageAvif: b.mainImageAvif,
-        series: meta.seriesName || null,
-        seriesNumber: meta.seriesNumber || null,
-        seriesTotal: meta.seriesTotal || null,
-        pages: meta.pages || null,
-        year: meta.year || null,
-        desc: meta.desc || null,
-        genres: meta.genres || [],
-        notes: b.notes || null,
-        finishedAt: b.finishedAt || null,
-        startedAt: b.startedAt || null
-      })
+      const bookData = bookDataJson(b, meta, statusLabels[b.status], b)
       var activeClass = b.status === 'reading' ? ' shelf-book-active' : ''
       html += '<li class="shelf-book' +
         activeClass +
         '" style="animation-delay: ' +
         i * 0.08 +
-        's" data-book=\'' +
-        bookData.replace(/'/g, '&#39;') +
-        '\' tabindex="0" aria-label="' +
+        's" data-book="' +
+        esc(bookData) +
+        '" tabindex="0" aria-label="' +
         a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) +
         '">'
       html += '<div class="shelf-cover-wrapper">'

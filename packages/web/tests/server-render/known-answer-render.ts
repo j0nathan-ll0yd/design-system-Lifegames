@@ -333,8 +333,9 @@ function bookshelf(): Projection {
       asin: b.asin,
       status: b.status,
       statusLabel: adapted.statusLabels[b.status],
-      ...(b.rating != null ? {rating: b.rating} : {}),
-      ...(progress != null ? {progress} : {}),
+      // bookDataJson writes a missing value as null, on every path.
+      rating: b.rating ?? null,
+      progress: progress ?? null,
       link: `https://www.amazon.com/dp/${b.asin}?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl`,
       notes: null,
       finishedAt: null,

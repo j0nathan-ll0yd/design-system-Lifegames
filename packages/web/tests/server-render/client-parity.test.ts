@@ -134,13 +134,13 @@ function normalizeStyle(value: string): string {
 /**
  * Every attribute of every element a reader or a stylesheet keys on: the
  * card root, each element with an id, the dots, the ring group, the bands,
- * the images, the links (href, rel, target), the lists (aria-live), every
- * tooltip and the reading notes. Inline styles cover ring offsets, fills, bars
+ * the images, the links (href, rel, target), the lists (aria-live) and their
+ * items, every tooltip and the reading notes. Inline styles cover ring offsets, fills, bars
  * and the sun dot.
  */
 function attributeMap(card: Element): string[] {
   const out: string[] = []
-  const els = [card, ...card.querySelectorAll('[id], .live-dot, [role="img"], .hydra-range, img, source, time, a, ul, [title], .article-list-note')]
+  const els = [card, ...card.querySelectorAll('[id], .live-dot, [role="img"], .hydra-range, img, source, time, a, ul, li, [title], .article-list-note')]
   els.forEach((el, i) => {
     const key = `${i}:${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`
     for (const a of [...el.attributes].sort((x, y) => x.name.localeCompare(y.name))) {
@@ -201,6 +201,11 @@ interface Card {
 }
 
 const H = raw('health', KA)
+const BOOKS = raw('books', KA)
+// A finished book rated 0: no stars on either side (and no stray "0").
+// A title an attribute must encode: both quotes, a literal "&amp;" and a tag.
+const BOOKS_HOSTILE_TITLE = {...BOOKS, books: BOOKS.books.map((b: any) => ({...b, title: `It's "A" &amp; <i>B</i>`}))}
+const BOOKS_RATED_ZERO = {...BOOKS, books: BOOKS.books.map((b: any) => (b.status === 'finished' ? {...b, rating: 0} : b))}
 const S = raw('sleep', KA)
 const PAUSED = raw('health', 'pausedHrGap')
 const {heartRate: _hr, heartRateVariabilitySDNN: _hrv, ...PAUSED_NO_HR} = PAUSED.quantities
@@ -342,6 +347,8 @@ const CARDS: Card[] = [
     cases: {
       live: {input: {books: raw('books', KA)}, state: 'live'},
       stale: {input: {books: aged('books', raw('books', KA))}, state: 'stale'},
+      'rated 0': {input: {books: BOOKS_RATED_ZERO}, state: 'live'},
+      'a title with quotes, an ampersand and a tag': {input: {books: BOOKS_HOSTILE_TITLE}, state: 'live'},
       empty: {input: {books: raw('books', 'empty')}, state: 'empty'}
     }
   },
@@ -444,7 +451,10 @@ describe('ReadingFeed: the server list is the updater first page', () => {
     const empty = {articles: raw('articles', 'empty')}
     const server = await serverCard(card, empty)
     const browser = await browserCard(card, empty, {articles: raw('articles', 'pagination')})
-    expect(document.querySelector('.article-pagination')).toBeNull()
+    // The pager is a scaffold: renderWidgetEmpty empties and hides it with the list.
+    const pager = document.querySelector('.article-pagination')!
+    expect(pager.hasAttribute('hidden')).toBe(true)
+    expect(pager.children).toHaveLength(0)
     expectSame(browser, server)
   })
 

@@ -47,13 +47,13 @@ const ARTICLE_NOTE_ICON = '<svg class="article-list-note-icon" viewBox="0 0 16 1
   '</svg>'
 
 /**
- * The children of one ReadingFeed row (`li.article-list-item`): the notes
- * icon with its tooltip, the title (a link when the URL is https), the
- * source, and the date. No whitespace between the inline children: a
- * whitespace text node renders as a space.
+ * One ReadingFeed row, `li.article-list-item`, at position `index` of its
+ * page: the notes icon with its tooltip, the title (a link when the URL is
+ * https), the source, and the date. No whitespace between the inline
+ * children: a whitespace text node renders as a space.
  */
-export function articleRowHtml(a: Article): string {
-  let html = ''
+export function articleItemHtml(a: Article, index: number): string {
+  let html = '<li class="article-list-item" style="animation-delay: ' + index * 0.07 + 's">'
   if (a.hasNotes) {
     html += '<span class="article-list-note" title="' + esc(a.noteText) + '">' + ARTICLE_NOTE_ICON + '</span>'
   }
@@ -69,7 +69,7 @@ export function articleRowHtml(a: Article): string {
   if (a.title) {
     html += '<span class="article-list-source">(' + esc(a.source) + ')</span>'
   }
-  return html + timeHtml('article-list-date', a.date, a.datetime)
+  return html + timeHtml('article-list-date', a.date, a.datetime) + '</li>'
 }
 
 /** The five rating stars of a Bookshelf book, with no whitespace between them. */
@@ -79,4 +79,67 @@ export function ratingStarsHtml(rating: number): string {
     html += '<span class="' + (s <= rating ? 'star-on' : 'star-off') + '">' + (s <= rating ? '\u2605' : '\u2606') + '</span>'
   }
   return html
+}
+
+/** The Bookshelf book fields the modal payload reads; both the props and the adapter entry fit. */
+export interface BookDataEntry {
+  asin: string
+  title: string
+  author: string
+  status: string
+  rating?: number | null
+  progress?: number | null
+  notes?: string | null
+  finishedAt?: string | null
+  startedAt?: string | null
+}
+
+/** The Bookshelf series and publication fields the modal payload reads. */
+export interface BookDataMeta {
+  seriesName?: string | null
+  seriesNumber?: number | null
+  seriesTotal?: number | null
+  pages?: number | null
+  year?: number | null
+  publicationDate?: string | null
+  desc?: string | null
+  genres?: string[]
+}
+
+/**
+ * The `data-book` JSON of one Bookshelf book, which the book modal reads. The
+ * template and both updater paths write it, so it has one owner: the same keys
+ * in the same order, a missing value as null. The caller passes the link and
+ * the cover URLs it has already resolved.
+ */
+export function bookDataJson(
+  b: BookDataEntry,
+  meta: BookDataMeta,
+  statusLabel: string | undefined,
+  resolved: {link: string; mainImage: string | null; mainImageAvif: string | null}
+): string {
+  return JSON.stringify({
+    title: b.title,
+    author: b.author,
+    asin: b.asin,
+    status: b.status,
+    statusLabel: statusLabel ?? null,
+    rating: b.rating ?? null,
+    progress: b.progress ?? null,
+    link: resolved.link,
+    notes: b.notes || null,
+    finishedAt: b.finishedAt || null,
+    startedAt: b.startedAt || null,
+    series: meta.seriesName || null,
+    seriesNumber: meta.seriesNumber || null,
+    seriesTotal: meta.seriesTotal || null,
+    pages: meta.pages || null,
+    year: meta.year || null,
+    publicationDate: meta.publicationDate || null,
+    desc: meta.desc || null,
+    genres: meta.genres || [],
+    // Contract field names: the modal reads `mainImage*` from here.
+    mainImage: resolved.mainImage,
+    mainImageAvif: resolved.mainImageAvif
+  })
 }
