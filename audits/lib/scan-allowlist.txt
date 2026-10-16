@@ -556,3 +556,6 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 # The copy hosting-string patch (decision 0160 Step 1.7): the changeset names the
 # @j0nathan-ll0yd/copy package it releases.
 .changeset/copy-workers-hosting.md:marker:j0nathan-ll0yd
+# The articles freshness change (LP #388 daily re-export): the changeset names the
+# @j0nathan-ll0yd/web package it releases.
+.changeset/articles-freshness-daily.md:marker:j0nathan-ll0yd

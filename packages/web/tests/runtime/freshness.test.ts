@@ -20,7 +20,7 @@ const REGISTRY: Record<FreshnessDomain, [number, number]> = {
   sleep: [12 * H, 24 * H],
   workouts: [12 * H, 24 * H],
   books: [7 * D, 14 * D],
-  articles: [7 * D, 14 * D],
+  articles: [3 * D, 6 * D],
   githubEvents: [7 * D, 14 * D],
   starredRepos: [18 * H, 36 * H],
   theatreReviews: [18 * H, 36 * H]
@@ -49,6 +49,17 @@ describe.each(Object.keys(REGISTRY) as FreshnessDomain[])('freshnessState(%s)', 
   it('reports degraded only past audit.error', () => {
     expect(isFreshnessDegraded(domain, ago(error), NOW)).toBe(false)
     expect(isFreshnessDegraded(domain, ago(error + 1), NOW)).toBe(true)
+  })
+})
+
+// LP #388 re-exports articles.json daily; the ages are 3x and 6x that cadence.
+describe('articles at the daily cadence', () => {
+  it('is live through 3 days, stale past 3 days, and degraded only past 6 days', () => {
+    expect(freshnessState('articles', ago(3 * D), NOW)).toBe('live')
+    expect(freshnessState('articles', ago(3 * D + 1), NOW)).toBe('stale')
+    expect(isFreshnessDegraded('articles', ago(3 * D + 1), NOW)).toBe(false)
+    expect(isFreshnessDegraded('articles', ago(6 * D), NOW)).toBe(false)
+    expect(isFreshnessDegraded('articles', ago(6 * D + 1), NOW)).toBe(true)
   })
 })
 

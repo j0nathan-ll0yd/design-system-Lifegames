@@ -28,7 +28,7 @@ export const EXPORT_FRESHNESS: Readonly<Record<FreshnessDomain, {readonly warnMs
   sleep: {warnMs: 12 * HOUR, errorMs: 24 * HOUR},
   workouts: {warnMs: 12 * HOUR, errorMs: 24 * HOUR},
   books: {warnMs: 7 * DAY, errorMs: 14 * DAY},
-  articles: {warnMs: 7 * DAY, errorMs: 14 * DAY},
+  articles: {warnMs: 3 * DAY, errorMs: 6 * DAY},
   githubEvents: {warnMs: 7 * DAY, errorMs: 14 * DAY},
   starredRepos: {warnMs: 18 * HOUR, errorMs: 36 * HOUR},
   theatreReviews: {warnMs: 18 * HOUR, errorMs: 36 * HOUR}
