@@ -28,7 +28,7 @@ public struct Identity: Codable, Sendable {
     /// THANKS sections.
     public let humansTxt: HumansTxt
     /// Site-wide navigation strings that no single page owns.
-    public let navigation: Navigation
+    public let navigation: IdentityNavigation
     /// Identity facts and biographical voices for Jonathan Lloyd.
     public let person: Person
     /// Privacy policy page copy — plain-English sections covering who operates the site, what
@@ -47,7 +47,7 @@ public struct Identity: Codable, Sendable {
         case about, contact, feed, humansTxt, navigation, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, navigation: Navigation, person: Person, privacy: Privacy, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, navigation: IdentityNavigation, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
         self.about = about
         self.contact = contact
@@ -85,7 +85,7 @@ public extension Identity {
         contact: IdentityContact? = nil,
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
-        navigation: Navigation? = nil,
+        navigation: IdentityNavigation? = nil,
         person: Person? = nil,
         privacy: Privacy? = nil,
         seo: SEO? = nil,
@@ -502,8 +502,8 @@ public extension HumansTxt {
 }
 
 /// Site-wide navigation strings that no single page owns.
-// MARK: - Navigation
-public struct Navigation: Codable, Sendable {
+// MARK: - IdentityNavigation
+public struct IdentityNavigation: Codable, Sendable {
     public let backLink: String
 
     public init(backLink: String) {
@@ -511,11 +511,11 @@ public struct Navigation: Codable, Sendable {
     }
 }
 
-// MARK: Navigation convenience initializers and mutators
+// MARK: IdentityNavigation convenience initializers and mutators
 
-public extension Navigation {
+public extension IdentityNavigation {
     init(data: Data) throws {
-        self = try newJSONDecoder().decode(Navigation.self, from: data)
+        self = try newJSONDecoder().decode(IdentityNavigation.self, from: data)
     }
 
     init(_ json: String, using encoding: String.Encoding = .utf8) throws {
@@ -531,8 +531,8 @@ public extension Navigation {
 
     func with(
         backLink: String? = nil
-    ) -> Navigation {
-        return Navigation(
+    ) -> IdentityNavigation {
+        return IdentityNavigation(
             backLink: backLink ?? self.backLink
         )
     }

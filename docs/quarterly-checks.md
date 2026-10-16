@@ -4,6 +4,6 @@ The register of deprecated items that `DEPRECATION.md` ("Quarterly Audit") names
 
 ### Q4 2026
 
-| Item                        | Type     | Deprecated In | Target Removal | replacedBy                     | Decision                                                                                   |
-| --------------------------- | -------- | ------------- | -------------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
-| `identity.privacy.backLink` | copy key | copy 4.1.0    | copy 5.0.0     | `identity.navigation.backLink` | extend: the website reads the old key until its follow-up PR adopts the replacement (0158) |
+| Item                        | Type     | Deprecated In | Target Removal | replacedBy                     | Decision                                                                                |
+| --------------------------- | -------- | ------------- | -------------- | ------------------------------ | --------------------------------------------------------------------------------------- |
+| `identity.privacy.backLink` | copy key | copy 4.1.0    | copy 5.0.0     | `identity.navigation.backLink` | new: the website adopts the replacement in a follow-up PR after the copy release (0158) |

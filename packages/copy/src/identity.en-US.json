@@ -411,7 +411,7 @@
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-10-16",
-        "rationale": "Atlas decision 0158 step 5b. The website read identity.privacy.backLink on every secondary page, a privacy-page key reused as a generic link. Same text as that key: a short sentence-case label with a verb (VOICE.md label register). The website adopts this key in a follow-up PR after the copy release."
+        "rationale": "Atlas decision 0158 step 5b. The website read identity.privacy.backLink on every secondary page, a privacy-page key reused as a generic link. Same text and register as that key: a short sentence-case label (VOICE.md label register). The website adopts this key in a follow-up PR after the copy release."
       }
     }
   },

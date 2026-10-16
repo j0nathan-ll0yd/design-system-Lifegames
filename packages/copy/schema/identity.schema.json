@@ -145,6 +145,7 @@
     },
     "navigation": {
       "type": "object",
+      "title": "IdentityNavigation",
       "description": "Site-wide navigation strings that no single page owns.",
       "additionalProperties": false,
       "required": ["backLink"],

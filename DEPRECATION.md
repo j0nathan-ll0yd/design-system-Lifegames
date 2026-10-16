@@ -86,9 +86,17 @@ Mark the leaf's `$ref` node in the rich schema (`packages/copy/schema/<namespace
 }
 ```
 
-The copy build carries both annotations into every generated artifact: the flat schema gets the `deprecated` keyword, the TS type an `@deprecated` JSDoc, the Zod schema a `.describe()`, and the Swift struct a doc comment. In the authoring file (`src/<namespace>.en-US.json`), keep the value and record the deprecation in `_meta.description` and `_meta.rationale`.
+The description starts with `Deprecated: use `<namespace>.<path>` instead.` or `Deprecated: no replacement.`. The copy build carries both annotations into every generated artifact: the flat schema gets the `deprecated` keyword, the TS type an `@deprecated` JSDoc, the Zod schema a `.describe()`, and the Swift property a `///` doc comment. In the authoring file (`src/<namespace>.en-US.json`), keep the value and record the deprecation in `_meta.description` and `_meta.rationale`.
 
-The build fails when a deprecated key names no replacement, names a key that is not a leaf of the same namespace, or names a key that is itself deprecated (`packages/copy/scripts/deprecation.ts`).
+Swift gets a doc comment, not `@available(*, deprecated)`. The generated memberwise `init` and `with(...)` read every property, so the attribute raises two compiler warnings inside `LifegamesCopy` for each deprecated key. A Swift consumer that reads a deprecated copy key therefore sees no compiler warning.
+
+The build exits 1 (`packages/copy/scripts/deprecation.ts`) when a deprecation:
+
+- does not start its description with one of the two forms above;
+- names a replacement that is not a leaf of the same namespace, or is itself deprecated;
+- marks a group, not a leaf;
+- marks an object-valued leaf (`CopyLink`). Its flat form is a `$ref`, whose sibling annotations Zod and Swift codegen drop;
+- sets `deprecated` to anything but the boolean `true`.
 
 ## Survival Period
 

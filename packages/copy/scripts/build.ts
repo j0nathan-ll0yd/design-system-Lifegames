@@ -114,10 +114,13 @@ function flatLeafForm(ctx: FlatContext, defName: string): JsonSchema {
 }
 
 /**
- * The consumer-facing annotations a leaf's `$ref` node may carry: a deprecated
- * key's `deprecated: true` and the `description` naming its replacement
- * (DEPRECATION.md, "Copy keys"). They become the TS `@deprecated` JSDoc, the
- * Zod `.describe()` and the flat schema's own `deprecated` keyword.
+ * The consumer-facing annotations a scalar leaf's `$ref` node may carry: a
+ * deprecated key's `deprecated: true` and the `description` naming its
+ * replacement (DEPRECATION.md, "Copy Keys"). They become the TS `@deprecated`
+ * JSDoc, the Zod `.describe()`, the Swift doc comment and the flat schema's own
+ * `deprecated` keyword. An object-valued leaf carries none: its flat form is a
+ * `$ref`, whose siblings Zod and Swift codegen drop (scripts/deprecation.ts
+ * refuses to deprecate one).
  */
 function leafAnnotations(node: JsonSchema): JsonSchema {
   return {...(typeof node.description === 'string' ? {description: node.description} : {}), ...(node.deprecated === true ? {deprecated: true} : {})}
@@ -138,7 +141,7 @@ function deriveFlat(node: JsonSchema, ctx: FlatContext): JsonSchema {
     // inline copies of the same shape emit LlmLink1…LlmLinkN and LinkSiteClass/LinkGithubClass/….
     const hoistedName = `${ctx.prefix}${match[1]!.replace(/^Copy/, '')}`
     ctx.hoisted[hoistedName] = {title: hoistedName, ...flat}
-    return {$ref: `#/$defs/${hoistedName}`, ...leafAnnotations(node)}
+    return {$ref: `#/$defs/${hoistedName}`}
   }
   if (node && node.type === 'object' && node.properties) {
     const properties: JsonSchema = {}
