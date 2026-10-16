@@ -11,6 +11,11 @@ export interface Article {
   date: string;
   // ISO timestamp behind `date`, rendered as <time datetime>.
   datetime?: string;
+  // The article link; only an https URL renders as an <a href>.
+  url?: string | null;
+  // True when the reader left notes; `noteText` is their tooltip.
+  hasNotes?: boolean;
+  noteText?: string | null;
 }
 
 export interface ReadingFeedProps extends WidgetStateProps {

@@ -8,7 +8,7 @@
 // rendering (no z-index required), and UA margin:auto centering.
 
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
-import {esc} from './html-utils'
+import {esc, safeHttpsUrl} from './html-utils'
 import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
 import {formatFinishedDate} from './updaters'
 
@@ -59,6 +59,22 @@ function normalizeGenres(g: BookData['genres']): string[] {
   return result
 }
 
+/**
+ * A numeric field as a finite number, or null. The book is parsed from the
+ * `data-book` attribute, so a field typed as a number can hold any JSON value;
+ * only a number reaches the markup.
+ */
+function finite(v: unknown): number | null {
+  return typeof v === 'number' && Number.isFinite(v) ? v : null
+}
+
+/** The status as one class-name token: letters only, so it cannot leave the attribute. */
+function statusToken(v: unknown): string {
+  return typeof v === 'string' && /^[A-Za-z]+$/.test(v) ? v : ''
+}
+
+// Every string field below is escaped (esc) or reduced to a closed form
+// (finite, statusToken, safeHttpsUrl) before it reaches innerHTML.
 function renderModalHtml(b: BookData): string {
   // No cover in the export → the first-party placeholder. Never a synthesized
   // third-party URL (atlas decision 0086).
@@ -77,20 +93,23 @@ function renderModalHtml(b: BookData): string {
   html += `<div class="book-modal-title">${esc(b.title || '')}</div>`
   if (b.series) {
     let seriesHtml = esc(b.series)
-    if (b.seriesNumber) {
-      seriesHtml += ` <span style="color:var(--neon-green)">&middot; Book ${b.seriesNumber}`
-      if (b.seriesTotal) {
-        seriesHtml += ` of ${b.seriesTotal}`
+    const seriesNumber = finite(b.seriesNumber)
+    const seriesTotal = finite(b.seriesTotal)
+    if (seriesNumber) {
+      seriesHtml += ` <span style="color:var(--neon-green)">&middot; Book ${seriesNumber}`
+      if (seriesTotal) {
+        seriesHtml += ` of ${seriesTotal}`
       }
       seriesHtml += '</span>'
     }
     html += `<div class="book-modal-series">${seriesHtml}</div>`
   }
   html += `<div class="book-modal-author">${esc(b.author || '')}</div>`
-  if (b.rating) {
+  const rating = finite(b.rating)
+  if (rating) {
     html += '<div class="book-modal-stars">'
     for (let s = 1; s <= 5; s++) {
-      html += `<span class="${s <= b.rating ? 'star-on' : 'star-off'}">${s <= b.rating ? '★' : '☆'}</span>`
+      html += `<span class="${s <= rating ? 'star-on' : 'star-off'}">${s <= rating ? '★' : '☆'}</span>`
     }
     html += '</div>'
   }
@@ -100,20 +119,22 @@ function renderModalHtml(b: BookData): string {
   html += '<div class="book-modal-body">'
   html += '<div class="book-modal-stats">'
   html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${
-    b.pages || '—'
+    finite(b.pages) || '—'
   }</div><div class="book-modal-stat-label">${widgets.bookModal.pages}</div></div>`
   html += `<div class="book-modal-stat"><div class="book-modal-stat-val">${
-    b.year || '—'
+    finite(b.year) || '—'
   }</div><div class="book-modal-stat-label">${widgets.bookModal.published}</div></div>`
-  html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${b.status}" style="font-size:0.7rem;margin:0">${
-    b.statusLabel || ''
-  }</div><div class="book-modal-stat-label">${widgets.bookModal.status}</div></div>`
+  html += `<div class="book-modal-stat"><div class="book-modal-stat-val shelf-book-status shelf-status-${
+    statusToken(b.status)
+  }" style="font-size:0.7rem;margin:0">${esc(b.statusLabel)}</div><div class="book-modal-stat-label">${widgets.bookModal.status}</div></div>`
   html += '</div>'
-  if (b.status === 'reading' && b.progress !== undefined) {
-    html += `<div><div class="book-modal-progress"><div class="book-modal-progress-fill" style="width:${b.progress}%"></div></div>`
-    html += `<div class="book-modal-progress-label">${widgets.bookModal.progressSuffix.replace('{percent}', String(b.progress))}</div></div>`
+  const progress = finite(b.progress)
+  if (b.status === 'reading' && progress !== null) {
+    html += `<div><div class="book-modal-progress"><div class="book-modal-progress-fill" style="width:${progress}%"></div></div>`
+    html += `<div class="book-modal-progress-label">${esc(widgets.bookModal.progressSuffix.replace('{percent}', String(progress)))}</div></div>`
   }
-  if (b.status === 'finished' && b.finishedAt) {
+  // An unparseable date renders no line: Intl.DateTimeFormat throws on it.
+  if (b.status === 'finished' && b.finishedAt && Number.isFinite(Date.parse(b.finishedAt))) {
     html += `<div class="book-modal-finished-date">${esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt)))}</div>`
   }
   if (b.desc) {
@@ -136,8 +157,10 @@ function renderModalHtml(b: BookData): string {
     html += `<div class="book-modal-notes-text">${esc(b.notes)}</div>`
     html += '</div>'
   }
-  if (b.link) {
-    html += `<div><a href="${esc(b.link)}" target="_blank" rel="noopener" class="book-modal-amazon">${widgets.bookModal.amazonCta}</a></div>`
+  // Only an https link becomes an href, as in the other widgets.
+  const link = safeHttpsUrl(b.link)
+  if (link) {
+    html += `<div><a href="${esc(link)}" target="_blank" rel="noopener" class="book-modal-amazon">${widgets.bookModal.amazonCta}</a></div>`
   }
   html += '</div>'
   return html

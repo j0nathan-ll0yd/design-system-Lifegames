@@ -80,9 +80,21 @@ export function toWorkoutsList(entries: readonly WorkoutEntry[] | null): Workout
 /** Articles the server renders: one client page. */
 export const READING_SERVER_PAGE_SIZE = 10
 
-/** Adapter articles → widget articles: title, source, date (+ ISO datetime), at most 10. */
+/**
+ * Adapter articles → widget articles, at most 10: title, source, date (+ ISO
+ * datetime), the link and the notes. The row is the updater's row
+ * (articleRowHtml), so the server must carry every field the updater reads.
+ */
 export function toReadingArticles(articles: readonly AdaptedArticle[]): Article[] {
-  return articles.slice(0, READING_SERVER_PAGE_SIZE).map((a) => ({title: a.title, source: a.source, date: a.date, datetime: a.datetime}))
+  return articles.slice(0, READING_SERVER_PAGE_SIZE).map((a) => ({
+    title: a.title,
+    source: a.source,
+    date: a.date,
+    datetime: a.datetime,
+    url: a.url,
+    hasNotes: a.hasNotes,
+    noteText: a.noteText
+  }))
 }
 
 // ── System status ───────────────────────────────────────────────────

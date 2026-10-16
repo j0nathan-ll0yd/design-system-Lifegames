@@ -10,10 +10,12 @@
 // updater with the adapted export and `exportFreshness(domain, export, NOW)`.
 //
 // The two must agree on `data-ssr-state`, `data-generated-at`, the paused and
-// loading classes, every visible text node, and every attribute of the
-// elements a reader or a stylesheet keys on (attributeMap). "Visible" models the
-// package's CSS: no `hidden` subtree, no skeleton, no <noscript>, and under
-// `.is-paused` the paused block instead of the value scaffold.
+// loading classes, every visible text node, every attribute of the elements a
+// reader or a stylesheet keys on (attributeMap), and the exact markup of the
+// inline runs whose spacing a whitespace text node changes (inlineMarkup).
+// "Visible" models the package's CSS: no `hidden` subtree, no skeleton, no
+// <noscript>, and under `.is-paused` the paused block instead of the value
+// scaffold.
 import {experimental_AstroContainer as AstroContainer} from 'astro/container'
 import {JSDOM} from 'jsdom'
 import {readFileSync} from 'node:fs'
@@ -113,6 +115,7 @@ interface CardSnapshot {
   loading: boolean
   text: string[]
   attrs: string[]
+  markup: string[]
 }
 
 // Attributes that differ by design, not by rendering: Astro's dev-only source
@@ -130,12 +133,14 @@ function normalizeStyle(value: string): string {
 
 /**
  * Every attribute of every element a reader or a stylesheet keys on: the
- * card root, each element with an id, the dots, the ring group, the bands
- * and the images. Inline styles cover ring offsets, fills, bars and the sun dot.
+ * card root, each element with an id, the dots, the ring group, the bands,
+ * the images, the links (href, rel, target), the lists (aria-live), every
+ * tooltip and the reading notes. Inline styles cover ring offsets, fills, bars
+ * and the sun dot.
  */
 function attributeMap(card: Element): string[] {
   const out: string[] = []
-  const els = [card, ...card.querySelectorAll('[id], .live-dot, [role="img"], .hydra-range, img, source, time')]
+  const els = [card, ...card.querySelectorAll('[id], .live-dot, [role="img"], .hydra-range, img, source, time, a, ul, [title], .article-list-note')]
   els.forEach((el, i) => {
     const key = `${i}:${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`
     for (const a of [...el.attributes].sort((x, y) => x.name.localeCompare(y.name))) {
@@ -149,6 +154,15 @@ function attributeMap(card: Element): string[] {
   return out
 }
 
+// Inline runs: a whitespace text node between two inline children renders as
+// a space, so these must match byte for byte (Bookshelf stars, article rows).
+const INLINE_RUNS = '.shelf-book-stars, .article-list-item'
+
+/** The serialized children of each inline run, without Astro's dev-only attributes. */
+function inlineMarkup(card: Element): string[] {
+  return [...card.querySelectorAll(INLINE_RUNS)].map((el) => `${el.className}: ${el.innerHTML.replace(/ data-astro-[\w-]+(="[^"]*")?/g, '')}`)
+}
+
 function snapshot(card: Element): CardSnapshot {
   return {
     state: card.getAttribute('data-ssr-state'),
@@ -156,7 +170,8 @@ function snapshot(card: Element): CardSnapshot {
     paused: card.classList.contains('is-paused'),
     loading: card.classList.contains('is-loading'),
     text: visibleText(card),
-    attrs: attributeMap(card)
+    attrs: attributeMap(card),
+    markup: inlineMarkup(card)
   }
 }
 
@@ -312,6 +327,9 @@ const CARDS: Card[] = [
     cases: {
       live: {input: {articles: raw('articles', KA)}, state: 'live'},
       stale: {input: {articles: aged('articles', raw('articles', KA))}, state: 'stale'},
+      // The notes icon and its tooltip, and the source promoted into an empty title.
+      'with notes': {input: {articles: raw('articles', 'withNotes')}, state: 'live'},
+      'empty title': {input: {articles: raw('articles', 'hoodlineEmptyTitle')}, state: 'live'},
       empty: {input: {articles: raw('articles', 'empty')}, state: 'empty'}
     }
   },
@@ -392,5 +410,65 @@ describe.each(CARDS)('$name: server render and browser updater agree', (card) =>
     const server = await serverCard(card, c.input)
     const browser = await browserCard(card, c.input, card.cases.live!.input)
     expectSame(browser, server)
+  })
+})
+
+// The server renders the first page of the feed only (toReadingArticles, one
+// client page) and no pager: a no-JS reader has no handler for the page
+// buttons. The updater then renders the whole feed (up to 30) with the pager.
+// Its first page must be the server's list, element for element.
+describe('ReadingFeed: the server list is the updater first page', () => {
+  async function lists(input: Input): Promise<{server: Element; browser: Element}> {
+    const card = CARDS.find((c) => c.name === 'ReadingFeed')!
+    const exports: DashboardExports = {articles: {data: input.articles}}
+    const html = await container.renderToString(ReadingFeed, {props: toDashboardViewModels(exports, NOW).readingFeed as never})
+    const server = new JSDOM(`<!doctype html><body>${html}</body>`).window.document.getElementById(card.id)!
+    const doc = mount(await container.renderToString(ReadingFeed, {props: {state: 'loading'}}))
+    card.apply(input)
+    return {server, browser: doc.getElementById(card.id)!}
+  }
+  const list = (card: Element): Element => card.querySelector('ul.article-list')!
+
+  it('three pages: the same first-page list, the pager on the browser only', async () => {
+    const {server, browser} = await lists({articles: raw('articles', 'pagination')})
+    expect(list(server).querySelectorAll('li')).toHaveLength(10)
+    expect(attributeMap(list(browser))).toEqual(attributeMap(list(server)))
+    expect(inlineMarkup(list(browser))).toEqual(inlineMarkup(list(server)))
+    expect(visibleText(list(browser))).toEqual(visibleText(list(server)))
+    expect(server.querySelector('.article-pagination')).toBeNull()
+    expect([...browser.querySelectorAll('.article-page-btn')].map((b) => b.textContent)).toEqual(['1', '2', '3'])
+  })
+
+  it('three pages, then an empty read: the pager goes with the list', async () => {
+    const card = CARDS.find((c) => c.name === 'ReadingFeed')!
+    const empty = {articles: raw('articles', 'empty')}
+    const server = await serverCard(card, empty)
+    const browser = await browserCard(card, empty, {articles: raw('articles', 'pagination')})
+    expect(document.querySelector('.article-pagination')).toBeNull()
+    expectSame(browser, server)
+  })
+
+  // A hostile export: the server row escapes every field and links only an
+  // https URL, exactly as the updater does.
+  it('a hostile article renders no markup from its fields, on either side', async () => {
+    const PAYLOAD = '"><img src=x onerror="alert(1)" data-injected>'
+    const base = raw('articles', KA)
+    const article = (over: Record<string, unknown>) => ({...base.articles[0], ...over})
+    const articles = {
+      ...base,
+      articles: [
+        article({articleTitle: PAYLOAD, sourceTitle: PAYLOAD, articleUrl: 'javascript:alert(1)', notes: [{comment: PAYLOAD}]}),
+        article({articleUrl: 'https://example.com/?q="><img src=x onerror=alert(1)>', notes: [{comment: 'a & b'}]})
+      ]
+    }
+    const {server, browser} = await lists({articles})
+    for (const card of [server, browser]) {
+      expect(card.querySelectorAll('img, [onerror], [data-injected]')).toHaveLength(0)
+      expect(card.querySelectorAll('a[href]')).toHaveLength(1)
+      expect(card.querySelector('a[href]')!.getAttribute('href')).toBe('https://example.com/?q="><img src=x onerror=alert(1)>')
+      expect(card.querySelector('.article-list-title')!.textContent).toBe(PAYLOAD)
+      expect(card.querySelector('.article-list-note')!.getAttribute('title')).toBe(PAYLOAD)
+    }
+    expect(inlineMarkup(list(browser))).toEqual(inlineMarkup(list(server)))
   })
 })

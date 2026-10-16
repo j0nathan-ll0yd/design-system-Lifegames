@@ -27,6 +27,14 @@
                 "type": ["string", "null"],
                 "optional": true
               },
+              "hasNotes": {
+                "type": ["boolean", "null"],
+                "optional": true
+              },
+              "noteText": {
+                "type": ["string", "null"],
+                "optional": true
+              },
               "source": {
                 "type": "string",
                 "optional": false
@@ -34,6 +42,10 @@
               "title": {
                 "type": "string",
                 "optional": false
+              },
+              "url": {
+                "type": ["string", "null"],
+                "optional": true
               }
             }
           }

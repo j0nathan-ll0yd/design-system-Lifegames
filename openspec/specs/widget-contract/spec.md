@@ -696,8 +696,12 @@ with the server's markup. Bookshelf SHALL carry its mirrored cover paths on the 
 
 This is a **blocking** rule. `packages/web/tests/server-render/client-parity.test.ts` renders each
 card on the server from the view models and through its updater from the `loading` markup, for the
-same export, and compares `data-ssr-state`, `data-generated-at`, the paused and loading classes and
-every visible text node. `client-gaps.test.ts` and `tests/runtime/freshness.test.ts` hold the bands,
+same export, and compares `data-ssr-state`, `data-generated-at`, the paused and loading classes,
+every visible text node, every attribute of the keyed elements (links with `href`, `rel` and
+`target`, lists with `aria-live`, tooltips and the reading notes among them), and the serialized
+markup of the inline runs a whitespace text node would respace (Bookshelf stars, ReadingFeed rows).
+The server ReadingFeed renders the first client page and no pager; its list SHALL equal the
+updater's first page. `client-gaps.test.ts` and `tests/runtime/freshness.test.ts` hold the bands,
 the unavailable transition, the paused state, the mirrored covers and the freshness boundaries. All
 three run inside `pnpm --filter @j0nathan-ll0yd/web test` in the required `contract-ts` status
 context.
@@ -708,6 +712,13 @@ context.
 - **WHEN** the updater runs with the adapted export and `exportFreshness(domain, export, now)`
 - **THEN** the card SHALL carry the same `data-ssr-state`, `data-generated-at` and visible text the
   server renders from `toDashboardViewModels` for the same export and time
+
+#### Scenario: A reading feed longer than one page
+
+- **GIVEN** an articles export with more articles than one client page
+- **WHEN** the server renders ReadingFeed and the updater fills a `loading` card
+- **THEN** the server list SHALL equal the updater's first page, link for link and note for note,
+  and only the updater SHALL render the pager
 
 #### Scenario: An export is older than its audit.warn age
 

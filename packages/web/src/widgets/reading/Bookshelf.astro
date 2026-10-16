@@ -9,6 +9,8 @@ import {
 } from '../../runtime/image-utils';
 import { formatMonthYear, rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { bookshelfState } from '../../runtime/widget-rules';
+// The updater's star markup: no whitespace text nodes between the stars.
+import { ratingStarsHtml } from '../../runtime/widget-markup';
 import type { BookshelfProps } from './Bookshelf.types';
 
 const { books, localCovers = [], generatedAt } = Astro.props as BookshelfProps;
@@ -207,13 +209,7 @@ function localImageUrl(candidate: string | null): string | null {
                     {statusLabels[b.status]}
                   </div>
                   {b.rating && (
-                    <div class="shelf-book-stars">
-                      {[1, 2, 3, 4, 5].map((s: number) => (
-                        <span class={s <= b.rating ? 'star-on' : 'star-off'}>
-                          {s <= b.rating ? '\u2605' : '\u2606'}
-                        </span>
-                      ))}
-                    </div>
+                    <div class="shelf-book-stars" set:html={ratingStarsHtml(b.rating)} />
                   )}
                   {b.status === 'finished' && b.finishedAt && (
                     <div class="shelf-book-finished-date">

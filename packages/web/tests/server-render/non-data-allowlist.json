@@ -661,6 +661,7 @@
         "h3 class=widget-label",
         "span class=widget-timestamp",
         "span data-live-label=recent",
+        "ul aria-live=polite",
         "ul class=article-list",
         "ul data-state-scaffold=",
         "ul hidden="

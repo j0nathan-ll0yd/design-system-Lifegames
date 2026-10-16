@@ -310,7 +310,8 @@ function readingFeed(): Projection {
   const labels = adaptArticles(raw('articles'), Date.parse(RENDER_NOW))
   return {
     text: [widgets.readingFeed.title, ...articles.flatMap((a: any, i: number) => [a.articleTitle, `(${a.sourceTitle})`, labels[i]!.date])],
-    attrs: articles.map((a: any) => `datetime=${a.savedAt}`),
+    // Each row links its https article URL (the updater's row, articleRowHtml).
+    attrs: articles.flatMap((a: any) => [`href=${a.articleUrl}`, `datetime=${a.savedAt}`]),
     styles: articles.map((_: unknown, i: number) => `li animation-delay: ${i * 0.07}s`),
     classes: ['article-list-date', 'article-list-item', 'article-list-source', 'article-list-title']
   }

@@ -44,6 +44,22 @@
                         "type": "null"
                       }
                     ]
+                  },
+                  "url": {
+                    "type": ["string", "null"]
+                  },
+                  "hasNotes": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "noteText": {
+                    "type": ["string", "null"]
                   }
                 },
                 "required": ["title", "source", "date"]
