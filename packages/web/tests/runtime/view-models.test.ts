@@ -38,8 +38,12 @@ describe('toReadingArticles', () => {
     noteText: null
   })
 
-  it('projects title, source, date and datetime only', () => {
-    expect(toReadingArticles([article(1)])).toEqual([{title: 'T1', source: 'S', date: '1h ago', datetime: '2026-03-18T11:00:00Z'}])
+  // The server row is the updater's row (articleRowHtml): it needs the link and the notes too.
+  it('carries every field the updater row reads: title, source, date, datetime, url and notes', () => {
+    expect(toReadingArticles([article(1), {...article(2), hasNotes: true, noteText: 'n'}])).toEqual([
+      {title: 'T1', source: 'S', date: '1h ago', datetime: '2026-03-18T11:00:00Z', url: 'https://example.com/1', hasNotes: false, noteText: null},
+      {title: 'T2', source: 'S', date: '1h ago', datetime: '2026-03-18T11:00:00Z', url: 'https://example.com/2', hasNotes: true, noteText: 'n'}
+    ])
   })
 
   it('caps the server render at 10 articles (one client page)', () => {

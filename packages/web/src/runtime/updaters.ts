@@ -8,10 +8,10 @@ import {enterUnavailable, insertStateNotice} from '../internal/card-state'
 import {writeHeartRateFooter} from '../internal/heart-rate-footer'
 import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {Freshness} from './freshness'
-import {heartRateEmptyHtml, hydrationRangeHtml} from './widget-markup'
+import {articleItemHtml, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
-import {composeSystemLines, formatAge} from './view-models'
+import {composeSystemLines, formatAge, READING_SERVER_PAGE_SIZE} from './view-models'
 import {formatMeasurement, formatMonthYear} from './widget-state'
 import {formatWorkoutDuration} from './widget-rules'
 import {workoutsRestHtml} from './workouts-markup'
@@ -354,13 +354,6 @@ function writeHydrationBand(vessel: Element | null, kind: 'water' | 'coffee', ba
   }
 }
 
-/** A relative date in <time datetime> when its ISO source is known. */
-function timeHtml(className: string, label: string, datetime: string | undefined): string {
-  return datetime
-    ? '<time class="' + className + '" datetime="' + esc(datetime) + '">' + esc(label) + '</time>'
-    : '<span class="' + className + '">' + esc(label) + '</span>'
-}
-
 export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undefined, freshness?: Freshness): void {
   const card = document.getElementById('cardDevLog')
   if (!card) {
@@ -414,10 +407,11 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undef
 
     // Only an https event URL becomes an href (shared with the template).
     const eventHref = safeHttpsUrl(e.url)
+    // The analytics hook the template writes on every line, linked or not.
     if (eventHref) {
-      html += '<a class="gh-dal-line" href="' + esc(eventHref) + '" target="_blank" rel="noopener noreferrer">'
+      html += '<a class="gh-dal-line" href="' + esc(eventHref) + '" target="_blank" rel="noopener noreferrer" data-sa-link-event="activity_click">'
     } else {
-      html += '<a class="gh-dal-line">'
+      html += '<a class="gh-dal-line" data-sa-link-event="activity_click">'
     }
     html += '<span class="gh-dal-icon" style="color: ' + icon.color + ';">' + icon.symbol + '</span>'
     html += '<span class="gh-dal-repo">' + esc(e.repo) + '</span>'
@@ -470,7 +464,8 @@ export function updateReadingFeed(input: AdaptedArticle[] | null | undefined, fr
   }
   revealLiveData(card, freshness?.state ?? 'live', {generatedAt: freshness?.generatedAt})
 
-  const PAGE_SIZE = 10
+  // One client page is the page the server renders.
+  const PAGE_SIZE = READING_SERVER_PAGE_SIZE
   const totalPages = Math.ceil(articles.length / PAGE_SIZE)
   const bodyEl = body as HTMLElement
 
@@ -488,39 +483,17 @@ export function updateReadingFeed(input: AdaptedArticle[] | null | undefined, fr
     const start = (page - 1) * PAGE_SIZE
     const pageArticles = articles.slice(start, start + PAGE_SIZE)
 
-    let html = '<ul class="article-list" aria-live="polite">'
+    // The list is the template's value scaffold: a later empty read hides it
+    // in place (renderWidgetEmpty), as the server renders `empty`.
+    let html = '<ul class="article-list" aria-live="polite" data-state-scaffold>'
     pageArticles.forEach((a: AdaptedArticle, i: number) => {
-      html += '<li class="article-list-item" style="animation-delay: ' + i * 0.07 + 's">'
-      if (a.hasNotes) {
-        html += '<span class="article-list-note" title="' + esc(a.noteText || '') + '">'
-        html += '<svg class="article-list-note-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">'
-        html += '<path d="M2 3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H5l-3 3V3z" stroke="currentColor" stroke-width="1.2"/>'
-        html += '<line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" stroke-width="1"/>'
-        html += '<line x1="5" y1="8.5" x2="9" y2="8.5" stroke="currentColor" stroke-width="1"/>'
-        html += '</svg>'
-        html += '</span>'
-      }
-      // Empty-title rows (e.g. Hoodline) promote the source into the title slot
-      // so the row never renders blank-left; the parenthetical source is then
-      // suppressed to avoid duplicating it.
-      const titleText = a.title || a.source
-      // Only an https article URL becomes an href, as in the other widgets.
-      const articleHref = safeHttpsUrl(a.url)
-      if (articleHref) {
-        html += '<a class="article-list-title" href="' + esc(articleHref) + '" target="_blank" rel="noopener noreferrer">' + esc(titleText) + '</a>'
-      } else {
-        html += '<span class="article-list-title">' + esc(titleText) + '</span>'
-      }
-      if (a.title) {
-        html += '<span class="article-list-source">(' + esc(a.source) + ')</span>'
-      }
-      html += timeHtml('article-list-date', a.date, a.datetime)
-      html += '</li>'
+      html += articleItemHtml(a, i)
     })
     html += '</ul>'
 
     if (totalPages > 1) {
-      html += '<div class="article-pagination">'
+      // A scaffold too: an empty or unavailable card hides the pager with the list.
+      html += '<div class="article-pagination" data-state-scaffold>'
       for (let p = 1; p <= totalPages; p++) {
         const activeClass = p === page ? ' article-page-active' : ''
         const ariaCurrent = p === page ? ' aria-current="page"' : ''
@@ -804,29 +777,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
         return
       }
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      el.setAttribute('data-book',
-        JSON.stringify({
-          title: b.title,
-          author: b.author,
-          asin: b.asin,
-          status: b.status,
-          statusLabel: statusLabels[b.status],
-          rating: b.rating,
-          progress: b.progress,
-          link: b.link,
-          mainImage: b.mainImage,
-          mainImageAvif: b.mainImageAvif,
-          series: meta.seriesName || null,
-          seriesNumber: meta.seriesNumber || null,
-          seriesTotal: meta.seriesTotal || null,
-          pages: meta.pages || null,
-          year: meta.year || null,
-          desc: meta.desc || null,
-          genres: meta.genres || [],
-          notes: b.notes || null,
-          finishedAt: b.finishedAt || null,
-          startedAt: b.startedAt || null
-        }))
+      el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
       el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
 
@@ -862,10 +813,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       // Stars: only for non-reading books
       const existingStars = el.querySelector('.shelf-book-stars')
       if (b.status !== 'reading' && b.rating) {
-        let starsHtml = ''
-        for (let s = 1; s <= 5; s++) {
-          starsHtml += '<span class="' + (s <= b.rating ? 'star-on' : 'star-off') + '">' + (s <= b.rating ? '\u2605' : '\u2606') + '</span>'
-        }
+        const starsHtml = ratingStarsHtml(b.rating)
         if (existingStars) {
           existingStars.innerHTML = starsHtml
         } else {
@@ -936,36 +884,15 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
     let html = ''
     displayBooks.forEach((b, i: number) => {
       const meta = bookMeta[b.asin] || ({} as BookMeta)
-      const bookData = JSON.stringify({
-        title: b.title,
-        author: b.author,
-        asin: b.asin,
-        status: b.status,
-        statusLabel: statusLabels[b.status],
-        rating: b.rating,
-        progress: b.progress,
-        link: b.link,
-        mainImage: b.mainImage,
-        mainImageAvif: b.mainImageAvif,
-        series: meta.seriesName || null,
-        seriesNumber: meta.seriesNumber || null,
-        seriesTotal: meta.seriesTotal || null,
-        pages: meta.pages || null,
-        year: meta.year || null,
-        desc: meta.desc || null,
-        genres: meta.genres || [],
-        notes: b.notes || null,
-        finishedAt: b.finishedAt || null,
-        startedAt: b.startedAt || null
-      })
+      const bookData = bookDataJson(b, meta, statusLabels[b.status], b)
       var activeClass = b.status === 'reading' ? ' shelf-book-active' : ''
       html += '<li class="shelf-book' +
         activeClass +
         '" style="animation-delay: ' +
         i * 0.08 +
-        's" data-book=\'' +
-        bookData.replace(/'/g, '&#39;') +
-        '\' tabindex="0" aria-label="' +
+        's" data-book="' +
+        esc(bookData) +
+        '" tabindex="0" aria-label="' +
         a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) +
         '">'
       html += '<div class="shelf-cover-wrapper">'

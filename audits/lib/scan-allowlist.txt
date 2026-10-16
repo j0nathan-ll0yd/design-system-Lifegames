@@ -559,3 +559,7 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 # The articles freshness change (LP #388 daily re-export): the changeset names the
 # @j0nathan-ll0yd/web package it releases.
 .changeset/articles-freshness-daily.md:marker:j0nathan-ll0yd
+# The server markup parity change (atlas decision 0160): the changesets name the
+# @j0nathan-ll0yd/web and @j0nathan-ll0yd/schemas packages they release.
+.changeset/web-server-markup-parity.md:marker:j0nathan-ll0yd
+.changeset/schemas-reading-feed-article-link.md:marker:j0nathan-ll0yd
