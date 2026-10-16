@@ -38,7 +38,7 @@ describe('toReadingArticles', () => {
     noteText: null
   })
 
-  // The server row is the updater's row (articleRowHtml): it needs the link and the notes too.
+  // The server row is the updater's row (articleItemHtml): it needs the link and the notes too.
   it('carries every field the updater row reads: title, source, date, datetime, url and notes', () => {
     expect(toReadingArticles([article(1), {...article(2), hasNotes: true, noteText: 'n'}])).toEqual([
       {title: 'T1', source: 'S', date: '1h ago', datetime: '2026-03-18T11:00:00Z', url: 'https://example.com/1', hasNotes: false, noteText: null},
