@@ -11,6 +11,7 @@ This policy governs the formal deprecation of:
 - **Design tokens** — entries in `tokens/*.tokens.json` (W3C DTCG format)
 - **Web components** — Astro components under `packages/web/` and `apps/`
 - **Swift components and widgets** — sources under `Sources/LifegamesComponents/`, `Sources/LifegamesWidgets/`, and `Sources/LifegamesComponentsWatch/`
+- **Copy keys** — leaves of the copy package (`packages/copy/schema/*.schema.json`, `packages/copy/src/*.en-US.json`)
 
 Deprecation is a lifecycle state (see GOVERNANCE.md §3 P7). A `Deprecated` item is still published but scheduled for removal. Consumers must migrate before the next MAJOR release.
 
@@ -73,6 +74,30 @@ Update the registry entry `"status": "Deprecated"` in `production-widgets.json` 
 
 ---
 
+### Copy Keys (`packages/copy`)
+
+Mark the leaf's `$ref` node in the rich schema (`packages/copy/schema/<namespace>.schema.json`) with `deprecated: true` and a `description` that names the replacement:
+
+```json
+"backLink": {
+  "$ref": "#/$defs/CopyString",
+  "deprecated": true,
+  "description": "Deprecated: use `identity.navigation.backLink` instead. Removed in the next major release."
+}
+```
+
+The description starts with `Deprecated: use `<namespace>.<path>` instead.` or `Deprecated: no replacement.`. The copy build carries both annotations into every generated artifact: the flat schema gets the `deprecated` keyword, the TS type an `@deprecated` JSDoc, the Zod schema a `.describe()`, and the Swift property a `///` doc comment. In the authoring file (`src/<namespace>.en-US.json`), keep the value and record the deprecation in `_meta.description` and `_meta.rationale`.
+
+Swift gets a doc comment, not `@available(*, deprecated)`. The generated memberwise `init` and `with(...)` read every property, so the attribute raises two compiler warnings inside `LifegamesCopy` for each deprecated key. A Swift consumer that reads a deprecated copy key therefore sees no compiler warning.
+
+The build exits 1 (`packages/copy/scripts/deprecation.ts`) when a deprecation:
+
+- does not start its description with one of the two forms above;
+- names a replacement that is not a leaf of the same namespace, or is itself deprecated;
+- marks a group, not a leaf;
+- marks an object-valued leaf (`CopyLink`). Its flat form is a `$ref`, whose sibling annotations Zod and Swift codegen drop;
+- sets `deprecated` to anything but the boolean `true`.
+
 ## Survival Period
 
 A deprecated item must survive for **at least one MAJOR release** before removal.
@@ -93,6 +118,7 @@ Every deprecated item must name its replacement or state there is none:
 - **Token:** `$extensions.lifegames.replacedBy` — canonical token name string, or `null`.
 - **Web component:** `@deprecated` JSDoc comment with component name or "no replacement".
 - **Swift:** `@available(*, deprecated, renamed: "...")` or `message:` with "no replacement".
+- **Copy key:** the schema `description` names it as "use `<namespace>.<path>` instead", or states "no replacement".
 
 A deprecated token with no `replacedBy` value and no `$description` is a policy violation. The `eslint-local-rules/no-deprecated-tokens.js` rule treats such tokens as errors.
 

@@ -15,6 +15,7 @@ import addFormats from 'ajv-formats'
 import {compile} from 'json-schema-to-typescript'
 import jsonSchemaToZod from 'json-schema-to-zod'
 import * as prettier from 'prettier'
+import {deprecationProblems} from './deprecation'
 import {reservedSwiftNames, swiftShadowClashes} from './swift-shadow'
 
 async function formatWithPrettier(src: string, outPath: string, parser: 'typescript' | 'json'): Promise<string> {
@@ -112,6 +113,19 @@ function flatLeafForm(ctx: FlatContext, defName: string): JsonSchema {
   return flat
 }
 
+/**
+ * The consumer-facing annotations a scalar leaf's `$ref` node may carry: a
+ * deprecated key's `deprecated: true` and the `description` naming its
+ * replacement (DEPRECATION.md, "Copy Keys"). They become the TS `@deprecated`
+ * JSDoc, the Zod `.describe()`, the Swift doc comment and the flat schema's own
+ * `deprecated` keyword. An object-valued leaf carries none: its flat form is a
+ * `$ref`, whose siblings Zod and Swift codegen drop (scripts/deprecation.ts
+ * refuses to deprecate one).
+ */
+function leafAnnotations(node: JsonSchema): JsonSchema {
+  return {...(typeof node.description === 'string' ? {description: node.description} : {}), ...(node.deprecated === true ? {deprecated: true} : {})}
+}
+
 function deriveFlat(node: JsonSchema, ctx: FlatContext): JsonSchema {
   if (node && typeof node === 'object' && typeof node.$ref === 'string') {
     const match = LEAF_REF_RE.exec(node.$ref)
@@ -120,7 +134,7 @@ function deriveFlat(node: JsonSchema, ctx: FlatContext): JsonSchema {
     }
     const flat = flatLeafForm(ctx, match[1]!)
     if (flat.type !== 'object') {
-      return flat
+      return {...flat, ...leafAnnotations(node)}
     }
     // An OBJECT-valued leaf is hoisted into the flat schema's own `$defs` and referenced, never
     // inlined: quicktype and json-schema-to-typescript each name one type per `$def`, where N
@@ -262,6 +276,16 @@ for (const ns of NAMESPACES) {
     process.exit(1)
   }
   console.log('  rich OK.')
+
+  // A deprecated key must name a live replacement or state there is none (DEPRECATION.md).
+  const deprecations = deprecationProblems(richSchema, ns.name)
+  if (deprecations.length > 0) {
+    console.error(`copy:build — DEPRECATION policy FAILED (${ns.name}):`)
+    for (const problem of deprecations) {
+      console.error(`  ${problem}`)
+    }
+    process.exit(1)
+  }
 
   // ── 2. Derive the FLAT schema ───────────────────────────────────────────────
   console.log(`copy:build — deriving flat schema (${ns.name})...`)

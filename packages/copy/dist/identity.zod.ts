@@ -47,6 +47,10 @@ export const identitySchema = z
       })
       .strict()
       .describe('Brand/site-level naming and description.'),
+    navigation: z
+      .object({ backLink: z.string() })
+      .strict()
+      .describe('Site-wide navigation strings that no single page owns.'),
     seo: z
       .object({
         title: z.string(),
@@ -102,7 +106,11 @@ export const identitySchema = z
         lastUpdated: z.string(),
         lastModified: z.string(),
         lastUpdatedLabel: z.string(),
-        backLink: z.string(),
+        backLink: z
+          .string()
+          .describe(
+            'Deprecated: use `identity.navigation.backLink` instead. Removed in the next major release.',
+          ),
         whoHeading: z.string(),
         dataDisplayedHeading: z.string(),
         dataCollectedHeading: z.string(),
