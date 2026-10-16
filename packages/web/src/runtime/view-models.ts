@@ -83,7 +83,7 @@ export const READING_SERVER_PAGE_SIZE = 10
 /**
  * Adapter articles → widget articles, at most 10: title, source, date (+ ISO
  * datetime), the link and the notes. The row is the updater's row
- * (articleRowHtml), so the server must carry every field the updater reads.
+ * (articleItemHtml), so the server must carry every field the updater reads.
  */
 export function toReadingArticles(articles: readonly AdaptedArticle[]): Article[] {
   return articles.slice(0, READING_SERVER_PAGE_SIZE).map((a) => ({
