@@ -126,4 +126,13 @@ describe('toDashboardViewModels', () => {
     expect(vm.heartRate.generatedAt).toBe('2026-03-18T09:00:00Z')
     expect(vm.heartRate.health?.quantities.heartRate?.value).toBe(61)
   })
+
+  it('reads the articles tile live through 3 days and stale past 3 days (daily cadence, LP #388)', () => {
+    const DAY = 24 * 60 * 60_000
+    const article = {title: 'A', sourceUrl: 'https://example.invalid/a', savedAt: '2026-03-10T12:00:00Z'}
+    const articlesAged = (ms: number) => ({articles: {data: {articles: [article], generatedAt: new Date(NOW - ms).toISOString()} as never}})
+    expect(toDashboardViewModels(articlesAged(3 * DAY), NOW).readingFeed.state).toBe('live')
+    expect(toDashboardViewModels(articlesAged(3 * DAY + 60_000), NOW).readingFeed.state).toBe('stale')
+    expect(toDashboardViewModels(articlesAged(6 * DAY + 60_000), NOW).readingFeed.state).toBe('stale')
+  })
 })
