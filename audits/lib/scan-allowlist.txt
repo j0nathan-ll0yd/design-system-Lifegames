@@ -563,3 +563,6 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 # @j0nathan-ll0yd/web and @j0nathan-ll0yd/schemas packages they release.
 .changeset/web-server-markup-parity.md:marker:j0nathan-ll0yd
 .changeset/schemas-reading-feed-article-link.md:marker:j0nathan-ll0yd
+# The page-neutral back link (atlas decision 0158 step 5b): the changeset names the
+# @j0nathan-ll0yd/copy package it releases.
+.changeset/copy-page-neutral-back-link.md:marker:j0nathan-ll0yd

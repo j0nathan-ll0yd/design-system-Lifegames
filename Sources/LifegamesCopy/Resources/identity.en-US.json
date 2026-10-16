@@ -50,6 +50,9 @@
     "description": "Personal portfolio of Jonathan Lloyd, an engineering director and backend engineer, built as a living data dashboard. Real biometrics and constant updates of his whole body (health, activity, hydration) and mind (coding, reading, learning). Jack into his human datastream as the world becomes more AI-centric.",
     "pwaDescription": "Living data dashboard — tracking body and mind. Jack into his human datastream."
   },
+  "navigation": {
+    "backLink": "Back to dashboard"
+  },
   "seo": {
     "title": "Jonathan Lloyd — Human Datastream | Live Engineering Dashboard",
     "keywords": [

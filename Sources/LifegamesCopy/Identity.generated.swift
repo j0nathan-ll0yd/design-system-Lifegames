@@ -27,6 +27,8 @@ public struct Identity: Codable, Sendable {
     /// humans.txt endpoint data — web stack, hosting, standards, and credits for the SITE and
     /// THANKS sections.
     public let humansTxt: HumansTxt
+    /// Site-wide navigation strings that no single page owns.
+    public let navigation: IdentityNavigation
     /// Identity facts and biographical voices for Jonathan Lloyd.
     public let person: Person
     /// Privacy policy page copy — plain-English sections covering who operates the site, what
@@ -42,15 +44,16 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case about, contact, feed, humansTxt, person, privacy, seo, site
+        case about, contact, feed, humansTxt, navigation, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, person: Person, privacy: Privacy, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, navigation: IdentityNavigation, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
         self.about = about
         self.contact = contact
         self.feed = feed
         self.humansTxt = humansTxt
+        self.navigation = navigation
         self.person = person
         self.privacy = privacy
         self.seo = seo
@@ -82,6 +85,7 @@ public extension Identity {
         contact: IdentityContact? = nil,
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
+        navigation: IdentityNavigation? = nil,
         person: Person? = nil,
         privacy: Privacy? = nil,
         seo: SEO? = nil,
@@ -93,6 +97,7 @@ public extension Identity {
             contact: contact ?? self.contact,
             feed: feed ?? self.feed,
             humansTxt: humansTxt ?? self.humansTxt,
+            navigation: navigation ?? self.navigation,
             person: person ?? self.person,
             privacy: privacy ?? self.privacy,
             seo: seo ?? self.seo,
@@ -496,6 +501,51 @@ public extension HumansTxt {
     }
 }
 
+/// Site-wide navigation strings that no single page owns.
+// MARK: - IdentityNavigation
+public struct IdentityNavigation: Codable, Sendable {
+    public let backLink: String
+
+    public init(backLink: String) {
+        self.backLink = backLink
+    }
+}
+
+// MARK: IdentityNavigation convenience initializers and mutators
+
+public extension IdentityNavigation {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(IdentityNavigation.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        backLink: String? = nil
+    ) -> IdentityNavigation {
+        return IdentityNavigation(
+            backLink: backLink ?? self.backLink
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
 /// Identity facts and biographical voices for Jonathan Lloyd.
 // MARK: - Person
 public struct Person: Codable, Sendable {
@@ -640,11 +690,13 @@ public extension Person {
 /// machine-readable lastModified date, and the back-link.
 // MARK: - Privacy
 public struct Privacy: Codable, Sendable {
-    public let analytics, analyticsHeading, backLink, changes: String
-    public let changesHeading, dataCollected, dataCollectedHeading, dataDisplayed: String
-    public let dataDisplayedHeading, lastModified, lastUpdated, lastUpdatedLabel: String
-    public let rights, rightsHeading, title, who: String
-    public let whoHeading: String
+    public let analytics, analyticsHeading: String
+    /// Deprecated: use `identity.navigation.backLink` instead. Removed in the next major release.
+    public let backLink: String
+    public let changes, changesHeading, dataCollected, dataCollectedHeading: String
+    public let dataDisplayed, dataDisplayedHeading, lastModified, lastUpdated: String
+    public let lastUpdatedLabel, rights, rightsHeading, title: String
+    public let who, whoHeading: String
 
     public init(analytics: String, analyticsHeading: String, backLink: String, changes: String, changesHeading: String, dataCollected: String, dataCollectedHeading: String, dataDisplayed: String, dataDisplayedHeading: String, lastModified: String, lastUpdated: String, lastUpdatedLabel: String, rights: String, rightsHeading: String, title: String, who: String, whoHeading: String) {
         self.analytics = analytics

@@ -150,6 +150,18 @@
       "required": ["name", "fullName", "tagline", "description", "pwaDescription"],
       "additionalProperties": false
     },
+    "navigation": {
+      "type": "object",
+      "title": "IdentityNavigation",
+      "description": "Site-wide navigation strings that no single page owns.",
+      "properties": {
+        "backLink": {
+          "type": "string"
+        }
+      },
+      "required": ["backLink"],
+      "additionalProperties": false
+    },
     "seo": {
       "type": "object",
       "description": "SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in consumers.",
@@ -276,7 +288,9 @@
           "type": "string"
         },
         "backLink": {
-          "type": "string"
+          "type": "string",
+          "description": "Deprecated: use `identity.navigation.backLink` instead. Removed in the next major release.",
+          "deprecated": true
         },
         "whoHeading": {
           "type": "string"
@@ -449,6 +463,17 @@
       "additionalProperties": false
     }
   },
-  "required": ["person", "site", "seo", "a11y", "humansTxt", "feed", "privacy", "about", "contact"],
+  "required": [
+    "person",
+    "site",
+    "navigation",
+    "seo",
+    "a11y",
+    "humansTxt",
+    "feed",
+    "privacy",
+    "about",
+    "contact"
+  ],
   "additionalProperties": false
 }
