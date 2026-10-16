@@ -48,6 +48,12 @@ export interface Identity {
     pwaDescription: string;
   };
   /**
+   * Site-wide navigation strings that no single page owns.
+   */
+  navigation: {
+    backLink: string;
+  };
+  /**
    * SEO/metadata copy. Composed strings are stored whole (D7), never concatenated in consumers.
    */
   seo: {
@@ -99,6 +105,10 @@ export interface Identity {
     lastUpdated: string;
     lastModified: string;
     lastUpdatedLabel: string;
+    /**
+     * @deprecated
+     * Deprecated: use `identity.navigation.backLink` instead. Removed in the next major release.
+     */
     backLink: string;
     whoHeading: string;
     dataDisplayedHeading: string;

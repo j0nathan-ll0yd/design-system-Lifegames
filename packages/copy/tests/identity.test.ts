@@ -76,7 +76,8 @@ const NAMESPACES: NamespaceFixture[] = [
   //   contact 12 (title/metaDescription/intro/channelsHeading + 3 label/note pairs +
   //   securityHeading/security) — atlas decision 0158.
   //   privacy, about, and contact each gained lastModified (the sitemap <lastmod> date).
-  {name: 'identity', expectedLeaves: 90},
+  //   navigation 1 (backLink, page-neutral; privacy.backLink stays, deprecated) — atlas decision 0158 step 5b.
+  {name: 'identity', expectedLeaves: 91},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
@@ -247,5 +248,34 @@ describe('@j0nathan-ll0yd/copy cross-namespace invariants', () => {
     for (let i = 1; i < defs.length; i++) {
       expect(defs[i]).toBe(defs[0])
     }
+  })
+})
+
+// atlas decision 0158 step 5b: the website's text pages, /offline and /500 read a
+// page-neutral back link. The privacy-page key they used stays until the next
+// major, deprecated, and names its replacement in every generated artifact.
+describe('@j0nathan-ll0yd/copy page-neutral back link', () => {
+  const flat = readJson(join(PKG, 'dist', 'identity.flat.json')) as {navigation: {backLink: string}; privacy: {backLink: string}}
+  const flatSchema = readJson(join(PKG, 'dist', 'identity.flat.schema.json')) as {
+    properties: Record<string, {properties: Record<string, {deprecated?: boolean; description?: string}>}>
+  }
+  const ts = readFileSync(join(PKG, 'dist', 'identity.ts'), 'utf8')
+  const zod = readFileSync(join(PKG, 'dist', 'identity.zod.ts'), 'utf8')
+
+  it('navigation.backLink carries the text privacy.backLink carries', () => {
+    expect(flat.navigation.backLink).toBe('Back to dashboard')
+    expect(flat.privacy.backLink).toBe(flat.navigation.backLink)
+  })
+
+  it('privacy.backLink is deprecated in favour of navigation.backLink in the flat schema, TS and Zod', () => {
+    const old = flatSchema.properties.privacy!.properties.backLink!
+    expect(old.deprecated).toBe(true)
+    expect(old.description).toContain('use `identity.navigation.backLink` instead')
+    expect(ts).toMatch(/\* @deprecated\s*\* Deprecated: use `identity\.navigation\.backLink` instead\.[^/]*\*\/\s*backLink: string;/)
+    expect(zod).toMatch(/backLink: z\s*\.string\(\)\s*\.describe\(\s*'Deprecated: use `identity\.navigation\.backLink` instead\./)
+  })
+
+  it('navigation.backLink is not deprecated', () => {
+    expect(flatSchema.properties.navigation!.properties.backLink!.deprecated).toBeUndefined()
   })
 })

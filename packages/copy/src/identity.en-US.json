@@ -397,6 +397,24 @@
       }
     }
   },
+  "navigation": {
+    "backLink": {
+      "value": "Back to dashboard",
+      "_meta": {
+        "description": "Text for the link that returns a visitor from a secondary page (the text pages, /offline, /500) to the main dashboard. Page-neutral: no page owns it.",
+        "usage": [
+          "web:src/layouts/InfoPage.astro:37 (TextPage back.label, for /about, /contact, /developers, /privacy)",
+          "web:src/pages/offline.astro:20 (offline-back-link)",
+          "web:src/pages/500.astro:20 (error-back-link)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-16",
+        "rationale": "Atlas decision 0158 step 5b. The website read identity.privacy.backLink on every secondary page, a privacy-page key reused as a generic link. Same text as that key: a short sentence-case label with a verb (VOICE.md label register). The website adopts this key in a follow-up PR after the copy release."
+      }
+    }
+  },
   "seo": {
     "title": {
       "value": "Jonathan Lloyd — Human Datastream | Live Engineering Dashboard",
@@ -706,12 +724,17 @@
     "backLink": {
       "value": "Back to dashboard",
       "_meta": {
-        "description": "Text for the back-navigation link at the bottom of the privacy page, returning visitors to the main dashboard.",
-        "usage": ["web:src/pages/privacy.astro (privacy-back-link)"],
+        "description": "DEPRECATED (copy 5.0.0 removes it): use identity.navigation.backLink. Text for the link that returns a visitor to the main dashboard.",
+        "usage": [
+          "web:src/layouts/InfoPage.astro:37 (TextPage back.label, for /about, /contact, /developers, /privacy)",
+          "web:src/pages/offline.astro:20 (offline-back-link)",
+          "web:src/pages/500.astro:20 (error-back-link)"
+        ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-23"
+        "lastReviewed": "2026-10-16",
+        "rationale": "Deprecated 2026-10-16 (atlas decision 0158 step 5b): every secondary page read this privacy-page key as a generic back link. identity.navigation.backLink replaces it with the same text. The key stays until the next major release (DEPRECATION.md); the website moves to the replacement after the copy release."
       }
     },
     "whoHeading": {
