@@ -1,5 +1,11 @@
 # @j0nathan-ll0yd/schemas
 
+## 2.4.1
+
+### Patch Changes
+
+- 9f869b9: The generated `focus-overlay` and `dnd-overlay` widget schemas describe the `now` prop as unused (atlas decision 0164 D5): the overlays render the `--:--:--` clock placeholder and the browser writes the time. Description text only; the schema shape and validation are unchanged.
+
 ## 2.4.0
 
 ### Minor Changes
