@@ -693,6 +693,8 @@ first read, `renderWidgetUnavailable` SHALL leave a `loading` card exactly as th
 successful read SHALL still fill the card. Hydration's target-range bands SHALL render on the client
 with the server's markup. Bookshelf SHALL carry its mirrored cover paths on the card in every state
 (`data-local-covers`), and both halves SHALL serve a cover same-origin only for an exact listed path.
+A relative label is the browser's alone (atlas decision 0164 D5): the server markup SHALL reach the
+updater's card once the load pass `fillRelativeTimes` runs over it at the same time.
 
 This is a **blocking** rule. `packages/web/tests/server-render/client-parity.test.ts` renders each
 card on the server from the view models and through its updater from the `loading` markup, for the
@@ -746,6 +748,49 @@ context.
   token differs from the mirrored file
 - **THEN** the first SHALL load from the same origin, the second from its contract URL with the W6
   fallback
+
+### Requirement: A live web widget's server markup does not depend on the render clock
+
+The same export data SHALL compose to the same bytes at any render time (atlas decision 0164 D5,
+"stable bytes"). The composer renders thirteen fragments from `toDashboardViewModels(exports, now)`;
+`now` SHALL decide only the freshness verdict, never a label. An instant SHALL render as absolute,
+locale-neutral UTC text (`YYYY-MM-DD HH:MM UTC`, `runtime/relative-time.ts` `absoluteTimeText`) in
+`<time datetime data-relative>`, the text a visitor without JavaScript sees. The relative label
+(`5m ago`) SHALL be written only in the browser, by `fillRelativeTimes`
+(`runtime/relative-time-fill.ts`): the updaters call it on the markup they write. Calling it once on
+the server markup at load is a consumer obligation, stated in the `@j0nathan-ll0yd/web` changeset for
+decision 0164; no gate in this repo can see the consumer page. The focus overlays SHALL render the `--:--:--` clock
+placeholder; `updateFocusOverlay` writes the time.
+
+This is a **blocking** rule. `packages/web/tests/server-render/byte-stability.test.ts` renders the
+thirteen production fragments from the same exports at two clocks ten minutes apart, live, under
+each focus overlay and stale, and the stale scenario again eight days on, and SHALL find them
+byte-equal. Its can-fail half fills the same bytes
+at both clocks and SHALL find different relative labels. It runs inside
+`pnpm --filter @j0nathan-ll0yd/web test` in the required `contract-ts` status context.
+`packages/web/tests/browser/relative-time.test.ts` loads the built fixture page in Chromium with
+JavaScript off and on.
+
+#### Scenario: The same exports at two render clocks
+
+- **GIVEN** the known-answer exports, with timestamped GitHub events
+- **WHEN** the thirteen fragments render at two clocks ten minutes apart, with every export in the
+  same freshness state at both
+- **THEN** every fragment SHALL be byte-equal, under no focus, Work, Do Not Disturb and all-stale
+
+#### Scenario: A visitor without JavaScript
+
+- **GIVEN** a card that shows an instant (System Status, DevActivityLog, StarredRepoList, ReadingFeed)
+- **WHEN** the page loads with JavaScript off
+- **THEN** each `<time data-relative>` SHALL show absolute UTC text, and its `datetime` SHALL keep the
+  ISO instant
+
+#### Scenario: The browser load pass
+
+- **GIVEN** the same server markup
+- **WHEN** `fillRelativeTimes` runs at a time `now`
+- **THEN** each `<time data-relative>` text SHALL change to the relative label at `now`, and
+  `datetime` SHALL not change
 
 ### Requirement: A Swift widget state rule returns the web rule's state for the same input
 

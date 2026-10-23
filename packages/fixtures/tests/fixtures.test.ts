@@ -47,14 +47,14 @@ describe('starredRepos post-adapter (adapter-derived, deterministic clock)', () 
     }
   })
 
-  it('produces deterministic relative-time strings via the stable injected clock', () => {
+  it('writes starredAt as absolute UTC text, with no clock (atlas decision 0164 D5)', () => {
     // 2 days, 5 days, 9 days, 16 days, 23 days before the fixed STABLE_NOW.
     expect(fixtures.starredRepos.baseline.map((r) => r.starredAt)).toEqual([
-      '2 days ago',
-      '5 days ago',
-      '1 week ago',
-      '2 weeks ago',
-      '3 weeks ago'
+      '2026-03-16 12:00 UTC',
+      '2026-03-13 12:00 UTC',
+      '2026-03-09 12:00 UTC',
+      '2026-03-02 12:00 UTC',
+      '2026-02-23 12:00 UTC'
     ])
   })
 

@@ -4,6 +4,7 @@
 // they apply to client-written nodes too.
 import {widgets} from '@j0nathan-ll0yd/copy'
 import {esc, safeHttpsUrl} from './html-utils'
+import {relativeAttr, type RelativeStyle} from './relative-time'
 import type {RangeBand} from './widget-views'
 import type {Article} from '../widgets/reading/ReadingFeed.types'
 
@@ -33,10 +34,17 @@ export function hydrationRangeHtml(kind: 'water' | 'coffee', band: RangeBand): s
     '</div>'
 }
 
-/** A relative date in <time datetime> when its ISO source is known. */
-export function timeHtml(className: string, label: string, datetime: string | null | undefined): string {
+/**
+ * A date in <time datetime> when its ISO source is known. With `relative` and a
+ * full timestamp, the element carries `data-relative`: `label` is the absolute
+ * text the server writes, and fillRelativeTimes writes the relative label in
+ * the browser (atlas decision 0164 D5).
+ */
+export function timeHtml(className: string, label: string, datetime: string | null | undefined, relative?: RelativeStyle): string {
+  const relativeStyle = relative ? relativeAttr(datetime, relative) : undefined
   return datetime
-    ? '<time class="' + className + '" datetime="' + esc(datetime) + '">' + esc(label) + '</time>'
+    ? '<time class="' + className + '" datetime="' + esc(datetime) + '"' + (relativeStyle ? ' data-relative="' + relativeStyle + '"' : '') + '>' +
+      esc(label) + '</time>'
     : '<span class="' + className + '">' + esc(label) + '</span>'
 }
 
@@ -69,7 +77,7 @@ export function articleItemHtml(a: Article, index: number): string {
   if (a.title) {
     html += '<span class="article-list-source">(' + esc(a.source) + ')</span>'
   }
-  return html + timeHtml('article-list-date', a.date, a.datetime) + '</li>'
+  return html + timeHtml('article-list-date', a.date, a.datetime, 'compact') + '</li>'
 }
 
 /** The five rating stars of a Bookshelf book, with no whitespace between them. */

@@ -1,5 +1,6 @@
 import {ACTIVITY_TYPE_MAP, HYDRATION, LANG_COLORS, STATUS_LABELS} from './constants'
 import {sanitizeImageUrl} from './image-sanitizer'
+import {absoluteTimeText} from './relative-time'
 import {computeSleepPercentages, computeTotalSleepSeconds, formatDuration, formatPhase, isSleepEmpty} from './sleep'
 import type {
   ArticlesExport,
@@ -90,8 +91,10 @@ export interface AdaptedGithubEvent {
   type: string
   repo: string
   title: string
-  // Relative label ("2h ago") computed against `now`; `datetime` keeps the
-  // export's ISO timestamp for <time datetime> (atlas decision 0160).
+  // Absolute UTC text of a timestamp (`2026-10-23 14:05 UTC`, atlas decision
+  // 0164 D5); a date-only value as the export wrote it. `datetime` keeps the
+  // export's ISO value for <time datetime> (atlas decision 0160); the browser
+  // writes the relative label from it (fillRelativeTimes).
   date: string
   datetime?: string
   number?: number
@@ -105,7 +108,8 @@ export interface AdaptedArticle {
   title: string
   url: string
   source: string
-  // Relative label computed against `now`; `datetime` is the ISO `savedAt`.
+  // Absolute UTC text of `savedAt` (atlas decision 0164 D5); `datetime` is the
+  // ISO `savedAt`, from which the browser writes the relative label.
   date: string
   datetime?: string
   hasNotes: boolean
@@ -159,7 +163,8 @@ export interface AdaptedStarredRepo {
   stars: number
   language: string
   languageColor: string
-  // Relative label computed against `now`; `datetime` is the ISO `starredAt`.
+  // Absolute UTC text of `starredAt` (atlas decision 0164 D5); `datetime` is the
+  // ISO `starredAt`, from which the browser writes the relative label.
   starredAt: string
   datetime?: string
 }
@@ -281,31 +286,20 @@ export function adaptWorkouts(workoutsData: WorkoutsExport | null): WorkoutEntry
   })
 }
 
-export function adaptGithubEvents(data: GithubEventsExport | null, now?: number): AdaptedGithubEvent[] {
+/**
+ * @param _now Unused since atlas decision 0164 D5: the label is absolute UTC
+ *   text and the browser writes the relative one. Kept so the signature stays
+ *   compatible; drop it at the next major.
+ */
+export function adaptGithubEvents(data: GithubEventsExport | null, _now?: number): AdaptedGithubEvent[] {
   if (!data) {
     return []
   }
   const events = data.events || []
-  const ts = now ?? Date.now()
 
   return events.slice(0, 10).map((e) => {
-    let date = e.date
-    if (date && date.includes('T')) {
-      const msAgo = ts - new Date(date).getTime()
-      const minutesAgo = Math.floor(msAgo / 60000)
-      const hoursAgo = Math.floor(minutesAgo / 60)
-      const daysAgo = Math.floor(hoursAgo / 24)
-      const weeksAgo = Math.floor(daysAgo / 7)
-      if (weeksAgo > 0) {
-        date = weeksAgo + 'w ago'
-      } else if (daysAgo > 0) {
-        date = daysAgo + 'd ago'
-      } else if (hoursAgo > 0) {
-        date = hoursAgo + 'h ago'
-      } else {
-        date = minutesAgo + 'm ago'
-      }
-    }
+    // A timestamp becomes absolute UTC text; a date-only value stays as written.
+    const date = e.date ? absoluteTimeText(e.date) : e.date
 
     const fullRepo = e.repo || ''
     let repo = fullRepo
@@ -383,21 +377,13 @@ export function adaptBooks(booksData: BooksExport): AdaptedBooks {
   return {books, bookMeta, statusLabels: STATUS_LABELS, stats: {total: books.length, reading: inProgress, completed, upcoming: next}}
 }
 
-export function adaptStarredRepos(data: GithubStarredReposExport, now?: number): AdaptedStarredRepo[] {
-  const ts = now ?? Date.now()
+/**
+ * @param _now Unused since atlas decision 0164 D5: the label is absolute UTC
+ *   text and the browser writes the relative one. Kept so the signature stays
+ *   compatible; drop it at the next major.
+ */
+export function adaptStarredRepos(data: GithubStarredReposExport, _now?: number): AdaptedStarredRepo[] {
   return (data.repos || []).slice(0, 5).map((r) => {
-    const msAgo = ts - new Date(r.starredAt).getTime()
-    const hoursAgo = Math.floor(msAgo / 3600000)
-    const daysAgo = Math.floor(hoursAgo / 24)
-    const weeksAgo = Math.floor(daysAgo / 7)
-    let starredAt: string
-    if (weeksAgo > 0) {
-      starredAt = `${weeksAgo} week${weeksAgo > 1 ? 's' : ''} ago`
-    } else if (daysAgo > 0) {
-      starredAt = `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`
-    } else {
-      starredAt = `${hoursAgo}h ago`
-    }
     const lang = r.languages?.[0]?.language || 'Unknown'
     return {
       owner: r.ownerLogin,
@@ -406,7 +392,7 @@ export function adaptStarredRepos(data: GithubStarredReposExport, now?: number):
       stars: r.stargazersCount,
       language: lang,
       languageColor: LANG_COLORS[lang] || '#8b949e',
-      starredAt,
+      starredAt: absoluteTimeText(r.starredAt),
       datetime: r.starredAt
     }
   })
@@ -417,30 +403,18 @@ export function amazonBookUrl(asin: string): string {
   return 'https://www.amazon.com/dp/' + asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl'
 }
 
-export function adaptArticles(data: ArticlesExport | null, now?: number): AdaptedArticle[] {
+/**
+ * @param _now Unused since atlas decision 0164 D5: the label is absolute UTC
+ *   text and the browser writes the relative one. Kept so the signature stays
+ *   compatible; drop it at the next major.
+ */
+export function adaptArticles(data: ArticlesExport | null, _now?: number): AdaptedArticle[] {
   if (!data || !data.articles) {
     return []
   }
 
-  const ts = now ?? Date.now()
-
   return data.articles.slice().sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()).slice(0, 30).map((a) => {
-    const msAgo = ts - new Date(a.savedAt).getTime()
-    const minutesAgo = Math.floor(msAgo / 60000)
-    const hoursAgo = Math.floor(minutesAgo / 60)
-    const daysAgo = Math.floor(hoursAgo / 24)
-    const weeksAgo = Math.floor(daysAgo / 7)
-    let date: string
-    if (weeksAgo > 0) {
-      date = weeksAgo + 'w ago'
-    } else if (daysAgo > 0) {
-      date = daysAgo + 'd ago'
-    } else if (hoursAgo > 0) {
-      date = hoursAgo + 'h ago'
-    } else {
-      date = minutesAgo + 'm ago'
-    }
-
+    const date = absoluteTimeText(a.savedAt)
     const hasNotes = Array.isArray(a.notes) && a.notes.length > 0
     const noteText = hasNotes ? a.notes.map((n) => n.comment).join('\n') : null
 

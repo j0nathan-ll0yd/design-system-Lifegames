@@ -7,21 +7,14 @@
 // this overlay's mode. The client runtime keeps owning later transitions: it
 // writes an inline `display` on every focus update, which overrides this one.
 import { FOCUS_MODES } from '@j0nathan-ll0yd/portal-contract/constants';
-import { DISPLAY_TIME_ZONE } from '../../runtime/widget-state';
 import type { DndOverlayProps } from './DndOverlay.types';
 
-const { currentFocus, now } = Astro.props as DndOverlayProps;
+const { currentFocus } = Astro.props as DndOverlayProps;
 const active = currentFocus === FOCUS_MODES.doNotDisturb;
-const nowMs = now ? Date.parse(now) : NaN;
-const clockText = Number.isFinite(nowMs)
-  ? new Date(nowMs).toLocaleString('en-US', {
-      timeZone: DISPLAY_TIME_ZONE,
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    })
-  : '--:--:--';
+// The server never renders a time of day (atlas decision 0164 D5): the same
+// focus value always composes to the same bytes. updateFocusOverlay writes the
+// owner-zone clock once the client runtime runs.
+const clockText = '--:--:--';
 ---
 
 <div

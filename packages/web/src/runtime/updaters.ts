@@ -11,7 +11,9 @@ import type {Freshness} from './freshness'
 import {articleItemHtml, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
-import {composeSystemLines, formatAge, READING_SERVER_PAGE_SIZE} from './view-models'
+import {composeSystemLines, READING_SERVER_PAGE_SIZE} from './view-models'
+import {formatAge, isIsoTimestamp} from './relative-time'
+import {fillRelativeTimes} from './relative-time-fill'
 import {formatMeasurement, formatMonthYear} from './widget-state'
 import {formatWorkoutDuration} from './widget-rules'
 import {workoutsRestHtml} from './workouts-markup'
@@ -419,7 +421,8 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undef
     if (detail) {
       html += '<span class="gh-dal-detail">' + detail + '</span>'
     }
-    html += timeHtml('gh-dal-date', e.date, e.datetime)
+    // A date-only event keeps its ISO date: no relative label, as before decision 0164.
+    html += timeHtml('gh-dal-date', e.date, e.datetime, isIsoTimestamp(e.datetime) ? 'compact' : undefined)
     html += '</a>'
   })
   html += '</div>'
@@ -431,6 +434,7 @@ export function updateDevActivityLog(events: AdaptedGithubEvent[] | null | undef
   withViewTransition(() => {
     bodyEl.style.viewTransitionName = 'live-content-swap'
     bodyEl.innerHTML = html
+    fillRelativeTimes(bodyEl)
     bodyEl.style.viewTransitionName = ''
   })
   card.classList.remove('is-loading')
@@ -520,6 +524,7 @@ export function updateReadingFeed(input: AdaptedArticle[] | null | undefined, fr
     withViewTransition(() => {
       bodyEl.style.viewTransitionName = 'live-content-swap'
       body.innerHTML = html
+      fillRelativeTimes(bodyEl)
       bodyEl.style.viewTransitionName = ''
     })
   }
@@ -588,6 +593,7 @@ export function updateSystemStatus(timestamps: Record<string, string | null>, no
     }
     valEl.className = composed.valClass ?? 'sys-val'
     valEl.innerHTML = composed.value
+    fillRelativeTimes(valEl, now)
     // A released row now shows live status: it carries no state of its own.
     delete line.dataset.ssrState
   })
@@ -980,10 +986,11 @@ export function updateStarredRepos(repos: AdaptedStarredRepo[] | null | undefine
     html += '<span class="gh-sl-lang-dot" style="background: ' + color + ';"></span>'
     html += esc(repo.language)
     html += '</span>'
-    html += timeHtml('gh-sl-date', repo.starredAt, repo.datetime)
+    html += timeHtml('gh-sl-date', repo.starredAt, repo.datetime, 'long')
     html += '</div>'
   })
   list.innerHTML = html
+  fillRelativeTimes(list)
 
   card.classList.remove('is-loading')
 }

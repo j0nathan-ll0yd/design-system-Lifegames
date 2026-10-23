@@ -20,6 +20,7 @@ import BookModal from '@widgets/reading/BookModal.astro';
 import FocusOverlay from '@widgets/other/FocusOverlay.astro';
 import DndOverlay from '@widgets/other/DndOverlay.astro';
 import TheatreReviews from '@widgets/reading/TheatreReviews.astro';
+import { STARRED_REPOS_FIXTURE_CLOCK } from '@j0nathan-ll0yd/fixtures/post-adapter/starredRepos';
 import type { ShowcaseData } from '../lib/showcase-data';
 
 interface Props {
@@ -118,14 +119,18 @@ const { theatre, focus } = data;
       fixtures are stashed on window by an inline define:vars script, then the
       bundled module (which statically imports the runtime) consumes them. */
   }
-  <script define:vars={{ theatre, focus }} is:inline>
-    window.__lgShowcaseFixtures = { theatre: theatre, focus: focus };
+  <script define:vars={{ theatre, focus, relativeClock: STARRED_REPOS_FIXTURE_CLOCK }} is:inline>
+    window.__lgShowcaseFixtures = { theatre: theatre, focus: focus, relativeClock: relativeClock };
   </script>
   <script>
     import { updateTheatreReviews } from '@runtime/updaters-theatre';
     import { updateFocusOverlay } from '@runtime/updaters-focus';
+    import { fillRelativeTimes } from '@runtime/relative-time-fill';
     const fx = (window as any).__lgShowcaseFixtures;
     if (fx) {
+      // The server writes absolute UTC text (atlas decision 0164 D5); the
+      // showcase fills the relative labels at the fixtures' own clock.
+      if (fx.relativeClock) fillRelativeTimes(document, Date.parse(fx.relativeClock));
       if (fx.theatre) updateTheatreReviews(fx.theatre);
       if (fx.focus) updateFocusOverlay(fx.focus);
     }

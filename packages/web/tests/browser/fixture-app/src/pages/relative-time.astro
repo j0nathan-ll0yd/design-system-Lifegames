@@ -1,0 +1,61 @@
+---
+// Relative-time labels (atlas decision 0164 D5) in a real engine. With page
+// JavaScript off, a visitor sees the server's absolute UTC text. With it on,
+// the bundled script below runs the browser's load pass (fillRelativeTimes)
+// at FILL_NOW and the same <time> elements show the relative label.
+// tests/browser/relative-time.test.ts loads this page both ways.
+// The cards start at opacity 0 until client JS adds `.visible`. The page
+// mirrors the website's Dashboard.astro: a <noscript> style shows them with
+// JavaScript off, and the page script adds `.visible` with it on.
+import '../../../../../../tokens/dist/tokens.css';
+import '../../../../../../tokens/src/compat.css';
+import '../../../../../../tokens/src/animations.css';
+import '../../../../../../tokens/src/effects.css';
+import '../../../../../../tokens/src/base.css';
+import '../../../../../../tokens/src/reset.css';
+import '../../../../../src/styles/primitives.css';
+import '../../../../../src/styles/components.css';
+import '../../../../../src/styles/layout.css';
+import '../../../../../src/styles/a11y.css';
+import DevActivityLog from '../../../../../src/widgets/github/DevActivityLog.astro';
+import ReadingFeed from '../../../../../src/widgets/reading/ReadingFeed.astro';
+import StarredRepoList from '../../../../../src/widgets/github/StarredRepoList.astro';
+import SystemStatus from '../../../../../src/widgets/other/SystemStatus.astro';
+import { FILL_NOW, relativeTimeViewModels } from '../lib/relative-time';
+
+const vm = relativeTimeViewModels();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Relative-time labels</title>
+    <noscript
+      ><style>
+        .tri-card,
+        .left-panel-status {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style></noscript
+    >
+  </head>
+  <body data-fill-now={FILL_NOW} style="background:#06060f;color:#fff;margin:0;padding:16px">
+    <div style="display:grid;grid-template-columns:repeat(2, 380px);gap:16px">
+      <section data-widget="SystemStatus"><SystemStatus {...vm.systemStatus} /></section>
+      <section data-widget="DevActivityLog"><DevActivityLog {...vm.devActivityLog} /></section>
+      <section data-widget="StarredRepoList"><StarredRepoList {...vm.starredRepoList} /></section>
+      <section data-widget="ReadingFeed"><ReadingFeed {...vm.readingFeed} /></section>
+    </div>
+    <script>
+      import { fillRelativeTimes } from '../../../../../src/runtime/relative-time-fill';
+
+      fillRelativeTimes(document, Date.parse(document.body.dataset.fillNow ?? ''));
+      document
+        .querySelectorAll('.tri-card, .left-panel-status')
+        .forEach((el) => el.classList.add('visible'));
+      document.documentElement.setAttribute('data-relative-filled', '1');
+    </script>
+  </body>
+</html>

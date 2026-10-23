@@ -5,6 +5,7 @@ import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { starredRepoListState } from '../../runtime/widget-rules';
 import { safeHttpsUrl } from '../../runtime/html-utils';
+import { relativeAttr } from '../../runtime/relative-time';
 import type { StarredRepoListProps } from './StarredRepoList.types';
 
 interface Repo {
@@ -72,7 +73,11 @@ const repos: Repo[] = showData ? (repoList ?? []) : [];
               {repo.language}
             </span>
             {repo.datetime ? (
-              <time class="gh-sl-date" datetime={repo.datetime}>
+              <time
+                class="gh-sl-date"
+                datetime={repo.datetime}
+                data-relative={relativeAttr(repo.datetime, 'long')}
+              >
                 {repo.starredAt}
               </time>
             ) : (
