@@ -15,7 +15,7 @@
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {readFileSync} from 'node:fs'
 import {join} from 'node:path'
-import {adaptArticles, adaptBooks, adaptGithubEvents, adaptHealth, adaptStarredRepos} from '../../src/runtime/adapters'
+import {adaptBooks, adaptGithubEvents, adaptHealth, adaptStarredRepos} from '../../src/runtime/adapters'
 import {classifyHeartRate, classifyHRV} from '../../src/runtime/heart-rate'
 import {PLACEHOLDER_IMAGE_SRC} from '../../src/runtime/image-utils'
 import {formatWorkoutDuration} from '../../src/runtime/widget-rules'
@@ -264,7 +264,7 @@ const DEV_LOG_ICONS: Record<string, {symbol: string; color: string}> = {
 
 function devActivityLog(): Projection {
   const rawEvents = raw('github-events').events
-  const events = adaptGithubEvents(raw('github-events'), Date.parse(RENDER_NOW))
+  const events = adaptGithubEvents(raw('github-events'))
   const text: string[] = [widgets.devLog.title]
   const attrs: string[] = []
   const styles: string[] = []
@@ -285,9 +285,19 @@ function devActivityLog(): Projection {
   return {text, attrs, styles, classes: ['gh-dal-date', 'gh-dal-detail', 'gh-dal-icon', 'gh-dal-line', 'gh-dal-repo', 'gh-dal-title']}
 }
 
+/**
+ * The server's text for an instant (atlas decision 0164 D5): absolute UTC,
+ * `YYYY-MM-DD HH:MM UTC`, written out here rather than read from the code
+ * under test. The relative label is the browser's (fillRelativeTimes).
+ */
+function utcText(iso: string): string {
+  const utc = new Date(iso).toISOString()
+  return `${utc.slice(0, 10)} ${utc.slice(11, 16)} UTC`
+}
+
 function starredRepoList(): Projection {
   const repos = raw('github-starred-repos').repos
-  const labels = adaptStarredRepos(raw('github-starred-repos'), Date.parse(RENDER_NOW))
+  const labels = adaptStarredRepos(raw('github-starred-repos'))
   return {
     text: [
       widgets.starredRepos.title,
@@ -296,10 +306,10 @@ function starredRepoList(): Projection {
         r.name,
         `★ ${r.stargazersCount.toLocaleString('en-US')}`,
         r.languages[0].language,
-        labels[i]!.starredAt
+        utcText(r.starredAt)
       ])
     ],
-    attrs: repos.flatMap((r: any) => [`href=${r.htmlUrl}`, 'data-sa-link-event=repo_click', `datetime=${r.starredAt}`]),
+    attrs: repos.flatMap((r: any) => [`href=${r.htmlUrl}`, 'data-sa-link-event=repo_click', `datetime=${r.starredAt}`, 'data-relative=long']),
     styles: labels.map((r) => `span background: ${r.languageColor};`),
     classes: ['gh-sl-date', 'gh-sl-lang', 'gh-sl-lang-dot', 'gh-sl-name', 'gh-sl-owner', 'gh-sl-row', 'gh-sl-stars']
   }
@@ -307,11 +317,10 @@ function starredRepoList(): Projection {
 
 function readingFeed(): Projection {
   const articles = raw('articles').articles
-  const labels = adaptArticles(raw('articles'), Date.parse(RENDER_NOW))
   return {
-    text: [widgets.readingFeed.title, ...articles.flatMap((a: any, i: number) => [a.articleTitle, `(${a.sourceTitle})`, labels[i]!.date])],
+    text: [widgets.readingFeed.title, ...articles.flatMap((a: any) => [a.articleTitle, `(${a.sourceTitle})`, utcText(a.savedAt)])],
     // Each row links its https article URL (the updater's row, articleItemHtml).
-    attrs: articles.flatMap((a: any) => [`href=${a.articleUrl}`, `datetime=${a.savedAt}`]),
+    attrs: articles.flatMap((a: any) => [`href=${a.articleUrl}`, `datetime=${a.savedAt}`, 'data-relative=compact']),
     styles: articles.map((_: unknown, i: number) => `li animation-delay: ${i * 0.07}s`),
     classes: ['article-list-date', 'article-list-item', 'article-list-source', 'article-list-title']
   }

@@ -10,6 +10,10 @@ export interface DndOverlayProps {
    * client runtime (updateFocusOverlay) shows it.
    */
   currentFocus?: string | null;
-  /** ISO time of the render; seeds the clock in the owner's time zone. */
+  /**
+   * ISO time of the render. Unused since atlas decision 0164 D5: the server
+   * renders the `--:--:--` clock placeholder and updateFocusOverlay writes the
+   * time. Kept so existing callers still type-check; drop it at the next major.
+   */
   now?: string;
 }

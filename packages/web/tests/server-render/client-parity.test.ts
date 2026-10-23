@@ -9,6 +9,13 @@
 // website PR 0a), loaded into a JSDOM window, then the website's call: the
 // updater with the adapted export and `exportFreshness(domain, export, NOW)`.
 //
+// Relative labels (atlas decision 0164 D5): the server writes absolute UTC
+// text in <time data-relative>, and the browser's load pass
+// (fillRelativeTimes) writes the relative label. The server half here is the
+// server markup after that pass at NOW; the browser half runs its updaters
+// with Date.now() at NOW. So the pair also proves the server markup plus the
+// load pass reaches the updater's card.
+//
 // The two must agree on `data-ssr-state`, `data-generated-at`, the paused and
 // loading classes, every visible text node, every attribute of the elements a
 // reader or a stylesheet keys on (attributeMap), and the exact markup of the
@@ -20,7 +27,7 @@ import {experimental_AstroContainer as AstroContainer} from 'astro/container'
 import {JSDOM} from 'jsdom'
 import {readFileSync} from 'node:fs'
 import {join} from 'node:path'
-import {afterEach, beforeAll, describe, expect, it} from 'vitest'
+import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest'
 import Bookshelf from '../../src/widgets/reading/Bookshelf.astro'
 import DevActivityLog from '../../src/widgets/github/DevActivityLog.astro'
 import HeartRate from '../../src/widgets/health/HeartRate.astro'
@@ -47,6 +54,7 @@ import {updateHeartRateFooter, updateMovementRings} from '../../src/runtime/upda
 import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import {type DashboardExports, type DashboardViewModels, toDashboardViewModels} from '../../src/runtime/view-models'
 import {sleepScoreSource} from '../../src/runtime/widget-rules'
+import {fillRelativeTimes} from '../../src/runtime/relative-time-fill'
 
 const GENERATED = join(__dirname, '../../../fixtures/src/generated')
 const raw = (dir: string, v: string): any => JSON.parse(readFileSync(join(GENERATED, dir, `${v}.json`), 'utf8'))
@@ -69,7 +77,12 @@ function mount(html: string): Document {
   }
   return dom.window.document
 }
+// The updaters write relative labels at Date.now(); pin it to the server's clock.
+beforeEach(() => {
+  vi.spyOn(Date, 'now').mockReturnValue(NOW)
+})
 afterEach(() => {
+  vi.restoreAllMocks()
   for (const key of GLOBALS) {
     delete (globalThis as Record<string, unknown>)[key]
   }
@@ -210,6 +223,12 @@ const S = raw('sleep', KA)
 const PAUSED = raw('health', 'pausedHrGap')
 const {heartRate: _hr, heartRateVariabilitySDNN: _hrv, ...PAUSED_NO_HR} = PAUSED.quantities
 
+const GITHUB_KA = raw('github-events', KA)
+const GITHUB_TIMESTAMPED = {
+  ...GITHUB_KA,
+  events: GITHUB_KA.events.map((e: any, i: number) => ({...e, date: new Date(NOW - (i + 1) * 95 * 60_000).toISOString()}))
+}
+
 const health = (i: Input) => adaptHealth(i.health, i.sleep ?? null)
 const fresh = (domain: FreshnessDomain, data: any) => exportFreshness(domain, data, NOW)
 
@@ -308,6 +327,9 @@ const CARDS: Card[] = [
     cases: {
       live: {input: {githubEvents: raw('github-events', KA)}, state: 'live'},
       stale: {input: {githubEvents: aged('githubEvents', raw('github-events', KA))}, state: 'stale'},
+      // The known answer carries date-only values; these carry timestamps, so
+      // each date is a <time data-relative> on both sides.
+      'timestamped events': {input: {githubEvents: GITHUB_TIMESTAMPED}, state: 'live'},
       empty: {input: {githubEvents: raw('github-events', 'empty')}, state: 'empty'}
     }
   },
@@ -379,6 +401,8 @@ async function serverCard(card: Card, input: Input): Promise<CardSnapshot> {
   const props = toDashboardViewModels(exports, NOW)[card.vm]
   const html = await container.renderToString(card.component as never, {props: {...(props as object), ...card.extra}})
   const doc = new JSDOM(`<!doctype html><body>${html}</body>`).window.document
+  // The browser's load pass over the server markup (atlas decision 0164 D5).
+  fillRelativeTimes(doc, NOW)
   return snapshot(doc.getElementById(card.id)!)
 }
 
@@ -430,6 +454,7 @@ describe('ReadingFeed: the server list is the updater first page', () => {
     const exports: DashboardExports = {articles: {data: input.articles}}
     const html = await container.renderToString(ReadingFeed, {props: toDashboardViewModels(exports, NOW).readingFeed as never})
     const server = new JSDOM(`<!doctype html><body>${html}</body>`).window.document.getElementById(card.id)!
+    fillRelativeTimes(server, NOW)
     const doc = mount(await container.renderToString(ReadingFeed, {props: {state: 'loading'}}))
     card.apply(input)
     return {server, browser: doc.getElementById(card.id)!}

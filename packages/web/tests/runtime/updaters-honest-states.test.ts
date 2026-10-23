@@ -271,8 +271,9 @@ describe('updateSystemStatus shares composeSystemLines', () => {
         <div class="sys-line" data-source="health"><div class="sys-dot"></div><span class="sys-key">Health:</span><span class="sys-val"></span></div>
       </div>`
     updateSystemStatus({health: '2026-03-18T10:00:00.000Z'}, Date.parse('2026-03-18T12:00:00.000Z'))
+    // The composed row, then fillRelativeTimes writes the age at `now`.
     expect(document.querySelector('.sys-line .sys-val-green')?.innerHTML).toBe(
-      'ACTIVE <span class="sys-val">(<time datetime="2026-03-18T10:00:00.000Z">2h ago</time>)</span>'
+      'ACTIVE <span class="sys-val">(<time datetime="2026-03-18T10:00:00.000Z" data-relative="age">2h ago</time>)</span>'
     )
     expect(document.querySelector('.sys-dot')?.className).toBe('sys-dot sys-dot-red')
   })
