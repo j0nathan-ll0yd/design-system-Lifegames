@@ -1,0 +1,6 @@
+Fixture /home-footer/, Chromium, deviceScaleFactor 2, reduced motion, after a 20000px mouse wheel.
+Boxes are viewport top/bottom in CSS px.
+after desktop {"footer":[821,852],"status":[771,821],"main":[0,900],"lastLinkUnderPointer":true}
+after narrow {"footer":[803,844],"status":[759,803],"main":[-3159,751],"lastLinkUnderPointer":true}
+before desktop {"footer":[837,852],"status":[787,837],"main":[0,900],"lastLinkUnderPointer":true}
+before narrow {"footer":[-4739,-4725],"status":[800,844],"main":[-3118,792],"lastLinkUnderPointer":false}
