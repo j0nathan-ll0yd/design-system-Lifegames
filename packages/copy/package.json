@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/copy",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
