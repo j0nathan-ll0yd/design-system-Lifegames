@@ -1,0 +1,43 @@
+---
+title: SiteFooterNav
+description: Footer navigation between the site's pages, shared by the text pages and the homepage
+---
+
+`SiteFooterNav` renders one named `nav` landmark with a list of page links. `TextPage` renders it in its footer. The website's homepage mounts it in its own footer, so both read one component and one stylesheet. It ships no JavaScript.
+
+## Usage
+
+```astro
+---
+import { SiteFooterNav } from '@j0nathan-ll0yd/web/components';
+---
+
+<footer>
+  <SiteFooterNav
+    links={[
+      { href: '/about', label: copy.aboutTitle },
+      { href: '/contact', label: copy.contactTitle },
+      { href: '/developers', label: copy.developersTitle, current: true },
+      { href: '/privacy', label: copy.privacyTitle },
+    ]}
+  />
+</footer>
+```
+
+The component sets no layout around itself. The consumer owns the footer element and its spacing.
+
+## Props
+
+| Prop    | Type                                                            | Default                            | Description                                                       |
+| ------- | --------------------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------- |
+| `links` | `readonly { href: string; label: string; current?: boolean }[]` | required                           | Page links, in render order. `current` sets `aria-current="page"` |
+| `label` | `string`                                                        | `identity.navigation.siteNavLabel` | Accessible name of the landmark. The copy default is `Site`       |
+
+`SiteFooterNavLink` is the type of one entry in `links`; `@j0nathan-ll0yd/web/components` exports it. An empty `links` renders nothing, so a page never gets an empty, unnamed landmark.
+
+## Accessibility
+
+- One `nav` landmark, named by `aria-label`. A screen reader reads it as "Site navigation".
+- The links sit in a `ul`, so a screen reader announces the link count.
+- Only the current page link carries `aria-current="page"`. It renders in the primary text color; the others render muted.
+- Link text is uppercase through CSS. The DOM and the accessible names keep the copy's case.

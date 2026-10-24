@@ -575,3 +575,8 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 .changeset/web-site-footer-nav.md:marker:j0nathan-ll0yd
 .changeset/copy-developers-api-v1.md:marker:j0nathan-ll0yd
 apps/docs/src/content/docs/components/site-footer-nav.mdx:marker:j0nathan-ll0yd
+# SiteFooterNav reads its default landmark name from @j0nathan-ll0yd/copy, and its tests
+# and the TextPage test assert against that copy key.
+packages/web/src/components/SiteFooterNav.astro:marker:j0nathan-ll0yd
+packages/web/tests/server-render/site-footer-nav.test.ts:marker:j0nathan-ll0yd
+packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd

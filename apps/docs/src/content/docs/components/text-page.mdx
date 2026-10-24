@@ -32,13 +32,13 @@ Render `TextPage` inside the document shell (the website's `Dashboard.astro`), o
 
 ## TextPage props
 
-| Prop      | Type                                                            | Default | Description                                                                                      |
-| --------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------ |
-| `title`   | `string`                                                        | --      | Page heading. Renders as the only `h1` and names the card                                        |
-| `updated` | `{ label: string; date: string; datetime?: string }`            | --      | Last-updated line under the heading: `label`, a space, then `date` in a `<time>` with `datetime` |
-| `lede`    | `string`                                                        | --      | Intro paragraph before the sections                                                              |
-| `back`    | `{ href: string; label: string }`                               | --      | Footer link back to the home page                                                                |
-| `links`   | `readonly { href: string; label: string; current?: boolean }[]` | `[]`    | Footer navigation. `current` sets `aria-current="page"`                                          |
+| Prop      | Type                                                            | Default | Description                                                                                                         |
+| --------- | --------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
+| `title`   | `string`                                                        | --      | Page heading. Renders as the only `h1` and names the card                                                           |
+| `updated` | `{ label: string; date: string; datetime?: string }`            | --      | Last-updated line under the heading: `label`, a space, then `date` in a `<time>` with `datetime`                    |
+| `lede`    | `string`                                                        | --      | Intro paragraph before the sections                                                                                 |
+| `back`    | `{ href: string; label: string }`                               | --      | Footer link back to the home page                                                                                   |
+| `links`   | `readonly { href: string; label: string; current?: boolean }[]` | `[]`    | Footer navigation, rendered by [`SiteFooterNav`](/components/site-footer-nav). `current` sets `aria-current="page"` |
 
 The default slot holds the sections. The footer renders only when `back` or `links` is set.
 
@@ -60,7 +60,7 @@ The website's dashboard layout locks viewport scroll at 1100px and up (`html, bo
 ## Accessibility
 
 - The card is an `article` named by its `h1`. Each section is a named region.
-- The current page link carries `aria-current="page"`.
+- The footer's page links are one `nav` landmark, named from copy (`identity.navigation.siteNavLabel`). The current page link carries `aria-current="page"`.
 - Colors and the card surface come from `--lg-card-*` tokens, which `a11y.css` raises under `prefers-contrast: more`.
 - The entrance animation runs only under `prefers-reduced-motion: no-preference`.
 - The card turns opaque where `backdrop-filter` is unsupported.
