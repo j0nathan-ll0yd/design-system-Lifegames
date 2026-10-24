@@ -36,6 +36,18 @@
       display: none;
     }
 
+    /* The homepage's site footer (SiteFooterNav), the last child of .left-panel. Here it
+       closes the left column: the body does not scroll from 1100px up, so a footer after
+       .command-layout could not be reached. It drops to the panel's foot when the column
+       has room, and follows System Status when it does not. */
+    .left-panel-footer {
+      width: 100%;
+      max-width: 380px;
+      flex-shrink: 0;
+      margin-top: auto;
+      padding-top: var(--lg-space-400);
+    }
+
     .left-panel::after {
       content: '';
       position: absolute;
@@ -351,6 +363,16 @@
         padding-bottom: var(--space-24);
       }
 
+      /* The footer follows System Status, so it ends the page. */
+      .left-panel-footer {
+        order: 100;
+        width: calc(100% - var(--lg-space-400) * 2);
+        max-width: 100%;
+        margin: 0 auto;
+        padding: var(--lg-space-400) var(--lg-space-400)
+          calc(var(--lg-space-600) + env(safe-area-inset-bottom, 0px));
+      }
+
       /* --- Variation A: Compact Row identity card ---
      No !important needed on most declarations: @layer layout beats @layer
      components via layer order, so these win over components.css
@@ -568,6 +590,16 @@
         margin-top: var(--space-12);
         padding-top: var(--space-12);
         padding-bottom: var(--space-24);
+      }
+
+      /* The footer follows System Status, so it ends the page. */
+      .left-panel-footer {
+        order: 100;
+        width: calc(100% - var(--lg-space-400) * 2);
+        max-width: 100%;
+        margin: 0 auto;
+        padding: var(--lg-space-400) var(--lg-space-400)
+          calc(var(--lg-space-600) + env(safe-area-inset-bottom, 0px));
       }
 
       .identity-card {

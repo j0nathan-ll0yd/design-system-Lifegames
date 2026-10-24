@@ -3,7 +3,7 @@ title: SiteFooterNav
 description: Footer navigation between the site's pages, shared by the text pages and the homepage
 ---
 
-`SiteFooterNav` renders one named `nav` landmark with a list of page links. `TextPage` renders it in its footer. The website's homepage will mount it in its own footer, so both read one component and one stylesheet. It ships no JavaScript.
+`SiteFooterNav` renders one named `nav` landmark with a list of page links. `TextPage` renders it in its footer. The website's homepage mounts it in its own footer, so both read one component and one stylesheet. It ships no JavaScript.
 
 ## Usage
 
@@ -26,6 +26,22 @@ import { SiteFooterNav } from '@j0nathan-ll0yd/web/components';
 ```
 
 The component sets no layout around itself. The consumer owns the footer element and its spacing.
+
+## Homepage placement
+
+On the dashboard homepage, put the footer last inside `.left-panel` with the class `left-panel-footer`. `layout.css` places it:
+
+- From 1100px up, the body does not scroll. The footer closes the left column, after System Status. It drops to the foot of the panel when the column has room.
+- Below 1100px, `.left-panel` is `display: contents`. The footer takes `order: 100`, after System Status (`order: 99`), so it ends the page.
+
+```astro
+<aside class="left-panel">
+  {/* identity card, bio, System Status */}
+  <footer class="left-panel-footer">
+    <SiteFooterNav links={links} />
+  </footer>
+</aside>
+```
 
 ## Props
 

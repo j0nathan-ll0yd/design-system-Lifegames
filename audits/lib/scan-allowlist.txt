@@ -580,3 +580,5 @@ apps/docs/src/content/docs/components/site-footer-nav.mdx:marker:j0nathan-ll0yd
 packages/web/src/components/SiteFooterNav.astro:marker:j0nathan-ll0yd
 packages/web/tests/server-render/site-footer-nav.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd
+# The homepage footer layout changeset names the package it bumps.
+.changeset/web-left-panel-footer.md:marker:j0nathan-ll0yd
