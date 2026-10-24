@@ -134,9 +134,8 @@
     "email": {
       "value": "webmaster@lifegames.org",
       "_meta": {
-        "description": "Public contact email address — the same address /.well-known/security.txt publishes (Contact: mailto:). Locale-invariant. The source of truth for the address: the web layer maps it into the Person JSON-LD contactPoint and the contact page. Prose leaves that name the address (privacy.who, privacy.rights, contact.security) inline it, and the identity tests hold each of them equal to this value.",
+        "description": "Public contact email address — the same address /.well-known/security.txt publishes (Contact: mailto:). Locale-invariant. The source of truth for the address: the web layer maps it into the contact page. The Person JSON-LD contactPoint carries organization.contactEmail instead (owner ruling 2026-10-24), not this address. Prose leaves that name the address (privacy.who, privacy.rights, contact.security) inline it, and the identity tests hold each of them equal to this value.",
         "usage": [
-          "web:src/layouts/Dashboard.astro (Person JSON-LD contactPoint.email)",
           "web:src/pages/contact.astro (email channel link text and mailto: href)"
         ],
         "register": "atom",
@@ -1177,7 +1176,8 @@
         "description": "Contact email address for the Organization: schema.org ContactPoint email and the top-level Organization email. A purpose-made, revocable alias for the Organization contact point. The personal address stays obfuscated on /contact (owner ruling 2026-10-12); do not replace this with the personal address.",
         "usage": [
           "web:src/layouts/Dashboard.astro (Organization JSON-LD email)",
-          "web:src/layouts/Dashboard.astro (Organization JSON-LD contactPoint.email)"
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD contactPoint.email)",
+          "web:src/layouts/Dashboard.astro (Person JSON-LD contactPoint.email)"
         ],
         "register": "atom",
         "audience": "machine",
@@ -1191,13 +1191,14 @@
       "_meta": {
         "description": "The PO Box number only, without a \"PO Box\" prefix. schema.org PostalAddress postOfficeBoxNumber for the Organization address. The address has no streetAddress.",
         "usage": [
-          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.postOfficeBoxNumber)"
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.postOfficeBoxNumber)",
+          "web:src/layouts/Dashboard.astro (Person JSON-LD address.postOfficeBoxNumber)"
         ],
         "register": "atom",
         "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-10-24",
-        "rationale": "The PO Box is the business mailing address of the Organization. The Person address stays locality-only (person.addressLocality, person.addressRegion, person.addressCountry)."
+        "rationale": "The PO Box is the business mailing address. Both the Organization and the Person JSON-LD address carry it (owner ruling 2026-10-24)."
       }
     },
     "locality": {
@@ -1205,7 +1206,8 @@
       "_meta": {
         "description": "City of the PO Box. schema.org PostalAddress addressLocality for the Organization address. Independent of person.addressLocality.",
         "usage": [
-          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressLocality)"
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressLocality)",
+          "web:src/layouts/Dashboard.astro (Person JSON-LD address.addressLocality)"
         ],
         "register": "atom",
         "audience": "machine",
@@ -1218,7 +1220,8 @@
       "_meta": {
         "description": "State of the PO Box as its two-letter postal code. schema.org PostalAddress addressRegion for the Organization address.",
         "usage": [
-          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressRegion)"
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressRegion)",
+          "web:src/layouts/Dashboard.astro (Person JSON-LD address.addressRegion)"
         ],
         "register": "atom",
         "audience": "machine",
@@ -1231,7 +1234,8 @@
       "_meta": {
         "description": "ZIP code of the PO Box. schema.org PostalAddress postalCode for the Organization address.",
         "usage": [
-          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.postalCode)"
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.postalCode)",
+          "web:src/layouts/Dashboard.astro (Person JSON-LD address.postalCode)"
         ],
         "register": "atom",
         "audience": "machine",
@@ -1244,7 +1248,8 @@
       "_meta": {
         "description": "Country of the PO Box as an ISO 3166-1 alpha-2 code. schema.org PostalAddress addressCountry for the Organization address.",
         "usage": [
-          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressCountry)"
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressCountry)",
+          "web:src/layouts/Dashboard.astro (Person JSON-LD address.addressCountry)"
         ],
         "register": "atom",
         "audience": "machine",
