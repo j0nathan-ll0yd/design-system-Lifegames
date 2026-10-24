@@ -5,7 +5,7 @@
   "description": "Rich authoring schema for the identity slice of @j0nathan-ll0yd/copy. Every customer-facing identity string is a CopyString/CopyStringList leaf carrying authoring context in _meta. The copy build derives a FLAT schema from this one (stripping _meta) for all consumer codegen (TS/Zod/Swift). Strings are authored in ICU MessageFormat 1 syntax.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["person", "site", "navigation", "seo", "a11y", "humansTxt", "feed", "privacy", "about", "contact"],
+  "required": ["person", "site", "navigation", "seo", "a11y", "humansTxt", "feed", "privacy", "about", "contact", "organization"],
   "properties": {
     "person": {
       "type": "object",
@@ -439,6 +439,52 @@
           "$ref": "#/$defs/CopyString"
         },
         "security": {
+          "$ref": "#/$defs/CopyString"
+        }
+      }
+    },
+    "organization": {
+      "type": "object",
+      "title": "IdentityOrganization",
+      "description": "Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name, description, contact point, and postal address. The node url is the site URL constant, not a copy key.",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "contactType",
+        "contactEmail",
+        "poBox",
+        "locality",
+        "region",
+        "postalCode",
+        "country"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "description": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contactType": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "contactEmail": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "poBox": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "locality": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "region": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "postalCode": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "country": {
           "$ref": "#/$defs/CopyString"
         }
       }

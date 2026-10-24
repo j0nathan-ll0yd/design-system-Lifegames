@@ -1133,5 +1133,124 @@
         "lastReviewed": "2026-10-07"
       }
     }
+  },
+  "organization": {
+    "name": {
+      "value": "Lifegames",
+      "_meta": {
+        "description": "Name of the organization behind the site. schema.org Organization name in the website JSON-LD. The node url is the site URL constant (https://jonathanlloyd.me), not a copy key: lifegames.org, the mail domain, does not resolve (DNS, 2026-10-24).",
+        "usage": ["web:src/layouts/Dashboard.astro (Organization JSON-LD name)"],
+        "register": "label",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24"
+      }
+    },
+    "description": {
+      "value": "Custom Computer Programming Services.",
+      "_meta": {
+        "description": "One sentence that states what the organization is. schema.org Organization description. Literal and factual: the arbitration rule gives a JSON-LD string facts, not flavor. The value is the NAICS 541511 industry title in the owner's exact words, plus a terminal period; the node can also carry schema.org naics \"541511\".",
+        "usage": ["web:src/layouts/Dashboard.astro (Organization JSON-LD description)"],
+        "register": "machine",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24"
+      }
+    },
+    "contactType": {
+      "value": "general inquiries",
+      "_meta": {
+        "description": "schema.org ContactPoint contactType for the Organization contact point. Lowercase free text, the form schema.org examples use.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD contactPoint.contactType)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Same value as person.contactType. The agent-readiness tests hold the two equal, so the two contact points cannot drift."
+      }
+    },
+    "contactEmail": {
+      "value": "portfolio.chamomile484@passmail.net",
+      "_meta": {
+        "description": "Contact email address for the Organization: schema.org ContactPoint email and the top-level Organization email. A purpose-made, revocable alias for the Organization contact point. The personal address stays obfuscated on /contact (owner ruling 2026-10-12); do not replace this with the personal address.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD email)",
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD contactPoint.email)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "The agent-readiness tests hold this value unequal to person.email, and allow no other identity leaf to name it."
+      }
+    },
+    "poBox": {
+      "value": "14335",
+      "_meta": {
+        "description": "The PO Box number only, without a \"PO Box\" prefix. schema.org PostalAddress postOfficeBoxNumber for the Organization address. The address has no streetAddress.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.postOfficeBoxNumber)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "The PO Box is the business mailing address of the Organization. The Person address stays locality-only (person.addressLocality, person.addressRegion, person.addressCountry)."
+      }
+    },
+    "locality": {
+      "value": "San Francisco",
+      "_meta": {
+        "description": "City of the PO Box. schema.org PostalAddress addressLocality for the Organization address. Independent of person.addressLocality.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressLocality)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24"
+      }
+    },
+    "region": {
+      "value": "CA",
+      "_meta": {
+        "description": "State of the PO Box as its two-letter postal code. schema.org PostalAddress addressRegion for the Organization address.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressRegion)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24"
+      }
+    },
+    "postalCode": {
+      "value": "94114",
+      "_meta": {
+        "description": "ZIP code of the PO Box. schema.org PostalAddress postalCode for the Organization address.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.postalCode)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24"
+      }
+    },
+    "country": {
+      "value": "US",
+      "_meta": {
+        "description": "Country of the PO Box as an ISO 3166-1 alpha-2 code. schema.org PostalAddress addressCountry for the Organization address.",
+        "usage": [
+          "web:src/layouts/Dashboard.astro (Organization JSON-LD address.addressCountry)"
+        ],
+        "register": "atom",
+        "audience": "machine",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24"
+      }
+    }
   }
 }

@@ -165,6 +165,22 @@ export const identitySchema = z
       .describe(
         'Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.',
       ),
+    organization: z
+      .object({
+        name: z.string(),
+        description: z.string(),
+        contactType: z.string(),
+        contactEmail: z.string(),
+        poBox: z.string(),
+        locality: z.string(),
+        region: z.string(),
+        postalCode: z.string(),
+        country: z.string(),
+      })
+      .strict()
+      .describe(
+        'Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name, description, contact point, and postal address. The node url is the site URL constant, not a copy key.',
+      ),
   })
   .strict()
   .describe(

@@ -461,6 +461,52 @@
         "security"
       ],
       "additionalProperties": false
+    },
+    "organization": {
+      "type": "object",
+      "title": "IdentityOrganization",
+      "description": "Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name, description, contact point, and postal address. The node url is the site URL constant, not a copy key.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "contactType": {
+          "type": "string"
+        },
+        "contactEmail": {
+          "type": "string"
+        },
+        "poBox": {
+          "type": "string"
+        },
+        "locality": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "postalCode": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "contactType",
+        "contactEmail",
+        "poBox",
+        "locality",
+        "region",
+        "postalCode",
+        "country"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
@@ -473,7 +519,8 @@
     "feed",
     "privacy",
     "about",
-    "contact"
+    "contact",
+    "organization"
   ],
   "additionalProperties": false
 }

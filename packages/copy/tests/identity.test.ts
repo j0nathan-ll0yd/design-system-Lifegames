@@ -77,7 +77,9 @@ const NAMESPACES: NamespaceFixture[] = [
   //   securityHeading/security) — atlas decision 0158.
   //   privacy, about, and contact each gained lastModified (the sitemap <lastmod> date).
   //   navigation 1 (backLink, page-neutral; privacy.backLink stays, deprecated) — atlas decision 0158 step 5b.
-  {name: 'identity', expectedLeaves: 91},
+  //   organization 9 (name/description/contactType/contactEmail/poBox/locality/region/postalCode/country)
+  //   — the schema.org Organization node for Lifegames (owner decision 2026-10-24).
+  {name: 'identity', expectedLeaves: 100},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5

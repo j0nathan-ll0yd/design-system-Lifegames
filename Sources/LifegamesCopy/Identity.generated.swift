@@ -29,6 +29,10 @@ public struct Identity: Codable, Sendable {
     public let humansTxt: HumansTxt
     /// Site-wide navigation strings that no single page owns.
     public let navigation: IdentityNavigation
+    /// Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name,
+    /// description, contact point, and postal address. The node url is the site URL constant,
+    /// not a copy key.
+    public let organization: IdentityOrganization
     /// Identity facts and biographical voices for Jonathan Lloyd.
     public let person: Person
     /// Privacy policy page copy — plain-English sections covering who operates the site, what
@@ -44,16 +48,17 @@ public struct Identity: Codable, Sendable {
 
     public enum CodingKeys: String, CodingKey {
         case a11Y = "a11y"
-        case about, contact, feed, humansTxt, navigation, person, privacy, seo, site
+        case about, contact, feed, humansTxt, navigation, organization, person, privacy, seo, site
     }
 
-    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, navigation: IdentityNavigation, person: Person, privacy: Privacy, seo: SEO, site: Site) {
+    public init(a11Y: A11Y, about: IdentityAbout, contact: IdentityContact, feed: Feed, humansTxt: HumansTxt, navigation: IdentityNavigation, organization: IdentityOrganization, person: Person, privacy: Privacy, seo: SEO, site: Site) {
         self.a11Y = a11Y
         self.about = about
         self.contact = contact
         self.feed = feed
         self.humansTxt = humansTxt
         self.navigation = navigation
+        self.organization = organization
         self.person = person
         self.privacy = privacy
         self.seo = seo
@@ -86,6 +91,7 @@ public extension Identity {
         feed: Feed? = nil,
         humansTxt: HumansTxt? = nil,
         navigation: IdentityNavigation? = nil,
+        organization: IdentityOrganization? = nil,
         person: Person? = nil,
         privacy: Privacy? = nil,
         seo: SEO? = nil,
@@ -98,6 +104,7 @@ public extension Identity {
             feed: feed ?? self.feed,
             humansTxt: humansTxt ?? self.humansTxt,
             navigation: navigation ?? self.navigation,
+            organization: organization ?? self.organization,
             person: person ?? self.person,
             privacy: privacy ?? self.privacy,
             seo: seo ?? self.seo,
@@ -534,6 +541,79 @@ public extension IdentityNavigation {
     ) -> IdentityNavigation {
         return IdentityNavigation(
             backLink: backLink ?? self.backLink
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name,
+/// description, contact point, and postal address. The node url is the site URL constant,
+/// not a copy key.
+// MARK: - IdentityOrganization
+public struct IdentityOrganization: Codable, Sendable {
+    public let contactEmail, contactType, country, description: String
+    public let locality, name, poBox, postalCode: String
+    public let region: String
+
+    public init(contactEmail: String, contactType: String, country: String, description: String, locality: String, name: String, poBox: String, postalCode: String, region: String) {
+        self.contactEmail = contactEmail
+        self.contactType = contactType
+        self.country = country
+        self.description = description
+        self.locality = locality
+        self.name = name
+        self.poBox = poBox
+        self.postalCode = postalCode
+        self.region = region
+    }
+}
+
+// MARK: IdentityOrganization convenience initializers and mutators
+
+public extension IdentityOrganization {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(IdentityOrganization.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        contactEmail: String? = nil,
+        contactType: String? = nil,
+        country: String? = nil,
+        description: String? = nil,
+        locality: String? = nil,
+        name: String? = nil,
+        poBox: String? = nil,
+        postalCode: String? = nil,
+        region: String? = nil
+    ) -> IdentityOrganization {
+        return IdentityOrganization(
+            contactEmail: contactEmail ?? self.contactEmail,
+            contactType: contactType ?? self.contactType,
+            country: country ?? self.country,
+            description: description ?? self.description,
+            locality: locality ?? self.locality,
+            name: name ?? self.name,
+            poBox: poBox ?? self.poBox,
+            postalCode: postalCode ?? self.postalCode,
+            region: region ?? self.region
         )
     }
 

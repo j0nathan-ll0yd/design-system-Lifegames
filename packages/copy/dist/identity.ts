@@ -120,6 +120,7 @@ export interface Identity {
   };
   about: IdentityAbout;
   contact: IdentityContact;
+  organization: IdentityOrganization;
 }
 /**
  * Site-wide navigation strings that no single page owns.
@@ -159,4 +160,18 @@ export interface IdentityContact {
   githubNote: string;
   securityHeading: string;
   security: string;
+}
+/**
+ * Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name, description, contact point, and postal address. The node url is the site URL constant, not a copy key.
+ */
+export interface IdentityOrganization {
+  name: string;
+  description: string;
+  contactType: string;
+  contactEmail: string;
+  poBox: string;
+  locality: string;
+  region: string;
+  postalCode: string;
+  country: string;
 }

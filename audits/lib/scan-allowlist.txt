@@ -569,3 +569,6 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 .changeset/web-relative-time-client-side.md:marker:j0nathan-ll0yd
 .changeset/fixtures-starred-absolute-time.md:marker:j0nathan-ll0yd
 .changeset/schemas-overlay-now-description.md:marker:j0nathan-ll0yd
+# The Organization identity group (owner decision 2026-10-24): the changeset names the
+# @j0nathan-ll0yd/copy package it releases.
+.changeset/copy-organization-identity.md:marker:j0nathan-ll0yd
