@@ -418,7 +418,9 @@
       "value": "Site",
       "_meta": {
         "description": "Accessible name (aria-label) of the site navigation landmark: the list of page links in a page footer. A screen reader reads the landmark as \"Site navigation\", so the value omits the word. Page-neutral: no page owns it.",
-        "usage": ["design-system:packages/web/src/components/SiteFooterNav.astro (default label; the TextPage footer and the website homepage footer)"],
+        "usage": [
+          "design-system:packages/web/src/components/SiteFooterNav.astro (default label; the TextPage footer, and the website homepage footer once the website mounts it)"
+        ],
         "register": "atom",
         "audience": "human",
         "owner": "jonathan",

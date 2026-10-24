@@ -52,6 +52,11 @@ describe('SiteFooterNav', () => {
     expect(doc.querySelector('nav')!.getAttribute('aria-label')).toBe('Fixture label')
   })
 
+  it('falls back to the copy default for an empty label: never an unnamed landmark', async () => {
+    const doc = await render({links: LINKS, label: ''})
+    expect(doc.querySelector('nav')!.getAttribute('aria-label')).toBe(identity.navigation.siteNavLabel)
+  })
+
   it('renders the links as a list, in order, with matching hrefs and labels', async () => {
     const doc = await render({links: LINKS})
 
