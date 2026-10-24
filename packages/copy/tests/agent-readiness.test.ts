@@ -235,6 +235,8 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
   it('each problem detail names the member or header that carries its variable data', () => {
     expect(llm.developers['problemNotFoundDetail']).toContain('validPaths')
     expect(llm.developers['problemMethodNotAllowedDetail']).toContain('Allow header')
+    // Method-neutral: /api/csp-report (POST only) answers the same problem as the GET/HEAD /api/v1 paths.
+    expect(llm.developers['problemMethodNotAllowedDetail']).not.toMatch(/\b(GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS)\b/)
     expect(llm.developers['problemRateLimitedDetail']).toContain('Retry-After')
     expect(llm.developers['problemFocusSuppressedDetail']).toContain('suppressed: true')
     expect(llm.developers['problemFocusSuppressedDetail']).toContain('Retry-After')

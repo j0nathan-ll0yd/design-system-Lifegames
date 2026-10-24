@@ -280,7 +280,7 @@
     "problemNotFoundTitle": "Not found",
     "problemNotFoundDetail": "No resource exists at this path. The validPaths member and {siteUrl}/openapi.json list the valid paths.",
     "problemMethodNotAllowedTitle": "Method not allowed",
-    "problemMethodNotAllowedDetail": "The API serves GET and HEAD only. The Allow header lists them.",
+    "problemMethodNotAllowedDetail": "This path accepts only the methods listed in the Allow header of the response.",
     "problemRateLimitedTitle": "Rate limit exceeded",
     "problemRateLimitedDetail": "This client has spent its request budget for the current window. Retry after the number of seconds in the Retry-After header.",
     "problemFocusSuppressedTitle": "Hidden by focus mode",
