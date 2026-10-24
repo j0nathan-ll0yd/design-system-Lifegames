@@ -43,10 +43,11 @@ public struct Llm: Codable, Sendable {
     /// titles and JSON-LD Dataset prose.
     public let dashboard: LlmDashboard
     /// Developer page copy (/developers on the website): title, meta description, intro, the
-    /// OpenAPI description of the focus-suppression 403, and one heading plus body per machine
-    /// interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt,
-    /// feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the
-    /// consumer substitutes {siteUrl}.
+    /// OpenAPI description of the focus-suppression 403, the /api/v1 base note, the RFC 9457
+    /// title and detail of each /api/v1 problem type, and one heading plus body per section —
+    /// data API and OpenAPI, errors, versioning, rate limits, MCP server, WebMCP tools, llms.txt
+    /// and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms.
+    /// Bodies are ICU MF1; the consumer substitutes {siteUrl}.
     public let developers: LlmDevelopers
     /// Prose strings from llms-full.eta — the complete LLM data dump (/llms-full.txt +
     /// /index.md). The <SYSTEM> framing line, headings, blockquote intro, meta labels, table
@@ -254,25 +255,33 @@ public extension LlmDashboard {
 }
 
 /// Developer page copy (/developers on the website): title, meta description, intro, the
-/// OpenAPI description of the focus-suppression 403, and one heading plus body per machine
-/// interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt,
-/// feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the
-/// consumer substitutes {siteUrl}.
+/// OpenAPI description of the focus-suppression 403, the /api/v1 base note, the RFC 9457
+/// title and detail of each /api/v1 problem type, and one heading plus body per section —
+/// data API and OpenAPI, errors, versioning, rate limits, MCP server, WebMCP tools, llms.txt
+/// and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms.
+/// Bodies are ICU MF1; the consumer substitutes {siteUrl}.
 // MARK: - LlmDevelopers
 public struct LlmDevelopers: Codable, Sendable {
-    public let apiBody, apiHeading, apiSuppressedResponse, cachingBody: String
-    public let cachingHeading, feedsBody, feedsHeading, focusBody: String
-    public let focusHeading, intro, lastModified, llmsBody: String
-    public let llmsHeading, mcpBody, mcpHeading, metaDescription: String
-    public let title, usageBody, usageHeading, webmcpBody: String
-    public let webmcpHeading: String
+    public let apiBaseNote, apiBody, apiHeading, apiSuppressedResponse: String
+    public let cachingBody, cachingHeading, errorsBody, errorsHeading: String
+    public let feedsBody, feedsHeading, focusBody, focusHeading: String
+    public let intro, lastModified, llmsBody, llmsHeading: String
+    public let mcpBody, mcpHeading, metaDescription, problemFocusSuppressedDetail: String
+    public let problemFocusSuppressedTitle, problemMethodNotAllowedDetail, problemMethodNotAllowedTitle, problemNotFoundDetail: String
+    public let problemNotFoundTitle, problemRateLimitedDetail, problemRateLimitedTitle, problemUpstreamUnavailableDetail: String
+    public let problemUpstreamUnavailableTitle, rateLimitBody, rateLimitHeading, title: String
+    public let usageBody, usageHeading, versioningBody, versioningHeading: String
+    public let webmcpBody, webmcpHeading: String
 
-    public init(apiBody: String, apiHeading: String, apiSuppressedResponse: String, cachingBody: String, cachingHeading: String, feedsBody: String, feedsHeading: String, focusBody: String, focusHeading: String, intro: String, lastModified: String, llmsBody: String, llmsHeading: String, mcpBody: String, mcpHeading: String, metaDescription: String, title: String, usageBody: String, usageHeading: String, webmcpBody: String, webmcpHeading: String) {
+    public init(apiBaseNote: String, apiBody: String, apiHeading: String, apiSuppressedResponse: String, cachingBody: String, cachingHeading: String, errorsBody: String, errorsHeading: String, feedsBody: String, feedsHeading: String, focusBody: String, focusHeading: String, intro: String, lastModified: String, llmsBody: String, llmsHeading: String, mcpBody: String, mcpHeading: String, metaDescription: String, problemFocusSuppressedDetail: String, problemFocusSuppressedTitle: String, problemMethodNotAllowedDetail: String, problemMethodNotAllowedTitle: String, problemNotFoundDetail: String, problemNotFoundTitle: String, problemRateLimitedDetail: String, problemRateLimitedTitle: String, problemUpstreamUnavailableDetail: String, problemUpstreamUnavailableTitle: String, rateLimitBody: String, rateLimitHeading: String, title: String, usageBody: String, usageHeading: String, versioningBody: String, versioningHeading: String, webmcpBody: String, webmcpHeading: String) {
+        self.apiBaseNote = apiBaseNote
         self.apiBody = apiBody
         self.apiHeading = apiHeading
         self.apiSuppressedResponse = apiSuppressedResponse
         self.cachingBody = cachingBody
         self.cachingHeading = cachingHeading
+        self.errorsBody = errorsBody
+        self.errorsHeading = errorsHeading
         self.feedsBody = feedsBody
         self.feedsHeading = feedsHeading
         self.focusBody = focusBody
@@ -284,9 +293,23 @@ public struct LlmDevelopers: Codable, Sendable {
         self.mcpBody = mcpBody
         self.mcpHeading = mcpHeading
         self.metaDescription = metaDescription
+        self.problemFocusSuppressedDetail = problemFocusSuppressedDetail
+        self.problemFocusSuppressedTitle = problemFocusSuppressedTitle
+        self.problemMethodNotAllowedDetail = problemMethodNotAllowedDetail
+        self.problemMethodNotAllowedTitle = problemMethodNotAllowedTitle
+        self.problemNotFoundDetail = problemNotFoundDetail
+        self.problemNotFoundTitle = problemNotFoundTitle
+        self.problemRateLimitedDetail = problemRateLimitedDetail
+        self.problemRateLimitedTitle = problemRateLimitedTitle
+        self.problemUpstreamUnavailableDetail = problemUpstreamUnavailableDetail
+        self.problemUpstreamUnavailableTitle = problemUpstreamUnavailableTitle
+        self.rateLimitBody = rateLimitBody
+        self.rateLimitHeading = rateLimitHeading
         self.title = title
         self.usageBody = usageBody
         self.usageHeading = usageHeading
+        self.versioningBody = versioningBody
+        self.versioningHeading = versioningHeading
         self.webmcpBody = webmcpBody
         self.webmcpHeading = webmcpHeading
     }
@@ -311,11 +334,14 @@ public extension LlmDevelopers {
     }
 
     func with(
+        apiBaseNote: String? = nil,
         apiBody: String? = nil,
         apiHeading: String? = nil,
         apiSuppressedResponse: String? = nil,
         cachingBody: String? = nil,
         cachingHeading: String? = nil,
+        errorsBody: String? = nil,
+        errorsHeading: String? = nil,
         feedsBody: String? = nil,
         feedsHeading: String? = nil,
         focusBody: String? = nil,
@@ -327,18 +353,35 @@ public extension LlmDevelopers {
         mcpBody: String? = nil,
         mcpHeading: String? = nil,
         metaDescription: String? = nil,
+        problemFocusSuppressedDetail: String? = nil,
+        problemFocusSuppressedTitle: String? = nil,
+        problemMethodNotAllowedDetail: String? = nil,
+        problemMethodNotAllowedTitle: String? = nil,
+        problemNotFoundDetail: String? = nil,
+        problemNotFoundTitle: String? = nil,
+        problemRateLimitedDetail: String? = nil,
+        problemRateLimitedTitle: String? = nil,
+        problemUpstreamUnavailableDetail: String? = nil,
+        problemUpstreamUnavailableTitle: String? = nil,
+        rateLimitBody: String? = nil,
+        rateLimitHeading: String? = nil,
         title: String? = nil,
         usageBody: String? = nil,
         usageHeading: String? = nil,
+        versioningBody: String? = nil,
+        versioningHeading: String? = nil,
         webmcpBody: String? = nil,
         webmcpHeading: String? = nil
     ) -> LlmDevelopers {
         return LlmDevelopers(
+            apiBaseNote: apiBaseNote ?? self.apiBaseNote,
             apiBody: apiBody ?? self.apiBody,
             apiHeading: apiHeading ?? self.apiHeading,
             apiSuppressedResponse: apiSuppressedResponse ?? self.apiSuppressedResponse,
             cachingBody: cachingBody ?? self.cachingBody,
             cachingHeading: cachingHeading ?? self.cachingHeading,
+            errorsBody: errorsBody ?? self.errorsBody,
+            errorsHeading: errorsHeading ?? self.errorsHeading,
             feedsBody: feedsBody ?? self.feedsBody,
             feedsHeading: feedsHeading ?? self.feedsHeading,
             focusBody: focusBody ?? self.focusBody,
@@ -350,9 +393,23 @@ public extension LlmDevelopers {
             mcpBody: mcpBody ?? self.mcpBody,
             mcpHeading: mcpHeading ?? self.mcpHeading,
             metaDescription: metaDescription ?? self.metaDescription,
+            problemFocusSuppressedDetail: problemFocusSuppressedDetail ?? self.problemFocusSuppressedDetail,
+            problemFocusSuppressedTitle: problemFocusSuppressedTitle ?? self.problemFocusSuppressedTitle,
+            problemMethodNotAllowedDetail: problemMethodNotAllowedDetail ?? self.problemMethodNotAllowedDetail,
+            problemMethodNotAllowedTitle: problemMethodNotAllowedTitle ?? self.problemMethodNotAllowedTitle,
+            problemNotFoundDetail: problemNotFoundDetail ?? self.problemNotFoundDetail,
+            problemNotFoundTitle: problemNotFoundTitle ?? self.problemNotFoundTitle,
+            problemRateLimitedDetail: problemRateLimitedDetail ?? self.problemRateLimitedDetail,
+            problemRateLimitedTitle: problemRateLimitedTitle ?? self.problemRateLimitedTitle,
+            problemUpstreamUnavailableDetail: problemUpstreamUnavailableDetail ?? self.problemUpstreamUnavailableDetail,
+            problemUpstreamUnavailableTitle: problemUpstreamUnavailableTitle ?? self.problemUpstreamUnavailableTitle,
+            rateLimitBody: rateLimitBody ?? self.rateLimitBody,
+            rateLimitHeading: rateLimitHeading ?? self.rateLimitHeading,
             title: title ?? self.title,
             usageBody: usageBody ?? self.usageBody,
             usageHeading: usageHeading ?? self.usageHeading,
+            versioningBody: versioningBody ?? self.versioningBody,
+            versioningHeading: versioningHeading ?? self.versioningHeading,
             webmcpBody: webmcpBody ?? self.webmcpBody,
             webmcpHeading: webmcpHeading ?? self.webmcpHeading
         )

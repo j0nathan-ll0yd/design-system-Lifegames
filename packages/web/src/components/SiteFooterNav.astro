@@ -1,0 +1,40 @@
+---
+// Site navigation for a page footer (atlas decision 0158): one <nav> landmark around
+// a list of page links. TextPage renders it in its footer, and the website's homepage
+// will mount the same component. No script. The accessible name defaults to
+// identity.navigation.siteNavLabel, also when a consumer passes an empty label. This component owns every style; the rules live in
+// primitives.css.
+import { identity } from '@j0nathan-ll0yd/copy';
+import '../styles/primitives.css';
+import type { SiteFooterNavLink } from './SiteFooterNav.types';
+
+interface Props {
+  /** Page links, rendered in this order. An empty list renders nothing. */
+  links: readonly SiteFooterNavLink[];
+  /** Accessible name of the nav landmark. Empty or absent: identity.navigation.siteNavLabel. */
+  label?: string;
+}
+
+const { links, label } = Astro.props;
+const name = label || identity.navigation.siteNavLabel;
+---
+
+{
+  links.length > 0 && (
+    <nav class="lg-site-footer-nav" aria-label={name}>
+      <ul class="lg-site-footer-nav-list">
+        {links.map((link) => (
+          <li class="lg-site-footer-nav-item">
+            <a
+              href={link.href}
+              class="lg-site-footer-nav-link"
+              aria-current={link.current ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

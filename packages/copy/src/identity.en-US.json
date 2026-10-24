@@ -413,6 +413,20 @@
         "lastReviewed": "2026-10-16",
         "rationale": "Atlas decision 0158 step 5b. The website read identity.privacy.backLink on every secondary page, a privacy-page key reused as a generic link. Same text and register as that key: a short sentence-case label (VOICE.md label register). The website adopts this key in a follow-up PR after the copy release."
       }
+    },
+    "siteNavLabel": {
+      "value": "Site",
+      "_meta": {
+        "description": "Accessible name (aria-label) of the site navigation landmark: the list of page links in a page footer. A screen reader reads the landmark as \"Site navigation\", so the value omits the word. Page-neutral: no page owns it.",
+        "usage": [
+          "design-system:packages/web/src/components/SiteFooterNav.astro (default label; the TextPage footer, and the website homepage footer once the website mounts it)"
+        ],
+        "register": "atom",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on (plan is-agentic-developers-link, option A, owner approval 2026-10-24). The text-page footer nav had no accessible name. A nav landmark needs one as soon as a page can hold more than one, and the homepage gains the same nav. One word: nav labels are atoms (VOICE.md Appendix A)."
+      }
     }
   },
   "seo": {

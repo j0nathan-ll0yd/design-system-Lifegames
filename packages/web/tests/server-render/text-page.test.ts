@@ -2,11 +2,12 @@
 // TextPage and TextPageSection (atlas decision 0158), rendered through the Astro
 // Container API and asserted on the parsed DOM: the card carries its heading and its
 // body, optional parts render only when the consumer passes them, and the footer marks
-// the current page. Whether the page scrolls is a layout question; the real-browser
+// the current page through SiteFooterNav (site-footer-nav.test.ts holds that component). Whether the page scrolls is a layout question; the real-browser
 // suite tests/browser/text-page.test.ts answers it.
 import {experimental_AstroContainer as AstroContainer} from 'astro/container'
 import {JSDOM} from 'jsdom'
 import {beforeAll, describe, expect, it} from 'vitest'
+import {identity} from '@j0nathan-ll0yd/copy'
 import TextPage from '../../src/components/TextPage.astro'
 import TextPageSection from '../../src/components/TextPageSection.astro'
 
@@ -93,13 +94,25 @@ describe('TextPage', () => {
     expect(back.getAttribute('href')).toBe('/')
     expect(text(back)).toBe('Home')
 
-    const nav = [...doc.querySelectorAll('footer nav a.lg-text-page-nav-link')]
+    const nav = [...doc.querySelectorAll('footer nav.lg-site-footer-nav li > a.lg-site-footer-nav-link')]
     expect(nav.map((a) => [a.getAttribute('href'), text(a)])).toEqual([
       ['/one', 'One'],
       ['/two', 'Two'],
       ['/three', 'Three']
     ])
     expect(nav.map((a) => a.getAttribute('aria-current'))).toEqual([null, 'page', null])
+  })
+
+  it('renders its page links through SiteFooterNav: exactly one nav landmark, named from copy', async () => {
+    const doc = await render(TextPage, {title: 'T', back: {href: '/', label: 'Home'}, links: LINKS}, {default: '<p>Body</p>'})
+
+    const navs = doc.querySelectorAll('nav, [role="navigation"]')
+    expect(navs).toHaveLength(1)
+    const nav = navs[0]!
+    expect(nav.parentElement?.matches('footer.lg-text-page-footer')).toBe(true)
+    expect(nav.getAttribute('aria-label')).toBe(identity.navigation.siteNavLabel)
+    // The back link stays TextPage's own, outside the landmark.
+    expect(nav.querySelector('a.lg-text-page-back')).toBeNull()
   })
 
   it('renders no footer when there is no back link and no page link', async () => {
