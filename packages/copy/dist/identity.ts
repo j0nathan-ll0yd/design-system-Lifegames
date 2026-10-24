@@ -127,6 +127,7 @@ export interface Identity {
  */
 export interface IdentityNavigation {
   backLink: string;
+  siteNavLabel: string;
 }
 /**
  * About page copy (/about) — title, meta description, and headed sections. The background section body reuses person.longBio.

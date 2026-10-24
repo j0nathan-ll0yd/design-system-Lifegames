@@ -51,7 +51,8 @@
     "pwaDescription": "Living data dashboard — tracking body and mind. Jack into his human datastream."
   },
   "navigation": {
-    "backLink": "Back to dashboard"
+    "backLink": "Back to dashboard",
+    "siteNavLabel": "Site"
   },
   "seo": {
     "title": "Jonathan Lloyd — Human Datastream | Live Engineering Dashboard",

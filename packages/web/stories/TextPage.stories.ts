@@ -1,9 +1,9 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite'
 import {html} from 'lit'
 
-// Hand-renders the markup of TextPage.astro and TextPageSection.astro with lit, like
-// every primitive story. The styles come from packages/web/src/styles/primitives.css,
-// imported once in .storybook/preview.ts. The main element omits id="main-content" so
+// Hand-renders the markup of TextPage.astro, TextPageSection.astro and the footer's
+// SiteFooterNav.astro with lit, like every primitive story. The styles come from
+// packages/web/src/styles/primitives.css, imported once in .storybook/preview.ts. The main element omits id="main-content" so
 // the autodocs page, which mounts every story at once, holds no duplicate id.
 const meta: Meta = {
   title: 'Primitives/TextPage',
@@ -38,9 +38,11 @@ const meta: Meta = {
         </div>
         <footer class="lg-text-page-footer">
           <a href="#" class="lg-text-page-back">Back</a>
-          <nav class="lg-text-page-nav">
-            <a href="#" class="lg-text-page-nav-link" aria-current="page">This page</a>
-            <a href="#" class="lg-text-page-nav-link">Other page</a>
+          <nav class="lg-site-footer-nav" aria-label="Site">
+            <ul class="lg-site-footer-nav-list">
+              <li class="lg-site-footer-nav-item"><a href="#" class="lg-site-footer-nav-link" aria-current="page">This page</a></li>
+              <li class="lg-site-footer-nav-item"><a href="#" class="lg-site-footer-nav-link">Other page</a></li>
+            </ul>
           </nav>
         </footer>
       </article>

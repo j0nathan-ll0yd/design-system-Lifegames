@@ -157,9 +157,12 @@
       "properties": {
         "backLink": {
           "type": "string"
+        },
+        "siteNavLabel": {
+          "type": "string"
         }
       },
-      "required": ["backLink"],
+      "required": ["backLink", "siteNavLabel"],
       "additionalProperties": false
     },
     "seo": {

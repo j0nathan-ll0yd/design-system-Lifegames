@@ -772,7 +772,7 @@
     "developers": {
       "type": "object",
       "title": "LlmDevelopers",
-      "description": "Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
+      "description": "Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, the /api/v1 base note, the RFC 9457 title and detail of each /api/v1 problem type, and one heading plus body per section — data API and OpenAPI, errors, versioning, rate limits, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
       "properties": {
         "title": {
           "type": "string"
@@ -792,7 +792,58 @@
         "apiBody": {
           "type": "string"
         },
+        "apiBaseNote": {
+          "type": "string"
+        },
         "apiSuppressedResponse": {
+          "type": "string"
+        },
+        "errorsHeading": {
+          "type": "string"
+        },
+        "errorsBody": {
+          "type": "string"
+        },
+        "problemNotFoundTitle": {
+          "type": "string"
+        },
+        "problemNotFoundDetail": {
+          "type": "string"
+        },
+        "problemMethodNotAllowedTitle": {
+          "type": "string"
+        },
+        "problemMethodNotAllowedDetail": {
+          "type": "string"
+        },
+        "problemRateLimitedTitle": {
+          "type": "string"
+        },
+        "problemRateLimitedDetail": {
+          "type": "string"
+        },
+        "problemFocusSuppressedTitle": {
+          "type": "string"
+        },
+        "problemFocusSuppressedDetail": {
+          "type": "string"
+        },
+        "problemUpstreamUnavailableTitle": {
+          "type": "string"
+        },
+        "problemUpstreamUnavailableDetail": {
+          "type": "string"
+        },
+        "versioningHeading": {
+          "type": "string"
+        },
+        "versioningBody": {
+          "type": "string"
+        },
+        "rateLimitHeading": {
+          "type": "string"
+        },
+        "rateLimitBody": {
           "type": "string"
         },
         "mcpHeading": {
@@ -845,7 +896,24 @@
         "intro",
         "apiHeading",
         "apiBody",
+        "apiBaseNote",
         "apiSuppressedResponse",
+        "errorsHeading",
+        "errorsBody",
+        "problemNotFoundTitle",
+        "problemNotFoundDetail",
+        "problemMethodNotAllowedTitle",
+        "problemMethodNotAllowedDetail",
+        "problemRateLimitedTitle",
+        "problemRateLimitedDetail",
+        "problemFocusSuppressedTitle",
+        "problemFocusSuppressedDetail",
+        "problemUpstreamUnavailableTitle",
+        "problemUpstreamUnavailableDetail",
+        "versioningHeading",
+        "versioningBody",
+        "rateLimitHeading",
+        "rateLimitBody",
         "mcpHeading",
         "mcpBody",
         "webmcpHeading",

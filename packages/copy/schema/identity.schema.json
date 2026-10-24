@@ -148,9 +148,12 @@
       "title": "IdentityNavigation",
       "description": "Site-wide navigation strings that no single page owns.",
       "additionalProperties": false,
-      "required": ["backLink"],
+      "required": ["backLink", "siteNavLabel"],
       "properties": {
         "backLink": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "siteNavLabel": {
           "$ref": "#/$defs/CopyString"
         }
       }

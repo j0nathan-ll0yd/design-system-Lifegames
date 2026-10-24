@@ -572,3 +572,14 @@ packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nath
 # The Organization identity group (owner decision 2026-10-24): the changeset names the
 # @j0nathan-ll0yd/copy package it releases.
 .changeset/copy-organization-identity.md:marker:j0nathan-ll0yd
+# The site footer nav and the /api/v1 developers copy (atlas decision 0158 follow-on):
+# the changesets name the @j0nathan-ll0yd/web and @j0nathan-ll0yd/copy packages they
+# release, and the docs page imports from @j0nathan-ll0yd/web.
+.changeset/web-site-footer-nav.md:marker:j0nathan-ll0yd
+.changeset/copy-developers-api-v1.md:marker:j0nathan-ll0yd
+apps/docs/src/content/docs/components/site-footer-nav.mdx:marker:j0nathan-ll0yd
+# SiteFooterNav reads its default landmark name from @j0nathan-ll0yd/copy, and its tests
+# and the TextPage test assert against that copy key.
+packages/web/src/components/SiteFooterNav.astro:marker:j0nathan-ll0yd
+packages/web/tests/server-render/site-footer-nav.test.ts:marker:j0nathan-ll0yd
+packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd
