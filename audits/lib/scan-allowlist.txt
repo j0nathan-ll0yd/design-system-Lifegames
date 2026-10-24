@@ -212,6 +212,7 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 .changeset/bookshelf-pending-sync-copy.md:marker:j0nathan-ll0yd
 .changeset/settings-token-verification-copy.md:marker:j0nathan-ll0yd
 .changeset/agent-readiness-copy-keys.md:marker:j0nathan-ll0yd
+.changeset/web-advisory-sweep-dev-deps.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd

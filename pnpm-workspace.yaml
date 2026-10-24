@@ -40,3 +40,25 @@ overrides:
   # packages/schemas/scripts/schema-urn.mjs keys are valid. Drop once
   # `pnpm why fast-uri` resolves >=3.1.8 without this entry.
   fast-uri@<3.1.8: ^3.1.8
+  # Security, advisory sweep 2026-10-21 (atlas decision 0163). Each parent range
+  # below already admits the fix, but the old version sits in a peer-resolved
+  # subtree (vitest, eslint, babel), so `pnpm update -r <pkg>` leaves it locked.
+  # Drop an entry once `pnpm why <pkg>` resolves the fixed version without it.
+  # brace-expansion 5.x below 5.0.11: GHSA-3jxr-9vmj-r5cp, GHSA-mh99-v99m-4gvg,
+  # GHSA-rgw5-rvv9-x895, GHSA-qhr7-859c-m2p7, GHSA-6j4f-fj2g-mc7p. Pulled by
+  # minimatch 10.2.5 (`^5.0.5`) under eslint, typescript-eslint and workbox-build.
+  brace-expansion@>=5.0.0 <5.0.11: ^5.0.11
+  # browserslist below 4.28.7: GHSA-c83g-rgw3-j3cx, GHSA-73wf-gq98-2v4g. Pulled by
+  # @babel/helper-compilation-targets (`^4.24.0`), core-js-compat and
+  # update-browserslist-db.
+  browserslist@<4.28.7: ^4.28.7
+  # undici 7.x below 7.29.1: GHSA-vmh5-mc38-953g, GHSA-vxpw-j846-p89q,
+  # GHSA-hm92-r4w5-c3mj, GHSA-4cwx-7wf7-3272, GHSA-rfgv-xxqx-mfg5,
+  # GHSA-w293-vg96-wgc3. Pulled by jsdom 29.1.1 (`^7.25.0`) under vitest.
+  undici@>=7.0.0 <7.29.1: ^7.29.1
+  # fast-json-patch below 3.1.1: GHSA-8gh8-hqwg-xf34 (prototype pollution). Pulled
+  # only by ajv-cli 5.0.0, the latest release, which declares `^2.0.0`; no 2.x fix
+  # exists. This override crosses a major under ajv-cli. ajv-cli calls only
+  # `jsonPatch.compare` (validate --changes, migrate), and 3.x keeps that API.
+  # Drop once an ajv-cli release declares `^3.1.1`.
+  ajv-cli>fast-json-patch: ^3.1.1

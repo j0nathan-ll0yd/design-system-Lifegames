@@ -1,2 +1,15 @@
 allowBuilds:
   esbuild: true
+
+# Security, advisory sweep 2026-10-21 (atlas decision 0163). This standalone
+# lockfile serves the consumer install flow (#112) and does not see the root
+# overrides. Each parent range already admits the fix, but the old version sits
+# under vite, resolved as a vitest peer, so `pnpm update <pkg>` leaves it locked.
+# Drop an entry once `pnpm why <pkg>` resolves the fixed version without it.
+overrides:
+  # GHSA-28wg-ghj8-5hjv, GHSA-2v37-7h3g-55p8. Pulled by postcss (`^3.3.12`).
+  nanoid@>=3.0.0 <3.3.18: ^3.3.18
+  # GHSA-68fv-2mgg-jv7q. Pulled by postcss (`^1.2.1`).
+  source-map-js@>=1.0.0 <1.2.2: ^1.2.2
+  # GHSA-587h-7wmj-h5pm. Resolved as a vitest 4.1.10 peer (`^6.0.0 || ^7.0.0 || ^8.0.0`).
+  vite@>=8.0.0 <8.1.6: ^8.1.6
