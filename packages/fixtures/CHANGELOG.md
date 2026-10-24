@@ -1,5 +1,13 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.6.3
+
+### Patch Changes
+
+- Updated dependencies [cfc7966]
+  - @j0nathan-ll0yd/copy@4.3.1
+  - @j0nathan-ll0yd/web@4.5.2
+
 ## 1.6.2
 
 ### Patch Changes
