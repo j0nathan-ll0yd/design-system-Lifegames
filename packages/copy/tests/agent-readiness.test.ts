@@ -298,6 +298,12 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     for (const term of ['60 requests per minute', 'RateLimit-Policy', 'RateLimit header', 'Retry-After', '429']) {
       expect(body).toContain(term)
     }
+    // The facade fails open: RateLimit-Policy is unconditional, RateLimit only when the counter
+    // counted the request (website #395 review, finding M2). The value must not promise RateLimit
+    // on every response, and must say the request is still served without it.
+    expect(body).toContain('every response the counter counted')
+    expect(body).toContain('the request is still served and the RateLimit field is absent')
+    expect(body).not.toMatch(/RateLimit-Policy and RateLimit header fields/)
   })
 
   it('the OpenAPI Suppressed description is status-neutral and channel-neutral, in value and _meta', () => {
