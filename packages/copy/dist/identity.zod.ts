@@ -48,7 +48,7 @@ export const identitySchema = z
       .strict()
       .describe('Brand/site-level naming and description.'),
     navigation: z
-      .object({ backLink: z.string() })
+      .object({ backLink: z.string(), siteNavLabel: z.string() })
       .strict()
       .describe('Site-wide navigation strings that no single page owns.'),
     seo: z

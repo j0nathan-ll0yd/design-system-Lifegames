@@ -77,7 +77,8 @@ const NAMESPACES: NamespaceFixture[] = [
   //   securityHeading/security) — atlas decision 0158.
   //   privacy, about, and contact each gained lastModified (the sitemap <lastmod> date).
   //   navigation 1 (backLink, page-neutral; privacy.backLink stays, deprecated) — atlas decision 0158 step 5b.
-  {name: 'identity', expectedLeaves: 91},
+  //   navigation gained siteNavLabel (the SiteFooterNav landmark name) — plan is-agentic-developers-link.
+  {name: 'identity', expectedLeaves: 92},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5
@@ -119,7 +120,9 @@ const NAMESPACES: NamespaceFixture[] = [
   //   (the get_data_sources description for health, sleep, and workouts).
   //   Owner decision 2026-10-12: txt lost endpointHealth/endpointSleep/endpointWorkouts and full
   //   lost streamHealth/streamSleep/streamWorkouts — no LLM-facing file links the raw health exports.
-  {name: 'llm', expectedLeaves: 203}
+  //   Plan is-agentic-api-v1 step 1: developers gained apiBaseNote, the errors, versioning, and
+  //   rateLimit heading/body pairs, and a Title and a Detail for each of the five problem types (17).
+  {name: 'llm', expectedLeaves: 220}
 ]
 
 for (const ns of NAMESPACES) {

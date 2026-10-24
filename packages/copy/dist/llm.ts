@@ -230,7 +230,7 @@ export interface LlmAgentDiscovery {
   aiCatalogSkillsQueries: string[];
 }
 /**
- * Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
+ * Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, the /api/v1 base note, the RFC 9457 title and detail of each /api/v1 problem type, and one heading plus body per section — data API and OpenAPI, errors, versioning, rate limits, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.
  */
 export interface LlmDevelopers {
   title: string;
@@ -239,7 +239,24 @@ export interface LlmDevelopers {
   intro: string;
   apiHeading: string;
   apiBody: string;
+  apiBaseNote: string;
   apiSuppressedResponse: string;
+  errorsHeading: string;
+  errorsBody: string;
+  problemNotFoundTitle: string;
+  problemNotFoundDetail: string;
+  problemMethodNotAllowedTitle: string;
+  problemMethodNotAllowedDetail: string;
+  problemRateLimitedTitle: string;
+  problemRateLimitedDetail: string;
+  problemFocusSuppressedTitle: string;
+  problemFocusSuppressedDetail: string;
+  problemUpstreamUnavailableTitle: string;
+  problemUpstreamUnavailableDetail: string;
+  versioningHeading: string;
+  versioningBody: string;
+  rateLimitHeading: string;
+  rateLimitBody: string;
   mcpHeading: string;
   mcpBody: string;
   webmcpHeading: string;

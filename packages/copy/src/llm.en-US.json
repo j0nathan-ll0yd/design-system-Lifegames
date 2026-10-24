@@ -2221,14 +2221,14 @@
       }
     },
     "lastModified": {
-      "value": "2026-10-07",
+      "value": "2026-10-24",
       "_meta": {
-        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /developers text entered this package on this date (atlas decision 0158). Bump it with any change to a value in this group.",
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /developers text entered this package on 2026-10-07 (atlas decision 0158); 2026-10-24 added the /api/v1 base, errors, versioning, and rate-limit text. Bump it with any change to a value in this group.",
         "usage": ["web:sitemap <lastmod> for /developers"],
         "register": "atom",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-24"
       }
     },
     "intro": {
@@ -2254,14 +2254,27 @@
       }
     },
     "apiBody": {
-      "value": "The live data ships as JSON exports, one per data stream. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas. {siteUrl}/.well-known/api-catalog links to it (RFC 9727).",
+      "value": "The live data ships as JSON exports, one per data stream, served from this site's /api/v1 base, not from the CloudFront data host. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas, and {siteUrl}/.well-known/api-catalog links to it (RFC 9727). Errors answer in JSON. The sections below set out the error model, the versioning policy, and the rate-limit headers.",
       "_meta": {
-        "description": "Section body — the JSON data exports, the OpenAPI 3.1 document, and the RFC 9727 API catalog. ICU MF1; the consumer substitutes the site base URL.",
+        "description": "Section body — the JSON data exports on the /api/v1 base, the OpenAPI 3.1 document, the RFC 9727 API catalog, and a pointer to the errors, versioning, and rate-limit sections. ICU MF1; the consumer substitutes the site base URL.",
         "usage": ["web:src/pages/developers.astro (apiBody)"],
         "register": "factual",
         "audience": "dual",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-24",
+        "rationale": "Changed 2026-10-24 (plan is-agentic-api-v1 step 1): the exports move from the CloudFront host to the site's /api/v1 facade, and the body points at the new errors, versioning, and rate-limit sections."
+      }
+    },
+    "apiBaseNote": {
+      "value": "The API base is {siteUrl}/api/v1, and {siteUrl}/openapi.json lists the nine export paths under it.",
+      "_meta": {
+        "description": "One sentence under the data API section — the /api/v1 base URL and where its paths are listed. ICU MF1; the consumer substitutes the site base URL.",
+        "usage": ["web:src/pages/developers.astro (apiBaseNote)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
       }
     },
     "apiSuppressedResponse": {
@@ -2273,6 +2286,213 @@
         "audience": "machine",
         "owner": "jonathan",
         "lastReviewed": "2026-10-07"
+      }
+    },
+    "errorsHeading": {
+      "value": "Errors",
+      "_meta": {
+        "description": "Section heading — the RFC 9457 error model of the /api/v1 facade.",
+        "usage": ["web:src/pages/developers.astro (errorsHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "errorsBody": {
+      "value": "Every 4xx and 5xx response under /api is an RFC 9457 problem document, served as application/problem+json. Its members are type, title, status, detail, and instance. The type URI points at the matching entry below, a fragment of this page. Some problem types add extension members, and their entries name them.",
+      "_meta": {
+        "description": "Section body — the error model: every 4xx and 5xx under /api, the /api/v1 paths and any other /api path alike, answers application/problem+json with the five RFC 9457 members. The type URI is {siteUrl}/developers#problem-<slug>; each slug has an entry built from a problem*Title and problem*Detail key in this group.",
+        "usage": ["web:src/pages/developers.astro (errorsBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemNotFoundTitle": {
+      "value": "Not found",
+      "_meta": {
+        "description": "RFC 9457 problem title for the not-found problem type, and its sub-heading in the errors section of /developers. RFC 9457: the title does not change from occurrence to occurrence of a type. Sentence case, no terminal period. Status 404.",
+        "usage": ["web:src/lib/edge/problem.ts (title, not-found)", "web:src/pages/developers.astro (errors section, #problem-not-found heading)"],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemNotFoundDetail": {
+      "value": "No resource exists at this path. The validPaths member and {siteUrl}/openapi.json list the valid paths.",
+      "_meta": {
+        "description": "RFC 9457 problem detail for the not-found problem type, and its sentence in the errors section of /developers. A static sentence: variable data travels in RFC 9457 extension members or response headers, never in this value. Status 404, for an unknown /api/v1 file, a nested path, /api/v1 itself, and any other /api path. The validPaths extension member lists the nine export paths. ICU MF1; the consumer substitutes the site base URL.",
+        "usage": ["web:src/lib/edge/problem.ts (detail, not-found)", "web:src/pages/developers.astro (errors section, #problem-not-found)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemMethodNotAllowedTitle": {
+      "value": "Method not allowed",
+      "_meta": {
+        "description": "RFC 9457 problem title for the method-not-allowed problem type, and its sub-heading in the errors section of /developers. RFC 9457: the title does not change from occurrence to occurrence of a type. Sentence case, no terminal period. Status 405.",
+        "usage": [
+          "web:src/lib/edge/problem.ts (title, method-not-allowed)",
+          "web:src/pages/developers.astro (errors section, #problem-method-not-allowed heading)"
+        ],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemMethodNotAllowedDetail": {
+      "value": "The API answers GET and HEAD only. The Allow header lists them.",
+      "_meta": {
+        "description": "RFC 9457 problem detail for the method-not-allowed problem type, and its sentence in the errors section of /developers. A static sentence: variable data travels in RFC 9457 extension members or response headers, never in this value. Status 405, with the response header Allow: GET, HEAD.",
+        "usage": [
+          "web:src/lib/edge/problem.ts (detail, method-not-allowed)",
+          "web:src/pages/developers.astro (errors section, #problem-method-not-allowed)"
+        ],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemRateLimitedTitle": {
+      "value": "Rate limit exceeded",
+      "_meta": {
+        "description": "RFC 9457 problem title for the rate-limited problem type, and its sub-heading in the errors section of /developers. RFC 9457: the title does not change from occurrence to occurrence of a type. Sentence case, no terminal period. Status 429.",
+        "usage": ["web:src/lib/edge/problem.ts (title, rate-limited)", "web:src/pages/developers.astro (errors section, #problem-rate-limited heading)"],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemRateLimitedDetail": {
+      "value": "This client has spent its request budget for the current window. Retry after the number of seconds in the Retry-After header.",
+      "_meta": {
+        "description": "RFC 9457 problem detail for the rate-limited problem type, and its sentence in the errors section of /developers. A static sentence: variable data travels in RFC 9457 extension members or response headers, never in this value. Status 429, with Retry-After and the RateLimit fields (r=0 and t). The budget is stated in rateLimitBody.",
+        "usage": ["web:src/lib/edge/problem.ts (detail, rate-limited)", "web:src/pages/developers.astro (errors section, #problem-rate-limited)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemFocusSuppressedTitle": {
+      "value": "Hidden by focus mode",
+      "_meta": {
+        "description": "RFC 9457 problem title for the focus-suppressed problem type, and its sub-heading in the errors section of /developers. RFC 9457: the title does not change from occurrence to occurrence of a type. Sentence case, no terminal period. Status 503.",
+        "usage": [
+          "web:src/lib/edge/problem.ts (title, focus-suppressed)",
+          "web:src/pages/developers.astro (errors section, #problem-focus-suppressed heading)"
+        ],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemFocusSuppressedDetail": {
+      "value": "An active focus mode hides this data, and the response carries none. The document also states suppressed: true and the reason, and the Retry-After header says when to retry.",
+      "_meta": {
+        "description": "RFC 9457 problem detail for the focus-suppressed problem type, and its sentence in the errors section of /developers. A static sentence: variable data travels in RFC 9457 extension members or response headers, never in this value. Status 503, with Retry-After. The document keeps the extension members suppressed (true) and reason, so every existing suppression recognizer still matches it. No braces in the value: ICU MF1 reads a brace as a placeholder.",
+        "usage": ["web:src/lib/edge/problem.ts (detail, focus-suppressed)", "web:src/pages/developers.astro (errors section, #problem-focus-suppressed)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemUpstreamUnavailableTitle": {
+      "value": "Upstream unavailable",
+      "_meta": {
+        "description": "RFC 9457 problem title for the upstream-unavailable problem type, and its sub-heading in the errors section of /developers. RFC 9457: the title does not change from occurrence to occurrence of a type. Sentence case, no terminal period. Status 502, or 504 on a deadline.",
+        "usage": [
+          "web:src/lib/edge/problem.ts (title, upstream-unavailable)",
+          "web:src/pages/developers.astro (errors section, #problem-upstream-unavailable heading)"
+        ],
+        "register": "label",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "problemUpstreamUnavailableDetail": {
+      "value": "The data plane did not answer. Retry after the interval in the Retry-After header.",
+      "_meta": {
+        "description": "RFC 9457 problem detail for the upstream-unavailable problem type, and its sentence in the errors section of /developers. A static sentence: variable data travels in RFC 9457 extension members or response headers, never in this value. Status 502, or 504 on a deadline, with Retry-After. No upstream body is echoed.",
+        "usage": [
+          "web:src/lib/edge/problem.ts (detail, upstream-unavailable)",
+          "web:src/pages/developers.astro (errors section, #problem-upstream-unavailable)"
+        ],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "versioningHeading": {
+      "value": "Versioning",
+      "_meta": {
+        "description": "Section heading — the /api/v1 versioning and deprecation policy.",
+        "usage": ["web:src/pages/developers.astro (versioningHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "versioningBody": {
+      "value": "The path carries the major version: v1. Within a version, response schemas only gain optional members. A removed member or a changed type ships as a new path version, and the old version keeps answering for at least 90 days. During that period its responses carry the Deprecation and Sunset headers and a Link header with rel=\"successor-version\". A major release of the portal contract, the package that publishes the export schemas, triggers a new version.",
+      "_meta": {
+        "description": "Section body — the versioning promise: path versioning, additive-only change within a version, a support window of at least 90 days for the old version with RFC 9745 Deprecation, RFC 8594 Sunset, and Link rel=\"successor-version\", and the trigger (a portal-contract major that removes or retypes an export member). The website OpenAPI info.description restates it.",
+        "usage": ["web:src/pages/developers.astro (versioningBody)", "web:/openapi.json (info.description)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release. The \"90 days\" is a support window, not a data window: llm-claim-honesty.test.ts exempts this leaf from its N-day pattern by name."
+      }
+    },
+    "rateLimitHeading": {
+      "value": "Rate limits",
+      "_meta": {
+        "description": "Section heading — the /api/v1 rate-limit policy.",
+        "usage": ["web:src/pages/developers.astro (rateLimitHeading)"],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+      }
+    },
+    "rateLimitBody": {
+      "value": "Each client gets 60 requests per minute. Every response carries the RateLimit-Policy and RateLimit header fields from the IETF httpapi draft. A 429 response also carries Retry-After. The limit is a courtesy budget for a free, read-only API.",
+      "_meta": {
+        "description": "Section body — the rate-limit policy: 60 requests per 60-second window per client (the website API_V1_RATE_LIMIT constant), the draft-ietf-httpapi-ratelimit-headers fields RateLimit-Policy (\"default\";q=60;w=60) and RateLimit (\"default\";r=<remaining>;t=<seconds>) on every /api/v1 response, and Retry-After on a 429.",
+        "usage": ["web:src/pages/developers.astro (rateLimitBody)"],
+        "register": "factual",
+        "audience": "dual",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-24",
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
       }
     },
     "mcpHeading": {
@@ -2399,14 +2619,15 @@
       }
     },
     "focusBody": {
-      "value": "Some focus modes hide the public data. While one is active, each JSON export except focus.json answers HTTP 403 with a JSON body that states suppressed: true and carries no data. The on-domain llms.txt, llms-full.txt, index.md, and feeds answer HTTP 503 with a Retry-After header. The MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
+      "value": "Some focus modes hide the public data. While one is active, the CloudFront data host answers each JSON export except focus.json with HTTP 403 and a JSON body that states suppressed: true and carries no data. Under /api/v1 the same exports answer HTTP 503 with a focus-suppressed problem document and a Retry-After header. The on-domain llms.txt, llms-full.txt, index.md, and feeds answer HTTP 503 with a Retry-After header. The MCP server withholds the same data. focus.json publishes the current state. Wait and retry; do not route around the gate.",
       "_meta": {
-        "description": "Section body — the fail-closed focus gate: the 403 the CloudFront data host returns for each suppressible JSON export (mantle-LifegamesPortal src/edge/focus-gate.js SUPPRESSION_RESPONSE), the 503 with Retry-After the website proxy returns for its on-domain routes (functions/_lib/proxy.ts suppressionResponse), and the instruction not to bypass the gate.",
+        "description": "Section body — the fail-closed focus gate: the 403 the CloudFront data host returns for each suppressible JSON export (mantle-LifegamesPortal src/edge/focus-gate.js SUPPRESSION_RESPONSE), the 503 focus-suppressed problem document the /api/v1 facade returns for the same exports, the 503 with Retry-After the website proxy returns for its other on-domain routes (src/lib/edge/proxy.ts makeCloudfrontProxy), and the instruction not to bypass the gate.",
         "usage": ["web:src/pages/developers.astro (focusBody)"],
         "register": "factual",
         "audience": "dual",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-07"
+        "lastReviewed": "2026-10-24",
+        "rationale": "Changed 2026-10-24 (plan is-agentic-api-v1 step 1): the developers page links the /api/v1 paths, which answer a focus-suppressed 503, so the body names both hosts. The 403 sentence still holds for the CloudFront URLs, which the MCP resources keep."
       }
     },
     "usageHeading": {

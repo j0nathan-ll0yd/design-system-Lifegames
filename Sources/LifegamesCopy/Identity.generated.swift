@@ -504,10 +504,11 @@ public extension HumansTxt {
 /// Site-wide navigation strings that no single page owns.
 // MARK: - IdentityNavigation
 public struct IdentityNavigation: Codable, Sendable {
-    public let backLink: String
+    public let backLink, siteNavLabel: String
 
-    public init(backLink: String) {
+    public init(backLink: String, siteNavLabel: String) {
         self.backLink = backLink
+        self.siteNavLabel = siteNavLabel
     }
 }
 
@@ -530,10 +531,12 @@ public extension IdentityNavigation {
     }
 
     func with(
-        backLink: String? = nil
+        backLink: String? = nil,
+        siteNavLabel: String? = nil
     ) -> IdentityNavigation {
         return IdentityNavigation(
-            backLink: backLink ?? self.backLink
+            backLink: backLink ?? self.backLink,
+            siteNavLabel: siteNavLabel ?? self.siteNavLabel
         )
     }
 
