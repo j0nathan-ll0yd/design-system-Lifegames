@@ -14,8 +14,8 @@
 # expected to contain real identity. All other checks (markers, email, phone)
 # apply everywhere, fixture pool included.
 #
-# Known-legitimate hits that aren't covered by the two built-in exclusions
-# above (webmaster@lifegames.org and noreply-style addresses) are suppressed
+# Known-legitimate hits that aren't covered by the built-in exclusions
+# above (the addresses in EMAIL_ALLOW_REGEX and noreply-style senders) are suppressed
 # via audits/lib/scan-allowlist.txt: one `path:check-label` per line (see that
 # file's header for the exact format). An allowlisted path/check pair is
 # skipped entirely for that finding.
@@ -53,7 +53,8 @@ MARKERS=(
 # the path would not — an allowlist entry suppresses the check for the whole
 # file, including any real address added to it later.
 EMAIL_REGEX='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
-EMAIL_ALLOW_REGEX='(webmaster@lifegames\.org|(^|[^a-zA-Z])[Nn]o-?[Rr]eply@|@no-?reply\.|@example\.(com|org|net)|@[A-Za-z0-9.-]+\.(test|example|invalid|localhost)([^A-Za-z0-9.-]|$))'
+# portfolio.chamomile484@passmail.net: the Organization contact point alias (owner decision 2026-10-24).
+EMAIL_ALLOW_REGEX='(webmaster@lifegames\.org|portfolio\.chamomile484@passmail\.net|(^|[^a-zA-Z])[Nn]o-?[Rr]eply@|@no-?reply\.|@example\.(com|org|net)|@[A-Za-z0-9.-]+\.(test|example|invalid|localhost)([^A-Za-z0-9.-]|$))'
 
 # US-style phone number pattern: NNN-NNN-NNNN / (NNN) NNN-NNNN / NNN.NNN.NNNN,
 # optionally prefixed +1. (Not spelled out as a literal example here so this
