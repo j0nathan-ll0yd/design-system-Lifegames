@@ -37,7 +37,7 @@
     }
 
     /* The homepage's site footer (SiteFooterNav), the last child of .left-panel. Here it
-       closes the left column: the body does not scroll from 1100px up, so a footer after
+       closes the left column: above 1100px the body does not scroll, so a footer after
        .command-layout could not be reached. It drops to the panel's foot when the column
        has room, and follows System Status when it does not. */
     .left-panel-footer {

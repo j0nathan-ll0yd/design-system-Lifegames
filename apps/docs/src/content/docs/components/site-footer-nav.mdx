@@ -31,8 +31,8 @@ The component sets no layout around itself. The consumer owns the footer element
 
 On the dashboard homepage, put the footer last inside `.left-panel` with the class `left-panel-footer`. `layout.css` places it:
 
-- From 1100px up, the body does not scroll. The footer closes the left column, after System Status. It drops to the foot of the panel when the column has room.
-- Below 1100px, `.left-panel` is `display: contents`. The footer takes `order: 100`, after System Status (`order: 99`), so it ends the page.
+- Above 1100px, the website's body does not scroll. The footer closes the left column, after System Status. It drops to the foot of the panel when the column has room.
+- At 1100px and below, `.left-panel` is `display: contents`. The footer takes `order: 100`, after System Status (`order: 99`), so it ends the page.
 
 ```astro
 <aside class="left-panel">

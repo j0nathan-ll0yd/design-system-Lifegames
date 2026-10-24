@@ -1,9 +1,9 @@
 // The homepage footer's placement in a real Chromium, under the website's dashboard
 // scroll lock (atlas decision 0158). DOM and layout assertions only, no screenshots.
 //
-// The regression under guard: from 1100px up the website locks html and body to 100dvh,
+// The regression under guard: above 1100px the website locks html and body to 100dvh,
 // so a footer after .command-layout sits below the viewport and no reader reaches it.
-// layout.css places .left-panel-footer instead: last in the left column from 1100px up,
+// layout.css places .left-panel-footer instead: last in the left column above 1100px,
 // and after System Status (order 99) below it, where .left-panel is display: contents.
 //
 // The scroll is a mouse wheel, as in text-page.test.ts: programmatic scrolling moves an
@@ -36,6 +36,8 @@ async function open(viewport: {width: number; height: number}): Promise<Page> {
 
 /** Wheel at a point until the selector's box is in the viewport, then hit-test its center. */
 async function wheelUntilReachable(page: Page, at: {x: number; y: number}, selector: string): Promise<void> {
+  // A late font swap can grow the column after the wheel reached its end.
+  await page.evaluate(() => document.fonts.ready)
   await page.mouse.move(at.x, at.y)
   await page.mouse.wheel(0, 20_000)
   await page.waitForFunction((sel) => {
@@ -108,7 +110,7 @@ describe('homepage footer, desktop 1400x900 (scroll lock on)', () => {
   })
 })
 
-describe('homepage footer below 1100px (left panel display: contents)', () => {
+describe('homepage footer at 1100px and below (left panel display: contents)', () => {
   for (
     const [name, viewport] of [
       ['tablet 900x1100', {width: 900, height: 1100}],
