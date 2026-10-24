@@ -274,7 +274,7 @@
     "apiHeading": "Data API and OpenAPI",
     "apiBody": "The live data ships as JSON exports, one per data stream, served from this site's /api/v1 base. {siteUrl}/openapi.json describes every export in OpenAPI 3.1, generated from the published JSON Schemas, and {siteUrl}/.well-known/api-catalog links to it (RFC 9727). API errors answer in JSON. The sections below set out the error model, the versioning policy, and the rate-limit headers.",
     "apiBaseNote": "The API base is {siteUrl}/api/v1, and {siteUrl}/openapi.json lists the nine export paths under it.",
-    "apiSuppressedResponse": "Hidden by an active focus mode. The JSON body states suppressed: true and the reason, and carries no data.",
+    "apiSuppressedResponse": "Hidden by an active focus mode: the JSON body states suppressed: true and the reason, carries no data, and the Retry-After header says when to retry.",
     "errorsHeading": "Errors",
     "errorsBody": "Every 4xx and 5xx response under /api/v1, and the 404 for any other unknown /api path, is an RFC 9457 problem document, served as application/problem+json. Its members are type, title, status, detail, and instance. The type URI points at the matching entry below, a fragment of this page. Some problem types add extension members, and their entries name them.",
     "problemNotFoundTitle": "Not found",

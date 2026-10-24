@@ -266,6 +266,17 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     }
   })
 
+  it('the OpenAPI Suppressed description is status-neutral and channel-neutral, in value and _meta', () => {
+    // The website OpenAPI generator attaches it to the /api/v1 facade's 503, while the data host
+    // still answers its own status: the text may name neither that status nor the host. Read from src/ for the _meta.
+    const rich = readJson(join(PKG, 'src', 'llm.en-US.json')) as {developers: Record<string, unknown>}
+    const text = JSON.stringify(rich.developers['apiSuppressedResponse'])
+    expect(text).not.toMatch(/\b403\b|cloudfront|jonathanlloyd\.me/i)
+    // The value names no status code at all; _meta.usage names the facade's 503 it documents.
+    expect(llm.developers['apiSuppressedResponse']).not.toMatch(/\b\d{3}\b/)
+    expect(llm.developers['apiSuppressedResponse']).toContain('Retry-After')
+  })
+
   it('the developers usage terms restate the site Content-Usage header verbatim', () => {
     expect(llm.developers['usageBody']).toContain('Content-Usage: train-ai=n, search=y')
   })
