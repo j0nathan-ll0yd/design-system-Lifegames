@@ -585,3 +585,5 @@ packages/web/tests/server-render/site-footer-nav.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd
 # The homepage footer layout changeset names the package it bumps.
 .changeset/web-left-panel-footer.md:marker:j0nathan-ll0yd
+# The rate-limit fail-open wording: the changeset names the @j0nathan-ll0yd/copy package it releases.
+.changeset/copy-ratelimit-fail-open.md:marker:j0nathan-ll0yd

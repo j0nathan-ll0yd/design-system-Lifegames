@@ -2492,15 +2492,15 @@
       }
     },
     "rateLimitBody": {
-      "value": "Each client gets 60 requests per minute. Every response from an export path under /api/v1 carries the RateLimit-Policy and RateLimit header fields from the IETF httpapi draft. A 429 response also carries Retry-After. The limit is a courtesy budget for a free, read-only API.",
+      "value": "Each client gets 60 requests per minute. Every response from an export path under /api/v1 carries the RateLimit-Policy header field from the IETF httpapi draft, and every response the counter counted also carries the RateLimit header field. If the counter is unavailable, the request is still served and the RateLimit field is absent. A 429 response also carries Retry-After. The limit is a courtesy budget for a free, read-only API.",
       "_meta": {
-        "description": "Section body — the rate-limit policy: 60 requests per 60-second window per client (the website API_V1_RATE_LIMIT constant), the draft-ietf-httpapi-ratelimit-headers fields RateLimit-Policy (\"default\";q=60;w=60) and RateLimit (\"default\";r=<remaining>;t=<seconds>) on every response from an export path under /api/v1, and Retry-After on a 429. The facade checks the path and the method before the limit (plan Design, Request handling), so a 404 or 405 does not carry the fields; the value is scoped to export paths for that reason.",
+        "description": "Section body — the rate-limit policy: 60 requests per 60-second window per client (the website API_V1_RATE_LIMIT constant), the draft-ietf-httpapi-ratelimit-headers fields RateLimit-Policy (\"default\";q=60;w=60) on every response from an export path under /api/v1, RateLimit (\"default\";r=<remaining>;t=<seconds>) on every response the counter counted, and Retry-After on a 429. The facade fails open: when the counter is unreachable it serves the request and omits RateLimit, because it has no honest r or t to state; RateLimit-Policy stays, since the policy does not depend on the counter. The facade checks the path and the method before the limit (plan Design, Request handling), so a 404 or 405 does not carry the fields; the value is scoped to export paths for that reason.",
         "usage": ["web:src/pages/developers.astro (rateLimitBody)"],
         "register": "factual",
         "audience": "dual",
         "owner": "jonathan",
         "lastReviewed": "2026-10-24",
-        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release."
+        "rationale": "Atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1 (owner approval 2026-10-24). The website /api/v1 facade adopts this key in the PR that ships the routes, pinned to this copy release. Changed 2026-10-24 (website #395 review, finding M2): the value promised RateLimit on every export response, but the facade omits it when the counter is unreachable."
       }
     },
     "mcpHeading": {
