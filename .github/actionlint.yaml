@@ -4,3 +4,5 @@ self-hosted-runner:
     - arm64
     - xcode-26
     - node
+    - node-highmem
+    - playwright

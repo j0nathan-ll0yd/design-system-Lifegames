@@ -124,11 +124,11 @@ step "watch exclusions (F-014)" pnpm watch:exclusions
 step "promotion gate (P4/P7)"  pnpm promotion:check
 step "tokens golden test"      pnpm -F @j0nathan-ll0yd/tokens test
 
-# ── Tier 4: apps Astro builds (mirror the build-web + docs-build CI jobs) ────
+# ── Tier 4: apps Astro builds (mirror the build-web + docs-build steps of the CI web-builds job) ────
 # These were previously absent from the gate; a widget-registry change that
 # broke the /llms-full.txt prerender (an incomplete MovementRings fixture, PR
 # #128) passed pre-push and only reddened on CI. `pnpm build` builds both the
-# portfolio and docs apps, so it covers both jobs' failure surface. Slowest
+# portfolio and docs apps, so it covers both steps' failure surface. Slowest
 # step — kept last.
 step "apps build (build-web + docs-build CI mirror)" pnpm build
 
