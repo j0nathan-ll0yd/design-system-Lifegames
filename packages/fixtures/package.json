@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@j0nathan-ll0yd/copy": "workspace:*",
-    "@j0nathan-ll0yd/portal-contract": "^2.5.0",
+    "@j0nathan-ll0yd/portal-contract": "^2.8.0",
     "@j0nathan-ll0yd/schemas": "workspace:*",
     "@j0nathan-ll0yd/web": "workspace:*"
   },

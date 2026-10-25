@@ -79,8 +79,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/fixtures
       '@j0nathan-ll0yd/portal-contract':
-        specifier: ^2.5.0
-        version: 2.7.0
+        specifier: ^2.8.0
+        version: 2.8.0
       '@j0nathan-ll0yd/tokens':
         specifier: workspace:*
         version: link:../../packages/tokens
@@ -206,8 +206,8 @@ importers:
         specifier: workspace:*
         version: link:../copy
       '@j0nathan-ll0yd/portal-contract':
-        specifier: ^2.5.0
-        version: 2.7.0
+        specifier: ^2.8.0
+        version: 2.8.0
       '@j0nathan-ll0yd/schemas':
         specifier: workspace:*
         version: link:../schemas
@@ -243,8 +243,8 @@ importers:
   packages/schemas:
     dependencies:
       '@j0nathan-ll0yd/portal-contract':
-        specifier: ^2.5.0
-        version: 2.7.0
+        specifier: ^2.8.0
+        version: 2.8.0
       ajv:
         specifier: ~8.20.0
         version: 8.20.0
@@ -298,8 +298,8 @@ importers:
         specifier: workspace:*
         version: link:../copy
       '@j0nathan-ll0yd/portal-contract':
-        specifier: ^2.5.0
-        version: 2.7.0
+        specifier: ^2.8.0
+        version: 2.8.0
       '@j0nathan-ll0yd/tokens':
         specifier: workspace:*
         version: link:../tokens
@@ -1853,8 +1853,8 @@ packages:
     peerDependencies:
       typescript: 5.9.2 || 5.9.3 || 6.0.3
 
-  '@j0nathan-ll0yd/portal-contract@2.7.0':
-    resolution: {integrity: sha512-IbA5siDDE79gVPMOdSaF6J7oSGJr/Yq6A3WUv3iqQIv/Bp2ShmHV52EReehe4m0kpWsfI4hteZHCHkqeXJLLMA==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/portal-contract/2.7.0/aab846c8221e3edbbf2a51ff673d63403c5f9068}
+  '@j0nathan-ll0yd/portal-contract@2.8.0':
+    resolution: {integrity: sha512-bZVNTxugt5F93ggdKcjkwMMj8PyRrIHITR1q46nnXDIo/ymNoGu61lGQBcOZZIPM+67rIWh0q/ZC4IEYx3PfYA==, tarball: https://npm.pkg.github.com/download/@j0nathan-ll0yd/portal-contract/2.8.0/360a13cd418babaea837f28623aa5f1be62fe2a7}
 
   '@jest/console@30.4.1':
     resolution: {integrity: sha512-v3bhyxUh9Hgmo5p6hAOXe14/R3ZxZDOsvHleh4B07z3m/x4/ngPUXEm9XwK4sF4u+f+P2ORb0Ge+MgpaqRMVDA==}
@@ -9296,7 +9296,7 @@ snapshots:
       typescript: 5.9.3
       zod: 4.6.7
 
-  '@j0nathan-ll0yd/portal-contract@2.7.0': {}
+  '@j0nathan-ll0yd/portal-contract@2.8.0': {}
 
   '@jest/console@30.4.1':
     dependencies:

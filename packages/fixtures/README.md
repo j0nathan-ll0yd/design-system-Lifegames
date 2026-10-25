@@ -113,8 +113,9 @@ Every domain provides a normalized **triad** of reserved variation keys:
 ### `full` semantics (per shape-kind)
 
 `full` means _maximally populated within schema bounds_ — all optional keys present, all
-nullable-but-required fields (`anyOf:[T, null]`) set to non-null values, longest realistic
-strings, and max-count arrays — to surface overflow/truncation/layout bugs.
+nullable-but-required fields (`type:[T, null]`, or the older `anyOf:[T, null]`) set to
+non-null values, longest realistic strings, and max-count arrays — to surface
+overflow/truncation/layout bugs.
 
 - **List domains** (books, articles, repos, events, reviews, workouts, sleep): max array
   length with every item-level nullable field non-null.

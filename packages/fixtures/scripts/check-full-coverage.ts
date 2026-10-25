@@ -7,8 +7,9 @@
  * recursive walker:
  *   (a) Optional-key presence: every property NOT in schema required[] must exist
  *       (not undefined) in the fixture.
- *   (b) Nullable-value non-nullness: every property IN schema required[] with an
- *       anyOf:[T, {type:'null'}] schema must carry a non-null value in the fixture.
+ *   (b) Nullable-value non-nullness: every property IN schema required[] with a
+ *       nullable schema (anyOf:[T, {type:'null'}] or type:[T, 'null']) must carry a
+ *       non-null value in the fixture.
  *
  * Fail-closed guard: every non-excepted domain must yield >=1 check. A domain that
  * produces zero checks indicates a silent no-op and exits non-zero.
@@ -26,6 +27,7 @@ import {fileURLToPath} from 'node:url'
 import {createRequire} from 'node:module'
 
 import {WALKER_EXCEPTIONS} from '../src/reserved-variations.js'
+import {isNullable, type JsonSchema, resolveNullable} from './json-schema-nullable.js'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const PKG_ROOT = resolve(HERE, '..')
@@ -45,43 +47,6 @@ function readJson(path: string): unknown {
 }
 
 const fixtureMap = readJson(join(PKG_ROOT, 'fixture-map.json')) as FixtureMap
-
-// ── Schema type helpers ───────────────────────────────────────────────────────
-
-interface JsonSchema {
-  type?: string | string[]
-  properties?: Record<string, JsonSchema>
-  required?: string[]
-  additionalProperties?: boolean | JsonSchema
-  items?: JsonSchema
-  anyOf?: JsonSchema[]
-  oneOf?: JsonSchema[]
-  allOf?: JsonSchema[]
-  const?: unknown
-}
-
-/**
- * Returns true when schema is exactly anyOf:[T, {type:'null'}] (the two-element
- * nullable pattern used throughout portal-contract raw-export schemas).
- */
-function isNullableAnyOf(schema: JsonSchema): boolean {
-  if (!Array.isArray(schema.anyOf) || schema.anyOf.length !== 2) {
-    return false
-  }
-  return schema.anyOf.some((s) => s.type === 'null')
-}
-
-/**
- * Unwraps anyOf:[T, {type:'null'}] → T. Returns the schema unchanged for any
- * other pattern.
- */
-function resolveNullableAnyOf(schema: JsonSchema): JsonSchema {
-  if (!isNullableAnyOf(schema)) {
-    return schema
-  }
-  const nonNull = schema.anyOf!.find((s) => s.type !== 'null')
-  return nonNull ?? schema
-}
 
 // ── Check accumulator ─────────────────────────────────────────────────────────
 
@@ -128,21 +93,21 @@ function walkSchema(schema: JsonSchema, fixture: unknown, path: string, domain: 
     }
 
     // CONDITION (b): Nullable-value non-nullness
-    // Key IS in required[] but schema is anyOf:[T, {type:'null'}].
-    if (required.has(key) && isNullableAnyOf(propSchema)) {
+    // Key IS in required[] but schema is nullable.
+    if (required.has(key) && isNullable(propSchema)) {
       checks.push({type: 'nullable-non-null', path: childPath})
       if (fixtureValue === null) {
         failures.push({path: childPath, domain, reason: `nullable-but-required field "${key}" is null in full.json`})
       }
     }
 
-    // Recurse: unwrap nullable anyOf to reach the inner schema.
-    const resolved = resolveNullableAnyOf(propSchema)
+    // Recurse: unwrap a nullable to reach the inner schema.
+    const resolved = resolveNullable(propSchema)
 
     // Warn and skip complex polymorphism (oneOf, allOf, or anyOf with >2 members
     // that is NOT the simple nullable pattern). These are not present in current
     // portal-contract raw schemas but the guard prevents silent breakage.
-    const hasComplexPoly = resolved.oneOf !== undefined || resolved.allOf !== undefined || (resolved.anyOf !== undefined && !isNullableAnyOf(resolved))
+    const hasComplexPoly = resolved.oneOf !== undefined || resolved.allOf !== undefined || (resolved.anyOf !== undefined && !isNullable(resolved))
     if (hasComplexPoly) {
       process.stderr.write(
         `[fixtures:check-full-coverage] WARN: ${domain}.${childPath} uses complex ` + `oneOf/allOf/anyOf — skipping (not a null-pattern)\n`
