@@ -6,7 +6,7 @@ What a Lifegames design-system widget promises, on both platforms, and what alre
 promise.
 
 This capability is descriptive, not aspirational. Every requirement below restates a rule this repo
-**already enforces** in `governance-gates`, `test-swift`, `contract-ts` or `lint-web`. The prose was
+**already enforces** in `governance-gates`, `test-swift`, `contract-ts` or the `lint-web` step of the `web-builds` job. The prose was
 scattered across `GOVERNANCE.md` (P2–P7, F-014, F-015), `CONTRACT.md`, `widget-consumers.json`,
 `widget-purity-exceptions.json` and `contracts/component-catalog/README.md`; this file is the same
 contract in a machine-checkable grammar.
@@ -156,7 +156,7 @@ or data-fetching library, and SHALL NOT call `fetch` outside a function body. Bo
 case-insensitive substring list, not identifiers, so a pure presentational helper import stays legal.
 
 This is a **blocking** rule. It is configured `error`, the lint script carries `--max-warnings 0`, and
-it runs in the required `governance-gates` status context as well as in `lint-web`.
+it runs in the required `governance-gates` status context as well as in the `lint-web` step of the `web-builds` job.
 
 Two things had to be true at once for it to gate, and neither was. The rule was configured `warn` and
 `pnpm lint` carried no `--max-warnings`, so a widget importing `axios` printed
