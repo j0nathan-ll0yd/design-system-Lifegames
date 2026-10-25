@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/schemas",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
