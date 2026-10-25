@@ -587,3 +587,7 @@ packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd
 .changeset/web-left-panel-footer.md:marker:j0nathan-ll0yd
 # The rate-limit fail-open wording: the changeset names the @j0nathan-ll0yd/copy package it releases.
 .changeset/copy-ratelimit-fail-open.md:marker:j0nathan-ll0yd
+# The portal-contract 2.8.0 changeset names the packages it bumps.
+.changeset/portal-contract-2-8-0.md:marker:j0nathan-ll0yd
+# The nullable-helper test resolves the portal-contract raw schemas by package name.
+packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
