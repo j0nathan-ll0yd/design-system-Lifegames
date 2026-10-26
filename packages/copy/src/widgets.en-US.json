@@ -2234,7 +2234,7 @@
         "description": "Shared searching/connecting state text used by both the connection badge and the primary action button title.",
         "usage": [
           "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .searching)",
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .searching)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .searching)"
         ],
         "register": "atom",
         "audience": "human",
@@ -2245,9 +2245,9 @@
     "actionConnect": {
       "value": "Connect your Acaia",
       "_meta": {
-        "description": "Primary action button title when the scale is unpaired.",
+        "description": "Primary action button title when the scale is unpaired and no cup is tracked (PrimaryAction.connect).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .unpaired)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .connect)"
         ],
         "register": "label",
         "audience": "human",
@@ -2258,9 +2258,10 @@
     "actionReconnect": {
       "value": "Reconnect",
       "_meta": {
-        "description": "Primary action button title when the scale connection errored.",
+        "description": "Primary action button title when the scale connection errored and no cup is tracked (PrimaryAction.reconnect). Also the secondary reconnect affordance under Finish Cup while a tracked cup's link is down.",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .error)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .reconnect)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (reconnectButton label)"
         ],
         "register": "atom",
         "audience": "human",
@@ -2271,9 +2272,9 @@
     "actionFinishCup": {
       "value": "Finish Cup",
       "_meta": {
-        "description": "Primary action button title when a tracking session is active.",
+        "description": "Primary action button title while a cup is tracked, in every connection state: finishing never needs the scale (PrimaryAction.finishCup).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .connected active)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .finishCup)"
         ],
         "register": "label",
         "audience": "human",
@@ -2284,9 +2285,9 @@
     "actionNewCup": {
       "value": "+ New Cup",
       "_meta": {
-        "description": "Primary action button title when connected and idle (start a new cup).",
+        "description": "Primary action button title when connected and idle, to start a new cup (PrimaryAction.newCup).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .connected idle)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .newCup)"
         ],
         "register": "label",
         "audience": "human",

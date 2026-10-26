@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import LifegamesComponentsCore
 
@@ -116,5 +117,81 @@ struct CoffeeTrackingPropsTests {
         )
         #expect(props.isLinkLostMidSession == false)
         #expect(props.isSipping == false)
+    }
+
+    // MARK: - Presence is unknown whenever a tracked cup has no live link
+
+    @Test func searchingMidSessionIsPresenceUnknownNotSipping() {
+        // The consumer forces isCupOnScale = false on every disconnect. A mug resting on the
+        // scale must not read "Sipping…" while the link comes back.
+        let props = CoffeeTrackingProps(
+            connection: .searching, isSessionActive: true, isCupOnScale: false
+        )
+        #expect(props.isPresenceUnknown == true)
+        #expect(props.isLinkLostMidSession == false) // unchanged: .error only
+        #expect(props.isSipping == false)
+    }
+
+    // MARK: - Full matrix: connection × isSessionActive × isCupOnScale
+
+    nonisolated private static let connections: [CoffeeTrackingProps.ScaleConnection] = [
+        .unpaired, .searching, .connected, .error,
+    ]
+
+    /// Independent restatement of the rule, written as a table rather than derived from the
+    /// implementation's shape.
+    private static func expectedAction(
+        _ connection: CoffeeTrackingProps.ScaleConnection, session: Bool
+    ) -> CoffeeTrackingProps.PrimaryAction {
+        guard !session else { return .finishCup }
+        switch connection {
+        case .unpaired: return .connect
+        case .searching: return .searching
+        case .connected: return .newCup
+        case .error: return .reconnect
+        }
+    }
+
+    @Test(arguments: connections, [false, true])
+    func primaryActionAndPresenceForEveryState(
+        connection: CoffeeTrackingProps.ScaleConnection, session: Bool
+    ) {
+        for onScale in [false, true] {
+            let props = CoffeeTrackingProps(
+                connection: connection, isSessionActive: session, isCupOnScale: onScale
+            )
+            #expect(props.primaryAction == Self.expectedAction(connection, session: session))
+            // A tracked cup can always be finished; finishing never needs the scale.
+            if session {
+                #expect(props.primaryAction == .finishCup)
+                #expect(props.primaryAction.isEnabled)
+            }
+            // Only the idle searching state disables the button.
+            #expect(props.primaryAction.isEnabled == !(connection == .searching && !session))
+
+            #expect(props.isPresenceUnknown == (session && connection != .connected))
+            #expect(props.isLinkLostMidSession == (session && connection == .error))
+            // Only a live link can report a lift.
+            #expect(props.isSipping == (session && connection == .connected && !onScale))
+        }
+    }
+
+    @Test func primaryActionIsNotEncoded() throws {
+        // Derived members are computed, so the wire shape is unchanged.
+        let props = CoffeeTrackingProps(connection: .searching, isSessionActive: true)
+        let json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(props)) as? [String: Any]
+        let keys = try #require(json).keys
+        #expect(!keys.contains("primaryAction"))
+        #expect(!keys.contains("isPresenceUnknown"))
+        #expect(!keys.contains("isSipping"))
+    }
+
+    @Test func primaryActionRawValuesAreStable() {
+        // The consumer may log or persist the raw value; pin it.
+        #expect(CoffeeTrackingProps.PrimaryAction.connect.rawValue == "connect")
+        #expect(CoffeeTrackingProps.PrimaryAction.reconnect.rawValue == "reconnect")
+        #expect(CoffeeTrackingProps.PrimaryAction.searching.rawValue == "searching")
+        #expect(CoffeeTrackingProps.PrimaryAction.newCup.rawValue == "newCup")
+        #expect(CoffeeTrackingProps.PrimaryAction.finishCup.rawValue == "finishCup")
     }
 }

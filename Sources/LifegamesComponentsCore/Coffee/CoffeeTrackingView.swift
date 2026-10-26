@@ -18,19 +18,27 @@ public struct CoffeeTrackingView: View {
     /// Animation seam — pass `false` for deterministic snapshot rendering. Production
     /// callers use the default (`true`).
     public let animated: Bool
-    /// Primary-action tap. The button's *meaning* is state-derived (New Cup / Finish Cup /
-    /// Connect / Reconnect — see `buttonTitle`); the caller owns the behavior. Presentational:
-    /// the view emits the event, it never mutates (GOVERNANCE P3 — data in, events out).
+    /// Primary-action tap. The button's *meaning* is `props.primaryAction`; the caller switches
+    /// on the same value, so label and behavior cannot drift. Presentational: the view emits
+    /// the event, it never mutates (GOVERNANCE P3 — data in, events out).
     public let onPrimaryAction: () -> Void
+    /// Manual retry while a cup is tracked and the link is down (`.error` / `.unpaired`). The
+    /// primary button stays `.finishCup` then, so retry is a secondary affordance. `nil` hides it.
+    public let onReconnect: (() -> Void)?
 
+    /// An unlabeled trailing closure binds to `onPrimaryAction` under Swift 6's forward-scan
+    /// rule. Swift 5 language mode still matches backward and would bind it to `onReconnect`,
+    /// so a Swift 5 caller must label `onPrimaryAction:`.
     public init(
         props: CoffeeTrackingProps,
         animated: Bool = true,
-        onPrimaryAction: @escaping () -> Void = {}
+        onPrimaryAction: @escaping () -> Void = {},
+        onReconnect: (() -> Void)? = nil
     ) {
         self.props = props
         self.animated = animated
         self.onPrimaryAction = onPrimaryAction
+        self.onReconnect = onReconnect
     }
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -43,9 +51,10 @@ public struct CoffeeTrackingView: View {
 
     // MARK: - Derived state
 
-    /// Desaturate the mug when not connected or on error.
+    /// Desaturate the mug when not connected or on error. A tracked cup with an absent link
+    /// reads half-desaturated in every non-connected state: the cup still counts.
     private var mugGrayscale: Double {
-        if props.isLinkLostMidSession {
+        if props.isPresenceUnknown {
             return 0.5
         }
         switch props.connection {
@@ -57,16 +66,26 @@ public struct CoffeeTrackingView: View {
 
     /// Dim the mug when connection is absent OR the cup is lifted mid-sip.
     private var mugOpacity: Double {
-        if props.isLinkLostMidSession {
+        if props.isPresenceUnknown || props.isSipping {
             return 0.60
         }
         if props.connection == .unpaired || props.connection == .error {
             return 0.35
         }
-        if props.isSessionActive && !props.isCupOnScale {
-            return 0.60
-        }
         return 1.0
+    }
+
+    /// Steam is a live "cup resting, still hot" cue. It holds only while the link can vouch
+    /// for the cup: off mid-sip, and off while presence is unknown (atlas OQ-V4).
+    var isSteamActive: Bool {
+        props.fillPercent > 0.05 && !props.isSipping && !props.isPresenceUnknown
+    }
+
+    /// The secondary retry renders only when the caller handles it AND a tracked cup has a
+    /// down link that will not recover by itself. `.searching` is already reconnecting.
+    var showsReconnectAffordance: Bool {
+        onReconnect != nil && props.isSessionActive
+            && (props.connection == .error || props.connection == .unpaired)
     }
 
     // MARK: - Body
@@ -92,7 +111,7 @@ public struct CoffeeTrackingView: View {
                     // Reserves Spacing.s1000 (40 pt) regardless of active state so
                     // the mug's vertical position stays locked as steam fades in/out.
                     HeroSteamRisers(
-                        active: props.fillPercent > 0.05 && !props.isSipping,
+                        active: isSteamActive,
                         animated: shouldAnimate
                     )
                     .frame(height: Spacing.s1000)
@@ -159,11 +178,16 @@ public struct CoffeeTrackingView: View {
             .allowsHitTesting(false)
 
             // Solid backing ensures button is always fully legible
-            primaryActionButton
-                .padding(.horizontal, Spacing.s600)
-                .padding(.top, Spacing.s100)
-                .padding(.bottom, Spacing.s500)
-                .background(LGColor.surfaceBase)
+            VStack(spacing: Spacing.s100) {
+                primaryActionButton
+                if showsReconnectAffordance {
+                    reconnectButton
+                }
+            }
+            .padding(.horizontal, Spacing.s600)
+            .padding(.top, Spacing.s100)
+            .padding(.bottom, Spacing.s500)
+            .background(LGColor.surfaceBase)
         }
     }
 
@@ -249,23 +273,23 @@ public struct CoffeeTrackingView: View {
     // MARK: - Primary action button
 
     private var primaryActionButton: some View {
-        let isDisabled = props.connection == .searching
-        let isConnectable = props.connection == .unpaired || props.connection == .error
+        let action = props.primaryAction
+        let isDisabled = !action.isEnabled
 
         return Button {
             onPrimaryAction() // caller owns behavior; view stays presentational (P3)
         } label: {
             HStack(spacing: Spacing.s200) {
-                if !isConnectable {
+                if let systemImage = action.systemImage {
                     // Hardened: SF-Symbol icons use .imageScale + .fontWeight, not a
                     // raw point-size font — direct size calls are banned in Core/Coffee
                     // (C-TOKENS / §10). .imageScale keeps size relative to the label.
-                    Image(systemName: props.isSessionActive ? "checkmark" : "plus")
+                    Image(systemName: systemImage)
                         .imageScale(.medium)
                         .fontWeight(.semibold)
                         .accessibilityHidden(true)
                 }
-                Text(buttonTitle)
+                Text(action.title)
                     .font(Font.Tokens.body())
                     .fontWeight(.semibold)
             }
@@ -286,30 +310,69 @@ public struct CoffeeTrackingView: View {
         .disabled(isDisabled)
         .frame(minHeight: 44)
         .contentShape(.rect)
-        .accessibilityLabel(buttonA11yLabel)
+        .accessibilityLabel(action.accessibilityLabel)
     }
 
-    private var buttonTitle: String {
-        switch props.connection {
-        case .unpaired: CopyLoader.widgets.coffee.actionConnect
-        case .searching: CopyLoader.widgets.coffee.searching
-        case .error: CopyLoader.widgets.coffee.actionReconnect
-        case .connected:
-            props.isSessionActive
-                ? CopyLoader.widgets.coffee.actionFinishCup
-                : CopyLoader.widgets.coffee.actionNewCup
+    // MARK: - Secondary reconnect affordance
+
+    /// Unfilled text button under the `.finishCup` primary: visibly secondary, never the primary target.
+    private var reconnectButton: some View {
+        Button {
+            onReconnect?() // caller owns behavior; view stays presentational (P3)
+        } label: {
+            HStack(spacing: Spacing.s150) {
+                Image(systemName: "arrow.clockwise")
+                    .imageScale(.small)
+                    .fontWeight(.semibold)
+                    .accessibilityHidden(true)
+                Text(CopyLoader.widgets.coffee.actionReconnect)
+                    .font(Font.Tokens.caption())
+                    .fontWeight(.medium)
+            }
+            .foregroundStyle(LGColor.accentAmber.opacity(0.8))
+            .frame(maxWidth: .infinity, minHeight: 44)
+        }
+        .contentShape(.rect)
+        .accessibilityLabel(CopyLoader.a11y.coffee.actionReconnect)
+    }
+}
+
+// MARK: - Primary action presentation
+
+/// Label, icon, enabled state and VoiceOver label, derived from `PrimaryAction` ONLY.
+extension CoffeeTrackingProps.PrimaryAction {
+    /// `.searching` is the one state with nothing to do: the link is still coming up and no
+    /// cup is tracked.
+    var isEnabled: Bool {
+        self != .searching
+    }
+
+    /// Only `.finishCup` carries a symbol. The `actionNewCup` copy value already starts with
+    /// "+", so a `plus` symbol rendered it twice; a disabled `.searching` has nothing to add.
+    var systemImage: String? {
+        switch self {
+        case .connect, .reconnect, .searching, .newCup: nil
+        case .finishCup: "checkmark"
         }
     }
 
-    private var buttonA11yLabel: String {
-        switch props.connection {
-        case .unpaired: CopyLoader.a11y.coffee.actionConnect
+    var title: String {
+        switch self {
+        case .connect: CopyLoader.widgets.coffee.actionConnect
+        case .reconnect: CopyLoader.widgets.coffee.actionReconnect
+        case .searching: CopyLoader.widgets.coffee.searching
+        case .newCup: CopyLoader.widgets.coffee.actionNewCup
+        case .finishCup: CopyLoader.widgets.coffee.actionFinishCup
+        }
+    }
+
+    var accessibilityLabel: String {
+        switch self {
+        case .connect: CopyLoader.a11y.coffee.actionConnect
+        case .reconnect: CopyLoader.a11y.coffee.actionReconnect
         case .searching: CopyLoader.a11y.coffee.actionSearching
-        case .error: CopyLoader.a11y.coffee.actionReconnect
-        case .connected:
-            props.isSessionActive
-                ? CopyLoader.a11y.coffee.actionFinishCup
-                : CopyLoader.a11y.coffee.actionNewCup
+        case .newCup: CopyLoader.a11y.coffee.actionNewCup
+        case .finishCup: CopyLoader.a11y.coffee.actionFinishCup
         }
     }
 }
@@ -323,7 +386,7 @@ public struct CoffeeTrackingView: View {
 /// Animation pattern mirrors `SteamPuffs` in `CoffeeMugView`: state set in `onAppear`,
 /// per-riser `.animation(.delay)` handles stagger. Reduce-motion is respected via the
 /// caller's `shouldAnimate` → `animated` prop (C-MOTION / §10).
-private struct HeroSteamRisers: View {
+struct HeroSteamRisers: View { // internal: behavioral tests read `active`
     let active: Bool
     let animated: Bool
 
@@ -469,7 +532,30 @@ private extension CoffeeTrackingProps.Beverage {
                 dailyTargetMg: 400,
                 cupsToday: 3,
                 beverage: .drip
-            )
+            ),
+            onReconnect: {}
+        )
+        .preferredColorScheme(.dark)
+    }
+
+    #Preview("Coffee — Searching mid-session") {
+        CoffeeTrackingView(
+            props: CoffeeTrackingProps(
+                connection: .searching,
+                batteryPercent: 78,
+                isSessionActive: true,
+                isCupOnScale: false,
+                startWeightGrams: 300,
+                lastStableWeightGrams: 170,
+                currentWeightGrams: 170,
+                flowRateGramsPerSec: 0,
+                sessionElapsedSeconds: 240,
+                dailyCaffeineMg: 220,
+                dailyTargetMg: 400,
+                cupsToday: 3,
+                beverage: .drip
+            ),
+            onReconnect: {}
         )
         .preferredColorScheme(.dark)
     }

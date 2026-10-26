@@ -69,10 +69,44 @@ public struct CoffeeTrackingProps: Hashable, Codable, Sendable {
         isSessionActive && connection == .error
     }
 
-    /// True while the cup is genuinely lifted mid-sip. Excludes the link-lost case, where
-    /// `isCupOnScale` is forced false by the consumer and means "unknown", not "lifted".
+    /// A tracked cup whose presence on the scale cannot be known, because the link is not
+    /// `.connected` (`.searching`, `.error` or `.unpaired`). The consumer forces `isCupOnScale`
+    /// false on every disconnect, so here it means "unknown", not "lifted". Superset of
+    /// `isLinkLostMidSession`, which stays the `.error`-only case.
+    public var isPresenceUnknown: Bool {
+        isSessionActive && connection != .connected
+    }
+
+    /// True while the cup is genuinely lifted mid-sip. Only a live link can report a lift, so
+    /// this is false whenever presence is unknown.
     public var isSipping: Bool {
-        isSessionActive && !isCupOnScale && !isLinkLostMidSession
+        isSessionActive && !isCupOnScale && !isPresenceUnknown
+    }
+
+    // MARK: - Primary action
+
+    /// What the primary button means. The single source of truth for the view's label rule
+    /// AND the consumer's tap behavior, so the two cannot drift.
+    public enum PrimaryAction: String, Codable, Sendable {
+        case connect // unpaired, no cup tracked
+        case reconnect // link failed, no cup tracked
+        case searching // scanning, no cup tracked — the only disabled action
+        case newCup // connected, no cup tracked
+        case finishCup // a cup is tracked, in ANY connection state
+    }
+
+    /// Finishing a cup is local accounting and never needs the scale, so an active session
+    /// always offers `.finishCup`. Otherwise the action follows the connection state.
+    public var primaryAction: PrimaryAction {
+        if isSessionActive {
+            return .finishCup
+        }
+        switch connection {
+        case .unpaired: return .connect
+        case .error: return .reconnect
+        case .searching: return .searching
+        case .connected: return .newCup
+        }
     }
 
     // MARK: - Init
