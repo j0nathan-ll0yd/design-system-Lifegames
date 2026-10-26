@@ -122,8 +122,9 @@ struct CoffeeTrackingPropsTests {
     // MARK: - Presence is unknown whenever a tracked cup has no live link
 
     @Test func searchingMidSessionIsPresenceUnknownNotSipping() {
-        // The consumer forces isCupOnScale = false on every disconnect. A mug resting on the
-        // scale must not read "Sipping…" while the link comes back.
+        // With no live link, isCupOnScale carries no presence information, whatever the
+        // consumer sets. A mug resting on the scale must not read "Sipping…" while the link
+        // comes back. The matrix test below covers isCupOnScale = true as well.
         let props = CoffeeTrackingProps(
             connection: .searching, isSessionActive: true, isCupOnScale: false
         )
