@@ -293,7 +293,7 @@ export interface SystemStatusRefsTheatreReviews {
   };
 }
 /**
- * Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.
+ * Coffee tracking screen (Acaia scale) — connection badge, status badge messages, primary action, caffeine readout, daily bar, and beverage short names.
  */
 export interface WidgetsCoffee {
   sipping: string;
@@ -308,6 +308,12 @@ export interface WidgetsCoffee {
   badgeConnect: string;
   badgeConnected: string;
   badgeError: string;
+  statusOffline: string;
+  statusStreamPaused: string;
+  statusReconnectFailed: string;
+  statusReconnectFailedTracked: string;
+  statusBluetoothUnavailable: string;
+  statusBluetoothDenied: string;
   beverageDrip: string;
   beverageEspresso: string;
   beverageColdBrew: string;

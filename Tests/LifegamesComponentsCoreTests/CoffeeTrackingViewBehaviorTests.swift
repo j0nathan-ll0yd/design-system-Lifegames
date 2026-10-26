@@ -156,4 +156,46 @@ struct CoffeeTrackingViewBehaviorTests {
             #expect(try view.inspect().find(HeroSteamRisers.self).actualView().active == steam)
         }
     }
+
+    // MARK: - Connection badge reads its visible status aloud through the copy template
+
+    @Test func badgeAccessibilityLabelUsesTheCopyTemplate() throws {
+        let template = CopyLoader.a11y.coffee.connectionStatus
+        let coffee = CopyLoader.widgets.coffee
+        let cases: [(CoffeeTrackingProps.ScaleConnection, String?, String)] = [
+            (.unpaired, nil, coffee.badgeConnect),
+            (.searching, nil, coffee.searching),
+            (.connected, nil, coffee.badgeConnected),
+            (.error, nil, coffee.badgeError),
+            (.error, coffee.statusOffline, coffee.statusOffline),
+            (.error, coffee.statusReconnectFailedTracked, coffee.statusReconnectFailedTracked),
+        ]
+        let modes: [CoffeeConnectionBadge.Mode] = [.pill, .headerDot, .ringState]
+        for mode in modes {
+            for (connection, message, spoken) in cases {
+                let badge = CoffeeConnectionBadge(connection: connection, mode: mode, errorMessage: message)
+                #expect(badge.accessibilityStatus == template.replacingOccurrences(of: "{status}", with: spoken))
+                #expect(!badge.accessibilityStatus.contains("{status}"))
+                // The rendered view carries that label, not a hardcoded literal.
+                let expected = badge.accessibilityStatus
+                #expect((try? badge.inspect().find(where: {
+                    (try? $0.accessibilityLabel().string()) == expected
+                })) != nil)
+            }
+        }
+    }
+
+    @Test func statusMessagesAreDistinctAndNonEmpty() {
+        let coffee = CopyLoader.widgets.coffee
+        let messages = [
+            coffee.statusOffline, coffee.statusStreamPaused, coffee.statusReconnectFailed,
+            coffee.statusReconnectFailedTracked, coffee.statusBluetoothUnavailable,
+            coffee.statusBluetoothDenied,
+        ]
+        #expect(messages.allSatisfy { !$0.isEmpty })
+        #expect(Set(messages).count == messages.count)
+        // With a cup tracked, the primary button finishes the cup, so the retry text must
+        // name the secondary affordance by its own label.
+        #expect(coffee.statusReconnectFailedTracked.contains(coffee.actionReconnect))
+    }
 }

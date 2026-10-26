@@ -224,6 +224,12 @@
     "badgeConnect": "Connect scale",
     "badgeConnected": "Connected",
     "badgeError": "Connection error",
+    "statusOffline": "Scale offline — your cup is still being tracked",
+    "statusStreamPaused": "Scale stream paused — reconnecting",
+    "statusReconnectFailed": "Could not reconnect to the scale — tap to try again",
+    "statusReconnectFailedTracked": "Could not reconnect to the scale — tap Reconnect",
+    "statusBluetoothUnavailable": "Bluetooth is unavailable — your cup is still being tracked",
+    "statusBluetoothDenied": "Enable Bluetooth for Life Portal in Settings to connect your scale",
     "beverageDrip": "drip",
     "beverageEspresso": "espresso",
     "beverageColdBrew": "cold brew"

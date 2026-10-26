@@ -326,6 +326,19 @@
         "owner": "jonathan",
         "lastReviewed": "2026-07-07"
       }
+    },
+    "connectionStatus": {
+      "value": "Scale connection: {status}",
+      "_meta": {
+        "description": "Accessibility label for the scale connection badge in every mode. ICU MF1 template; the consumer substitutes the visible status text (a widgets.coffee.badge* label, widgets.coffee.searching, or the errorMessage, such as widgets.coffee.status*) at the call site.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (pill, headerDot and ringState accessibilityLabel)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
     }
   }
 }

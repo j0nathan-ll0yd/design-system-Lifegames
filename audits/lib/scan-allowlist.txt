@@ -591,3 +591,5 @@ packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd
 .changeset/portal-contract-2-8-0.md:marker:j0nathan-ll0yd
 # The nullable-helper test resolves the portal-contract raw schemas by package name.
 packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
+# The coffee status-message changeset names the package it bumps.
+.changeset/copy-coffee-status-messages.md:marker:j0nathan-ll0yd

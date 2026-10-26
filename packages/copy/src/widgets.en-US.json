@@ -2334,6 +2334,90 @@
         "lastReviewed": "2026-07-07"
       }
     },
+    "statusOffline": {
+      "value": "Scale offline — your cup is still being tracked",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when the scale link is lost while a cup is tracked. Replaces raw CoreBluetooth error text, which is never shown to the user.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: link lost mid-cup)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusStreamPaused": {
+      "value": "Scale stream paused — reconnecting",
+      "_meta": {
+        "description": "Status badge text (errorMessage) while the app bounces a stalled scale stream on return to the foreground.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: foreground stall bounce)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusReconnectFailed": {
+      "value": "Could not reconnect to the scale — tap to try again",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when reconnection gave up and no cup is tracked, so the primary button is Reconnect.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: reconnect gave up, no cup tracked)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusReconnectFailedTracked": {
+      "value": "Could not reconnect to the scale — tap Reconnect",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when reconnection gave up while a cup is tracked. The primary button stays on finishing the cup, so the text points at the secondary Reconnect affordance (widgets.coffee.actionReconnect).",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: reconnect gave up, cup tracked)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusBluetoothUnavailable": {
+      "value": "Bluetooth is unavailable — your cup is still being tracked",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when Bluetooth powers off while a cup is tracked.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: Bluetooth powered off mid-cup)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusBluetoothDenied": {
+      "value": "Enable Bluetooth for Life Portal in Settings to connect your scale",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when Bluetooth permission is denied or restricted. No terminal period: it renders in the status badge (VOICE.md Appendix C).",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: Bluetooth permission denied or restricted)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
     "beverageDrip": {
       "value": "drip",
       "_meta": {

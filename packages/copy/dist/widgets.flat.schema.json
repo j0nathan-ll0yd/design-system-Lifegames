@@ -802,7 +802,7 @@
     "coffee": {
       "type": "object",
       "title": "WidgetsCoffee",
-      "description": "Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.",
+      "description": "Coffee tracking screen (Acaia scale) — connection badge, status badge messages, primary action, caffeine readout, daily bar, and beverage short names.",
       "properties": {
         "sipping": {
           "type": "string"
@@ -840,6 +840,24 @@
         "badgeError": {
           "type": "string"
         },
+        "statusOffline": {
+          "type": "string"
+        },
+        "statusStreamPaused": {
+          "type": "string"
+        },
+        "statusReconnectFailed": {
+          "type": "string"
+        },
+        "statusReconnectFailedTracked": {
+          "type": "string"
+        },
+        "statusBluetoothUnavailable": {
+          "type": "string"
+        },
+        "statusBluetoothDenied": {
+          "type": "string"
+        },
         "beverageDrip": {
           "type": "string"
         },
@@ -863,6 +881,12 @@
         "badgeConnect",
         "badgeConnected",
         "badgeError",
+        "statusOffline",
+        "statusStreamPaused",
+        "statusReconnectFailed",
+        "statusReconnectFailedTracked",
+        "statusBluetoothUnavailable",
+        "statusBluetoothDenied",
         "beverageDrip",
         "beverageEspresso",
         "beverageColdBrew"
