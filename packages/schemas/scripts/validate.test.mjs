@@ -75,6 +75,13 @@ test('an unknown --bucket fails instead of checking nothing', () => {
   assert.match(r.stderr, /Bucket "consumer" is not an object/)
 })
 
+test('a second --bucket flag fails instead of being dropped', () => {
+  const r = run({ds: {'ok.json': {schema: SCHEMA}}}, {'ok.json': (p) => copyFileSync(REAL_FIXTURE, p)}, ['--bucket=ds', '--bucket=consumer'])
+  assert.equal(r.status, 1)
+  assert.match(r.stderr, /2 --bucket= flags given \(--bucket=ds, --bucket=consumer\)/)
+  assert.doesNotMatch(r.stdout, /OK:/)
+})
+
 test('a malformed entry fails instead of being skipped', () => {
   const r = run({ds: {'ok.json': {strategy: 'single'}}}, {'ok.json': (p) => copyFileSync(REAL_FIXTURE, p)})
   assert.equal(r.status, 1)

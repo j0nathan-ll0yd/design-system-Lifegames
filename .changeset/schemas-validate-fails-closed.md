@@ -5,7 +5,7 @@
 `scripts/validate.ts` now fails closed, and `fixture-map.json` drops its `consumer` bucket.
 
 - A mapped fixture that does not exist is an error. The message names the path, the bucket and the directory it resolved against. Before, the script skipped a missing file and still printed `OK: 0 fixture(s) validated successfully.`
-- A run that validates 0 fixtures fails. So does a bucket that maps no fixtures, a `--bucket=<name>` that names no bucket, and a map entry with no `schema`.
+- A run that validates 0 fixtures fails. So does a bucket that maps no fixtures, a `--bucket=<name>` that names no bucket, more than one `--bucket=` flag, and a map entry with no `schema`.
 - A real validation error still exits 1, as before.
 - The `consumer` bucket is gone. It mapped seven website files (`data/books.json`, `data/github.json`, `data/health.json`, `data/profile.json`, `data/reading.json`, `data/system.json`, `data/theatre-reviews-sample.json`). The website stopped writing them (atlas decision 0160), so the website prebuild validated nothing.
 - New flag: `--map=<path>` reads another map.

@@ -56,10 +56,24 @@ describe('fixtures validate.ts', () => {
   })
 
   it('fails a mapped raw directory that holds no JSON', () => {
-    const r = run({raw: {books: RAW_SCHEMA}, postAdapter: {}}, {'src/generated/books/README.md': 'not json'})
+    // A second domain validates one real fixture, so the 0-fixture guard cannot fire:
+    // the exit code alone proves the empty-directory guard.
+    const r = run({raw: {books: RAW_SCHEMA, more: RAW_SCHEMA}, postAdapter: {}}, {
+      'src/generated/books/README.md': 'not json',
+      'src/generated/more/baseline.json': null
+    })
     expect(r.status).toBe(1)
     expect(r.stderr).toMatch(/books\/\*\.json \(books-export\.schema\.json\)/)
     expect(r.stderr).toMatch(/no raw fixtures found/)
+  })
+
+  it.each(['raw', 'postAdapter'])('fails a map with no %s object', (key) => {
+    const map: Record<string, object> = {raw: {}, postAdapter: {}}
+    delete map[key]
+    const r = run(map)
+    expect(r.status).toBe(1)
+    expect(r.stderr).toMatch(new RegExp(`has no "${key}" object`))
+    expect(r.stderr).not.toMatch(/TypeError/)
   })
 
   it('fails a run that validates 0 fixtures', () => {

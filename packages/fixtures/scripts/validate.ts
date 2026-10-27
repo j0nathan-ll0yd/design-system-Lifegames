@@ -57,7 +57,15 @@ function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, 'utf-8'))
 }
 
-const fixtureMap = readJson(join(FIXTURES_ROOT, 'fixture-map.json')) as FixtureMap
+const fixtureMapPath = join(FIXTURES_ROOT, 'fixture-map.json')
+const fixtureMap = readJson(fixtureMapPath) as FixtureMap
+for (const key of ['raw', 'postAdapter'] as const) {
+  const section: unknown = fixtureMap[key]
+  if (!section || typeof section !== 'object' || Array.isArray(section)) {
+    process.stderr.write(`\n[fixtures:validate] FAIL: ${fixtureMapPath} has no "${key}" object.\n`)
+    process.exit(1)
+  }
+}
 
 const ajv = new Ajv({strict: false, allErrors: true, allowUnionTypes: true})
 // ajv-formats is CJS with a callable default under tsx's esModuleInterop.

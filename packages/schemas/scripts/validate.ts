@@ -133,7 +133,12 @@ const fixtureMap = JSON.parse(readFileSync(fixtureMapPath, 'utf-8')) as Record<
 >
 
 // Determine which buckets to validate (default: all)
-const bucketArg = args.find((a) => a.startsWith('--bucket='))
+const bucketArgs = args.filter((a) => a.startsWith('--bucket='))
+if (bucketArgs.length > 1) {
+  process.stderr.write(`\n[schemas:validate] FAIL: ${bucketArgs.length} --bucket= flags given (${bucketArgs.join(', ')}). Give at most one.\n`)
+  process.exit(1)
+}
+const bucketArg = bucketArgs[0]
 const buckets = bucketArg ? [bucketArg.slice('--bucket='.length)] : Object.keys(fixtureMap).filter((k) => !k.startsWith('_'))
 
 let total = 0
