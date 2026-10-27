@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import {spawnSync} from 'node:child_process'
-import {copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs'
+import {copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -97,8 +97,13 @@ function writeFiles(root, files) {
   }
 }
 
+// Pin git's default path quoting, so a non-ASCII path test does not depend on
+// the machine's core.quotePath.
+const quotedPathEnv = {...isolatedChildEnv, GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.quotePath', GIT_CONFIG_VALUE_0: 'true'}
+
 function scan(root, mode) {
-  return run('bash', ['audits/checks/d6-scan-personal-data.sh', ...(mode === 'full' ? ['--full-tree'] : [])], root)
+  const args = ['audits/checks/d6-scan-personal-data.sh', ...(mode === 'full' ? ['--full-tree'] : [])]
+  return spawnSync('bash', args, {cwd: root, encoding: 'utf8', env: quotedPathEnv})
 }
 
 function withFixture(files, allowlist, body) {
@@ -181,6 +186,12 @@ test('the handle outside the narrow changeset rule fails without an entry and pa
     '.changeset/other-key.md': changeset(`'${scope}/web': minor\nauthor: ${marker}`),
     '.changeset/unclosed.md': `---\n'${scope}/web': minor\n`,
     '.changeset/late-block.md': `Intro.\n---\n'${scope}/web': minor\n---\n`,
+    '.changeset/trailing-text.md': changeset(`'${scope}/web': patch # ${marker}`),
+    '.changeset/trailing-text-dq.md': changeset(`"${scope}/web": patch # ${marker}`),
+    '.changeset/trailing-space.md': changeset(`'${scope}/web': patch `),
+    '.changeset/trailing-space-dq.md': changeset(`"${scope}/web": patch `),
+    '.changeset/line-prefix.md': changeset(`x '${scope}/web': patch`),
+    '.changeset/line-prefix-dq.md': changeset(`x "${scope}/web": patch`),
     '.changeset/body-shaped.md': changeset(`'${scope}/web': minor`, `'${scope}/tokens': patch\n`),
     'docs/plain.txt': `${marker}\n`
   }
@@ -201,4 +212,68 @@ test('staged mode scans the staged content, not the working tree', () => {
     writeFileSync(path.join(root, 'docs/note.md'), 'clean again\n')
     assertFails(scan(root, 'staged'), /ERROR: \[marker:[^\]]+\] docs\/note\.md: 1:/, 'the staged blob holds the marker')
   })
+})
+
+test('staged mode scans a renamed file that gains the handle', () => {
+  withFixture({'docs/a.txt': 'clean line one\nclean line two\nclean line three\nclean line four\n'}, '', (root) => {
+    assertSucceeded(run('git', ['mv', 'docs/a.txt', 'docs/b.txt'], root), 'rename the file')
+    writeFileSync(path.join(root, 'docs/b.txt'), `clean line one\nclean line two\nclean line three\nclean line four\n${marker}\n`)
+    assertSucceeded(run('git', ['add', 'docs/b.txt'], root), 'stage the edit')
+    const status = run('git', ['diff', '--cached', '--name-status', '-M'], root)
+    assert.match(status.stdout, /^R\d+\tdocs\/a\.txt\tdocs\/b\.txt$/m, 'git must see a rename, or this test proves nothing')
+    assertFails(scan(root, 'staged'), /ERROR: \[marker:[^\]]+\] docs\/b\.txt: 5:/, 'the renamed file holds the marker')
+  })
+})
+
+const nonAsciiName = 'docs/caf\u00e9.txt'
+const nonAsciiHit = new RegExp(`ERROR: \\[marker:[^\\]]+\\] ${nonAsciiName.replace('.', '\\.')}: 1:`)
+
+test('the full-tree scan reads a non-ASCII path', () => {
+  withFixture({[nonAsciiName]: `${marker}\n`}, '', (root) => {
+    assertFails(scan(root, 'full'), nonAsciiHit, 'full-tree scan')
+  })
+})
+
+test('the staged scan reads a non-ASCII path', () => {
+  withFixture({'docs/clean.txt': 'clean\n'}, '', (root) => {
+    writeFiles(root, {[nonAsciiName]: `${marker}\n`})
+    assertSucceeded(run('git', ['add', nonAsciiName], root), 'stage the non-ASCII path')
+    assertFails(scan(root, 'staged'), nonAsciiHit, 'staged scan')
+  })
+})
+
+test('an allowlist entry for a non-ASCII path is not stale', () => {
+  withFixture({[nonAsciiName]: `${marker}\n`}, `${nonAsciiName}:marker:${marker}\n`, (root) => {
+    assertPasses(scan(root, 'full'), 'full tree')
+    writeFiles(root, {'docs/other.txt': 'clean\n'})
+    assertSucceeded(run('git', ['add', 'docs/other.txt'], root), 'stage another file')
+    assertPasses(scan(root, 'staged'), 'staged')
+  })
+})
+
+test('staged mode scans a file that changes type to a symlink', () => {
+  withFixture({'docs/link': 'clean\n'}, '', (root) => {
+    rmSync(path.join(root, 'docs/link'))
+    symlinkSync(marker, path.join(root, 'docs/link'))
+    assertSucceeded(run('git', ['add', 'docs/link'], root), 'stage the type change')
+    const status = run('git', ['diff', '--cached', '--name-status'], root)
+    assert.match(status.stdout, /^T\tdocs\/link$/m, 'git must see a type change, or this test proves nothing')
+    assertFails(scan(root, 'staged'), /ERROR: \[marker:[^\]]+\] docs\/link: 1:/, 'the link text holds the marker')
+    assertFails(scan(root, 'full'), /ERROR: \[marker:[^\]]+\] docs\/link: 1:/, 'full tree reads the link text from its blob')
+  })
+})
+
+test('the full-tree scan fails on a tracked file it cannot read', () => {
+  withFixture({'docs/gone.txt': 'clean\n'}, '', (root) => {
+    rmSync(path.join(root, 'docs/gone.txt'))
+    assertFails(scan(root, 'full'), /ERROR: \[unreadable\] docs\/gone\.txt:/, 'a missing tracked file must not pass silently')
+  })
+})
+
+test('the scan does not stop after a clean file', () => {
+  withFixture({'.changeset/a-clean.md': changeset(`'${scope}/web': minor`), 'docs/a-clean.txt': 'clean\n', 'docs/z-dirty.txt': `${marker}\n`}, '',
+    (root) => {
+      const result = scan(root, 'full')
+      assertFails(result, /ERROR: \[marker:[^\]]+\] docs\/z-dirty\.txt:/, 'the last file must be scanned')
+    })
 })

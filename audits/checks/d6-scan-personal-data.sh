@@ -31,9 +31,13 @@
 # Every allowlist entry must name a tracked path (a path in the git index). An
 # entry whose path is not tracked is stale and fails the scan, in both modes,
 # whether or not any file is staged. Staged mode reads the allowlist and each
-# scanned file from the index, so it checks exactly what the commit records:
-# a commit that deletes or renames an allowlisted file without removing its
-# entry fails. Full-tree mode reads the working tree, as before.
+# added, copied, modified, renamed or retyped file from the index, so it scans
+# the content the commit records: a commit that deletes or renames an
+# allowlisted file without removing its entry fails. Full-tree mode reads the
+# working tree, as before. Both modes list paths NUL-separated, so a non-ASCII
+# path is never quoted out of the scan, and a file that cannot be read fails
+# the scan instead of being skipped. grep -I treats a file holding a NUL byte
+# as binary and does not scan it; that gap is unchanged.
 #
 # Exits non-zero if any un-allowlisted marker/heuristic hit is found in
 # scope, or if any allowlist entry is stale.
@@ -97,16 +101,34 @@ CHANGESET_RELEASE_DQ='^"@j0nathan-ll0yd/[a-z0-9][a-z0-9._-]*": (major|minor|patc
 ALLOWLIST_PATH="audits/lib/scan-allowlist.txt"
 ALLOWLIST_LABEL_REGEX=':(marker:[^:]+|email|phone|coordinate|[*])$'
 
-if [ "$FULL_TREE" -eq 1 ]; then
-  FILES=$(git -C "$REPO_ROOT" ls-files | grep -vE "$SKIP_FILES_REGEX" || true)
-  ALLOWLIST=$(cat "$REPO_ROOT/$ALLOWLIST_PATH" 2>/dev/null || true)
-else
-  FILES=$(git -C "$REPO_ROOT" diff --cached --name-only --diff-filter=ACM | grep -vE "$SKIP_FILES_REGEX" || true)
-  ALLOWLIST=$(git -C "$REPO_ROOT" cat-file blob ":$ALLOWLIST_PATH" 2>/dev/null || true)
-fi
-
 SCAN_TMP=$(mktemp -d)
 trap 'rm -rf "$SCAN_TMP"' EXIT
+
+# Every git listing is NUL-separated (-z), so git never quotes a path: a
+# non-ASCII name such as docs/café.txt reaches the scan unchanged. A listing
+# that fails stops the scan, rather than leaving an empty list behind.
+git_listing() {
+  local out="$1"
+  shift
+  if ! git -C "$REPO_ROOT" "$@" > "$out"; then
+    echo "ERROR: [git] 'git $*' failed; nothing was scanned."
+    exit 2
+  fi
+}
+
+if [ "$FULL_TREE" -eq 1 ]; then
+  # <mode> <sha> <stage><TAB><path>
+  git_listing "$SCAN_TMP/files" ls-files -s -z
+  ALLOWLIST=$(cat "$REPO_ROOT/$ALLOWLIST_PATH" 2>/dev/null || true)
+else
+  # :<old mode> <new mode> <old sha> <new sha> <status> NUL <path> NUL.
+  # --no-renames reports a rename as a delete plus an add, so the renamed
+  # file is scanned. T (type change) covers a file that became a symlink.
+  git_listing "$SCAN_TMP/files" diff --cached --raw -z --no-renames --no-abbrev --diff-filter=ACMT
+  ALLOWLIST=$(git -C "$REPO_ROOT" cat-file blob ":$ALLOWLIST_PATH" 2>/dev/null || true)
+fi
+git_listing "$SCAN_TMP/tracked-z" ls-files -z
+tr '\0' '\n' < "$SCAN_TMP/tracked-z" > "$SCAN_TMP/tracked"
 
 is_allowlisted() {
   local file="$1" label="$2"
@@ -136,7 +158,7 @@ STALE_ENTRIES=$(awk -v label_regex="$ALLOWLIST_LABEL_REGEX" '
     sub(label_regex, "", path)
     if (!(path in tracked)) print
   }
-' <(git -C "$REPO_ROOT" ls-files) <(printf '%s\n' "$ALLOWLIST"))
+' "$SCAN_TMP/tracked" <(printf '%s\n' "$ALLOWLIST"))
 
 STALE=0
 if [ -n "$STALE_ENTRIES" ]; then
@@ -162,16 +184,17 @@ blank_changeset_releases() {
   ' "$1"
 }
 
-while IFS= read -r file; do
-  [ -n "$file" ] || continue
+# A file the scan cannot read fails the scan. It is never skipped.
+UNREADABLE=0
+unreadable() {
+  echo "ERROR: [unreadable] $1: $2"
+  UNREADABLE=1
+}
 
-  if [ "$FULL_TREE" -eq 1 ]; then
-    [ -f "$REPO_ROOT/$file" ] || continue
-    source_path="$REPO_ROOT/$file"
-  else
-    source_path="$SCAN_TMP/staged"
-    git -C "$REPO_ROOT" cat-file blob ":$file" > "$source_path" 2>/dev/null || continue
-  fi
+SCANNED=0
+scan_file() {
+  local file="$1" source_path="$2" scan_path marker match
+  SCANNED=$((SCANNED + 1))
 
   scan_path="$source_path"
   if [[ "$file" =~ $CHANGESET_FILE_REGEX ]]; then
@@ -197,7 +220,41 @@ while IFS= read -r file; do
       [ -n "$match" ] && report "coordinate" "$file" "$match"
       ;;
   esac
-done <<< "$FILES"
+  return 0 # the last test above is false on a clean file; set -e must not stop the scan
+}
+
+GITLINK_MODE=160000
+SYMLINK_MODE=120000
+
+# Full tree: the working-tree file, except a symlink, whose link text is read
+# from its blob. Staged: the blob the commit records, by its sha.
+while IFS= read -r -d '' record; do
+  if [ "$FULL_TREE" -eq 1 ]; then
+    meta="${record%%$'\t'*}"
+    file="${record#*$'\t'}"
+    read -r mode sha _ <<< "$meta"
+  else
+    IFS= read -r -d '' file || break
+    read -r _ mode _ sha _ <<< "${record#:}"
+  fi
+
+  [[ "$file" =~ $SKIP_FILES_REGEX ]] && continue
+  [ "$mode" = "$GITLINK_MODE" ] && continue # a submodule commit holds no text
+
+  source_path="$SCAN_TMP/blob"
+  if [ "$FULL_TREE" -eq 1 ] && [ "$mode" != "$SYMLINK_MODE" ]; then
+    source_path="$REPO_ROOT/$file"
+    if [ ! -f "$source_path" ] || [ ! -r "$source_path" ]; then
+      unreadable "$file" "tracked, but not a readable file in the working tree"
+      continue
+    fi
+  elif ! git -C "$REPO_ROOT" cat-file blob "$sha" > "$source_path" 2>/dev/null; then
+    unreadable "$file" "git cat-file blob $sha failed"
+    continue
+  fi
+
+  scan_file "$file" "$source_path"
+done < "$SCAN_TMP/files"
 
 if [ "$STALE" -ne 0 ]; then
   echo ""
@@ -210,12 +267,12 @@ if [ "$FOUND" -ne 0 ]; then
   echo "See Sources/LifegamesWidgets/Resources/widgets/SCRUBBING.md for the fixture-pool scrubbing log."
 fi
 
-if [ "$FOUND" -ne 0 ] || [ "$STALE" -ne 0 ]; then
+if [ "$FOUND" -ne 0 ] || [ "$STALE" -ne 0 ] || [ "$UNREADABLE" -ne 0 ]; then
   exit 1
 fi
 
 if [ "$FULL_TREE" -eq 1 ]; then
-  echo "OK: no personal data markers found (full tree, $(grep -c . <<< "$FILES" || true) files)."
+  echo "OK: no personal data markers found (full tree, $SCANNED files)."
 else
   echo "OK: no personal data markers found in staged files."
 fi
