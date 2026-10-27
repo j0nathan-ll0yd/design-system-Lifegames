@@ -8,7 +8,7 @@ import {enterUnavailable, insertStateNotice} from '../internal/card-state'
 import {writeHeartRateFooter} from '../internal/heart-rate-footer'
 import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {Freshness} from './freshness'
-import {articleItemHtml, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
+import {articleItemHtml, BOOK_LINK_REL, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
 import {composeSystemLines, READING_SERVER_PAGE_SIZE} from './view-models'
@@ -785,7 +785,12 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const meta = bookMeta[b.asin] || ({} as BookMeta)
       el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
-      el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
+      // The tile's link names the book: a changed book moves its href and its label.
+      const link = el.querySelector('.shelf-book-link')
+      if (link) {
+        link.setAttribute('href', b.link)
+        link.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
+      }
 
       const coverWrapper = el.querySelector<HTMLElement>('.shelf-cover-wrapper')
       if (coverWrapper) {
@@ -892,13 +897,12 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const meta = bookMeta[b.asin] || ({} as BookMeta)
       const bookData = bookDataJson(b, meta, statusLabels[b.status], b)
       var activeClass = b.status === 'reading' ? ' shelf-book-active' : ''
-      html += '<li class="shelf-book' +
-        activeClass +
-        '" style="animation-delay: ' +
-        i * 0.08 +
-        's" data-book="' +
-        esc(bookData) +
-        '" tabindex="0" aria-label="' +
+      html += '<li class="shelf-book' + activeClass + '" style="animation-delay: ' + i * 0.08 + 's" data-book="' + esc(bookData) + '">'
+      html += '<a class="shelf-book-link" href="' +
+        esc(b.link) +
+        '" target="_blank" rel="' +
+        BOOK_LINK_REL +
+        '" aria-label="' +
         a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) +
         '">'
       html += '<div class="shelf-cover-wrapper">'
@@ -924,7 +928,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       if (b.status === 'finished' && b.finishedAt) {
         html += '<div class="shelf-book-finished-date">' + esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt))) + '</div>'
       }
-      html += '</li>'
+      html += '</a></li>'
     })
     shelfRow.innerHTML = html
   }

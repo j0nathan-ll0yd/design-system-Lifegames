@@ -1,5 +1,6 @@
 import type {BookshelfProps} from '../widgets/reading/Bookshelf.types'
 import {installImageFallbacks} from './image-utils'
+import {isPlainPrimaryClick} from './input-modality'
 
 export function initBookshelf(container: HTMLElement, _fixture: BookshelfProps): void {
   // Idempotency guard: prevent duplicate click listeners and onerror attachments.
@@ -10,28 +11,28 @@ export function initBookshelf(container: HTMLElement, _fixture: BookshelfProps):
 
   installImageFallbacks(container)
 
-  // Wire click/keyboard handlers on book items to dispatch detail event
+  // Each tile is a real link to the book on Amazon. A plain primary click
+  // (Enter on the link fires one too) dispatches the detail event instead of
+  // following the link; every other click keeps the browser's default.
   const books = container.querySelectorAll<HTMLElement>('.shelf-book')
   books.forEach((bookEl) => {
-    const handler = (): void => {
+    bookEl.addEventListener('click', (e: MouseEvent) => {
+      if (!isPlainPrimaryClick(e)) {
+        return
+      }
       const raw = bookEl.getAttribute('data-book')
       if (!raw) {
         return
       }
+      // A payload that does not parse leaves the link to the browser.
+      let bookData: unknown
       try {
-        const bookData: unknown = JSON.parse(raw)
-        bookEl.dispatchEvent(new CustomEvent('book-clicked', {bubbles: true, detail: bookData}))
+        bookData = JSON.parse(raw)
       } catch {
-        // Invalid JSON in data-book attribute — skip silently
+        return
       }
-    }
-
-    bookEl.addEventListener('click', handler)
-    bookEl.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        handler()
-      }
+      e.preventDefault()
+      bookEl.dispatchEvent(new CustomEvent('book-clicked', {bubbles: true, detail: bookData}))
     })
   })
 

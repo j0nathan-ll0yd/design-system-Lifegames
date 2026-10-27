@@ -290,7 +290,7 @@ describe("gap 5: Bookshelf's localCovers reach the browser", () => {
     return b
   }
   const shelfCovers = (doc: Document) => {
-    const book = [...doc.querySelectorAll('.shelf-book')].find((b) => b.getAttribute('aria-label')?.includes('Kappa-7731'))!
+    const book = [...doc.querySelectorAll('.shelf-book-link')].find((b) => b.getAttribute('aria-label')?.includes('Kappa-7731'))!
     return {
       src: book.querySelector('img')!.getAttribute('src'),
       srcset: book.querySelector('img')!.getAttribute('srcset'),

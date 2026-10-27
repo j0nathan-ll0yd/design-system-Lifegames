@@ -10,6 +10,7 @@
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {esc, safeHttpsUrl} from './html-utils'
 import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
+import {isPlainPrimaryClick} from './input-modality'
 import {formatFinishedDate} from './updaters'
 
 interface BookData {
@@ -293,28 +294,32 @@ export function initBookModal(): void {
     }
   })
 
+  // Each tile is a real link to the book on Amazon; the dialog is an
+  // enhancement. A plain primary click (Enter on the link fires one too) opens
+  // the dialog instead of the link. Every other click keeps the browser's
+  // default, so a meta-, ctrl- or middle-click still opens Amazon.
   const cardBooks = document.getElementById('cardBooks')
   if (cardBooks) {
-    cardBooks.addEventListener('click', (e: Event) => {
+    cardBooks.addEventListener('click', (e: MouseEvent) => {
+      if (!isPlainPrimaryClick(e)) {
+        return
+      }
       const target = e.target as HTMLElement
       const book = target.closest<HTMLElement>('.shelf-book[data-book]')
-      if (book) {
-        triggerElement = book
-        const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
-        openModal(data)
+      if (!book) {
+        return
       }
-    })
-    cardBooks.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        const target = e.target as HTMLElement
-        const book = target.closest<HTMLElement>('.shelf-book[data-book]')
-        if (book) {
-          e.preventDefault()
-          triggerElement = book
-          const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
-          openModal(data)
-        }
+      // A payload that does not parse leaves the link to the browser.
+      let data: BookData
+      try {
+        data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
+      } catch {
+        return
       }
+      e.preventDefault()
+      // Focus returns to the link on close: the tile itself takes no focus.
+      triggerElement = book.querySelector<HTMLElement>('.shelf-book-link') ?? book
+      openModal(data)
     })
   }
 }

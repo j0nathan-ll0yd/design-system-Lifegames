@@ -38,7 +38,7 @@
    base.css also declares focus rules, but they don't reach the consumer — which
    is why every ring was pink). We define the visible keyboard ring here: a
    global pink :focus-visible, with the design-system's intended per-element
-   colors — green for book tiles, blue for the modal close button. The ring is
+   colors — green for a book tile's link, blue for the modal close button. The ring is
    suppressed for pointer/touch input via the input-modality tracker
    (runtime/input-modality.ts); keyboard focus keeps it. */
 :focus-visible {
@@ -47,7 +47,7 @@
 }
 
 /* Per-element focus colors (each ring matches its widget accent). */
-.shelf-book:focus-visible {
+.shelf-book-link:focus-visible {
   outline-color: var(--lg-color-accent-green);
 }
 .book-modal-close:focus-visible {

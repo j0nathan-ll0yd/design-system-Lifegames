@@ -65,11 +65,11 @@
     "bookItem": {
       "value": "{title} by {author}",
       "_meta": {
-        "description": "Per-book list-item aria-label on the bookshelf shelf row. ICU MF1 template; the consumer substitutes the book title and author at the call site (D2-A).",
+        "description": "Per-book aria-label of each bookshelf tile's link (.shelf-book-link) on the shelf row. ICU MF1 template; the consumer substitutes the book title and author at the call site (D2-A).",
         "usage": [
-          "web:packages/web/src/widgets/reading/Bookshelf.astro:83 (.shelf-book aria-label, SSR, composed `${b.title} by ${b.author}`)",
-          "web:packages/web/src/runtime/updaters.ts:532 (shelf-book aria-label set on re-render, 'b.title + ' by ' + b.author')",
-          "web:packages/web/src/runtime/updaters.ts:661 (shelf-book aria-label in generated markup, esc(b.title) + ' by ' + esc(b.author))"
+          "web:packages/web/src/widgets/reading/Bookshelf.astro:145 (.shelf-book-link aria-label, SSR, composed `${b.title} by ${b.author}`)",
+          "web:packages/web/src/runtime/updaters.ts:792 (.shelf-book-link aria-label set on an in-place patch, b.title and b.author)",
+          "web:packages/web/src/runtime/updaters.ts:905 (.shelf-book-link aria-label in generated markup, esc(b.title) and esc(b.author))"
         ],
         "register": "label",
         "audience": "human",

@@ -1987,12 +1987,17 @@
       padding: 6px 4px;
     }
 
+    /* The tile's real link wraps its content. A block box with the tile's own
+       color and no underline, so the tile renders as it did without one. */
+    .shelf-book-link {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+    }
+
     @media (hover: hover) {
       .shelf-book:hover {
         transform: translateY(-4px);
-      }
-      .shelf-book:hover .shelf-book-title a {
-        color: var(--neon-amber);
       }
     }
 
@@ -2054,12 +2059,6 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-    }
-
-    .shelf-book-title a {
-      color: var(--text);
-      text-decoration: none;
-      transition: color 0.2s ease;
     }
 
     .shelf-book-author {
