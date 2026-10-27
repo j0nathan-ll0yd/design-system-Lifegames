@@ -142,6 +142,18 @@ describe('updateBookshelf: the links follow the books', () => {
     expectTileLinks(doc, CHANGED.books, false)
   })
 
+  it('a tile without its link takes the rebuild, so no tile is left without one', async () => {
+    const doc = mount(await serverHtml(KNOWN))
+    // Markup from another writer: the first tile's title has no link.
+    const first = doc.querySelector('.shelf-book-link')!
+    first.replaceWith(...first.childNodes)
+    expect(doc.querySelectorAll('.shelf-book-link').length, 'control: one tile lost its link').toBe(KNOWN.books.length - 1)
+    const untouched = doc.querySelectorAll('.shelf-book')[1]
+    updateBookshelf(adaptBooks(KNOWN))
+    expect(doc.querySelectorAll('.shelf-book')[1], 'the rebuild path ran (new tiles)').not.toBe(untouched)
+    expectTileLinks(doc, KNOWN.books, false)
+  })
+
   it('a rebuild (a new book count) writes the same narrow links', async () => {
     const doc = mount(await serverHtml(KNOWN))
     const ONE = {...KNOWN, books: KNOWN.books.slice(0, 1)}

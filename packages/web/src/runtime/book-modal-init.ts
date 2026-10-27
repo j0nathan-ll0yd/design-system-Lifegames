@@ -184,7 +184,29 @@ export function initBookModal(): void {
   }
   dwg._bookModalInit = true
 
-  let triggerElement: HTMLElement | null = null
+  // The tile that opened the dialog, and its book's link (the `data-book`
+  // link, which is the title link's href).
+  interface Trigger {
+    tile: HTMLElement
+    href: string | undefined
+  }
+  let triggerElement: Trigger | null = null
+
+  // Focus returns to a link, never to the tile: the tile takes no focus. The
+  // tile's own link while the tile is in the page; otherwise (an updater
+  // rebuilt the tiles while the dialog was open) the link to the same book.
+  function returnFocusTarget(trigger: Trigger): HTMLElement | null {
+    const own = trigger.tile.isConnected ? trigger.tile.querySelector<HTMLElement>('.shelf-book-link') : null
+    if (own) {
+      return own
+    }
+    for (const link of document.querySelectorAll<HTMLElement>('#cardBooks .shelf-book-link')) {
+      if (trigger.href !== undefined && link.getAttribute('href') === trigger.href) {
+        return link
+      }
+    }
+    return null
+  }
 
   function openModal(b: BookData): void {
     modal!.innerHTML = renderModalHtml(b)
@@ -242,7 +264,7 @@ export function initBookModal(): void {
       modal!.style.animation = ''
       dialog!.close()
       if (trigger) {
-        trigger.focus()
+        returnFocusTarget(trigger)?.focus()
       }
     }
 
@@ -328,8 +350,7 @@ export function initBookModal(): void {
         return
       }
       e.preventDefault()
-      // Focus returns to the link on close: the tile itself takes no focus.
-      triggerElement = book.querySelector<HTMLElement>('.shelf-book-link') ?? book
+      triggerElement = {tile: book, href: typeof data.link === 'string' ? data.link : undefined}
       openModal(data)
     })
   }

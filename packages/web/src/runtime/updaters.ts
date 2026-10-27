@@ -769,7 +769,11 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
 
   const existingBooks = shelfRow.querySelectorAll('.shelf-book')
 
-  if (existingBooks.length === displayBooks.length) {
+  // Patch in place only when every tile carries its title link; a tile without
+  // one (markup from another writer) takes the rebuild, so no tile is left
+  // without its link.
+  const everyTileLinked = [...existingBooks].every((el) => el.querySelector('.shelf-book-link') !== null)
+  if (existingBooks.length === displayBooks.length && everyTileLinked) {
     displayBooks.forEach((b, i: number) => {
       const el = existingBooks[i]
       // existingBooks.length === displayBooks.length (guard above) → i is in-bounds.
@@ -780,9 +784,8 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
       // The title's link names the book by its text: a changed book moves its
-      // href. The website composes the fragment and bundles this runtime from
-      // one DS version, so a tile always carries the link.
-      el.querySelector('.shelf-book-link')?.setAttribute('href', b.link)
+      // href. Every tile has one here (everyTileLinked).
+      el.querySelector('.shelf-book-link')!.setAttribute('href', b.link)
 
       const coverWrapper = el.querySelector<HTMLElement>('.shelf-cover-wrapper')
       if (coverWrapper) {

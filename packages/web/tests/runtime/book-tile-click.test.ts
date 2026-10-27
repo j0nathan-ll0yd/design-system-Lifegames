@@ -82,6 +82,26 @@ describe('book modal: the tile link and the dialog', () => {
     expect(dialog.open).toBe(false)
     expect(document.activeElement).toBe(link)
   })
+
+  it('tiles rebuilt while the dialog was open: focus returns to the new link for the same book', () => {
+    clickTile()
+    // An updater rebuilds the shelf: every tile and link is a new element.
+    document.getElementById('cardBooks')!.innerHTML = TILE
+    const rebuilt = document.querySelector<HTMLAnchorElement>('.shelf-book-link')!
+    dialog.dispatchEvent(new Event('cancel', {cancelable: true}))
+    expect(dialog.open).toBe(false)
+    expect(document.activeElement).toBe(rebuilt)
+  })
+
+  it('a tile without a link: focus never goes to the tile, which takes no focus', () => {
+    document.getElementById('cardBooks')!.innerHTML = TILE.replace(/<a [^>]*>(.*?)<\/a>/, '$1')
+    const tile = document.querySelector<HTMLElement>('.shelf-book')!
+    tile.dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true, button: 0}))
+    expect(dialog.open, 'control: the tile opened the dialog').toBe(true)
+    dialog.dispatchEvent(new Event('cancel', {cancelable: true}))
+    expect(dialog.open).toBe(false)
+    expect(document.activeElement).not.toBe(tile)
+  })
 })
 
 describe('bookshelf island: the tile link and the book-clicked event', () => {
