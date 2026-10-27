@@ -197,3 +197,49 @@ describe('the dialog enhancement marks the links it takes over', () => {
     expectTileLinks(doc, KNOWN.books, true)
   })
 })
+
+describe('closing the dialog after a live update returns focus to a link', () => {
+  // The website's sequence: the dialog is open on a book while live data
+  // rewrites the shelf; Escape then closes the dialog.
+  async function openOnFirstBook(): Promise<{doc: Document; dialog: HTMLDialogElement; href: string}> {
+    const doc = mount(await serverHtml(KNOWN))
+    const win = doc.defaultView as unknown as Window
+    // jsdom has no top layer and no matchMedia: open and close only toggle `open`; reduced motion closes at once.
+    const dialog = doc.getElementById('bookDialog') as HTMLDialogElement
+    dialog.showModal = () => dialog.setAttribute('open', '')
+    dialog.close = () => dialog.removeAttribute('open')
+    win.matchMedia = ((query: string) => ({matches: query.includes('reduce'), media: query})) as unknown as typeof win.matchMedia
+    initBookModal()
+    const link = doc.querySelector<HTMLAnchorElement>('.shelf-book-link')!
+    link.dispatchEvent(new win.MouseEvent('click', {bubbles: true, cancelable: true, button: 0}))
+    expect(dialog.open, 'control: the dialog opened').toBe(true)
+    return {doc, dialog, href: link.getAttribute('href')!}
+  }
+  const escape = (dialog: HTMLDialogElement): void => {
+    dialog.dispatchEvent(new (dialog.ownerDocument.defaultView as unknown as Window).Event('cancel', {cancelable: true}))
+  }
+
+  it('an in-place reorder: focus returns to the same book, not to the tile that now shows another', async () => {
+    const {doc, dialog, href} = await openOnFirstBook()
+    const firstTile = doc.querySelector('.shelf-book')!
+    // Same count, statuses swapped: the patch path moves the other book into the first tile.
+    const SWAPPED = {...KNOWN, books: KNOWN.books.map((b: any) => ({...b, status: b.status === 'reading' ? 'finished' : 'reading'}))}
+    updateBookshelf(adaptBooks(SWAPPED))
+    expect(doc.querySelector('.shelf-book'), 'control: the patch path ran').toBe(firstTile)
+    expect(firstTile.querySelector('.shelf-book-link')!.getAttribute('href'), 'control: the first tile now shows another book').not.toBe(href)
+    escape(dialog)
+    expect(dialog.open).toBe(false)
+    expect(doc.activeElement?.getAttribute('href')).toBe(href)
+    expect(doc.activeElement?.classList.contains('shelf-book-link')).toBe(true)
+  })
+
+  it('the book left the shelf: focus returns to the first book link, never to the body or a tile', async () => {
+    const {doc, dialog, href} = await openOnFirstBook()
+    const REMOVED = {...KNOWN, books: KNOWN.books.filter((b: any) => amazonBookUrl(b.asin) !== href)}
+    updateBookshelf(adaptBooks(REMOVED))
+    expect(doc.querySelectorAll('.shelf-book-link').length, 'control: one book is left').toBe(1)
+    escape(dialog)
+    expect(dialog.open).toBe(false)
+    expect(doc.activeElement).toBe(doc.querySelector('.shelf-book-link'))
+  })
+})

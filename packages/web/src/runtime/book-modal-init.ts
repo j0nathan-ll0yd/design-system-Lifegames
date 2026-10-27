@@ -192,20 +192,22 @@ export function initBookModal(): void {
   }
   let triggerElement: Trigger | null = null
 
-  // Focus returns to a link, never to the tile: the tile takes no focus. The
-  // tile's own link while the tile is in the page; otherwise (an updater
-  // rebuilt the tiles while the dialog was open) the link to the same book.
+  // Focus returns to a link, never to the tile: the tile takes no focus. An
+  // updater may rewrite the shelf while the dialog is open, so the order is:
+  // 1. the link to the same book, wherever it now sits (an in-place patch can
+  //    move another book into the trigger tile);
+  // 2. the trigger tile's own link, if the book left the shelf and the tile
+  //    stayed;
+  // 3. the first book link on the card, if the tiles were rebuilt without it;
+  // 4. any element on the card that already takes focus, if no book is left.
+  // Server markup gains no tabindex for this: the fragment policy pins it.
   function returnFocusTarget(trigger: Trigger): HTMLElement | null {
+    const card = document.getElementById('cardBooks')
+    const links = card ? [...card.querySelectorAll<HTMLElement>('.shelf-book-link')] : []
+    const sameBook = trigger.href === undefined ? undefined : links.find((link) => link.getAttribute('href') === trigger.href)
     const own = trigger.tile.isConnected ? trigger.tile.querySelector<HTMLElement>('.shelf-book-link') : null
-    if (own) {
-      return own
-    }
-    for (const link of document.querySelectorAll<HTMLElement>('#cardBooks .shelf-book-link')) {
-      if (trigger.href !== undefined && link.getAttribute('href') === trigger.href) {
-        return link
-      }
-    }
-    return null
+    const focusable = card?.querySelector<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]):not(.shelf-book)') ?? null
+    return sameBook ?? own ?? links[0] ?? focusable
   }
 
   function openModal(b: BookData): void {
