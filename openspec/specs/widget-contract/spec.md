@@ -100,7 +100,9 @@ JSON file and a symlink SHALL be reported as unmapped, never skipped and never f
 
 - **GIVEN** a fixture JSON on disk that the committed `fixture-map.json` does not list
 - **WHEN** `governance-gates` runs the fixture-wiring suite
-- **THEN** the suite SHALL fail, and the validator SHALL NOT report a pass over a map that omits it
+- **THEN** the suite SHALL fail and show the missing path. `validate.ts` reads only the map and never
+  scans the tree, so this suite is the gate for an omission; a fixture with no schema title also
+  fails the generator, as in the scenario above
 
 #### Scenario: The fixture tree holds a symlink
 
