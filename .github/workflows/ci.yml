@@ -120,12 +120,6 @@ jobs:
       - name: 'schemas-freshness: schema URN unit suite'
         if: ${{ !cancelled() }}
         run: node --test packages/schemas/scripts/schema-urn.test.mjs
-      # validate.ts fails closed: a missing mapped fixture and a 0-fixture run both
-      # exit 1. The build below runs the validator over the real map only, so it
-      # cannot show the missing-file or empty-run branch fail; this suite does.
-      - name: 'schemas-freshness: validator fail-closed suite'
-        if: ${{ !cancelled() }}
-        run: node --test packages/schemas/scripts/validate.test.mjs
       - name: schemas-freshness
         if: ${{ !cancelled() }}
         run: pnpm check:schemas-freshness
@@ -759,6 +753,15 @@ jobs:
           # contracts/component-catalog/ only) — so every rule above was one silent edit away from
           # reporting nothing, with its `// covers:` tether still satisfying check:covers.
           node --test eslint-local-rules/__tests__/*.test.js
+          # Fixture-map validators (schemas and fixtures). validate.ts over the real map ran only in
+          # web-builds (`pnpm build`) and .husky/pre-push, so no required context failed when a real
+          # widget fixture stopped matching its schema. The two known-answer suites prove the fail-
+          # closed branches: a missing mapped fixture, an empty bucket or directory, and a 0-fixture
+          # run all exit 1. The real-map run cannot show those branches fail; the suites can. They
+          # run HERE because governance-gates is a required status context and packages is not.
+          LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F @j0nathan-ll0yd/schemas validate
+          node --test packages/schemas/scripts/validate.test.mjs
+          pnpm -F @j0nathan-ll0yd/fixtures exec vitest run tests/validate.test.ts
           # Style Dictionary golden-file characterization (F-005)
           pnpm --filter @j0nathan-ll0yd/tokens test
           # S22 preview scheme audit
