@@ -24,11 +24,13 @@ afterEach(() => {
   }
 })
 
-function mount(active = false): HTMLElement {
+function mount(active = false, tileStyle = ''): HTMLElement {
   const root = document.createElement('div')
   document.body.append(root)
   root.innerHTML =
-    `<div id="cardBooks"><ul class="shelf-row"><li class="shelf-book${active ? ' shelf-book-active' : ''}" data-book='${JSON.stringify(BOOK)}'>` +
+    `<div id="cardBooks"><ul class="shelf-row"><li class="shelf-book${active ? ' shelf-book-active' : ''}"${
+      tileStyle ? ` style="${tileStyle}"` : ''
+    } data-book='${JSON.stringify(BOOK)}'>` +
     '<div class="shelf-cover-wrapper"><img alt="" width="80" height="120" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="></div>' +
     `<div class="shelf-book-title"><a class="shelf-book-link" href="${BOOK.link}" target="_blank" rel="sponsored noopener noreferrer">` +
     '<span>Keyboard Title</span></a></div><div class="shelf-book-author">Fixture</div></li></ul></div>' +
@@ -102,6 +104,33 @@ describe('Bookshelf tile: a click anywhere on the tile reaches the link', () => 
       document.removeEventListener('click', record)
       root.querySelector<HTMLDialogElement>('#bookDialog')!.close()
     }
+  })
+})
+
+describe('Bookshelf tile: the tile itself contains the overlay', () => {
+  // The fade-in (tokens effects.css shelfFadeIn) ends at a transform, and a
+  // transform makes a settled tile the overlay's containing block on its own.
+  // During each tile's animation-delay, and for a consumer that sets
+  // `animation: none`, only `.shelf-book { position: relative }` keeps the
+  // overlay inside the tile.
+  it('with no animation, the overlay covers exactly the tile padding box and the cover hits the link', () => {
+    const root = mount(false, 'animation: none')
+    const tile = root.querySelector<HTMLElement>('.shelf-book')!
+    const link = root.querySelector<HTMLAnchorElement>('.shelf-book-link')!
+    expect(getComputedStyle(tile).transform, 'control: no transform makes the containing block').toBe('none')
+    // The tile's padding box: its border box less its borders (unrounded,
+    // unlike clientWidth and clientHeight).
+    const rect = tile.getBoundingClientRect()
+    const t = getComputedStyle(tile)
+    const padding = {
+      w: rect.width - parseFloat(t.borderLeftWidth) - parseFloat(t.borderRightWidth),
+      h: rect.height - parseFloat(t.borderTopWidth) - parseFloat(t.borderBottomWidth)
+    }
+    const overlay = getComputedStyle(link, '::after')
+    expect(parseFloat(overlay.width)).toBeCloseTo(padding.w, 1)
+    expect(parseFloat(overlay.height)).toBeCloseTo(padding.h, 1)
+    const box = root.querySelector('.shelf-cover-wrapper')!.getBoundingClientRect()
+    expect(document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)).toBe(link)
   })
 })
 
