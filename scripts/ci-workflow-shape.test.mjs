@@ -128,6 +128,13 @@ const FORMERLY_PINNED = [
   'scripts/storybook-visual-regression.test.mjs'
 ]
 
+test('ci.yml: governance-gates runs the D6 full-tree personal-data scan', () => {
+  // .husky/pre-commit scans staged files only, and audit-ds.yml runs weekly; a commit made without
+  // hooks reaches main unscanned unless a required context scans the tree.
+  const command = 'bash audits/checks/d6-scan-personal-data.sh --full-tree'
+  assert.ok(governanceGatesLines().includes(command), `governance-gates must run: ${command}`)
+})
+
 test('ci.yml: governance-gates runs `pnpm test:scripts`', () => {
   assert.ok(governanceGatesLines().includes(TEST_SCRIPTS), `governance-gates must run: ${TEST_SCRIPTS}`)
 })

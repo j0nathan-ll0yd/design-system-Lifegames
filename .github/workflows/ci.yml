@@ -669,3 +669,7 @@ jobs:
           pnpm --filter @j0nathan-ll0yd/tokens test
           # S22 preview scheme audit
           bash audits/checks/d3-preview-scheme.sh
+          # D6 personal-data scan over every tracked file. It ran only in .husky/pre-commit
+          # (staged files) and the weekly audit-ds.yml, so a commit made without hooks (web UI,
+          # a bot, a Release PR) reached main unscanned. Offline; ~30 s.
+          bash audits/checks/d6-scan-personal-data.sh --full-tree
