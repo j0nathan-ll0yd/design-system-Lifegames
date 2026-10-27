@@ -55,7 +55,10 @@
   outline: none;
 }
 .shelf-book-link:focus-visible::after {
-  outline: 2px solid var(--lg-color-accent-green);
+  /* The colour stays its own declaration: an undefined token then falls back
+     to currentColor instead of voiding the whole outline. */
+  outline: 2px solid;
+  outline-color: var(--lg-color-accent-green);
   outline-offset: 3px;
 }
 .book-modal-close:focus-visible {

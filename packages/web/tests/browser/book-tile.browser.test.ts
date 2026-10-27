@@ -9,7 +9,10 @@
 // on the cover or on the author still reaches the link.
 import {afterEach, describe, expect, it} from 'vitest'
 import {userEvent} from 'vitest/browser'
+// The tokens first: the ring colour is a token.
+import '@j0nathan-ll0yd/tokens/css'
 import '../../src/styles/components.css'
+import '../../src/styles/a11y.css'
 import {initBookModal} from '../../src/runtime/book-modal-init'
 
 const BOOK = {title: 'Keyboard Title', author: 'Fixture', asin: 'KEYBOARD-1', status: 'finished', link: 'https://www.amazon.com/dp/KEYBOARD-1'}
@@ -21,10 +24,11 @@ afterEach(() => {
   }
 })
 
-function mount(): HTMLElement {
+function mount(active = false): HTMLElement {
   const root = document.createElement('div')
   document.body.append(root)
-  root.innerHTML = `<div id="cardBooks"><ul class="shelf-row"><li class="shelf-book" data-book='${JSON.stringify(BOOK)}'>` +
+  root.innerHTML =
+    `<div id="cardBooks"><ul class="shelf-row"><li class="shelf-book${active ? ' shelf-book-active' : ''}" data-book='${JSON.stringify(BOOK)}'>` +
     '<div class="shelf-cover-wrapper"><img alt="" width="80" height="120" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="></div>' +
     `<div class="shelf-book-title"><a class="shelf-book-link" href="${BOOK.link}" target="_blank" rel="sponsored noopener noreferrer">` +
     '<span>Keyboard Title</span></a></div><div class="shelf-book-author">Fixture</div></li></ul></div>' +
@@ -64,8 +68,15 @@ describe('Bookshelf tile: the keyboard reaches the dialog through the link', () 
 })
 
 describe('Bookshelf tile: a click anywhere on the tile reaches the link', () => {
-  it.each(['.shelf-cover-wrapper', '.shelf-book-author'])('the hit target over %s is the title link', (selector) => {
-    const root = mount()
+  // The active (reading) tile is the riskiest case: its cover wrapper is
+  // positioned and clips, and its scan line carries a z-index and will-change.
+  it.each([
+    ['.shelf-cover-wrapper', false],
+    ['.shelf-book-author', false],
+    ['.shelf-cover-wrapper', true],
+    ['.shelf-book-author', true]
+  ] as const)('the hit target over %s (active tile: %s) is the title link', (selector, active) => {
+    const root = mount(active)
     const link = root.querySelector<HTMLAnchorElement>('.shelf-book-link')!
     const box = root.querySelector(selector)!.getBoundingClientRect()
     expect(box.width * box.height, 'control: the element has a box').toBeGreaterThan(0)
@@ -91,5 +102,34 @@ describe('Bookshelf tile: a click anywhere on the tile reaches the link', () => 
       document.removeEventListener('click', record)
       root.querySelector<HTMLDialogElement>('#bookDialog')!.close()
     }
+  })
+})
+
+describe('Bookshelf tile: the keyboard focus ring outlines the tile', () => {
+  afterEach(() => {
+    delete document.documentElement.dataset.inputModality
+  })
+
+  it('the link draws no ring; its overlay draws the green ring 3px outside the tile padding edge, and pointer input suppresses it', async () => {
+    const root = mount()
+    const link = root.querySelector<HTMLAnchorElement>('.shelf-book-link')!
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    await userEvent.keyboard('{Tab}')
+    expect(document.activeElement).toBe(link)
+    expect(link.matches(':focus-visible'), 'control: keyboard focus is focus-visible').toBe(true)
+    expect(getComputedStyle(link).outlineStyle, 'the link itself draws no ring').toBe('none')
+    const ring = getComputedStyle(link, '::after')
+    expect(ring.outlineStyle).toBe('solid')
+    expect(ring.outlineWidth).toBe('2px')
+    expect(ring.outlineOffset).toBe('3px')
+    expect(ring.outlineColor, 'the green token').toBe('rgb(6, 214, 160)')
+    // The overlay covers the tile's padding box.
+    const tile = root.querySelector('.shelf-book')!.getBoundingClientRect()
+    const overlay = {w: parseFloat(ring.width), h: parseFloat(ring.height)}
+    expect(overlay.w).toBeCloseTo(tile.width - 2, 0)
+    expect(overlay.h).toBeCloseTo(tile.height - 2, 0)
+
+    document.documentElement.dataset.inputModality = 'pointer'
+    expect(getComputedStyle(link, '::after').outlineStyle, 'pointer input suppresses the ring').toBe('none')
   })
 })

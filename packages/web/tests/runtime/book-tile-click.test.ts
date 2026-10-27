@@ -60,7 +60,7 @@ describe('book modal: the tile link and the dialog', () => {
   })
 
   // The click a browser fires for Enter on a link. The key press itself is
-  // proved in a real engine (tests/browser/book-tile-keyboard.browser.test.ts).
+  // proved in a real engine (tests/browser/book-tile.browser.test.ts).
   it('a keyboard-style click (detail 0) on the link opens the dialog', () => {
     const link = document.querySelector<HTMLAnchorElement>('.shelf-book-link')!
     const event = new MouseEvent('click', {bubbles: true, cancelable: true, button: 0, detail: 0})
@@ -101,9 +101,20 @@ describe('bookshelf island: the tile link and the book-clicked event', () => {
     document.removeEventListener('book-clicked', record)
   })
 
-  it('a plain click dispatches book-clicked and prevents the navigation', () => {
-    expect(clickTile()).toBe(true)
+  it('a plain click dispatches book-clicked; with no listener claiming it, the link still navigates', () => {
+    expect(clickTile()).toBe(false)
     expect(events).toEqual([BOOK])
+  })
+
+  it('a listener that claims book-clicked (preventDefault) cancels the navigation', () => {
+    const claim = (e: Event): void => e.preventDefault()
+    document.addEventListener('book-clicked', claim)
+    try {
+      expect(clickTile()).toBe(true)
+      expect(events).toEqual([BOOK])
+    } finally {
+      document.removeEventListener('book-clicked', claim)
+    }
   })
 
   it.each(MODIFIED)('%s neither dispatches nor prevents the navigation', (_name, init) => {

@@ -125,7 +125,8 @@
     }
 
     .shelf-book-link:focus-visible::after {
-      outline: 2px solid var(--neon-green);
+      outline: 2px solid;
+      outline-color: var(--neon-green);
       outline-offset: 3px;
     }
 

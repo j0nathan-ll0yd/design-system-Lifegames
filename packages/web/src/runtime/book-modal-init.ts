@@ -10,7 +10,7 @@
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {esc, safeHttpsUrl} from './html-utils'
 import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
-import {isPlainPrimaryClick} from './input-modality'
+import {isPlainPrimaryClick} from './click-intent'
 import {formatFinishedDate} from './updaters'
 
 interface BookData {

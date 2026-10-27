@@ -137,14 +137,17 @@ interface CardSnapshot {
 // parameters (the browser hands them to the canvas through __ecgUpdate).
 const IGNORED_ATTR = /^(data-astro-|data-live-updated$|data-bpm$|data-hrv$|data-stroke$)/
 
-// Attributes only a bound JavaScript enhancement writes, never a renderer.
-// `aria-haspopup`: the book dialog (initBookModal) marks each Bookshelf title
-// link once it takes plain clicks over. Without JavaScript the link navigates,
-// so the server markup must never say it opens a dialog
+// Attributes only a bound JavaScript enhancement writes, never a renderer,
+// each scoped to one card, one element and one value. The book dialog
+// (initBookModal) marks each Bookshelf title link `aria-haspopup="dialog"` once
+// it takes plain clicks over. Without JavaScript the link navigates, so the
+// server markup must never say it opens a dialog
 // (tests/server-render/bookshelf-links.test.ts holds both halves). The browser
-// half binds the dialog as the website does, so this one name is set aside and
-// every other attribute is still compared.
-const JS_ONLY_ATTR = new Set(['aria-haspopup'])
+// half binds the dialog as the website does, so this one attribute is set
+// aside there; any other aria-haspopup, or another value, is still compared.
+const JS_ONLY_ATTRS = [{card: 'cardBooks', selector: '.shelf-book-link', name: 'aria-haspopup', value: 'dialog'}]
+const isJsOnly = (card: Element, el: Element, a: Attr): boolean =>
+  JS_ONLY_ATTRS.some((r) => card.id === r.card && el.matches(r.selector) && a.name === r.name && a.value === r.value)
 
 // A style attribute serialized by CSSOM, then sorted by declaration: the
 // browser writes styles through CSSOM (hex becomes rgb()), the server as text.
@@ -167,7 +170,7 @@ function attributeMap(card: Element): string[] {
   els.forEach((el, i) => {
     const key = `${i}:${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`
     for (const a of [...el.attributes].sort((x, y) => x.name.localeCompare(y.name))) {
-      if (!IGNORED_ATTR.test(a.name) && !JS_ONLY_ATTR.has(a.name)) {
+      if (!IGNORED_ATTR.test(a.name) && !isJsOnly(card, el, a)) {
         // Class order carries no meaning; style serialization differs by writer.
         const value = a.name === 'style' ? normalizeStyle(a.value) : a.name === 'class' ? a.value.split(/\s+/).filter(Boolean).sort().join(' ') : a.value
         out.push(`${key} ${a.name}=${value}`)
@@ -377,7 +380,9 @@ const CARDS: Card[] = [
     vm: 'bookshelf',
     // The website binds the book dialog (BookModal) before its live data lands.
     apply: (i) => {
-      document.body.insertAdjacentHTML('beforeend', '<dialog id="bookDialog"><div id="bookModal"></div></dialog>')
+      if (!document.getElementById('bookDialog')) {
+        document.body.insertAdjacentHTML('beforeend', '<dialog id="bookDialog"><div id="bookModal"></div></dialog>')
+      }
       initBookModal()
       updateBookshelf(adaptBooks(i.books), fresh('books', i.books))
     },
@@ -428,7 +433,7 @@ async function browserCard(card: Card, input: Input, from?: Input): Promise<Card
     card.apply(from)
   }
   card.apply(input)
-  // Let a bound enhancement's MutationObserver run (JS_ONLY_ATTR).
+  // Let a bound enhancement's MutationObserver run (JS_ONLY_ATTRS).
   await new Promise((resolve) => setTimeout(resolve, 0))
   return snapshot(doc.getElementById(card.id)!)
 }

@@ -779,7 +779,9 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const meta = bookMeta[b.asin] || ({} as BookMeta)
       el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
-      // The title's link names the book by its text: a changed book moves its href.
+      // The title's link names the book by its text: a changed book moves its
+      // href. The website composes the fragment and bundles this runtime from
+      // one DS version, so a tile always carries the link.
       el.querySelector('.shelf-book-link')?.setAttribute('href', b.link)
 
       const coverWrapper = el.querySelector<HTMLElement>('.shelf-cover-wrapper')

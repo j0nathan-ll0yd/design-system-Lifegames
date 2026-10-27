@@ -601,3 +601,5 @@ packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
 .changeset/copy-book-link-provenance.md:marker:j0nathan-ll0yd
 # The Bookshelf link test reads the tile label template from the copy package by name.
 packages/web/tests/server-render/bookshelf-links.test.ts:marker:j0nathan-ll0yd
+# The Bookshelf tile browser test loads the tokens stylesheet by package name (the focus ring colour is a token).
+packages/web/tests/browser/book-tile.browser.test.ts:marker:j0nathan-ll0yd

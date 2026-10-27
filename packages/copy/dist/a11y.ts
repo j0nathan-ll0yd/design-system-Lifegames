@@ -33,7 +33,7 @@ export interface A11YIdentity {
   socialNav: string;
 }
 /**
- * Bookshelf widget accessibility label — the per-book list-item aria-label template.
+ * Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is deprecated: the title link is named by its own text.
  */
 export interface A11YBookshelf {
   /**
