@@ -70,6 +70,21 @@ test('ci.yml: the folded jobs keep one named step per old gate, each run past an
   }
 })
 
+test('ci.yml: governance-gates runs both fixture-map validators and their fail-closed suites', () => {
+  // packages is not a required context, so these lines in packages alone could not block a merge.
+  const step = ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates')
+  const pkgName = (dir) => JSON.parse(readFileSync(resolve(repoRoot, dir, 'package.json'), 'utf8')).name
+  for (
+    const command of [
+      `LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F ${pkgName('packages/schemas')} validate`,
+      'node --test packages/schemas/scripts/validate.test.mjs',
+      `pnpm -F ${pkgName('packages/fixtures')} exec vitest run tests/validate.test.ts`
+    ]
+  ) {
+    assert.ok(step.run.split('\n').some((line) => line.trim() === command), `governance-gates must run: ${command}`)
+  }
+})
+
 test('no workflow restores the pnpm store from the GitHub Actions cache', () => {
   for (const file of readdirSync(workflowsDir).filter((f) => f.endsWith('.yml'))) {
     for (const [id, job] of Object.entries(load(file).jobs)) {

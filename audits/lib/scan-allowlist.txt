@@ -65,7 +65,6 @@ audits/checks/d2-baseline-age.mjs:marker:j0nathan-ll0yd
 scripts/sync-assets.sh:marker:j0nathan-ll0yd
 audits/checks/d3-widget-inventory.mjs:marker:j0nathan-ll0yd
 packages/schemas/.contract-lock.json:marker:j0nathan-ll0yd
-packages/schemas/scripts/baseline-validate.mjs:marker:j0nathan-ll0yd
 packages/schemas/scripts/generate-contract-lock.ts:marker:j0nathan-ll0yd
 # Same upstream repo slug as the generator above — the lock model's unit suite pins
 # the `generatedFrom.repo` value the generator writes.
@@ -599,7 +598,7 @@ packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
 .changeset/bookshelf-real-links.md:marker:j0nathan-ll0yd
 .changeset/tokens-book-link-focus.md:marker:j0nathan-ll0yd
 .changeset/copy-book-link-provenance.md:marker:j0nathan-ll0yd
-# The Bookshelf link test reads the tile label template from the copy package by name.
-packages/web/tests/server-render/bookshelf-links.test.ts:marker:j0nathan-ll0yd
 # The Bookshelf tile browser test loads the tokens stylesheet by package name (the focus ring colour is a token).
 packages/web/tests/browser/book-tile.browser.test.ts:marker:j0nathan-ll0yd
+# The fail-closed schemas validator changeset names the package it bumps.
+.changeset/schemas-validate-fails-closed.md:marker:j0nathan-ll0yd
