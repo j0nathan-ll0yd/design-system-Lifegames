@@ -221,7 +221,6 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   )}
   <link rel="dns-prefetch" href="https://scripts.simpleanalyticscdn.com">
   <link rel="dns-prefetch" href="https://queue.simpleanalyticscdn.com">
-  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" media="print" onload="this.media='all'">
   <style is:inline>/* System font fallback sized to match Space Grotesk metrics */
 @font-face {
   font-family: 'Space Grotesk Fallback';
@@ -433,7 +432,6 @@ const ogImage = new URL('/assets/og-image.png', Astro.site);
   <noscript><style>.tri-card,.identity-card,.left-panel-status,.left-panel-bio{opacity:1!important;transform:none!important;}</style></noscript>
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <slot />
-  {import.meta.env.DEV && <script is:inline src="/vendor/leaflet/leaflet.js" defer></script>}
   <script is:inline>
   if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     window.addEventListener('load', function() {
