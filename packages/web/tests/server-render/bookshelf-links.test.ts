@@ -198,11 +198,14 @@ describe('the dialog enhancement marks the links it takes over', () => {
   })
 })
 
-describe('closing the dialog after a live update returns focus to a link', () => {
+describe('closing the dialog after a live update keeps the reader in place', () => {
   // The website's sequence: the dialog is open on a book while live data
   // rewrites the shelf; Escape then closes the dialog.
-  async function openOnFirstBook(): Promise<{doc: Document; dialog: HTMLDialogElement; href: string}> {
-    const doc = mount(await serverHtml(KNOWN))
+  // Three books, in the template's order: reading, then two finished.
+  const THREE = {...KNOWN, books: [...KNOWN.books, {...KNOWN.books[1], asin: 'KA7731KAP3', title: 'Known Answer Third Kappa-7731', author: 'Third Author'}]}
+
+  async function openOn(books: any, tile: number): Promise<{doc: Document; dialog: HTMLDialogElement; href: string}> {
+    const doc = mount(await serverHtml(books))
     const win = doc.defaultView as unknown as Window
     // jsdom has no top layer and no matchMedia: open and close only toggle `open`; reduced motion closes at once.
     const dialog = doc.getElementById('bookDialog') as HTMLDialogElement
@@ -210,17 +213,19 @@ describe('closing the dialog after a live update returns focus to a link', () =>
     dialog.close = () => dialog.removeAttribute('open')
     win.matchMedia = ((query: string) => ({matches: query.includes('reduce'), media: query})) as unknown as typeof win.matchMedia
     initBookModal()
-    const link = doc.querySelector<HTMLAnchorElement>('.shelf-book-link')!
+    const link = doc.querySelectorAll<HTMLAnchorElement>('.shelf-book-link')[tile]!
     link.dispatchEvent(new win.MouseEvent('click', {bubbles: true, cancelable: true, button: 0}))
     expect(dialog.open, 'control: the dialog opened').toBe(true)
     return {doc, dialog, href: link.getAttribute('href')!}
   }
   const escape = (dialog: HTMLDialogElement): void => {
     dialog.dispatchEvent(new (dialog.ownerDocument.defaultView as unknown as Window).Event('cancel', {cancelable: true}))
+    expect(dialog.open).toBe(false)
   }
+  const without = (books: any, href: string) => ({...books, books: books.books.filter((b: any) => amazonBookUrl(b.asin) !== href)})
 
-  it('an in-place reorder: focus returns to the same book, not to the tile that now shows another', async () => {
-    const {doc, dialog, href} = await openOnFirstBook()
+  it('step 1, in-place reorder: focus returns to the same book, not to the tile that now shows another', async () => {
+    const {doc, dialog, href} = await openOn(KNOWN, 0)
     const firstTile = doc.querySelector('.shelf-book')!
     // Same count, statuses swapped: the patch path moves the other book into the first tile.
     const SWAPPED = {...KNOWN, books: KNOWN.books.map((b: any) => ({...b, status: b.status === 'reading' ? 'finished' : 'reading'}))}
@@ -228,18 +233,53 @@ describe('closing the dialog after a live update returns focus to a link', () =>
     expect(doc.querySelector('.shelf-book'), 'control: the patch path ran').toBe(firstTile)
     expect(firstTile.querySelector('.shelf-book-link')!.getAttribute('href'), 'control: the first tile now shows another book').not.toBe(href)
     escape(dialog)
-    expect(dialog.open).toBe(false)
     expect(doc.activeElement?.getAttribute('href')).toBe(href)
-    expect(doc.activeElement?.classList.contains('shelf-book-link')).toBe(true)
   })
 
-  it('the book left the shelf: focus returns to the first book link, never to the body or a tile', async () => {
-    const {doc, dialog, href} = await openOnFirstBook()
-    const REMOVED = {...KNOWN, books: KNOWN.books.filter((b: any) => amazonBookUrl(b.asin) !== href)}
-    updateBookshelf(adaptBooks(REMOVED))
-    expect(doc.querySelectorAll('.shelf-book-link').length, 'control: one book is left').toBe(1)
+  it("step 2, in-place swap that removes the open book: focus lands on the trigger tile's link", async () => {
+    const {doc, dialog, href} = await openOn(THREE, 1)
+    const tiles = [...doc.querySelectorAll('.shelf-book')]
+    // Same count: the open book is replaced, so the patch path keeps every tile.
+    const REPLACED = {...THREE, books: THREE.books.map((b: any) => (amazonBookUrl(b.asin) === href ? {...b, asin: 'KA7731SWAP', title: 'Swapped In'} : b))}
+    updateBookshelf(adaptBooks(REPLACED))
+    expect([...doc.querySelectorAll('.shelf-book')], 'control: the patch path ran').toEqual(tiles)
+    expect(doc.querySelector(`.shelf-book-link[href="${href}"]`), 'control: the open book left the shelf').toBeNull()
     escape(dialog)
-    expect(dialog.open).toBe(false)
-    expect(doc.activeElement).toBe(doc.querySelector('.shelf-book-link'))
+    expect(doc.activeElement).toBe(tiles[1]!.querySelector('.shelf-book-link'))
+  })
+
+  it.each([
+    ['book 2', 1, 1],
+    ['book 3', 2, 1]
+  ])('step 2, 3 books to 2 with the dialog on %s (rebuild): focus lands on the link at the clamped place', async (_name, tile, expected) => {
+    const {doc, dialog, href} = await openOn(THREE, tile)
+    const before = doc.querySelector('.shelf-book')
+    updateBookshelf(adaptBooks(without(THREE, href)))
+    expect(doc.querySelector('.shelf-book'), 'control: the rebuild path ran').not.toBe(before)
+    escape(dialog)
+    expect(doc.activeElement).toBe(doc.querySelectorAll('.shelf-book-link')[expected])
+  })
+
+  it('steps 3 and 4, an empty shelf: focus skips hidden elements and lands on the card heading, never the body or a tile', async () => {
+    const {doc, dialog} = await openOn(KNOWN, 0)
+    updateBookshelf(adaptBooks({...KNOWN, books: []}))
+    expect(doc.querySelectorAll('.shelf-book-link').length, 'control: no book is left').toBe(0)
+    // Focusable but not rendered: focus() on either would leave focus on <body>.
+    const header = doc.querySelector('#cardBooks .widget-header-right')!
+    header.insertAdjacentHTML('beforeend', '<button hidden>hidden</button><span style="display: none"><a href="/x">inside hidden</a></span>')
+    escape(dialog)
+    expect(doc.activeElement).not.toBe(doc.body)
+    expect(doc.activeElement?.closest('li')).toBeNull()
+    expect(doc.activeElement?.classList.contains('widget-label'), 'the card heading').toBe(true)
+    expect(doc.activeElement?.getAttribute('tabindex'), 'focusable from script only').toBe('-1')
+  })
+
+  it('step 3: a rendered element on the card that already takes focus comes before the heading', async () => {
+    const {doc, dialog} = await openOn(KNOWN, 0)
+    updateBookshelf(adaptBooks({...KNOWN, books: []}))
+    doc.querySelector('#cardBooks .widget-header-right')!.insertAdjacentHTML('beforeend',
+      '<button hidden>hidden</button><button class="probe">shown</button>')
+    escape(dialog)
+    expect(doc.activeElement?.classList.contains('probe')).toBe(true)
   })
 })

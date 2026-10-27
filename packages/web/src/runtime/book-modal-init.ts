@@ -184,30 +184,60 @@ export function initBookModal(): void {
   }
   dwg._bookModalInit = true
 
-  // The tile that opened the dialog, and its book's link (the `data-book`
-  // link, which is the title link's href).
+  // The book that opened the dialog: its link (the `data-book` link, which is
+  // the title link's href) and its tile's place on the shelf.
   interface Trigger {
-    tile: HTMLElement
     href: string | undefined
+    index: number
   }
   let triggerElement: Trigger | null = null
 
-  // Focus returns to a link, never to the tile: the tile takes no focus. An
+  // Focus returns to the shelf, never to a tile: the tile takes no focus. An
   // updater may rewrite the shelf while the dialog is open, so the order is:
   // 1. the link to the same book, wherever it now sits (an in-place patch can
   //    move another book into the trigger tile);
-  // 2. the trigger tile's own link, if the book left the shelf and the tile
-  //    stayed;
-  // 3. the first book link on the card, if the tiles were rebuilt without it;
-  // 4. any element on the card that already takes focus, if no book is left.
-  // Server markup gains no tabindex for this: the fragment policy pins it.
+  // 2. the link at the trigger tile's place, clamped to the last tile, if the
+  //    book left the shelf. An in-place patch keeps every tile in its place,
+  //    so this is the trigger tile's own link there, and the nearest place
+  //    after a rebuild;
+  // 3. a rendered element on the card that already takes focus, if no book
+  //    is left;
+  // 4. the card heading, made focusable from script only (tabindex -1, out of
+  //    the tab order), if the card holds nothing else. Server markup never
+  //    carries that tabindex: the fragment policy pins the markup.
   function returnFocusTarget(trigger: Trigger): HTMLElement | null {
     const card = document.getElementById('cardBooks')
-    const links = card ? [...card.querySelectorAll<HTMLElement>('.shelf-book-link')] : []
+    if (!card) {
+      return null
+    }
+    const links = [...card.querySelectorAll<HTMLElement>('.shelf-book-link')]
     const sameBook = trigger.href === undefined ? undefined : links.find((link) => link.getAttribute('href') === trigger.href)
-    const own = trigger.tile.isConnected ? trigger.tile.querySelector<HTMLElement>('.shelf-book-link') : null
-    const focusable = card?.querySelector<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"]):not(.shelf-book)') ?? null
-    return sameBook ?? own ?? links[0] ?? focusable
+    if (sameBook) {
+      return sameBook
+    }
+    if (links.length > 0) {
+      return links[Math.min(trigger.index, links.length - 1)]!
+    }
+    const focusable = [...card.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')].find((el) =>
+      !el.classList.contains('shelf-book') && isRendered(el, card)
+    )
+    if (focusable) {
+      return focusable
+    }
+    const heading = card.querySelector<HTMLElement>('.widget-label')
+    heading?.setAttribute('tabindex', '-1')
+    return heading
+  }
+
+  // focus() does nothing on an element that is not rendered, and focus would
+  // fall to <body>: skip anything hidden, or inside something hidden.
+  function isRendered(el: HTMLElement, within: HTMLElement): boolean {
+    for (let node: HTMLElement | null = el; node && node !== within.parentElement; node = node.parentElement) {
+      if (node.hidden || window.getComputedStyle(node).display === 'none') {
+        return false
+      }
+    }
+    return window.getComputedStyle(el).visibility !== 'hidden'
   }
 
   function openModal(b: BookData): void {
@@ -352,7 +382,8 @@ export function initBookModal(): void {
         return
       }
       e.preventDefault()
-      triggerElement = {tile: book, href: typeof data.link === 'string' ? data.link : undefined}
+      const tiles = [...cardBooks.querySelectorAll('.shelf-book')]
+      triggerElement = {href: typeof data.link === 'string' ? data.link : undefined, index: Math.max(0, tiles.indexOf(book))}
       openModal(data)
     })
   }
