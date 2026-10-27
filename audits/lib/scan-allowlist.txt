@@ -5,6 +5,15 @@
 #   email, phone, coordinate — or `*` to suppress every check for that path.
 # Blank lines and `#`-prefixed comments are ignored.
 #
+# Every entry must name a tracked file. The scan fails on an entry whose path
+# is not in the git index, so delete or rename a file and its entry together.
+#
+# Do not add `.changeset/` entries. The scan itself skips the scoped-package
+# release lines of a changeset's frontmatter (see d6-scan-personal-data.sh's
+# header). Name a package in a changeset body by its path (`packages/web`), not
+# by its scoped name. A changeset file is deleted when a release consumes it,
+# so a per-file entry would go stale in the Release PR.
+#
 # Entries below were seeded by running `audits/checks/d6-scan-personal-data.sh --full-tree`
 # and triaging every hit (lp-audit D6, 2026-07-16). Re-triage this file whenever
 # a genuinely new hit shows up that isn't already covered here.
@@ -182,35 +191,6 @@ packages/fixtures/src/factories/workouts.ts:marker:j0nathan-ll0yd
 # + Swift, schemas Swift), the ESLint leaf-boundary rules that name the
 # scope, and doc/CHANGELOG references. Not personal data; it is the mandated
 # distribution namespace.
-.changeset/repo-wide-formatting.md:marker:j0nathan-ll0yd
-.changeset/schemas-drop-spurious-swift-export.md:marker:j0nathan-ll0yd
-.changeset/tokens-emit-declarations.md:marker:j0nathan-ll0yd
-.changeset/copy-llms-txt-about-markdown-links.md:marker:j0nathan-ll0yd
-.changeset/bright-books-readably.md:marker:j0nathan-ll0yd
-# Changesets must name the scoped public package they release.
-.changeset/honest-github-fixtures.md:marker:j0nathan-ll0yd
-.changeset/audit-web-comment-discipline.md:marker:j0nathan-ll0yd
-.changeset/first-party-book-covers.md:marker:j0nathan-ll0yd
-.changeset/heavy-crabs-repeat.md:marker:j0nathan-ll0yd
-.changeset/heavy-pandas-tickle.md:marker:j0nathan-ll0yd
-.changeset/quiet-books-shed-covers.md:marker:j0nathan-ll0yd
-.changeset/harden-cover-render-chain.md:marker:j0nathan-ll0yd
-.changeset/portal-contract-2x-schemas.md:marker:j0nathan-ll0yd
-.changeset/portal-contract-2x-fixtures.md:marker:j0nathan-ll0yd
-.changeset/text-page-layout.md:marker:j0nathan-ll0yd
-.changeset/portal-contract-2x-web.md:marker:j0nathan-ll0yd
-.changeset/coarsen-workout-device-source.md:marker:j0nathan-ll0yd
-.changeset/movement-rings-svg-img-alt.md:marker:j0nathan-ll0yd
-.changeset/movement-rings-live-aria-label.md:marker:j0nathan-ll0yd
-.changeset/raise-web-widget-purity-gates.md:marker:j0nathan-ll0yd
-.changeset/olive-donkeys-smile.md:marker:j0nathan-ll0yd
-.changeset/tall-buttons-repeat.md:marker:j0nathan-ll0yd
-.changeset/structured-llm-link-and-heading-leaves.md:marker:j0nathan-ll0yd
-.changeset/scrub-dead-location-copy-leaves.md:marker:j0nathan-ll0yd
-.changeset/portal-contract-27-focus-hiding-since.md:marker:j0nathan-ll0yd
-.changeset/bookshelf-pending-sync-copy.md:marker:j0nathan-ll0yd
-.changeset/settings-token-verification-copy.md:marker:j0nathan-ll0yd
-.changeset/agent-readiness-copy-keys.md:marker:j0nathan-ll0yd
 # Names the `pnpm -F @j0nathan-ll0yd/web` command its comment explains.
 packages/web/vitest.browser.config.ts:marker:j0nathan-ll0yd
 .gitignore:marker:j0nathan-ll0yd
@@ -498,8 +478,6 @@ openspec/README.md:marker:j0nathan-ll0yd
 openspec/specs/widget-contract/spec.md:marker:j0nathan-ll0yd
 audits/checks/d3-openspec-covers.mjs:marker:j0nathan-ll0yd
 audits/__tests__/d3-openspec-covers.test.mjs:marker:j0nathan-ll0yd
-# Changesets must name the scoped public package they release.
-.changeset/offline-record-repoint.md:marker:j0nathan-ll0yd
 # Atlas decision 0160 (honest widget states). These files import or name the
 # scoped packages they build on (@j0nathan-ll0yd/copy, @j0nathan-ll0yd/portal-contract,
 # @j0nathan-ll0yd/web). The marker is the mandated GitHub Packages namespace, a
@@ -511,11 +489,7 @@ packages/web/src/runtime/widget-state.ts:marker:j0nathan-ll0yd
 packages/web/src/widgets/other/DndOverlay.astro:marker:j0nathan-ll0yd
 packages/web/src/widgets/other/FocusOverlay.astro:marker:j0nathan-ll0yd
 packages/web/tests/server-render/server-safe.test.ts:marker:j0nathan-ll0yd
-.changeset/honest-widget-states-fixtures.md:marker:j0nathan-ll0yd
-.changeset/honest-widget-states-schemas.md:marker:j0nathan-ll0yd
-.changeset/honest-widget-states-web.md:marker:j0nathan-ll0yd
 packages/web/tests/server-render/states.test.ts:marker:j0nathan-ll0yd
-.changeset/widget-state-copy.md:marker:j0nathan-ll0yd
 packages/web/stories/production/state-notice.ts:marker:j0nathan-ll0yd
 packages/fixtures/tests/post-adapter-health-drift.test.ts:marker:j0nathan-ll0yd
 # turbo.json names the web package's test task (@j0nathan-ll0yd/web#test) to add its inputs.
@@ -527,8 +501,6 @@ packages/web/src/runtime/workouts-markup.ts:marker:j0nathan-ll0yd
 packages/web/tests/server-render/known-answer-render.ts:marker:j0nathan-ll0yd
 # atlas 0160 Step 1.7: the copy profile namespace and the fixtures that read it name
 # the @j0nathan-ll0yd scope (a public distribution namespace, not personal data).
-.changeset/copy-profile-namespace.md:marker:j0nathan-ll0yd
-.changeset/fixtures-profile-from-copy.md:marker:j0nathan-ll0yd
 Sources/LifegamesCopy/ProfileCopy.generated.swift:marker:j0nathan-ll0yd
 packages/copy/dist/profile.flat.schema.json:marker:j0nathan-ll0yd
 packages/copy/dist/profile.ts:marker:j0nathan-ll0yd
@@ -536,69 +508,24 @@ packages/copy/dist/profile.zod.ts:marker:j0nathan-ll0yd
 packages/copy/schema/profile.schema.json:marker:j0nathan-ll0yd
 packages/fixtures/tests/profile-from-copy.test.ts:marker:j0nathan-ll0yd
 # Atlas decision 0160, website PR 0a browser gaps: the shared views, markup and
-# freshness tests import @j0nathan-ll0yd/copy, and the changeset names the
-# @j0nathan-ll0yd/web package it releases. The marker is the mandated GitHub
+# freshness tests import @j0nathan-ll0yd/copy. The marker is the mandated GitHub
 # Packages namespace, a public distribution scope, not personal data.
 packages/web/src/runtime/widget-markup.ts:marker:j0nathan-ll0yd
 packages/web/src/runtime/widget-views.ts:marker:j0nathan-ll0yd
 packages/web/tests/runtime/freshness.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/server-render/client-gaps.test.ts:marker:j0nathan-ll0yd
-.changeset/web-client-honest-states.md:marker:j0nathan-ll0yd
-# W13 variation-updater tests and the odometer fix: the leaderboard test imports
-# @j0nathan-ll0yd/copy, and the changeset names the @j0nathan-ll0yd/web package it
-# releases. The marker is the mandated GitHub Packages namespace, not personal data.
+# W13 variation-updater tests: the leaderboard test imports @j0nathan-ll0yd/copy.
+# The marker is the mandated GitHub Packages namespace, not personal data.
 packages/web/tests/runtime/updaters-leaderboard-variations.test.ts:marker:j0nathan-ll0yd
-.changeset/odometer-city-and-day-count.md:marker:j0nathan-ll0yd
-# The schemas URN-encoding fix: the changeset names the @j0nathan-ll0yd/schemas
-# package it releases. The marker is the mandated GitHub Packages namespace.
-.changeset/schemas-validate-urn-encoding.md:marker:j0nathan-ll0yd
-# The copy hosting-string patch (decision 0160 Step 1.7): the changeset names the
-# @j0nathan-ll0yd/copy package it releases.
-.changeset/copy-workers-hosting.md:marker:j0nathan-ll0yd
-# The articles freshness change (LP #388 daily re-export): the changeset names the
-# @j0nathan-ll0yd/web package it releases.
-.changeset/articles-freshness-daily.md:marker:j0nathan-ll0yd
-# The server markup parity change (atlas decision 0160): the changesets name the
-# @j0nathan-ll0yd/web and @j0nathan-ll0yd/schemas packages they release.
-.changeset/web-server-markup-parity.md:marker:j0nathan-ll0yd
-.changeset/schemas-reading-feed-article-link.md:marker:j0nathan-ll0yd
-# The page-neutral back link (atlas decision 0158 step 5b): the changeset names the
-# @j0nathan-ll0yd/copy package it releases.
-.changeset/copy-page-neutral-back-link.md:marker:j0nathan-ll0yd
-.changeset/web-relative-time-client-side.md:marker:j0nathan-ll0yd
-.changeset/fixtures-starred-absolute-time.md:marker:j0nathan-ll0yd
-.changeset/schemas-overlay-now-description.md:marker:j0nathan-ll0yd
-# The Organization identity group (owner decision 2026-10-24): the changeset names the
-# @j0nathan-ll0yd/copy package it releases.
-.changeset/copy-organization-identity.md:marker:j0nathan-ll0yd
-# The site footer nav and the /api/v1 developers copy (atlas decision 0158 follow-on):
-# the changesets name the @j0nathan-ll0yd/web and @j0nathan-ll0yd/copy packages they
-# release, and the docs page imports from @j0nathan-ll0yd/web.
-.changeset/web-site-footer-nav.md:marker:j0nathan-ll0yd
-.changeset/copy-developers-api-v1.md:marker:j0nathan-ll0yd
+# The site footer nav (atlas decision 0158 follow-on): the docs page imports from
+# @j0nathan-ll0yd/web.
 apps/docs/src/content/docs/components/site-footer-nav.mdx:marker:j0nathan-ll0yd
 # SiteFooterNav reads its default landmark name from @j0nathan-ll0yd/copy, and its tests
 # and the TextPage test assert against that copy key.
 packages/web/src/components/SiteFooterNav.astro:marker:j0nathan-ll0yd
 packages/web/tests/server-render/site-footer-nav.test.ts:marker:j0nathan-ll0yd
 packages/web/tests/server-render/text-page.test.ts:marker:j0nathan-ll0yd
-# The homepage footer layout changeset names the package it bumps.
-.changeset/web-left-panel-footer.md:marker:j0nathan-ll0yd
-# The rate-limit fail-open wording: the changeset names the @j0nathan-ll0yd/copy package it releases.
-.changeset/copy-ratelimit-fail-open.md:marker:j0nathan-ll0yd
-# The portal-contract 2.8.0 changeset names the packages it bumps.
-.changeset/portal-contract-2-8-0.md:marker:j0nathan-ll0yd
 # The nullable-helper test resolves the portal-contract raw schemas by package name.
 packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
-# The coffee status-message changeset names the package it bumps.
-.changeset/copy-coffee-status-messages.md:marker:j0nathan-ll0yd
-# The dead map-CSS removal changeset names the packages it bumps.
-.changeset/remove-dead-map-css.md:marker:j0nathan-ll0yd
-# The Bookshelf real-link changesets name the packages they bump (web, tokens, copy).
-.changeset/bookshelf-real-links.md:marker:j0nathan-ll0yd
-.changeset/tokens-book-link-focus.md:marker:j0nathan-ll0yd
-.changeset/copy-book-link-provenance.md:marker:j0nathan-ll0yd
 # The Bookshelf tile browser test loads the tokens stylesheet by package name (the focus ring colour is a token).
 packages/web/tests/browser/book-tile.browser.test.ts:marker:j0nathan-ll0yd
-# The fail-closed schemas validator changeset names the package it bumps.
-.changeset/schemas-validate-fails-closed.md:marker:j0nathan-ll0yd
