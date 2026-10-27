@@ -38,7 +38,7 @@
    base.css also declares focus rules, but they don't reach the consumer — which
    is why every ring was pink). We define the visible keyboard ring here: a
    global pink :focus-visible, with the design-system's intended per-element
-   colors — green for a book tile's link, blue for the modal close button. The ring is
+   colors — green for a book tile, blue for the modal close button. The ring is
    suppressed for pointer/touch input via the input-modality tracker
    (runtime/input-modality.ts); keyboard focus keeps it. */
 :focus-visible {
@@ -47,8 +47,16 @@
 }
 
 /* Per-element focus colors (each ring matches its widget accent). */
+/* A book tile: its title link draws no ring of its own. The link's overlay
+   (components.css .shelf-book-link::after) covers the tile's padding box, 1px
+   inside the tile's border, so a 3px offset puts the ring where the tile's own
+   2px-offset ring was. */
 .shelf-book-link:focus-visible {
-  outline-color: var(--lg-color-accent-green);
+  outline: none;
+}
+.shelf-book-link:focus-visible::after {
+  outline: 2px solid var(--lg-color-accent-green);
+  outline-offset: 3px;
 }
 .book-modal-close:focus-visible {
   outline-color: var(--lg-color-accent-blue);
@@ -56,7 +64,8 @@
 
 /* Suppress the ring after pointer/touch input; kept for keyboard nav. Higher
    specificity than the rules above so it wins under pointer modality. */
-:root[data-input-modality='pointer'] :focus-visible {
+:root[data-input-modality='pointer'] :focus-visible,
+:root[data-input-modality='pointer'] .shelf-book-link:focus-visible::after {
   outline: none;
 }
 

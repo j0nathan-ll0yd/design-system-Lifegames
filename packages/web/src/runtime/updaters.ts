@@ -711,14 +711,8 @@ function bookshelfCoverHtml(book: AdaptedBooks['books'][number], localCandidates
   const avifCandidates = [avifCard ? esc(avifCard) + ' 1x' : '', avifThumb ? esc(avifThumb) + ' 2x' : ''].filter(Boolean)
   const avifSrcset = avifCandidates.join(', ')
 
-  const imgAttrs = 'src="' +
-    esc(displaySrc) +
-    '"' +
-    (rasterSrcset ? ' srcset="' + esc(rasterSrcset) + '"' : '') +
-    ' width="80" height="120" alt="' +
-    esc(book.title) +
-    '" loading="lazy" decoding="async"' +
-    imgFallbackAttrs(displaySrc, avifSrcset.length > 0)
+  const imgAttrs = 'src="' + esc(displaySrc) + '"' + (rasterSrcset ? ' srcset="' + esc(rasterSrcset) + '"' : '') + // Decorative: the title text in the same tile names the book.
+    ' width="80" height="120" alt="" loading="lazy" decoding="async"' + imgFallbackAttrs(displaySrc, avifSrcset.length > 0)
   const img = '<img ' + imgAttrs + '>'
   return avifSrcset
     ? '<picture><source srcset="' + avifSrcset + '" type="image/avif">' + img + '</picture>'
@@ -785,12 +779,8 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const meta = bookMeta[b.asin] || ({} as BookMeta)
       el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
-      // The tile's link names the book: a changed book moves its href and its label.
-      const link = el.querySelector('.shelf-book-link')
-      if (link) {
-        link.setAttribute('href', b.link)
-        link.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
-      }
+      // The title's link names the book by its text: a changed book moves its href.
+      el.querySelector('.shelf-book-link')?.setAttribute('href', b.link)
 
       const coverWrapper = el.querySelector<HTMLElement>('.shelf-cover-wrapper')
       if (coverWrapper) {
@@ -898,17 +888,12 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const bookData = bookDataJson(b, meta, statusLabels[b.status], b)
       var activeClass = b.status === 'reading' ? ' shelf-book-active' : ''
       html += '<li class="shelf-book' + activeClass + '" style="animation-delay: ' + i * 0.08 + 's" data-book="' + esc(bookData) + '">'
-      html += '<a class="shelf-book-link" href="' +
-        esc(b.link) +
-        '" target="_blank" rel="' +
-        BOOK_LINK_REL +
-        '" aria-label="' +
-        a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) +
-        '">'
       html += '<div class="shelf-cover-wrapper">'
       html += bookshelfCoverHtml(b, localCandidates)
       html += '</div>'
-      html += '<div class="shelf-book-title"><span>' + esc(b.title) + '</span></div>'
+      html += '<div class="shelf-book-title"><a class="shelf-book-link" href="' + esc(b.link) + '" target="_blank" rel="' + BOOK_LINK_REL + '"><span>' +
+        esc(b.title) +
+        '</span></a></div>'
       html += '<div class="shelf-book-author">' + esc(b.author) + '</div>'
       html += '<div class="shelf-book-status shelf-status-' +
         b.status +
@@ -928,7 +913,7 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       if (b.status === 'finished' && b.finishedAt) {
         html += '<div class="shelf-book-finished-date">' + esc(widgets.bookshelf.finishedDate.replace('{date}', formatFinishedDate(b.finishedAt))) + '</div>'
       }
-      html += '</a></li>'
+      html += '</li>'
     })
     shelfRow.innerHTML = html
   }

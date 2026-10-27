@@ -55,6 +55,7 @@ import {updateTheatreReviews} from '../../src/runtime/updaters-theatre'
 import {type DashboardExports, type DashboardViewModels, toDashboardViewModels} from '../../src/runtime/view-models'
 import {sleepScoreSource} from '../../src/runtime/widget-rules'
 import {fillRelativeTimes} from '../../src/runtime/relative-time-fill'
+import {initBookModal} from '../../src/runtime/book-modal-init'
 
 const GENERATED = join(__dirname, '../../../fixtures/src/generated')
 const raw = (dir: string, v: string): any => JSON.parse(readFileSync(join(GENERATED, dir, `${v}.json`), 'utf8'))
@@ -69,7 +70,7 @@ function aged<T extends {generatedAt?: string}>(domain: FreshnessDomain, data: T
 
 // ── DOM plumbing ─────────────────────────────────────────────────────
 
-const GLOBALS = ['window', 'document', 'HTMLElement', 'Element', 'Node', 'requestAnimationFrame'] as const
+const GLOBALS = ['window', 'document', 'HTMLElement', 'Element', 'Node', 'requestAnimationFrame', 'MutationObserver'] as const
 function mount(html: string): Document {
   const dom = new JSDOM(`<!doctype html><body>${html}</body>`, {pretendToBeVisual: true})
   for (const key of GLOBALS) {
@@ -136,6 +137,15 @@ interface CardSnapshot {
 // parameters (the browser hands them to the canvas through __ecgUpdate).
 const IGNORED_ATTR = /^(data-astro-|data-live-updated$|data-bpm$|data-hrv$|data-stroke$)/
 
+// Attributes only a bound JavaScript enhancement writes, never a renderer.
+// `aria-haspopup`: the book dialog (initBookModal) marks each Bookshelf title
+// link once it takes plain clicks over. Without JavaScript the link navigates,
+// so the server markup must never say it opens a dialog
+// (tests/server-render/bookshelf-links.test.ts holds both halves). The browser
+// half binds the dialog as the website does, so this one name is set aside and
+// every other attribute is still compared.
+const JS_ONLY_ATTR = new Set(['aria-haspopup'])
+
 // A style attribute serialized by CSSOM, then sorted by declaration: the
 // browser writes styles through CSSOM (hex becomes rgb()), the server as text.
 const STYLE_PARSER = new JSDOM('<!doctype html><div></div>').window.document.querySelector('div') as HTMLElement
@@ -157,7 +167,7 @@ function attributeMap(card: Element): string[] {
   els.forEach((el, i) => {
     const key = `${i}:${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}`
     for (const a of [...el.attributes].sort((x, y) => x.name.localeCompare(y.name))) {
-      if (!IGNORED_ATTR.test(a.name)) {
+      if (!IGNORED_ATTR.test(a.name) && !JS_ONLY_ATTR.has(a.name)) {
         // Class order carries no meaning; style serialization differs by writer.
         const value = a.name === 'style' ? normalizeStyle(a.value) : a.name === 'class' ? a.value.split(/\s+/).filter(Boolean).sort().join(' ') : a.value
         out.push(`${key} ${a.name}=${value}`)
@@ -365,7 +375,12 @@ const CARDS: Card[] = [
     id: 'cardBooks',
     component: Bookshelf,
     vm: 'bookshelf',
-    apply: (i) => updateBookshelf(adaptBooks(i.books), fresh('books', i.books)),
+    // The website binds the book dialog (BookModal) before its live data lands.
+    apply: (i) => {
+      document.body.insertAdjacentHTML('beforeend', '<dialog id="bookDialog"><div id="bookModal"></div></dialog>')
+      initBookModal()
+      updateBookshelf(adaptBooks(i.books), fresh('books', i.books))
+    },
     cases: {
       live: {input: {books: raw('books', KA)}, state: 'live'},
       stale: {input: {books: aged('books', raw('books', KA))}, state: 'stale'},
@@ -413,6 +428,8 @@ async function browserCard(card: Card, input: Input, from?: Input): Promise<Card
     card.apply(from)
   }
   card.apply(input)
+  // Let a bound enhancement's MutationObserver run (JS_ONLY_ATTR).
+  await new Promise((resolve) => setTimeout(resolve, 0))
   return snapshot(doc.getElementById(card.id)!)
 }
 

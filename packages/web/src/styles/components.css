@@ -1985,14 +1985,24 @@
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       padding: 6px 4px;
+      /* The containing block of the title link's overlay. */
+      position: relative;
     }
 
-    /* The tile's real link wraps its content. A block box with the tile's own
-       color and no underline, so the tile renders as it did without one. */
+    /* The tile's real link is its title: the tile's own color, no underline.
+       Its overlay stretches the hit area over the whole tile, so a click
+       anywhere on the tile activates the link. The overlay stops text
+       selection inside the tile. Its radius is the tile's inner (padding-edge)
+       radius, so a focus ring on it follows the tile's corners (a11y.css). */
     .shelf-book-link {
-      display: block;
       color: inherit;
       text-decoration: none;
+    }
+    .shelf-book-link::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: calc(var(--radius-md) - 1px);
     }
 
     @media (hover: hover) {

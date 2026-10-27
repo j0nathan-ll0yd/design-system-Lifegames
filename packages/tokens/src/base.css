@@ -121,8 +121,12 @@
     }
 
     .shelf-book-link:focus-visible {
+      outline: none;
+    }
+
+    .shelf-book-link:focus-visible::after {
       outline: 2px solid var(--neon-green);
-      outline-offset: 2px;
+      outline-offset: 3px;
     }
 
     .book-modal-close:focus-visible {

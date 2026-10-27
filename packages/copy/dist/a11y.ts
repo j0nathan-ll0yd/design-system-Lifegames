@@ -36,6 +36,10 @@ export interface A11YIdentity {
  * Bookshelf widget accessibility label — the per-book list-item aria-label template.
  */
 export interface A11YBookshelf {
+  /**
+   * @deprecated
+   * Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key.
+   */
   bookItem: string;
 }
 /**

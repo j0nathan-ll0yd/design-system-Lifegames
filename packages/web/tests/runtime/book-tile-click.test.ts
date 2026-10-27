@@ -11,16 +11,18 @@ import type {BookshelfProps} from '../../src/widgets/reading/Bookshelf.types'
 
 const BOOK = {title: 'Known Title', author: 'Known Author', asin: 'KA0000001', status: 'finished', link: 'https://www.amazon.com/dp/KA0000001'}
 
+// The template's tile: the title is the link; CSS stretches its hit area over
+// the tile, so a click anywhere on the tile targets the link.
 const TILE = `<ul class="shelf-row"><li class="shelf-book" data-book='${JSON.stringify(BOOK)}'>` +
-  `<a class="shelf-book-link" href="${BOOK.link}" target="_blank" rel="sponsored noopener noreferrer" aria-label="Known Title">` +
-  '<div class="shelf-cover-wrapper"><img alt="Known Title"></div><div class="shelf-book-title"><span>Known Title</span></div>' +
-  '</a></li></ul>'
+  '<div class="shelf-cover-wrapper"><img alt=""></div>' +
+  `<div class="shelf-book-title"><a class="shelf-book-link" href="${BOOK.link}" target="_blank" rel="sponsored noopener noreferrer"><span>Known Title</span></a></div>` +
+  '<div class="shelf-book-author">Known Author</div></li></ul>'
 
-/** Dispatches a cancelable click on the tile's cover; returns whether the default (navigation) was prevented. */
-function clickCover(init: MouseEventInit = {}): boolean {
-  const img = document.querySelector('.shelf-cover-wrapper img')!
+/** Dispatches a cancelable click on the tile's link; returns whether the default (navigation) was prevented. */
+function clickTile(init: MouseEventInit = {}): boolean {
+  const link = document.querySelector('.shelf-book-link')!
   const event = new MouseEvent('click', {bubbles: true, cancelable: true, button: 0, ...init})
-  img.dispatchEvent(event)
+  link.dispatchEvent(event)
   return event.defaultPrevented
 }
 
@@ -51,9 +53,10 @@ describe('book modal: the tile link and the dialog', () => {
   })
 
   it('a plain click opens the dialog and prevents the navigation', () => {
-    expect(clickCover()).toBe(true)
+    expect(clickTile()).toBe(true)
     expect(dialog.open).toBe(true)
     expect(document.querySelector('#bookModal')!.textContent).toContain('Known Title')
+    expect(document.querySelector('.shelf-book-link')!.getAttribute('aria-haspopup'), 'the bound dialog marks the link').toBe('dialog')
   })
 
   // The click a browser fires for Enter on a link. The key press itself is
@@ -67,13 +70,13 @@ describe('book modal: the tile link and the dialog', () => {
   })
 
   it.each(MODIFIED)('%s neither opens the dialog nor prevents the navigation', (_name, init) => {
-    expect(clickCover(init)).toBe(false)
+    expect(clickTile(init)).toBe(false)
     expect(dialog.open).toBe(false)
   })
 
   it('closing the dialog returns focus to the link, not the tile', () => {
     const link = document.querySelector<HTMLAnchorElement>('.shelf-book-link')!
-    clickCover()
+    clickTile()
     // Escape: the cancel event drives the close; reduced motion closes at once.
     dialog.dispatchEvent(new Event('cancel', {cancelable: true}))
     expect(dialog.open).toBe(false)
@@ -99,12 +102,12 @@ describe('bookshelf island: the tile link and the book-clicked event', () => {
   })
 
   it('a plain click dispatches book-clicked and prevents the navigation', () => {
-    expect(clickCover()).toBe(true)
+    expect(clickTile()).toBe(true)
     expect(events).toEqual([BOOK])
   })
 
   it.each(MODIFIED)('%s neither dispatches nor prevents the navigation', (_name, init) => {
-    expect(clickCover(init)).toBe(false)
+    expect(clickTile(init)).toBe(false)
     expect(events).toEqual([])
   })
 })
@@ -117,7 +120,7 @@ describe('a payload that does not parse leaves the link to the browser', () => {
 
   it('the dialog handler neither opens nor prevents the navigation', () => {
     initBookModal()
-    expect(clickCover()).toBe(false)
+    expect(clickTile()).toBe(false)
     expect((document.getElementById('bookDialog') as HTMLDialogElement).open).toBe(false)
   })
 
@@ -129,7 +132,7 @@ describe('a payload that does not parse leaves the link to the browser', () => {
     document.addEventListener('book-clicked', record)
     try {
       initBookshelf(document.getElementById('cardBooks')!, {} as BookshelfProps)
-      expect(clickCover()).toBe(false)
+      expect(clickTile()).toBe(false)
       expect(events).toEqual([])
     } finally {
       document.removeEventListener('book-clicked', record)

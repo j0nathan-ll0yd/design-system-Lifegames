@@ -364,8 +364,8 @@ function bookshelf(): Projection {
       mainImage: PLACEHOLDER_IMAGE_SRC,
       mainImageAvif: null
     })
-    attrs.push('data-book=*', `href=${link}`, `aria-label=${a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author)}`,
-      `src=${PLACEHOLDER_IMAGE_SRC}`, `srcset=${PLACEHOLDER_IMAGE_SRC} 1x, ${PLACEHOLDER_IMAGE_SRC} 2x`, `alt=${b.title}`)
+    // The cover is decorative (alt=""): the title link's text names the book.
+    attrs.push('data-book=*', `src=${PLACEHOLDER_IMAGE_SRC}`, `srcset=${PLACEHOLDER_IMAGE_SRC} 1x, ${PLACEHOLDER_IMAGE_SRC} 2x`, 'alt=', `href=${link}`)
     styles.push(`li animation-delay: ${i * 0.08}s`)
     text.push(b.title, b.author, adapted.statusLabels[b.status]!)
     if (progress != null) {

@@ -294,12 +294,23 @@ export function initBookModal(): void {
     }
   })
 
-  // Each tile is a real link to the book on Amazon; the dialog is an
-  // enhancement. A plain primary click (Enter on the link fires one too) opens
-  // the dialog instead of the link. Every other click keeps the browser's
-  // default, so a meta-, ctrl- or middle-click still opens Amazon.
+  // Each tile's title is a real link to the book on Amazon, stretched over the
+  // tile; the dialog is an enhancement. A plain primary click (Enter on the
+  // link fires one too) opens the dialog instead of the link. Every other click
+  // keeps the browser's default, so a meta-, ctrl- or middle-click still opens
+  // Amazon.
   const cardBooks = document.getElementById('cardBooks')
   if (cardBooks) {
+    // Only the bound enhancement may say a link opens a dialog: without
+    // JavaScript the link navigates, so server markup never carries
+    // aria-haspopup. The observer marks a link an updater writes later (a
+    // rebuild replaces the tiles; an in-place patch keeps the marked link).
+    const markDialogLinks = (): void => {
+      cardBooks.querySelectorAll('.shelf-book-link:not([aria-haspopup])').forEach((link) => link.setAttribute('aria-haspopup', 'dialog'))
+    }
+    markDialogLinks()
+    new MutationObserver(markDialogLinks).observe(cardBooks, {childList: true, subtree: true})
+
     cardBooks.addEventListener('click', (e: MouseEvent) => {
       if (!isPlainPrimaryClick(e)) {
         return

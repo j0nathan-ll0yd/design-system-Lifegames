@@ -41,7 +41,9 @@
       "description": "Bookshelf widget accessibility label — the per-book list-item aria-label template.",
       "properties": {
         "bookItem": {
-          "type": "string"
+          "type": "string",
+          "description": "Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key.",
+          "deprecated": true
         }
       },
       "required": ["bookItem"],

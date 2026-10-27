@@ -1,5 +1,5 @@
 ---
-import { widgets, a11y } from '@j0nathan-ll0yd/copy';
+import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import {
@@ -137,80 +137,72 @@ function localImageUrl(candidate: string | null): string | null {
               style={`animation-delay: ${i * 0.08}s`}
               data-book={bookData}
             >
-              <a
-                class="shelf-book-link"
-                href={link}
-                target="_blank"
-                rel={BOOK_LINK_REL}
-                aria-label={a11y.bookshelf.bookItem
-                  .replace('{title}', b.title)
-                  .replace('{author}', b.author)}
-              >
-                <div class="shelf-cover-wrapper">
-                  {avifSrcset ? (
-                    <picture>
-                      <source srcset={avifSrcset} type="image/avif" />
-                      <img
-                        src={imgSrc}
-                        srcset={imgSrcset}
-                        width="80"
-                        height="120"
-                        alt={b.title}
-                        loading="lazy"
-                        decoding="async"
-                        data-fallback={fallbackAttr}
-                      />
-                    </picture>
-                  ) : (
+              <div class="shelf-cover-wrapper">
+                {avifSrcset ? (
+                  <picture>
+                    <source srcset={avifSrcset} type="image/avif" />
                     <img
                       src={imgSrc}
                       srcset={imgSrcset}
                       width="80"
                       height="120"
-                      alt={b.title}
+                      alt=""
                       loading="lazy"
                       decoding="async"
                       data-fallback={fallbackAttr}
                     />
-                  )}
-                </div>
-                <div class="shelf-book-title">
-                  <span>{b.title}</span>
-                </div>
-                <div class="shelf-book-author">{b.author}</div>
-                {b.status === 'reading' ? (
-                  <Fragment>
-                    <div class="shelf-book-status shelf-status-reading">
-                      {widgets.bookshelf.statusReading}
-                    </div>
-                    {b.progress != null && (
-                      <Fragment>
-                        <div class="shelf-book-progress-bar">
-                          <div class="shelf-book-progress-fill" style={`width: ${b.progress}%`} />
-                        </div>
-                        <div class="shelf-book-progress">{b.progress}%</div>
-                      </Fragment>
-                    )}
-                  </Fragment>
+                  </picture>
                 ) : (
-                  <Fragment>
-                    <div class={`shelf-book-status shelf-status-${b.status}`}>
-                      {statusLabels[b.status]}
-                    </div>
-                    {b.rating ? (
-                      <div class="shelf-book-stars" set:html={ratingStarsHtml(b.rating)} />
-                    ) : null}
-                    {b.status === 'finished' && b.finishedAt && (
-                      <div class="shelf-book-finished-date">
-                        {widgets.bookshelf.finishedDate.replace(
-                          '{date}',
-                          formatFinishedDate(b.finishedAt),
-                        )}
-                      </div>
-                    )}
-                  </Fragment>
+                  <img
+                    src={imgSrc}
+                    srcset={imgSrcset}
+                    width="80"
+                    height="120"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    data-fallback={fallbackAttr}
+                  />
                 )}
-              </a>
+              </div>
+              <div class="shelf-book-title">
+                <a class="shelf-book-link" href={link} target="_blank" rel={BOOK_LINK_REL}>
+                  <span>{b.title}</span>
+                </a>
+              </div>
+              <div class="shelf-book-author">{b.author}</div>
+              {b.status === 'reading' ? (
+                <Fragment>
+                  <div class="shelf-book-status shelf-status-reading">
+                    {widgets.bookshelf.statusReading}
+                  </div>
+                  {b.progress != null && (
+                    <Fragment>
+                      <div class="shelf-book-progress-bar">
+                        <div class="shelf-book-progress-fill" style={`width: ${b.progress}%`} />
+                      </div>
+                      <div class="shelf-book-progress">{b.progress}%</div>
+                    </Fragment>
+                  )}
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <div class={`shelf-book-status shelf-status-${b.status}`}>
+                    {statusLabels[b.status]}
+                  </div>
+                  {b.rating ? (
+                    <div class="shelf-book-stars" set:html={ratingStarsHtml(b.rating)} />
+                  ) : null}
+                  {b.status === 'finished' && b.finishedAt && (
+                    <div class="shelf-book-finished-date">
+                      {widgets.bookshelf.finishedDate.replace(
+                        '{date}',
+                        formatFinishedDate(b.finishedAt),
+                      )}
+                    </div>
+                  )}
+                </Fragment>
+              )}
             </li>
           );
         })

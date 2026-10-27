@@ -1,5 +1,5 @@
 ---
-'@j0nathan-ll0yd/copy': patch
+'@j0nathan-ll0yd/copy': minor
 ---
 
-Point the `_meta` provenance of `a11y.bookshelf.bookItem` at its new call sites: the label now sits on each Bookshelf tile's link (`.shelf-book-link`), not on the `<li>`. The value does not change.
+Deprecate `a11y.bookshelf.bookItem` with no replacement (DEPRECATION.md, "Copy Keys"). Each Bookshelf tile's title is now a real link, named by its own text, so the web template and both updater paths dropped the tile label. No Swift, iOS, website or portal source reads the key. The rich schema marks it `deprecated: true`. The TS type gains an `@deprecated` JSDoc, the Zod schema a `.describe()`, and the Swift `A11YBookshelf.bookItem` property a doc comment. The accessor stays until the next major release, and the value does not change.

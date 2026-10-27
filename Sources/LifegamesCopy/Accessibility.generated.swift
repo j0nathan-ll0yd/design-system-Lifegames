@@ -162,6 +162,8 @@ public extension A11YBookModal {
 /// Bookshelf widget accessibility label — the per-book list-item aria-label template.
 // MARK: - A11YBookshelf
 public struct A11YBookshelf: Codable, Sendable {
+    /// Deprecated: no replacement. Removed in the next major release. The Bookshelf title link
+    /// is named by its text; no consumer reads this key.
     public let bookItem: String
 
     public init(bookItem: String) {

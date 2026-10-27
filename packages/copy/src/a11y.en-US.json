@@ -65,16 +65,15 @@
     "bookItem": {
       "value": "{title} by {author}",
       "_meta": {
-        "description": "Per-book aria-label of each bookshelf tile's link (.shelf-book-link) on the shelf row. ICU MF1 template; the consumer substitutes the book title and author at the call site (D2-A).",
+        "description": "DEPRECATED (the next copy major removes it): no replacement, and no consumer reads it. It was the per-book aria-label of each bookshelf tile. ICU MF1 template; the consumer substituted the book title and author at the call site (D2-A).",
         "usage": [
-          "web:packages/web/src/widgets/reading/Bookshelf.astro:145 (.shelf-book-link aria-label, SSR, composed `${b.title} by ${b.author}`)",
-          "web:packages/web/src/runtime/updaters.ts:792 (.shelf-book-link aria-label set on an in-place patch, b.title and b.author)",
-          "web:packages/web/src/runtime/updaters.ts:905 (.shelf-book-link aria-label in generated markup, esc(b.title) and esc(b.author))"
+          "none: no consumer reads this key since the Bookshelf title link replaced the tile label (atlas decision 0160 D5); it stays for the deprecation window"
         ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-06-11"
+        "lastReviewed": "2026-10-27",
+        "rationale": "Deprecated 2026-10-27 (atlas decision 0160 D5, owner decision on design-system PR 333): each Bookshelf tile's title is now a real link, named by its own text, so the web template and both updater paths dropped the label. No Swift, iOS, website or portal source reads the key. The key stays until the next major release (DEPRECATION.md)."
       }
     }
   },

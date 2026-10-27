@@ -11,9 +11,10 @@ export function initBookshelf(container: HTMLElement, _fixture: BookshelfProps):
 
   installImageFallbacks(container)
 
-  // Each tile is a real link to the book on Amazon. A plain primary click
-  // (Enter on the link fires one too) dispatches the detail event instead of
-  // following the link; every other click keeps the browser's default.
+  // Each tile's title is a real link to the book on Amazon, stretched over the
+  // tile. A plain primary click (Enter on the link fires one too) dispatches
+  // the detail event instead of following the link; every other click keeps
+  // the browser's default.
   const books = container.querySelectorAll<HTMLElement>('.shelf-book')
   books.forEach((bookEl) => {
     bookEl.addEventListener('click', (e: MouseEvent) => {

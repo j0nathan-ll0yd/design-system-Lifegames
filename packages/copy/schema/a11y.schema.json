@@ -57,7 +57,9 @@
       "required": ["bookItem"],
       "properties": {
         "bookItem": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyString",
+          "deprecated": true,
+          "description": "Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key."
         }
       }
     },
