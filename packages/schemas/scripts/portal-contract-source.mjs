@@ -7,8 +7,9 @@
 // URI namespace and the generated/ `$ref`s are unchanged — only the file SOURCE
 // moved here.
 //
-// Authored as .mjs (not .ts) so the plain-node baseline-validate.mjs script can
-// import it directly; tsx-run .ts scripts import it transparently.
+// Authored as .mjs (not .ts): it ships in the published package beside
+// validate.ts, and plain node imports it with no TypeScript step. tsx-run .ts
+// scripts import it transparently.
 
 import {createRequire} from 'node:module'
 import {dirname} from 'node:path'
