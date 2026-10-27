@@ -522,9 +522,6 @@
       .gh-stat-value {
         font-size: 1.1rem;
       }
-      .map-wrapper {
-        height: 140px;
-      }
 
       /* Safe-area insets for notched tablets */
       .identity-card {
@@ -767,9 +764,6 @@
       .gh-stat-value {
         font-size: 1.1rem;
       }
-      .map-wrapper {
-        height: 140px;
-      }
     }
 
     /* Small mobile: single column everything */
@@ -846,9 +840,6 @@
       }
       .hr-hrv-value {
         font-size: 1rem;
-      }
-      .map-wrapper {
-        height: 120px;
       }
       .hydra-layout {
         gap: 16px;
