@@ -19,7 +19,7 @@ struct WidgetFixtureCatalogTests {
     /// Catalog of every fixture the gallery loads through `FixtureLoader`.
     static var allRows: [FixtureCatalogRow] {
         healthRows + identityRows + locationRows + readingRows + otherRows + githubRows
-            + mediaRows
+            + mediaRows + coffeeRows
     }
 
     @Test func catalogIsNonEmpty() {

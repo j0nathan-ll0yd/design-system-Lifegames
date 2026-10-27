@@ -55,6 +55,8 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesWidgetsTests", dependencies: [
             "LifegamesWidgets",
+            // CoffeeTrackingProps: the coffee fixture catalog rows decode into it.
+            "LifegamesComponentsCore",
             "LifegamesWidgetsWatch",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             .product(name: "ViewInspector", package: "ViewInspector"),

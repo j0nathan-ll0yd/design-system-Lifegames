@@ -81,6 +81,35 @@ that declared it, naming the Props type, never silently skipped.
 - **THEN** the decode failure SHALL be recorded against that row, and the suite SHALL NOT report a
   pass for a row it could not decode
 
+### Requirement: Every widget fixture on disk maps to a schema, or the generator writes no map
+
+Every fixture JSON under `Sources/LifegamesWidgets/Resources/widgets/` SHALL map to a schema in
+`packages/schemas/fixture-map.json`, so that `validate.ts` checks it. When a fixture maps to no schema,
+`generate-widget-schemas.mjs` SHALL name each such file, say how to wire it, and exit 1 before it
+writes the map. The root `widget-manifest.json` and dot-directories are not fixtures. A dot-prefixed
+JSON file and a symlink SHALL be reported as unmapped, never skipped and never followed.
+
+#### Scenario: A fixture has no schema
+
+- **GIVEN** a fixture JSON whose base name resolves to no schema title
+- **WHEN** the generator wires the fixture tree
+- **THEN** it SHALL exit 1, name the file and how to wire it, and SHALL NOT write
+  `fixture-map.json`
+
+#### Scenario: A fixture lands on disk but not in the map
+
+- **GIVEN** a fixture JSON on disk that the committed `fixture-map.json` does not list
+- **WHEN** `governance-gates` runs the fixture-wiring suite
+- **THEN** the suite SHALL fail and show the missing path. `validate.ts` reads only the map and never
+  scans the tree, so this suite is the gate for an omission; a fixture with no schema title also
+  fails the generator, as in the scenario above
+
+#### Scenario: The fixture tree holds a symlink
+
+- **GIVEN** a symlink under the fixture tree, broken, pointing at a file, or pointing back up the tree
+- **WHEN** the generator wires the fixture tree
+- **THEN** the link SHALL be reported as unmapped by path, without a thrown error and without a loop
+
 ### Requirement: Every manifest widget has a fixture on disk and instantiates without crashing
 
 Every entry in `widget-manifest.json` SHALL name a fixture that exists in the widget resource bundle,

@@ -1,5 +1,41 @@
 {
   "ds": {
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.connected-drinking.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.connected-finished.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.connected-fresh.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.connected-idle.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.connected-sipping.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.error.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.full-overflow.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.searching.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
+    "Sources/LifegamesWidgets/Resources/widgets/coffee/coffee-tracking.unpaired.json": {
+      "schema": "CoffeeTracking",
+      "strategy": "single"
+    },
     "Sources/LifegamesWidgets/Resources/widgets/github/activity-feed.burst-week.json": {
       "schema": "ActivityFeedProps",
       "strategy": "single"

@@ -35,7 +35,7 @@
 
 ## Schema Validation
 
-Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). The validator fails closed: a mapped fixture that does not exist fails and names its path and bucket, and a run that validates 0 fixtures fails (`scripts/validate.test.mjs`). The map holds one bucket, `ds`; the `consumer` bucket left with atlas decision 0160, and website PR #416 removes the last consumer call (its `prebuild`). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
+Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). The validator fails closed: a mapped fixture that does not exist fails and names its path and bucket, and a run that validates 0 fixtures fails (`scripts/validate.test.mjs`). The generator fails closed too: `generate-widget-schemas.mjs` exits 1 before it writes the map when any fixture JSON under `Sources/LifegamesWidgets/Resources/widgets/` maps to no schema, and names each file (`scripts/fixture-wiring.mjs`, `scripts/fixture-wiring.test.mjs`). The manifest and dot-directories are not fixtures; a dot-prefixed JSON file and any symlink (never followed) are reported as unmapped. A data-only fixture pool (media, location previews, `coffee`) gets a hand-authored `authored/<name>.schema.json`, an `EXTRA_CATEGORY_WIRING` entry, a `SCHEMA_ENTRIES` row in `codegen.ts`, and Swift catalog rows in `Tests/LifegamesWidgetsTests/WidgetFixtureCatalog+<Category>.swift` that decode each fixture into its Swift type. The map holds one bucket, `ds`; the `consumer` bucket left with atlas decision 0160, and website PR #416 removes the last consumer call (its `prebuild`). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
 
 ## Cross-Repo Consumption
 
@@ -109,9 +109,9 @@ change. See `contracts/component-catalog/README.md`.
 
 Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
 `openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
-today: `widget-contract`** (18 requirements / 67 scenarios), which restates the widget contract already
+today: `widget-contract`** (19 requirements / 70 scenarios), which restates the widget contract already
 enforced by `governance-gates`, `test-swift`, `contract-ts` and the `lint-web` step of `web-builds` — P3/F-015 purity, the
-fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
+fixture→Props decode, fixture-map coverage (every widget fixture JSON maps to a schema, or the generator writes no map), W16 props-extend-schema, registry reconciliation, the component-contract catalog
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
 promotion bar, the honest server states of the live widgets (atlas 0160, `packages/web/tests/server-render/states.test.ts`), and byte-stable server markup under a moving clock (atlas 0164 D5, `packages/web/tests/server-render/byte-stability.test.ts`). **Describe what is already enforced**; a requirement with no gate behind it is a wish
 with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
