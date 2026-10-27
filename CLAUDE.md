@@ -27,6 +27,10 @@
 - Astro components use scoped `<style>` blocks
 - Widget fixtures in `Sources/LifegamesWidgets/Resources/widgets/` (shared with iOS via Vite alias)
 
+## Script Test Suites (`pnpm test:scripts`)
+
+`pnpm test:scripts` runs every `node:test` and ESLint `RuleTester` suite: `audits/__tests__/`, `scripts/`, `packages/schemas/scripts/`, `contracts/component-catalog/` and `eslint-local-rules/__tests__/`. CI runs it ONCE, in the required `governance-gates` step, and in no other job. `scripts/ci-workflow-shape.test.mjs` enforces this: a tracked suite outside the globs, a narrowed glob that drops a formerly pinned suite, or a second `node --test` of a covered file anywhere in `ci.yml` fails it. Put a new suite under one of those directories; do not add a per-suite CI line.
+
 ## Fixture Rules
 
 - Personal data MUST be scrubbed before push (enforced by `audits/checks/d6-scan-personal-data.sh`)
@@ -65,7 +69,7 @@ All use Vite 8 (unified from prior Vite 6/7 split).
 - **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
-- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the `lint-web` step of the non-required `web-builds` job. `audits/__tests__/d3-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they are now in `test:scripts` and in `governance-gates`.
+- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the `lint-web` step of the non-required `web-builds` job. `audits/__tests__/d3-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they now run in `pnpm test:scripts`, which `governance-gates` runs.
 
 ## Component-Contract Catalog (`contracts/component-catalog/`)
 
@@ -100,8 +104,8 @@ lane `origin/main` IS the pushed commit, so the merge base is HEAD and the freez
 passes `github.event.before` there.
 Gate: `pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
 conformance ratchet, baseline freeze, idempotence) — wired into BOTH the CI `governance-gates` step
-(required status context) and `.husky/pre-push`; unit tests run under `pnpm test:scripts`, and
-`ratchet.test.mjs` also runs directly in `governance-gates` as the freeze's can-fail proof. Bumping
+(required status context) and `.husky/pre-push`; its unit tests, including `ratchet.test.mjs` (the
+freeze's can-fail proof), run under `pnpm test:scripts`, which `governance-gates` runs. Bumping
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
 change. See `contracts/component-catalog/README.md`.
 
@@ -131,8 +135,8 @@ other finding type blocks unconditionally; a baseline id naming no live requirem
 id is reported PRUNABLE and must be pruned in the same PR; an unparseable baseline is a hard RED; an
 absent one grandfathers nothing (stricter, never a pass). Re-record with `pnpm covers:update-baseline`
 — never hand-edit an id. Gate: `pnpm check:covers` — wired into BOTH the CI `governance-gates` step
-(required status context) and `.husky/pre-push`; `audits/__tests__/d3-openspec-covers.test.mjs` also runs directly
-in `governance-gates` as the can-fail proof. See `openspec/README.md`.
+(required status context) and `.husky/pre-push`; `audits/__tests__/d3-openspec-covers.test.mjs`, the can-fail
+proof, runs in `governance-gates` under `pnpm test:scripts`. See `openspec/README.md`.
 
 ## lp-audit (Audit System — D domain)
 
