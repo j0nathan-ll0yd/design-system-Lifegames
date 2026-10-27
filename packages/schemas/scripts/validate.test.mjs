@@ -82,6 +82,20 @@ test('a malformed entry fails instead of being skipped', () => {
   assert.match(r.stderr, /Malformed map entry/)
 })
 
+test('an unknown schema fails', () => {
+  const r = run({ds: {'ok.json': {schema: 'NoSuchSchema'}}}, {'ok.json': (p) => copyFileSync(REAL_FIXTURE, p)})
+  assert.equal(r.status, 1)
+  assert.match(r.stderr, /x ok\.json \[bucket: ds\] \(NoSuchSchema\)/)
+  assert.match(r.stderr, /Schema not found: NoSuchSchema/)
+})
+
+test('an unparseable fixture fails', () => {
+  const r = run({ds: {'broken.json': {schema: SCHEMA}}}, {'broken.json': (p) => writeFileSync(p, '{')})
+  assert.equal(r.status, 1)
+  assert.match(r.stderr, /x broken\.json \[bucket: ds\]/)
+  assert.match(r.stderr, /Parse error/)
+})
+
 test('the shipped map has no consumer bucket', () => {
   const map = JSON.parse(readFileSync(join(HERE, '../fixture-map.json'), 'utf8'))
   assert.deepEqual(Object.keys(map).filter((k) => !k.startsWith('_')), ['ds'])

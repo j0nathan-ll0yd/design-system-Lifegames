@@ -6,7 +6,8 @@
 // Fails closed: a mapped fixture that does not exist is an error naming the
 // path and the bucket, and a run that validates 0 fixtures fails. Fixture
 // paths resolve against LIFEGAMES_VALIDATE_CWD (default: process.cwd()).
-// Flags: --bucket=<name> checks one bucket; --map=<path> reads another map.
+// Flags: --bucket=<name> checks one bucket; --map=<path> reads another map
+// (a relative --map resolves against process.cwd(), not LIFEGAMES_VALIDATE_CWD).
 
 import {existsSync, readdirSync, readFileSync} from 'node:fs'
 import {isAbsolute, join, resolve} from 'node:path'
@@ -217,7 +218,7 @@ if (failed === 0 && total === 0) {
 }
 
 if (failed > 0) {
-  process.stderr.write(`\n[schemas:validate] FAIL: ${failed} error(s) across ${total} mapped fixture(s).\n\n`)
+  process.stderr.write(`\n[schemas:validate] FAIL: ${failed} error(s); ${total} mapped fixture(s) checked.\n\n`)
   for (const e of errors) {
     process.stderr.write(`  x ${e.fixture} [bucket: ${e.bucket}] (${e.schema || 'unknown schema'})\n`)
     if (e.ajvErrors) {

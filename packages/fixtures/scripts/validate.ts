@@ -147,7 +147,7 @@ if (total === 0 && errors.length === 0) {
 }
 
 if (errors.length > 0) {
-  process.stderr.write(`\n[fixtures:validate] FAIL: ${errors.length} of ${total} fixture(s) failed.\n\n`)
+  process.stderr.write(`\n[fixtures:validate] FAIL: ${errors.length} error(s); ${total} fixture(s) checked.\n\n`)
   for (const e of errors) {
     process.stderr.write(`  x ${e.fixture} (${e.schema})\n`)
     if (e.ajvErrors) {
