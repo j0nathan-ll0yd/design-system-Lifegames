@@ -4,6 +4,7 @@ import {mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {basename, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import * as prettier from 'prettier'
+import {formatUnmapped, wireFixtures} from './fixture-wiring.mjs'
 
 // Format emitted JSON through Prettier (root .prettierrc.mjs) so generated
 // artifacts stay readable and byte-stable for `format:check` (issue #54).
@@ -380,13 +381,15 @@ fixtureBaseToTitle['place-leaderboard-v3'] = 'PlaceLeaderboardV3Props'
 // Data-only fixture domains: app-preview fixture pools (S98) that have no web
 // widget or manifest entry (a manifest entry implies a viewType). Their schemas
 // are authored in packages/schemas/authored/ and validated via urn:authored:.
+// coffee-tracking mirrors CoffeeTrackingProps (Sources/LifegamesComponentsCore/Coffee).
 const EXTRA_CATEGORY_WIRING = {
   'media-file': 'MediaFile',
   'media-library': 'MediaLibrary',
   'media-profile': 'MediaProfile',
   'visit-timeline': 'VisitTimeline',
   'saved-places': 'SavedPlaces',
-  'place-search-results': 'PlaceSearchResults'
+  'place-search-results': 'PlaceSearchResults',
+  'coffee-tracking': 'CoffeeTracking'
 }
 Object.assign(fixtureBaseToTitle, EXTRA_CATEGORY_WIRING)
 
@@ -407,24 +410,17 @@ for (const f of readdirSync(AUTHORED_DIR).filter((f) => f.endsWith('.schema.json
   }
 }
 
-const dsEntries = {}
-const widgetCats = readdirSync(WIDGETS_ROOT).filter((d) => {
-  try {
-    return !d.includes('.') && readdirSync(join(WIDGETS_ROOT, d)).length > 0
-  } catch {
-    return false
-  }
+const {entries: dsEntries, unmapped} = wireFixtures({
+  widgetsRoot: WIDGETS_ROOT,
+  relPrefix: 'Sources/LifegamesWidgets/Resources/widgets',
+  fixtureBaseToTitle,
+  schemaTitles
 })
-for (const cat of widgetCats) {
-  for (const f of readdirSync(join(WIDGETS_ROOT, cat)).filter((f) => f.endsWith('.json'))) {
-    const rel = `Sources/LifegamesWidgets/Resources/widgets/${cat}/${f}`
-    const fullBase = f.replace(/\.json$/, '')
-    const baseOnly = fullBase.replace(/\.[^.]+$/, '')
-    const title = fixtureBaseToTitle[fullBase] || fixtureBaseToTitle[baseOnly]
-    if (title && schemaTitles.has(title)) {
-      dsEntries[rel] = {schema: title, strategy: 'single'}
-    }
-  }
+// Fail before the map is written: a map that silently omits a fixture is the
+// failure this guards against.
+if (unmapped.length > 0) {
+  process.stderr.write(formatUnmapped(unmapped))
+  process.exit(1)
 }
 
 const fixtureMapPath = join(PKG_ROOT, 'fixture-map.json')

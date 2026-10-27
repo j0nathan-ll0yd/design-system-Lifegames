@@ -2,7 +2,7 @@
 // Source: packages/schemas/{vendored,authored}/*.schema.json
 // Re-run: pnpm -F @j0nathan-ll0yd/schemas codegen
 //
-// Contains Codable structs for all 21 widget data schemas.
+// Contains Codable structs for all 22 widget data schemas.
 // Shared decoder helpers appear once at the end of this file.
 
 import Foundation
@@ -4232,6 +4232,127 @@ extension PlaceSearchResultEntry {
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
         return String(data: try self.jsonData(), encoding: encoding)
     }
+}
+
+// MARK: - Helper functions for creating encoders and decoders
+
+// MARK: - Schema: CoffeeTracking
+
+/// Presentational props for the Acaia coffee-tracking screen: the wire shape of
+/// CoffeeTrackingProps (Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingProps.swift).
+/// Only the stored properties are encoded; the derived values (consumedGrams, fillPercent,
+/// caffeineMgThisCup, isLinkLostMidSession, isPresenceUnknown, isSipping, primaryAction) are
+/// computed and never appear on the wire. Fixture pool for coffee-tracking previews (S98).
+// MARK: - CoffeeTracking
+struct CoffeeTracking: Codable {
+    /// Scale battery level. Null when unknown or the scale is unpaired.
+    let batteryPercent: Int?
+    /// Beverage type. Raw values of CoffeeTrackingProps.Beverage.
+    let beverage: CoffeeBeverage
+    /// Scale link state. Raw values of CoffeeTrackingProps.ScaleConnection.
+    let connection: CoffeeScaleConnection
+    let cupsToday: Int
+    /// Instantaneous reading. May be about 0 while the cup is lifted.
+    let currentWeightGrams: Double
+    let dailyCaffeineMg: Int
+    /// Daily caffeine target. The Swift initializer defaults it to 400 mg (FDA guideline); the
+    /// wire carries it explicitly.
+    let dailyTargetMg: Int
+    /// Non-nil only when connection is error.
+    let errorMessage: String?
+    /// Weight change per second, derived client-side. 0 when idle.
+    let flowRateGramsPerSEC: Double
+    /// False while the cup is lifted. Meaningful only while connection is connected.
+    let isCupOnScale: Bool
+    /// True while a cup is actively tracked.
+    let isSessionActive: Bool
+    /// Last settled reading. Drives the fill meter.
+    let lastStableWeightGrams: Double
+    let sessionElapsedSeconds: Int
+    /// Baseline captured at New Cup (the full-cup weight).
+    let startWeightGrams: Double
+
+    enum CodingKeys: String, CodingKey {
+        case batteryPercent, beverage, connection, cupsToday, currentWeightGrams, dailyCaffeineMg, dailyTargetMg, errorMessage
+        case flowRateGramsPerSEC = "flowRateGramsPerSec"
+        case isCupOnScale, isSessionActive, lastStableWeightGrams, sessionElapsedSeconds, startWeightGrams
+    }
+}
+
+// MARK: CoffeeTracking convenience initializers and mutators
+
+extension CoffeeTracking {
+    init(data: Data) throws {
+        self = try newJSONDecoder().decode(CoffeeTracking.self, from: data)
+    }
+
+    init(_ json: String, using encoding: String.Encoding = .utf8) throws {
+        guard let data = json.data(using: encoding) else {
+            throw NSError(domain: "JSONDecoding", code: 0, userInfo: nil)
+        }
+        try self.init(data: data)
+    }
+
+    init(fromURL url: URL) throws {
+        try self.init(data: try Data(contentsOf: url))
+    }
+
+    func with(
+        batteryPercent: Int?? = nil,
+        beverage: CoffeeBeverage? = nil,
+        connection: CoffeeScaleConnection? = nil,
+        cupsToday: Int? = nil,
+        currentWeightGrams: Double? = nil,
+        dailyCaffeineMg: Int? = nil,
+        dailyTargetMg: Int? = nil,
+        errorMessage: String?? = nil,
+        flowRateGramsPerSEC: Double? = nil,
+        isCupOnScale: Bool? = nil,
+        isSessionActive: Bool? = nil,
+        lastStableWeightGrams: Double? = nil,
+        sessionElapsedSeconds: Int? = nil,
+        startWeightGrams: Double? = nil
+    ) -> CoffeeTracking {
+        return CoffeeTracking(
+            batteryPercent: batteryPercent ?? self.batteryPercent,
+            beverage: beverage ?? self.beverage,
+            connection: connection ?? self.connection,
+            cupsToday: cupsToday ?? self.cupsToday,
+            currentWeightGrams: currentWeightGrams ?? self.currentWeightGrams,
+            dailyCaffeineMg: dailyCaffeineMg ?? self.dailyCaffeineMg,
+            dailyTargetMg: dailyTargetMg ?? self.dailyTargetMg,
+            errorMessage: errorMessage ?? self.errorMessage,
+            flowRateGramsPerSEC: flowRateGramsPerSEC ?? self.flowRateGramsPerSEC,
+            isCupOnScale: isCupOnScale ?? self.isCupOnScale,
+            isSessionActive: isSessionActive ?? self.isSessionActive,
+            lastStableWeightGrams: lastStableWeightGrams ?? self.lastStableWeightGrams,
+            sessionElapsedSeconds: sessionElapsedSeconds ?? self.sessionElapsedSeconds,
+            startWeightGrams: startWeightGrams ?? self.startWeightGrams
+        )
+    }
+
+    func jsonData() throws -> Data {
+        return try newJSONEncoder().encode(self)
+    }
+
+    func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
+        return String(data: try self.jsonData(), encoding: encoding)
+    }
+}
+
+/// Beverage type. Raw values of CoffeeTrackingProps.Beverage.
+enum CoffeeBeverage: String, Codable {
+    case coldBrew = "coldBrew"
+    case drip = "drip"
+    case espresso = "espresso"
+}
+
+/// Scale link state. Raw values of CoffeeTrackingProps.ScaleConnection.
+enum CoffeeScaleConnection: String, Codable {
+    case connected = "connected"
+    case error = "error"
+    case searching = "searching"
+    case unpaired = "unpaired"
 }
 
 // MARK: - Helper functions for creating encoders and decoders

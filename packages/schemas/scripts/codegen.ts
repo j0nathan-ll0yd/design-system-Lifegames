@@ -66,7 +66,8 @@ const SCHEMA_ENTRIES: Array<{relPath: string; name: string}> = [
   {relPath: 'authored/media-profile.schema.json', name: 'MediaProfile'},
   {relPath: 'authored/visit-timeline.schema.json', name: 'VisitTimeline'},
   {relPath: 'authored/saved-places.schema.json', name: 'SavedPlaces'},
-  {relPath: 'authored/place-search-results.schema.json', name: 'PlaceSearchResults'}
+  {relPath: 'authored/place-search-results.schema.json', name: 'PlaceSearchResults'},
+  {relPath: 'authored/coffee-tracking.schema.json', name: 'CoffeeTracking'}
 ]
 
 /**
