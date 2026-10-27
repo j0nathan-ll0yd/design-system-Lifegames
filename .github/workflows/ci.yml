@@ -120,6 +120,12 @@ jobs:
       - name: 'schemas-freshness: schema URN unit suite'
         if: ${{ !cancelled() }}
         run: node --test packages/schemas/scripts/schema-urn.test.mjs
+      # validate.ts fails closed: a missing mapped fixture and a 0-fixture run both
+      # exit 1. The build below runs the validator over the real map only, so it
+      # cannot show the missing-file or empty-run branch fail; this suite does.
+      - name: 'schemas-freshness: validator fail-closed suite'
+        if: ${{ !cancelled() }}
+        run: node --test packages/schemas/scripts/validate.test.mjs
       - name: schemas-freshness
         if: ${{ !cancelled() }}
         run: pnpm check:schemas-freshness
