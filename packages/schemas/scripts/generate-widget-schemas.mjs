@@ -4,7 +4,7 @@ import {mkdirSync, readdirSync, readFileSync, writeFileSync} from 'node:fs'
 import {basename, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import * as prettier from 'prettier'
-import {formatUnmapped, wireFixtures} from './fixture-wiring.mjs'
+import {failIfUnmapped, wireFixtures} from './fixture-wiring.mjs'
 
 // Format emitted JSON through Prettier (root .prettierrc.mjs) so generated
 // artifacts stay readable and byte-stable for `format:check` (issue #54).
@@ -416,12 +416,17 @@ const {entries: dsEntries, unmapped} = wireFixtures({
   fixtureBaseToTitle,
   schemaTitles
 })
+// Report schema-generation errors first: a widget whose schema failed to
+// generate shows up below as unmapped fixtures, and this names the cause.
+if (errors.length > 0) {
+  process.stderr.write(`[generate-widget-schemas] ${errors.length} errors:\n`)
+  for (const e of errors) {
+    process.stderr.write(`  x ${e.slug}: ${e.error}\n`)
+  }
+}
 // Fail before the map is written: a map that silently omits a fixture is the
 // failure this guards against.
-if (unmapped.length > 0) {
-  process.stderr.write(formatUnmapped(unmapped))
-  process.exit(1)
-}
+failIfUnmapped(unmapped, {write: (text) => process.stderr.write(text), exit: (code) => process.exit(code)})
 
 const fixtureMapPath = join(PKG_ROOT, 'fixture-map.json')
 const fixtureMap = JSON.parse(readFileSync(fixtureMapPath, 'utf-8'))
@@ -429,10 +434,7 @@ fixtureMap.ds = dsEntries
 await writeJson(fixtureMapPath, fixtureMap)
 
 process.stdout.write(`[generate-widget-schemas] Generated ${generated.length} schemas, wired ${Object.keys(dsEntries).length} fixture-map entries.\n`)
+// The schema errors printed above still fail the run, after the map is written.
 if (errors.length > 0) {
-  process.stderr.write(`[generate-widget-schemas] ${errors.length} errors:\n`)
-  for (const e of errors) {
-    process.stderr.write(`  x ${e.slug}: ${e.error}\n`)
-  }
   process.exit(1)
 }

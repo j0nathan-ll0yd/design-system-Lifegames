@@ -41,7 +41,18 @@ function validateMutant(mutate) {
 }
 
 test('the coffee fixture directory holds the nine known states', () => {
-  assert.equal(COFFEE_FIXTURES.length, 9, COFFEE_FIXTURES.join(', '))
+  // A new coffee state fails here on purpose: add it to this list once it validates.
+  assert.deepEqual(COFFEE_FIXTURES, [
+    'coffee-tracking.connected-drinking.json',
+    'coffee-tracking.connected-finished.json',
+    'coffee-tracking.connected-fresh.json',
+    'coffee-tracking.connected-idle.json',
+    'coffee-tracking.connected-sipping.json',
+    'coffee-tracking.error.json',
+    'coffee-tracking.full-overflow.json',
+    'coffee-tracking.searching.json',
+    'coffee-tracking.unpaired.json'
+  ])
 })
 
 test('the shipped map wires every coffee fixture to CoffeeTracking', () => {
@@ -85,7 +96,23 @@ test('a wrong-typed optional field fails', () => {
     f.batteryPercent = '78'
   })
   assert.equal(r.status, 1)
-  assert.match(r.stderr, /\/batteryPercent/)
+  assert.match(r.stderr, /\/batteryPercent: type — must be integer/)
+})
+
+test('a wrong-typed errorMessage fails', () => {
+  const r = validateMutant((f) => {
+    f.errorMessage = 5
+  })
+  assert.equal(r.status, 1)
+  assert.match(r.stderr, /\/errorMessage: type — must be string/)
+})
+
+test('null in a required field fails, as Swift throws on it', () => {
+  const r = validateMutant((f) => {
+    f.cupsToday = null
+  })
+  assert.equal(r.status, 1)
+  assert.match(r.stderr, /\/cupsToday: type — must be integer/)
 })
 
 test('a beverage outside CoffeeTrackingProps.Beverage fails', () => {

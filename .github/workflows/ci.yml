@@ -761,6 +761,11 @@ jobs:
           # run HERE because governance-gates is a required status context and packages is not.
           LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F @j0nathan-ll0yd/schemas validate
           node --test packages/schemas/scripts/validate.test.mjs
+          # The generator's fail-closed wiring: every widget fixture JSON maps to a schema, and the
+          # coffee fixtures validate against CoffeeTracking. The generator's own exit-1 gate runs
+          # only in the non-required packages job (check:schemas-freshness); the "shipped map holds
+          # every fixture JSON" case holds the same property here, in a required context.
+          node --test packages/schemas/scripts/fixture-wiring.test.mjs packages/schemas/scripts/coffee-tracking-schema.test.mjs
           pnpm -F @j0nathan-ll0yd/fixtures exec vitest run tests/validate.test.ts
           # Style Dictionary golden-file characterization (F-005)
           pnpm --filter @j0nathan-ll0yd/tokens test

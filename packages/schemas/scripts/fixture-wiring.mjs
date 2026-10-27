@@ -1,25 +1,28 @@
 // Maps the widget fixture tree onto schema titles for fixture-map.json's `ds`
 // bucket. Fails closed: every fixture JSON under the root must resolve to a
 // schema, so a fixture cannot drop out of validation without a word.
-import {readdirSync} from 'node:fs'
+import {readdirSync, statSync} from 'node:fs'
 import {join} from 'node:path'
 
 // The manifest sits at the root of the fixture tree but is not a fixture.
 export const MANIFEST_FILE = 'widget-manifest.json'
 
 // Every *.json under `dir`, as POSIX paths relative to `root`, sorted. A
-// dot-entry is skipped: it is tool state (a session hook writes `.omc/` into
-// the directory it runs in, and .gitignore drops it), never a fixture.
+// dot-directory is skipped: it is tool state (a session hook writes `.omc/`
+// into the directory it runs in, and .gitignore drops it), never a fixture
+// directory. A dot-prefixed JSON file is listed, so it is reported, not hidden.
+// A symlink is followed, as the old inline loop did.
 function listJson(root, dir = root, prefix = '') {
   const out = []
   for (const entry of readdirSync(dir, {withFileTypes: true})) {
-    if (entry.name.startsWith('.')) {
-      continue
-    }
+    const full = join(dir, entry.name)
     const rel = prefix ? `${prefix}/${entry.name}` : entry.name
-    if (entry.isDirectory()) {
-      out.push(...listJson(root, join(dir, entry.name), rel))
-    } else if (entry.isFile() && entry.name.endsWith('.json')) {
+    const stat = entry.isSymbolicLink() ? statSync(full) : entry
+    if (stat.isDirectory()) {
+      if (!entry.name.startsWith('.')) {
+        out.push(...listJson(root, full, rel))
+      }
+    } else if (stat.isFile() && entry.name.endsWith('.json')) {
       out.push(rel)
     }
   }
@@ -51,9 +54,16 @@ export function wireFixtures({widgetsRoot, relPrefix, fixtureBaseToTitle, schema
       unmapped.push({path, reason: 'not directly inside a category directory'})
       continue
     }
+    if (parts[1].startsWith('.')) {
+      unmapped.push({path, reason: 'dot-prefixed file name'})
+      continue
+    }
     const fullBase = parts[1].replace(/\.json$/, '')
     const baseOnly = fullBase.replace(/\.[^.]+$/, '')
-    const title = fixtureBaseToTitle[fullBase] || fixtureBaseToTitle[baseOnly]
+    // Own keys only: a fixture named `constructor.json` must not resolve to
+    // Object.prototype.constructor.
+    const title = (Object.hasOwn(fixtureBaseToTitle, fullBase) && fixtureBaseToTitle[fullBase]) ||
+      (Object.hasOwn(fixtureBaseToTitle, baseOnly) && fixtureBaseToTitle[baseOnly])
     if (!title) {
       unmapped.push({path, reason: `no schema title for "${baseOnly}"`})
     } else if (!schemaTitles.has(title)) {
@@ -75,4 +85,16 @@ export function formatUnmapped(unmapped) {
     '  A data-only fixture pool: author packages/schemas/authored/<name>.schema.json, map the fixture base name to its',
     '  title in EXTRA_CATEGORY_WIRING (scripts/generate-widget-schemas.mjs), and add it to SCHEMA_ENTRIES (scripts/codegen.ts).')
   return lines.join('\n') + '\n'
+}
+
+/**
+ * The generator's gate. Writes the failure text and exits 1 when any fixture is
+ * unmapped; returns otherwise. `write` and `exit` are injected so the test
+ * drives the branch the generator runs.
+ */
+export function failIfUnmapped(unmapped, {write, exit}) {
+  if (unmapped.length > 0) {
+    write(formatUnmapped(unmapped))
+    exit(1)
+  }
 }
