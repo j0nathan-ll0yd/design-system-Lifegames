@@ -1,11 +1,12 @@
 #!/usr/bin/env tsx
 // B4 production validator — reads fixture-map.json and validates every
 // listed fixture against its schema. Strict mode (additionalProperties: false).
-// Used by DS build and consumer prebuild.
+// Used by the DS build (`pnpm -F <schemas> build`, CWD = repo root).
 //
-// Consumer-side invocation (Phase D1):
-//   "prebuild": "LIFEGAMES_VALIDATE_CWD=$PWD pnpm --dir <ds-root> -F @j0nathan-ll0yd/schemas validate"
-// (or equivalent when consumed via the published npm package)
+// Fails closed: a mapped fixture that does not exist is an error naming the
+// path and the bucket, and a run that validates 0 fixtures fails. Fixture
+// paths resolve against LIFEGAMES_VALIDATE_CWD (default: process.cwd()).
+// Flags: --bucket=<name> checks one bucket; --map=<path> reads another map.
 
 import {existsSync, readdirSync, readFileSync} from 'node:fs'
 import {isAbsolute, join, resolve} from 'node:path'
@@ -18,9 +19,8 @@ import {schemaUrn} from './schema-urn.mjs'
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const PKG_ROOT = resolve(__dirname, '..')
 
-// Resolve the working directory: in DS build this is the DS root.
-// In consumer prebuild (D1+ work), the consumer will invoke this with its CWD,
-// so fixture paths in fixture-map are relative to the invoker's CWD.
+// Resolve the working directory: in DS build this is the DS root. Fixture
+// paths in fixture-map are relative to it.
 const INVOKER_CWD = process.env.LIFEGAMES_VALIDATE_CWD || process.cwd()
 
 // Load AJV — Draft-07 is what all our schemas declare
@@ -121,32 +121,44 @@ for (const [file, name] of Object.entries(VENDORED_TITLE_MAP)) {
   }
 }
 
-// Read fixture-map.json
-const fixtureMap = JSON.parse(readFileSync(join(PKG_ROOT, 'fixture-map.json'), 'utf-8')) as Record<
+// Read the fixture map. `--map=<path>` points at another map (tests use it);
+// the default is the map this package ships.
+const args = process.argv.slice(2)
+const mapArg = args.find((a) => a.startsWith('--map='))
+const fixtureMapPath = mapArg ? resolve(mapArg.slice('--map='.length)) : join(PKG_ROOT, 'fixture-map.json')
+const fixtureMap = JSON.parse(readFileSync(fixtureMapPath, 'utf-8')) as Record<
   string,
   unknown
 >
 
 // Determine which buckets to validate (default: all)
-const args = process.argv.slice(2)
 const bucketArg = args.find((a) => a.startsWith('--bucket='))
-const buckets = bucketArg ? [bucketArg.slice('--bucket='.length)] : Object.keys(fixtureMap)
+const buckets = bucketArg ? [bucketArg.slice('--bucket='.length)] : Object.keys(fixtureMap).filter((k) => !k.startsWith('_'))
 
 let total = 0
 let failed = 0
-const errors: Array<{fixture: string; schema?: string; error?: string; ajvErrors?: ErrorObject[] | null}> = []
+const errors: Array<{fixture: string; bucket: string; schema?: string; error?: string; ajvErrors?: ErrorObject[] | null}> = []
 
+// Every mapped fixture must exist and validate. A missing file, a malformed
+// entry, an unknown or empty bucket, and a run that checks nothing all fail:
+// a gate that passes over an empty set cannot fail, so it measures nothing.
 for (const bucketName of buckets) {
   const bucket = fixtureMap[bucketName]
-  if (!bucket || typeof bucket !== 'object') {
+  if (!bucket || typeof bucket !== 'object' || Array.isArray(bucket)) {
+    failed++
+    errors.push({fixture: '(bucket)', bucket: bucketName, error: `Bucket "${bucketName}" is not an object in ${fixtureMapPath}`})
     continue
   }
+  let bucketTotal = 0
   for (const [fixtureRelPath, entry] of Object.entries(bucket as Record<string, unknown>)) {
     // Skip comment keys
     if (fixtureRelPath.startsWith('_')) {
       continue
     }
-    if (!entry || typeof entry !== 'object' || !('schema' in entry)) {
+    bucketTotal++
+    if (!entry || typeof entry !== 'object' || typeof (entry as {schema?: unknown}).schema !== 'string') {
+      failed++
+      errors.push({fixture: fixtureRelPath, bucket: bucketName, error: 'Malformed map entry: expected {"schema": "<title>"}'})
       continue
     }
 
@@ -155,19 +167,24 @@ for (const bucketName of buckets) {
       ? fixtureRelPath
       : join(INVOKER_CWD, fixtureRelPath)
 
+    total++
     if (!existsSync(fixtureAbsPath)) {
-      // Skip silently: bucket's fixtures aren't present in this invoker's tree.
-      // (e.g., DS build invokes; consumer fixtures aren't present here.)
+      failed++
+      errors.push({
+        fixture: fixtureRelPath,
+        bucket: bucketName,
+        schema: schemaName,
+        error: `Mapped fixture not found: ${fixtureAbsPath} (resolved against ${INVOKER_CWD})`
+      })
       continue
     }
 
-    total++
     let data: unknown
     try {
       data = JSON.parse(readFileSync(fixtureAbsPath, 'utf-8'))
     } catch (e) {
       failed++
-      errors.push({fixture: fixtureRelPath, error: `Parse error: ${(e as Error).message}`})
+      errors.push({fixture: fixtureRelPath, bucket: bucketName, schema: schemaName, error: `Parse error: ${(e as Error).message}`})
       continue
     }
 
@@ -178,22 +195,31 @@ for (const bucketName of buckets) {
 
     if (!validate) {
       failed++
-      errors.push({fixture: fixtureRelPath, error: `Schema not found: ${schemaName}`})
+      errors.push({fixture: fixtureRelPath, bucket: bucketName, schema: schemaName, error: `Schema not found: ${schemaName}`})
       continue
     }
 
     const ok = validate(data)
     if (!ok) {
       failed++
-      errors.push({fixture: fixtureRelPath, schema: schemaName, ajvErrors: validate.errors})
+      errors.push({fixture: fixtureRelPath, bucket: bucketName, schema: schemaName, ajvErrors: validate.errors})
     }
+  }
+  if (bucketTotal === 0) {
+    failed++
+    errors.push({fixture: '(bucket)', bucket: bucketName, error: `Bucket "${bucketName}" maps no fixtures`})
   }
 }
 
+if (failed === 0 && total === 0) {
+  process.stderr.write(`\n[schemas:validate] FAIL: 0 fixtures validated. ${fixtureMapPath} maps no fixtures to check.\n`)
+  process.exit(1)
+}
+
 if (failed > 0) {
-  process.stderr.write(`\n[schemas:validate] FAIL: ${failed} of ${total} fixtures failed validation.\n\n`)
+  process.stderr.write(`\n[schemas:validate] FAIL: ${failed} error(s) across ${total} mapped fixture(s).\n\n`)
   for (const e of errors) {
-    process.stderr.write(`  x ${e.fixture} (${e.schema || 'unknown schema'})\n`)
+    process.stderr.write(`  x ${e.fixture} [bucket: ${e.bucket}] (${e.schema || 'unknown schema'})\n`)
     if (e.ajvErrors) {
       const shown = e.ajvErrors.slice(0, 5)
       for (const err of shown) {

@@ -595,3 +595,5 @@ packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
 .changeset/copy-coffee-status-messages.md:marker:j0nathan-ll0yd
 # The dead map-CSS removal changeset names the packages it bumps.
 .changeset/remove-dead-map-css.md:marker:j0nathan-ll0yd
+# The fail-closed schemas validator changeset names the package it bumps.
+.changeset/schemas-validate-fails-closed.md:marker:j0nathan-ll0yd

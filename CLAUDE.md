@@ -34,7 +34,7 @@
 
 ## Schema Validation
 
-Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). Consumer-side invocation: `LIFEGAMES_VALIDATE_CWD=$PWD pnpm ... validate` (Phase D1+). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
+Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). The validator fails closed: a mapped fixture that does not exist fails and names its path and bucket, and a run that validates 0 fixtures fails (`scripts/validate.test.mjs`). The map holds one bucket, `ds`; no consumer runs the validator (the `consumer` bucket left with atlas decision 0160). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
 
 ## Cross-Repo Consumption
 
