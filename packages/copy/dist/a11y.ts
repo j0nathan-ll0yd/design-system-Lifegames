@@ -83,7 +83,7 @@ export interface A11YPage404 {
   region: string;
 }
 /**
- * Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.
+ * Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, primary action button states, and the connection badge.
  */
 export interface A11YCoffee {
   mug: string;
@@ -94,4 +94,5 @@ export interface A11YCoffee {
   actionReconnect: string;
   actionFinishCup: string;
   actionNewCup: string;
+  connectionStatus: string;
 }

@@ -23,8 +23,8 @@ public struct Accessibility: Codable, Sendable {
     public let bookshelf: A11YBookshelf
     /// Live clock accessibility label (web shell) — the top-bar current-time readout.
     public let clock: A11YClock
-    /// Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and
-    /// primary action button states.
+    /// Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar,
+    /// primary action button states, and the connection badge.
     public let coffee: A11YCoffee
     /// Identity card accessibility labels — the avatar image alt text and the social-links nav
     /// region label.
@@ -249,20 +249,22 @@ public extension A11YClock {
     }
 }
 
-/// Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and
-/// primary action button states.
+/// Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar,
+/// primary action button states, and the connection badge.
 // MARK: - A11YCoffee
 public struct A11YCoffee: Codable, Sendable {
     public let actionConnect, actionFinishCup, actionNewCup, actionReconnect: String
-    public let actionSearching, caffeineThisCup, dailyCaffeine, mug: String
+    public let actionSearching, caffeineThisCup, connectionStatus, dailyCaffeine: String
+    public let mug: String
 
-    public init(actionConnect: String, actionFinishCup: String, actionNewCup: String, actionReconnect: String, actionSearching: String, caffeineThisCup: String, dailyCaffeine: String, mug: String) {
+    public init(actionConnect: String, actionFinishCup: String, actionNewCup: String, actionReconnect: String, actionSearching: String, caffeineThisCup: String, connectionStatus: String, dailyCaffeine: String, mug: String) {
         self.actionConnect = actionConnect
         self.actionFinishCup = actionFinishCup
         self.actionNewCup = actionNewCup
         self.actionReconnect = actionReconnect
         self.actionSearching = actionSearching
         self.caffeineThisCup = caffeineThisCup
+        self.connectionStatus = connectionStatus
         self.dailyCaffeine = dailyCaffeine
         self.mug = mug
     }
@@ -293,6 +295,7 @@ public extension A11YCoffee {
         actionReconnect: String? = nil,
         actionSearching: String? = nil,
         caffeineThisCup: String? = nil,
+        connectionStatus: String? = nil,
         dailyCaffeine: String? = nil,
         mug: String? = nil
     ) -> A11YCoffee {
@@ -303,6 +306,7 @@ public extension A11YCoffee {
             actionReconnect: actionReconnect ?? self.actionReconnect,
             actionSearching: actionSearching ?? self.actionSearching,
             caffeineThisCup: caffeineThisCup ?? self.caffeineThisCup,
+            connectionStatus: connectionStatus ?? self.connectionStatus,
             dailyCaffeine: dailyCaffeine ?? self.dailyCaffeine,
             mug: mug ?? self.mug
         )

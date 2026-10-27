@@ -91,16 +91,17 @@ const NAMESPACES: NamespaceFixture[] = [
   //     + books 1 (body, no refs) + articles 3 (body + feedly ×2)
   //     + githubEvents 3 (body + github ×2) + starredRepos 3 (body + github ×2)
   //     + theatreReviews 3 (body + squarespace ×2)
-  //   + coffee 15 (sipping/caffeineUnit/thisCup/dailyLabel/searching + action ×4
+  //   + coffee 21 (sipping/caffeineUnit/thisCup/dailyLabel/searching + action ×4
   //     [connect/reconnect/finishCup/newCup] + badge ×3 [connect/connected/error]
-  //     + beverage ×3 [drip/espresso/coldBrew]).
+  //     + status ×6 [offline/streamPaused/reconnectFailed/reconnectFailedTracked/
+  //     bluetoothUnavailable/bluetoothDenied] + beverage ×3 [drip/espresso/coldBrew]).
   //   heartRate and movement each gained +4 paused leaves (label/labelCharging/description/descriptionCharging).
-  {name: 'widgets', expectedLeaves: 151},
+  {name: 'widgets', expectedLeaves: 157},
   // a11y: movement 2 + identity 2 + bookshelf 1 + bookModal 1 + modal 1
   //   + readingFeed 1 + nav 2 + region 2 + clock 1 + page404 1
-  //   + coffee 8 (mug/caffeineThisCup/dailyCaffeine + action ×5
-  //     [connect/searching/reconnect/finishCup/newCup]).
-  {name: 'a11y', expectedLeaves: 22},
+  //   + coffee 9 (mug/caffeineThisCup/dailyCaffeine + action ×5
+  //     [connect/searching/reconnect/finishCup/newCup] + connectionStatus).
+  {name: 'a11y', expectedLeaves: 23},
   // app: nav 10 + common 7 + home 12 + settings 45 + savedPlaces 4
   //   + addPlace 9 + health 9 + sleep 8 + location 73 + bookshelf 54 + watch 12
   //   + sections 2 + page404 2.

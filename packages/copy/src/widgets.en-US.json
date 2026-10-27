@@ -2234,7 +2234,7 @@
         "description": "Shared searching/connecting state text used by both the connection badge and the primary action button title.",
         "usage": [
           "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .searching)",
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .searching)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .searching)"
         ],
         "register": "atom",
         "audience": "human",
@@ -2245,9 +2245,9 @@
     "actionConnect": {
       "value": "Connect your Acaia",
       "_meta": {
-        "description": "Primary action button title when the scale is unpaired.",
+        "description": "Primary action button title when the scale is unpaired and no cup is tracked (PrimaryAction.connect).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .unpaired)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .connect)"
         ],
         "register": "label",
         "audience": "human",
@@ -2258,9 +2258,10 @@
     "actionReconnect": {
       "value": "Reconnect",
       "_meta": {
-        "description": "Primary action button title when the scale connection errored.",
+        "description": "Primary action button title when the scale connection errored and no cup is tracked (PrimaryAction.reconnect). Also the secondary reconnect affordance under Finish Cup while a tracked cup's link is down.",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .error)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .reconnect)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (reconnectButton label)"
         ],
         "register": "atom",
         "audience": "human",
@@ -2271,9 +2272,9 @@
     "actionFinishCup": {
       "value": "Finish Cup",
       "_meta": {
-        "description": "Primary action button title when a tracking session is active.",
+        "description": "Primary action button title while a cup is tracked, in every connection state: finishing never needs the scale (PrimaryAction.finishCup).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .connected active)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .finishCup)"
         ],
         "register": "label",
         "audience": "human",
@@ -2284,9 +2285,9 @@
     "actionNewCup": {
       "value": "+ New Cup",
       "_meta": {
-        "description": "Primary action button title when connected and idle (start a new cup).",
+        "description": "Primary action button title when connected and idle, to start a new cup (PrimaryAction.newCup).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonTitle .connected idle)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.title .newCup)"
         ],
         "register": "label",
         "audience": "human",
@@ -2331,6 +2332,90 @@
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-07-07"
+      }
+    },
+    "statusOffline": {
+      "value": "Scale offline — your cup is still being tracked",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when the scale link is lost while a cup is tracked. Replaces raw CoreBluetooth error text, which is never shown to the user.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: link lost mid-cup)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusStreamPaused": {
+      "value": "Scale stream paused — reconnecting",
+      "_meta": {
+        "description": "Status badge text (errorMessage) while the app bounces a stalled scale stream on return to the foreground.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: foreground stall bounce)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusReconnectFailed": {
+      "value": "Could not reconnect to the scale — tap to try again",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when reconnection gave up and no cup is tracked, so the primary button is Reconnect.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: reconnect gave up, no cup tracked)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusReconnectFailedTracked": {
+      "value": "Could not reconnect to the scale — tap Reconnect",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when reconnection gave up while a cup is tracked. The primary button stays on finishing the cup, so the text points at the secondary Reconnect affordance (widgets.coffee.actionReconnect).",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: reconnect gave up, cup tracked)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusBluetoothUnavailable": {
+      "value": "Bluetooth is unavailable — your cup is still being tracked",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when Bluetooth powers off while a cup is tracked.",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: Bluetooth powered off mid-cup)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
+      }
+    },
+    "statusBluetoothDenied": {
+      "value": "Enable Bluetooth for Life Portal in Settings to connect your scale",
+      "_meta": {
+        "description": "Status badge text (errorMessage) when Bluetooth permission is denied or restricted. No terminal period: it renders in the status badge (VOICE.md Appendix C).",
+        "usage": [
+          "ios:LifePortal/Packages/LifePortalFeatures/Sources/CoffeeFeature/CoffeeFeature.swift (reducer errorMessage: Bluetooth permission denied or restricted)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (statusLabel .error, via errorMessage)"
+        ],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
       }
     },
     "beverageDrip": {

@@ -68,10 +68,11 @@ export const a11ySchema = z
         actionReconnect: z.string(),
         actionFinishCup: z.string(),
         actionNewCup: z.string(),
+        connectionStatus: z.string(),
       })
       .strict()
       .describe(
-        'Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.',
+        'Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, primary action button states, and the connection badge.',
       ),
   })
   .strict()

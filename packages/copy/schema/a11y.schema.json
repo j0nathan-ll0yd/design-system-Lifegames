@@ -154,7 +154,7 @@
     "coffee": {
       "type": "object",
       "title": "A11yCoffee",
-      "description": "Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.",
+      "description": "Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, primary action button states, and the connection badge.",
       "additionalProperties": false,
       "required": [
         "mug",
@@ -164,7 +164,8 @@
         "actionSearching",
         "actionReconnect",
         "actionFinishCup",
-        "actionNewCup"
+        "actionNewCup",
+        "connectionStatus"
       ],
       "properties": {
         "mug": {
@@ -189,6 +190,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "actionNewCup": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "connectionStatus": {
           "$ref": "#/$defs/CopyString"
         }
       }

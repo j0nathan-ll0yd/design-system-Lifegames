@@ -54,6 +54,11 @@ public struct CoffeeConnectionBadge: View {
         }
     }
 
+    /// VoiceOver label for every mode: the visible status text in the copy template.
+    var accessibilityStatus: String {
+        CopyLoader.a11y.coffee.connectionStatus.replacingOccurrences(of: "{status}", with: statusLabel)
+    }
+
     // MARK: - Body
 
     public var body: some View {
@@ -82,14 +87,14 @@ public struct CoffeeConnectionBadge: View {
         .clipShape(Capsule())
         .overlay(Capsule().stroke(connectionColor.opacity(0.3), lineWidth: 1))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Scale connection: \(statusLabel)")
+        .accessibilityLabel(accessibilityStatus)
     }
 
     // MARK: - Header dot
 
     private var headerDotView: some View {
         LiveDotView(color: connectionColor)
-            .accessibilityLabel("Scale connection: \(connection.rawValue)")
+            .accessibilityLabel(accessibilityStatus)
     }
 
     // MARK: - Ring state
@@ -103,7 +108,7 @@ public struct CoffeeConnectionBadge: View {
                     : StrokeStyle(lineWidth: 4)
             )
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel("Scale connection: \(statusLabel)")
+            .accessibilityLabel(accessibilityStatus)
             .accessibilityAddTraits(.isStaticText)
     }
 }
@@ -116,7 +121,7 @@ public struct CoffeeConnectionBadge: View {
             CoffeeConnectionBadge(connection: .connected, mode: .pill)
             CoffeeConnectionBadge(connection: .searching, mode: .pill)
             CoffeeConnectionBadge(connection: .unpaired, mode: .pill)
-            CoffeeConnectionBadge(connection: .error, mode: .pill, errorMessage: "Lost connection to Pearl")
+            CoffeeConnectionBadge(connection: .error, mode: .pill, errorMessage: CopyLoader.widgets.coffee.statusOffline)
         }
         .padding(Spacing.s600)
         .background(LGColor.surfaceBase)
@@ -152,7 +157,7 @@ public struct CoffeeConnectionBadge: View {
                 CoffeeConnectionBadge(
                     connection: state,
                     mode: .ringState,
-                    errorMessage: state == .error ? "Lost connection to Pearl" : nil
+                    errorMessage: state == .error ? CopyLoader.widgets.coffee.statusOffline : nil
                 )
                 .frame(width: 64, height: 64)
             }

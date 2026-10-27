@@ -264,9 +264,9 @@
     "actionConnect": {
       "value": "Connect your Acaia scale",
       "_meta": {
-        "description": "Accessibility label for the primary action button when the scale is unpaired.",
+        "description": "Accessibility label for the primary action button when the scale is unpaired and no cup is tracked (PrimaryAction.connect).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .unpaired)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.accessibilityLabel .connect)"
         ],
         "register": "label",
         "audience": "human",
@@ -277,9 +277,9 @@
     "actionSearching": {
       "value": "Searching for scale",
       "_meta": {
-        "description": "Accessibility label for the primary action button while searching for the scale.",
+        "description": "Accessibility label for the disabled primary action button while searching for the scale with no cup tracked (PrimaryAction.searching).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .searching)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.accessibilityLabel .searching)"
         ],
         "register": "label",
         "audience": "human",
@@ -290,9 +290,10 @@
     "actionReconnect": {
       "value": "Reconnect to scale",
       "_meta": {
-        "description": "Accessibility label for the primary action button when the scale connection errored.",
+        "description": "Accessibility label for the primary action button when the scale connection errored and no cup is tracked (PrimaryAction.reconnect), and for the secondary reconnect affordance under Finish Cup while a tracked cup's link is down.",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .error)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.accessibilityLabel .reconnect)",
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (reconnectButton accessibilityLabel)"
         ],
         "register": "label",
         "audience": "human",
@@ -303,9 +304,9 @@
     "actionFinishCup": {
       "value": "Finish tracking this cup",
       "_meta": {
-        "description": "Accessibility label for the primary action button when a tracking session is active.",
+        "description": "Accessibility label for the primary action button while a cup is tracked, in every connection state (PrimaryAction.finishCup).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .connected active)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.accessibilityLabel .finishCup)"
         ],
         "register": "label",
         "audience": "human",
@@ -316,14 +317,27 @@
     "actionNewCup": {
       "value": "Start tracking a new cup",
       "_meta": {
-        "description": "Accessibility label for the primary action button when connected and idle.",
+        "description": "Accessibility label for the primary action button when connected and idle (PrimaryAction.newCup).",
         "usage": [
-          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (buttonA11yLabel .connected idle)"
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingView.swift (PrimaryAction.accessibilityLabel .newCup)"
         ],
         "register": "label",
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-07-07"
+      }
+    },
+    "connectionStatus": {
+      "value": "Scale connection: {status}",
+      "_meta": {
+        "description": "Accessibility label for the scale connection badge in every mode. ICU MF1 template; the consumer substitutes the visible status text (a widgets.coffee.badge* label, widgets.coffee.searching, or the errorMessage, such as widgets.coffee.status*) at the call site.",
+        "usage": [
+          "ios:Sources/LifegamesComponentsCore/Coffee/CoffeeConnectionBadge.swift (pill, headerDot and ringState accessibilityLabel)"
+        ],
+        "register": "label",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-26"
       }
     }
   }
