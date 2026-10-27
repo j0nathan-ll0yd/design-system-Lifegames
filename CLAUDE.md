@@ -44,7 +44,7 @@ Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Re
 
 ## Apps
 
-- `apps/portfolio` — Astro 6 static site (was Astro 5)
+- `apps/portfolio` — Astro 6 static site (was Astro 5). In-repo consumer build: it renders 15 `packages/web` widgets (13 through the `@widgets` alias, `BioTerminal` and `Hydration` through `@j0nathan-ll0yd/web/production`), `OGImage` and the web stylesheets from `@j0nathan-ll0yd/fixtures` data at build time. `pnpm build` builds it in the CI `web-builds` job, `.husky/pre-push` and `publish-ds-packages.yml`, so a widget change that breaks rendering fails before a release. It has no tests and no deploy. Keep it in step with widget changes.
 - `apps/docs` — Astro 6 Starlight documentation (was Astro 5)
 - `apps/storybook` — Storybook 10 component workshop (was Storybook 9)
 - `apps/swift-gallery` — iOS SwiftUI runtime showcase. Consumes DS via local-path SPM. Six sections: Colors, Typography, Cards, Components, Neon Effects, Widgets. Open with `open apps/swift-gallery/SwiftGallery.xcodeproj`. Dropped from LP's DesignGalleryFeature: BookshelfFeature and HomeFeature showcases (coupling was via PreviewMocks only, not direct symbol references).
