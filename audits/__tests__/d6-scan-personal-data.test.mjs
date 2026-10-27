@@ -277,3 +277,30 @@ test('the scan does not stop after a clean file', () => {
       assertFails(result, /ERROR: \[marker:[^\]]+\] docs\/z-dirty\.txt:/, 'the last file must be scanned')
     })
 })
+
+test('a failed git listing exits 2 and scans nothing', () => {
+  const root = mkdtempSync(path.join(tmpdir(), 'd6-no-repo-'))
+  try {
+    mkdirSync(path.join(root, 'audits/checks'), {recursive: true})
+    copyFileSync(path.join(repoRoot, 'audits/checks/d6-scan-personal-data.sh'), path.join(root, 'audits/checks/d6-scan-personal-data.sh'))
+    // Stop git at this directory, so it cannot find a repository above it.
+    const env = {...quotedPathEnv, GIT_CEILING_DIRECTORIES: path.dirname(root)}
+    for (const args of [[], ['--full-tree']]) {
+      const result = spawnSync('bash', ['audits/checks/d6-scan-personal-data.sh', ...args], {cwd: root, encoding: 'utf8', env})
+      const context = `mode ${args.join(' ') || 'staged'}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`
+      assert.equal(result.status, 2, context)
+      assert.match(result.stdout, /^ERROR: \[git\] 'git .+' failed; nothing was scanned\.$/m, context)
+    }
+  } finally {
+    rmSync(root, {recursive: true, force: true})
+  }
+})
+
+test('the staged scan fails on a staged blob it cannot read', () => {
+  withFixture({'docs/clean.txt': 'clean\n'}, '', (root) => {
+    const missingBlob = '1'.repeat(40)
+    assertSucceeded(run('git', ['update-index', '--add', '--cacheinfo', `100644,${missingBlob},ghost.txt`], root), 'stage a blob that does not exist')
+    assertFails(scan(root, 'staged'), new RegExp(`^ERROR: \\[unreadable\\] ghost\\.txt: git cat-file blob ${missingBlob} failed$`, 'm'),
+      'a missing blob must not pass')
+  })
+})

@@ -37,7 +37,10 @@
 # working tree, as before. Both modes list paths NUL-separated, so a non-ASCII
 # path is never quoted out of the scan, and a file that cannot be read fails
 # the scan instead of being skipped. grep -I treats a file holding a NUL byte
-# as binary and does not scan it; that gap is unchanged.
+# as binary and does not scan it; that gap is unchanged. A path that holds a
+# newline cannot be named in the line-based allowlist: the stale check splits
+# the tracked list on newlines. The scan itself still fails closed on a marker
+# in such a file, because the file listing stays NUL-separated.
 #
 # Exits non-zero if any un-allowlisted marker/heuristic hit is found in
 # scope, or if any allowlist entry is stale.
@@ -127,6 +130,8 @@ else
   git_listing "$SCAN_TMP/files" diff --cached --raw -z --no-renames --no-abbrev --diff-filter=ACMT
   ALLOWLIST=$(git -C "$REPO_ROOT" cat-file blob ":$ALLOWLIST_PATH" 2>/dev/null || true)
 fi
+# The allowlist is line-based, so the tracked list is too. A path that holds
+# a newline splits here; see the header for that limit.
 git_listing "$SCAN_TMP/tracked-z" ls-files -z
 tr '\0' '\n' < "$SCAN_TMP/tracked-z" > "$SCAN_TMP/tracked"
 
