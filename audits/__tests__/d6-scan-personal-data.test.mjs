@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import {spawnSync} from 'node:child_process'
-import {copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync} from 'node:fs'
+import {copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -67,4 +67,240 @@ test('full-tree mode rejects a forbidden artifact even when nothing is staged', 
   } finally {
     rmSync(fixtureRoot, {recursive: true, force: true})
   }
+})
+
+// Build the marker and the package scope at runtime, so this tracked file
+// never holds the literal the real-tree scan looks for.
+const marker = ['j0nathan', 'll0yd'].join('-')
+const scope = `@${marker}`
+const commitArgs = ['-c', 'user.name=D6 Test', '-c', 'user.email=d6@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-q', '-m']
+
+// One throwaway repository per test: the scanner, an allowlist, the given
+// files, all committed. Returns the root; the caller removes it.
+function makeFixture(files, allowlist = '') {
+  const root = mkdtempSync(path.join(tmpdir(), 'd6-fixture-'))
+  mkdirSync(path.join(root, 'audits/checks'), {recursive: true})
+  mkdirSync(path.join(root, 'audits/lib'), {recursive: true})
+  copyFileSync(path.join(repoRoot, 'audits/checks/d6-scan-personal-data.sh'), path.join(root, 'audits/checks/d6-scan-personal-data.sh'))
+  writeFileSync(path.join(root, 'audits/lib/scan-allowlist.txt'), `# Isolated fixture allowlist.\n${allowlist}`)
+  writeFiles(root, files)
+  assertSucceeded(run('git', ['init', '-q', '--initial-branch=main'], root), 'initialize fixture repository')
+  assertSucceeded(run('git', ['add', '.'], root), 'stage fixture')
+  assertSucceeded(run('git', [...commitArgs, 'fixture'], root), 'commit fixture')
+  return root
+}
+
+function writeFiles(root, files) {
+  for (const [name, content] of Object.entries(files)) {
+    mkdirSync(path.dirname(path.join(root, name)), {recursive: true})
+    writeFileSync(path.join(root, name), content)
+  }
+}
+
+// Pin git's default path quoting, so a non-ASCII path test does not depend on
+// the machine's core.quotePath.
+const quotedPathEnv = {...isolatedChildEnv, GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.quotePath', GIT_CONFIG_VALUE_0: 'true'}
+
+function scan(root, mode) {
+  const args = ['audits/checks/d6-scan-personal-data.sh', ...(mode === 'full' ? ['--full-tree'] : [])]
+  return spawnSync('bash', args, {cwd: root, encoding: 'utf8', env: quotedPathEnv})
+}
+
+function withFixture(files, allowlist, body) {
+  const root = makeFixture(files, allowlist)
+  try {
+    body(root)
+  } finally {
+    rmSync(root, {recursive: true, force: true})
+  }
+}
+
+function assertPasses(result, context) {
+  assert.equal(result.status, 0, `${context}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`)
+}
+
+function assertFails(result, pattern, context) {
+  assert.equal(result.status, 1, `${context}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`)
+  assert.match(result.stdout, pattern, context)
+}
+
+const changeset = (frontmatter, body = 'Synthetic release note.\n') => `---\n${frontmatter}\n---\n\n${body}`
+
+test('a stale allowlist entry fails the full-tree scan and the error names it', () => {
+  withFixture({'docs/live.md': `${marker}\n`}, `docs/live.md:marker:${marker}\ndocs/deleted.md:marker:${marker}\n`, (root) => {
+    const result = scan(root, 'full')
+    assertFails(result,
+      new RegExp(`ERROR: \\[stale-allowlist-entry\\] audits/lib/scan-allowlist\\.txt: 'docs/deleted\\.md:marker:${marker}' names no tracked file`),
+      'stale entry must fail')
+    assert.doesNotMatch(result.stdout, /docs\/live\.md/, 'the live entry is not stale')
+  })
+})
+
+test('an allowlist entry with an unknown check label is reported as stale', () => {
+  withFixture({'docs/live.md': 'clean\n'}, 'docs/live.md:emial\n', (root) => {
+    assertFails(scan(root, 'full'), /\[stale-allowlist-entry\] .*'docs\/live\.md:emial'/, 'a typo in the label must not hide')
+  })
+})
+
+test('staged mode fails a commit that deletes an allowlisted file but keeps its entry', () => {
+  withFixture({'docs/doomed.md': `${marker}\n`}, `docs/doomed.md:marker:${marker}\n`, (root) => {
+    assertPasses(scan(root, 'staged'), 'nothing staged and no stale entry')
+    assertSucceeded(run('git', ['rm', '-q', 'docs/doomed.md'], root), 'stage the deletion')
+    assertFails(scan(root, 'staged'), /\[stale-allowlist-entry\] .*'docs\/doomed\.md:marker:/, 'a deletion-only commit must still fail')
+
+    // Removing the entry in the working tree is not enough: the commit
+    // records the staged allowlist.
+    writeFileSync(path.join(root, 'audits/lib/scan-allowlist.txt'), '# Isolated fixture allowlist.\n')
+    assertFails(scan(root, 'staged'), /\[stale-allowlist-entry\]/, 'an unstaged allowlist fix must not pass the commit')
+    assertSucceeded(run('git', ['add', 'audits/lib/scan-allowlist.txt'], root), 'stage the allowlist fix')
+    assertPasses(scan(root, 'staged'), 'the staged allowlist fix passes')
+  })
+})
+
+test('a changeset whose frontmatter names a scoped package passes with no allowlist entry', () => {
+  const files = {
+    '.changeset/single.md': changeset(`'${scope}/web': minor`),
+    '.changeset/double.md': changeset(`"${scope}/tokens": patch\n'${scope}/copy': major\n'${scope}/schemas': none`)
+  }
+  withFixture(files, '', (root) => {
+    assertPasses(scan(root, 'full'), 'full-tree scan')
+    writeFiles(root, {'.changeset/staged.md': changeset(`'${scope}/web': minor`)})
+    assertSucceeded(run('git', ['add', '.changeset/staged.md'], root), 'stage a new changeset')
+    assertPasses(scan(root, 'staged'), 'staged scan')
+  })
+})
+
+test('the handle in a changeset body still fails, after an exempt frontmatter line', () => {
+  withFixture({'.changeset/body.md': changeset(`'${scope}/web': minor`, `- \`${scope}/web\`: synthetic change.\n`)}, '', (root) => {
+    assertFails(scan(root, 'full'), /ERROR: \[marker:[^\]]+\] \.changeset\/body\.md: 5:/, 'body line 5 must be reported')
+  })
+})
+
+test('the handle outside the narrow changeset rule fails without an entry and passes with one', () => {
+  const cases = {
+    'docs/release.md': changeset(`'${scope}/web': minor`),
+    '.changeset/nested/deep.md': changeset(`'${scope}/web': minor`),
+    '.changeset/notes.txt': changeset(`'${scope}/web': minor`),
+    '.changeset/bad-type.md': changeset(`'${scope}/web': huge`),
+    '.changeset/mixed-quotes.md': changeset(`'${scope}/web": minor`),
+    '.changeset/other-key.md': changeset(`'${scope}/web': minor\nauthor: ${marker}`),
+    '.changeset/unclosed.md': `---\n'${scope}/web': minor\n`,
+    '.changeset/late-block.md': `Intro.\n---\n'${scope}/web': minor\n---\n`,
+    '.changeset/trailing-text.md': changeset(`'${scope}/web': patch # ${marker}`),
+    '.changeset/trailing-text-dq.md': changeset(`"${scope}/web": patch # ${marker}`),
+    '.changeset/trailing-space.md': changeset(`'${scope}/web': patch `),
+    '.changeset/trailing-space-dq.md': changeset(`"${scope}/web": patch `),
+    '.changeset/line-prefix.md': changeset(`x '${scope}/web': patch`),
+    '.changeset/line-prefix-dq.md': changeset(`x "${scope}/web": patch`),
+    '.changeset/body-shaped.md': changeset(`'${scope}/web': minor`, `'${scope}/tokens': patch\n`),
+    'docs/plain.txt': `${marker}\n`
+  }
+  for (const [name, content] of Object.entries(cases)) {
+    withFixture({[name]: content}, '', (root) => {
+      assertFails(scan(root, 'full'), new RegExp(`ERROR: \\[marker:[^\\]]+\\] ${name.replaceAll('.', '\\.')}:`), `${name} without an entry`)
+    })
+    withFixture({[name]: content}, `${name}:marker:${marker}\n`, (root) => {
+      assertPasses(scan(root, 'full'), `${name} with an entry`)
+    })
+  }
+})
+
+test('staged mode scans the staged content, not the working tree', () => {
+  withFixture({'docs/note.md': 'clean\n'}, '', (root) => {
+    writeFileSync(path.join(root, 'docs/note.md'), `${marker}\n`)
+    assertSucceeded(run('git', ['add', 'docs/note.md'], root), 'stage the marker')
+    writeFileSync(path.join(root, 'docs/note.md'), 'clean again\n')
+    assertFails(scan(root, 'staged'), /ERROR: \[marker:[^\]]+\] docs\/note\.md: 1:/, 'the staged blob holds the marker')
+  })
+})
+
+test('staged mode scans a renamed file that gains the handle', () => {
+  withFixture({'docs/a.txt': 'clean line one\nclean line two\nclean line three\nclean line four\n'}, '', (root) => {
+    assertSucceeded(run('git', ['mv', 'docs/a.txt', 'docs/b.txt'], root), 'rename the file')
+    writeFileSync(path.join(root, 'docs/b.txt'), `clean line one\nclean line two\nclean line three\nclean line four\n${marker}\n`)
+    assertSucceeded(run('git', ['add', 'docs/b.txt'], root), 'stage the edit')
+    const status = run('git', ['diff', '--cached', '--name-status', '-M'], root)
+    assert.match(status.stdout, /^R\d+\tdocs\/a\.txt\tdocs\/b\.txt$/m, 'git must see a rename, or this test proves nothing')
+    assertFails(scan(root, 'staged'), /ERROR: \[marker:[^\]]+\] docs\/b\.txt: 5:/, 'the renamed file holds the marker')
+  })
+})
+
+const nonAsciiName = 'docs/caf\u00e9.txt'
+const nonAsciiHit = new RegExp(`ERROR: \\[marker:[^\\]]+\\] ${nonAsciiName.replace('.', '\\.')}: 1:`)
+
+test('the full-tree scan reads a non-ASCII path', () => {
+  withFixture({[nonAsciiName]: `${marker}\n`}, '', (root) => {
+    assertFails(scan(root, 'full'), nonAsciiHit, 'full-tree scan')
+  })
+})
+
+test('the staged scan reads a non-ASCII path', () => {
+  withFixture({'docs/clean.txt': 'clean\n'}, '', (root) => {
+    writeFiles(root, {[nonAsciiName]: `${marker}\n`})
+    assertSucceeded(run('git', ['add', nonAsciiName], root), 'stage the non-ASCII path')
+    assertFails(scan(root, 'staged'), nonAsciiHit, 'staged scan')
+  })
+})
+
+test('an allowlist entry for a non-ASCII path is not stale', () => {
+  withFixture({[nonAsciiName]: `${marker}\n`}, `${nonAsciiName}:marker:${marker}\n`, (root) => {
+    assertPasses(scan(root, 'full'), 'full tree')
+    writeFiles(root, {'docs/other.txt': 'clean\n'})
+    assertSucceeded(run('git', ['add', 'docs/other.txt'], root), 'stage another file')
+    assertPasses(scan(root, 'staged'), 'staged')
+  })
+})
+
+test('staged mode scans a file that changes type to a symlink', () => {
+  withFixture({'docs/link': 'clean\n'}, '', (root) => {
+    rmSync(path.join(root, 'docs/link'))
+    symlinkSync(marker, path.join(root, 'docs/link'))
+    assertSucceeded(run('git', ['add', 'docs/link'], root), 'stage the type change')
+    const status = run('git', ['diff', '--cached', '--name-status'], root)
+    assert.match(status.stdout, /^T\tdocs\/link$/m, 'git must see a type change, or this test proves nothing')
+    assertFails(scan(root, 'staged'), /ERROR: \[marker:[^\]]+\] docs\/link: 1:/, 'the link text holds the marker')
+    assertFails(scan(root, 'full'), /ERROR: \[marker:[^\]]+\] docs\/link: 1:/, 'full tree reads the link text from its blob')
+  })
+})
+
+test('the full-tree scan fails on a tracked file it cannot read', () => {
+  withFixture({'docs/gone.txt': 'clean\n'}, '', (root) => {
+    rmSync(path.join(root, 'docs/gone.txt'))
+    assertFails(scan(root, 'full'), /ERROR: \[unreadable\] docs\/gone\.txt:/, 'a missing tracked file must not pass silently')
+  })
+})
+
+test('the scan does not stop after a clean file', () => {
+  withFixture({'.changeset/a-clean.md': changeset(`'${scope}/web': minor`), 'docs/a-clean.txt': 'clean\n', 'docs/z-dirty.txt': `${marker}\n`}, '',
+    (root) => {
+      const result = scan(root, 'full')
+      assertFails(result, /ERROR: \[marker:[^\]]+\] docs\/z-dirty\.txt:/, 'the last file must be scanned')
+    })
+})
+
+test('a failed git listing exits 2 and scans nothing', () => {
+  const root = mkdtempSync(path.join(tmpdir(), 'd6-no-repo-'))
+  try {
+    mkdirSync(path.join(root, 'audits/checks'), {recursive: true})
+    copyFileSync(path.join(repoRoot, 'audits/checks/d6-scan-personal-data.sh'), path.join(root, 'audits/checks/d6-scan-personal-data.sh'))
+    // Stop git at this directory, so it cannot find a repository above it.
+    const env = {...quotedPathEnv, GIT_CEILING_DIRECTORIES: path.dirname(root)}
+    for (const args of [[], ['--full-tree']]) {
+      const result = spawnSync('bash', ['audits/checks/d6-scan-personal-data.sh', ...args], {cwd: root, encoding: 'utf8', env})
+      const context = `mode ${args.join(' ') || 'staged'}\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`
+      assert.equal(result.status, 2, context)
+      assert.match(result.stdout, /^ERROR: \[git\] 'git .+' failed; nothing was scanned\.$/m, context)
+    }
+  } finally {
+    rmSync(root, {recursive: true, force: true})
+  }
+})
+
+test('the staged scan fails on a staged blob it cannot read', () => {
+  withFixture({'docs/clean.txt': 'clean\n'}, '', (root) => {
+    const missingBlob = '1'.repeat(40)
+    assertSucceeded(run('git', ['update-index', '--add', '--cacheinfo', `100644,${missingBlob},ghost.txt`], root), 'stage a blob that does not exist')
+    assertFails(scan(root, 'staged'), new RegExp(`^ERROR: \\[unreadable\\] ghost\\.txt: git cat-file blob ${missingBlob} failed$`, 'm'),
+      'a missing blob must not pass')
+  })
 })

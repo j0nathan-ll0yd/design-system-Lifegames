@@ -30,6 +30,7 @@
 ## Fixture Rules
 
 - Personal data MUST be scrubbed before push (enforced by `audits/checks/d6-scan-personal-data.sh`)
+- Every `audits/lib/scan-allowlist.txt` entry must name a tracked file; D6 fails on a stale entry. Changesets need no entry: D6 skips the scoped-package release lines of their frontmatter. Name a package in a changeset body by its path (`packages/web`).
 - All scrubs recorded in `SCRUBBING.md`
 
 ## Schema Validation

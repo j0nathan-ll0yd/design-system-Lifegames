@@ -32,7 +32,9 @@ story column reads the story roots from Storybook's own `apps/storybook/.storybo
 rather than `governance-gates`, because that is the job its validator lives in).
 
 **`d6`** — D6, fixture personal-data scan. `d6-scan-personal-data.sh`, reading
-`lib/scan-allowlist.txt`. Blocking in `audit-ds.yml` and in `.husky/pre-commit`.
+`lib/scan-allowlist.txt`. Blocking in `audit-ds.yml` and in `.husky/pre-commit`. It fails on an
+allowlist entry whose path is not tracked. It skips the scoped-package release lines of a
+`.changeset/*.md` frontmatter, so changesets need no allowlist entry.
 
 **`c147`** — published-package payload drift. `c147-package-drift.mjs`, run by the
 `package-version-drift` CI job, `package-drift-post-publish.yml`, `drift-self-test-nightly.yml`

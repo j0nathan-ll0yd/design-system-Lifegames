@@ -11,7 +11,7 @@ Give every Bookshelf tile a real link to its book (atlas decision 0160 D5), in t
 - `initBookshelf` (the showcase island) dispatches `book-clicked` on a plain primary click, and the event is now cancelable. Only a listener that calls `preventDefault()` on it cancels the link's navigation. With no listener claiming it, the link still navigates. Modified clicks dispatch nothing.
 - `updateBookshelf` writes the title link on a rebuild and moves each link's `href` on an in-place patch. A tile without its title link takes the rebuild instead of the patch, so no tile is left without its link. The rebuilt cover takes `alt=""`.
 - New exports: `BOOK_LINK_REL` from `runtime/widget-markup` and `isPlainPrimaryClick` from the new `runtime/click-intent`.
-- `amazonBookUrl` encodes the ASIN (`encodeURIComponent`). A valid ASIN is unchanged. `a11y.bookshelf.bookItem` loses its web use (deprecated in `@j0nathan-ll0yd/copy`).
+- `amazonBookUrl` encodes the ASIN (`encodeURIComponent`). A valid ASIN is unchanged. `a11y.bookshelf.bookItem` loses its web use (deprecated in `packages/copy`).
 
 Consumer actions, before a consumer adopts this version:
 
