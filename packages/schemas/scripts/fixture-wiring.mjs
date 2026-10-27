@@ -1,32 +1,35 @@
 // Maps the widget fixture tree onto schema titles for fixture-map.json's `ds`
 // bucket. Fails closed: every fixture JSON under the root must resolve to a
 // schema, so a fixture cannot drop out of validation without a word.
-import {readdirSync, statSync} from 'node:fs'
+import {lstatSync, readdirSync} from 'node:fs'
 import {join} from 'node:path'
 
 // The manifest sits at the root of the fixture tree but is not a fixture.
 export const MANIFEST_FILE = 'widget-manifest.json'
 
-// Every *.json under `dir`, as POSIX paths relative to `root`, sorted. A
-// dot-directory is skipped: it is tool state (a session hook writes `.omc/`
-// into the directory it runs in, and .gitignore drops it), never a fixture
-// directory. A dot-prefixed JSON file is listed, so it is reported, not hidden.
-// A symlink is followed, as the old inline loop did.
-function listJson(root, dir = root, prefix = '') {
+// Every *.json and every symlink under `dir`, as POSIX paths relative to
+// `root`, sorted. A dot-directory is skipped: it is tool state (a session hook
+// writes `.omc/` into the directory it runs in, and .gitignore drops it), never
+// a fixture directory. A dot-prefixed JSON file is listed, so it is reported,
+// not hidden. A symlink is listed and never followed: lstat does not resolve
+// it, so a broken link cannot throw and a link back up the tree cannot loop.
+function listEntries(root, dir = root, prefix = '') {
   const out = []
-  for (const entry of readdirSync(dir, {withFileTypes: true})) {
-    const full = join(dir, entry.name)
-    const rel = prefix ? `${prefix}/${entry.name}` : entry.name
-    const stat = entry.isSymbolicLink() ? statSync(full) : entry
-    if (stat.isDirectory()) {
-      if (!entry.name.startsWith('.')) {
-        out.push(...listJson(root, full, rel))
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name)
+    const rel = prefix ? `${prefix}/${name}` : name
+    const stat = lstatSync(full)
+    if (stat.isSymbolicLink()) {
+      out.push({rel, symlink: true})
+    } else if (stat.isDirectory()) {
+      if (!name.startsWith('.')) {
+        out.push(...listEntries(root, full, rel))
       }
-    } else if (stat.isFile() && entry.name.endsWith('.json')) {
-      out.push(rel)
+    } else if (stat.isFile() && name.endsWith('.json')) {
+      out.push({rel, symlink: false})
     }
   }
-  return out.sort()
+  return out.sort((a, b) => (a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0))
 }
 
 /**
@@ -36,7 +39,7 @@ function listJson(root, dir = root, prefix = '') {
  * `fixtureBaseToTitle[<base>.<state>]`, then `fixtureBaseToTitle[<base>]`, and
  * must name a title in `schemaTitles`. A file at the root (other than the
  * manifest) or nested below a category cannot be loaded as a fixture, so it is
- * unmapped too.
+ * unmapped too, as is any symlink.
  *
  * @param {{widgetsRoot: string, relPrefix: string, fixtureBaseToTitle: Record<string, string>, schemaTitles: Set<string>}} opts
  * @returns {{entries: Record<string, {schema: string, strategy: 'single'}>, unmapped: Array<{path: string, reason: string}>}}
@@ -44,11 +47,15 @@ function listJson(root, dir = root, prefix = '') {
 export function wireFixtures({widgetsRoot, relPrefix, fixtureBaseToTitle, schemaTitles}) {
   const entries = {}
   const unmapped = []
-  for (const rel of listJson(widgetsRoot)) {
+  for (const {rel, symlink} of listEntries(widgetsRoot)) {
+    const path = `${relPrefix}/${rel}`
+    if (symlink) {
+      unmapped.push({path, reason: 'symbolic link; a fixture must be a regular file'})
+      continue
+    }
     if (rel === MANIFEST_FILE) {
       continue
     }
-    const path = `${relPrefix}/${rel}`
     const parts = rel.split('/')
     if (parts.length !== 2) {
       unmapped.push({path, reason: 'not directly inside a category directory'})

@@ -45,6 +45,7 @@ test('mapped fixtures wire by full base, then by base without the state suffix',
   })
 })
 
+// covers: widget-contract#Every widget fixture on disk maps to a schema, or the generator writes no map
 test('a fixture with no schema title is unmapped and named', () => {
   const r = tree(['a/feed.json', 'coffee/coffee-tracking.idle.json'])
   assert.deepEqual(r.unmapped, [{path: 'widgets/coffee/coffee-tracking.idle.json', reason: 'no schema title for "coffee-tracking"'}])
@@ -73,10 +74,23 @@ test('a dot-prefixed JSON file is reported, not hidden', () => {
   assert.deepEqual(r.unmapped, [{path: 'widgets/a/.feed.json', reason: 'dot-prefixed file name'}])
 })
 
-test('a symlinked fixture is followed and wired', () => {
+test('a symlinked fixture is reported, not followed', () => {
   const r = tree(['src/pool.json'], {links: {'a/feed.json': 'src/pool.json'}})
-  assert.deepEqual(r.unmapped, [])
-  assert.deepEqual(Object.keys(r.entries).sort(), ['widgets/a/feed.json', 'widgets/src/pool.json'])
+  assert.deepEqual(r.unmapped, [{path: 'widgets/a/feed.json', reason: 'symbolic link; a fixture must be a regular file'}])
+  assert.deepEqual(Object.keys(r.entries), ['widgets/src/pool.json'])
+})
+
+// covers: widget-contract#Every widget fixture on disk maps to a schema, or the generator writes no map
+test('a broken symlink is reported, not thrown', () => {
+  const r = tree(['a/feed.json'], {links: {'a/gone.json': 'a/missing.json'}})
+  assert.deepEqual(r.unmapped, [{path: 'widgets/a/gone.json', reason: 'symbolic link; a fixture must be a regular file'}])
+})
+
+// covers: widget-contract#Every widget fixture on disk maps to a schema, or the generator writes no map
+test('a symlink back up the tree is reported, not looped through', () => {
+  const r = tree(['a/feed.json'], {links: {'a/loop': '.'}})
+  assert.deepEqual(r.unmapped, [{path: 'widgets/a/loop', reason: 'symbolic link; a fixture must be a regular file'}])
+  assert.deepEqual(Object.keys(r.entries), ['widgets/a/feed.json'])
 })
 
 test('an Object.prototype key is not a schema title', () => {
@@ -101,6 +115,7 @@ function gate(unmapped) {
   return calls
 }
 
+// covers: widget-contract#Every widget fixture on disk maps to a schema, or the generator writes no map
 test('the gate exits 1 and prints every unmapped path', () => {
   const calls = gate([{path: 'widgets/coffee/coffee-tracking.idle.json', reason: 'no schema title for "coffee-tracking"'}])
   assert.equal(calls.exitCode, 1)
@@ -111,6 +126,7 @@ test('the gate passes silently when every fixture is mapped', () => {
   assert.deepEqual(gate([]), {written: '', exitCode: null})
 })
 
+// covers: widget-contract#Every widget fixture on disk maps to a schema, or the generator writes no map
 test('the generator calls the gate before it writes the map', () => {
   const src = readFileSync(join(HERE, 'generate-widget-schemas.mjs'), 'utf8')
   const call = src.indexOf('failIfUnmapped(unmapped')
@@ -118,6 +134,7 @@ test('the generator calls the gate before it writes the map', () => {
   assert.ok(call < src.indexOf('fixtureMap.ds = dsEntries'), 'the gate must run before fixture-map.json is written')
 })
 
+// covers: widget-contract#Every widget fixture on disk maps to a schema, or the generator writes no map
 test('the shipped map holds every fixture JSON in the tree, and nothing else', () => {
   const root = join(REPO_ROOT, WIDGETS_REL)
   const onDisk = []

@@ -70,7 +70,7 @@ test('ci.yml: the folded jobs keep one named step per old gate, each run past an
   }
 })
 
-test('ci.yml: governance-gates runs both fixture-map validators and their fail-closed suites', () => {
+test('ci.yml: governance-gates runs both fixture-map validators, their fail-closed suites and the fixture-wiring suites', () => {
   // packages is not a required context, so these lines in packages alone could not block a merge.
   const step = ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates')
   const pkgName = (dir) => JSON.parse(readFileSync(resolve(repoRoot, dir, 'package.json'), 'utf8')).name
@@ -78,6 +78,7 @@ test('ci.yml: governance-gates runs both fixture-map validators and their fail-c
     const command of [
       `LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F ${pkgName('packages/schemas')} validate`,
       'node --test packages/schemas/scripts/validate.test.mjs',
+      'node --test packages/schemas/scripts/fixture-wiring.test.mjs packages/schemas/scripts/coffee-tracking-schema.test.mjs',
       `pnpm -F ${pkgName('packages/fixtures')} exec vitest run tests/validate.test.ts`
     ]
   ) {
