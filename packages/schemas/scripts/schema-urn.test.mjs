@@ -52,12 +52,11 @@ test('titles the old resolver truncated to one key stay distinct', () => {
 })
 
 test('every schema key site builds its URN through schemaUrn', () => {
-  for (const file of ['validate.ts', 'baseline-validate.mjs']) {
-    // Comment lines may name the namespaces; code may not spell a urn: string.
-    const code = readFileSync(join(HERE, file), 'utf8').split('\n').filter((line) => !line.trim().startsWith('//')).join('\n')
-    assert.doesNotMatch(code, /['"`]urn:/, `${file} builds a urn: key outside schemaUrn`)
-    assert.match(code, /from '\.\/schema-urn\.mjs'/, `${file} does not import schemaUrn`)
-  }
+  // validate.ts is the only script that keys schemas by URN.
+  // Comment lines may name the namespaces; code may not spell a urn: string.
+  const code = readFileSync(join(HERE, 'validate.ts'), 'utf8').split('\n').filter((line) => !line.trim().startsWith('//')).join('\n')
+  assert.doesNotMatch(code, /['"`]urn:/, 'validate.ts builds a urn: key outside schemaUrn')
+  assert.match(code, /from '\.\/schema-urn\.mjs'/, 'validate.ts does not import schemaUrn')
 })
 
 test('the published package ships every module validate.ts reaches', () => {
