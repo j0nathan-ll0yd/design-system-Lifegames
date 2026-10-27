@@ -1,5 +1,5 @@
 ---
-import { widgets, a11y } from '@j0nathan-ll0yd/copy';
+import { widgets } from '@j0nathan-ll0yd/copy';
 import WidgetStateNotice from '../../components/WidgetStateNotice.astro';
 import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import {
@@ -10,7 +10,7 @@ import {
 import { formatMonthYear, rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { bookshelfState } from '../../runtime/widget-rules';
 // The updater's star markup (no whitespace text nodes between the stars) and modal payload.
-import { bookDataJson, ratingStarsHtml } from '../../runtime/widget-markup';
+import { BOOK_LINK_REL, bookDataJson, ratingStarsHtml } from '../../runtime/widget-markup';
 import { amazonBookUrl } from '../../runtime/adapters';
 import type { BookshelfProps } from './Bookshelf.types';
 
@@ -124,8 +124,10 @@ function localImageUrl(candidate: string | null): string | null {
           const fallbackAttr =
             imgSrc !== PLACEHOLDER_IMAGE_SRC || avifSrcset ? PLACEHOLDER_IMAGE_SRC : undefined;
           const meta = bookMeta[asin] || {};
+          // One URL for the tile's link and the modal payload's `link`.
+          const link = amazonBookUrl(asin);
           const bookData = bookDataJson(b, meta, statusLabels[b.status], {
-            link: amazonBookUrl(asin),
+            link,
             mainImage: sanitizeImageUrl(b.mainImage, { baseUrl: Astro.url }),
             mainImageAvif: sanitizeImageUrl(b.mainImageAvif, sanitizerOptions),
           });
@@ -134,10 +136,6 @@ function localImageUrl(candidate: string | null): string | null {
               class={`shelf-book${b.status === 'reading' ? ' shelf-book-active' : ''}`}
               style={`animation-delay: ${i * 0.08}s`}
               data-book={bookData}
-              tabindex="0"
-              aria-label={a11y.bookshelf.bookItem
-                .replace('{title}', b.title)
-                .replace('{author}', b.author)}
             >
               <div class="shelf-cover-wrapper">
                 {avifSrcset ? (
@@ -148,7 +146,7 @@ function localImageUrl(candidate: string | null): string | null {
                       srcset={imgSrcset}
                       width="80"
                       height="120"
-                      alt={b.title}
+                      alt=""
                       loading="lazy"
                       decoding="async"
                       data-fallback={fallbackAttr}
@@ -160,7 +158,7 @@ function localImageUrl(candidate: string | null): string | null {
                     srcset={imgSrcset}
                     width="80"
                     height="120"
-                    alt={b.title}
+                    alt=""
                     loading="lazy"
                     decoding="async"
                     data-fallback={fallbackAttr}
@@ -168,7 +166,9 @@ function localImageUrl(candidate: string | null): string | null {
                 )}
               </div>
               <div class="shelf-book-title">
-                <span>{b.title}</span>
+                <a class="shelf-book-link" href={link} target="_blank" rel={BOOK_LINK_REL}>
+                  <span>{b.title}</span>
+                </a>
               </div>
               <div class="shelf-book-author">{b.author}</div>
               {b.status === 'reading' ? (

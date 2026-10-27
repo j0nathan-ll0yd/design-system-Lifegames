@@ -335,6 +335,8 @@ function bookshelf(): Projection {
   const styles: string[] = []
   const bookJson: unknown[] = []
   books.forEach((b: any, i: number) => {
+    // Spelled out, not amazonBookUrl: the tile's href and the payload's link are this one string.
+    const link = `https://www.amazon.com/dp/${b.asin}?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl`
     const progress = b.currentPage != null ? Math.round((b.currentPage / b.totalPages) * 100) : undefined
     bookJson.push({
       title: b.title,
@@ -345,7 +347,7 @@ function bookshelf(): Projection {
       // bookDataJson writes a missing value as null, on every path.
       rating: b.rating ?? null,
       progress: progress ?? null,
-      link: `https://www.amazon.com/dp/${b.asin}?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl`,
+      link,
       notes: null,
       finishedAt: null,
       startedAt: null,
@@ -362,8 +364,8 @@ function bookshelf(): Projection {
       mainImage: PLACEHOLDER_IMAGE_SRC,
       mainImageAvif: null
     })
-    attrs.push('data-book=*', `aria-label=${a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author)}`,
-      `src=${PLACEHOLDER_IMAGE_SRC}`, `srcset=${PLACEHOLDER_IMAGE_SRC} 1x, ${PLACEHOLDER_IMAGE_SRC} 2x`, `alt=${b.title}`)
+    // The cover is decorative (alt=""): the title link's text names the book.
+    attrs.push('data-book=*', `src=${PLACEHOLDER_IMAGE_SRC}`, `srcset=${PLACEHOLDER_IMAGE_SRC} 1x, ${PLACEHOLDER_IMAGE_SRC} 2x`, 'alt=', `href=${link}`)
     styles.push(`li animation-delay: ${i * 0.08}s`)
     text.push(b.title, b.author, adapted.statusLabels[b.status]!)
     if (progress != null) {
@@ -377,7 +379,7 @@ function bookshelf(): Projection {
     }
   })
   // The row's chrome, plus the classes each book's status, progress and rating select.
-  const classes = new Set(['shelf-book', 'shelf-book-author', 'shelf-book-status', 'shelf-book-title', 'shelf-cover-wrapper'])
+  const classes = new Set(['shelf-book', 'shelf-book-author', 'shelf-book-link', 'shelf-book-status', 'shelf-book-title', 'shelf-cover-wrapper'])
   for (const b of books) {
     classes.add(`shelf-status-${b.status}`)
     if (b.status === 'reading') {

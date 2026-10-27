@@ -89,6 +89,13 @@ export function ratingStarsHtml(rating: number): string {
   return html
 }
 
+/**
+ * The `rel` of a Bookshelf tile's Amazon link. The link is an affiliate link
+ * (`sponsored`) that opens in a new tab and passes no opener and no referrer.
+ * The template and both updater paths write it.
+ */
+export const BOOK_LINK_REL = 'sponsored noopener noreferrer'
+
 /** The Bookshelf book fields the modal payload reads; both the props and the adapter entry fit. */
 export interface BookDataEntry {
   asin: string

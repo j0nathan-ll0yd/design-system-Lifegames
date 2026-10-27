@@ -120,9 +120,14 @@
       box-shadow: 0 0 0 4px rgba(255, 0, 110, 0.25);
     }
 
-    .shelf-book:focus-visible {
-      outline: 2px solid var(--neon-green);
-      outline-offset: 2px;
+    .shelf-book-link:focus-visible {
+      outline: none;
+    }
+
+    .shelf-book-link:focus-visible::after {
+      outline: 2px solid;
+      outline-color: var(--neon-green);
+      outline-offset: 3px;
     }
 
     .book-modal-close:focus-visible {

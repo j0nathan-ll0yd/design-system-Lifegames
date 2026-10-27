@@ -19,7 +19,8 @@ import Foundation
 public struct Accessibility: Codable, Sendable {
     /// Book detail modal accessibility label — the dialog region label.
     public let bookModal: A11YBookModal
-    /// Bookshelf widget accessibility label — the per-book list-item aria-label template.
+    /// Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is
+    /// deprecated: the title link is named by its own text.
     public let bookshelf: A11YBookshelf
     /// Live clock accessibility label (web shell) — the top-bar current-time readout.
     public let clock: A11YClock
@@ -159,9 +160,12 @@ public extension A11YBookModal {
     }
 }
 
-/// Bookshelf widget accessibility label — the per-book list-item aria-label template.
+/// Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is
+/// deprecated: the title link is named by its own text.
 // MARK: - A11YBookshelf
 public struct A11YBookshelf: Codable, Sendable {
+    /// Deprecated: no replacement. Removed in the next major release. The Bookshelf title link
+    /// is named by its text; no consumer reads this key.
     public let bookItem: String
 
     public init(bookItem: String) {

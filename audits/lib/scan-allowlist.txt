@@ -594,5 +594,11 @@ packages/fixtures/tests/json-schema-nullable.test.ts:marker:j0nathan-ll0yd
 .changeset/copy-coffee-status-messages.md:marker:j0nathan-ll0yd
 # The dead map-CSS removal changeset names the packages it bumps.
 .changeset/remove-dead-map-css.md:marker:j0nathan-ll0yd
+# The Bookshelf real-link changesets name the packages they bump (web, tokens, copy).
+.changeset/bookshelf-real-links.md:marker:j0nathan-ll0yd
+.changeset/tokens-book-link-focus.md:marker:j0nathan-ll0yd
+.changeset/copy-book-link-provenance.md:marker:j0nathan-ll0yd
+# The Bookshelf tile browser test loads the tokens stylesheet by package name (the focus ring colour is a token).
+packages/web/tests/browser/book-tile.browser.test.ts:marker:j0nathan-ll0yd
 # The fail-closed schemas validator changeset names the package it bumps.
 .changeset/schemas-validate-fails-closed.md:marker:j0nathan-ll0yd

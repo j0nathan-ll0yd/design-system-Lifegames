@@ -400,7 +400,7 @@ export function adaptStarredRepos(data: GithubStarredReposExport, _now?: number)
 
 /** A book's Amazon link: the one URL the adapter, the Bookshelf template and the modal payload use. */
 export function amazonBookUrl(asin: string): string {
-  return 'https://www.amazon.com/dp/' + asin + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl'
+  return 'https://www.amazon.com/dp/' + encodeURIComponent(asin) + '?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl'
 }
 
 /**

@@ -52,12 +52,14 @@
     "bookshelf": {
       "type": "object",
       "title": "A11yBookshelf",
-      "description": "Bookshelf widget accessibility label — the per-book list-item aria-label template.",
+      "description": "Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is deprecated: the title link is named by its own text.",
       "additionalProperties": false,
       "required": ["bookItem"],
       "properties": {
         "bookItem": {
-          "$ref": "#/$defs/CopyString"
+          "$ref": "#/$defs/CopyString",
+          "deprecated": true,
+          "description": "Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key."
         }
       }
     },

@@ -1985,14 +1985,29 @@
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       padding: 6px 4px;
+      /* The containing block of the title link's overlay. */
+      position: relative;
+    }
+
+    /* The tile's real link is its title: the tile's own color, no underline.
+       Its overlay stretches the hit area over the whole tile, so a click
+       anywhere on the tile activates the link. The overlay stops text
+       selection inside the tile. Its radius is the tile's inner (padding-edge)
+       radius, so a focus ring on it follows the tile's corners (a11y.css). */
+    .shelf-book-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    .shelf-book-link::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: calc(var(--radius-md) - 1px);
     }
 
     @media (hover: hover) {
       .shelf-book:hover {
         transform: translateY(-4px);
-      }
-      .shelf-book:hover .shelf-book-title a {
-        color: var(--neon-amber);
       }
     }
 
@@ -2054,12 +2069,6 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-    }
-
-    .shelf-book-title a {
-      color: var(--text);
-      text-decoration: none;
-      transition: color 0.2s ease;
     }
 
     .shelf-book-author {

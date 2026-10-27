@@ -8,7 +8,7 @@ import {enterUnavailable, insertStateNotice} from '../internal/card-state'
 import {writeHeartRateFooter} from '../internal/heart-rate-footer'
 import {isSuppressedCard, renderWidgetEmpty, revealLiveData} from './updater-empty'
 import type {Freshness} from './freshness'
-import {articleItemHtml, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
+import {articleItemHtml, BOOK_LINK_REL, bookDataJson, heartRateEmptyHtml, hydrationRangeHtml, ratingStarsHtml, timeHtml} from './widget-markup'
 import {type HeartRateView, heartRateView, hydrationView, nightSummaryView, type RangeBand, SLEEP_PHASES, toNightSummaryHealth} from './widget-views'
 import type {HeartRateProps} from '../widgets/health/HeartRate.types'
 import {composeSystemLines, READING_SERVER_PAGE_SIZE} from './view-models'
@@ -711,14 +711,8 @@ function bookshelfCoverHtml(book: AdaptedBooks['books'][number], localCandidates
   const avifCandidates = [avifCard ? esc(avifCard) + ' 1x' : '', avifThumb ? esc(avifThumb) + ' 2x' : ''].filter(Boolean)
   const avifSrcset = avifCandidates.join(', ')
 
-  const imgAttrs = 'src="' +
-    esc(displaySrc) +
-    '"' +
-    (rasterSrcset ? ' srcset="' + esc(rasterSrcset) + '"' : '') +
-    ' width="80" height="120" alt="' +
-    esc(book.title) +
-    '" loading="lazy" decoding="async"' +
-    imgFallbackAttrs(displaySrc, avifSrcset.length > 0)
+  const imgAttrs = 'src="' + esc(displaySrc) + '"' + (rasterSrcset ? ' srcset="' + esc(rasterSrcset) + '"' : '') + // Decorative: the title text in the same tile names the book.
+    ' width="80" height="120" alt="" loading="lazy" decoding="async"' + imgFallbackAttrs(displaySrc, avifSrcset.length > 0)
   const img = '<img ' + imgAttrs + '>'
   return avifSrcset
     ? '<picture><source srcset="' + avifSrcset + '" type="image/avif">' + img + '</picture>'
@@ -775,7 +769,11 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
 
   const existingBooks = shelfRow.querySelectorAll('.shelf-book')
 
-  if (existingBooks.length === displayBooks.length) {
+  // Patch in place only when every tile carries its title link; a tile without
+  // one (markup from another writer) takes the rebuild, so no tile is left
+  // without its link.
+  const everyTileLinked = [...existingBooks].every((el) => el.querySelector('.shelf-book-link') !== null)
+  if (existingBooks.length === displayBooks.length && everyTileLinked) {
     displayBooks.forEach((b, i: number) => {
       const el = existingBooks[i]
       // existingBooks.length === displayBooks.length (guard above) → i is in-bounds.
@@ -785,7 +783,9 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const meta = bookMeta[b.asin] || ({} as BookMeta)
       el.setAttribute('data-book', bookDataJson(b, meta, statusLabels[b.status], b))
 
-      el.setAttribute('aria-label', a11y.bookshelf.bookItem.replace('{title}', b.title).replace('{author}', b.author))
+      // The title's link names the book by its text: a changed book moves its
+      // href. Every tile has one here (everyTileLinked).
+      el.querySelector('.shelf-book-link')!.setAttribute('href', b.link)
 
       const coverWrapper = el.querySelector<HTMLElement>('.shelf-cover-wrapper')
       if (coverWrapper) {
@@ -892,19 +892,13 @@ export function updateBookshelf(data: AdaptedBooks | null | undefined, freshness
       const meta = bookMeta[b.asin] || ({} as BookMeta)
       const bookData = bookDataJson(b, meta, statusLabels[b.status], b)
       var activeClass = b.status === 'reading' ? ' shelf-book-active' : ''
-      html += '<li class="shelf-book' +
-        activeClass +
-        '" style="animation-delay: ' +
-        i * 0.08 +
-        's" data-book="' +
-        esc(bookData) +
-        '" tabindex="0" aria-label="' +
-        a11y.bookshelf.bookItem.replace('{title}', esc(b.title)).replace('{author}', esc(b.author)) +
-        '">'
+      html += '<li class="shelf-book' + activeClass + '" style="animation-delay: ' + i * 0.08 + 's" data-book="' + esc(bookData) + '">'
       html += '<div class="shelf-cover-wrapper">'
       html += bookshelfCoverHtml(b, localCandidates)
       html += '</div>'
-      html += '<div class="shelf-book-title"><span>' + esc(b.title) + '</span></div>'
+      html += '<div class="shelf-book-title"><a class="shelf-book-link" href="' + esc(b.link) + '" target="_blank" rel="' + BOOK_LINK_REL + '"><span>' +
+        esc(b.title) +
+        '</span></a></div>'
       html += '<div class="shelf-book-author">' + esc(b.author) + '</div>'
       html += '<div class="shelf-book-status shelf-status-' +
         b.status +
