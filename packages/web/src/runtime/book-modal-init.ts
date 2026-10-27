@@ -225,15 +225,22 @@ export function initBookModal(): void {
       return focusable
     }
     const heading = card.querySelector<HTMLElement>('.widget-label')
-    heading?.setAttribute('tabindex', '-1')
+    if (heading && !heading.hasAttribute('tabindex')) {
+      heading.setAttribute('tabindex', '-1')
+      // Once focus moves on, the DOM returns to the server-rendered state.
+      heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {once: true})
+    }
     return heading
   }
 
-  // focus() does nothing on an element that is not rendered, and focus would
-  // fall to <body>: skip anything hidden, or inside something hidden.
+  // focus() does nothing on an element that is not rendered or sits in an
+  // inert subtree, and focus would fall to <body>; inside aria-hidden content
+  // it would land where assistive technology cannot follow. Skip all of them.
   function isRendered(el: HTMLElement, within: HTMLElement): boolean {
     for (let node: HTMLElement | null = el; node && node !== within.parentElement; node = node.parentElement) {
-      if (node.hidden || window.getComputedStyle(node).display === 'none') {
+      if (
+        node.hidden || node.hasAttribute('inert') || node.getAttribute('aria-hidden') === 'true' || window.getComputedStyle(node).display === 'none'
+      ) {
         return false
       }
     }

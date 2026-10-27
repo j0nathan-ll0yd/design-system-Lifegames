@@ -266,12 +266,21 @@ describe('closing the dialog after a live update keeps the reader in place', () 
     expect(doc.querySelectorAll('.shelf-book-link').length, 'control: no book is left').toBe(0)
     // Focusable but not rendered: focus() on either would leave focus on <body>.
     const header = doc.querySelector('#cardBooks .widget-header-right')!
-    header.insertAdjacentHTML('beforeend', '<button hidden>hidden</button><span style="display: none"><a href="/x">inside hidden</a></span>')
+    // Every decoy takes focus by markup, and none may receive it: hidden, inside
+    // display: none, visibility: hidden, inside inert, inside aria-hidden.
+    header.insertAdjacentHTML('beforeend',
+      '<button hidden>hidden</button><span style="display: none"><a href="/x">inside hidden</a></span>' +
+        '<button style="visibility: hidden">invisible</button><span inert><button>inside inert</button></span>' +
+        '<span aria-hidden="true"><button>inside aria-hidden</button></span>')
     escape(dialog)
     expect(doc.activeElement).not.toBe(doc.body)
     expect(doc.activeElement?.closest('li')).toBeNull()
     expect(doc.activeElement?.classList.contains('widget-label'), 'the card heading').toBe(true)
-    expect(doc.activeElement?.getAttribute('tabindex'), 'focusable from script only').toBe('-1')
+    const heading = doc.activeElement as HTMLElement
+    expect(heading.getAttribute('tabindex'), 'focusable from script only').toBe('-1')
+    // Once focus moves on, the heading is back to its server markup.
+    heading.blur()
+    expect(heading.hasAttribute('tabindex'), 'the script-added tabindex is gone').toBe(false)
   })
 
   it('step 3: a rendered element on the card that already takes focus comes before the heading', async () => {
