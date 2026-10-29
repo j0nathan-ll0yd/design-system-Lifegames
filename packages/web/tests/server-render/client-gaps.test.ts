@@ -276,7 +276,7 @@ describe('gap 3: a paused watch records one state on HeartRate and MovementRings
 // ── Gap 5: Bookshelf's mirrored covers ────────────────────────────────
 
 describe("gap 5: Bookshelf's localCovers reach the browser", () => {
-  const ASIN = 'KA7731KAP1'
+  const ASIN = 'B0KA7731P1'
   const VERSION = '00d8d9c74e41f9c468de2699'
   const CF = `${CLOUDFRONT_BASE}/images/books`
   const card = `${CF}/${ASIN}-${VERSION}-card.webp`
