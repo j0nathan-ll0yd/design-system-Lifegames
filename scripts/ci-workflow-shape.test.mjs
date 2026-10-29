@@ -54,6 +54,48 @@ for (const [file, workflow, context] of REQUIRED) {
   })
 }
 
+// GitHub counts a SKIPPED required job as satisfied. On 2026-10-27 build-tokens failed at PR #333's
+// 005ed18, three required jobs skipped on their failed `needs:`, and the PR read mergeable. A
+// required job therefore never skips: it runs past a failed need and reds on it, and it refuses a
+// fork PR with a red step instead of a job-level skip.
+const FORK_PR = "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository"
+const requiredJob = (workflow, context) => Object.entries(workflow.jobs).find(([id, job]) => (job.name ?? id) === context)?.[1]
+const needsOf = (job) => [job.needs ?? []].flat()
+
+for (const [file, workflow, context] of REQUIRED) {
+  test(`${file}: required context ${context} never passes by skipping on a failed need or a fork PR`, () => {
+    const job = requiredJob(workflow, context)
+    const jobIf = String(job.if ?? '')
+    assert.doesNotMatch(jobIf, /head\.repo\.full_name/, `${context} must refuse a fork PR with a red step, not skip it with a job-level if`)
+
+    const firstStep = job.steps[0]
+    assert.equal(firstStep.if, FORK_PR, `${context}: its first step must refuse a fork PR, before checkout`)
+    assert.match(firstStep.run, /^\s*exit 1\s*$/m, `${context}: the fork refusal must exit 1`)
+
+    if (needsOf(job).length === 0) {
+      assert.equal(job.if, undefined, `${context} has no needs, so it must carry no job-level if that could skip it`)
+      return
+    }
+    // A plain `if:` carries an implicit success(), which skips the job when a need fails.
+    assert.match(jobIf, /!cancelled\(\)|always\(\)/, `${context} needs ${needsOf(job)}, so its if must run past a failed need`)
+    const checkoutAt = job.steps.findIndex((step) => String(step.uses ?? '').startsWith('actions/checkout@'))
+    for (const need of needsOf(job)) {
+      const result = `needs.${need}.result`
+      // Either a guard step before checkout reds on the result, or the job if runs the gate
+      // itself whenever the need did not succeed (swift-snapshots runs the suite).
+      const guardAt = job.steps.findIndex((step) =>
+        Object.values(step.env ?? {}).some((value) => String(value).includes(result)) && /exit 1/.test(step.run ?? '')
+      )
+      const ifRunsOnFailure = jobIf.includes(`${result} != 'success'`)
+      assert.ok(guardAt !== -1 || ifRunsOnFailure, `${context} needs ${need} but no step reds on ${result}`)
+      if (guardAt !== -1) {
+        assert.equal(job.steps[guardAt].if, undefined, `${context}: the ${need} guard must carry no if that could skip it`)
+        assert.ok(guardAt < checkoutAt, `${context}: the ${need} guard must run before checkout`)
+      }
+    }
+  })
+}
+
 test('ci.yml: the folded jobs keep one named step per old gate, each run past an earlier red', () => {
   for (const [jobId, oldJobs] of Object.entries(FOLDED)) {
     const job = ci.jobs[jobId]

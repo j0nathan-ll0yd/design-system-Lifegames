@@ -38,11 +38,29 @@ concurrency:
 # the deadline never sees a silent interval, and caps the wrapped command so the heartbeat cannot
 # become a licence to hang. See scripts/ci-heartbeat.sh for what it does NOT cover.
 
+# WHY NO REQUIRED JOB CAN SKIP
+# Branch protection on main requires eight contexts, and GitHub counts a SKIPPED required job as
+# satisfied. On 2026-10-27 build-tokens failed on an upload-artifact ECONNRESET at PR #333's
+# 005ed18; test-swift, web-browser-runtime and governance-gates skipped on their failed `needs:`,
+# and the PR read mergeable with three required gates never run. So every required job here
+# reports on every event:
+#   - No job-level `if:` that skips. A job with `needs:` runs under `!cancelled()`, and its
+#     `build-tokens must have succeeded` step reds unless the need concluded success.
+#   - A fork PR is refused by a RED first step, before checkout: these jobs run on self-hosted
+#     hardware, which must not execute fork code, and a skip would read as a pass. Push the
+#     branch to this repository to measure it.
+# package-version-drift aggregates its needs the same way. `scripts/ci-workflow-shape.test.mjs`
+# pins this shape for every required context.
+
 jobs:
   format:
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=format cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -62,9 +80,13 @@ jobs:
     # tsc --noEmit across the packages that extend @j0nathan-ll0yd/config's
     # tsconfig-base (schemas, fixtures, web, storybook). `turbo run typecheck`
     # builds workspace deps first (^build) so cross-package types resolve.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=typecheck cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -406,7 +428,8 @@ jobs:
       # names, and the only one that runs OUTSIDE governance-gates — which is why D3's
       # runner had to grow this job as a second entry. The proof runs beside the gate it
       # proves rather than in governance-gates: build-tokens is where the validator lives,
-      # and governance-gates `needs:` it, so a red here blocks the required context too.
+      # and governance-gates `needs:` it and reds unless it succeeded, so a red here blocks
+      # the required context too.
       - name: Prove the DTCG validator can fail
         run: node --test audits/__tests__/d3-validate-dtcg.test.mjs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -475,13 +498,13 @@ jobs:
   # The Swift job runs on a self-hosted Mac (shared with ios-LifegamesPortal).
   # Deliberately the ONLY macOS job — one cold compile + one queue acquisition
   # per run (see .omc/plans/contract-tests-ci-perf.md).
-  # Security: the `if` guard below skips it for fork PRs so untrusted code
-  # from forks never executes on the host Mac. Internal-branch PRs and
-  # pushes to main still run normally. External contributors: maintainer must
-  # re-push the PR to a branch in this repo to get Swift coverage.
+  # Security: the first step refuses a fork PR with a RED result before checkout, so
+  # untrusted code from forks never executes on the host Mac and the required context
+  # never passes by skipping. Internal-branch PRs and pushes to main run normally.
+  # External contributors: maintainer must re-push the PR to a branch in this repo.
   test-swift:
     needs: [build-tokens]
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ !cancelled() }}
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
     env:
@@ -490,6 +513,19 @@ jobs:
       # any mismatch is a test failure, not a silent re-record.
       SNAPSHOT_TESTING_RECORD: never
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=test-swift cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: build-tokens must have succeeded
+        env:
+          BUILD_TOKENS_RESULT: ${{ needs.build-tokens.result }}
+        run: |
+          if [ "$BUILD_TOKENS_RESULT" != 'success' ]; then
+            echo "::error title=test-swift cannot run without build-tokens::build-tokens concluded '$BUILD_TOKENS_RESULT'. This gate needs the token-dist artifact, so it reports RED rather than skipping: GitHub treats a skipped job as satisfying a required status check. Fix or re-run build-tokens."
+            exit 1
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
@@ -522,9 +558,13 @@ jobs:
     # Web Props TypeScript contract check — moved off the macOS runner (no Xcode dep).
     # The Swift side of the contract is covered by test-swift's unfiltered `swift test`
     # (Tests/LifegamesWidgetsTests/ContractTests.swift).
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=contract-ts cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -559,10 +599,23 @@ jobs:
     # The scripts-off suite renders the widgets with the real token CSS
     # (packages/tokens/dist/tokens.css), so it needs the token build.
     needs: build-tokens
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ !cancelled() }}
     runs-on: [self-hosted, linux, arm64, playwright]
     timeout-minutes: 15
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=web-browser-runtime cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: build-tokens must have succeeded
+        env:
+          BUILD_TOKENS_RESULT: ${{ needs.build-tokens.result }}
+        run: |
+          if [ "$BUILD_TOKENS_RESULT" != 'success' ]; then
+            echo "::error title=web-browser-runtime cannot run without build-tokens::build-tokens concluded '$BUILD_TOKENS_RESULT'. This gate needs the token-dist artifact, so it reports RED rather than skipping: GitHub treats a skipped job as satisfying a required status check. Fix or re-run build-tokens."
+            exit 1
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -584,9 +637,22 @@ jobs:
   governance-gates:
     name: governance-gates
     needs: build-tokens
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ !cancelled() }}
     runs-on: [self-hosted, linux, arm64, node]
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=governance-gates cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: build-tokens must have succeeded
+        env:
+          BUILD_TOKENS_RESULT: ${{ needs.build-tokens.result }}
+        run: |
+          if [ "$BUILD_TOKENS_RESULT" != 'success' ]; then
+            echo "::error title=governance-gates cannot run without build-tokens::build-tokens concluded '$BUILD_TOKENS_RESULT'. This gate needs the token-dist artifact, so it reports RED rather than skipping: GitHub treats a skipped job as satisfying a required status check. Fix or re-run build-tokens."
+            exit 1
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # The conformance BASELINE FREEZE (atlas decision 0102 move 1b) compares
