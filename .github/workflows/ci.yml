@@ -661,9 +661,12 @@ jobs:
           # validators and fixture wiring), the DTCG and package-drift suites, and the CI and
           # release workflow shape contracts. `pnpm test:scripts` was reachable only through
           # .husky/pre-push, so DS_SKIP_PREPUSH=1 skipped it, and seven of its suites ran in no
-          # CI job at all. This is the ONLY place CI runs these suites; a second `node --test` of
+          # CI job at all. This is the ONLY place CI runs these suites (the shape test excepted, below); a second `node --test` of
           # a covered file anywhere in ci.yml reds scripts/ci-workflow-shape.test.mjs, and so does
-          # a narrowed glob that drops a suite. Offline; ~30 s.
+          # a narrowed glob that drops a suite. That guard is itself one of these suites, so it also
+          # runs alone first: deleting the `pnpm test:scripts` line or narrowing its glob would
+          # otherwise stop the guard with it, and nothing would red. Offline; ~30 s.
+          node --test scripts/ci-workflow-shape.test.mjs
           pnpm test:scripts
           # Style Dictionary golden-file characterization (F-005)
           pnpm --filter @j0nathan-ll0yd/tokens test

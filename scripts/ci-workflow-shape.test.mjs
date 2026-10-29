@@ -91,11 +91,21 @@ test('ci.yml: governance-gates runs both fixture-map validators', () => {
 // six more had a step in another job, and seven ran in no CI job at all: only .husky/pre-push ran
 // them, and DS_SKIP_PREPUSH=1 skips the hook.
 const TEST_SCRIPTS = 'pnpm test:scripts'
+// The shape test pins its own run on a separate governance-gates line, BEFORE `pnpm test:scripts`.
+// Inside test:scripts alone, deleting that line or narrowing its glob would also stop this guard,
+// and nothing in CI would red. It is the one suite allowed to run twice.
+const SHAPE_TEST = 'scripts/ci-workflow-shape.test.mjs'
+const SHAPE_TEST_COMMAND = `node --test ${SHAPE_TEST}`
+const testScriptsCommand = () => JSON.parse(readFileSync(resolve(repoRoot, 'package.json'), 'utf8')).scripts['test:scripts']
 const testScriptsGlobs = () => {
-  const [node, flag, ...globs] = JSON.parse(readFileSync(resolve(repoRoot, 'package.json'), 'utf8')).scripts['test:scripts'].split(/\s+/)
+  const [node, flag, ...globs] = testScriptsCommand().split(/\s+/)
   assert.deepEqual([node, flag], ['node', '--test'], 'test:scripts must stay a bare `node --test <globs>`')
   return globs
 }
+// A pre-push hook exports GIT_DIR, which outranks cwd; strip it so git reads this checkout.
+const gitFreeEnv = Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('GIT_')))
+const trackedFiles = (...patterns) =>
+  execFileSync('git', ['ls-files', '-z', '--', ...patterns], {cwd: repoRoot, encoding: 'utf8', env: gitFreeEnv}).split('\0').filter(Boolean)
 const coveredSuites = () => new Set(testScriptsGlobs().flatMap((glob) => globSync(glob, {cwd: repoRoot})))
 
 // Every suite that had a pinned `node --test` line in ci.yml before the consolidation. The globs
@@ -139,6 +149,24 @@ test('ci.yml: governance-gates runs `pnpm test:scripts`', () => {
   assert.ok(governanceGatesLines().includes(TEST_SCRIPTS), `governance-gates must run: ${TEST_SCRIPTS}`)
 })
 
+test('ci.yml: governance-gates runs the shape test on its own line, before `pnpm test:scripts`', () => {
+  const lines = governanceGatesLines()
+  const own = lines.indexOf(SHAPE_TEST_COMMAND)
+  assert.ok(own >= 0, `governance-gates must run: ${SHAPE_TEST_COMMAND}`)
+  assert.ok(own < lines.indexOf(TEST_SCRIPTS), `${SHAPE_TEST_COMMAND} must run before ${TEST_SCRIPTS}`)
+})
+
+test('package.json: test:scripts is one plain command, and every glob matches a tracked file', () => {
+  // `|| true` or `; true` would keep the globs below intact and make the run pass regardless. An
+  // empty glob makes node --test run 0 tests from it and still exit 0.
+  const tokens = testScriptsCommand().split(/\s+/)
+  const shell = tokens.filter((token) => /[|;&<>`$]/.test(token))
+  assert.deepEqual(shell, [], `test:scripts must hold no shell operator: ${shell.join(' ')}`)
+  const tracked = new Set(trackedFiles())
+  const empty = testScriptsGlobs().filter((glob) => !globSync(glob, {cwd: repoRoot}).some((file) => tracked.has(file)))
+  assert.deepEqual(empty, [], `test:scripts globs that match no tracked file: ${empty.join(' ')}`)
+})
+
 test('package.json: the test:scripts globs still reach every suite ci.yml used to pin', () => {
   const covered = coveredSuites()
   const dropped = FORMERLY_PINNED.filter((suite) => !covered.has(suite))
@@ -148,10 +176,8 @@ test('package.json: the test:scripts globs still reach every suite ci.yml used t
 test('package.json: the test:scripts globs reach every tracked node:test and RuleTester suite', () => {
   // A suite placed outside the globs runs nowhere in CI. vitest suites (*.test.ts, the package and
   // Tests/ trees) do not import node:test or RuleTester, so they fall outside this net.
-  // A pre-push hook exports GIT_DIR, which outranks cwd; strip it so git reads this checkout.
-  const gitFreeEnv = Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('GIT_')))
-  const tracked = execFileSync('git', ['ls-files', '-z', '--', '*.test.mjs', '*.test.js', '*.test.cjs'], {cwd: repoRoot, encoding: 'utf8', env: gitFreeEnv})
-    .split('\0').filter(Boolean)
+  // *.spec.* is in the net too: a RuleTester file named no-deprecated-tokens.spec.js ran nowhere.
+  const tracked = trackedFiles('*.test.mjs', '*.test.js', '*.test.cjs', '*.spec.mjs', '*.spec.js', '*.spec.cjs')
   const suites = tracked.filter((file) =>
     /from ['"]node:test['"]|require\(['"]node:test['"]\)|\bRuleTester\b/.test(readFileSync(resolve(repoRoot, file), 'utf8'))
   )
@@ -163,13 +189,18 @@ test('package.json: the test:scripts globs reach every tracked node:test and Rul
 
 test('ci.yml: no step runs a test:scripts suite a second time', () => {
   // `pnpm test:scripts` in governance-gates is the one CI run. A per-suite `node --test` line costs
-  // wall clock and, outside a required context, reads as a gate that cannot block.
+  // wall clock and, outside a required context, reads as a gate that cannot block. The one
+  // exemption is the shape test's own pinned line in governance-gates (see SHAPE_TEST above).
+  // Limit: the check reads one trimmed line at a time and expects `node --test` as adjacent words,
+  // so a `\` continuation or a flag between them (`node --import ./x.mjs --test <file>`) slips past.
+  // A missed duplicate costs wall clock, not coverage: the run-everywhere checks above still hold.
   const covered = coveredSuites()
   const twice = []
   for (const [id, job] of Object.entries(ci.jobs)) {
     for (const step of job.steps ?? []) {
       const commands = String(step.run ?? '').split('\n').map((line) => line.trim()).filter((line) => line && !line.startsWith('#'))
-      for (const command of commands.filter((line) => /\bnode\s+--test\b/.test(line))) {
+      const pinnedShapeTest = (line) => id === 'governance-gates' && step.name === 'governance-gates' && line === SHAPE_TEST_COMMAND
+      for (const command of commands.filter((line) => /\bnode\s+--test\b/.test(line) && !pinnedShapeTest(line))) {
         const targets = command.split(/\s+/).slice(2).filter((arg) => !arg.startsWith('-')).flatMap((arg) => globSync(arg, {cwd: repoRoot}))
         twice.push(...targets.filter((suite) => covered.has(suite)).map((suite) => `${id}: ${suite}`))
       }
