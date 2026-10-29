@@ -14,6 +14,6 @@ Every fixture book now carries a real-shaped ASIN: exactly 10 characters, either
   - `allFields`: `F001` becomes `0123456789`, the book's own `isbn10`.
   - `ssrKnownAnswer`: `KA7731KAP1` and `KA7731KAP2` become `B0KA7731P1` and `B0KA7731P2`. They still appear in no other fixture. The `isbn10` values are unchanged.
 - `packages/fixtures/src/post-adapter/books.ts`: the baseline "A Philosophy of Software Design" ASIN `173210220X` had a wrong ISBN-10 check digit. It becomes `1732102201`, the ISBN-10 of its own `isbn` `9781732102200`. `books.baseline.json` is regenerated.
-- `packages/fixtures/tests/asin-shape.test.ts` is a new gate. It checks every `asin` in the raw variations, the generated raw JSON, the post-adapter JSON and the Swift widget fixtures, and fails on a repeated ASIN in one book list.
+- `packages/fixtures/tests/asin-shape.test.ts` is a new gate. It checks every `asin` and every `bookMeta` key in the raw variations, the generated raw JSON, the post-adapter JSON and the Swift widget fixtures. It fails on a repeated ASIN in one book list, on a `bookMeta` key that names no book, and on a book with no `bookMeta` entry. Three pre-existing gaps in Swift widget fixtures are listed by file and ASIN.
 
 Patch: no export, type, variation or field changes. A consumer snapshot that records a fixture ASIN, an Amazon link built from one, or a `data-book` attribute changes on upgrade.
