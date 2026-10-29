@@ -432,6 +432,8 @@ jobs:
       # the required context too.
       - name: Prove the DTCG validator can fail
         run: node --test audits/__tests__/d3-validate-dtcg.test.mjs
+      - name: 'THROWAWAY: force build-tokens to fail (revert before merge)'
+        run: exit 1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: token-dist
