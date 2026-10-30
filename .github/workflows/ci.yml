@@ -413,6 +413,10 @@ jobs:
 
   build-tokens:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      packages: read
+      actions: write
     runs-on: [self-hosted, linux, arm64, node]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -436,8 +440,17 @@ jobs:
       # the required context too.
       - name: Prove the DTCG validator can fail
         run: node --test audits/__tests__/d3-validate-dtcg.test.mjs
-      - name: 'THROWAWAY: force build-tokens to fail (revert before merge)'
+      - name: 'THROWAWAY T3b: force build-tokens to fail (revert before merge)'
         run: exit 1
+      - name: 'THROWAWAY T3b: cancel this run before the dependents start (revert before merge)'
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          date -u +%T
+          curl -sS -X POST -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/cancel" -w 'cancel HTTP %{http_code}'; echo
+          date -u +%T
+          exit 1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: token-dist
