@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import {execFileSync} from 'node:child_process'
+import {execFileSync, spawnSync} from 'node:child_process'
 import {globSync, readdirSync, readFileSync} from 'node:fs'
 import {dirname, resolve} from 'node:path'
 import {test} from 'node:test'
@@ -28,11 +28,14 @@ const REQUIRED = [
   ['ci.yml', ci, 'test-swift'],
   ['ci.yml', ci, 'package-version-drift'],
   ['ci.yml', ci, 'web-browser-runtime'],
+  // Owner decision 2026-10-30: the folded copy, fixtures and schemas gates block a merge.
+  ['ci.yml', ci, 'packages'],
   ['swift-snapshots.yml', swiftSnapshots, 'swift-snapshots']
 ]
 
-// The seven non-required install-only jobs, folded into two (decision 0168 item 4). Each old
-// job name survives as a step name, so a red step still names its gate.
+// The seven install-only jobs, folded into two (decision 0168 item 4). Each old job name survives
+// as a step name, so a red step still names its gate. None was a required context at the fold;
+// `packages` became one by owner decision 2026-10-30, and `web-builds` is still not one.
 const FOLDED = {packages: ['schemas-freshness', 'copy', 'fixtures'], 'web-builds': ['lint-web', 'build-web', 'storybook-build', 'docs-build']}
 
 const isSetupStep = (step) => typeof step.uses === 'string' || step.name === 'Authenticate to GitHub Packages' || /pnpm install/.test(step.run ?? '')
@@ -183,26 +186,109 @@ for (const [file, workflow] of [['ci.yml', ci], ['swift-snapshots.yml', swiftSna
   })
 }
 
+const namesGate = (name, oldJob) => name === oldJob || String(name).startsWith(`${oldJob}: `)
+// A required folded job also carries its fork refusal and its exact-step verdict, which name no gate.
+const isRequiredJobFrame = (jobId, step) =>
+  REQUIRED.some(([file, , context]) => file === 'ci.yml' && context === jobId) && (step.if === FORK_PR || step.name === jobId)
+
 test('ci.yml: the folded jobs keep one named step per old gate, each run past an earlier red', () => {
   for (const [jobId, oldJobs] of Object.entries(FOLDED)) {
     const job = ci.jobs[jobId]
     assert.ok(job, `ci.yml has no ${jobId} job`)
-    const namesGate = (name, oldJob) => name === oldJob || String(name).startsWith(`${oldJob}: `)
     for (const oldJob of oldJobs) {
       assert.ok(!(oldJob in ci.jobs), `${oldJob} must stay folded into ${jobId}, not return as its own job`)
       assert.ok(job.steps.some((step) => namesGate(step.name, oldJob)), `${jobId} has no step for ${oldJob}`)
     }
-    for (const step of job.steps.filter((s) => !isSetupStep(s))) {
+    for (const step of job.steps.filter((s) => !isSetupStep(s) && !isRequiredJobFrame(jobId, s))) {
       assert.ok(oldJobs.some((oldJob) => namesGate(step.name, oldJob)), `${jobId} step "${step.name ?? step.run}" must be named for the gate it came from`)
       assert.match(String(step.if ?? ''), /!cancelled\(\)/, `${jobId} step "${step.name}" must run under !cancelled()`)
     }
   }
 })
 
+// `packages` runs one step per gate, and A2b binds a required context to ONE step of the same name
+// (atlas audits/gate-can-fail-campaign.md, requirement 2). So its last step, `packages`, is a
+// verdict over every gate step's outcome. A gate the verdict does not read could red its own step
+// and still leave `packages` green; a verdict that is not last could pass before a later gate ran.
+// Each gate step runs only once install succeeded, so a fork PR or a failed install leaves every
+// gate SKIPPED, and the verdict reds on the skip. The skip-contract-check label is the one waiver.
+const PACKAGES_VERDICT_IF = '${{ !cancelled() }}'
+const PACKAGES_GATE_IF = "${{ !cancelled() && steps.install.outcome == 'success' }}"
+// The contract step also skips under the skip-contract-check label, the verdict's one waiver.
+const PACKAGES_GATE_IF_EXCEPTIONS = {
+  'schemas-contract':
+    "${{ !cancelled() && steps.install.outcome == 'success' && !contains(github.event.pull_request.labels.*.name, 'skip-contract-check') }}"
+}
+const PACKAGES_WAIVED = "${{ contains(github.event.pull_request.labels.*.name, 'skip-contract-check') && 'GATE_SCHEMAS_CONTRACT' || '' }}"
+
+test('ci.yml: the packages verdict step is last, never skips, and reads every gate step', () => {
+  const steps = ci.jobs.packages.steps
+  const verdict = steps.at(-1)
+  assert.equal(verdict.name, 'packages', 'the last packages step must be the verdict named exactly packages')
+  assert.equal(steps.filter((step) => step.name === 'packages').length, 1, 'packages must have exactly one step named packages')
+  assert.equal(verdict.if, PACKAGES_VERDICT_IF, 'the packages verdict must run past a red gate, so its if must be exactly !cancelled()')
+  assert.equal(verdict['continue-on-error'], undefined, 'the packages verdict must not carry continue-on-error')
+
+  const installAt = steps.findIndex((step) => step.id === 'install')
+  assert.ok(installAt > 0 && /pnpm install --frozen-lockfile/.test(steps[installAt].run), 'packages must keep its install step under id install')
+  // Every step that is neither setup nor the job frame is a gate, wherever it sits. A gate before
+  // install could run with nothing installed, and the verdict would not read it.
+  const gates = steps.filter((step) => !isSetupStep(step) && !isRequiredJobFrame('packages', step))
+  assert.ok(gates.length >= FOLDED.packages.length, `packages has only ${gates.length} gate steps`)
+  for (const gate of gates) {
+    assert.ok(steps.indexOf(gate) > installAt, `packages gate "${gate.name}" must run after install`)
+  }
+  const expected = []
+  for (const gate of gates) {
+    assert.ok(gate.id, `packages gate "${gate.name}" needs an id, so the verdict can read its outcome`)
+    assert.equal(gate['continue-on-error'], undefined, `packages gate "${gate.name}" must not carry continue-on-error`)
+    const pinnedIf = PACKAGES_GATE_IF_EXCEPTIONS[gate.id] ?? PACKAGES_GATE_IF
+    assert.equal(gate.if, pinnedIf, `packages gate "${gate.name}" must run under exactly ${pinnedIf}`)
+    expected.push(`\${{ steps.${gate.id}.outcome }}`)
+  }
+
+  const env = verdict.env ?? {}
+  const read = Object.entries(env).filter(([name]) => name.startsWith('GATE_')).map(([, value]) => value)
+  const unread = expected.filter((value) => !read.includes(value))
+  assert.deepEqual(unread, [], `the packages verdict does not read: ${unread.join(', ')}`)
+  const stale = read.filter((value) => !expected.includes(value))
+  assert.deepEqual(stale, [], `the packages verdict reads no gate step: ${stale.join(', ')}`)
+  assert.equal(read.length, expected.length, 'the packages verdict must read each gate step exactly once')
+  assert.equal(env.WAIVED, PACKAGES_WAIVED, 'the packages verdict waiver must stay the skip-contract-check label alone')
+
+  for (const id of Object.keys(PACKAGES_GATE_IF_EXCEPTIONS)) {
+    assert.ok(gates.some((gate) => gate.id === id), `PACKAGES_GATE_IF_EXCEPTIONS names ${id}, which is no packages gate; prune it`)
+  }
+})
+
+// Known answers for the verdict script itself, run as GitHub runs a `run:` step on a runner with
+// bash: `bash --noprofile --norc -eo pipefail {0}`.
+// The YAML assertions above prove what the verdict reads; these prove what it decides.
+const VERDICT_KNOWN_ANSWERS = [
+  ['every gate succeeded', {GATE_A: 'success', GATE_B: 'success', WAIVED: ''}, 0],
+  ['one gate failed', {GATE_A: 'success', GATE_B: 'failure', WAIVED: ''}, 1],
+  ['one gate skipped with no waiver', {GATE_A: 'success', GATE_B: 'skipped', WAIVED: ''}, 1],
+  ['the waived gate skipped', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 0],
+  ['the waived gate failed', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'failure', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
+  ['another gate skipped under the waiver', {GATE_A: 'skipped', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
+  ['a gate read an empty outcome (unknown step id)', {GATE_A: 'success', GATE_B: '', WAIVED: ''}, 1],
+  ['a gate concluded cancelled', {GATE_A: 'cancelled', WAIVED: ''}, 1],
+  ['no gate variable at all', {WAIVED: ''}, 1]
+]
+
+for (const [label, gateEnv, expected] of VERDICT_KNOWN_ANSWERS) {
+  test(`ci.yml: the packages verdict exits ${expected} when ${label}`, () => {
+    const run = ci.jobs.packages.steps.at(-1).run
+    const result = spawnSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', run], {env: {PATH: process.env.PATH, ...gateEnv}, encoding: 'utf8'})
+    assert.equal(result.status, expected, `${label}: exit ${result.status}\n${result.stdout}${result.stderr}`)
+  })
+}
+
 const governanceGatesLines = () => ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates').run.split('\n').map((line) => line.trim())
 
 test('ci.yml: governance-gates runs both fixture-map validators', () => {
-  // packages is not a required context, so these lines in packages alone could not block a merge.
+  // These lines date from when packages was not a required context, so in packages alone they
+  // could not block a merge. packages is required since owner decision 2026-10-30.
   const pkgName = (dir) => JSON.parse(readFileSync(resolve(repoRoot, dir, 'package.json'), 'utf8')).name
   for (
     const command of [
@@ -228,6 +314,10 @@ const testScriptsCommand = () => JSON.parse(readFileSync(resolve(repoRoot, 'pack
 const testScriptsGlobs = () => {
   const [node, flag, ...globs] = testScriptsCommand().split(/\s+/)
   assert.deepEqual([node, flag], ['node', '--test'], 'test:scripts must stay a bare `node --test <globs>`')
+  // A flag after --test (`--test-only`, `--test-name-pattern=x`) can shrink the run while every glob
+  // still matches. Name it here, not as the side effect of a glob that matches no file.
+  const flags = globs.filter((token) => token.startsWith('-'))
+  assert.deepEqual(flags, [], `test:scripts must pass no flag after --test: ${flags.join(' ')}`)
   return globs
 }
 // A pre-push hook exports GIT_DIR, which outranks cwd; strip it so git reads this checkout.
