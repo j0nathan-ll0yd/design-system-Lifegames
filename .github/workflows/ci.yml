@@ -124,16 +124,26 @@ jobs:
     # FOLDED INSTALL-ONLY JOBS (atlas decision 0168 item 4): `schemas-freshness`, `copy` and
     # `fixtures` were three containers, each paying ~30 s of checkout, setup and install to run
     # 50-60 s of work, against a Colima cap that drops to 6 while test-swift holds a macOS VM.
-    # None is a required context. Each gate is still its own named step, prefixed with the job it
-    # came from, and every gate step runs under `if: ${{ !cancelled() }}`: one red gate does not
-    # hide the next, and the failing step still names its gate.
+    # Each gate is still its own named step, prefixed with the job it came from, and every gate
+    # step runs under `!cancelled()` once install succeeded: one red gate does not hide the next,
+    # and the failing step still names its gate.
+    #
+    # REQUIRED CONTEXT (owner decision 2026-10-30). At the fold none of these gates was required,
+    # so a red in any of them never blocked a merge. `packages` is now required, so it follows
+    # the "WHY NO REQUIRED JOB CAN SKIP" rule above: no job-level `if:`, and a fork PR reds at the
+    # first step, before checkout. The last step, `packages`, is the A2b exact-step binding: it
+    # reds unless every gate step concluded success, so a red `packages` names that step.
     #
     # Freshness runs FIRST, on the clean checkout. The copy and fixtures builds below regenerate
     # committed artifacts, and the freshness git-diff must judge what is committed, not what an
     # earlier step in this job wrote.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, linux, arm64, node]
     steps:
+      - name: Refuse to run fork-PR code on a self-hosted runner
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error title=packages cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -143,16 +153,19 @@ jobs:
         run: pnpm config set '//npm.pkg.github.com/:_authToken' "$NODE_AUTH_TOKEN"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
+      - id: install
+        run: bash scripts/ci-heartbeat.sh pnpm install --frozen-lockfile
       # schemas-freshness: verifies vendored LP schemas + generated TS/Swift artifacts are not
       # stale. Soft on missing LP (CI has no LP checkout) — vendored/ is the source of truth in CI.
       # The contract-lock model and schema URN unit suites run in governance-gates, a required
       # context, under `pnpm test:scripts`.
       - name: schemas-freshness
-        if: ${{ !cancelled() }}
+        id: schemas-freshness
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm check:schemas-freshness
       - name: 'schemas-freshness: verify schema contract'
-        if: ${{ !cancelled() && !contains(github.event.pull_request.labels.*.name, 'skip-contract-check') }}
+        id: schemas-contract
+        if: ${{ !cancelled() && steps.install.outcome == 'success' && !contains(github.event.pull_request.labels.*.name, 'skip-contract-check') }}
         run: pnpm -F @j0nathan-ll0yd/schemas contract:verify
         env:
           CONTRACT_CHECK_MODE: blocking
@@ -161,24 +174,29 @@ jobs:
       # zero-dependency leaf-boundary lint. The freshness git-diff of copy's
       # generated artifacts is the schemas-freshness step above.
       - name: 'copy: build'
-        if: ${{ !cancelled() }}
+        id: copy-build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/copy build
       - name: 'copy: test'
-        if: ${{ !cancelled() }}
+        id: copy-test
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/copy test
       - name: 'copy: lint'
-        if: ${{ !cancelled() }}
+        id: copy-lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/copy lint
       # Grep gate: fail if a migrated copy value reappears hardcoded
       # in consumer source (DS web widgets + runtime + Swift widgets).
       - name: 'copy: grep-gate'
-        if: ${{ !cancelled() }}
+        id: copy-grep-gate
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/copy grep-gate
       # Voice & mechanics gate: the register/audience enum is enforced by the
       # build (Ajv); check-copy-voice.mjs adds banned terms, punctuation, and the
       # human↔AI arbitration rule (no allusion in machine surfaces). See VOICE.md.
       - name: 'copy: voice'
-        if: ${{ !cancelled() }}
+        id: copy-voice
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/copy voice
       # fixtures — @j0nathan-ll0yd/fixtures: generate (deterministic raw + post-adapter fixtures) +
       # validate (Ajv against portal-contract raw + @j0nathan-ll0yd/schemas display schemas)
@@ -186,14 +204,56 @@ jobs:
       # The freshness git-diff of the committed fixture output is the schemas-freshness step
       # above (it re-runs `pnpm -F @j0nathan-ll0yd/fixtures generate`).
       - name: 'fixtures: build'
-        if: ${{ !cancelled() }}
+        id: fixtures-build
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/fixtures build
       - name: 'fixtures: test'
-        if: ${{ !cancelled() }}
+        id: fixtures-test
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/fixtures test
       - name: 'fixtures: lint'
-        if: ${{ !cancelled() }}
+        id: fixtures-lint
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/fixtures lint
+      # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md). The verdict reds unless
+      # every gate step above concluded success. A gate that failed reds its own step too; a gate
+      # that SKIPPED (install failed, or a fork PR) reds only here. Each GATE_ variable reads one
+      # gate step's outcome, and the shape test pins that every gate step has exactly one.
+      # The one waiver: the `skip-contract-check` label skips the contract step by design.
+      - name: packages
+        if: ${{ !cancelled() }}
+        env:
+          GATE_SCHEMAS_FRESHNESS: ${{ steps.schemas-freshness.outcome }}
+          GATE_SCHEMAS_CONTRACT: ${{ steps.schemas-contract.outcome }}
+          GATE_COPY_BUILD: ${{ steps.copy-build.outcome }}
+          GATE_COPY_TEST: ${{ steps.copy-test.outcome }}
+          GATE_COPY_LINT: ${{ steps.copy-lint.outcome }}
+          GATE_COPY_GREP_GATE: ${{ steps.copy-grep-gate.outcome }}
+          GATE_COPY_VOICE: ${{ steps.copy-voice.outcome }}
+          GATE_FIXTURES_BUILD: ${{ steps.fixtures-build.outcome }}
+          GATE_FIXTURES_TEST: ${{ steps.fixtures-test.outcome }}
+          GATE_FIXTURES_LINT: ${{ steps.fixtures-lint.outcome }}
+          WAIVED: ${{ contains(github.event.pull_request.labels.*.name, 'skip-contract-check') && 'GATE_SCHEMAS_CONTRACT' || '' }}
+        run: |
+          set -euo pipefail
+          gates=$(compgen -v GATE_ || true)
+          if [ -z "$gates" ]; then
+            echo "::error title=packages verdict read no gate::No GATE_ variable is set, so this step measured nothing. It reports RED rather than passing."
+            exit 1
+          fi
+          failed=0
+          for gate in $gates; do
+            outcome="${!gate}"
+            if [ "$outcome" = 'success' ]; then
+              echo "$gate: success"
+            elif [ "$outcome" = 'skipped' ] && [ "$gate" = "$WAIVED" ]; then
+              echo "$gate: skipped by the skip-contract-check label"
+            else
+              echo "::error title=packages gate did not pass::$gate concluded '$outcome'. Every gate in this job must conclude success."
+              failed=1
+            fi
+          done
+          exit "$failed"
 
   drift-engine-filter:
     # Answers one question for the jobs below: did this change touch the drift engine or the
