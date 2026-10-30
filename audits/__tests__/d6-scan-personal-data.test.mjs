@@ -304,3 +304,36 @@ test('the staged scan fails on a staged blob it cannot read', () => {
       'a missing blob must not pass')
   })
 })
+
+// Build the forbidden address at runtime, so this tracked file never holds it.
+const leakedAddress = ['someone', 'mailbox.net'].join('@')
+
+test('an allowed address earlier in a file does not hide a later forbidden one', () => {
+  withFixture({'docs/contact.txt': `Write to webmaster@lifegames.org.\nOr to ${leakedAddress}.\n`}, '', (root) => {
+    assertFails(scan(root, 'full'), new RegExp(`^ERROR: \\[email\\] docs/contact\\.txt: 2:Or to ${leakedAddress.replace('.', '\\.')}\\.$`, 'm'),
+      'the second line names a forbidden address')
+  })
+})
+
+test('an allowed address on the same line does not hide a forbidden one', () => {
+  withFixture({'docs/contact.txt': `Write to webmaster@lifegames.org or ${leakedAddress}.\n`}, '', (root) => {
+    assertFails(scan(root, 'full'), /^ERROR: \[email\] docs\/contact\.txt: 1:Write to /m, 'one line names an allowed and a forbidden address')
+  })
+})
+
+test('the published security.txt contacts pass', () => {
+  withFixture({'docs/contact.txt': 'Report to security@lifegames.org.\nMail to webmaster@lifegames.org also reaches the owner.\n'}, '', (root) => {
+    assertPasses(scan(root, 'full'), 'both security.txt Contact addresses are public')
+  })
+})
+
+test('an address that only contains an allowed one fails', () => {
+  // Built at runtime, so this tracked file holds neither address.
+  const prefixed = ['xsecurity', 'lifegames.org'].join('@')
+  const suffixed = ['security', 'lifegames.org.attacker.io'].join('@')
+  for (const address of [prefixed, suffixed]) {
+    withFixture({'docs/contact.txt': `Write to ${address} today.\n`}, '', (root) => {
+      assertFails(scan(root, 'full'), /^ERROR: \[email\] docs\/contact\.txt: 1:Write to /m, `${address} is not an allowed address`)
+    })
+  }
+})

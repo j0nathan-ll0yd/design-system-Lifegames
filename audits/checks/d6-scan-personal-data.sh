@@ -74,8 +74,16 @@ MARKERS=(
 # the path would not — an allowlist entry suppresses the check for the whole
 # file, including any real address added to it later.
 EMAIL_REGEX='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+# EMAIL_ALLOW_REGEX matches one `<line>:<address>` pair of `grep -no` output and
+# is anchored at both ends, so it admits a WHOLE address only: a longer address
+# that merely contains an allowed one (`x` + an allowed address, or an allowed
+# address plus `.attacker.io`) still fails.
+# webmaster@lifegames.org: the public contact, the second security.txt Contact.
+# security@lifegames.org: the first security.txt Contact (owner ruling 2026-10-29, atlas decision 0175).
 # portfolio.chamomile484@passmail.net: the Organization contact point alias (owner decision 2026-10-24).
-EMAIL_ALLOW_REGEX='(webmaster@lifegames\.org|portfolio\.chamomile484@passmail\.net|(^|[^a-zA-Z])[Nn]o-?[Rr]eply@|@no-?reply\.|@example\.(com|org|net)|@[A-Za-z0-9.-]+\.(test|example|invalid|localhost)([^A-Za-z0-9.-]|$))'
+# A noreply local part may follow a non-letter (`12345+noreply@`), never a letter.
+EMAIL_LOCAL='[A-Za-z0-9._%+-]+'
+EMAIL_ALLOW_REGEX="^[0-9]+:((webmaster|security)@lifegames\.org|portfolio\.chamomile484@passmail\.net|([A-Za-z0-9._%+-]*[0-9._%+-])?[Nn]o-?[Rr]eply@[A-Za-z0-9.-]+|${EMAIL_LOCAL}@no-?reply\.[A-Za-z0-9.-]+|${EMAIL_LOCAL}@example\.(com|org|net)|${EMAIL_LOCAL}@[A-Za-z0-9.-]+\.(test|example|invalid|localhost))\$"
 
 # US-style phone number pattern: NNN-NNN-NNNN / (NNN) NNN-NNNN / NNN.NNN.NNNN,
 # optionally prefixed +1. (Not spelled out as a literal example here so this
@@ -212,8 +220,10 @@ scan_file() {
     [ -n "$match" ] && report "marker:$marker" "$file" "$match"
   done
 
-  match=$(grep -InE -m1 "$EMAIL_REGEX" "$scan_path" 2>/dev/null | grep -vE "$EMAIL_ALLOW_REGEX" || true)
-  [ -n "$match" ] && report "email" "$file" "$match"
+  # Filter each ADDRESS, not each line: an allowed address must not hide a later
+  # one in the same file or on the same line. The report names the full line.
+  match=$(grep -InoE "$EMAIL_REGEX" "$scan_path" 2>/dev/null | grep -vE "$EMAIL_ALLOW_REGEX" | head -n 1 || true)
+  [ -n "$match" ] && report "email" "$file" "${match%%:*}:$(sed -n "${match%%:*}p" "$scan_path")"
 
   match=$(grep -InE -m1 "$PHONE_REGEX" "$scan_path" 2>/dev/null || true)
   [ -n "$match" ] && report "phone" "$file" "$match"
