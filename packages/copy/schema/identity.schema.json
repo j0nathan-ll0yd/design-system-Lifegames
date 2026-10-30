@@ -24,6 +24,7 @@
         "alumniOfUrl",
         "location",
         "email",
+        "securityEmail",
         "contactType",
         "addressLocality",
         "addressRegion",
@@ -74,6 +75,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "email": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityEmail": {
           "$ref": "#/$defs/CopyString"
         },
         "contactType": {
@@ -387,7 +391,7 @@
     "contact": {
       "type": "object",
       "title": "IdentityContact",
-      "description": "Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.",
+      "description": "Contact page copy (/contact): title, meta description, intro, channel labels and notes, and the vulnerability-disclosure policy (securityHeading plus the security* policy leaves; security is the deprecated one-sentence note). Addresses and profile URLs come from person.email, person.securityEmail, and person.sameAs.",
       "additionalProperties": false,
       "required": [
         "title",
@@ -402,7 +406,16 @@
         "githubLabel",
         "githubNote",
         "securityHeading",
-        "security"
+        "security",
+        "securityScope",
+        "securityReport",
+        "securityReportAlternate",
+        "securityEncryption",
+        "securityInclude",
+        "securitySafeHarbor",
+        "securityExclusions",
+        "securityBounty",
+        "securityResponse"
       ],
       "properties": {
         "title": {
@@ -442,6 +455,35 @@
           "$ref": "#/$defs/CopyString"
         },
         "security": {
+          "$ref": "#/$defs/CopyString",
+          "deprecated": true,
+          "description": "Deprecated: use `identity.contact.securityReport` instead. Removed in the next major release."
+        },
+        "securityScope": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityReport": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityReportAlternate": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityEncryption": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityInclude": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securitySafeHarbor": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityExclusions": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityBounty": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityResponse": {
           "$ref": "#/$defs/CopyString"
         }
       }

@@ -45,6 +45,9 @@
         "email": {
           "type": "string"
         },
+        "securityEmail": {
+          "type": "string"
+        },
         "contactType": {
           "type": "string"
         },
@@ -110,6 +113,7 @@
         "alumniOfUrl",
         "location",
         "email",
+        "securityEmail",
         "contactType",
         "addressLocality",
         "addressRegion",
@@ -406,7 +410,7 @@
     "contact": {
       "type": "object",
       "title": "IdentityContact",
-      "description": "Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.",
+      "description": "Contact page copy (/contact): title, meta description, intro, channel labels and notes, and the vulnerability-disclosure policy (securityHeading plus the security* policy leaves; security is the deprecated one-sentence note). Addresses and profile URLs come from person.email, person.securityEmail, and person.sameAs.",
       "properties": {
         "title": {
           "type": "string"
@@ -445,6 +449,35 @@
           "type": "string"
         },
         "security": {
+          "type": "string",
+          "description": "Deprecated: use `identity.contact.securityReport` instead. Removed in the next major release.",
+          "deprecated": true
+        },
+        "securityScope": {
+          "type": "string"
+        },
+        "securityReport": {
+          "type": "string"
+        },
+        "securityReportAlternate": {
+          "type": "string"
+        },
+        "securityEncryption": {
+          "type": "string"
+        },
+        "securityInclude": {
+          "type": "string"
+        },
+        "securitySafeHarbor": {
+          "type": "string"
+        },
+        "securityExclusions": {
+          "type": "string"
+        },
+        "securityBounty": {
+          "type": "string"
+        },
+        "securityResponse": {
           "type": "string"
         }
       },
@@ -461,7 +494,16 @@
         "githubLabel",
         "githubNote",
         "securityHeading",
-        "security"
+        "security",
+        "securityScope",
+        "securityReport",
+        "securityReportAlternate",
+        "securityEncryption",
+        "securityInclude",
+        "securitySafeHarbor",
+        "securityExclusions",
+        "securityBounty",
+        "securityResponse"
       ],
       "additionalProperties": false
     },
