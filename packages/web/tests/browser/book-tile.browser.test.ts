@@ -108,11 +108,11 @@ describe('Bookshelf tile: a click anywhere on the tile reaches the link', () => 
 })
 
 describe('Bookshelf tile: the tile itself contains the overlay', () => {
-  // The fade-in (tokens effects.css shelfFadeIn) ends at a transform, and a
-  // transform makes a settled tile the overlay's containing block on its own.
-  // During each tile's animation-delay, and for a consumer that sets
-  // `animation: none`, only `.shelf-book { position: relative }` keeps the
-  // overlay inside the tile.
+  // While the fade-in (tokens effects.css shelfFadeIn) runs, its transform
+  // makes the tile the overlay's containing block on its own. Once it ends
+  // (backwards fill), during each tile's animation-delay, and for a consumer
+  // that sets `animation: none`, only `.shelf-book { position: relative }`
+  // keeps the overlay inside the tile.
   it('with no animation, the overlay covers exactly the tile padding box and the cover hits the link', () => {
     const root = mount(false, 'animation: none')
     const tile = root.querySelector<HTMLElement>('.shelf-book')!

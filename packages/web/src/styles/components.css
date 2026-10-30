@@ -1804,6 +1804,10 @@
     /* ===== 13. READING FEED ===== */
     .article-list {
       list-style: none;
+      /* The list's own reset: a consumer without tokens/reset would otherwise
+         indent every row by the user agent's list padding. */
+      margin: 0;
+      padding: 0;
     }
 
     .article-list-item {
@@ -1815,11 +1819,23 @@
       transition:
         transform 0.2s ease,
         background 0.2s ease;
-      opacity: 0;
-      animation: fadeSlideRight 0.4s ease-out forwards;
+      /* Fail visible: no hidden base state. The fill mode applies the
+         keyframes' hidden from-state only while the animation delays or runs,
+         so a consumer that does not load tokens/animations still shows the
+         row, without the motion. */
+      animation: fadeSlideRight 0.4s ease-out backwards;
       cursor: default;
       white-space: nowrap;
       min-width: 0;
+    }
+
+    /* Reduced-motion gate (WCAG 2.3.3). It does not rely on the
+       tokens/animations duration override, which leaves the stagger delay,
+       and so the hidden from-state, in place. */
+    @media (prefers-reduced-motion: reduce) {
+      .article-list-item {
+        animation: none;
+      }
     }
 
     .article-list-item:last-child {
@@ -1954,13 +1970,19 @@
       gap: var(--space-14);
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      padding-bottom: 6px;
+      /* The scroll box clips at its padding edge. A tile's keyboard focus ring
+         (a11y.css, offset 3px and 2px wide on an overlay 1px inside the tile's
+         border) reaches 4px past the tile, and the hover lift raises a tile
+         4px. The 4px padding holds both inside the clip; the matching
+         negative margin and scroll padding keep the tiles, and their snap
+         positions, where they were. */
+      padding: 4px 4px 6px;
+      margin: -4px -4px 0;
+      scroll-padding-inline: 4px;
       scrollbar-width: thin;
       scrollbar-color: rgba(245, 158, 11, 0.3) transparent;
       align-items: stretch;
       list-style: none;
-      padding-left: 0;
-      margin: 0;
     }
 
     .shelf-row::-webkit-scrollbar {
@@ -1979,14 +2001,22 @@
       width: 105px;
       scroll-snap-align: start;
       cursor: pointer;
-      opacity: 0;
-      animation: shelfFadeIn 0.4s ease-out forwards;
+      /* Fail visible, as .article-list-item: shelfFadeIn lives in
+         tokens/effects. */
+      animation: shelfFadeIn 0.4s ease-out backwards;
       transition: transform 0.2s ease;
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       padding: 6px 4px;
       /* The containing block of the title link's overlay. */
       position: relative;
+    }
+
+    /* Reduced-motion gate (WCAG 2.3.3), as .article-list-item. */
+    @media (prefers-reduced-motion: reduce) {
+      .shelf-book {
+        animation: none;
+      }
     }
 
     /* The tile's real link is its title: the tile's own color, no underline.
@@ -2013,7 +2043,6 @@
 
     .shelf-book-active {
       padding: 8px 6px;
-      opacity: 1;
     }
 
     .shelf-book-active .shelf-cover-wrapper {

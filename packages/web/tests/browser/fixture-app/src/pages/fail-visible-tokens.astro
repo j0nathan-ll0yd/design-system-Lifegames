@@ -1,0 +1,15 @@
+---
+// The full consumer stack: the web stylesheets plus tokens/animations and
+// tokens/effects, so the row entry keyframes exist and run.
+// tests/browser/fail-visible.test.ts compares it with fail-visible-bare.
+import '../../../../../../tokens/dist/tokens.css';
+import '../../../../../../tokens/src/animations.css';
+import '../../../../../../tokens/src/effects.css';
+import '../../../../../src/styles/primitives.css';
+import '../../../../../src/styles/components.css';
+import '../../../../../src/styles/layout.css';
+import '../../../../../src/styles/a11y.css';
+import FailVisibleCards from '../components/FailVisibleCards.astro';
+---
+
+<FailVisibleCards title="Fail visible: full token stack" />
