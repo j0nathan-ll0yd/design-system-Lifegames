@@ -84,9 +84,11 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     'securityEncryption',
     'securityInclude',
     'securitySafeHarbor',
+    'securityThirdParty',
     'securityExclusions',
     'securityBounty',
-    'securityResponse'
+    'securityResponse',
+    'securityDisclosure'
   ]
   /**
    * The addresses each security leaf may name. The website encodes every string that names an
@@ -149,6 +151,17 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(policy.filter((value) => /https?:\/\/|jonathanlloyd\.me/i.test(value))).toEqual([])
     // {siteUrl} is the only placeholder: the website fills it and renders the rest as text.
     expect(policy.filter((value) => /[{}]/.test(value.replaceAll('{siteUrl}', '')))).toEqual([])
+  })
+
+  it('the disclosure policy pins each owner ruling of 2026-10-30', () => {
+    // The safe harbor stops at the providers the site cannot authorize research against.
+    expect(identity.contact['securityThirdParty']).toMatch(/\bthird-party services\b/)
+    expect(identity.contact['securityThirdParty']).toContain('Cloudflare')
+    expect(identity.contact['securityThirdParty']).toContain('Proton')
+    // The site has no other users: the data rule limits what research may touch, not whose data it is.
+    expect(identity.contact['securityExclusions']).toContain('more data than you need')
+    expect(identity.contact['securityExclusions']).not.toMatch(/other people's data/)
+    expect(identity.contact['securityDisclosure']).toMatch(/\b90 days\b/)
   })
 
   it('the contact meta description names no address and no longer claims one shared address', () => {

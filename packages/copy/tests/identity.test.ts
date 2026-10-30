@@ -84,7 +84,8 @@ const NAMESPACES: NamespaceFixture[] = [
   //   vulnerability-disclosure policy leaves (securityScope/securityReport/securityReportAlternate/
   //   securityEncryption/securityInclude/securitySafeHarbor/securityExclusions/securityBounty/
   //   securityResponse); contact.security stays, deprecated — atlas decision 0175.
-  {name: 'identity', expectedLeaves: 111},
+  //   contact gained securityThirdParty and securityDisclosure (owner rulings 2026-10-30).
+  {name: 'identity', expectedLeaves: 113},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5

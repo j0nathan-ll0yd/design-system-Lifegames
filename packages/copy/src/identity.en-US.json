@@ -1043,14 +1043,14 @@
       }
     },
     "lastModified": {
-      "value": "2026-10-29",
+      "value": "2026-10-30",
       "_meta": {
-        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /contact text entered this package on 2026-10-07 (atlas decision 0158); the security policy and the corrected meta description changed it on 2026-10-29 (atlas decision 0175). Bump it with any change to a value in this group.",
+        "description": "Machine-readable ISO-8601 date (YYYY-MM-DD) of the last change to this page's text, for the sitemap <lastmod>. The /contact text entered this package on 2026-10-07 (atlas decision 0158); the security policy and the corrected meta description changed it on 2026-10-29 and 2026-10-30 (atlas decision 0175). Bump it with any change to a value in this group.",
         "usage": ["web:sitemap <lastmod> for /contact"],
         "register": "atom",
         "audience": "machine",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-29"
+        "lastReviewed": "2026-10-30"
       }
     },
     "intro": {
@@ -1167,7 +1167,7 @@
     "securityScope": {
       "value": "This policy covers {siteUrl}, its API under {siteUrl}/api/v1, and its MCP server at {siteUrl}/mcp.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. The scope: the site, its /api/v1 facade, and its MCP server. ICU MF1: {siteUrl} is the site base URL, as in the llm namespace.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The scope: the site, its /api/v1 facade, and its MCP server. ICU MF1: {siteUrl} is the site base URL, as in the llm namespace.",
         "usage": ["web:src/pages/contact.astro (security policy: scope)"],
         "register": "factual",
         "audience": "human",
@@ -1178,7 +1178,7 @@
     "securityReport": {
       "value": "Report a vulnerability by email to security@lifegames.org.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. How to report. Names person.securityEmail inline; the agent-readiness tests hold the address to it. Keep the address in this one string: the web layer encodes the whole string.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. How to report. Names person.securityEmail inline; the agent-readiness tests hold the address to it. Keep the address in this one string: the web layer encodes the whole string.",
         "usage": ["web:src/pages/contact.astro (security policy: report)"],
         "register": "factual",
         "audience": "human",
@@ -1189,7 +1189,7 @@
     "securityReportAlternate": {
       "value": "Mail to webmaster@lifegames.org also reaches Jonathan Lloyd.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. The second channel. Names person.email inline; the agent-readiness tests hold the address to it. Keep the address in this one string: the web layer encodes the whole string.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The second channel. Names person.email inline; the agent-readiness tests hold the address to it. Keep the address in this one string: the web layer encodes the whole string.",
         "usage": ["web:src/pages/contact.astro (security policy: alternate address)"],
         "register": "factual",
         "audience": "human",
@@ -1200,7 +1200,7 @@
     "securityEncryption": {
       "value": "To encrypt a report, use the OpenPGP key at {siteUrl}/pgp-key.txt.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. Where the OpenPGP key is published (the Encryption URL of /.well-known/security.txt). ICU MF1: {siteUrl} is the site base URL.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. Where the OpenPGP key is published (the Encryption URL of /.well-known/security.txt). ICU MF1: {siteUrl} is the site base URL.",
         "usage": ["web:src/pages/contact.astro (security policy: encryption)"],
         "register": "factual",
         "audience": "human",
@@ -1211,7 +1211,7 @@
     "securityInclude": {
       "value": "Include the affected URL, the steps to reproduce, and the impact.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. What a report must carry.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. What a report must carry.",
         "usage": ["web:src/pages/contact.astro (security policy: what to include)"],
         "register": "factual",
         "audience": "human",
@@ -1222,7 +1222,7 @@
     "securitySafeHarbor": {
       "value": "Good-faith research inside this scope that follows this policy is authorized. Jonathan Lloyd will take no legal action over it.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. Safe harbor. A commitment, not flavor: no wit, no hedge. The owner approves this wording.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. Safe harbor. A commitment, not flavor: no wit, no hedge. The owner approves this wording.",
         "usage": ["web:src/pages/contact.astro (security policy: safe harbor)"],
         "register": "factual",
         "audience": "human",
@@ -1230,21 +1230,34 @@
         "lastReviewed": "2026-10-29"
       }
     },
-    "securityExclusions": {
-      "value": "Do not attempt denial of service or social engineering, do not run high-volume automated scans, and do not access or change other people's data. Research that does any of these falls outside this policy.",
+    "securityThirdParty": {
+      "value": "This authorization does not extend to third-party services, such as Cloudflare or Proton.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. The four exclusions from the safe harbor.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The limit of the safe harbor: it authorizes no testing of the third-party services the site and its mail run on.",
+        "usage": ["web:src/pages/contact.astro (security policy: third-party services)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-30",
+        "rationale": "Owner ruling 2026-10-30 (PR #342 review): the site cannot authorize research against a provider it does not own. Cloudflare serves the site; Proton carries its mail."
+      }
+    },
+    "securityExclusions": {
+      "value": "Do not attempt denial of service or social engineering, do not run high-volume automated scans, and do not access, change, or keep more data than you need to show the issue. Research that does any of these falls outside this policy.",
+      "_meta": {
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The four exclusions from the safe harbor. The data rule limits research data to what shows the issue: the site has no other users, so a rule about other people's data would cover almost nothing.",
         "usage": ["web:src/pages/contact.astro (security policy: exclusions)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-29"
+        "lastReviewed": "2026-10-30",
+        "rationale": "Owner ruling 2026-10-30 (PR #342 review): the data rule became \"do not access, change, or keep more data than you need to show the issue\"."
       }
     },
     "securityBounty": {
       "value": "This site runs no bug bounty and pays no financial reward for reports.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. No bounty. Matches the Bug-Bounty: False field of /.well-known/security.txt.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. No bounty. Matches the Bug-Bounty: False field of /.well-known/security.txt.",
         "usage": ["web:src/pages/contact.astro (security policy: no bounty)"],
         "register": "factual",
         "audience": "human",
@@ -1255,12 +1268,24 @@
     "securityResponse": {
       "value": "Jonathan Lloyd sends a first reply within 7 days of a report.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityExclusions, securityBounty, securityResponse. The response commitment: a first reply within 7 days.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The response commitment: a first reply within 7 days.",
         "usage": ["web:src/pages/contact.astro (security policy: response time)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-10-29"
+      }
+    },
+    "securityDisclosure": {
+      "value": "Give Jonathan Lloyd 90 days to fix an issue before you disclose it publicly.",
+      "_meta": {
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The coordinated-disclosure window: 90 days.",
+        "usage": ["web:src/pages/contact.astro (security policy: disclosure window)"],
+        "register": "factual",
+        "audience": "human",
+        "owner": "jonathan",
+        "lastReviewed": "2026-10-30",
+        "rationale": "Owner ruling 2026-10-30 (PR #342 review)."
       }
     }
   },

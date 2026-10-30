@@ -171,9 +171,11 @@ export const identitySchema = z
         securityEncryption: z.string(),
         securityInclude: z.string(),
         securitySafeHarbor: z.string(),
+        securityThirdParty: z.string(),
         securityExclusions: z.string(),
         securityBounty: z.string(),
         securityResponse: z.string(),
+        securityDisclosure: z.string(),
       })
       .strict()
       .describe(

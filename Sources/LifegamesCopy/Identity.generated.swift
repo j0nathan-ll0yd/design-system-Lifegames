@@ -258,11 +258,12 @@ public struct IdentityContact: Codable, Sendable {
     /// Deprecated: use `identity.contact.securityReport` instead. Removed in the next major
     /// release.
     public let security: String
-    public let securityBounty, securityEncryption, securityExclusions, securityHeading: String
-    public let securityInclude, securityReport, securityReportAlternate, securityResponse: String
-    public let securitySafeHarbor, securityScope, title: String
+    public let securityBounty, securityDisclosure, securityEncryption, securityExclusions: String
+    public let securityHeading, securityInclude, securityReport, securityReportAlternate: String
+    public let securityResponse, securitySafeHarbor, securityScope, securityThirdParty: String
+    public let title: String
 
-    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, lastModified: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityBounty: String, securityEncryption: String, securityExclusions: String, securityHeading: String, securityInclude: String, securityReport: String, securityReportAlternate: String, securityResponse: String, securitySafeHarbor: String, securityScope: String, title: String) {
+    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, lastModified: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityBounty: String, securityDisclosure: String, securityEncryption: String, securityExclusions: String, securityHeading: String, securityInclude: String, securityReport: String, securityReportAlternate: String, securityResponse: String, securitySafeHarbor: String, securityScope: String, securityThirdParty: String, title: String) {
         self.channelsHeading = channelsHeading
         self.emailLabel = emailLabel
         self.emailNote = emailNote
@@ -275,6 +276,7 @@ public struct IdentityContact: Codable, Sendable {
         self.metaDescription = metaDescription
         self.security = security
         self.securityBounty = securityBounty
+        self.securityDisclosure = securityDisclosure
         self.securityEncryption = securityEncryption
         self.securityExclusions = securityExclusions
         self.securityHeading = securityHeading
@@ -284,6 +286,7 @@ public struct IdentityContact: Codable, Sendable {
         self.securityResponse = securityResponse
         self.securitySafeHarbor = securitySafeHarbor
         self.securityScope = securityScope
+        self.securityThirdParty = securityThirdParty
         self.title = title
     }
 }
@@ -319,6 +322,7 @@ public extension IdentityContact {
         metaDescription: String? = nil,
         security: String? = nil,
         securityBounty: String? = nil,
+        securityDisclosure: String? = nil,
         securityEncryption: String? = nil,
         securityExclusions: String? = nil,
         securityHeading: String? = nil,
@@ -328,6 +332,7 @@ public extension IdentityContact {
         securityResponse: String? = nil,
         securitySafeHarbor: String? = nil,
         securityScope: String? = nil,
+        securityThirdParty: String? = nil,
         title: String? = nil
     ) -> IdentityContact {
         return IdentityContact(
@@ -343,6 +348,7 @@ public extension IdentityContact {
             metaDescription: metaDescription ?? self.metaDescription,
             security: security ?? self.security,
             securityBounty: securityBounty ?? self.securityBounty,
+            securityDisclosure: securityDisclosure ?? self.securityDisclosure,
             securityEncryption: securityEncryption ?? self.securityEncryption,
             securityExclusions: securityExclusions ?? self.securityExclusions,
             securityHeading: securityHeading ?? self.securityHeading,
@@ -352,6 +358,7 @@ public extension IdentityContact {
             securityResponse: securityResponse ?? self.securityResponse,
             securitySafeHarbor: securitySafeHarbor ?? self.securitySafeHarbor,
             securityScope: securityScope ?? self.securityScope,
+            securityThirdParty: securityThirdParty ?? self.securityThirdParty,
             title: title ?? self.title
         )
     }

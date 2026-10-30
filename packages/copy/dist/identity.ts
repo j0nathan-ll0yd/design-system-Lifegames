@@ -172,9 +172,11 @@ export interface IdentityContact {
   securityEncryption: string;
   securityInclude: string;
   securitySafeHarbor: string;
+  securityThirdParty: string;
   securityExclusions: string;
   securityBounty: string;
   securityResponse: string;
+  securityDisclosure: string;
 }
 /**
  * Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name, description, contact point, and postal address. The node url is the site URL constant, not a copy key.

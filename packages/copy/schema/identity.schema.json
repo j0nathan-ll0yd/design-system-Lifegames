@@ -413,9 +413,11 @@
         "securityEncryption",
         "securityInclude",
         "securitySafeHarbor",
+        "securityThirdParty",
         "securityExclusions",
         "securityBounty",
-        "securityResponse"
+        "securityResponse",
+        "securityDisclosure"
       ],
       "properties": {
         "title": {
@@ -477,6 +479,9 @@
         "securitySafeHarbor": {
           "$ref": "#/$defs/CopyString"
         },
+        "securityThirdParty": {
+          "$ref": "#/$defs/CopyString"
+        },
         "securityExclusions": {
           "$ref": "#/$defs/CopyString"
         },
@@ -484,6 +489,9 @@
           "$ref": "#/$defs/CopyString"
         },
         "securityResponse": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "securityDisclosure": {
           "$ref": "#/$defs/CopyString"
         }
       }

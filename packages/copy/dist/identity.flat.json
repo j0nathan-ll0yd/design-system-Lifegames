@@ -123,7 +123,7 @@
   "contact": {
     "title": "Contact",
     "metaDescription": "Contact Jonathan Lloyd by email for general inquiries, or find him on LinkedIn and GitHub. This page also states how to report a security issue.",
-    "lastModified": "2026-10-29",
+    "lastModified": "2026-10-30",
     "intro": "Jonathan Lloyd takes general inquiries by email. His professional history is on LinkedIn, and his public code is on GitHub.",
     "channelsHeading": "Channels",
     "emailLabel": "Email",
@@ -140,9 +140,11 @@
     "securityEncryption": "To encrypt a report, use the OpenPGP key at {siteUrl}/pgp-key.txt.",
     "securityInclude": "Include the affected URL, the steps to reproduce, and the impact.",
     "securitySafeHarbor": "Good-faith research inside this scope that follows this policy is authorized. Jonathan Lloyd will take no legal action over it.",
-    "securityExclusions": "Do not attempt denial of service or social engineering, do not run high-volume automated scans, and do not access or change other people's data. Research that does any of these falls outside this policy.",
+    "securityThirdParty": "This authorization does not extend to third-party services, such as Cloudflare or Proton.",
+    "securityExclusions": "Do not attempt denial of service or social engineering, do not run high-volume automated scans, and do not access, change, or keep more data than you need to show the issue. Research that does any of these falls outside this policy.",
     "securityBounty": "This site runs no bug bounty and pays no financial reward for reports.",
-    "securityResponse": "Jonathan Lloyd sends a first reply within 7 days of a report."
+    "securityResponse": "Jonathan Lloyd sends a first reply within 7 days of a report.",
+    "securityDisclosure": "Give Jonathan Lloyd 90 days to fix an issue before you disclose it publicly."
   },
   "organization": {
     "name": "Lifegames",
