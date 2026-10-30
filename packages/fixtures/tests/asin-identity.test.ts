@@ -9,10 +9,12 @@
 // RULES, across every source below:
 //   (a) one ASIN maps to one (title, author);
 //   (b) one (title, author) maps to one ASIN;
-//   (c) a covered ASIN's title and author equal its post-adapter entry
-//       (src/post-adapter/books.ts is the source of truth for covered books);
-//   (d) an ASIN's pages and year are the same everywhere they are stated, and for a
-//       covered ASIN they equal the post-adapter entry.
+//   (c) an ASIN with a cover names the book that cover shows. A covered ASIN
+//       (COVERED_ASINS) takes its post-adapter entry (src/post-adapter/books.ts); an
+//       ASIN whose only cover is the docs mirror (apps/docs/public/images/books/)
+//       takes its MIRROR_ONLY_BOOKS entry. Every mirror cover must have a known book;
+//   (d) an ASIN's pages and year are the same everywhere they are stated, and for an
+//       ASIN with a known book they equal that book's.
 // Strings compare exactly. Author is not normalized: every schema types it as one
 // string, so a non-string author is itself a failure.
 //
@@ -36,7 +38,7 @@ import {readdirSync, readFileSync, statSync} from 'node:fs'
 import {dirname, join, relative, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {describe, expect, it} from 'vitest'
-import {COVERED_ASINS} from '../src/cover-inventory'
+import {COVER_ORIGIN, coverAsin, COVERED_ASINS} from '../src/cover-inventory'
 import {booksPostAdapter} from '../src/post-adapter/books'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -44,6 +46,23 @@ const PKG_ROOT = resolve(HERE, '..')
 const REPO_ROOT = resolve(PKG_ROOT, '..', '..')
 const JSON_ROOTS = [join(REPO_ROOT, 'Sources', 'LifegamesWidgets', 'Resources', 'widgets'), join(PKG_ROOT, 'src')]
 const POST_ADAPTER_SOURCE = 'packages/fixtures/src/post-adapter/books.ts'
+const MIRROR_DIR = join(REPO_ROOT, 'apps', 'docs', 'public', 'images', 'books')
+const MIRROR_ONLY_SOURCE = 'packages/fixtures/tests/asin-identity.test.ts MIRROR_ONLY_BOOKS'
+
+/**
+ * The book each mirror-only cover shows: a cover under apps/docs/public/images/books/
+ * whose ASIN is not in COVERED_ASINS, so post-adapter does not describe it. Each entry
+ * was read off the mirrored cover image and verified by ISBN-10 against a public
+ * record (PR #343). Pages and year are those of the edition the ISBN-10 names.
+ *   0593128508: Del Rey trade paperback, 2021 (openlibrary.org/books/OL32208249M,
+ *               isfdb.org publication 866306).
+ *   1984820680: Del Rey trade paperback, 2023 (openlibrary.org/books/OL46153272M,
+ *               isfdb.org publication 932469).
+ */
+const MIRROR_ONLY_BOOKS: Record<string, {title: string; author: string; pages: number; year: number}> = {
+  '0593128508': {title: 'A Deadly Education', author: 'Naomi Novik', pages: 336, year: 2021},
+  '1984820680': {title: 'Locklands', author: 'Robert Jackson Bennett', pages: 560, year: 2023}
+}
 
 // Eager globs: Vite resolves these at transform time, so a new module is imported
 // (and walked) with no edit here. A module that fails to import fails the file.
@@ -194,19 +213,19 @@ export function bookToAsinProblems(records: BookRecord[]): string[] {
   return out
 }
 
-/** (c) A covered ASIN's title and author equal its post-adapter entry. */
+/** (c) An ASIN with a known book (its cover) names that book. */
 export function coveredTitleProblems(records: BookRecord[], truth: Map<string, BookRecord>): string[] {
   const out: string[] = []
   for (const r of records) {
     const expected = truth.get(r.asin)
     if (expected && identity(r) !== identity(expected)) {
-      out.push(`(c) covered ASIN ${r.asin} must be ${book(expected)}, found ${book(r)}`)
+      out.push(`(c) ASIN ${r.asin} has a cover of ${book(expected)}, found ${book(r)}`)
     }
   }
   return out
 }
 
-/** (d) Pages and year agree for one ASIN everywhere, and equal post-adapter for a covered ASIN. */
+/** (d) Pages and year agree for one ASIN everywhere, and equal the known book's when there is one. */
 export function metaProblems(records: BookRecord[], truth: Map<string, BookRecord>): string[] {
   const out: string[] = []
   for (const [asin, group] of groupBy(records, (r) => r.asin)) {
@@ -259,14 +278,55 @@ function loadRecords(): BookRecord[] {
   return records
 }
 
-function postAdapterTruth(): Map<string, BookRecord> {
-  const truth = new Map<string, BookRecord>()
-  for (const r of collectBooks(booksPostAdapter, POST_ADAPTER_SOURCE, 'booksPostAdapter')) {
-    if (COVERED_ASINS.includes(r.asin) && !truth.has(r.asin)) {
-      truth.set(r.asin, r)
+/** The ASIN of every cover under the docs mirror, and each file name that names none. */
+function mirroredCovers(): {asins: string[]; unparsed: string[]} {
+  const asins = new Set<string>()
+  const unparsed: string[] = []
+  for (const name of readdirSync(MIRROR_DIR)) {
+    const asin = coverAsin(`${COVER_ORIGIN}${name}`)
+    if (asin) {
+      asins.add(asin)
+    } else {
+      unparsed.push(name)
     }
   }
-  return truth
+  return {asins: [...asins].sort(), unparsed}
+}
+
+/** The known book per ASIN: post-adapter for a covered ASIN, MIRROR_ONLY_BOOKS for a mirror-only one. */
+function knownBooks(): Map<string, BookRecord> {
+  const known = new Map<string, BookRecord>()
+  for (const r of collectBooks(booksPostAdapter, POST_ADAPTER_SOURCE, 'booksPostAdapter')) {
+    if (COVERED_ASINS.includes(r.asin) && !known.has(r.asin)) {
+      known.set(r.asin, r)
+    }
+  }
+  for (const [asin, b] of Object.entries(MIRROR_ONLY_BOOKS)) {
+    known.set(asin, {file: MIRROR_ONLY_SOURCE, where: asin, asin, ...b})
+  }
+  return known
+}
+
+/**
+ * Every mirror cover has a known book, every MIRROR_ONLY_BOOKS entry names a mirror
+ * cover, and no entry restates a covered ASIN (post-adapter owns those).
+ */
+export function mirrorProblems(mirrored: string[], covered: readonly string[], mirrorOnly: readonly string[]): string[] {
+  const out: string[] = []
+  for (const asin of mirrored) {
+    if (!covered.includes(asin) && !mirrorOnly.includes(asin)) {
+      out.push(`mirror cover ${asin} (apps/docs/public/images/books/) has no known book: add its title and author to MIRROR_ONLY_BOOKS`)
+    }
+  }
+  for (const asin of mirrorOnly) {
+    if (!mirrored.includes(asin)) {
+      out.push(`MIRROR_ONLY_BOOKS ${asin} names no mirror cover`)
+    }
+    if (covered.includes(asin)) {
+      out.push(`MIRROR_ONLY_BOOKS ${asin} is a covered ASIN; post-adapter describes it`)
+    }
+  }
+  return out
 }
 
 /** Tracked files that pair `asin` with a 10-character literal. */
@@ -290,14 +350,21 @@ function trackedAsinFiles(): string[] {
 
 describe('fixture ASINs name one book everywhere', () => {
   const records = loadRecords()
-  const truth = postAdapterTruth()
+  const truth = knownBooks()
 
   it('reads every source class and every covered ASIN (guards against a vacuous gate)', () => {
     const files = new Set(records.map((r) => r.file))
     expect([...files].some((f) => f.startsWith('Sources/LifegamesWidgets/Resources/widgets/') && f.endsWith('.json')), 'Swift JSON').toBe(true)
     expect([...files].some((f) => f.startsWith('packages/fixtures/src/') && f.endsWith('.ts')), 'fixtures TS').toBe(true)
     expect([...files].some((f) => f.startsWith('packages/web/stories/') && f.endsWith('.ts')), 'story TS').toBe(true)
-    expect([...truth.keys()].sort()).toEqual([...COVERED_ASINS].sort())
+    expect([...truth.keys()].sort()).toEqual([...COVERED_ASINS, ...Object.keys(MIRROR_ONLY_BOOKS)].sort())
+  })
+
+  it('every docs mirror cover has a known book, and every MIRROR_ONLY_BOOKS entry names a mirror cover', () => {
+    const {asins, unparsed} = mirroredCovers()
+    expect(asins.length, 'the mirror holds covers (guards against a vacuous gate)').toBeGreaterThan(0)
+    expect(unparsed, 'mirror files that name no ASIN').toEqual([])
+    expect(mirrorProblems(asins, COVERED_ASINS, Object.keys(MIRROR_ONLY_BOOKS))).toEqual([])
   })
 
   it('every author is a string', () => {
@@ -312,11 +379,11 @@ describe('fixture ASINs name one book everywhere', () => {
     expect(bookToAsinProblems(records)).toEqual([])
   })
 
-  it('(c) a covered ASIN names its post-adapter book', () => {
+  it('(c) an ASIN with a cover names the book that cover shows', () => {
     expect(coveredTitleProblems(records, truth)).toEqual([])
   })
 
-  it('(d) an ASIN states one pages and year, and a covered ASIN states the post-adapter ones', () => {
+  it("(d) an ASIN states one pages and year, and an ASIN with a known book states that book's", () => {
     expect(metaProblems(records, truth)).toEqual([])
   })
 
@@ -345,7 +412,12 @@ describe('fixture ASINs name one book everywhere', () => {
       '(b) one book carries two ASINs: ASIN 1600000010 "One" by "A" (x.json $) and ASIN 1600000029 "One" by "A" (y.ts $)'
     ])
     expect(coveredTitleProblems([probe('x.json', '0525573844', 'Range', 'David Epstein')], covered)).toEqual([
-      '(c) covered ASIN 0525573844 must be "Foundryside" by "Robert Jackson Bennett" (truth.ts $), found "Range" by "David Epstein" (x.json $)'
+      '(c) ASIN 0525573844 has a cover of "Foundryside" by "Robert Jackson Bennett" (truth.ts $), found "Range" by "David Epstein" (x.json $)'
+    ])
+    expect(mirrorProblems(['0525573844', '0593128508', '9999999999'], ['0525573844'], ['0593128508', '0525573844', '1984820680'])).toEqual([
+      'mirror cover 9999999999 (apps/docs/public/images/books/) has no known book: add its title and author to MIRROR_ONLY_BOOKS',
+      'MIRROR_ONLY_BOOKS 0525573844 is a covered ASIN; post-adapter describes it',
+      'MIRROR_ONLY_BOOKS 1984820680 names no mirror cover'
     ])
     expect(metaProblems([probe('x.json', '0525573844', 'Foundryside', 'Robert Jackson Bennett', 352, 2018)], covered)).toEqual([
       '(d) ASIN 0525573844 pages disagree: "Foundryside" by "Robert Jackson Bennett" (truth.ts $) has pages 512, year 2018; "Foundryside" by "Robert Jackson Bennett" (x.json $) has pages 352, year 2018'
