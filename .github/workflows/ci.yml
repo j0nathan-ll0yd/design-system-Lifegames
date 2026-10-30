@@ -44,17 +44,23 @@ concurrency:
 # 005ed18; test-swift, web-browser-runtime and governance-gates skipped on their failed `needs:`,
 # and the PR read mergeable with three required gates never run. So every required job here
 # reports on every event:
-#   - No job-level `if:` that skips. A job with `needs:` runs under `always()`, and its
-#     `build-tokens must have succeeded` step reds unless the need concluded success.
 #   - A fork PR is refused by a RED first step, before checkout: these jobs run on self-hosted
 #     hardware, which must not execute fork code, and a skip would read as a pass. Push the
 #     branch to this repository to measure it.
-#   - `always()`, not `!cancelled()`: a run cancelled while build-tokens runs would SKIP a
-#     `!cancelled()` job. Under `always()` the job runs, build-tokens concludes 'cancelled', and
-#     the guard reds before checkout, so no suite runs. A step-level `if: cancelled()` cannot do
-#     this: it reads false in a job that starts after the cancel (measured on run 41011529722).
+#   - A job with `needs:` runs under `!cancelled() || needs.build-tokens.result != 'success'`,
+#     and its `build-tokens must have succeeded` step reds before checkout unless the need
+#     succeeded. On a run cancel GitHub re-evaluates the `if:` of every running job and cancels
+#     the job when it turns false (docs: workflow-cancellation). So:
+#       need failed or cancelled  -> the job runs and reds at the guard, no suite (PR #339 runs
+#                                    41094878303, 41102726858);
+#       need succeeded, then the run is cancelled or superseded -> the job is CANCELLED, which
+#                                    frees its runner and still blocks a merge (runs 41096602512
+#                                    mid-suite, 41098524113 queued, 41104464607 superseded).
+#     Plain `!cancelled()` SKIPS the job when the run is cancelled during its need. `always()`
+#     keeps a cancelled run's job running to completion. A step-level `if: cancelled()` reads
+#     false in a job that starts after the cancel (run 41011529722).
 # package-version-drift aggregates its needs the same way. `scripts/ci-workflow-shape.test.mjs`
-# pins this shape for every required context.
+# pins every expression verbatim.
 
 jobs:
   format:
@@ -316,10 +322,12 @@ jobs:
   # on self-hosted hardware is unsafe. Push the branch to this repository to measure it.
   #
   # This is the job branch protection requires, so its NAME must not change and it must report on
-  # every event. It runs with `if: always()` and aggregates the self-test jobs itself rather than
-  # letting `needs` gate it, because a plain `needs` would SKIP this job when a self-test job
-  # fails — and GitHub counts a skipped required check as satisfied, which is the exact failure
-  # mode (a green-looking gate that measured nothing) this job exists to avoid.
+  # every event. It aggregates the self-test jobs itself rather than letting `needs` gate it,
+  # because a plain `needs` would SKIP this job when a self-test job fails — and GitHub counts a
+  # skipped required check as satisfied, which is the exact failure mode (a green-looking gate
+  # that measured nothing) this job exists to avoid. Its `if:` keeps it running whenever a need
+  # failed or was cancelled, so the aggregate step reds; a cancelled run whose needs all passed or
+  # skipped cancels it, which frees the node-highmem runner (PR #339 run 41096602512).
     needs: [drift-engine-filter, drift-self-test-baseline, drift-self-test-shard]
     if: ${{ !cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}
     runs-on: [self-hosted, linux, arm64, node-highmem]
@@ -379,8 +387,6 @@ jobs:
           done
           echo "self-test not required for this change (engine and contract untouched); nightly covers main."
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: 'THROWAWAY T4: hold this job open (revert before merge)'
-        run: for i in $(seq 1 40); do echo "holding $i"; sleep 30; done
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -533,8 +539,6 @@ jobs:
             exit 1
           fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: 'THROWAWAY T4: hold this job open (revert before merge)'
-        run: for i in $(seq 1 40); do echo "holding $i"; sleep 30; done
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: token-dist
@@ -673,8 +677,6 @@ jobs:
           # history is what makes it resolvable. GitHub Actions sets CI, which is what arms the
           # freeze; there is deliberately no env var here to remove.
           fetch-depth: 0
-      - name: 'THROWAWAY T4: hold this job open (revert before merge)'
-        run: for i in $(seq 1 40); do echo "holding $i"; sleep 30; done
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:

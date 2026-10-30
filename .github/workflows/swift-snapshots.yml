@@ -13,12 +13,15 @@ name: Swift Snapshots
 # when no Swift input changed, `swift-snapshots` concludes `skipped` and still reports.
 #
 # FAIL-CLOSED. `swift-snapshots` runs whenever `swift-changes` did not give a clean "no Swift
-# change" answer: the filter failed, was skipped (fork PR, manual dispatch), or found a change.
-# A fork PR then reaches the refusal step and reports RED instead of a vacuous skip, the same rule
-# ci.yml's `package-version-drift` applies to fork code on self-hosted hardware. The job `if:`
-# uses `always()`, not `!cancelled()`, so a run cancelled during `swift-changes` still runs this
-# job, and its `swift-changes must not be cancelled` step reports RED before checkout instead of a
-# skip or a full suite. A failed or skipped filter still runs the suite.
+# change" answer: the filter failed, was skipped (fork PR, manual dispatch), was cancelled, or
+# found a change. A fork PR then reaches the refusal step and reports RED instead of a vacuous
+# skip, the same rule ci.yml's `package-version-drift` applies to fork code on self-hosted
+# hardware. A cancelled filter reaches the `swift-changes must not be cancelled` step and reports
+# RED before checkout (PR #339 run 41094878245). A failed or skipped filter still runs the suite.
+# When the filter found a change and the run is then cancelled, the `!cancelled()` conjunct turns
+# false and GitHub cancels the job, which frees the macOS runner (runs 41096602534 queued,
+# 41098524122 mid-suite). The one declared skip, a clean "no Swift change" answer, still concludes
+# skipped (run 41104464537).
 #
 # RE-RECORDING. Dispatch this workflow with `record: true` on the branch that changes the views.
 # The job re-records every image on the pinned simulator, fails on purpose (record mode always
@@ -67,7 +70,11 @@ jobs:
           # swift-snapshot-testing renders. This file is listed so a change to the lane re-runs it.
           filters: |
             swift:
-              - 'no-such-path-c7/**'
+              - 'Sources/**'
+              - 'Tests/**'
+              - 'Package.swift'
+              - 'Package.resolved'
+              - '.github/workflows/swift-snapshots.yml'
 
   swift-snapshots:
     name: swift-snapshots
