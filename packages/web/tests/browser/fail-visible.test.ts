@@ -11,7 +11,7 @@
 // token entrypoints. Each runs with the default motion preference and under
 // `prefers-reduced-motion: reduce`.
 import {type Browser, chromium, type Page} from 'playwright'
-import {afterAll, beforeAll, describe, expect, it} from 'vitest'
+import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
 import {type DistServer, serveDist} from './serve-dist'
 
 const ROWS = [
@@ -21,11 +21,17 @@ const ROWS = [
 
 let server: DistServer
 let browser: Browser
+/** Pages this test opened; closed after each test, pass or fail. */
+const pages: Page[] = []
 
 beforeAll(async () => {
   server = await serveDist()
   browser = await chromium.launch()
 }, 60_000)
+
+afterEach(async () => {
+  await Promise.all(pages.splice(0).map((page) => page.close()))
+})
 
 afterAll(async () => {
   await browser?.close()
@@ -34,15 +40,28 @@ afterAll(async () => {
 
 async function open(path: string, reducedMotion: 'reduce' | 'no-preference'): Promise<Page> {
   const page = await browser.newPage({reducedMotion})
-  // Records every CSS animation that runs to its end, from the first paint on.
+  pages.push(page)
+  // Records, from the first paint on, every CSS animation that starts (with
+  // its timing, read while it runs) and every one that runs to its end.
   await page.addInitScript(() => {
-    const ended: Array<{name: string; target: Element}> = []
-    ;(window as unknown as {__ended: typeof ended}).__ended = ended
-    document.addEventListener('animationend', (e) => ended.push({name: e.animationName, target: e.target as Element}), true)
+    const log: Motion = {started: [], ended: []}
+    ;(window as unknown as {__motion: Motion}).__motion = log
+    document.addEventListener('animationstart', (e) => {
+      const target = e.target as Element
+      const animation = target.getAnimations().find((a) => (a as CSSAnimation).animationName === e.animationName)
+      const timing = animation?.effect?.getTiming()
+      log.started.push({name: e.animationName, target, fill: String(timing?.fill), delay: Number(timing?.delay)})
+    }, true)
+    document.addEventListener('animationend', (e) => log.ended.push({name: e.animationName, target: e.target as Element}), true)
   })
   const response = await page.goto(`${server.baseUrl}${path}`)
   expect(response?.status()).toBe(200)
   return page
+}
+
+interface Motion {
+  started: Array<{name: string; target: Element; fill: string; delay: number}>
+  ended: Array<{name: string; target: Element}>
 }
 
 interface Row {
@@ -66,7 +85,6 @@ describe('row entry animations fail visible', () => {
         const found = await rows(page, selector)
         expect(found.length, 'the fixture renders rows').toBeGreaterThan(1)
         expect(found, 'no keyframes, so no animation and no hidden state').toEqual(found.map(() => ({opacity: '1', animations: []})))
-        await page.close()
       })
 
       it('shows every row at once under reduced motion without the token keyframes', async () => {
@@ -74,7 +92,6 @@ describe('row entry animations fail visible', () => {
         const found = await rows(page, selector)
         expect(found.length).toBeGreaterThan(1)
         expect(found).toEqual(found.map(() => ({opacity: '1', animations: []})))
-        await page.close()
       })
 
       it('shows every row at once under reduced motion with the token keyframes', async () => {
@@ -85,22 +102,36 @@ describe('row entry animations fail visible', () => {
         const found = await rows(page, selector)
         expect(found.length).toBeGreaterThan(1)
         expect(found).toEqual(found.map(() => ({opacity: '1', animations: []})))
-        await page.close()
       })
 
-      it(`runs ${keyframes} with the token keyframes and ends visible`, async () => {
+      it(`runs ${keyframes} staggered with the token keyframes and ends visible`, async () => {
         const page = await open('/fail-visible-tokens/', 'no-preference')
         const found = await rows(page, selector)
         expect(found.length).toBeGreaterThan(1)
         // The motion is kept: with the keyframes present, every row runs its
-        // entry animation to the end.
+        // entry animation to the end. Distinct targets, so a replayed row
+        // cannot overshoot the count.
         await page.waitForFunction(({selector, keyframes, count}) => {
-          const ended = (window as unknown as {__ended: Array<{name: string; target: Element}>}).__ended
-          return ended.filter((e) => e.name === keyframes && e.target.matches(selector)).length === count
-        }, {selector, keyframes, count: found.length})
+          const {ended} = (window as unknown as {__motion: Motion}).__motion
+          return new Set(ended.filter((e) => e.name === keyframes && e.target.matches(selector)).map((e) => e.target)).size >= count
+        }, {selector, keyframes, count: found.length}, {timeout: 10_000})
+        // Each row ran with the backwards fill and its own stagger delay, in
+        // row order from 0.
+        const timings = await page.locator(selector).evaluateAll((els, keyframes) => {
+          const {started} = (window as unknown as {__motion: Motion}).__motion
+          return els.map((el) => {
+            const start = started.find((s) => s.target === el && s.name === keyframes)
+            return start ? {fill: start.fill, delay: start.delay} : null
+          })
+        }, keyframes)
+        expect(timings.map((t) => t?.fill)).toEqual(found.map(() => 'backwards'))
+        const delays = timings.map((t) => t!.delay)
+        expect(delays[0]).toBe(0)
+        for (let i = 1; i < delays.length; i++) {
+          expect(delays[i], `row ${i} starts after row ${i - 1}`).toBeGreaterThan(delays[i - 1]!)
+        }
         const settled = await rows(page, selector)
         expect(settled).toEqual(found.map(() => ({opacity: '1', animations: []})))
-        await page.close()
       })
     })
   }
@@ -115,6 +146,5 @@ describe('ReadingFeed list without tokens/reset', () => {
       return {paddingLeft: s.paddingLeft, marginTop: s.marginTop, marginBottom: s.marginBottom}
     })
     expect(box).toEqual({paddingLeft: '0px', marginTop: '0px', marginBottom: '0px'})
-    await page.close()
   })
 })

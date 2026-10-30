@@ -7,6 +7,8 @@ The ReadingFeed rows and the Bookshelf tiles now fail visible. `.article-list-it
 - `packages/web/src/styles/components.css`: both rules drop the base `opacity: 0` and use `animation-fill-mode: backwards`. The keyframes' hidden from-state applies only while the stagger delay and the animation run. Without the keyframes there is no animation and the rows show at once.
 - Both rules gain their own `prefers-reduced-motion: reduce` gate (`animation: none`). The `tokens/animations` override shortens the duration but keeps the stagger delay, which the backwards fill would hold hidden.
 - `.article-list` resets its own `margin` and `padding`. A consumer without `tokens/reset` indented every row by the user agent list padding.
+- The hover motion now works where the keyframes load. The old `forwards` fill held `transform: translateX(0)` after the entry animation, which blocked `.article-list-item:hover` (6px right) and `.shelf-book:hover` (4px up). With the `backwards` fill the hover rules apply once the animation ends. The lifted tile's top 4px, its transparent border and padding, rises past the `.shelf-row` scroll box; no cover or text is cut.
+- `.shelf-book-active` drops its `opacity: 1`. It only undid the removed hidden base.
 - The keyframes stay in the tokens package, their single source. A consumer that wants the entry motion loads `tokens/animations` and `tokens/effects`, as before.
 
 Consumers may drop their own visibility overrides once they adopt this patch, for example `.article-list-item { opacity: 1; }`. An override that sets `opacity: 1` stays compatible: the rows already show without it.
