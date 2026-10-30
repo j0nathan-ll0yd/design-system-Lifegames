@@ -48,8 +48,8 @@
       },
       {
         "asin": "B07QVH2Q2K",
-        "title": "The Midnight Library",
-        "author": "Matt Haig",
+        "title": "Shorefall",
+        "author": "Robert Jackson Bennett",
         "status": "finished",
         "rating": 4,
         "progress": null,
@@ -57,8 +57,8 @@
       },
       {
         "asin": "B0FBRJY116",
-        "title": "Intermezzo",
-        "author": "Sally Rooney",
+        "title": "Crafting Engineering Strategy",
+        "author": "Will Larson",
         "status": "upNext",
         "rating": null,
         "progress": null,
@@ -95,6 +95,24 @@
         "year": 2020,
         "desc": "Timeless lessons on wealth and happiness",
         "genres": ["Finance", "Psychology"]
+      },
+      "B07QVH2Q2K": {
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 2,
+        "seriesTotal": 3,
+        "pages": 496,
+        "genres": ["Fantasy", "Science Fiction"],
+        "year": 2020,
+        "desc": "The stakes escalate dramatically as an ancient intelligence returns to reshape reality — Valeria is a compelling antagonist who challenges everything."
+      },
+      "B0FBRJY116": {
+        "seriesName": "Engineering Leadership Series",
+        "seriesNumber": 2,
+        "seriesTotal": 3,
+        "pages": 307,
+        "genres": ["Technology", "Business", "Leadership"],
+        "year": 2024,
+        "desc": "Practical frameworks for engineering strategy at director+ level — covers organizational design, technical vision, and execution at scale."
       }
     },
     "statusLabels": {
