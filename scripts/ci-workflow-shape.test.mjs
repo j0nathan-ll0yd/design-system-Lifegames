@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import {execFileSync} from 'node:child_process'
+import {execFileSync, spawnSync} from 'node:child_process'
 import {globSync, readdirSync, readFileSync} from 'node:fs'
 import {dirname, resolve} from 'node:path'
 import {test} from 'node:test'
@@ -206,14 +206,19 @@ test('ci.yml: the folded jobs keep one named step per old gate, each run past an
   }
 })
 
-// `packages` runs ten gate steps, and A2b binds a required context to ONE step of the same name
+// `packages` runs one step per gate, and A2b binds a required context to ONE step of the same name
 // (atlas audits/gate-can-fail-campaign.md, requirement 2). So its last step, `packages`, is a
 // verdict over every gate step's outcome. A gate the verdict does not read could red its own step
 // and still leave `packages` green; a verdict that is not last could pass before a later gate ran.
 // Each gate step runs only once install succeeded, so a fork PR or a failed install leaves every
 // gate SKIPPED, and the verdict reds on the skip. The skip-contract-check label is the one waiver.
 const PACKAGES_VERDICT_IF = '${{ !cancelled() }}'
-const PACKAGES_GATE_IF = "!cancelled() && steps.install.outcome == 'success'"
+const PACKAGES_GATE_IF = "${{ !cancelled() && steps.install.outcome == 'success' }}"
+// The contract step also skips under the skip-contract-check label, the verdict's one waiver.
+const PACKAGES_GATE_IF_EXCEPTIONS = {
+  'schemas-contract':
+    "${{ !cancelled() && steps.install.outcome == 'success' && !contains(github.event.pull_request.labels.*.name, 'skip-contract-check') }}"
+}
 const PACKAGES_WAIVED = "${{ contains(github.event.pull_request.labels.*.name, 'skip-contract-check') && 'GATE_SCHEMAS_CONTRACT' || '' }}"
 
 test('ci.yml: the packages verdict step is last, never skips, and reads every gate step', () => {
@@ -226,13 +231,19 @@ test('ci.yml: the packages verdict step is last, never skips, and reads every ga
 
   const installAt = steps.findIndex((step) => step.id === 'install')
   assert.ok(installAt > 0 && /pnpm install --frozen-lockfile/.test(steps[installAt].run), 'packages must keep its install step under id install')
-  const gates = steps.slice(installAt + 1, -1)
+  // Every step that is neither setup nor the job frame is a gate, wherever it sits. A gate before
+  // install could run with nothing installed, and the verdict would not read it.
+  const gates = steps.filter((step) => !isSetupStep(step) && !isRequiredJobFrame('packages', step))
   assert.ok(gates.length >= FOLDED.packages.length, `packages has only ${gates.length} gate steps`)
+  for (const gate of gates) {
+    assert.ok(steps.indexOf(gate) > installAt, `packages gate "${gate.name}" must run after install`)
+  }
   const expected = []
   for (const gate of gates) {
     assert.ok(gate.id, `packages gate "${gate.name}" needs an id, so the verdict can read its outcome`)
     assert.equal(gate['continue-on-error'], undefined, `packages gate "${gate.name}" must not carry continue-on-error`)
-    assert.ok(String(gate.if ?? '').startsWith(`\${{ ${PACKAGES_GATE_IF}`), `packages gate "${gate.name}" must run under ${PACKAGES_GATE_IF}`)
+    const pinnedIf = PACKAGES_GATE_IF_EXCEPTIONS[gate.id] ?? PACKAGES_GATE_IF
+    assert.equal(gate.if, pinnedIf, `packages gate "${gate.name}" must run under exactly ${pinnedIf}`)
     expected.push(`\${{ steps.${gate.id}.outcome }}`)
   }
 
@@ -245,11 +256,33 @@ test('ci.yml: the packages verdict step is last, never skips, and reads every ga
   assert.equal(read.length, expected.length, 'the packages verdict must read each gate step exactly once')
   assert.equal(env.WAIVED, PACKAGES_WAIVED, 'the packages verdict waiver must stay the skip-contract-check label alone')
 
-  const run = String(verdict.run ?? '')
-  for (const line of ['set -euo pipefail', 'gates=$(compgen -v GATE_ || true)', `if [ "$outcome" = 'success' ]; then`, 'exit "$failed"']) {
-    assert.ok(run.split('\n').some((l) => l.trim() === line), `the packages verdict must run: ${line}`)
+  for (const id of Object.keys(PACKAGES_GATE_IF_EXCEPTIONS)) {
+    assert.ok(gates.some((gate) => gate.id === id), `PACKAGES_GATE_IF_EXCEPTIONS names ${id}, which is no packages gate; prune it`)
   }
 })
+
+// Known answers for the verdict script itself, run as GitHub runs a `run:` step on a runner with
+// bash: `bash --noprofile --norc -eo pipefail {0}`.
+// The YAML assertions above prove what the verdict reads; these prove what it decides.
+const VERDICT_KNOWN_ANSWERS = [
+  ['every gate succeeded', {GATE_A: 'success', GATE_B: 'success', WAIVED: ''}, 0],
+  ['one gate failed', {GATE_A: 'success', GATE_B: 'failure', WAIVED: ''}, 1],
+  ['one gate skipped with no waiver', {GATE_A: 'success', GATE_B: 'skipped', WAIVED: ''}, 1],
+  ['the waived gate skipped', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 0],
+  ['the waived gate failed', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'failure', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
+  ['another gate skipped under the waiver', {GATE_A: 'skipped', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
+  ['a gate read an empty outcome (unknown step id)', {GATE_A: 'success', GATE_B: '', WAIVED: ''}, 1],
+  ['a gate concluded cancelled', {GATE_A: 'cancelled', WAIVED: ''}, 1],
+  ['no gate variable at all', {WAIVED: ''}, 1]
+]
+
+for (const [label, gateEnv, expected] of VERDICT_KNOWN_ANSWERS) {
+  test(`ci.yml: the packages verdict exits ${expected} when ${label}`, () => {
+    const run = ci.jobs.packages.steps.at(-1).run
+    const result = spawnSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', run], {env: {PATH: process.env.PATH, ...gateEnv}, encoding: 'utf8'})
+    assert.equal(result.status, expected, `${label}: exit ${result.status}\n${result.stdout}${result.stderr}`)
+  })
+}
 
 const governanceGatesLines = () => ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates').run.split('\n').map((line) => line.trim())
 

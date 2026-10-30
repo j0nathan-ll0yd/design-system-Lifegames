@@ -39,10 +39,11 @@ concurrency:
 # become a licence to hang. See scripts/ci-heartbeat.sh for what it does NOT cover.
 
 # WHY NO REQUIRED JOB CAN SKIP
-# Branch protection on main requires eight contexts, and GitHub counts a SKIPPED required job as
-# satisfied. On 2026-10-27 build-tokens failed on an upload-artifact ECONNRESET at PR #333's
-# 005ed18; test-swift, web-browser-runtime and governance-gates skipped on their failed `needs:`,
-# and the PR read mergeable with three required gates never run. So every required job here
+# Branch protection on main requires the contexts that REQUIRED lists in
+# scripts/ci-workflow-shape.test.mjs, and GitHub counts a SKIPPED required job as satisfied.
+# On 2026-10-27 build-tokens failed on an upload-artifact ECONNRESET at PR #333's 005ed18;
+# test-swift, web-browser-runtime and governance-gates skipped on their failed `needs:`, and
+# the PR read mergeable with three required gates never run. So every required job here
 # reports on every event:
 #   - A fork PR is refused by a RED first step, before checkout: these jobs run on self-hosted
 #     hardware, which must not execute fork code, and a skip would read as a pass. Push the
@@ -216,9 +217,10 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/fixtures lint
       # A2b exact-step binding (atlas audits/gate-can-fail-campaign.md). The verdict reds unless
-      # every gate step above concluded success. A gate that failed reds its own step too; a gate
-      # that SKIPPED (install failed, or a fork PR) reds only here. Each GATE_ variable reads one
-      # gate step's outcome, and the shape test pins that every gate step has exactly one.
+      # every gate step above concluded success. A gate that failed reds its own step too. A gate
+      # that SKIPPED (install failed, or a fork PR) has no red step of its own, so the verdict reds
+      # for it. Each GATE_ variable reads one gate step's outcome; the shape test pins that every
+      # gate step has exactly one, and runs this script against known answers.
       # The one waiver: the `skip-contract-check` label skips the contract step by design.
       - name: packages
         if: ${{ !cancelled() }}
@@ -236,7 +238,7 @@ jobs:
           WAIVED: ${{ contains(github.event.pull_request.labels.*.name, 'skip-contract-check') && 'GATE_SCHEMAS_CONTRACT' || '' }}
         run: |
           set -euo pipefail
-          gates=$(compgen -v GATE_ || true)
+          gates=$(env | sed -n 's/^\(GATE_[A-Z_]*\)=.*/\1/p' | sort)
           if [ -z "$gates" ]; then
             echo "::error title=packages verdict read no gate::No GATE_ variable is set, so this step measured nothing. It reports RED rather than passing."
             exit 1
