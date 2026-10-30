@@ -49,13 +49,22 @@ concurrency:
 #     branch to this repository to measure it.
 #   - A job with `needs:` runs under `!cancelled() || needs.build-tokens.result != 'success'`,
 #     and its `build-tokens must have succeeded` step reds before checkout unless the need
-#     succeeded. On a run cancel GitHub re-evaluates the `if:` of every running job and cancels
-#     the job when it turns false (docs: workflow-cancellation). So:
+#     succeeded. On a run cancel GitHub re-evaluates the `if:` of "all currently running jobs"
+#     and cancels each one whose condition is now false (docs: workflow-cancellation, step 1).
+#     The docs say nothing about queued or not-yet-started jobs, so for those the no-skip
+#     property rests on measurement, not on the docs. So:
 #       need failed or cancelled  -> the job runs and reds at the guard, no suite (PR #339 runs
 #                                    41094878303, 41102726858);
-#       need succeeded, then the run is cancelled or superseded -> the job is CANCELLED, which
-#                                    frees its runner and still blocks a merge (runs 41096602512
-#                                    mid-suite, 41098524113 queued, 41104464607 superseded).
+#       need succeeded, then the run is cancelled or superseded while the job runs -> the job
+#                                    is CANCELLED, which frees its runner and still blocks a
+#                                    merge (documented; runs 41096602512 mid-suite and
+#                                    41104464607 superseded);
+#       need succeeded, then the run is cancelled while the job is queued -> CANCELLED as well
+#                                    (measured only: run 41098524113, and 0 dependents skipped
+#                                    after build-tokens succeeded across 96 cancelled DS CI runs
+#                                    in history).
+#     This holds only while a cancel also cancels the upstream job. Each upstream `if:` must
+#     carry no status function and must keep the fork check; the shape test pins every one.
 #     Plain `!cancelled()` SKIPS the job when the run is cancelled during its need. `always()`
 #     keeps a cancelled run's job running to completion. A step-level `if: cancelled()` reads
 #     false in a job that starts after the cancel (run 41011529722).

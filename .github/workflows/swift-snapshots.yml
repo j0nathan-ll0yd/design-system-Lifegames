@@ -19,9 +19,11 @@ name: Swift Snapshots
 # hardware. A cancelled filter reaches the `swift-changes must not be cancelled` step and reports
 # RED before checkout (PR #339 run 41094878245). A failed or skipped filter still runs the suite.
 # When the filter found a change and the run is then cancelled, the `!cancelled()` conjunct turns
-# false and GitHub cancels the job, which frees the macOS runner (runs 41096602534 queued,
-# 41098524122 mid-suite). The one declared skip, a clean "no Swift change" answer, still concludes
-# skipped (run 41104464537).
+# false and GitHub cancels the job, which frees the macOS runner. The docs (workflow-cancellation,
+# step 1) cover only "all currently running jobs": the running case is documented and measured
+# (run 41098524122 mid-suite), and the queued case is measured only (run 41096602534). This holds
+# only while `swift-changes` carries no status function in its `if:`; the shape test pins it. The
+# one declared skip, a clean "no Swift change" answer, still concludes skipped (run 41104464537).
 #
 # RE-RECORDING. Dispatch this workflow with `record: true` on the branch that changes the views.
 # The job re-records every image on the pinned simulator, fails on purpose (record mode always

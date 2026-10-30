@@ -130,6 +130,58 @@ for (const [file, workflow, context] of REQUIRED) {
   })
 }
 
+// The cancel-aware `if:` above is safe only while every upstream job is CANCELLED by a run cancel,
+// so its result reads 'cancelled' and the dependent runs and reds at its guard. That holds only
+// while no upstream `if:` carries a status function: the implicit success() is what cancels it.
+// An upstream `always()` would finish success after the cancel, leave both arms of the dependent's
+// `if:` false, and SKIP the required context. On build-tokens it would also drop the fork check
+// and run fork code on self-hosted hardware. So every job in the needs chain of a required job is
+// pinned verbatim. Each root (a job with no needs) carries the same-repo condition; a job below a
+// root inherits it, because the implicit success() skips it when its root skipped on a fork.
+const SAME_REPO = "github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository"
+const UPSTREAM_IFS = {
+  'ci.yml': {
+    'build-tokens': SAME_REPO,
+    'drift-engine-filter': SAME_REPO,
+    'drift-self-test-baseline': "needs.drift-engine-filter.outputs.engine == 'true'",
+    'drift-self-test-shard': "needs.drift-engine-filter.outputs.engine == 'true'"
+  },
+  'swift-snapshots.yml': {'swift-changes': `github.event_name != 'workflow_dispatch' && (${SAME_REPO})`}
+}
+const STATUS_FUNCTION = /\b(always|cancelled|failure|success)\s*\(/
+
+for (const [file, workflow] of [['ci.yml', ci], ['swift-snapshots.yml', swiftSnapshots]]) {
+  test(`${file}: every upstream job of a required context is pinned, carries no status function, and keeps the fork check`, () => {
+    const pins = UPSTREAM_IFS[file]
+    const reached = new Set()
+    const walk = (id) => {
+      for (const need of needsOf(workflow.jobs[id])) {
+        if (reached.has(need)) {
+          continue
+        }
+        reached.add(need)
+        walk(need)
+      }
+    }
+    for (const [, , context] of REQUIRED.filter(([f]) => f === file)) {
+      walk(Object.keys(workflow.jobs).find((id) => (workflow.jobs[id].name ?? id) === context))
+    }
+    for (const id of reached) {
+      const job = workflow.jobs[id]
+      assert.ok(id in pins, `${file}: ${id} is upstream of a required context but has no pinned if`)
+      assert.doesNotMatch(String(job.if ?? ''), STATUS_FUNCTION,
+        `${file}: upstream job ${id} must carry no status function, or a cancel can leave it successful`)
+      assert.equal(job.if, pins[id], `${file}: upstream job ${id} must keep its pinned if`)
+      if (needsOf(job).length === 0) {
+        assert.ok(String(job.if ?? '').includes(SAME_REPO), `${file}: upstream root ${id} must skip a fork PR with the same-repo condition`)
+      }
+    }
+    for (const id of Object.keys(pins)) {
+      assert.ok(reached.has(id), `${file}: pinned upstream job ${id} is upstream of no required context; prune the pin`)
+    }
+  })
+}
+
 test('ci.yml: the folded jobs keep one named step per old gate, each run past an earlier red', () => {
   for (const [jobId, oldJobs] of Object.entries(FOLDED)) {
     const job = ci.jobs[jobId]
