@@ -13,9 +13,17 @@ name: Swift Snapshots
 # when no Swift input changed, `swift-snapshots` concludes `skipped` and still reports.
 #
 # FAIL-CLOSED. `swift-snapshots` runs whenever `swift-changes` did not give a clean "no Swift
-# change" answer: the filter failed, was skipped (fork PR, manual dispatch), or found a change.
-# A fork PR then reaches the refusal step and reports RED instead of a vacuous skip, the same rule
-# ci.yml's `package-version-drift` applies to fork code on self-hosted hardware.
+# change" answer: the filter failed, was skipped (fork PR, manual dispatch), was cancelled, or
+# found a change. A fork PR then reaches the refusal step and reports RED instead of a vacuous
+# skip, the same rule ci.yml's `package-version-drift` applies to fork code on self-hosted
+# hardware. A cancelled filter reaches the `swift-changes must not be cancelled` step and reports
+# RED before checkout (PR #339 run 41094878245). A failed or skipped filter still runs the suite.
+# When the filter found a change and the run is then cancelled, the `!cancelled()` conjunct turns
+# false and GitHub cancels the job, which frees the macOS runner. The docs (workflow-cancellation,
+# step 1) cover only "all currently running jobs": the running case is documented and measured
+# (run 41098524122 mid-suite), and the queued case is measured only (run 41096602534). This holds
+# only while `swift-changes` carries no status function in its `if:`; the shape test pins it. The
+# one declared skip, a clean "no Swift change" answer, still concludes skipped (run 41104464537).
 #
 # RE-RECORDING. Dispatch this workflow with `record: true` on the branch that changes the views.
 # The job re-records every image on the pinned simulator, fails on purpose (record mode always
@@ -73,7 +81,7 @@ jobs:
   swift-snapshots:
     name: swift-snapshots
     needs: [swift-changes]
-    if: ${{ !cancelled() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}
+    if: ${{ needs.swift-changes.result != 'success' || (!cancelled() && needs.swift-changes.outputs.swift == 'true') }}
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 30
     env:
@@ -113,6 +121,15 @@ jobs:
         run: |
           echo "::error title=swift-snapshots cannot evaluate a fork PR::This gate builds and runs the package on a self-hosted macOS runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
           exit 1
+
+      - name: swift-changes must not be cancelled
+        env:
+          SWIFT_CHANGES_RESULT: ${{ needs.swift-changes.result }}
+        run: |
+          if [ "$SWIFT_CHANGES_RESULT" = 'cancelled' ]; then
+            echo "::error title=swift-snapshots cannot run on a cancelled run::swift-changes concluded 'cancelled', so the run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
+            exit 1
+          fi
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 

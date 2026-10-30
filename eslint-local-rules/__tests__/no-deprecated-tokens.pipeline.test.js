@@ -94,4 +94,4 @@ const tester = new RuleTester({languageOptions: {ecmaVersion: 2020, sourceType: 
   fs.rmSync(root, {recursive: true, force: true})
 }
 
-console.log('no-deprecated-tokens.spec: all pipeline assertions passed')
+console.log('no-deprecated-tokens.pipeline: all pipeline assertions passed')
