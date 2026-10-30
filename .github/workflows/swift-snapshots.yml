@@ -67,11 +67,7 @@ jobs:
           # swift-snapshot-testing renders. This file is listed so a change to the lane re-runs it.
           filters: |
             swift:
-              - 'Sources/**'
-              - 'Tests/**'
-              - 'Package.swift'
-              - 'Package.resolved'
-              - '.github/workflows/swift-snapshots.yml'
+              - 'no-such-path-c7/**'
 
   swift-snapshots:
     name: swift-snapshots
