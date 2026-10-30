@@ -733,6 +733,11 @@ jobs:
           # rather than in web-builds' lint-web step because governance-gates is a required status
           # context and web-builds is not — a gate that cannot block is not a gate.
           node --test audits/__tests__/d3-ssr-image-fallback.test.mjs
+          # Placeholder asset (atlas decision 0086): every apps/* package that renders web widget
+          # code serves /images/no-cover.svg byte-identical to packages/web/src/assets/no-cover.svg.
+          # The apps are discovered from their imports. It ran only through `pnpm test:scripts`, so
+          # no workflow saw apps/docs ship with no copy: its Bookshelf page painted 36 broken images.
+          node --test scripts/check-placeholder-asset.test.mjs
           # Web widget-purity lint (P1 raw hex, P3 forbidden imports / module-scope fetch, W16
           # props-extend-schema). It runs HERE and not only in web-builds' lint-web step for the reason stated on the
           # SSR gate above: governance-gates is a required status context and web-builds is not.
