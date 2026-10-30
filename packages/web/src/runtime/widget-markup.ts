@@ -54,21 +54,14 @@ const ARTICLE_NOTE_ICON = '<svg class="article-list-note-icon" viewBox="0 0 16 1
   '<line x1="5" y1="8.5" x2="9" y2="8.5" stroke="currentColor" stroke-width="1"/>' +
   '</svg>'
 
-/** Rows per ReadingFeed page; the pager (reading-feed-init.ts) shows one page at a time. */
-export const ARTICLE_PAGE_SIZE = 10
-
 /**
- * One ReadingFeed row, `li.article-list-item`, at position `index` of the
- * whole list. Its entry delay counts from the top of its own page: the pager
- * hides the other pages with `display: none`, so showing a page restarts each
- * row's entry animation, and a list-wide index would hold the page-2 rows
- * hidden for 0.7 s and more. The row carries the notes icon with its
- * tooltip, the title (a link when the URL is https), the source, and the
- * date. No whitespace between the inline children: a whitespace text node
- * renders as a space.
+ * One ReadingFeed row, `li.article-list-item`, at position `index` of its
+ * page: the notes icon with its tooltip, the title (a link when the URL is
+ * https), the source, and the date. No whitespace between the inline
+ * children: a whitespace text node renders as a space.
  */
 export function articleItemHtml(a: Article, index: number): string {
-  let html = '<li class="article-list-item" style="animation-delay: ' + (index % ARTICLE_PAGE_SIZE) * 0.07 + 's">'
+  let html = '<li class="article-list-item" style="animation-delay: ' + index * 0.07 + 's">'
   if (a.hasNotes) {
     html += '<span class="article-list-note" title="' + esc(a.noteText) + '">' + ARTICLE_NOTE_ICON + '</span>'
   }

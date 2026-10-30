@@ -1,5 +1,8 @@
 import {a11y} from '@j0nathan-ll0yd/copy'
-import {ARTICLE_PAGE_SIZE as PAGE_SIZE} from './widget-markup'
+
+const PAGE_SIZE = 10
+// Seconds between two rows' entry animations: articleItemHtml's step.
+const ROW_STAGGER_S = 0.07
 
 function paginateReadingFeed(card: HTMLElement, debug: boolean): void {
   const body = card.querySelector('.widget-body')
@@ -48,9 +51,18 @@ function paginateReadingFeed(card: HTMLElement, debug: boolean): void {
   body.appendChild(pager)
 
   function showPage(page: number): void {
+    const first = (page - 1) * PAGE_SIZE
     items.forEach((it, idx) => {
-      const visible = idx >= (page - 1) * PAGE_SIZE && idx < page * PAGE_SIZE
-      ;(it as HTMLElement).style.display = visible ? '' : 'none'
+      const visible = idx >= first && idx < first + PAGE_SIZE
+      const row = it as HTMLElement
+      // Showing a row clears its display: none, which restarts its entry
+      // animation. The row markup staggers by list position
+      // (articleItemHtml), so restart the stagger at the page's first row:
+      // a page-2 row would otherwise wait 0.7 s and more.
+      if (visible) {
+        row.style.animationDelay = (idx - first) * ROW_STAGGER_S + 's'
+      }
+      row.style.display = visible ? '' : 'none'
     })
     pager.querySelectorAll<HTMLButtonElement>('.article-page-btn').forEach((btn) => {
       const target = Number(btn.dataset.page)

@@ -321,7 +321,7 @@ function readingFeed(): Projection {
     text: [widgets.readingFeed.title, ...articles.flatMap((a: any) => [a.articleTitle, `(${a.sourceTitle})`, utcText(a.savedAt)])],
     // Each row links its https article URL (the updater's row, articleItemHtml).
     attrs: articles.flatMap((a: any) => [`href=${a.articleUrl}`, `datetime=${a.savedAt}`, 'data-relative=compact']),
-    styles: articles.map((_: unknown, i: number) => `li animation-delay: ${(i % 10) * 0.07}s`),
+    styles: articles.map((_: unknown, i: number) => `li animation-delay: ${i * 0.07}s`),
     classes: ['article-list-date', 'article-list-item', 'article-list-source', 'article-list-title']
   }
 }
