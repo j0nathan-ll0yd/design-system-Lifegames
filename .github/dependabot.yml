@@ -13,19 +13,37 @@ version: 2
 # variables -> Dependabot), not the Actions one: Dependabot never sees the
 # workflow GITHUB_TOKEN, and GitHub forbids Dependabot secret names beginning
 # with `GITHUB_`, so `${{secrets.GITHUB_TOKEN}}` is not expressible here.
-# `read:packages` is the only scope required.
+# `read:packages` is the only scope required. If the secret is absent, every npm
+# job fails before resolution with `422 Secret Not Found: GH_PACKAGES_READ_TOKEN`
+# (runs 30876321560 to 32789230394, 2026-08-04 to 2026-08-24).
+#
+# `scope` is required. Keep it equal to the `@j0nathan-ll0yd:registry=` line in
+# .npmrc, which local and CI installs read. With `scope` set, Dependabot
+# generates its .npmrc from these credentials and ignores the committed one
+# (GitHub docs, "Dependabot options reference", `scope`). The generated file
+# writes the scope mapping and the auth line, and keeps only the `allow-git`
+# and `allow-remote` lines of the committed file (dependabot-core 1f80af96b,
+# npm_and_yarn/lib/dependabot/npm_and_yarn/file_updater/npmrc_builder.rb,
+# `build_npmrc_from_scope_credentials`). The committed .npmrc holds only the
+# scope mapping, so the generated file is equivalent.
+#
+# Why: without `scope`, Dependabot infers scope mappings from the URL each
+# dependency resolved through (`registry_scopes` in the same file). GitHub
+# Packages answers 200 for `@types/*` and `@microsoft/*` with stale copies, so
+# pnpm fetches those scopes from here and fails. The fault can surface as
+# `ERR_PNPM_NO_MATCHING_VERSION` or, with truncated pnpm output, as
+# `private_source_authentication_failure` for registry.npmjs.org. Same fault
+# and fix: mantle #489, mantle-OfflineMediaDownloader #693,
+# mantle-LifegamesPortal #413.
 #
 # Deliberately NOT set:
 #   replaces-base -- would route *every* npm dependency through GitHub Packages,
 #     which does not proxy registry.npmjs.org.
-#   scope         -- would make Dependabot regenerate .npmrc purely from these
-#     credentials and discard the committed one. The committed
-#     `@j0nathan-ll0yd:registry=` line already does the scope mapping and
-#     Dependabot appends the credential from here.
 registries:
   github-packages:
     type: npm-registry
     url: https://npm.pkg.github.com
+    scope: '@j0nathan-ll0yd'
     token: ${{secrets.GH_PACKAGES_READ_TOKEN}}
 
 updates:
