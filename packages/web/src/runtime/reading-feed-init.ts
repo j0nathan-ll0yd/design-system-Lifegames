@@ -1,6 +1,5 @@
 import {a11y} from '@j0nathan-ll0yd/copy'
-
-const PAGE_SIZE = 10
+import {ARTICLE_PAGE_SIZE as PAGE_SIZE} from './widget-markup'
 
 function paginateReadingFeed(card: HTMLElement, debug: boolean): void {
   const body = card.querySelector('.widget-body')

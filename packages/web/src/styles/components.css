@@ -1970,13 +1970,19 @@
       gap: var(--space-14);
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      padding-bottom: 6px;
+      /* The scroll box clips at its padding edge. A tile's keyboard focus ring
+         (a11y.css, offset 3px and 2px wide on an overlay 1px inside the tile's
+         border) reaches 4px past the tile, and the hover lift raises a tile
+         4px. The 4px padding holds both inside the clip; the matching
+         negative margin and scroll padding keep the tiles, and their snap
+         positions, where they were. */
+      padding: 4px 4px 6px;
+      margin: -4px -4px 0;
+      scroll-padding-inline: 4px;
       scrollbar-width: thin;
       scrollbar-color: rgba(245, 158, 11, 0.3) transparent;
       align-items: stretch;
       list-style: none;
-      padding-left: 0;
-      margin: 0;
     }
 
     .shelf-row::-webkit-scrollbar {

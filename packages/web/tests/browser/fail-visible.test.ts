@@ -15,8 +15,9 @@ import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
 import {type DistServer, serveDist} from './serve-dist'
 
 const ROWS = [
-  {selector: '.article-list-item', keyframes: 'fadeSlideRight'},
-  {selector: '.shelf-book', keyframes: 'shelfFadeIn'}
+  // `hover`: the computed transform of components.css's :hover rule.
+  {selector: '.article-list-item', keyframes: 'fadeSlideRight', hover: 'matrix(1, 0, 0, 1, 6, 0)'},
+  {selector: '.shelf-book', keyframes: 'shelfFadeIn', hover: 'matrix(1, 0, 0, 1, 0, -4)'}
 ] as const
 
 let server: DistServer
@@ -70,6 +71,22 @@ interface Row {
   animations: string[]
 }
 
+/**
+ * Waits until `count` distinct rows matching `selector` have run `keyframes`
+ * to the end. Distinct targets, so a replayed row cannot overshoot the count.
+ */
+async function waitForEntry(page: Page, selector: string, keyframes: string, count: number): Promise<void> {
+  await page.waitForFunction(({selector, keyframes, count}) => {
+    const {ended} = (window as unknown as {__motion: Motion}).__motion
+    return new Set(ended.filter((e) => e.name === keyframes && e.target.matches(selector)).map((e) => e.target)).size >= count
+  }, {selector, keyframes, count}, {timeout: 10_000})
+}
+
+/** Waits for every running animation and transition on `el` to finish. */
+function settle(page: Page, selector: string): Promise<unknown> {
+  return page.locator(selector).evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)))
+}
+
 /** Every row's computed opacity and running animations, read in one task. */
 function rows(page: Page, selector: string): Promise<Row[]> {
   return page.locator(selector).evaluateAll((els) =>
@@ -78,7 +95,7 @@ function rows(page: Page, selector: string): Promise<Row[]> {
 }
 
 describe('row entry animations fail visible', () => {
-  for (const {selector, keyframes} of ROWS) {
+  for (const {selector, keyframes, hover} of ROWS) {
     describe(selector, () => {
       it('shows every row at once without the token keyframes', async () => {
         const page = await open('/fail-visible-bare/', 'no-preference')
@@ -109,12 +126,8 @@ describe('row entry animations fail visible', () => {
         const found = await rows(page, selector)
         expect(found.length).toBeGreaterThan(1)
         // The motion is kept: with the keyframes present, every row runs its
-        // entry animation to the end. Distinct targets, so a replayed row
-        // cannot overshoot the count.
-        await page.waitForFunction(({selector, keyframes, count}) => {
-          const {ended} = (window as unknown as {__motion: Motion}).__motion
-          return new Set(ended.filter((e) => e.name === keyframes && e.target.matches(selector)).map((e) => e.target)).size >= count
-        }, {selector, keyframes, count: found.length}, {timeout: 10_000})
+        // entry animation to the end.
+        await waitForEntry(page, selector, keyframes, found.length)
         // Each row ran with the backwards fill and its own stagger delay, in
         // row order from 0.
         const timings = await page.locator(selector).evaluateAll((els, keyframes) => {
@@ -133,6 +146,18 @@ describe('row entry animations fail visible', () => {
         const settled = await rows(page, selector)
         expect(settled).toEqual(found.map(() => ({opacity: '1', animations: []})))
       })
+
+      it('applies the hover motion once the entry animation ends', async () => {
+        // A forwards fill held the entry's end transform and so blocked the
+        // :hover transform for good. The backwards fill lets it apply.
+        const page = await open('/fail-visible-tokens/', 'no-preference')
+        const count = await page.locator(selector).count()
+        await waitForEntry(page, selector, keyframes, count)
+        const first = `${selector} >> nth=0`
+        await page.locator(first).hover()
+        await settle(page, first)
+        expect(await page.locator(first).evaluate((el) => getComputedStyle(el).transform)).toBe(hover)
+      })
     })
   }
 })
@@ -146,5 +171,71 @@ describe('ReadingFeed list without tokens/reset', () => {
       return {paddingLeft: s.paddingLeft, marginTop: s.marginTop, marginBottom: s.marginBottom}
     })
     expect(box).toEqual({paddingLeft: '0px', marginTop: '0px', marginBottom: '0px'})
+  })
+})
+
+describe('ReadingFeed page 2', () => {
+  it('staggers each page from its own first row', async () => {
+    // The pager hides the other pages with display: none, so showing page 2
+    // restarts its rows' entry animations. A delay from the list-wide index
+    // held those rows hidden for 0.7 s and more.
+    const page = await open('/reading-feed-pages/', 'no-preference')
+    const list = '#cardReading .article-list-item'
+    await waitForEntry(page, list, 'fadeSlideRight', 10)
+    await page.locator('#cardReading .article-page-btn[data-page="2"]').click()
+    const shown = await page.locator(list).evaluateAll((els) =>
+      els.filter((el) => getComputedStyle(el).display !== 'none').map((el) => {
+        const animation = el.getAnimations().find((a) => (a as CSSAnimation).animationName === 'fadeSlideRight')
+        return Number(animation?.effect?.getTiming().delay)
+      })
+    )
+    expect(shown.length, 'page 2 shows rows 11-20').toBe(10)
+    expect(shown.map(Math.round), 'delays in ms, from 0 at the page top').toEqual(shown.map((_, i) => i * 70))
+  })
+})
+
+describe('Bookshelf keyboard focus ring', () => {
+  it('lies inside the shelf row clip for every tile', async () => {
+    // a11y.css draws the ring on the title link's overlay (the tile's padding
+    // box), offset 3px and 2px wide. .shelf-row clips at its padding edge.
+    const page = await open('/fail-visible-tokens/', 'no-preference')
+    const links = page.locator('#cardBooks .shelf-book-link')
+    const count = await links.count()
+    expect(count).toBeGreaterThan(1)
+    await waitForEntry(page, '.shelf-book', 'shelfFadeIn', count)
+    const boxes: unknown[] = []
+    for (let i = 0; i < count; i++) {
+      // Tab moves focus as a keyboard user does, so :focus-visible matches and
+      // the browser scrolls the tile into the row's view.
+      do {
+        await page.keyboard.press('Tab')
+      } while (!(await links.nth(i).evaluate((el) => el === document.activeElement)))
+      boxes.push(await links.nth(i).evaluate((link) => {
+        const tile = link.closest('.shelf-book')!
+        const row = link.closest('.shelf-row')!
+        const ring = getComputedStyle(link, '::after')
+        const reach = parseFloat(ring.outlineOffset) + parseFloat(ring.outlineWidth)
+        const t = tile.getBoundingClientRect()
+        const ts = getComputedStyle(tile)
+        const r = row.getBoundingClientRect()
+        // The ring's outer box: the tile's padding box grown by the reach.
+        const outer = {
+          top: t.top + parseFloat(ts.borderTopWidth) - reach,
+          left: t.left + parseFloat(ts.borderLeftWidth) - reach,
+          right: t.right - parseFloat(ts.borderRightWidth) + reach,
+          bottom: t.bottom - parseFloat(ts.borderBottomWidth) + reach
+        }
+        return {
+          reach,
+          inside: outer.top >= r.top && outer.left >= r.left && outer.right <= r.right && outer.bottom <= r.bottom,
+          outer,
+          row: {top: r.top, left: r.left, right: r.right, bottom: r.bottom}
+        }
+      }))
+    }
+    for (const [i, box] of boxes.entries()) {
+      expect((box as {reach: number}).reach, `tile ${i}: the ring is drawn`).toBe(5)
+      expect((box as {inside: boolean}).inside, `tile ${i}: ${JSON.stringify(box)}`).toBe(true)
+    }
   })
 })
