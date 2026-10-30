@@ -128,8 +128,6 @@ jobs:
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: 'THROWAWAY T2b: hold this job open (revert before merge)'
-        run: for i in $(seq 1 40); do echo "holding $i"; sleep 30; done
       - name: Select Xcode 26
         run: |
           XCODE=$(find /Applications -maxdepth 1 -type d \( -name 'Xcode_26*.app' -o -name 'Xcode.app' \) 2>/dev/null | sort -V | tail -1)
