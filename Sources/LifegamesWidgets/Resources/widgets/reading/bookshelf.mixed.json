@@ -21,8 +21,8 @@
       },
       {
         "asin": "B0FBRJY116",
-        "title": "Intermezzo",
-        "author": "Sally Rooney",
+        "title": "Crafting Engineering Strategy",
+        "author": "Will Larson",
         "status": "upNext",
         "rating": null,
         "progress": null,
@@ -41,6 +41,15 @@
         "year": 2021,
         "desc": "An astronaut wakes up alone on a spaceship with no memory",
         "genres": ["Science Fiction", "Adventure"]
+      },
+      "B0FBRJY116": {
+        "seriesName": "Engineering Leadership Series",
+        "seriesNumber": 2,
+        "seriesTotal": 3,
+        "pages": 307,
+        "genres": ["Technology", "Business", "Leadership"],
+        "year": 2024,
+        "desc": "Practical frameworks for engineering strategy at director+ level — covers organizational design, technical vision, and execution at scale."
       }
     },
     "statusLabels": {

@@ -16,8 +16,7 @@
 // `bookMeta` map (the web looks books up by `bookMeta[b.asin]`).
 //
 // BOOKMETA PAIRING: each `bookMeta` map's keys equal the ASINs of its sibling `books`
-// list. An orphan key always fails; a book with no entry fails unless the root's
-// tolerated list names it (see bookMetaProblems).
+// list. An orphan key fails, and a book with no entry fails (see bookMetaProblems).
 import {readdirSync, readFileSync, statSync} from 'node:fs'
 import {dirname, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -122,16 +121,12 @@ export function collectAsins(value: unknown, where: string, into: Collected = {f
 }
 
 /**
- * A `bookMeta` key with no book is always an error: nothing can look it up. A book
- * with no `bookMeta` entry is an error unless `toleratedMissing` names it as
- * `<where> <asin>`. The web reads `bookMeta[b.asin] || {}`, so a missing entry renders
- * without series or description, but a fixture that means "fully populated" must not
- * lose one silently. A tolerated entry that is no longer missing is also an error, so
- * the list cannot go stale.
+ * A `bookMeta` key with no book is an error: nothing can look it up. A book with no
+ * `bookMeta` entry is an error too. The web reads `bookMeta[b.asin] || {}`, so a
+ * missing entry renders without series or description, and nothing else signals it.
  */
-export function bookMetaProblems(metas: MetaPair[], toleratedMissing: ReadonlySet<string> = new Set()): string[] {
+export function bookMetaProblems(metas: MetaPair[]): string[] {
   const out: string[] = []
-  const missing = new Set<string>()
   for (const {where, keys, asins} of metas) {
     for (const key of keys) {
       if (!asins.includes(key)) {
@@ -140,18 +135,8 @@ export function bookMetaProblems(metas: MetaPair[], toleratedMissing: ReadonlySe
     }
     for (const asin of asins) {
       if (!keys.includes(asin)) {
-        missing.add(`${where} ${asin}`)
+        out.push(`${where} ${asin} has no bookMeta entry`)
       }
-    }
-  }
-  for (const id of missing) {
-    if (!toleratedMissing.has(id)) {
-      out.push(`${id} has no bookMeta entry`)
-    }
-  }
-  for (const id of toleratedMissing) {
-    if (!missing.has(id)) {
-      out.push(`${id} is listed as tolerated-missing but has a bookMeta entry or no longer exists: remove it`)
     }
   }
   return out
@@ -197,16 +182,6 @@ const roots: Array<[string, () => Array<[string, unknown]>]> = [
   )
 ]
 
-// Swift widget fixtures whose `books` list holds a book with no `bookMeta` entry. These
-// predate the gate. Each id names one file and one ASIN; a new gap fails.
-const WIDGET_TOLERATED_MISSING_META: ReadonlySet<string> = new Set([
-  'Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.mixed.json.books B0FBRJY116',
-  'Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.populated-max.json.books B07QVH2Q2K',
-  'Sources/LifegamesWidgets/Resources/widgets/reading/bookshelf.populated-max.json.books B0FBRJY116'
-])
-
-const TOLERATED_MISSING_META: Record<string, ReadonlySet<string>> = {'Sources/LifegamesWidgets/Resources/widgets': WIDGET_TOLERATED_MISSING_META}
-
 function collectRoot(load: () => Array<[string, unknown]>): Collected {
   const result: Collected = {found: [], duplicates: [], metas: []}
   for (const [label, value] of load()) {
@@ -222,9 +197,9 @@ describe('fixture ASINs have the real shape', () => {
     expect(problems(result)).toEqual([])
   })
 
-  it.each(roots)('%s: every bookMeta key names a book, and every book has its bookMeta entry', (root, load) => {
+  it.each(roots)('%s: every bookMeta key names a book, and every book has its bookMeta entry', (_root, load) => {
     const result = collectRoot(load)
-    expect(bookMetaProblems(result.metas, TOLERATED_MISSING_META[root])).toEqual([])
+    expect(bookMetaProblems(result.metas)).toEqual([])
   })
 
   it('the bookMeta check reaches the post-adapter and widget fixtures (guards against a vacuous gate)', () => {
@@ -252,15 +227,15 @@ describe('fixture ASINs have the real shape', () => {
     ])
   })
 
-  it('rejects a short bookMeta key, an orphan key, a book with no entry and a stale tolerated id (can-fail proof)', () => {
+  it('rejects a short bookMeta key, an orphan key and a book with no entry (can-fail proof)', () => {
     const probe = {books: [{asin: '1732102201'}, {asin: 'B0DSRD0001'}], bookMeta: {'1732': {}, B0DSRD0002: {}}}
     const result = collectAsins(probe, 'probe')
     expect(problems(result)).toEqual(['probe.bookMeta key "1732" is not 10 characters of [A-Z0-9]'])
-    expect(bookMetaProblems(result.metas, new Set(['probe B0DSRD0001', 'probe 0123456789']))).toEqual([
+    expect(bookMetaProblems(result.metas)).toEqual([
       'probe.bookMeta key "1732" names no book in probe.books',
       'probe.bookMeta key "B0DSRD0002" names no book in probe.books',
       'probe 1732102201 has no bookMeta entry',
-      'probe 0123456789 is listed as tolerated-missing but has a bookMeta entry or no longer exists: remove it'
+      'probe B0DSRD0001 has no bookMeta entry'
     ])
   })
 })
