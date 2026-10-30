@@ -44,11 +44,15 @@ concurrency:
 # 005ed18; test-swift, web-browser-runtime and governance-gates skipped on their failed `needs:`,
 # and the PR read mergeable with three required gates never run. So every required job here
 # reports on every event:
-#   - No job-level `if:` that skips. A job with `needs:` runs under `!cancelled()`, and its
+#   - No job-level `if:` that skips. A job with `needs:` runs under `always()`, and its
 #     `build-tokens must have succeeded` step reds unless the need concluded success.
 #   - A fork PR is refused by a RED first step, before checkout: these jobs run on self-hosted
 #     hardware, which must not execute fork code, and a skip would read as a pass. Push the
 #     branch to this repository to measure it.
+#   - A cancelled run is refused by a RED `Refuse a cancelled run` step (`if: cancelled()`),
+#     before checkout. `!cancelled()` would SKIP the job when a run is cancelled while its need
+#     runs, and `always()` alone would let every later step skip and the job read green. The
+#     step reds cheaply and no suite runs.
 # package-version-drift aggregates its needs the same way. `scripts/ci-workflow-shape.test.mjs`
 # pins this shape for every required context.
 
@@ -325,6 +329,11 @@ jobs:
         run: |
           echo "::error title=package-version-drift cannot evaluate a fork PR::This gate builds and packs the workspace on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check - it would claim 'no drift' having measured nothing. Push the branch to this repository and re-run."
           exit 1
+      - name: Refuse a cancelled run
+        if: cancelled()
+        run: |
+          echo "::error title=package-version-drift was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
+          exit 1
       # FAIL-CLOSED AGGREGATION. Every outcome is enumerated and the default is failure, so a
       # result this step does not recognise reds the gate instead of falling through. For a matrix
       # job `needs.<job>.result` is 'success' only when EVERY shard succeeded, so one survivor in
@@ -504,7 +513,7 @@ jobs:
   # External contributors: maintainer must re-push the PR to a branch in this repo.
   test-swift:
     needs: [build-tokens]
-    if: ${{ !cancelled() }}
+    if: always()
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
     env:
@@ -517,6 +526,11 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
           echo "::error title=test-swift cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: Refuse a cancelled run
+        if: cancelled()
+        run: |
+          echo "::error title=test-swift was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
           exit 1
       - name: build-tokens must have succeeded
         env:
@@ -552,6 +566,8 @@ jobs:
         if: failure()
         with:
           name: snapshot-diffs
+          # A red guard step leaves no snapshots to upload.
+          if-no-files-found: ignore
           path: Tests/**/__Snapshots__/**/*.png
 
   contract-ts:
@@ -599,7 +615,7 @@ jobs:
     # The scripts-off suite renders the widgets with the real token CSS
     # (packages/tokens/dist/tokens.css), so it needs the token build.
     needs: build-tokens
-    if: ${{ !cancelled() }}
+    if: always()
     runs-on: [self-hosted, linux, arm64, playwright]
     timeout-minutes: 15
     steps:
@@ -607,6 +623,11 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
           echo "::error title=web-browser-runtime cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: Refuse a cancelled run
+        if: cancelled()
+        run: |
+          echo "::error title=web-browser-runtime was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
           exit 1
       - name: build-tokens must have succeeded
         env:
@@ -637,13 +658,18 @@ jobs:
   governance-gates:
     name: governance-gates
     needs: build-tokens
-    if: ${{ !cancelled() }}
+    if: always()
     runs-on: [self-hosted, linux, arm64, node]
     steps:
       - name: Refuse to run fork-PR code on a self-hosted runner
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
           echo "::error title=governance-gates cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: Refuse a cancelled run
+        if: cancelled()
+        run: |
+          echo "::error title=governance-gates was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
           exit 1
       - name: build-tokens must have succeeded
         env:

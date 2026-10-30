@@ -56,42 +56,65 @@ for (const [file, workflow, context] of REQUIRED) {
 
 // GitHub counts a SKIPPED required job as satisfied. On 2026-10-27 build-tokens failed at PR #333's
 // 005ed18, three required jobs skipped on their failed `needs:`, and the PR read mergeable. A
-// required job therefore never skips: it runs past a failed need and reds on it, and it refuses a
-// fork PR with a red step instead of a job-level skip.
+// required job therefore never skips: it runs past a failed need or a cancelled run and reds on
+// it, and it refuses a fork PR with a red step instead of a job-level skip. Every guard runs before
+// checkout, so a red costs no suite, and no guard may carry `continue-on-error`.
 const FORK_PR = "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository"
+// The exact job-level `if:` of a required job with `needs:`. `!cancelled()` skips the job when the
+// run is cancelled during its need; any extra clause can skip it on some other event.
+const NEEDS_IF = 'always()'
+// Named exceptions, pinned verbatim. swift-snapshots skips only on a clean "no Swift change"
+// answer, and its if runs the full suite whenever swift-changes did not succeed.
+const IF_EXCEPTIONS = {'swift-snapshots': "${{ always() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}"}
+// Needs a job aggregates itself, because they skip legitimately: package-version-drift requires its
+// self-test rungs only when the drift engine changed, and reds on any outcome it does not recognise.
+const AGGREGATED_NEEDS = {'package-version-drift': ['drift-self-test-baseline', 'drift-self-test-shard']}
 const requiredJob = (workflow, context) => Object.entries(workflow.jobs).find(([id, job]) => (job.name ?? id) === context)?.[1]
 const needsOf = (job) => [job.needs ?? []].flat()
+const exits1 = (step) => /^\s*exit 1\s*$/m.test(step.run ?? '')
 
 for (const [file, workflow, context] of REQUIRED) {
-  test(`${file}: required context ${context} never passes by skipping on a failed need or a fork PR`, () => {
+  test(`${file}: required context ${context} never passes by skipping on a failed need, a cancelled run or a fork PR`, () => {
     const job = requiredJob(workflow, context)
-    const jobIf = String(job.if ?? '')
-    assert.doesNotMatch(jobIf, /head\.repo\.full_name/, `${context} must refuse a fork PR with a red step, not skip it with a job-level if`)
+    assert.equal(job['continue-on-error'], undefined, `${context} must not carry job-level continue-on-error`)
+    assert.doesNotMatch(String(job.if ?? ''), /head\.repo\.full_name/, `${context} must refuse a fork PR with a red step, not skip it with a job-level if`)
 
-    const firstStep = job.steps[0]
-    assert.equal(firstStep.if, FORK_PR, `${context}: its first step must refuse a fork PR, before checkout`)
-    assert.match(firstStep.run, /^\s*exit 1\s*$/m, `${context}: the fork refusal must exit 1`)
+    const checkoutAt = job.steps.findIndex((step) => String(step.uses ?? '').startsWith('actions/checkout@'))
+    assert.ok(checkoutAt > 0, `${context} must check out after its guards`)
+    const guards = job.steps.slice(0, checkoutAt)
+    for (const step of guards) {
+      assert.equal(step['continue-on-error'], undefined, `${context}: guard "${step.name}" must not carry continue-on-error`)
+    }
+
+    assert.equal(guards[0].if, FORK_PR, `${context}: its first step must refuse a fork PR, before checkout`)
+    assert.ok(exits1(guards[0]), `${context}: the fork refusal must exit 1`)
 
     if (needsOf(job).length === 0) {
       assert.equal(job.if, undefined, `${context} has no needs, so it must carry no job-level if that could skip it`)
       return
     }
     // A plain `if:` carries an implicit success(), which skips the job when a need fails.
-    assert.match(jobIf, /!cancelled\(\)|always\(\)/, `${context} needs ${needsOf(job)}, so its if must run past a failed need`)
-    const checkoutAt = job.steps.findIndex((step) => String(step.uses ?? '').startsWith('actions/checkout@'))
+    assert.equal(job.if, IF_EXCEPTIONS[context] ?? NEEDS_IF, `${context} needs ${needsOf(job)}, so its if must be exactly the pinned one`)
+    // always() runs the job on a cancelled run, but every later step would skip and the job could
+    // read green. This step reds it instead.
+    assert.ok(guards.some((step) => step.if === 'cancelled()' && exits1(step)), `${context}: a step before checkout must red a cancelled run`)
+
     for (const need of needsOf(job)) {
-      const result = `needs.${need}.result`
-      // Either a guard step before checkout reds on the result, or the job if runs the gate
-      // itself whenever the need did not succeed (swift-snapshots runs the suite).
-      const guardAt = job.steps.findIndex((step) =>
-        Object.values(step.env ?? {}).some((value) => String(value).includes(result)) && /exit 1/.test(step.run ?? '')
-      )
-      const ifRunsOnFailure = jobIf.includes(`${result} != 'success'`)
-      assert.ok(guardAt !== -1 || ifRunsOnFailure, `${context} needs ${need} but no step reds on ${result}`)
-      if (guardAt !== -1) {
-        assert.equal(job.steps[guardAt].if, undefined, `${context}: the ${need} guard must carry no if that could skip it`)
-        assert.ok(guardAt < checkoutAt, `${context}: the ${need} guard must run before checkout`)
+      const result = `\${{ needs.${need}.result }}`
+      if (AGGREGATED_NEEDS[context]?.includes(need)) {
+        assert.ok(guards.some((step) => Object.values(step.env ?? {}).includes(result)), `${context} must aggregate ${need} before checkout`)
+        continue
       }
+      if (IF_EXCEPTIONS[context]?.includes(`needs.${need}.result != 'success'`)) {
+        continue
+      }
+      const guard = guards.find((step) => Object.values(step.env ?? {}).includes(result))
+      assert.ok(guard, `${context} needs ${need} but no step before checkout reads ${result}`)
+      const variable = Object.entries(guard.env).find(([, value]) => value === result)[0]
+      assert.ok(guard.run.includes(`[ "$${variable}" != 'success' ]`), `${context}: the ${need} guard must red unless ${variable} is 'success'`)
+      assert.ok(exits1(guard), `${context}: the ${need} guard must exit 1`)
+      // The implicit success() skips the guard only after an earlier guard has already red.
+      assert.equal(guard.if, undefined, `${context}: the ${need} guard must carry no if that could skip it`)
     }
   })
 }

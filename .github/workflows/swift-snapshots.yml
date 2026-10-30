@@ -15,7 +15,9 @@ name: Swift Snapshots
 # FAIL-CLOSED. `swift-snapshots` runs whenever `swift-changes` did not give a clean "no Swift
 # change" answer: the filter failed, was skipped (fork PR, manual dispatch), or found a change.
 # A fork PR then reaches the refusal step and reports RED instead of a vacuous skip, the same rule
-# ci.yml's `package-version-drift` applies to fork code on self-hosted hardware.
+# ci.yml's `package-version-drift` applies to fork code on self-hosted hardware. The job `if:`
+# uses `always()`, not `!cancelled()`, so a run cancelled during `swift-changes` reaches the
+# `Refuse a cancelled run` step and reports RED instead of a skip.
 #
 # RE-RECORDING. Dispatch this workflow with `record: true` on the branch that changes the views.
 # The job re-records every image on the pinned simulator, fails on purpose (record mode always
@@ -73,7 +75,7 @@ jobs:
   swift-snapshots:
     name: swift-snapshots
     needs: [swift-changes]
-    if: ${{ !cancelled() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}
+    if: ${{ always() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 30
     env:
@@ -112,6 +114,11 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
           echo "::error title=swift-snapshots cannot evaluate a fork PR::This gate builds and runs the package on a self-hosted macOS runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
+          exit 1
+      - name: Refuse a cancelled run
+        if: cancelled()
+        run: |
+          echo "::error title=swift-snapshots was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
           exit 1
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
