@@ -31,7 +31,8 @@
     },
     "@j0nathan-ll0yd/web#test": {
       "dependsOn": [
-        "build"
+        "build",
+        "@j0nathan-ll0yd/fixtures#build"
       ],
       "inputs": [
         "$TURBO_DEFAULT$",

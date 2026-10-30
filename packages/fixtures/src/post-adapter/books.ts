@@ -75,7 +75,7 @@ export const baseline = authored<DashboardBooks>({
       title: 'A Philosophy of Software Design',
       author: 'John Ousterhout',
       isbn: '9781732102200',
-      asin: '173210220X',
+      asin: '1732102201',
       mainImage: null,
       mainImageThumb: null,
       mainImageCard: null,
@@ -116,7 +116,7 @@ export const baseline = authored<DashboardBooks>({
       year: 2017,
       desc: 'A comprehensive guide to the principles, design, and implementation of scalable, reliable data systems.'
     },
-    '173210220X': {
+    '1732102201': {
       seriesName: null,
       seriesNumber: null,
       seriesTotal: null,
