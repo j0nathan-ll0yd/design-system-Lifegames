@@ -1,0 +1,26 @@
+---
+// The two widgets whose rows animate in: ReadingFeed (.article-list-item,
+// fadeSlideRight from tokens/animations) and Bookshelf (.shelf-book,
+// shelfFadeIn from tokens/effects). Live props, as the scripts-off suite.
+import Bookshelf from '../../../../../src/widgets/reading/Bookshelf.astro';
+import ReadingFeed from '../../../../../src/widgets/reading/ReadingFeed.astro';
+import { propsFor } from '../lib/states';
+
+const { title } = Astro.props as { title: string };
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+  </head>
+  <body style="background:#06060f;color:#fff;margin:0;padding:16px">
+    <section style="width:380px">
+      <ReadingFeed {...propsFor('readingFeed', 'live')} />
+    </section>
+    <section style="width:380px">
+      <Bookshelf {...propsFor('bookshelf', 'live')} />
+    </section>
+  </body>
+</html>

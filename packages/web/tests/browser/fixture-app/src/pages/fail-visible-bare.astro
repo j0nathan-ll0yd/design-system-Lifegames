@@ -1,0 +1,13 @@
+---
+// The web stylesheets WITHOUT tokens/animations and tokens/effects: the
+// keyframes of the row entry animations are missing. tests/browser/fail-visible.test.ts
+// asserts the rows still show.
+import '../../../../../../tokens/dist/tokens.css';
+import '../../../../../src/styles/primitives.css';
+import '../../../../../src/styles/components.css';
+import '../../../../../src/styles/layout.css';
+import '../../../../../src/styles/a11y.css';
+import FailVisibleCards from '../components/FailVisibleCards.astro';
+---
+
+<FailVisibleCards title="Fail visible: web stylesheets only" />

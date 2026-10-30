@@ -15,9 +15,8 @@ const CF_IMAGE_HOST = new URL(CF_IMAGE_PREFIX).host
  * third-party host (atlas decision 0086).
  *
  * The asset ships with this package at `src/assets/no-cover.svg`; consumers
- * copy it to this path under their static root. In-repo that copy is
- * `apps/portfolio/public/images/no-cover.svg`, held byte-identical by
- * `scripts/check-placeholder-asset.test.mjs`.
+ * copy it to this path under their static root. Every consumer serves its own
+ * copy; each repository's test holds it byte-identical to this asset.
  */
 export const PLACEHOLDER_IMAGE_SRC = '/images/no-cover.svg'
 
