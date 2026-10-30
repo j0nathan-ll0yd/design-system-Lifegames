@@ -2,7 +2,7 @@
   "books": {
     "books": [
       {
-        "asin": "1600000312",
+        "asin": "0735214484",
         "title": "Range: Why Generalists Triumph in a Specialized World",
         "author": "David Epstein",
         "status": "reading",
@@ -12,15 +12,15 @@
       },
       {
         "asin": "0593128508",
-        "title": "Project Hail Mary",
-        "author": "Andy Weir",
+        "title": "A Deadly Education",
+        "author": "Naomi Novik",
         "status": "finished",
         "rating": 5,
         "progress": null,
-        "notes": "Best sci-fi since The Martian"
+        "notes": "A school story with real menace."
       },
       {
-        "asin": "1600000320",
+        "asin": "0593243919",
         "title": "Supercommunicators: How to Unlock the Secret Language of Connection",
         "author": "Charles Duhigg",
         "status": "reading",
@@ -29,7 +29,7 @@
         "notes": null
       },
       {
-        "asin": "1600000347",
+        "asin": "0735211299",
         "title": "Atomic Habits: An Easy & Proven Way to Build Good Habits & Break Bad Ones",
         "author": "James Clear",
         "status": "finished",
@@ -38,7 +38,7 @@
         "notes": "Practical frameworks for habit formation"
       },
       {
-        "asin": "1600000339",
+        "asin": "0857197681",
         "title": "The Psychology of Money: Timeless Lessons on Wealth, Greed, and Happiness",
         "author": "Morgan Housel",
         "status": "finished",
@@ -66,32 +66,35 @@
       }
     ],
     "bookMeta": {
-      "1600000312": {
+      "0735214484": {
         "pages": 352,
         "year": 2019,
         "desc": "Why generalists triumph in a specialized world",
         "genres": ["Psychology", "Self-Help"]
       },
       "0593128508": {
-        "pages": 496,
+        "seriesName": "The Scholomance",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 336,
+        "genres": ["Fantasy", "Dark Academia", "Urban Fantasy"],
         "year": 2021,
-        "desc": "An astronaut wakes up alone on a spaceship with no memory",
-        "genres": ["Science Fiction", "Adventure"]
+        "desc": "A sorcerer with a dark affinity tries to survive a school of magic that hunts its own students."
       },
-      "1600000320": {
+      "0593243919": {
         "pages": 320,
         "year": 2024,
         "desc": "The science of better conversations",
         "genres": ["Psychology", "Communication"]
       },
-      "1600000347": {
+      "0735211299": {
         "pages": 320,
         "year": 2018,
         "desc": "Practical strategies for forming good habits",
         "genres": ["Self-Help", "Psychology"]
       },
-      "1600000339": {
-        "pages": 256,
+      "0857197681": {
+        "pages": 250,
         "year": 2020,
         "desc": "Timeless lessons on wealth and happiness",
         "genres": ["Finance", "Psychology"]

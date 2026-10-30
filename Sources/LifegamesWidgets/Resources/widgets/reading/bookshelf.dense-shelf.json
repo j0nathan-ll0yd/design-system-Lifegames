@@ -30,8 +30,8 @@
       },
       {
         "asin": "1984820680",
-        "title": "Staff Engineer",
-        "author": "Will Larson",
+        "title": "Locklands",
+        "author": "Robert Jackson Bennett",
         "status": "finished",
         "rating": 4,
         "progress": null,
@@ -130,7 +130,15 @@
         "year": 2025,
         "desc": "The political intrigue deepens as the investigation uncovers corruption at the heart of the empire — even better than the first installment."
       },
-      "1984820680": { "pages": 256, "year": 2021, "desc": "Navigating the staff-plus career path.", "genres": ["Leadership"] },
+      "1984820680": {
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 3,
+        "seriesTotal": 3,
+        "pages": 560,
+        "genres": ["Fantasy"],
+        "year": 2023,
+        "desc": "The last Founders novel: Sancia and her allies make a final stand against the scriving intelligence Tevanne."
+      },
       "1984820710": {
         "seriesName": "Shadow of the Leviathan",
         "seriesNumber": 1,

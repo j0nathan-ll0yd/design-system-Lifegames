@@ -30,12 +30,12 @@
       },
       {
         "asin": "1984820680",
-        "title": "Staff Engineer",
-        "author": "Will Larson",
+        "title": "Locklands",
+        "author": "Robert Jackson Bennett",
         "status": "finished",
         "rating": 4,
         "progress": null,
-        "notes": "Great frameworks for thinking about the staff-plus career path."
+        "notes": "A fitting close to the Founders Trilogy."
       },
       {
         "asin": "1984820710",
@@ -74,11 +74,14 @@
         "desc": "The political intrigue deepens as the investigation uncovers corruption at the heart of the empire — even better than the first installment."
       },
       "1984820680": {
-        "pages": 256,
-        "year": 2021,
-        "publicationDate": "2021-02-28",
-        "desc": "At most technology companies, you'll reach Senior Software Engineer, the so-called 'terminal level,' in about five years. Beyond that point, growth becomes nonlinear. Staff Engineer provides concrete advice for navigating the principal-track career path — from forging a path to staff, sharpening the skills required, and operating across organizational boundaries.",
-        "genres": ["Leadership", "Career", "Software Engineering"]
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 3,
+        "seriesTotal": 3,
+        "pages": 560,
+        "genres": ["Fantasy"],
+        "year": 2023,
+        "publicationDate": "2023-03-21",
+        "desc": "The last Founders novel: Sancia and her allies make a final stand against the scriving intelligence Tevanne."
       },
       "1984820710": {
         "seriesName": "Shadow of the Leviathan",
