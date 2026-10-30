@@ -321,7 +321,7 @@ jobs:
   # fails — and GitHub counts a skipped required check as satisfied, which is the exact failure
   # mode (a green-looking gate that measured nothing) this job exists to avoid.
     needs: [drift-engine-filter, drift-self-test-baseline, drift-self-test-shard]
-    if: always()
+    if: ${{ !cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}
     runs-on: [self-hosted, linux, arm64, node-highmem]
     steps:
       - name: Refuse to measure fork-PR code on a self-hosted runner
@@ -508,7 +508,7 @@ jobs:
   # External contributors: maintainer must re-push the PR to a branch in this repo.
   test-swift:
     needs: [build-tokens]
-    if: always()
+    if: ${{ !cancelled() || needs.build-tokens.result != 'success' }}
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 20
     env:
@@ -605,7 +605,7 @@ jobs:
     # The scripts-off suite renders the widgets with the real token CSS
     # (packages/tokens/dist/tokens.css), so it needs the token build.
     needs: build-tokens
-    if: always()
+    if: ${{ !cancelled() || needs.build-tokens.result != 'success' }}
     runs-on: [self-hosted, linux, arm64, playwright]
     timeout-minutes: 15
     steps:
@@ -643,7 +643,7 @@ jobs:
   governance-gates:
     name: governance-gates
     needs: build-tokens
-    if: always()
+    if: ${{ !cancelled() || needs.build-tokens.result != 'success' }}
     runs-on: [self-hosted, linux, arm64, node]
     steps:
       - name: Refuse to run fork-PR code on a self-hosted runner

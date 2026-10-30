@@ -60,17 +60,23 @@ for (const [file, workflow, context] of REQUIRED) {
 // it refuses a fork PR with a red step instead of a job-level skip. Every guard runs before
 // checkout, so a red costs no suite, and no guard may carry `continue-on-error`.
 const FORK_PR = "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository"
-// The exact job-level `if:` of a required job with `needs:`. `!cancelled()` skips the job when the
-// run is cancelled during its need; any extra clause can skip it on some other event.
-const NEEDS_IF = 'always()'
+// The exact job-level `if:` of a required job with one need. On a run cancel GitHub re-evaluates
+// the `if:` of every running job and cancels it when the `if:` turns false, so a job whose need
+// already succeeded stops and frees its runner. When the need failed or was cancelled, the second
+// arm keeps the job running to red at its guard. A status function in the `if:` drops the implicit
+// success(). Plain `!cancelled()` SKIPS the job when the run is cancelled during its need, and
+// `always()` keeps a cancelled run's job running to completion.
+const NEEDS_IF = (need) => `\${{ !cancelled() || needs.${need}.result != 'success' }}`
 // The guard test on a need's result: red on anything but success, a cancelled need included.
 const guardTest = (variable) => `[ "$${variable}" != 'success' ]`
-// One named exception, pinned verbatim. swift-snapshots skips only on a clean "no Swift change"
-// answer and runs the full suite when swift-changes failed or skipped, so its guard reds only a
-// cancelled run.
+// Named exceptions, pinned verbatim. package-version-drift has three needs, and its self-test
+// rungs skip legitimately, so it runs on as long as any need failed or was cancelled.
+// swift-snapshots skips only on a clean "no Swift change" answer and runs the full suite when
+// swift-changes failed or skipped, so its guard reds only a cancelled run.
 const EXCEPTIONS = {
+  'package-version-drift': {if: "${{ !cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}"},
   'swift-snapshots': {
-    if: "${{ always() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}",
+    if: "${{ needs.swift-changes.result != 'success' || (!cancelled() && needs.swift-changes.outputs.swift == 'true') }}",
     guardTest: (variable) => `[ "$${variable}" = 'cancelled' ]`
   }
 }
@@ -102,7 +108,9 @@ for (const [file, workflow, context] of REQUIRED) {
       return
     }
     // A plain `if:` carries an implicit success(), which skips the job when a need fails.
-    assert.equal(job.if, EXCEPTIONS[context]?.if ?? NEEDS_IF, `${context} needs ${needsOf(job)}, so its if must be exactly the pinned one`)
+    const pinnedIf = EXCEPTIONS[context]?.if ?? (needsOf(job).length === 1 ? NEEDS_IF(needsOf(job)[0]) : undefined)
+    assert.ok(pinnedIf, `${context} has several needs, so it needs a pinned exception`)
+    assert.equal(job.if, pinnedIf, `${context} needs ${needsOf(job)}, so its if must be exactly the pinned one`)
 
     for (const need of needsOf(job)) {
       const result = `\${{ needs.${need}.result }}`

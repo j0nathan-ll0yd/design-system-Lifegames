@@ -76,7 +76,7 @@ jobs:
   swift-snapshots:
     name: swift-snapshots
     needs: [swift-changes]
-    if: ${{ always() && (needs.swift-changes.result != 'success' || needs.swift-changes.outputs.swift == 'true') }}
+    if: ${{ needs.swift-changes.result != 'success' || (!cancelled() && needs.swift-changes.outputs.swift == 'true') }}
     runs-on: [self-hosted, macOS, arm64, xcode-26]
     timeout-minutes: 30
     env:
