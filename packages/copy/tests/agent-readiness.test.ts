@@ -155,13 +155,18 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
 
   it('the disclosure policy pins each owner ruling of 2026-10-30', () => {
     // The safe harbor stops at the providers the site cannot authorize research against.
-    expect(identity.contact['securityThirdParty']).toMatch(/\bthird-party services\b/)
+    // The authorization names what it covers first: the site itself runs on Cloudflare.
+    expect(identity.contact['securityThirdParty']).toContain("this site's own code and configuration")
+    expect(identity.contact['securityThirdParty']).toMatch(/\bthird-party providers\b/)
     expect(identity.contact['securityThirdParty']).toContain('Cloudflare')
     expect(identity.contact['securityThirdParty']).toContain('Proton')
     // The site has no other users: the data rule limits what research may touch, not whose data it is.
     expect(identity.contact['securityExclusions']).toContain('more data than you need')
     expect(identity.contact['securityExclusions']).not.toMatch(/other people's data/)
-    expect(identity.contact['securityDisclosure']).toMatch(/\b90 days\b/)
+    // The window starts at the report.
+    expect(identity.contact['securityDisclosure']).toContain('90 days from your report')
+    // The OpenPGP key belongs to the security address only.
+    expect(identity.contact['securityEncryption']).toContain('to the security address')
   })
 
   it('the contact meta description names no address and no longer claims one shared address', () => {

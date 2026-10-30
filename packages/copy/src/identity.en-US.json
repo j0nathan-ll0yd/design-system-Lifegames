@@ -1198,14 +1198,14 @@
       }
     },
     "securityEncryption": {
-      "value": "To encrypt a report, use the OpenPGP key at {siteUrl}/pgp-key.txt.",
+      "value": "To encrypt a report to the security address, use the OpenPGP key at {siteUrl}/pgp-key.txt.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. Where the OpenPGP key is published (the Encryption URL of /.well-known/security.txt). ICU MF1: {siteUrl} is the site base URL.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. Where the OpenPGP key is published (the Encryption URL of /.well-known/security.txt). The key belongs to person.securityEmail only, so the sentence names the security address and not person.email. ICU MF1: {siteUrl} is the site base URL.",
         "usage": ["web:src/pages/contact.astro (security policy: encryption)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
-        "lastReviewed": "2026-10-29"
+        "lastReviewed": "2026-10-30"
       }
     },
     "securityInclude": {
@@ -1231,15 +1231,15 @@
       }
     },
     "securityThirdParty": {
-      "value": "This authorization does not extend to third-party services, such as Cloudflare or Proton.",
+      "value": "This authorization covers this site's own code and configuration. It does not extend to the platforms of third-party providers, such as Cloudflare or Proton.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The limit of the safe harbor: it authorizes no testing of the third-party services the site and its mail run on.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The limit of the safe harbor: it covers the site's own code and configuration, not the platforms of the third-party providers the site and its mail run on.",
         "usage": ["web:src/pages/contact.astro (security policy: third-party services)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-10-30",
-        "rationale": "Owner ruling 2026-10-30 (PR #342 review): the site cannot authorize research against a provider it does not own. Cloudflare serves the site; Proton carries its mail."
+        "rationale": "Owner rulings 2026-10-30 (PR #342 review): the site cannot authorize research against a provider it does not own. Cloudflare serves the site; Proton carries its mail. The sentence first names what the authorization covers, because the site itself runs on Cloudflare and \"third-party services\" alone could read as excluding the site."
       }
     },
     "securityExclusions": {
@@ -1277,15 +1277,15 @@
       }
     },
     "securityDisclosure": {
-      "value": "Give Jonathan Lloyd 90 days to fix an issue before you disclose it publicly.",
+      "value": "Give Jonathan Lloyd 90 days from your report to fix an issue before you disclose it publicly.",
       "_meta": {
-        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The coordinated-disclosure window: 90 days.",
+        "description": "Vulnerability-disclosure policy on /contact (section contact-security, the Policy URL of /.well-known/security.txt). Render order: securityScope, securityReport, securityReportAlternate, securityEncryption, securityInclude, securitySafeHarbor, securityThirdParty, securityExclusions, securityBounty, securityResponse, securityDisclosure. The coordinated-disclosure window: 90 days, counted from the report.",
         "usage": ["web:src/pages/contact.astro (security policy: disclosure window)"],
         "register": "factual",
         "audience": "human",
         "owner": "jonathan",
         "lastReviewed": "2026-10-30",
-        "rationale": "Owner ruling 2026-10-30 (PR #342 review)."
+        "rationale": "Owner rulings 2026-10-30 (PR #342 review): a 90-day window that starts at the report."
       }
     }
   },

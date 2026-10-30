@@ -60,10 +60,11 @@ MARKERS=(
   "j0nathan_ll0yd"
 )
 
-# Email addresses, excluding the maintainer's public contact address and
-# noreply-style addresses (CI/bot notification senders).
+# Email addresses, excluding the exact addresses EMAIL_ALLOW_REGEX names (the
+# maintainer's published contacts and the Organization alias, listed below)
+# and noreply-style addresses (CI/bot notification senders).
 # RFC 2606 reserved documentation domains (example.com/.org/.net) are excluded
-# alongside the maintainer's own address and noreply senders: fixture authors
+# alongside those exact addresses and noreply senders: fixture authors
 # use them as the standard "obviously synthetic" email convention throughout
 # this repo (e.g. Sources/LifegamesWidgets/Resources/widgets/media/*.json),
 # and a real leak would essentially never land on a reserved domain.
