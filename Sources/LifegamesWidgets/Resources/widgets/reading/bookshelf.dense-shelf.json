@@ -3,15 +3,15 @@
     "books": [
       {
         "asin": "0525573844",
-        "title": "The Pragmatic Programmer",
-        "author": "David Thomas, Andrew Hunt",
+        "title": "Foundryside",
+        "author": "Robert Jackson Bennett",
         "status": "finished",
         "rating": 5,
         "progress": null,
         "notes": null
       },
       {
-        "asin": "0593128508",
+        "asin": "1449373321",
         "title": "Designing Data-Intensive Applications",
         "author": "Martin Kleppmann",
         "status": "finished",
@@ -21,8 +21,8 @@
       },
       {
         "asin": "0593723848",
-        "title": "A Philosophy of Software Design",
-        "author": "John Ousterhout",
+        "title": "A Drop of Corruption",
+        "author": "Robert Jackson Bennett",
         "status": "finished",
         "rating": 5,
         "progress": null,
@@ -39,8 +39,8 @@
       },
       {
         "asin": "1984820710",
-        "title": "The Manager's Path",
-        "author": "Camille Fournier",
+        "title": "The Tainted Cup",
+        "author": "Robert Jackson Bennett",
         "status": "finished",
         "rating": 4,
         "progress": null,
@@ -111,11 +111,35 @@
       }
     ],
     "bookMeta": {
-      "0525573844": { "pages": 352, "year": 2019, "desc": "The best programming book ever written.", "genres": ["Software Engineering"] },
-      "0593128508": { "pages": 616, "year": 2017, "desc": "Data systems design at scale.", "genres": ["Distributed Systems"] },
-      "0593723848": { "pages": 196, "year": 2018, "desc": "Deep modules and information hiding.", "genres": ["Software Design"] },
+      "0525573844": {
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 512,
+        "genres": ["Fantasy", "Science Fiction"],
+        "year": 2018,
+        "desc": "Ingenious magic system based on industrial programming — a thief discovers her city is built on ancient, dangerous technology called scriving."
+      },
+      "1449373321": { "pages": 611, "year": 2017, "desc": "Data systems design at scale.", "genres": ["Distributed Systems"] },
+      "0593723848": {
+        "seriesName": "Shadow of the Leviathan",
+        "seriesNumber": 2,
+        "seriesTotal": 3,
+        "pages": 480,
+        "genres": ["Fantasy", "Mystery", "Thriller"],
+        "year": 2025,
+        "desc": "The political intrigue deepens as the investigation uncovers corruption at the heart of the empire — even better than the first installment."
+      },
       "1984820680": { "pages": 256, "year": 2021, "desc": "Navigating the staff-plus career path.", "genres": ["Leadership"] },
-      "1984820710": { "pages": 244, "year": 2017, "desc": "From engineer to tech lead to senior leader.", "genres": ["Management"] },
+      "1984820710": {
+        "seriesName": "Shadow of the Leviathan",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 432,
+        "genres": ["Fantasy", "Mystery", "Thriller"],
+        "year": 2024,
+        "desc": "Outstanding mystery-fantasy hybrid with inventive worldbuilding — an investigator and her assistant solve murders in a city threatened by leviathans."
+      },
       "0735224293": { "pages": 288, "year": 2018, "desc": "Science behind high-performing DevOps teams.", "genres": ["DevOps", "Leadership"] },
       "0062301357": { "pages": 304, "year": 2014, "desc": "Lessons from building and running startups.", "genres": ["Business", "Leadership"] },
       "0307887898": { "pages": 224, "year": 2014, "desc": "Notes on startups, or how to build the future.", "genres": ["Business"] },
