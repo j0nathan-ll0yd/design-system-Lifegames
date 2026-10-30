@@ -49,10 +49,10 @@ concurrency:
 #   - A fork PR is refused by a RED first step, before checkout: these jobs run on self-hosted
 #     hardware, which must not execute fork code, and a skip would read as a pass. Push the
 #     branch to this repository to measure it.
-#   - A cancelled run is refused by a RED `Refuse a cancelled run` step (`if: cancelled()`),
-#     before checkout. `!cancelled()` would SKIP the job when a run is cancelled while its need
-#     runs, and `always()` alone would let every later step skip and the job read green. The
-#     step reds cheaply and no suite runs.
+#   - `always()`, not `!cancelled()`: a run cancelled while build-tokens runs would SKIP a
+#     `!cancelled()` job. Under `always()` the job runs, build-tokens concludes 'cancelled', and
+#     the guard reds before checkout, so no suite runs. A step-level `if: cancelled()` cannot do
+#     this: it reads false in a job that starts after the cancel (measured on run 41011529722).
 # package-version-drift aggregates its needs the same way. `scripts/ci-workflow-shape.test.mjs`
 # pins this shape for every required context.
 
@@ -329,11 +329,6 @@ jobs:
         run: |
           echo "::error title=package-version-drift cannot evaluate a fork PR::This gate builds and packs the workspace on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check - it would claim 'no drift' having measured nothing. Push the branch to this repository and re-run."
           exit 1
-      - name: Refuse a cancelled run
-        if: cancelled()
-        run: |
-          echo "::error title=package-version-drift was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
-          exit 1
       # FAIL-CLOSED AGGREGATION. Every outcome is enumerated and the default is failure, so a
       # result this step does not recognise reds the gate instead of falling through. For a matrix
       # job `needs.<job>.result` is 'success' only when EVERY shard succeeded, so one survivor in
@@ -527,11 +522,6 @@ jobs:
         run: |
           echo "::error title=test-swift cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
           exit 1
-      - name: Refuse a cancelled run
-        if: cancelled()
-        run: |
-          echo "::error title=test-swift was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
-          exit 1
       - name: build-tokens must have succeeded
         env:
           BUILD_TOKENS_RESULT: ${{ needs.build-tokens.result }}
@@ -624,11 +614,6 @@ jobs:
         run: |
           echo "::error title=web-browser-runtime cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
           exit 1
-      - name: Refuse a cancelled run
-        if: cancelled()
-        run: |
-          echo "::error title=web-browser-runtime was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
-          exit 1
       - name: build-tokens must have succeeded
         env:
           BUILD_TOKENS_RESULT: ${{ needs.build-tokens.result }}
@@ -665,11 +650,6 @@ jobs:
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         run: |
           echo "::error title=governance-gates cannot evaluate a fork PR::This gate runs on a self-hosted runner, which would execute fork code on estate hardware. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Push the branch to this repository and re-run."
-          exit 1
-      - name: Refuse a cancelled run
-        if: cancelled()
-        run: |
-          echo "::error title=governance-gates was cancelled::The run was cancelled before this gate measured anything. It reports RED rather than skipping, because GitHub treats a skipped job as satisfying a required status check. Re-run the workflow."
           exit 1
       - name: build-tokens must have succeeded
         env:
