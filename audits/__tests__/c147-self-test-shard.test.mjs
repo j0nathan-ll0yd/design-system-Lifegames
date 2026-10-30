@@ -227,13 +227,17 @@ test('the required job aggregates the rungs FAIL-CLOSED — success is the only 
   // required. A guard written as `== 'failure'` would let a cancelled rung through.
   assert.ok(guard.includes("!= 'success'"), 'the aggregation step must treat any non-success result as a failure')
 
-  // The required job must run even when a dependency fails; a plain `needs` would SKIP it, and
-  // GitHub counts a skipped required check as satisfied. Read from the comment-stripped text and
-  // matched line-anchored, so the prose explaining the key cannot stand in for the key.
+  // The required job must run even when a dependency fails or is cancelled; a plain `needs` would
+  // SKIP it, and GitHub counts a skipped required check as satisfied. A cancelled run whose needs
+  // all passed or skipped may cancel it, which frees the runner and still blocks a merge. Read
+  // from the comment-stripped text and matched line-anchored, so the prose explaining the key
+  // cannot stand in for the key. scripts/ci-workflow-shape.test.mjs pins the same expression.
   const bare = withoutComments(text)
   const jobBlock = bare.slice(bare.indexOf('\n  package-version-drift:'))
   const header = jobBlock.slice(0, jobBlock.indexOf('steps:'))
-  assert.match(header, /^ {4}if: always\(\)$/m, 'package-version-drift must carry a real `if: always()` key so it cannot be skipped into a pass')
+  const runsUnlessCancelledClean = "    if: ${{ !cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}"
+  assert.ok(header.split('\n').includes(runsUnlessCancelledClean),
+    'package-version-drift must carry the real fail-closed `if:` key so it cannot be skipped into a pass')
   assert.match(header, /^ {4}needs: \[drift-engine-filter, drift-self-test-baseline, drift-self-test-shard\]$/m,
     'package-version-drift must depend on the filter and both self-test rungs')
 })
