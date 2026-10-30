@@ -55,6 +55,8 @@ jobs:
     outputs:
       swift: ${{ steps.filter.outputs.swift }}
     steps:
+      - name: 'THROWAWAY: hold swift-changes open so the run can be cancelled (revert before merge)'
+        run: for i in $(seq 1 20); do echo "holding $i"; sleep 30; done
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Detect Swift source, test and resource changes
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
