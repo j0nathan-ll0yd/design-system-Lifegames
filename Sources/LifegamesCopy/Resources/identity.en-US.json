@@ -12,6 +12,7 @@
     "alumniOfUrl": "https://www.fullerton.edu",
     "location": "San Francisco, CA",
     "email": "webmaster@lifegames.org",
+    "securityEmail": "security@lifegames.org",
     "contactType": "general inquiries",
     "addressLocality": "San Francisco",
     "addressRegion": "CA",
@@ -144,8 +145,8 @@
   },
   "contact": {
     "title": "Contact",
-    "metaDescription": "Contact Jonathan Lloyd by email for general inquiries, or find him on LinkedIn and GitHub. Security reports go to the same email address.",
-    "lastModified": "2026-10-07",
+    "metaDescription": "Contact Jonathan Lloyd by email for general inquiries, or find him on LinkedIn and GitHub. This page also states how to report a security issue.",
+    "lastModified": "2026-10-30",
     "intro": "Jonathan Lloyd takes general inquiries by email. His professional history is on LinkedIn, and his public code is on GitHub.",
     "channelsHeading": "Channels",
     "emailLabel": "Email",
@@ -155,7 +156,18 @@
     "githubLabel": "GitHub",
     "githubNote": "Public code, including the source of this site.",
     "securityHeading": "Security reports",
-    "security": "Report a security issue on this site to webmaster@lifegames.org, the contact that /.well-known/security.txt publishes. Include the affected URL and the steps to reproduce."
+    "security": "Report a security issue on this site to webmaster@lifegames.org, the contact that /.well-known/security.txt publishes. Include the affected URL and the steps to reproduce.",
+    "securityScope": "This policy covers {siteUrl}, its API under {siteUrl}/api/v1, and its MCP server at {siteUrl}/mcp.",
+    "securityReport": "Report a vulnerability by email to security@lifegames.org.",
+    "securityReportAlternate": "Mail to webmaster@lifegames.org also reaches Jonathan Lloyd.",
+    "securityEncryption": "To encrypt a report to the security address, use the OpenPGP key at {siteUrl}/pgp-key.txt.",
+    "securityInclude": "Include the affected URL, the steps to reproduce, and the impact.",
+    "securitySafeHarbor": "Good-faith research inside this scope that follows this policy is authorized. Jonathan Lloyd will take no legal action over it.",
+    "securityThirdParty": "This authorization covers this site's own code and configuration. It does not extend to the platforms of third-party providers, such as Cloudflare or Proton.",
+    "securityExclusions": "Do not attempt denial of service or social engineering, do not run high-volume automated scans, and do not access, change, or keep more data than you need to show the issue. Research that does any of these falls outside this policy.",
+    "securityBounty": "This site runs no bug bounty and pays no financial reward for reports.",
+    "securityResponse": "Jonathan Lloyd sends a first reply within 7 days of a report.",
+    "securityDisclosure": "Give Jonathan Lloyd 90 days from your report to fix an issue before you disclose it publicly."
   },
   "organization": {
     "name": "Lifegames",

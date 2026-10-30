@@ -17,9 +17,10 @@ public struct Identity: Codable, Sendable {
     /// About page copy (/about) — title, meta description, and headed sections. The background
     /// section body reuses person.longBio.
     public let about: IdentityAbout
-    /// Contact page copy (/contact) — title, meta description, intro, channel labels and notes,
-    /// and the security-report note. Addresses and profile URLs come from person.email and
-    /// person.sameAs.
+    /// Contact page copy (/contact): title, meta description, intro, channel labels and notes,
+    /// and the vulnerability-disclosure policy (securityHeading plus the security* policy
+    /// leaves; security is the deprecated one-sentence note). Addresses and profile URLs come
+    /// from person.email, person.securityEmail, and person.sameAs.
     public let contact: IdentityContact
     /// RSS 2.0 + JSON Feed channel copy — title, description, author, copyright, and per-domain
     /// section labels.
@@ -245,17 +246,24 @@ public extension IdentityAbout {
     }
 }
 
-/// Contact page copy (/contact) — title, meta description, intro, channel labels and notes,
-/// and the security-report note. Addresses and profile URLs come from person.email and
-/// person.sameAs.
+/// Contact page copy (/contact): title, meta description, intro, channel labels and notes,
+/// and the vulnerability-disclosure policy (securityHeading plus the security* policy
+/// leaves; security is the deprecated one-sentence note). Addresses and profile URLs come
+/// from person.email, person.securityEmail, and person.sameAs.
 // MARK: - IdentityContact
 public struct IdentityContact: Codable, Sendable {
     public let channelsHeading, emailLabel, emailNote, githubLabel: String
     public let githubNote, intro, lastModified, linkedinLabel: String
-    public let linkedinNote, metaDescription, security, securityHeading: String
+    public let linkedinNote, metaDescription: String
+    /// Deprecated: use `identity.contact.securityReport` instead. Removed in the next major
+    /// release.
+    public let security: String
+    public let securityBounty, securityDisclosure, securityEncryption, securityExclusions: String
+    public let securityHeading, securityInclude, securityReport, securityReportAlternate: String
+    public let securityResponse, securitySafeHarbor, securityScope, securityThirdParty: String
     public let title: String
 
-    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, lastModified: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityHeading: String, title: String) {
+    public init(channelsHeading: String, emailLabel: String, emailNote: String, githubLabel: String, githubNote: String, intro: String, lastModified: String, linkedinLabel: String, linkedinNote: String, metaDescription: String, security: String, securityBounty: String, securityDisclosure: String, securityEncryption: String, securityExclusions: String, securityHeading: String, securityInclude: String, securityReport: String, securityReportAlternate: String, securityResponse: String, securitySafeHarbor: String, securityScope: String, securityThirdParty: String, title: String) {
         self.channelsHeading = channelsHeading
         self.emailLabel = emailLabel
         self.emailNote = emailNote
@@ -267,7 +275,18 @@ public struct IdentityContact: Codable, Sendable {
         self.linkedinNote = linkedinNote
         self.metaDescription = metaDescription
         self.security = security
+        self.securityBounty = securityBounty
+        self.securityDisclosure = securityDisclosure
+        self.securityEncryption = securityEncryption
+        self.securityExclusions = securityExclusions
         self.securityHeading = securityHeading
+        self.securityInclude = securityInclude
+        self.securityReport = securityReport
+        self.securityReportAlternate = securityReportAlternate
+        self.securityResponse = securityResponse
+        self.securitySafeHarbor = securitySafeHarbor
+        self.securityScope = securityScope
+        self.securityThirdParty = securityThirdParty
         self.title = title
     }
 }
@@ -302,7 +321,18 @@ public extension IdentityContact {
         linkedinNote: String? = nil,
         metaDescription: String? = nil,
         security: String? = nil,
+        securityBounty: String? = nil,
+        securityDisclosure: String? = nil,
+        securityEncryption: String? = nil,
+        securityExclusions: String? = nil,
         securityHeading: String? = nil,
+        securityInclude: String? = nil,
+        securityReport: String? = nil,
+        securityReportAlternate: String? = nil,
+        securityResponse: String? = nil,
+        securitySafeHarbor: String? = nil,
+        securityScope: String? = nil,
+        securityThirdParty: String? = nil,
         title: String? = nil
     ) -> IdentityContact {
         return IdentityContact(
@@ -317,7 +347,18 @@ public extension IdentityContact {
             linkedinNote: linkedinNote ?? self.linkedinNote,
             metaDescription: metaDescription ?? self.metaDescription,
             security: security ?? self.security,
+            securityBounty: securityBounty ?? self.securityBounty,
+            securityDisclosure: securityDisclosure ?? self.securityDisclosure,
+            securityEncryption: securityEncryption ?? self.securityEncryption,
+            securityExclusions: securityExclusions ?? self.securityExclusions,
             securityHeading: securityHeading ?? self.securityHeading,
+            securityInclude: securityInclude ?? self.securityInclude,
+            securityReport: securityReport ?? self.securityReport,
+            securityReportAlternate: securityReportAlternate ?? self.securityReportAlternate,
+            securityResponse: securityResponse ?? self.securityResponse,
+            securitySafeHarbor: securitySafeHarbor ?? self.securitySafeHarbor,
+            securityScope: securityScope ?? self.securityScope,
+            securityThirdParty: securityThirdParty ?? self.securityThirdParty,
             title: title ?? self.title
         )
     }
@@ -640,7 +681,7 @@ public struct Person: Codable, Sendable {
     public let jobTitle, lastName, location, longBio: String
     public let name, philosophy, rolePhrase: String
     public let sameAs: [String]
-    public let shortBio: String
+    public let securityEmail, shortBio: String
     public let skills: [String]
     public let socialBio, yearsExperience: String
 
@@ -649,10 +690,10 @@ public struct Person: Codable, Sendable {
         case alumniOfURL = "alumniOfUrl"
         case contactType, email, employer
         case employerURL = "employerUrl"
-        case experiencePhrase, firstName, flavorBio, handle, interests, jobTitle, lastName, location, longBio, name, philosophy, rolePhrase, sameAs, shortBio, skills, socialBio, yearsExperience
+        case experiencePhrase, firstName, flavorBio, handle, interests, jobTitle, lastName, location, longBio, name, philosophy, rolePhrase, sameAs, securityEmail, shortBio, skills, socialBio, yearsExperience
     }
 
-    public init(addressCountry: String, addressLocality: String, addressRegion: String, alumniOf: String, alumniOfURL: String, contactType: String, email: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, rolePhrase: String, sameAs: [String], shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
+    public init(addressCountry: String, addressLocality: String, addressRegion: String, alumniOf: String, alumniOfURL: String, contactType: String, email: String, employer: String, employerURL: String, experiencePhrase: String, firstName: String, flavorBio: String, handle: String, interests: [String], jobTitle: String, lastName: String, location: String, longBio: String, name: String, philosophy: String, rolePhrase: String, sameAs: [String], securityEmail: String, shortBio: String, skills: [String], socialBio: String, yearsExperience: String) {
         self.addressCountry = addressCountry
         self.addressLocality = addressLocality
         self.addressRegion = addressRegion
@@ -675,6 +716,7 @@ public struct Person: Codable, Sendable {
         self.philosophy = philosophy
         self.rolePhrase = rolePhrase
         self.sameAs = sameAs
+        self.securityEmail = securityEmail
         self.shortBio = shortBio
         self.skills = skills
         self.socialBio = socialBio
@@ -723,6 +765,7 @@ public extension Person {
         philosophy: String? = nil,
         rolePhrase: String? = nil,
         sameAs: [String]? = nil,
+        securityEmail: String? = nil,
         shortBio: String? = nil,
         skills: [String]? = nil,
         socialBio: String? = nil,
@@ -751,6 +794,7 @@ public extension Person {
             philosophy: philosophy ?? self.philosophy,
             rolePhrase: rolePhrase ?? self.rolePhrase,
             sameAs: sameAs ?? self.sameAs,
+            securityEmail: securityEmail ?? self.securityEmail,
             shortBio: shortBio ?? self.shortBio,
             skills: skills ?? self.skills,
             socialBio: socialBio ?? self.socialBio,

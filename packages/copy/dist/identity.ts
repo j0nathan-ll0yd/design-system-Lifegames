@@ -22,6 +22,7 @@ export interface Identity {
     alumniOfUrl: string;
     location: string;
     email: string;
+    securityEmail: string;
     contactType: string;
     addressLocality: string;
     addressRegion: string;
@@ -145,7 +146,7 @@ export interface IdentityAbout {
   outside: string;
 }
 /**
- * Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.
+ * Contact page copy (/contact): title, meta description, intro, channel labels and notes, and the vulnerability-disclosure policy (securityHeading plus the security* policy leaves; security is the deprecated one-sentence note). Addresses and profile URLs come from person.email, person.securityEmail, and person.sameAs.
  */
 export interface IdentityContact {
   title: string;
@@ -160,7 +161,22 @@ export interface IdentityContact {
   githubLabel: string;
   githubNote: string;
   securityHeading: string;
+  /**
+   * @deprecated
+   * Deprecated: use `identity.contact.securityReport` instead. Removed in the next major release.
+   */
   security: string;
+  securityScope: string;
+  securityReport: string;
+  securityReportAlternate: string;
+  securityEncryption: string;
+  securityInclude: string;
+  securitySafeHarbor: string;
+  securityThirdParty: string;
+  securityExclusions: string;
+  securityBounty: string;
+  securityResponse: string;
+  securityDisclosure: string;
 }
 /**
  * Facts for the schema.org Organization node for Lifegames in the website JSON-LD: name, description, contact point, and postal address. The node url is the site URL constant, not a copy key.
