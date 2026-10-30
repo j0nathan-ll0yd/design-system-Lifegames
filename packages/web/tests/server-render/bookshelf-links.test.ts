@@ -202,7 +202,7 @@ describe('closing the dialog after a live update keeps the reader in place', () 
   // The website's sequence: the dialog is open on a book while live data
   // rewrites the shelf; Escape then closes the dialog.
   // Three books, in the template's order: reading, then two finished.
-  const THREE = {...KNOWN, books: [...KNOWN.books, {...KNOWN.books[1], asin: 'KA7731KAP3', title: 'Known Answer Third Kappa-7731', author: 'Third Author'}]}
+  const THREE = {...KNOWN, books: [...KNOWN.books, {...KNOWN.books[1], asin: 'B0KA7731P3', title: 'Known Answer Third Kappa-7731', author: 'Third Author'}]}
 
   async function openOn(books: any, tile: number): Promise<{doc: Document; dialog: HTMLDialogElement; href: string}> {
     const doc = mount(await serverHtml(books))

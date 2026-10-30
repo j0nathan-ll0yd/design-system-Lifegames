@@ -2,7 +2,7 @@
   "generatedAt": "2026-03-18T12:00:00.000Z",
   "books": [
     {
-      "asin": "M001",
+      "asin": "B0DSMX0001",
       "title": "Mixed Completed",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -32,7 +32,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "M002",
+      "asin": "B0DSMX0002",
       "title": "Mixed Reading",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -62,7 +62,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "M003",
+      "asin": "B0DSMX0003",
       "title": "Mixed Up Next",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -92,7 +92,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "M004",
+      "asin": "B0DSMX0004",
       "title": "Mixed No Status",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",

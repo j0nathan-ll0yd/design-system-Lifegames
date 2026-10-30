@@ -53,7 +53,7 @@ describe('post-adapter book covers only name objects that exist', () => {
   })
 
   it('the four fixture-only ASINs from atlas 0086 issue #2 carry no cover at all', () => {
-    const stripped = ['0132350882', '0135957052', '1449373321', '173210220X']
+    const stripped = ['0132350882', '0135957052', '1449373321', '1732102201']
     for (const asin of stripped) {
       const entries = allBooks.filter((b) => b.book.asin === asin)
       expect(entries.length, `expected fixture entries for ${asin}`).toBeGreaterThan(0)

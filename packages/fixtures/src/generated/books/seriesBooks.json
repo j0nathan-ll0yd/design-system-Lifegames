@@ -2,7 +2,7 @@
   "generatedAt": "2026-03-18T12:00:00.000Z",
   "books": [
     {
-      "asin": "S001",
+      "asin": "1600000118",
       "title": "Series Alpha 1",
       "author": "Robert Jackson Bennett",
       "series": "Alpha Chronicles",
@@ -32,7 +32,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "S002",
+      "asin": "1600000126",
       "title": "Series Alpha 2",
       "author": "Robert Jackson Bennett",
       "series": "Alpha Chronicles",
@@ -62,7 +62,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "S003",
+      "asin": "1600000134",
       "title": "Series Alpha 3",
       "author": "Robert Jackson Bennett",
       "series": "Alpha Chronicles",
@@ -92,7 +92,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "S004",
+      "asin": "1600000142",
       "title": "Series Alpha 4",
       "author": "Robert Jackson Bennett",
       "series": "Alpha Chronicles",
@@ -122,7 +122,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "S005",
+      "asin": "1600000150",
       "title": "Series Beta 1",
       "author": "Robert Jackson Bennett",
       "series": "Beta Saga",

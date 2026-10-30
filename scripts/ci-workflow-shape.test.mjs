@@ -55,6 +55,134 @@ for (const [file, workflow, context] of REQUIRED) {
   })
 }
 
+// GitHub counts a SKIPPED required job as satisfied. On 2026-10-27 build-tokens failed at PR #333's
+// 005ed18, three required jobs skipped on their failed `needs:`, and the PR read mergeable. A
+// required job therefore never skips: it runs past a failed or cancelled need and reds on it, and
+// it refuses a fork PR with a red step instead of a job-level skip. Every guard runs before
+// checkout, so a red costs no suite, and no guard may carry `continue-on-error`.
+const FORK_PR = "github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository"
+// The exact job-level `if:` of a required job with one need. On a run cancel GitHub re-evaluates
+// the `if:` of every running job and cancels it when the `if:` turns false, so a job whose need
+// already succeeded stops and frees its runner. When the need failed or was cancelled, the second
+// arm keeps the job running to red at its guard. A status function in the `if:` drops the implicit
+// success(). Plain `!cancelled()` SKIPS the job when the run is cancelled during its need, and
+// `always()` keeps a cancelled run's job running to completion.
+const NEEDS_IF = (need) => `\${{ !cancelled() || needs.${need}.result != 'success' }}`
+// The guard test on a need's result: red on anything but success, a cancelled need included.
+const guardTest = (variable) => `[ "$${variable}" != 'success' ]`
+// Named exceptions, pinned verbatim. package-version-drift has three needs, and its self-test
+// rungs skip legitimately, so it runs on as long as any need failed or was cancelled.
+// swift-snapshots skips only on a clean "no Swift change" answer and runs the full suite when
+// swift-changes failed or skipped, so its guard reds only a cancelled run.
+const EXCEPTIONS = {
+  'package-version-drift': {if: "${{ !cancelled() || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'failure') }}"},
+  'swift-snapshots': {
+    if: "${{ needs.swift-changes.result != 'success' || (!cancelled() && needs.swift-changes.outputs.swift == 'true') }}",
+    guardTest: (variable) => `[ "$${variable}" = 'cancelled' ]`
+  }
+}
+// Needs a job aggregates itself, because they skip legitimately: package-version-drift requires its
+// self-test rungs only when the drift engine changed, and reds on any outcome it does not recognise.
+const AGGREGATED_NEEDS = {'package-version-drift': ['drift-self-test-baseline', 'drift-self-test-shard']}
+const requiredJob = (workflow, context) => Object.entries(workflow.jobs).find(([id, job]) => (job.name ?? id) === context)?.[1]
+const needsOf = (job) => [job.needs ?? []].flat()
+const exits1 = (step) => /^\s*exit 1\s*$/m.test(step.run ?? '')
+
+for (const [file, workflow, context] of REQUIRED) {
+  test(`${file}: required context ${context} never passes by skipping on a failed or cancelled need or a fork PR`, () => {
+    const job = requiredJob(workflow, context)
+    assert.equal(job['continue-on-error'], undefined, `${context} must not carry job-level continue-on-error`)
+    assert.doesNotMatch(String(job.if ?? ''), /head\.repo\.full_name/, `${context} must refuse a fork PR with a red step, not skip it with a job-level if`)
+
+    const checkoutAt = job.steps.findIndex((step) => String(step.uses ?? '').startsWith('actions/checkout@'))
+    assert.ok(checkoutAt > 0, `${context} must check out after its guards`)
+    const guards = job.steps.slice(0, checkoutAt)
+    for (const step of guards) {
+      assert.equal(step['continue-on-error'], undefined, `${context}: guard "${step.name}" must not carry continue-on-error`)
+    }
+
+    assert.equal(guards[0].if, FORK_PR, `${context}: its first step must refuse a fork PR, before checkout`)
+    assert.ok(exits1(guards[0]), `${context}: the fork refusal must exit 1`)
+
+    if (needsOf(job).length === 0) {
+      assert.equal(job.if, undefined, `${context} has no needs, so it must carry no job-level if that could skip it`)
+      return
+    }
+    // A plain `if:` carries an implicit success(), which skips the job when a need fails.
+    const pinnedIf = EXCEPTIONS[context]?.if ?? (needsOf(job).length === 1 ? NEEDS_IF(needsOf(job)[0]) : undefined)
+    assert.ok(pinnedIf, `${context} has several needs, so it needs a pinned exception`)
+    assert.equal(job.if, pinnedIf, `${context} needs ${needsOf(job)}, so its if must be exactly the pinned one`)
+
+    for (const need of needsOf(job)) {
+      const result = `\${{ needs.${need}.result }}`
+      if (AGGREGATED_NEEDS[context]?.includes(need)) {
+        assert.ok(guards.some((step) => Object.values(step.env ?? {}).includes(result)), `${context} must aggregate ${need} before checkout`)
+        continue
+      }
+      const guard = guards.find((step) => Object.values(step.env ?? {}).includes(result))
+      assert.ok(guard, `${context} needs ${need} but no step before checkout reads ${result}`)
+      const variable = Object.entries(guard.env).find(([, value]) => value === result)[0]
+      const test = (EXCEPTIONS[context]?.guardTest ?? guardTest)(variable)
+      assert.ok(guard.run.includes(test), `${context}: the ${need} guard must test ${test}`)
+      assert.ok(exits1(guard), `${context}: the ${need} guard must exit 1`)
+      // The implicit success() skips the guard only after an earlier guard has already red.
+      assert.equal(guard.if, undefined, `${context}: the ${need} guard must carry no if that could skip it`)
+    }
+  })
+}
+
+// The cancel-aware `if:` above is safe only while every upstream job is CANCELLED by a run cancel,
+// so its result reads 'cancelled' and the dependent runs and reds at its guard. That holds only
+// while no upstream `if:` carries a status function: the implicit success() is what cancels it.
+// An upstream `always()` would finish success after the cancel, leave both arms of the dependent's
+// `if:` false, and SKIP the required context. On build-tokens it would also drop the fork check
+// and run fork code on self-hosted hardware. So every job in the needs chain of a required job is
+// pinned verbatim. Each root (a job with no needs) carries the same-repo condition; a job below a
+// root inherits it, because the implicit success() skips it when its root skipped on a fork.
+const SAME_REPO = "github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository"
+const UPSTREAM_IFS = {
+  'ci.yml': {
+    'build-tokens': SAME_REPO,
+    'drift-engine-filter': SAME_REPO,
+    'drift-self-test-baseline': "needs.drift-engine-filter.outputs.engine == 'true'",
+    'drift-self-test-shard': "needs.drift-engine-filter.outputs.engine == 'true'"
+  },
+  'swift-snapshots.yml': {'swift-changes': `github.event_name != 'workflow_dispatch' && (${SAME_REPO})`}
+}
+const STATUS_FUNCTION = /\b(always|cancelled|failure|success)\s*\(/
+
+for (const [file, workflow] of [['ci.yml', ci], ['swift-snapshots.yml', swiftSnapshots]]) {
+  test(`${file}: every upstream job of a required context is pinned, carries no status function, and keeps the fork check`, () => {
+    const pins = UPSTREAM_IFS[file]
+    const reached = new Set()
+    const walk = (id) => {
+      for (const need of needsOf(workflow.jobs[id])) {
+        if (reached.has(need)) {
+          continue
+        }
+        reached.add(need)
+        walk(need)
+      }
+    }
+    for (const [, , context] of REQUIRED.filter(([f]) => f === file)) {
+      walk(Object.keys(workflow.jobs).find((id) => (workflow.jobs[id].name ?? id) === context))
+    }
+    for (const id of reached) {
+      const job = workflow.jobs[id]
+      assert.ok(id in pins, `${file}: ${id} is upstream of a required context but has no pinned if`)
+      assert.doesNotMatch(String(job.if ?? ''), STATUS_FUNCTION,
+        `${file}: upstream job ${id} must carry no status function, or a cancel can leave it successful`)
+      assert.equal(job.if, pins[id], `${file}: upstream job ${id} must keep its pinned if`)
+      if (needsOf(job).length === 0) {
+        assert.ok(String(job.if ?? '').includes(SAME_REPO), `${file}: upstream root ${id} must skip a fork PR with the same-repo condition`)
+      }
+    }
+    for (const id of Object.keys(pins)) {
+      assert.ok(reached.has(id), `${file}: pinned upstream job ${id} is upstream of no required context; prune the pin`)
+    }
+  })
+}
+
 test('ci.yml: the folded jobs keep one named step per old gate, each run past an earlier red', () => {
   for (const [jobId, oldJobs] of Object.entries(FOLDED)) {
     const job = ci.jobs[jobId]
