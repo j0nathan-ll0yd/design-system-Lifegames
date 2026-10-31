@@ -56,7 +56,7 @@ function renderReviews(reviews: typeof defaultReviews) {
     reviews.map((r) =>
       html`
             <div
-              style="display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <div
                 style="font-size: 1.3em; font-weight: bold; color: ${ratingColor(r.ratingNumeric)}; width: 32px; flex-shrink: 0;"

@@ -10,7 +10,7 @@ const meta: Meta = {
   render: (args) =>
     html`
     <div
-      style="position: relative; height: 200px; border: 1px dashed var(--lg-color-border); border-radius: 8px; overflow: hidden;"
+      style="position: relative; height: 200px; border: 1px dashed var(--lg-color-border-default); border-radius: 8px; overflow: hidden;"
     >
       <div
         id="focusOverlay"
