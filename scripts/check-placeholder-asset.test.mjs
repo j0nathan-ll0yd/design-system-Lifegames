@@ -12,7 +12,7 @@
 
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {existsSync, globSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
 import {fileURLToPath} from 'node:url'
 import path from 'node:path'
@@ -29,6 +29,47 @@ const SKIPPED_DIRS = new Set(['node_modules', 'dist', 'public', '.astro', 'story
 // A stylesheet cannot emit the placeholder; only widget, island and runtime code can.
 const STYLESHEET = /\.(css|scss|sass|less)$/
 const GLOB_CHAR = /[*?{[]/
+// File types an app may hold that cannot carry web widget code. Any other type the
+// check cannot read fails the scan, so a new component format (.svelte, .vue)
+// cannot hide an import.
+const INERT_EXTENSIONS = new Set([
+  '',
+  '.avif',
+  '.css',
+  '.entitlements',
+  '.gif',
+  '.ico',
+  '.jpeg',
+  '.jpg',
+  '.json',
+  '.less',
+  '.lock',
+  '.log',
+  '.map',
+  '.otf',
+  '.pbxproj',
+  '.plist',
+  '.png',
+  '.sass',
+  '.scss',
+  '.sh',
+  '.strings',
+  '.svg',
+  '.swift',
+  '.toml',
+  '.ttf',
+  '.txt',
+  '.webmanifest',
+  '.webp',
+  '.woff',
+  '.woff2',
+  '.xcconfig',
+  '.xcscheme',
+  '.xcworkspacedata',
+  '.xml',
+  '.yaml',
+  '.yml'
+])
 
 function configFiles(appDir) {
   const found = []
@@ -67,53 +108,143 @@ function mask(text, keep) {
   return out.join('')
 }
 
+// ts.createSourceFile never throws: it recovers and records parseDiagnostics.
+// A file it cannot read cleanly would silently drop its imports, so it fails here.
+function parse(file, code, kind = scriptKind(file)) {
+  const source = ts.createSourceFile(file, code, ts.ScriptTarget.Latest, true, kind)
+  const [first] = source.parseDiagnostics
+  if (first) {
+    const {line} = source.getLineAndCharacterOfPosition(first.start)
+    throw new Error(
+      `${file}:${line + 1} does not parse: ${ts.flattenDiagnosticMessageText(first.messageText, ' ')} ` +
+        `(${source.parseDiagnostics.length} diagnostics), so the check cannot read its imports`
+    )
+  }
+  return source
+}
+
+function parsesClean(code) {
+  return ts.createSourceFile('block.tsx', code, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX).parseDiagnostics.length === 0
+}
+
+const JS_SCRIPT_TYPES = new Set(['', 'module', 'text/javascript', 'application/javascript', 'text/ecmascript', 'application/ecmascript'])
+
+// Astro bundles a <script> unless it is `is:inline`, loads `src`, or carries a
+// non-JavaScript `type` such as application/ld+json. Only a bundled script can
+// import a module.
+function bundledScript(attrs) {
+  if (/(?:^|\s)is:inline\b/.test(attrs) || /(?:^|\s)src\s*=/.test(attrs)) {
+    return false
+  }
+  const type = attrs.match(/(?:^|\s)type\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/)
+  return !type || JS_SCRIPT_TYPES.has((type[1] ?? type[2] ?? type[3]).trim().toLowerCase())
+}
+
+// The bodies of the bundled <script> elements in Astro markup. The tag scan
+// honors quotes and `{...}` expressions, so `>` inside an attribute does not end
+// the tag, and a self-closing `<script ... />` has no body.
+function astroScriptBodies(html, from) {
+  const lower = html.toLowerCase()
+  const bodies = []
+  let at = lower.indexOf('<script', from)
+  while (at !== -1) {
+    if (!/[\s/>]/.test(html[at + 7] ?? '')) {
+      at = lower.indexOf('<script', at + 7)
+      continue
+    }
+    let end = at + 7
+    let depth = 0
+    let quote = null
+    for (; end < html.length; end++) {
+      const c = html[end]
+      if (quote) {
+        quote = c === quote ? null : quote
+      } else if (c === '"' || c === "'" || c === '`') {
+        quote = c
+      } else if (c === '{') {
+        depth++
+      } else if (c === '}') {
+        depth--
+      } else if (c === '>' && depth === 0) {
+        break
+      }
+    }
+    const attrs = html.slice(at + 7, end)
+    if (/\/\s*$/.test(attrs)) {
+      at = lower.indexOf('<script', end + 1)
+      continue
+    }
+    const close = lower.indexOf('</script', end + 1)
+    const bodyEnd = close === -1 ? html.length : close
+    if (bundledScript(attrs)) {
+      bodies.push([end + 1, bodyEnd])
+    }
+    at = lower.indexOf('<script', bodyEnd)
+  }
+  return bodies
+}
+
+// The ESM blocks of an .md or .mdx file, outside fenced code. As in MDX, a block
+// starts at a line-leading `import` or `export` and ends at a blank line once it
+// parses; an unfinished statement runs on past the blank line.
+function mdxEsmBlocks(text) {
+  const lines = text.split('\n')
+  const offsets = []
+  let offset = 0
+  for (const line of lines) {
+    offsets.push(offset)
+    offset += line.length + 1
+  }
+  const ranges = []
+  let fence = null
+  let block = null
+  const close = (last) => {
+    ranges.push([offsets[block], offsets[last] + lines[last].length])
+    block = null
+  }
+  lines.forEach((line, i) => {
+    const marker = line.match(/^\s*(`{3,}|~{3,})/)
+    if (fence) {
+      if (marker && marker[1][0] === fence[0] && marker[1].length >= fence.length) {
+        fence = null
+      }
+    } else if (marker) {
+      if (block !== null) {
+        close(i - 1)
+      }
+      fence = marker[1]
+    } else if (block === null) {
+      if (/^(import|export)\b/.test(line)) {
+        block = i
+      }
+    } else if (line.trim() === '' && parsesClean(lines.slice(block, i).join('\n'))) {
+      close(i - 1)
+    }
+  })
+  if (block !== null) {
+    close(lines.length - 1)
+  }
+  return ranges
+}
+
 // The module code of a file. An .astro file contributes its frontmatter and its
-// <script> bodies; its markup and HTML comments are not code. An .md or .mdx file
-// contributes its top-level ESM paragraphs only, so a fenced usage sample, prose
-// and an MDX comment never count as an import.
+// bundled <script> bodies; its markup and HTML comments are not code. An .md or
+// .mdx file contributes its ESM blocks only, so a fenced usage sample, prose and
+// an MDX comment never count as an import.
 function moduleCode(file, text) {
   const ext = path.extname(file)
   if (ext === '.astro') {
     const html = text.replace(/<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '))
     const keep = []
-    const front = html.match(/^\s*---\r?\n([\s\S]*?)\r?\n---/)
+    const front = html.match(/^(\s*---\r?\n)([\s\S]*?)\r?\n---/)
     if (front) {
-      const at = html.indexOf(front[1])
-      keep.push([at, at + front[1].length])
+      keep.push([front[1].length, front[1].length + front[2].length])
     }
-    for (const m of html.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
-      const at = m.index + m[0].indexOf('>') + 1
-      keep.push([at, at + m[1].length])
-    }
+    keep.push(...astroScriptBodies(html, front ? front[0].length : 0))
     return mask(html, keep)
   }
   if (ext === '.md' || ext === '.mdx') {
-    const keep = []
-    let offset = 0
-    let fence = null
-    let esm = false
-    for (const line of text.split('\n')) {
-      const marker = line.match(/^\s*(`{3,}|~{3,})/)
-      if (fence) {
-        if (marker && marker[1][0] === fence[0] && marker[1].length >= fence.length) {
-          fence = null
-        }
-      } else if (marker) {
-        fence = marker[1]
-        esm = false
-      } else {
-        if (/^(import|export)\b/.test(line)) {
-          esm = true
-        } else if (line.trim() === '') {
-          esm = false
-        }
-        if (esm) {
-          keep.push([offset, offset + line.length])
-        }
-      }
-      offset += line.length + 1
-    }
-    return mask(text, keep)
+    return mask(text, mdxEsmBlocks(text))
   }
   return text
 }
@@ -143,7 +274,7 @@ function isTypeOnlyImport(node) {
 // type-only ones), `import()`, `require()`, and `import.meta.glob` patterns. A
 // template-literal `import()` contributes its static head as a prefix.
 function moduleRefs(file, text) {
-  const source = ts.createSourceFile(file, moduleCode(file, text), ts.ScriptTarget.Latest, true, scriptKind(file))
+  const source = parse(file, moduleCode(file, text))
   const refs = []
   const add = (node, kind, specifier) => {
     if (specifier) {
@@ -204,7 +335,7 @@ function readConfigs(appDir, webSrc) {
   const roots = []
   const unkeyed = []
   for (const file of configFiles(appDir)) {
-    const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, scriptKind(file))
+    const source = parse(file, readFileSync(file, 'utf8'))
     const visit = (node) => {
       const value = stringValue(node)
       if (value !== null && (value.startsWith('.') || path.isAbsolute(value)) && !STYLESHEET.test(value)) {
@@ -253,7 +384,8 @@ function basenamePattern(glob) {
   return new RegExp(`^${body}$`)
 }
 
-function* sourceFiles(dir, name = /./) {
+// Every file under `dir` whose name matches, outside build output and dependencies.
+function* walk(dir, name = /./) {
   for (const entry of readdirSync(dir, {withFileTypes: true}).sort((a, b) => a.name.localeCompare(b.name))) {
     if (entry.isSymbolicLink()) {
       continue
@@ -261,10 +393,18 @@ function* sourceFiles(dir, name = /./) {
     const full = path.join(dir, entry.name)
     if (entry.isDirectory()) {
       if (!SKIPPED_DIRS.has(entry.name)) {
-        yield* sourceFiles(full, name)
+        yield* walk(full, name)
       }
-    } else if (SOURCE_EXTENSIONS.has(path.extname(entry.name)) && name.test(entry.name)) {
+    } else if (name.test(entry.name)) {
       yield full
+    }
+  }
+}
+
+function* sourceFiles(dir, name) {
+  for (const file of walk(dir, name)) {
+    if (SOURCE_EXTENSIONS.has(path.extname(file))) {
+      yield file
     }
   }
 }
@@ -320,9 +460,76 @@ function workspacePackages(root, webPackage) {
   return byName
 }
 
+const MODULE_SUFFIXES = ['', '.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs', '.astro']
+
+// A module path as Node or a bundler resolves it: as written, with an extension,
+// as a directory index, or a `.js` specifier that names a `.ts` source.
+function resolveModuleFile(target) {
+  const candidates = [
+    ...MODULE_SUFFIXES.map((suffix) => target + suffix),
+    ...MODULE_SUFFIXES.slice(1).map((suffix) => path.join(target, 'index' + suffix)),
+    target.replace(/\.(m|c)?js$/, '.$1ts')
+  ]
+  return candidates.find((file) => existsSync(file) && statSync(file).isFile()) ?? null
+}
+
+const isTestFile = (file) => /\.(test|spec)\./.test(file) || file.split(path.sep).includes('__tests__')
+
+// The runtime files a workspace package exposes: every `exports`, `main` and
+// `module` target, then every relative import those files reach. When a target
+// does not exist in the tree (unbuilt output) or the manifest declares none, the
+// package's non-test src/ files count too.
+function packageFiles(pkgDir) {
+  const manifest = JSON.parse(readFileSync(path.join(pkgDir, 'package.json'), 'utf8'))
+  const targets = []
+  const collect = (value) => {
+    if (typeof value === 'string') {
+      targets.push(value)
+    } else if (value && typeof value === 'object') {
+      Object.values(value).forEach(collect)
+    }
+  }
+  collect(manifest.exports)
+  collect(manifest.main)
+  collect(manifest.module)
+  const queue = []
+  let fallback = targets.length === 0
+  for (const target of targets) {
+    if (GLOB_CHAR.test(target)) {
+      const matches = globSync(target.replace(/^\.\//, ''), {cwd: pkgDir})
+      fallback ||= matches.length === 0
+      queue.push(...matches.map((match) => path.join(pkgDir, match)))
+    } else {
+      const file = resolveModuleFile(path.resolve(pkgDir, target))
+      fallback ||= file === null
+      if (file) {
+        queue.push(file)
+      }
+    }
+  }
+  const src = path.join(pkgDir, 'src')
+  if (fallback && existsSync(src)) {
+    queue.push(...[...sourceFiles(src)].filter((file) => !isTestFile(file)))
+  }
+  const files = new Set()
+  while (queue.length > 0) {
+    const file = queue.shift()
+    if (files.has(file) || !SOURCE_EXTENSIONS.has(path.extname(file))) {
+      continue
+    }
+    files.add(file)
+    for (const ref of moduleRefs(file, readFileSync(file, 'utf8'))) {
+      const next = ref.kind === 'imports' && ref.specifier.startsWith('.') ? resolveModuleFile(path.resolve(path.dirname(file), ref.specifier)) : null
+      if (next && isInside(next, pkgDir)) {
+        queue.push(next)
+      }
+    }
+  }
+  return [...files]
+}
+
 // A workspace package that re-exports or imports web widget code at runtime
-// passes it to every app that imports the package. Only its src/ counts, never
-// its tests or build scripts. `seen` breaks import cycles.
+// passes it to every app that imports the package. `seen` breaks import cycles.
 function packageCarriesWebCode(name, ctx, seen = new Set()) {
   if (ctx.carries.has(name)) {
     return ctx.carries.get(name)
@@ -331,17 +538,11 @@ function packageCarriesWebCode(name, ctx, seen = new Set()) {
     return false
   }
   seen.add(name)
-  const src = path.join(ctx.packages.get(name), 'src')
   let carries = false
-  scan: for (const file of existsSync(src) ? sourceFiles(src) : []) {
-    if (/\.test\.|\.spec\./.test(file) || file.split(path.sep).includes('__tests__')) {
-      continue
-    }
+  for (const file of packageFiles(ctx.packages.get(name))) {
+    ctx.read.add(file)
     for (const ref of moduleRefs(file, readFileSync(file, 'utf8'))) {
-      if (refHitsWebCode(ref, file, null, [], ctx, seen)) {
-        carries = true
-        break scan
-      }
+      carries ||= refHitsWebCode(ref, file, null, [], ctx, seen)
     }
   }
   ctx.carries.set(name, carries)
@@ -367,29 +568,40 @@ function refHitsWebCode(ref, file, appDir, aliases, ctx, seen) {
 
 /**
  * Every apps/* package that renders web widget code, each with the first
- * reference that proves it. An app that imports only the web stylesheets, or
- * only types, is not listed.
+ * reference that proves it, and every file read to decide it. An app that
+ * imports only the web stylesheets, or only types, is not listed. Every file is
+ * read, not only up to the first hit, so each one must parse clean; a file the
+ * check cannot parse, or a file type it cannot read, fails the scan.
  */
-export function discoverWidgetApps(root) {
+export function scanTree(root) {
   const appsDir = path.join(root, 'apps')
   const webSrc = path.join(root, 'packages/web/src')
   // The published name, read where it is declared rather than restated here.
   const webPackage = JSON.parse(readFileSync(path.join(root, 'packages/web/package.json'), 'utf8')).name
-  const ctx = {webSrc, webPackage, packages: workspacePackages(root, webPackage), carries: new Map()}
+  const ctx = {webSrc, webPackage, packages: workspacePackages(root, webPackage), carries: new Map(), read: new Set()}
   const apps = []
+  const unreadable = []
   for (const entry of readdirSync(appsDir, {withFileTypes: true}).sort((a, b) => a.name.localeCompare(b.name))) {
     const appDir = path.join(appsDir, entry.name)
     if (!entry.isDirectory() || !existsSync(path.join(appDir, 'package.json'))) {
       continue
     }
     const {aliases, roots, unkeyed} = readConfigs(appDir, webSrc)
+    configFiles(appDir).forEach((file) => ctx.read.add(file))
     let evidence = null
-    scan: for (const {dir, name} of [{dir: appDir}, ...roots]) {
-      for (const file of sourceFiles(dir, name)) {
+    for (const {dir, name} of [{dir: appDir}, ...roots]) {
+      for (const file of walk(dir, name)) {
+        const ext = path.extname(file)
+        if (!SOURCE_EXTENSIONS.has(ext)) {
+          if (!INERT_EXTENSIONS.has(ext)) {
+            unreadable.push(path.relative(root, file))
+          }
+          continue
+        }
+        ctx.read.add(file)
         for (const ref of moduleRefs(file, readFileSync(file, 'utf8'))) {
           if (refHitsWebCode(ref, file, appDir, aliases, ctx, new Set())) {
-            evidence = `${path.relative(root, file)}:${ref.line} ${ref.kind} '${ref.specifier}'`
-            break scan
+            evidence ??= `${path.relative(root, file)}:${ref.line} ${ref.kind} '${ref.specifier}'`
           }
         }
       }
@@ -399,10 +611,29 @@ export function discoverWidgetApps(root) {
       apps.push({app: path.relative(root, appDir), evidence})
     }
   }
-  return apps
+  if (unreadable.length > 0) {
+    throw new Error(`the check cannot read these app files, so it cannot tell whether they import web widget code: ${unreadable.join(', ')}`)
+  }
+  return {apps, read: [...ctx.read].map((file) => path.relative(root, file)).sort()}
 }
 
-const widgetApps = discoverWidgetApps(repoRoot)
+export function discoverWidgetApps(root) {
+  return scanTree(root).apps
+}
+
+let scan = {apps: [], read: []}
+let scanError = null
+try {
+  scan = scanTree(repoRoot)
+} catch (error) {
+  scanError = error
+}
+const widgetApps = scan.apps
+
+test(`every file the check reads parses clean (${scan.read.length} files)`, () => {
+  assert.ifError(scanError)
+  assert.ok(scan.read.length > 0, 'the scan read no files')
+})
 
 test('discovery finds at least one app that renders the web widgets', () => {
   assert.ok(widgetApps.length > 0, 'no apps/* package imports widget code; discovery is broken, not the tree')
@@ -513,28 +744,107 @@ test('discovery classifies apps by what they import, not by name', () => {
     write('apps/mdxreal/src/a.mdx',
       "```astro\nimport {Card} from '@scope/web'\n```\n\nimport Shelf from '@scope/web/widgets/reading/Shelf.astro'\n\n<Shelf />\n")
 
+    // An MDX import that spans a blank line.
+    write('apps/mdxblank/package.json', '{}')
+    write('apps/mdxblank/src/a.mdx', "import {\n\n  A\n} from '@scope/web'\n\n<A />\n")
+    // A self-closing JSON-LD script, then markup with a backtick and a `/*`, then a bundled script.
+    write('apps/selfclosing/package.json', '{}')
+    write('apps/selfclosing/src/p.astro',
+      "---\n---\n<script type=\"application/ld+json\" set:html={JSON.stringify({a: 1})} />\n<p>use `x and /* here, it's</p>\n<script>\nimport A from '@scope/web'\n</script>\n")
+    // `>` inside a script attribute expression does not end the tag.
+    write('apps/attrgt/package.json', '{}')
+    write('apps/attrgt/src/p.astro', "---\n---\n<script define:vars={{ok: 2 > 1}}>\nimport A from '@scope/web'\n</script>\n")
+    // Scripts Astro does not bundle cannot import: is:inline, src, a non-JavaScript type.
+    write('apps/unbundled/package.json', '{}')
+    write('apps/unbundled/src/p.astro',
+      '---\n---\n<script is:inline>import A from \'@scope/web\'</script>\n<script src="/x.js"></script>\n<script type="application/ld+json">{"import": "@scope/web"}</script>\n<script type="importmap">{"imports": {}}</script>\n')
+    // A workspace package whose `exports` entry sits outside src/.
+    write('packages/rootentry/package.json', JSON.stringify({name: '@scope/rootentry', exports: {'.': './index.ts'}}))
+    write('packages/rootentry/index.ts', "export * from './lib/inner'\n")
+    write('packages/rootentry/lib/inner.ts', "export * from '@scope/web'\n")
+    write('apps/exportsroot/package.json', '{}')
+    write('apps/exportsroot/src/p.ts', "import {A} from '@scope/rootentry'\n")
+    // A package whose entry does not reach the file that imports web code.
+    write('packages/unexported/package.json', JSON.stringify({name: '@scope/unexported', main: './index.js'}))
+    write('packages/unexported/index.js', 'export const x = 1\n')
+    write('packages/unexported/src/unused.ts', "export * from '@scope/web'\n")
+    write('apps/viaunexported/package.json', '{}')
+    write('apps/viaunexported/src/p.ts', "import {x} from '@scope/unexported'\n")
+    // Inert files only besides the code.
+    write('apps/inert/package.json', '{}')
+    write('apps/inert/src/a.json', '{}')
+    write('apps/inert/Sources/App.swift', 'import SwiftUI\n')
+
     const found = discoverWidgetApps(root)
     assert.deepEqual(found.map((a) => a.app), [
       'apps/alias',
+      'apps/attrgt',
       'apps/cts',
+      'apps/exportsroot',
       'apps/findalias',
       'apps/globrel',
       'apps/globroot',
+      'apps/mdxblank',
       'apps/mdxreal',
       'apps/minified',
       'apps/pkg',
       'apps/reexport',
+      'apps/selfclosing',
       'apps/stories',
       'apps/tmpl',
       'apps/tspaths',
       'apps/unkeyed',
       'apps/urlalias'
     ])
+    assert.equal(found.find((a) => a.app === 'apps/selfclosing').evidence, "apps/selfclosing/src/p.astro:6 imports '@scope/web'")
     assert.equal(found.find((a) => a.app === 'apps/mdxreal').evidence, "apps/mdxreal/src/a.mdx:5 imports '@scope/web/widgets/reading/Shelf.astro'")
     assert.match(found.find((a) => a.app === 'apps/unkeyed').evidence, /astro\.config\.mjs:1 points/)
   } finally {
     rmSync(root, {recursive: true, force: true})
   }
+})
+
+// Fail-closed known answers. A file the check cannot parse would drop its imports,
+// and a file type it cannot read would hide them; both must stop the scan.
+function scanFails(files, pattern) {
+  const root = mkdtempSync(path.join(tmpdir(), 'placeholder-fail-'))
+  try {
+    for (const [rel, text] of Object.entries({'packages/web/package.json': JSON.stringify({name: '@scope/web'}), 'apps/x/package.json': '{}', ...files})) {
+      mkdirSync(path.dirname(path.join(root, rel)), {recursive: true})
+      writeFileSync(path.join(root, rel), text)
+    }
+    assert.throws(() => scanTree(root), pattern)
+  } finally {
+    rmSync(root, {recursive: true, force: true})
+  }
+}
+
+test('a source file that does not parse fails the scan, named by file and line', () => {
+  scanFails({'apps/x/src/p.ts': "const s = `oops\nimport A from '@scope/web'\n"}, /apps\/x\/src\/p\.ts:3 does not parse: Unterminated template literal/)
+  scanFails({'apps/x/src/p.astro': "---\nconst s = 'oops\nimport A from '@scope/web'\n---\n"}, /p\.astro:2 does not parse/)
+  scanFails({'apps/x/src/a.mdx': "import A from '@scope/web'\nprose that is not code\n"}, /a\.mdx:2 does not parse/)
+  // After the app's first hit: every file is read, not only up to the evidence.
+  scanFails({'apps/x/src/a.ts': "import A from '@scope/web'\n", 'apps/x/src/b.ts': 'const = 1\n'}, /b\.ts:1 does not parse/)
+})
+
+test('a config file that does not parse fails the scan', () => {
+  scanFails({
+    'apps/x/astro.config.mjs': "/* oops\nexport default {alias: {'@w': path.resolve(__dirname, '../../packages/web/src')}}\n",
+    'apps/x/src/p.ts': "import W from '@w/widgets/A.astro'\n"
+  }, /astro\.config\.mjs:3 does not parse: '\*\/' expected/)
+})
+
+test('a workspace package file that does not parse fails the scan', () => {
+  scanFails({
+    'packages/shared/package.json': JSON.stringify({name: '@scope/shared'}),
+    'packages/shared/src/index.ts': 'export const = 1\n',
+    'apps/x/src/p.ts': "import {A} from '@scope/shared'\n"
+  }, /shared\/src\/index\.ts:1 does not parse/)
+})
+
+test('an app file type the check cannot read fails the scan', () => {
+  scanFails({'apps/x/src/a.svelte': "<script>\nimport A from '@scope/web'\n</script>\n"}, /cannot read these app files.*apps\/x\/src\/a\.svelte/)
+  scanFails({'apps/x/src/b.vue': '<template></template>\n'}, /apps\/x\/src\/b\.vue/)
 })
 
 // The gate this file was missing. It asserted the two copies were identical and
