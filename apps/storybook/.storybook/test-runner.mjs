@@ -46,10 +46,16 @@ const MAX_CONTENT_RATIO_SWING = 0.5
    - Drift: 77 of the 96 baselines recorded in #144 differed from a CI render because
      code changed after them (run 41136521812 re-rendered #144-era code on today's
      lane), and the 2% tolerance passed every one.
-   So the bound is a pixel count, set below the smallest measured real change.
-   Record baselines only through the update-mode dispatch, which records on the
-   same CI lane that checks them. A runner image change (Chromium, fonts) moves
-   every story; re-record then. */
+   - With Space Grotesk loaded (this file's font wait), runs 41156583946,
+     41156778029 and 41156936282 again rendered all stories byte-identical, and
+     the smallest real change was one digit of the Bookshelf progress (68 to 69),
+     31 px.
+   So the bound is a pixel count: 10 px, below the smallest real change in either
+   measurement (25 px, 31 px) with a 2.5x margin, and above the measured noise
+   (0 px) so a stray few-pixel flake does not red a story. Record baselines only
+   through the update-mode dispatch, which records on the same CI lane that checks
+   them. A runner image change (Chromium, system libraries) moves every story;
+   re-record then. */
 export const MAX_DIFF_PIXELS = 10
 export const SMALLEST_MEASURED_REAL_CHANGE_PIXELS = 25
 
