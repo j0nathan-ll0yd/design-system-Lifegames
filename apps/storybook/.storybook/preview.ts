@@ -1,4 +1,7 @@
 import '@j0nathan-ll0yd/tokens/css'
+// Space Grotesk @font-face rules, as production consumers load them. The files
+// come from staticDirs in main.ts; test-runner.mjs waits for them to load.
+import '@j0nathan-ll0yd/tokens/fonts'
 import '@j0nathan-ll0yd/tokens/compat'
 import '@j0nathan-ll0yd/web/styles/components.css'
 import '@j0nathan-ll0yd/tokens/animations'
@@ -28,7 +31,11 @@ const preview: Preview = {
     // rule is the sanctioned static-render escape hatch, but it needs this
     // ancestor attribute to match. Without it every .tri-card story renders
     // fully transparent — that is how 52 baselines were minted blank (#123).
-    (story) => html`<div data-widget-preview style="background-color: #06060f; padding: 16px;">${story()}</div>`
+    //
+    // The font family mirrors the production page body (`html, body` in
+    // apps/portfolio/src/layouts/Dashboard.astro): without it, text with no
+    // family of its own renders in the browser default serif.
+    (story) => html`<div data-widget-preview style="background-color: #06060f; padding: 16px; font-family: var(--lg-font-family-brand);">${story()}</div>`
   ],
   tags: ['autodocs']
 }
