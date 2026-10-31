@@ -34,7 +34,7 @@ function renderLog(events: typeof defaultEvents) {
     events.map((e) =>
       html`
             <div
-              style="display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <span style="color: var(--lg-color-accent-green); width: 16px; flex-shrink: 0;"
                 >${typeIcon[e.type] ?? '●'}</span

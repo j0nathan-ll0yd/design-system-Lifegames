@@ -38,7 +38,7 @@ function renderBookshelf(books: typeof defaultBooks) {
     books.map((b) =>
       html`
             <div
-              style="display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <div style="flex: 1; min-width: 0;">
                 <div

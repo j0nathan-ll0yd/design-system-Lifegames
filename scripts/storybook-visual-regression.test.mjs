@@ -5,7 +5,15 @@ import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {describe, test} from 'node:test'
 
-import {assertContentRatioStable, contentRatio, contentRatioSwing} from '../apps/storybook/.storybook/test-runner.mjs'
+import {
+  assertBrandFontsLoaded,
+  assertContentRatioStable,
+  contentRatio,
+  contentRatioSwing,
+  imageSnapshotOptions,
+  MAX_DIFF_PIXELS,
+  SMALLEST_MEASURED_REAL_CHANGE_PIXELS
+} from '../apps/storybook/.storybook/test-runner.mjs'
 import {mintFromEmptySnapshotDirectory} from '../apps/storybook/.storybook/update-visual-snapshots.mjs'
 
 describe('Storybook content sentinel', () => {
@@ -31,6 +39,39 @@ describe('Storybook content sentinel', () => {
   test('ignores background-edge noise when both frames are below the absolute floor', () => {
     assert.equal(contentRatioSwing(0.00009, 0), 0)
     assert.doesNotThrow(() => assertContentRatioStable('blank--story', 0.00009, 0))
+  })
+})
+
+describe('Storybook pixel bound', () => {
+  test('counts pixels, not a share of the frame', () => {
+    const options = imageSnapshotOptions('example--story')
+    assert.equal(options.failureThresholdType, 'pixel')
+    assert.equal(options.failureThreshold, MAX_DIFF_PIXELS)
+    assert.equal(options.customSnapshotIdentifier, 'example--story')
+  })
+
+  test('sits below the smallest measured real change, so that change fails', () => {
+    assert.ok(Number.isInteger(MAX_DIFF_PIXELS) && MAX_DIFF_PIXELS >= 0)
+    assert.ok(MAX_DIFF_PIXELS < SMALLEST_MEASURED_REAL_CHANGE_PIXELS,
+      `${MAX_DIFF_PIXELS} px would pass a ${SMALLEST_MEASURED_REAL_CHANGE_PIXELS} px real change`)
+  })
+})
+
+describe('Storybook font wait', () => {
+  const loaded = (unicodeRange) => ({unicodeRange, status: 'loaded'})
+
+  test('accepts a story once every brand face is loaded', () => {
+    assert.doesNotThrow(() => assertBrandFontsLoaded('example--story', [loaded('U+0000-00FF'), loaded('U+0100-02BA')]))
+  })
+
+  test('rejects a story whose page declares no brand face', () => {
+    assert.throws(() => assertBrandFontsLoaded('example--story', []), /declares no Space Grotesk @font-face/)
+  })
+
+  test('rejects a story with a face that failed or is still loading', () => {
+    assert.throws(() => assertBrandFontsLoaded('example--story', [loaded('U+0000-00FF'), {unicodeRange: 'U+0100-02BA', status: 'error'}]),
+      /1 of 2 Space Grotesk faces not loaded \(U\+0100-02BA: error\)/)
+    assert.throws(() => assertBrandFontsLoaded('example--story', [{unicodeRange: 'U+0000-00FF', status: 'loading'}]), /not loaded/)
   })
 })
 

@@ -30,7 +30,7 @@ function renderWorkouts(workouts: typeof defaultWorkouts) {
     workouts.map((w) =>
       html`
             <div
-              style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <span>${w.activity_type}</span>
               <span style="color: var(--lg-color-text-muted); font-size: 0.85em;"
