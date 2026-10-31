@@ -3,8 +3,8 @@
     "books": [
       {
         "asin": "0525573844",
-        "title": "Range",
-        "author": "David Epstein",
+        "title": "Foundryside",
+        "author": "Robert Jackson Bennett",
         "status": "reading",
         "rating": null,
         "progress": 34,
@@ -13,10 +13,13 @@
     ],
     "bookMeta": {
       "0525573844": {
-        "pages": 352,
-        "year": 2019,
-        "desc": "Why generalists triumph in a specialized world",
-        "genres": ["Psychology", "Self-Help"]
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 512,
+        "genres": ["Fantasy", "Science Fiction"],
+        "year": 2018,
+        "desc": "Ingenious magic system based on industrial programming — a thief discovers her city is built on ancient, dangerous technology called scriving."
       }
     },
     "statusLabels": {
