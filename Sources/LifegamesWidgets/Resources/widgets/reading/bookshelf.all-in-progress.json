@@ -3,8 +3,8 @@
     "books": [
       {
         "asin": "0525573844",
-        "title": "Range",
-        "author": "David Epstein",
+        "title": "Foundryside",
+        "author": "Robert Jackson Bennett",
         "status": "reading",
         "rating": null,
         "progress": 68,
@@ -12,8 +12,8 @@
       },
       {
         "asin": "0593128508",
-        "title": "Project Hail Mary",
-        "author": "Andy Weir",
+        "title": "A Deadly Education",
+        "author": "Naomi Novik",
         "status": "reading",
         "rating": null,
         "progress": 34,
@@ -21,8 +21,8 @@
       },
       {
         "asin": "0593723848",
-        "title": "Supercommunicators",
-        "author": "Charles Duhigg",
+        "title": "A Drop of Corruption",
+        "author": "Robert Jackson Bennett",
         "status": "reading",
         "rating": null,
         "progress": 12,
@@ -31,22 +31,31 @@
     ],
     "bookMeta": {
       "0525573844": {
-        "pages": 352,
-        "year": 2019,
-        "desc": "Why generalists triumph in a specialized world",
-        "genres": ["Psychology", "Self-Help"]
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 512,
+        "genres": ["Fantasy", "Science Fiction"],
+        "year": 2018,
+        "desc": "Ingenious magic system based on industrial programming — a thief discovers her city is built on ancient, dangerous technology called scriving."
       },
       "0593128508": {
-        "pages": 496,
+        "seriesName": "The Scholomance",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 336,
+        "genres": ["Fantasy", "Dark Academia", "Urban Fantasy"],
         "year": 2021,
-        "desc": "An astronaut wakes up alone on a spaceship with no memory",
-        "genres": ["Science Fiction", "Adventure"]
+        "desc": "A sorcerer with a dark affinity tries to survive a school of magic that hunts its own students."
       },
       "0593723848": {
-        "pages": 320,
-        "year": 2024,
-        "desc": "The science of better conversations",
-        "genres": ["Psychology", "Communication"]
+        "seriesName": "Shadow of the Leviathan",
+        "seriesNumber": 2,
+        "seriesTotal": 3,
+        "pages": 480,
+        "genres": ["Fantasy", "Mystery", "Thriller"],
+        "year": 2025,
+        "desc": "The political intrigue deepens as the investigation uncovers corruption at the heart of the empire — even better than the first installment."
       }
     },
     "statusLabels": {

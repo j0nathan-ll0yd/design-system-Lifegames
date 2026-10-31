@@ -1,0 +1,532 @@
+// ASIN identity gate.
+//
+// An ASIN names one book. Since DS #333 a Bookshelf tile is a real Amazon link, and a
+// covered ASIN also names a real cover object (cover-inventory.ts), so a fixture that
+// pairs an ASIN with another book shows one book's cover and link under another
+// book's title. asin-shape.test.ts checks the SHAPE of each ASIN; this gate checks
+// that the same ASIN means the same book in every fixture source.
+//
+// RULES, across every source below:
+//   (a) one ASIN maps to one (title, author);
+//   (b) one (title, author) maps to one ASIN;
+//   (c) an ASIN with a cover names the book that cover shows. A covered ASIN
+//       (COVERED_ASINS) takes its post-adapter entry (src/post-adapter/books.ts); an
+//       ASIN whose only cover is an app mirror (apps/*/public/images/books/, found by
+//       glob) takes its MIRROR_ONLY_BOOKS entry. Every mirror cover must have a known book;
+//   (d) an ASIN's pages and year are the same everywhere they are stated, and for an
+//       ASIN with a known book they equal that book's.
+// Strings compare exactly. Author is not normalized: every schema types it as one
+// string, so a non-string author is itself a failure.
+//
+// SOURCES, discovered by glob so a new fixture is covered without an edit:
+//   - every JSON under Sources/LifegamesWidgets/Resources/widgets/ (Swift catalog
+//     fixtures; the docs site and the portfolio render these same files);
+//   - every JSON under packages/fixtures/src/ (generated raw and post-adapter JSON);
+//   - every TS module under packages/fixtures/src/ (factories, variations,
+//     post-adapter), imported and walked through its exports;
+//   - every TS module under packages/web/stories/, imported and walked the same way.
+// A book is any object with a string `asin` and a string `title`. Its pages and year
+// come from the sibling `bookMeta[asin]` entry when the object sits in a `books` list
+// next to a `bookMeta` map, and otherwise from the object itself (`pages`/`pageCount`,
+// `year`/`publishedYear`). A null or absent value states nothing.
+//
+// SWEEP: every tracked file that pairs an ASIN-named key with a 10-character literal
+// must be a scanned source or appear in UNSCANNED with a reason, so no source is skipped
+// silently. See ASIN_PAIRING for the forms it recognises.
+/// <reference types="vite/client" />
+import {execFileSync} from 'node:child_process'
+import {existsSync, readdirSync, readFileSync, statSync} from 'node:fs'
+import {dirname, join, relative, resolve} from 'node:path'
+import {fileURLToPath} from 'node:url'
+import {describe, expect, it} from 'vitest'
+import {COVER_ORIGIN, coverAsin, COVERED_ASINS} from '../src/cover-inventory'
+import {booksPostAdapter} from '../src/post-adapter/books'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const PKG_ROOT = resolve(HERE, '..')
+const REPO_ROOT = resolve(PKG_ROOT, '..', '..')
+const JSON_ROOTS = [join(REPO_ROOT, 'Sources', 'LifegamesWidgets', 'Resources', 'widgets'), join(PKG_ROOT, 'src')]
+const POST_ADAPTER_SOURCE = 'packages/fixtures/src/post-adapter/books.ts'
+const APPS_DIR = join(REPO_ROOT, 'apps')
+const MIRROR_SUBPATH = join('public', 'images', 'books')
+const MIRROR_ONLY_SOURCE = 'packages/fixtures/tests/asin-identity.test.ts MIRROR_ONLY_BOOKS'
+
+/**
+ * The book each mirror-only cover shows: a cover under an app mirror
+ * (apps/<app>/public/images/books/) whose ASIN is not in COVERED_ASINS, so post-adapter does
+ * not describe it. Each entry was read off the mirrored cover image and verified by
+ * ISBN-10 against a public record (PR #343). Pages and year are those of the edition
+ * the ISBN-10 names.
+ *   0593128508: Del Rey trade paperback, 2021 (openlibrary.org/books/OL32208249M,
+ *               isfdb.org publication 866306).
+ *   080413717X: Broadway Books trade paperback, 2014 (openlibrary.org/books/OL27164620M,
+ *               isfdb.org publication 464873). Portfolio mirror only.
+ *   1984820680: Del Rey trade paperback, 2023 (openlibrary.org/books/OL46153272M,
+ *               isfdb.org publication 932469).
+ */
+const MIRROR_ONLY_BOOKS: Record<string, {title: string; author: string; pages: number; year: number}> = {
+  '0593128508': {title: 'A Deadly Education', author: 'Naomi Novik', pages: 336, year: 2021},
+  '080413717X': {title: 'City of Stairs', author: 'Robert Jackson Bennett', pages: 452, year: 2014},
+  '1984820680': {title: 'Locklands', author: 'Robert Jackson Bennett', pages: 560, year: 2023}
+}
+
+/**
+ * An ASIN-named key: `asin` or `asins` in any casing, alone or after a prefix that ends
+ * in `_`, `-` or a lower-case letter before an upper-case `A` (`book_asin`, `data-asin`,
+ * `bookAsin`, `bookASIN`). A word that merely ends in "asin" (`basin`) is not a key.
+ */
+const ASIN_KEY = String.raw`(?<![\w-])(?:[\w-]*[_-]|[A-Za-z0-9]*[a-z0-9](?=A))?(?:asin|Asin|ASIN)s?(?![\w-])`
+/** A 10-character literal after an optional `{` (JSX, Astro) or `[` (array), in any quotes or none. */
+const ASIN_VALUE = String.raw`[{[]?\s*["'\x60]?[A-Z0-9]{10}\b`
+/** An ISBN-10 or B0 + 8 literal used as a map key with a string value (`{'0525573844': 'Range'}`). */
+const ASIN_MAP_KEY = String.raw`[{,]\s*["'\x60]?(?:\d{9}[\dX]|B0[A-Z0-9]{8})["'\x60]?\s*:\s*["'\x60]`
+
+/**
+ * The sweep's pairing forms:
+ *   - an ASIN-named key, quoted or not, with `:` or `=`, before ASIN_VALUE (JSON, TS,
+ *     YAML, Markdown, HTML attributes, JSX and Astro props, arrays, Swift arguments,
+ *     TS consts and Swift `let`/`var` without a type);
+ *   - a Swift `let`/`var` with a `: String` annotation;
+ *   - an ASIN-keyed map with string values.
+ * Known gap: a map whose ASIN keys hold non-string values (`{'0525573844': {...}}`) is not
+ * a pairing form. Every such map in the repo is a `bookMeta` map, which rule (d) reads.
+ */
+export const ASIN_PAIRING = new RegExp([
+  String.raw`${ASIN_KEY}["'\x60]?\s*[:=]\s*${ASIN_VALUE}`,
+  String.raw`\b(?:let|var)\s+${ASIN_KEY}\s*:\s*String\??\s*=\s*"[A-Z0-9]{10}"`,
+  ASIN_MAP_KEY
+].join('|'))
+const SWEPT_EXTENSIONS = /\.(json|ts|mts|js|mjs|astro|md|mdx|yaml|yml|html|swift)$/
+
+// Eager globs: Vite resolves these at transform time, so a new module is imported
+// (and walked) with no edit here. A module that fails to import fails the file.
+const FIXTURE_MODULES = import.meta.glob('../src/**/*.ts', {eager: true})
+const STORY_MODULES = import.meta.glob('../../web/stories/**/*.ts', {eager: true})
+
+/**
+ * Tracked files that pair `asin` with a 10-character literal but that this gate does
+ * not read, each with the reason. A listed file that no longer matches fails, so the
+ * list cannot go stale.
+ */
+const UNSCANNED: Record<string, string> = {
+  'Sources/LifegamesWidgets/Reading/BookshelfView.swift': 'Swift #Preview literals; no Swift parser here',
+  'Sources/LifegamesWidgets/Reading/BookModalView.swift': 'Swift #Preview literals; no Swift parser here',
+  'Tests/LifegamesSchemasTests/WidgetModelsDecodeTests.swift': 'Swift decode-test literal; no Swift parser here',
+  'packages/web/tests/runtime/adapters.test.ts': 'test-local adapter inputs, not a fixture',
+  'packages/web/tests/server-render/bookshelf-links.test.ts': 'test-local known-answer inputs, not a fixture',
+  'packages/web/tests/server-render/client-gaps.test.ts': 'test-local cover-URL input (const ASIN), not a fixture',
+  'packages/fixtures/tests/asin-shape.test.ts': 'can-fail probes of the shape gate',
+  'packages/fixtures/tests/asin-identity.test.ts': 'can-fail probes of this gate'
+}
+
+export interface BookRecord {
+  file: string
+  where: string
+  asin: string
+  title: string
+  author: unknown
+  pages: number | null
+  year: number | null
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value)
+const numberOrNull = (...values: unknown[]): number | null => {
+  for (const value of values) {
+    if (typeof value === 'number') {
+      return value
+    }
+  }
+  return null
+}
+
+/** Every book under `value`. `seen` stops a walk through shared or cyclic objects. */
+export function collectBooks(value: unknown, file: string, where: string, into: BookRecord[] = [], seen = new WeakSet<object>()): BookRecord[] {
+  if (value === null || typeof value !== 'object') {
+    return into
+  }
+  if (seen.has(value)) {
+    return into
+  }
+  seen.add(value)
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => collectBooks(item, file, `${where}[${index}]`, into, seen))
+    return into
+  }
+  return collectFromRecord(value as Record<string, unknown>, file, where, into, seen)
+}
+
+function collectFromRecord(value: Record<string, unknown>, file: string, where: string, into: BookRecord[], seen: WeakSet<object>): BookRecord[] {
+  const meta = isRecord(value.bookMeta) ? value.bookMeta : null
+  const books = Array.isArray(value.books) ? value.books : []
+  books.forEach((book, index) => {
+    if (isRecord(book) && typeof book.asin === 'string' && typeof book.title === 'string') {
+      const own = meta && isRecord(meta[book.asin]) ? (meta[book.asin] as Record<string, unknown>) : book
+      into.push({
+        file,
+        where: `${where}.books[${index}]`,
+        asin: book.asin,
+        title: book.title,
+        author: book.author,
+        pages: numberOrNull(own.pages, own.pageCount),
+        year: numberOrNull(own.year, own.publishedYear)
+      })
+      seen.add(book)
+    }
+  })
+  if (typeof value.asin === 'string' && typeof value.title === 'string') {
+    into.push({
+      file,
+      where,
+      asin: value.asin,
+      title: value.title,
+      author: value.author,
+      pages: numberOrNull(value.pages, value.pageCount),
+      year: numberOrNull(value.year, value.publishedYear)
+    })
+  }
+  for (const [key, child] of Object.entries(value)) {
+    if (key !== 'bookMeta') {
+      collectBooks(child, file, `${where}.${key}`, into, seen)
+    }
+  }
+  return into
+}
+
+const book = (r: BookRecord): string => `${JSON.stringify(r.title)} by ${JSON.stringify(r.author)} (${r.file} ${r.where})`
+const facts = (r: {pages: number | null; year: number | null}): string => `pages ${r.pages ?? '-'}, year ${r.year ?? '-'}`
+
+/**
+ * One side of a conflict: the book and its first location in each file. One object
+ * reached through several modules yields one record per module, so every file shows.
+ */
+function side(records: BookRecord[]): string {
+  const first = records[0]!
+  const places = new Map<string, string>()
+  for (const r of records) {
+    if (!places.has(r.file)) {
+      places.set(r.file, `${r.file} ${r.where}`)
+    }
+  }
+  return `${JSON.stringify(first.title)} by ${JSON.stringify(first.author)} (${[...places.values()].join('; ')})`
+}
+
+function groupBy(records: BookRecord[], key: (r: BookRecord) => string): Map<string, BookRecord[]> {
+  const out = new Map<string, BookRecord[]>()
+  for (const r of records) {
+    out.set(key(r), [...(out.get(key(r)) ?? []), r])
+  }
+  return out
+}
+
+const identity = (r: BookRecord): string => JSON.stringify([r.title, r.author])
+
+export function authorProblems(records: BookRecord[]): string[] {
+  return records.filter((r) => typeof r.author !== 'string').map((r) => `ASIN ${r.asin}: author is not a string: ${book(r)}`)
+}
+
+/** (a) One ASIN maps to one (title, author). */
+export function asinToBookProblems(records: BookRecord[]): string[] {
+  const out: string[] = []
+  for (const [asin, group] of groupBy(records, (r) => r.asin)) {
+    const [first, ...others] = groupBy(group, identity).values()
+    for (const other of others) {
+      out.push(`(a) ASIN ${asin} names two books: ${side(first!)} and ${side(other)}`)
+    }
+  }
+  return out
+}
+
+/** (b) One (title, author) maps to one ASIN. */
+export function bookToAsinProblems(records: BookRecord[]): string[] {
+  const out: string[] = []
+  for (const group of groupBy(records, identity).values()) {
+    const [first, ...others] = groupBy(group, (r) => r.asin).values()
+    for (const other of others) {
+      out.push(`(b) one book carries two ASINs: ASIN ${first![0]!.asin} ${side(first!)} and ASIN ${other[0]!.asin} ${side(other)}`)
+    }
+  }
+  return out
+}
+
+/** (c) An ASIN with a known book (its cover) names that book. */
+export function coveredTitleProblems(records: BookRecord[], truth: Map<string, BookRecord>): string[] {
+  const out: string[] = []
+  for (const r of records) {
+    const expected = truth.get(r.asin)
+    if (expected && identity(r) !== identity(expected)) {
+      out.push(`(c) ASIN ${r.asin} has a cover of ${book(expected)}, found ${book(r)}`)
+    }
+  }
+  return out
+}
+
+/** (d) Pages and year agree for one ASIN everywhere, and equal the known book's when there is one. */
+export function metaProblems(records: BookRecord[], truth: Map<string, BookRecord>): string[] {
+  const out: string[] = []
+  for (const [asin, group] of groupBy(records, (r) => r.asin)) {
+    const expected = truth.get(asin)
+    for (const field of ['pages', 'year'] as const) {
+      const stated = group.filter((r) => r[field] !== null)
+      const reference = expected && expected[field] !== null ? expected : stated[0]
+      for (const r of stated) {
+        if (reference && r[field] !== reference[field]) {
+          out.push(`(d) ASIN ${asin} ${field} disagree: ${book(reference)} has ${facts(reference)}; ${book(r)} has ${facts(r)}`)
+        }
+      }
+    }
+  }
+  return out
+}
+
+function jsonFilesUnder(dir: string): string[] {
+  const out: string[] = []
+  for (const name of readdirSync(dir)) {
+    const path = join(dir, name)
+    if (statSync(path).isDirectory()) {
+      out.push(...jsonFilesUnder(path))
+    } else if (name.endsWith('.json')) {
+      out.push(path)
+    }
+  }
+  return out
+}
+
+const fromRepo = (path: string): string => relative(REPO_ROOT, path)
+const moduleFile = (key: string): string => fromRepo(resolve(HERE, key))
+
+function scannedFiles(): string[] {
+  return [
+    ...JSON_ROOTS.flatMap(jsonFilesUnder).map(fromRepo),
+    ...Object.keys(FIXTURE_MODULES).map(moduleFile),
+    ...Object.keys(STORY_MODULES).map(moduleFile)
+  ]
+}
+
+function loadRecords(): BookRecord[] {
+  const records: BookRecord[] = []
+  for (const path of JSON_ROOTS.flatMap(jsonFilesUnder)) {
+    collectBooks(JSON.parse(readFileSync(path, 'utf-8')), fromRepo(path), '$', records)
+  }
+  for (const [key, mod] of Object.entries({...FIXTURE_MODULES, ...STORY_MODULES})) {
+    collectBooks(mod, moduleFile(key), 'exports', records)
+  }
+  return records
+}
+
+/** Every app cover mirror, found by glob: apps/<app>/public/images/books/. */
+function mirrorDirs(): string[] {
+  return readdirSync(APPS_DIR).map((app) => join(APPS_DIR, app, MIRROR_SUBPATH)).filter((dir) => existsSync(dir) && statSync(dir).isDirectory()).map(
+    fromRepo
+  ).sort()
+}
+
+/** The ASINs of the covers in each mirror, and each file name that names none. */
+function mirroredCovers(): {mirrors: Record<string, string[]>; unparsed: string[]} {
+  const mirrors: Record<string, string[]> = {}
+  const unparsed: string[] = []
+  for (const dir of mirrorDirs()) {
+    const asins = new Set<string>()
+    for (const name of readdirSync(join(REPO_ROOT, dir))) {
+      const asin = coverAsin(`${COVER_ORIGIN}${name}`)
+      if (asin) {
+        asins.add(asin)
+      } else {
+        unparsed.push(`${dir}/${name}`)
+      }
+    }
+    mirrors[dir] = [...asins].sort()
+  }
+  return {mirrors, unparsed}
+}
+
+/** The known book per ASIN: post-adapter for a covered ASIN, MIRROR_ONLY_BOOKS for a mirror-only one. */
+function knownBooks(): Map<string, BookRecord> {
+  const known = new Map<string, BookRecord>()
+  for (const r of collectBooks(booksPostAdapter, POST_ADAPTER_SOURCE, 'booksPostAdapter')) {
+    if (COVERED_ASINS.includes(r.asin) && !known.has(r.asin)) {
+      known.set(r.asin, r)
+    }
+  }
+  for (const [asin, b] of Object.entries(MIRROR_ONLY_BOOKS)) {
+    known.set(asin, {file: MIRROR_ONLY_SOURCE, where: asin, asin, ...b})
+  }
+  return known
+}
+
+/**
+ * Every mirror cover has a known book, every MIRROR_ONLY_BOOKS entry names a mirror
+ * cover, and no entry restates a covered ASIN (post-adapter owns those).
+ */
+export function mirrorProblems(mirrors: Record<string, string[]>, covered: readonly string[], mirrorOnly: readonly string[]): string[] {
+  const out: string[] = []
+  for (const [dir, asins] of Object.entries(mirrors)) {
+    for (const asin of asins) {
+      if (!covered.includes(asin) && !mirrorOnly.includes(asin)) {
+        out.push(`mirror cover ${asin} (${dir}/) has no known book: add its title and author to MIRROR_ONLY_BOOKS`)
+      }
+    }
+  }
+  const mirrored = Object.values(mirrors).flat()
+  for (const asin of mirrorOnly) {
+    if (!mirrored.includes(asin)) {
+      out.push(`MIRROR_ONLY_BOOKS ${asin} names no mirror cover`)
+    }
+    if (covered.includes(asin)) {
+      out.push(`MIRROR_ONLY_BOOKS ${asin} is a covered ASIN; post-adapter describes it`)
+    }
+  }
+  return out
+}
+
+/** Tracked files that pair an ASIN-named key with a 10-character literal (ASIN_PAIRING). */
+function trackedAsinFiles(): string[] {
+  const env = {...process.env}
+  delete env.GIT_DIR
+  delete env.GIT_WORK_TREE
+  delete env.GIT_INDEX_FILE
+  const files = execFileSync('git', ['ls-files', '-z'], {cwd: REPO_ROOT, env, encoding: 'utf-8', maxBuffer: 64 * 1024 * 1024}).split('\0').filter((file) =>
+    SWEPT_EXTENSIONS.test(file)
+  )
+  return files.filter((file) => {
+    try {
+      return ASIN_PAIRING.test(readFileSync(join(REPO_ROOT, file), 'utf-8'))
+    } catch {
+      return false
+    }
+  })
+}
+
+describe('fixture ASINs name one book everywhere', () => {
+  const records = loadRecords()
+  const truth = knownBooks()
+
+  it('reads every source class and every covered ASIN (guards against a vacuous gate)', () => {
+    const files = new Set(records.map((r) => r.file))
+    expect([...files].some((f) => f.startsWith('Sources/LifegamesWidgets/Resources/widgets/') && f.endsWith('.json')), 'Swift JSON').toBe(true)
+    expect([...files].some((f) => f.startsWith('packages/fixtures/src/') && f.endsWith('.ts')), 'fixtures TS').toBe(true)
+    expect([...files].some((f) => f.startsWith('packages/web/stories/') && f.endsWith('.ts')), 'story TS').toBe(true)
+    expect([...truth.keys()].sort()).toEqual([...COVERED_ASINS, ...Object.keys(MIRROR_ONLY_BOOKS)].sort())
+  })
+
+  it('every app mirror cover has a known book, and every MIRROR_ONLY_BOOKS entry names a mirror cover', () => {
+    const {mirrors, unparsed} = mirroredCovers()
+    expect(Object.keys(mirrors), 'both app mirrors are found (guards against a vacuous glob)').toEqual(
+      expect.arrayContaining(['apps/docs/public/images/books', 'apps/portfolio/public/images/books'])
+    )
+    for (const [dir, asins] of Object.entries(mirrors)) {
+      expect(asins.length, `${dir} holds covers`).toBeGreaterThan(0)
+    }
+    expect(unparsed, 'mirror files that name no ASIN').toEqual([])
+    expect(mirrorProblems(mirrors, COVERED_ASINS, Object.keys(MIRROR_ONLY_BOOKS))).toEqual([])
+  })
+
+  it('every author is a string', () => {
+    expect(authorProblems(records)).toEqual([])
+  })
+
+  it('(a) one ASIN maps to one (title, author)', () => {
+    expect(asinToBookProblems(records)).toEqual([])
+  })
+
+  it('(b) one (title, author) maps to one ASIN', () => {
+    expect(bookToAsinProblems(records)).toEqual([])
+  })
+
+  it('(c) an ASIN with a cover names the book that cover shows', () => {
+    expect(coveredTitleProblems(records, truth)).toEqual([])
+  })
+
+  it("(d) an ASIN states one pages and year, and an ASIN with a known book states that book's", () => {
+    expect(metaProblems(records, truth)).toEqual([])
+  })
+
+  it('every tracked file that pairs an ASIN with a book is scanned or listed in UNSCANNED', () => {
+    const scanned = new Set(scannedFiles())
+    const tracked = trackedAsinFiles()
+    expect(tracked.filter((file) => !scanned.has(file) && !(file in UNSCANNED))).toEqual([])
+    expect(Object.keys(UNSCANNED).filter((file) => !tracked.includes(file)), 'stale UNSCANNED entries').toEqual([])
+  })
+
+  it('each rule fails on a mismatch and names the file, the ASIN and both books (can-fail proof)', () => {
+    const probe = (file: string, asin: string, title: string, author: unknown, pages: number | null = null, year: number | null = null): BookRecord => ({
+      file,
+      where: '$',
+      asin,
+      title,
+      author,
+      pages,
+      year
+    })
+    const covered = new Map([['0525573844', probe('truth.ts', '0525573844', 'Foundryside', 'Robert Jackson Bennett', 512, 2018)]])
+    expect(asinToBookProblems([probe('x.json', '1600000010', 'One', 'A'), probe('y.ts', '1600000010', 'Two', 'B')])).toEqual([
+      '(a) ASIN 1600000010 names two books: "One" by "A" (x.json $) and "Two" by "B" (y.ts $)'
+    ])
+    expect(bookToAsinProblems([probe('x.json', '1600000010', 'One', 'A'), probe('y.ts', '1600000029', 'One', 'A')])).toEqual([
+      '(b) one book carries two ASINs: ASIN 1600000010 "One" by "A" (x.json $) and ASIN 1600000029 "One" by "A" (y.ts $)'
+    ])
+    expect(coveredTitleProblems([probe('x.json', '0525573844', 'Range', 'David Epstein')], covered)).toEqual([
+      '(c) ASIN 0525573844 has a cover of "Foundryside" by "Robert Jackson Bennett" (truth.ts $), found "Range" by "David Epstein" (x.json $)'
+    ])
+    expect(
+      mirrorProblems({'apps/x/public/images/books': ['0525573844', '0593128508', '9999999999']}, ['0525573844'], ['0593128508', '0525573844', '1984820680'])
+    ).toEqual([
+      'mirror cover 9999999999 (apps/x/public/images/books/) has no known book: add its title and author to MIRROR_ONLY_BOOKS',
+      'MIRROR_ONLY_BOOKS 0525573844 is a covered ASIN; post-adapter describes it',
+      'MIRROR_ONLY_BOOKS 1984820680 names no mirror cover'
+    ])
+    expect(metaProblems([probe('x.json', '0525573844', 'Foundryside', 'Robert Jackson Bennett', 352, 2018)], covered)).toEqual([
+      '(d) ASIN 0525573844 pages disagree: "Foundryside" by "Robert Jackson Bennett" (truth.ts $) has pages 512, year 2018; "Foundryside" by "Robert Jackson Bennett" (x.json $) has pages 352, year 2018'
+    ])
+    expect(metaProblems([probe('x.json', '1600000010', 'One', 'A', 100, 2001), probe('y.ts', '1600000010', 'One', 'A', null, 2002)], new Map())).toEqual([
+      '(d) ASIN 1600000010 year disagree: "One" by "A" (x.json $) has pages 100, year 2001; "One" by "A" (y.ts $) has pages -, year 2002'
+    ])
+    expect(authorProblems([probe('x.json', '1600000010', 'One', ['A', 'B'])])).toEqual([
+      'ASIN 1600000010: author is not a string: "One" by ["A","B"] (x.json $)'
+    ])
+  })
+
+  it('the sweep recognises every ASIN pairing form, and ignores a type annotation (can-fail proof)', () => {
+    const hits = [
+      '"asin": "0525573844"',
+      "asin: '0525573844'",
+      'ASIN: 0525573844',
+      'book_asin: "0525573844"',
+      "bookAsin: '0525573844'",
+      'data-asin="0525573844"',
+      "const ASIN = '0525573844'",
+      'let asin = "0525573844"',
+      'var bookASIN: String = "0525573844"',
+      '.init(title: "T", author: "A", asin: "0525573844")',
+      'asin: `0525573844`',
+      '<Book asin={"0525573844"} />',
+      "{'0525573844': 'Range'}",
+      'asins: ["0525573844"]',
+      'bookAsins = [\n  "0525573844"\n]'
+    ]
+    for (const text of hits) {
+      expect(ASIN_PAIRING.test(text), text).toBe(true)
+    }
+    for (
+      const text of [
+        'asin: String',
+        'let asin: String?',
+        'asin: string',
+        "asin: 'KEYBOARD-1'",
+        'basin = "ABCDEFGHIJ"',
+        'Basin: "ABCDEFGHIJ"',
+        "{'0525573844': {pages: 1}}"
+      ]
+    ) {
+      expect(ASIN_PAIRING.test(text), text).toBe(false)
+    }
+  })
+
+  it('reads pages and year from the sibling bookMeta entry, else from the book itself', () => {
+    const shelf = {books: [{asin: '1600000010', title: 'One', author: 'A', pageCount: 1}], bookMeta: {'1600000010': {pages: 300, year: 2020}}}
+    const modal = {asin: '1600000029', title: 'Two', author: 'B', pageCount: 120, publishedYear: 1999}
+    expect(collectBooks([shelf, modal], 'probe', '$').map((r) => [r.asin, r.pages, r.year])).toEqual([
+      ['1600000010', 300, 2020],
+      ['1600000029', 120, 1999]
+    ])
+  })
+})
