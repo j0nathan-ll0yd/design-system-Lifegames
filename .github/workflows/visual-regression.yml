@@ -9,14 +9,33 @@ on:
         type: boolean
         default: false
 
+  # Every input a story render reads. scripts/visual-regression-paths.test.mjs
+  # walks the story import graph and fails when an input falls outside this list.
   pull_request:
     paths:
+      # Render sources: tokens, CSS, story code, the copy and fixture data stories import.
       - 'tokens/**'
       - 'packages/tokens/**'
       - 'packages/web/**'
+      - 'packages/copy/**'
+      - 'Sources/LifegamesWidgets/Resources/widgets/**'
       - 'apps/storybook/src/**'
       - 'apps/storybook/.storybook/**'
-      - 'packages/web/stories/**'
+      # The token build that writes packages/tokens/dist/*.css.
+      - 'style-dictionary.config.mjs'
+      - 'scripts/emit-platform.mjs'
+      # Space Grotesk, served to Storybook through staticDirs.
+      - 'apps/docs/public/fonts/**'
+      # The gate itself: baselines, runner config and this workflow.
+      - 'apps/storybook/__snapshots__/**'
+      - 'apps/storybook/test-runner-jest.config.mjs'
+      - '.github/workflows/visual-regression.yml'
+      # Toolchain: Storybook, lit, Playwright, jest-image-snapshot and Node versions.
+      - 'apps/storybook/package.json'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.nvmrc'
 
 concurrency:
   group: visual-regression-${{ github.ref }}
