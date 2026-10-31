@@ -71,13 +71,31 @@ const MIRROR_ONLY_BOOKS: Record<string, {title: string; author: string; pages: n
 }
 
 /**
- * A key named for an ASIN, paired with a 10-character literal. Keys match in any casing
- * and with any prefix (`asin`, `ASIN`, `book_asin`, `bookAsin`, `data-asin`), quoted or
- * not, with `:` or `=` (JSON, TS, YAML, HTML attributes, Swift arguments, TS consts).
- * The second form is a Swift `let`/`var` declaration, with an optional `: String`.
+ * An ASIN-named key: `asin` or `asins` in any casing, alone or after a prefix that ends
+ * in `_`, `-` or a lower-case letter before an upper-case `A` (`book_asin`, `data-asin`,
+ * `bookAsin`, `bookASIN`). A word that merely ends in "asin" (`basin`) is not a key.
  */
-export const ASIN_PAIRING =
-  /[\w-]*[Aa][Ss][Ii][Nn]["']?\s*[:=]\s*["']?[A-Z0-9]{10}\b|\b(?:let|var)\s+\w*[Aa][Ss][Ii][Nn]\w*(?:\s*:\s*String\??)?\s*=\s*"[A-Z0-9]{10}"/
+const ASIN_KEY = String.raw`(?<![\w-])(?:[\w-]*[_-]|[A-Za-z0-9]*[a-z0-9](?=A))?(?:asin|Asin|ASIN)s?(?![\w-])`
+/** A 10-character literal after an optional `{` (JSX, Astro) or `[` (array), in any quotes or none. */
+const ASIN_VALUE = String.raw`[{[]?\s*["'\x60]?[A-Z0-9]{10}\b`
+/** An ISBN-10 or B0 + 8 literal used as a map key with a string value (`{'0525573844': 'Range'}`). */
+const ASIN_MAP_KEY = String.raw`[{,]\s*["'\x60]?(?:\d{9}[\dX]|B0[A-Z0-9]{8})["'\x60]?\s*:\s*["'\x60]`
+
+/**
+ * The sweep's pairing forms:
+ *   - an ASIN-named key, quoted or not, with `:` or `=`, before ASIN_VALUE (JSON, TS,
+ *     YAML, Markdown, HTML attributes, JSX and Astro props, arrays, Swift arguments,
+ *     TS consts and Swift `let`/`var` without a type);
+ *   - a Swift `let`/`var` with a `: String` annotation;
+ *   - an ASIN-keyed map with string values.
+ * Known gap: a map whose ASIN keys hold non-string values (`{'0525573844': {...}}`) is not
+ * a pairing form. Every such map in the repo is a `bookMeta` map, which rule (d) reads.
+ */
+export const ASIN_PAIRING = new RegExp([
+  String.raw`${ASIN_KEY}["'\x60]?\s*[:=]\s*${ASIN_VALUE}`,
+  String.raw`\b(?:let|var)\s+${ASIN_KEY}\s*:\s*String\??\s*=\s*"[A-Z0-9]{10}"`,
+  ASIN_MAP_KEY
+].join('|'))
 const SWEPT_EXTENSIONS = /\.(json|ts|mts|js|mjs|astro|md|mdx|yaml|yml|html|swift)$/
 
 // Eager globs: Vite resolves these at transform time, so a new module is imported
@@ -478,12 +496,27 @@ describe('fixture ASINs name one book everywhere', () => {
       "const ASIN = '0525573844'",
       'let asin = "0525573844"',
       'var bookASIN: String = "0525573844"',
-      '.init(title: "T", author: "A", asin: "0525573844")'
+      '.init(title: "T", author: "A", asin: "0525573844")',
+      'asin: `0525573844`',
+      '<Book asin={"0525573844"} />',
+      "{'0525573844': 'Range'}",
+      'asins: ["0525573844"]',
+      'bookAsins = [\n  "0525573844"\n]'
     ]
     for (const text of hits) {
       expect(ASIN_PAIRING.test(text), text).toBe(true)
     }
-    for (const text of ['asin: String', 'let asin: String?', 'asin: string', "asin: 'KEYBOARD-1'", 'basin: "short"']) {
+    for (
+      const text of [
+        'asin: String',
+        'let asin: String?',
+        'asin: string',
+        "asin: 'KEYBOARD-1'",
+        'basin = "ABCDEFGHIJ"',
+        'Basin: "ABCDEFGHIJ"',
+        "{'0525573844': {pages: 1}}"
+      ]
+    ) {
       expect(ASIN_PAIRING.test(text), text).toBe(false)
     }
   })
