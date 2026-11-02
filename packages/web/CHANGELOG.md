@@ -1,5 +1,12 @@
 # @j0nathan-ll0yd/web
 
+## 4.6.1
+
+### Patch Changes
+
+- Updated dependencies [99140ce]
+  - @j0nathan-ll0yd/tokens@2.3.0
+
 ## 4.6.0
 
 ### Minor Changes
