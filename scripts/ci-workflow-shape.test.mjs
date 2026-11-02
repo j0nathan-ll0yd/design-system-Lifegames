@@ -211,15 +211,12 @@ test('ci.yml: the folded jobs keep one named step per old gate, each run past an
 // verdict over every gate step's outcome. A gate the verdict does not read could red its own step
 // and still leave `packages` green; a verdict that is not last could pass before a later gate ran.
 // Each gate step runs only once install succeeded, so a fork PR or a failed install leaves every
-// gate SKIPPED, and the verdict reds on the skip. The skip-contract-check label is the one waiver.
+// gate SKIPPED, and the verdict reds on the skip. No gate has a waiver (owner decision 2026-11-02).
 const PACKAGES_VERDICT_IF = '${{ !cancelled() }}'
 const PACKAGES_GATE_IF = "${{ !cancelled() && steps.install.outcome == 'success' }}"
-// The contract step also skips under the skip-contract-check label, the verdict's one waiver.
-const PACKAGES_GATE_IF_EXCEPTIONS = {
-  'schemas-contract':
-    "${{ !cancelled() && steps.install.outcome == 'success' && !contains(github.event.pull_request.labels.*.name, 'skip-contract-check') }}"
-}
-const PACKAGES_WAIVED = "${{ contains(github.event.pull_request.labels.*.name, 'skip-contract-check') && 'GATE_SCHEMAS_CONTRACT' || '' }}"
+// The verdict lists its gates with this sed pattern. It must match every GATE_ key the env can
+// carry, so a key with a digit or a lowercase letter cannot drop out of the list.
+const PACKAGES_GATE_LIST = "sed -n 's/^\\(GATE_[^=]*\\)=.*/\\1/p'"
 
 test('ci.yml: the packages verdict step is last, never skips, and reads every gate step', () => {
   const steps = ci.jobs.packages.steps
@@ -242,22 +239,28 @@ test('ci.yml: the packages verdict step is last, never skips, and reads every ga
   for (const gate of gates) {
     assert.ok(gate.id, `packages gate "${gate.name}" needs an id, so the verdict can read its outcome`)
     assert.equal(gate['continue-on-error'], undefined, `packages gate "${gate.name}" must not carry continue-on-error`)
-    const pinnedIf = PACKAGES_GATE_IF_EXCEPTIONS[gate.id] ?? PACKAGES_GATE_IF
-    assert.equal(gate.if, pinnedIf, `packages gate "${gate.name}" must run under exactly ${pinnedIf}`)
+    assert.equal(gate.if, PACKAGES_GATE_IF, `packages gate "${gate.name}" must run under exactly ${PACKAGES_GATE_IF}`)
     expected.push(`\${{ steps.${gate.id}.outcome }}`)
   }
 
   const env = verdict.env ?? {}
+  const keys = Object.keys(env)
+  assert.deepEqual(keys.filter((name) => !name.startsWith('GATE_')), [], 'the packages verdict env must hold GATE_ keys only; no gate has a waiver')
+  for (const name of keys) {
+    assert.match(name, /^GATE_[A-Z0-9_]+$/, `packages verdict key ${name} must match /^GATE_[A-Z0-9_]+$/`)
+  }
+  assert.ok(verdict.run.includes(PACKAGES_GATE_LIST), `the packages verdict must list its gates with ${PACKAGES_GATE_LIST}`)
   const read = Object.entries(env).filter(([name]) => name.startsWith('GATE_')).map(([, value]) => value)
   const unread = expected.filter((value) => !read.includes(value))
   assert.deepEqual(unread, [], `the packages verdict does not read: ${unread.join(', ')}`)
   const stale = read.filter((value) => !expected.includes(value))
   assert.deepEqual(stale, [], `the packages verdict reads no gate step: ${stale.join(', ')}`)
   assert.equal(read.length, expected.length, 'the packages verdict must read each gate step exactly once')
-  assert.equal(env.WAIVED, PACKAGES_WAIVED, 'the packages verdict waiver must stay the skip-contract-check label alone')
-
-  for (const id of Object.keys(PACKAGES_GATE_IF_EXCEPTIONS)) {
-    assert.ok(gates.some((gate) => gate.id === id), `PACKAGES_GATE_IF_EXCEPTIONS names ${id}, which is no packages gate; prune it`)
+  // Each key is named for the step it reads, so a key name cannot drift from its gate.
+  for (const [name, value] of Object.entries(env)) {
+    const id = /^\$\{\{ steps\.([a-z0-9-]+)\.outcome \}\}$/.exec(value)?.[1]
+    const want = id && `GATE_${id.toUpperCase().replaceAll('-', '_')}`
+    assert.equal(name, want, `packages verdict key ${name} must be named ${want} for the step it reads`)
   }
 })
 
@@ -265,15 +268,15 @@ test('ci.yml: the packages verdict step is last, never skips, and reads every ga
 // bash: `bash --noprofile --norc -eo pipefail {0}`.
 // The YAML assertions above prove what the verdict reads; these prove what it decides.
 const VERDICT_KNOWN_ANSWERS = [
-  ['every gate succeeded', {GATE_A: 'success', GATE_B: 'success', WAIVED: ''}, 0],
-  ['one gate failed', {GATE_A: 'success', GATE_B: 'failure', WAIVED: ''}, 1],
-  ['one gate skipped with no waiver', {GATE_A: 'success', GATE_B: 'skipped', WAIVED: ''}, 1],
-  ['the waived gate skipped', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 0],
-  ['the waived gate failed', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'failure', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
-  ['another gate skipped under the waiver', {GATE_A: 'skipped', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
-  ['a gate read an empty outcome (unknown step id)', {GATE_A: 'success', GATE_B: '', WAIVED: ''}, 1],
-  ['a gate concluded cancelled', {GATE_A: 'cancelled', WAIVED: ''}, 1],
-  ['no gate variable at all', {WAIVED: ''}, 1]
+  ['every gate succeeded', {GATE_A: 'success', GATE_B: 'success'}, 0],
+  ['one gate failed', {GATE_A: 'success', GATE_B: 'failure'}, 1],
+  ['one gate skipped', {GATE_A: 'success', GATE_B: 'skipped'}, 1],
+  ['the contract gate skipped with WAIVED set', {GATE_A: 'success', GATE_SCHEMAS_CONTRACT: 'skipped', WAIVED: 'GATE_SCHEMAS_CONTRACT'}, 1],
+  ['a gate whose key has a digit skipped', {GATE_A: 'success', GATE_X2: 'skipped', WAIVED: ''}, 1],
+  ['a gate whose key has a lowercase letter skipped', {GATE_A: 'success', GATE_x: 'skipped'}, 1],
+  ['a gate read an empty outcome (unknown step id)', {GATE_A: 'success', GATE_B: ''}, 1],
+  ['a gate concluded cancelled', {GATE_A: 'cancelled'}, 1],
+  ['no gate variable at all', {}, 1]
 ]
 
 for (const [label, gateEnv, expected] of VERDICT_KNOWN_ANSWERS) {
@@ -283,6 +286,22 @@ for (const [label, gateEnv, expected] of VERDICT_KNOWN_ANSWERS) {
     assert.equal(result.status, expected, `${label}: exit ${result.status}\n${result.stdout}${result.stderr}`)
   })
 }
+
+// The same script against the real GATE_ keys in ci.yml: it passes when every gate succeeded, and
+// reds when any one gate skipped. A key the gate list cannot see would let its skip pass here.
+test('ci.yml: the packages verdict reds when any one of its real gates skipped', () => {
+  const verdict = ci.jobs.packages.steps.at(-1)
+  const keys = Object.keys(verdict.env ?? {}).filter((name) => name.startsWith('GATE_'))
+  assert.ok(keys.length > 0, 'the packages verdict reads no GATE_ key')
+  const runVerdict = (gateEnv) =>
+    spawnSync('bash', ['--noprofile', '--norc', '-eo', 'pipefail', '-c', verdict.run], {env: {PATH: process.env.PATH, ...gateEnv}, encoding: 'utf8'})
+  const allSuccess = Object.fromEntries(keys.map((name) => [name, 'success']))
+  assert.equal(runVerdict(allSuccess).status, 0, 'the packages verdict must pass when every real gate succeeded')
+  for (const name of keys) {
+    const result = runVerdict({...allSuccess, [name]: 'skipped'})
+    assert.equal(result.status, 1, `the packages verdict must red when ${name} skipped: exit ${result.status}\n${result.stdout}${result.stderr}`)
+  }
+})
 
 const governanceGatesLines = () => ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates').run.split('\n').map((line) => line.trim())
 

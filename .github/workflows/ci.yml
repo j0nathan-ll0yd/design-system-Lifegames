@@ -166,7 +166,7 @@ jobs:
         run: pnpm check:schemas-freshness
       - name: 'schemas-freshness: verify schema contract'
         id: schemas-contract
-        if: ${{ !cancelled() && steps.install.outcome == 'success' && !contains(github.event.pull_request.labels.*.name, 'skip-contract-check') }}
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
         run: pnpm -F @j0nathan-ll0yd/schemas contract:verify
         env:
           CONTRACT_CHECK_MODE: blocking
@@ -220,8 +220,8 @@ jobs:
       # every gate step above concluded success. A gate that failed reds its own step too. A gate
       # that SKIPPED (install failed, or a fork PR) has no red step of its own, so the verdict reds
       # for it. Each GATE_ variable reads one gate step's outcome; the shape test pins that every
-      # gate step has exactly one, and runs this script against known answers.
-      # The one waiver: the `skip-contract-check` label skips the contract step by design.
+      # gate step has exactly one, and runs this script against known answers. No gate has a
+      # waiver: a gate that does not conclude success reds this step (owner decision 2026-11-02).
       - name: packages
         if: ${{ !cancelled() }}
         env:
@@ -235,10 +235,9 @@ jobs:
           GATE_FIXTURES_BUILD: ${{ steps.fixtures-build.outcome }}
           GATE_FIXTURES_TEST: ${{ steps.fixtures-test.outcome }}
           GATE_FIXTURES_LINT: ${{ steps.fixtures-lint.outcome }}
-          WAIVED: ${{ contains(github.event.pull_request.labels.*.name, 'skip-contract-check') && 'GATE_SCHEMAS_CONTRACT' || '' }}
         run: |
           set -euo pipefail
-          gates=$(env | sed -n 's/^\(GATE_[A-Z_]*\)=.*/\1/p' | sort)
+          gates=$(env | sed -n 's/^\(GATE_[^=]*\)=.*/\1/p' | sort)
           if [ -z "$gates" ]; then
             echo "::error title=packages verdict read no gate::No GATE_ variable is set, so this step measured nothing. It reports RED rather than passing."
             exit 1
@@ -248,8 +247,6 @@ jobs:
             outcome="${!gate}"
             if [ "$outcome" = 'success' ]; then
               echo "$gate: success"
-            elif [ "$outcome" = 'skipped' ] && [ "$gate" = "$WAIVED" ]; then
-              echo "$gate: skipped by the skip-contract-check label"
             else
               echo "::error title=packages gate did not pass::$gate concluded '$outcome'. Every gate in this job must conclude success."
               failed=1
