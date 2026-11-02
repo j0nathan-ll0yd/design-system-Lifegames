@@ -1216,6 +1216,36 @@
       },
       "$type": "typography",
       "$description": "Maps to web --font-size-hero"
+    },
+    "caption2Emphasized": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 11.5,
+        "fontWeight": 500,
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "caption2 at Medium weight. Status pills and uppercase labels. SwiftUI cannot apply .fontWeight to a custom face, so emphasis is its own token."
+    },
+    "captionEmphasized": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 12.5,
+        "fontWeight": 500,
+        "lineHeight": 1.3
+      },
+      "$type": "typography",
+      "$description": "caption at Medium weight. Secondary text buttons."
+    },
+    "bodyEmphasized": {
+      "$value": {
+        "fontFamily": "Space Grotesk",
+        "fontSize": 13.1,
+        "fontWeight": 600,
+        "lineHeight": 1.5
+      },
+      "$type": "typography",
+      "$description": "body at SemiBold weight. Primary button titles."
     }
   },
   "z": {

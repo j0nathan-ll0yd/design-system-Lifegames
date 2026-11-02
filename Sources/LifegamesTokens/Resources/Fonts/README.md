@@ -1,6 +1,6 @@
 # Fonts
 
-`SpaceGrotesk-Variable.ttf` is not tracked in git. Download it from the
-[Space Grotesk releases](https://github.com/floriankarsten/space-grotesk/releases)
-and place it here before building. See `docs/maintenance/font-delivery.md` for
-the full delivery mechanism, consumer setup steps, and silent-fallback behavior.
+`SpaceGrotesk-{Light,Regular,Medium,SemiBold,Bold}.ttf` are the runtime faces that
+`LifegamesFonts.registerFonts()` registers. `scripts/fonts/instance-space-grotesk.py`
+generates them from `SpaceGrotesk-Variable.ttf`. `Package.swift` excludes the variable
+source from the bundle. See `docs/maintenance/font-delivery.md`.

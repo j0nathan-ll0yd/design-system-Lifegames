@@ -36,6 +36,15 @@ public extension Font {
         public static func hero() -> Font {
             .custom("SpaceGrotesk-Bold", size: 35.2, relativeTo: .largeTitle)
         }
+        public static func caption2Emphasized() -> Font {
+            .custom("SpaceGrotesk-Medium", size: 11.5, relativeTo: .caption2)
+        }
+        public static func captionEmphasized() -> Font {
+            .custom("SpaceGrotesk-Medium", size: 12.5, relativeTo: .caption)
+        }
+        public static func bodyEmphasized() -> Font {
+            .custom("SpaceGrotesk-SemiBold", size: 13.1, relativeTo: .body)
+        }
         public static func display() -> Font {
             .custom("SpaceGrotesk-Bold", size: 17, relativeTo: .body)
         }
