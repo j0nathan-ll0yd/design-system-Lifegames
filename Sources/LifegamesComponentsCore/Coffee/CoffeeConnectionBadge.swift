@@ -75,8 +75,7 @@ public struct CoffeeConnectionBadge: View {
         HStack(spacing: Spacing.s150) {
             LiveDotView(color: connectionColor)
             Text(statusLabel)
-                .font(Font.Tokens.caption2())
-                .fontWeight(.medium)
+                .font(Font.Tokens.caption2Emphasized())
                 .textCase(.uppercase)
                 .kerning(1.5)
                 .foregroundStyle(connectionColor)

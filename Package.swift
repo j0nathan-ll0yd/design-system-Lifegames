@@ -29,7 +29,10 @@ let package = Package(
         .package(url: "https://github.com/nalexn/ViewInspector", .upToNextMinor(from: "0.10.1")),
     ],
     targets: [
-        .target(name: "LifegamesTokens", resources: [.process("Resources")]),
+        // The variable font is the instancing source (scripts/fonts/instance-space-grotesk.py),
+        // not a runtime face: iOS cannot resolve its named instances by PostScript name.
+        .target(name: "LifegamesTokens", exclude: ["Resources/Fonts/SpaceGrotesk-Variable.ttf"],
+                resources: [.process("Resources")]),
         .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
         .target(name: "LifegamesCopy", resources: [.process("Resources")]),
         .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens", "LifegamesCopy"]),

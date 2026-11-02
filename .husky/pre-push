@@ -108,6 +108,12 @@ step "package payload drift"   node audits/checks/c147-package-drift.mjs --lane=
 step "web tests"               pnpm -F @j0nathan-ll0yd/web test
 step "widget-rule known answers" pnpm -F @j0nathan-ll0yd/web exec vitest run --config ../../contracts/widget-rules/vitest.config.mjs
 step "copy tests"              pnpm -F @j0nathan-ll0yd/copy test
+# Fixture ASIN gates. asin-identity (PR #343): one ASIN names one book across the Swift
+# catalog fixtures, the fixtures package, the Storybook stories and the app cover
+# mirrors. asin-shape: every fixture ASIN is ISBN-10 or B0 + 8. Both read committed
+# files only, so they need no fixtures build. CI runs them in the `packages` job, which
+# is not yet a required context; until it is, this line is where they block.
+step "fixture ASIN gates"      pnpm -F @j0nathan-ll0yd/fixtures exec vitest run tests/asin-identity.test.ts tests/asin-shape.test.ts
 step "audit script tests"      pnpm test:scripts
 step "copy grep-gate"          pnpm -F @j0nathan-ll0yd/copy grep-gate
 step "web inline-script audit" pnpm -F @j0nathan-ll0yd/web audit:inline-scripts
