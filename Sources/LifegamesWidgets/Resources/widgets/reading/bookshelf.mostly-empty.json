@@ -3,8 +3,8 @@
     "books": [
       {
         "asin": "0525573844",
-        "title": "The Pragmatic Programmer",
-        "author": "David Thomas, Andrew Hunt",
+        "title": "Foundryside",
+        "author": "Robert Jackson Bennett",
         "status": "reading",
         "rating": null,
         "progress": 12,
@@ -13,11 +13,13 @@
     ],
     "bookMeta": {
       "0525573844": {
-        "pages": 352,
-        "year": 2019,
-        "publicationDate": "2019-09-13",
-        "desc": "The best programming book ever written, fully updated for a new generation.",
-        "genres": ["Software Engineering", "Programming"]
+        "seriesName": "The Founders Trilogy",
+        "seriesNumber": 1,
+        "seriesTotal": 3,
+        "pages": 512,
+        "genres": ["Fantasy", "Science Fiction"],
+        "year": 2018,
+        "desc": "Ingenious magic system based on industrial programming — a thief discovers her city is built on ancient, dangerous technology called scriving."
       }
     },
     "statusLabels": {

@@ -75,8 +75,7 @@ struct CoffeeStateSwitcher: View {
         VStack(spacing: 0) {
             HStack {
                 Text("State")
-                    .font(Font.Tokens.caption2())
-                    .fontWeight(.medium)
+                    .font(Font.Tokens.caption2Emphasized())
                     .textCase(.uppercase)
                     .kerning(1.5)
                     .foregroundStyle(LGColor.textMuted)

@@ -188,6 +188,9 @@ Fluid type scale via `clamp()` on web; SwiftUI `Font.custom(..., relativeTo:)` o
 | `title2` | `clamp(1.90rem, 1.53rem + 1.00vw, 2.40rem)` | `.title2` | Bold (700) |
 | `title1` | `clamp(2.10rem, 1.70rem + 1.05vw, 2.625rem)` | `.title` | Bold (700) |
 | `hero` | `clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem)` | `.largeTitle` | Bold (700) |
+| `caption2Emphasized` | `` | `.caption2` | Medium (500) |
+| `captionEmphasized` | `` | `.caption` | Medium (500) |
+| `bodyEmphasized` | `` | `.body` | SemiBold (600) |
 | `display` | `` | `` | Bold (700) |
 | `heading1` | `` | `` | Bold (700) |
 | `heading2` | `` | `` | SemiBold (600) |
