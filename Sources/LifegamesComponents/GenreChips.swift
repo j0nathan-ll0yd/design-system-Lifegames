@@ -28,8 +28,16 @@ public struct GenreChips: View {
                 chips
             }
         } else {
-            HStack(spacing: spacing) {
-                chips
+            // One row when every chip fits. A column too narrow for the row squeezed the last
+            // chip until it truncated ("Communica…") or broke mid-word at accessibility sizes
+            // ("Communicat / ion"); the chips flow onto more rows instead.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: spacing) {
+                    chips
+                }
+                FlowLayout(spacing: spacing) {
+                    chips
+                }
             }
         }
     }
@@ -43,6 +51,7 @@ public struct GenreChips: View {
                 .padding(.vertical, 3)
                 .background(tint.opacity(0.12))
                 .clipShape(Capsule())
+                .fixedSize()
         }
     }
 }
