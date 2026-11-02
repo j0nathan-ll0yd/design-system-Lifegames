@@ -111,6 +111,35 @@ async function waitForBrandFonts(page, storyId) {
   assertBrandFontsLoaded(storyId, faces)
 }
 
+/* MOTION FREEZE
+   -------------
+   Measured 2026-11-02 (PR #348 head a82daf1): of three serial update runs
+   (41506615378, 41507888324, 41509972838), the third drew one pixel of
+   production-other-dndoverlay--default differently (x=691 y=154, red 6 vs 10).
+   That story fades its overlay with `transition: opacity 0.3s`. A transition
+   samples the clock, so a capture can catch it between values. Before each story
+   renders, this stylesheet sets every transition to none, so a property takes its
+   end value at once.
+   Animations are NOT set to `animation: none`: `.shelf-book` and
+   `.article-list-item` (packages/web/src/styles/components.css) rest at
+   `opacity: 0` and reach 1 only through a `forwards` animation, so `none` would
+   draw them invisible. The screenshot's `animations: 'disabled'` jumps finite
+   animations to their end state and cancels infinite ones instead. */
+const MOTION_FREEZE_ID = 'lg-visual-motion-freeze'
+const MOTION_FREEZE_CSS = '*, *::before, *::after { transition: none !important; }'
+
+async function freezeMotion(page) {
+  await page.evaluate(([id, css]) => {
+    if (document.getElementById(id)) {
+      return
+    }
+    const style = document.createElement('style')
+    style.id = id
+    style.textContent = css
+    document.head.appendChild(style)
+  }, [MOTION_FREEZE_ID, MOTION_FREEZE_CSS])
+}
+
 /* Stories that legitimately render (near-)blank. Listed explicitly so the
    exemption is visible and tracked rather than absorbed by a lowered threshold —
    an unexplained entry here is a bug, not a config detail.
@@ -170,7 +199,13 @@ export default {
     expect.extend({toMatchImageSnapshot})
   },
 
+  async preVisit(page) {
+    await freezeMotion(page)
+  },
+
   async postVisit(page, context) {
+    // preVisit covers the render; this covers a page the runner reloaded since.
+    await freezeMotion(page)
     await waitForBrandFonts(page, context.id)
     const image = await page.screenshot({animations: 'disabled'})
     const currentRatio = contentRatio(image)
