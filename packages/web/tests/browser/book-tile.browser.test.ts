@@ -139,7 +139,7 @@ describe('Bookshelf tile: the keyboard focus ring outlines the tile', () => {
     delete document.documentElement.dataset.inputModality
   })
 
-  it('the link draws no ring; its overlay draws the green ring 3px outside the tile padding edge, and pointer input suppresses it', async () => {
+  it('the link draws no ring; its overlay draws the green ring with its outer edge on the tile border edge, and pointer input suppresses it', async () => {
     const root = mount()
     const link = root.querySelector<HTMLAnchorElement>('.shelf-book-link')!
     ;(document.activeElement as HTMLElement | null)?.blur()
@@ -150,7 +150,9 @@ describe('Bookshelf tile: the keyboard focus ring outlines the tile', () => {
     const ring = getComputedStyle(link, '::after')
     expect(ring.outlineStyle).toBe('solid')
     expect(ring.outlineWidth).toBe('2px')
-    expect(ring.outlineOffset).toBe('3px')
+    // -1px on an overlay 1px inside the tile's border: the 2px ring's outer
+    // edge is the tile's border edge, so the shelf row cannot clip it.
+    expect(ring.outlineOffset).toBe('-1px')
     expect(ring.outlineColor, 'the green token').toBe('rgb(6, 214, 160)')
     // The overlay covers the tile's padding box.
     const tile = root.querySelector('.shelf-book')!.getBoundingClientRect()
