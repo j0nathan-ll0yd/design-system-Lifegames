@@ -194,23 +194,39 @@ describe('ReadingFeed page 2', () => {
   })
 })
 
-describe('Bookshelf keyboard focus ring', () => {
-  it('lies inside the shelf row clip for every tile', async () => {
-    // a11y.css draws the ring on the title link's overlay (the tile's padding
-    // box), offset 3px and 2px wide. .shelf-row clips at its padding edge.
-    const page = await open('/fail-visible-tokens/', 'no-preference')
+// The website loads tokens/reset UNLAYERED after the layered web stylesheets,
+// so its `ul { margin: 0; padding: 0 }` zeroes any .shelf-row spacing.
+// fail-visible-website models that stack; fail-visible-tokens has no reset.
+// fail-visible-docs models the docs showcase, which draws the ring from
+// tokens/base instead of a11y.css.
+describe.each(['fail-visible-tokens', 'fail-visible-website', 'fail-visible-docs'])('Bookshelf keyboard focus ring (%s)', (fixture) => {
+  /**
+   * Tabs to each tile in turn, as a keyboard user does, so :focus-visible
+   * matches and the browser scrolls the tile into the row's view. With
+   * `hover`, the pointer then rests on the focused tile. Returns, per tile,
+   * the ring's outer box and the row's clip box.
+   */
+  async function ringBoxes(hover: boolean): Promise<Array<{width: string; style: string; inside: boolean}>> {
+    const page = await open(`/${fixture}/`, 'no-preference')
     const links = page.locator('#cardBooks .shelf-book-link')
     const count = await links.count()
     expect(count).toBeGreaterThan(1)
     await waitForEntry(page, '.shelf-book', 'shelfFadeIn', count)
-    const boxes: unknown[] = []
+    const boxes = []
     for (let i = 0; i < count; i++) {
-      // Tab moves focus as a keyboard user does, so :focus-visible matches and
-      // the browser scrolls the tile into the row's view.
       do {
         await page.keyboard.press('Tab')
       } while (!(await links.nth(i).evaluate((el) => el === document.activeElement)))
+      if (hover) {
+        // Moves the pointer without a pointerdown, so input-modality.ts keeps
+        // the keyboard modality and the ring stays drawn.
+        await links.nth(i).hover()
+      }
+      // Waits for the hover lift's transition, where one runs.
+      await links.nth(i).evaluate((el) => Promise.all(el.closest('.shelf-book')!.getAnimations().map((a) => a.finished)))
       boxes.push(await links.nth(i).evaluate((link) => {
+        // a11y.css draws the ring on the title link's overlay (the tile's
+        // padding box). .shelf-row clips at its padding edge.
         const tile = link.closest('.shelf-book')!
         const row = link.closest('.shelf-row')!
         const ring = getComputedStyle(link, '::after')
@@ -218,6 +234,7 @@ describe('Bookshelf keyboard focus ring', () => {
         const t = tile.getBoundingClientRect()
         const ts = getComputedStyle(tile)
         const r = row.getBoundingClientRect()
+        const rs = getComputedStyle(row)
         // The ring's outer box: the tile's padding box grown by the reach.
         const outer = {
           top: t.top + parseFloat(ts.borderTopWidth) - reach,
@@ -225,17 +242,28 @@ describe('Bookshelf keyboard focus ring', () => {
           right: t.right - parseFloat(ts.borderRightWidth) + reach,
           bottom: t.bottom - parseFloat(ts.borderBottomWidth) + reach
         }
+        const clip = {
+          top: r.top + parseFloat(rs.borderTopWidth),
+          left: r.left + parseFloat(rs.borderLeftWidth),
+          right: r.right - parseFloat(rs.borderRightWidth),
+          bottom: r.bottom - parseFloat(rs.borderBottomWidth)
+        }
         return {
-          reach,
-          inside: outer.top >= r.top && outer.left >= r.left && outer.right <= r.right && outer.bottom <= r.bottom,
+          width: ring.outlineWidth,
+          style: ring.outlineStyle,
+          inside: outer.top >= clip.top && outer.left >= clip.left && outer.right <= clip.right && outer.bottom <= clip.bottom,
           outer,
-          row: {top: r.top, left: r.left, right: r.right, bottom: r.bottom}
+          clip
         }
       }))
     }
-    for (const [i, box] of boxes.entries()) {
-      expect((box as {reach: number}).reach, `tile ${i}: the ring is drawn`).toBe(5)
-      expect((box as {inside: boolean}).inside, `tile ${i}: ${JSON.stringify(box)}`).toBe(true)
+    return boxes
+  }
+
+  it.each([false, true])('lies inside the shelf row clip for every tile (hovered: %s)', async (hover) => {
+    for (const [i, box] of (await ringBoxes(hover)).entries()) {
+      expect(`${box.style} ${box.width}`, `tile ${i}: the ring is drawn`).toBe('solid 2px')
+      expect(box.inside, `tile ${i}: ${JSON.stringify(box)}`).toBe(true)
     }
   })
 })

@@ -1,0 +1,19 @@
+---
+// The production website's stack (its Dashboard layout),
+// in its order: tokens/reset loads UNLAYERED after the layered web stylesheets,
+// so its `ul { margin: 0; padding: 0 }` beats any layered `.shelf-row` spacing.
+// tests/browser/fail-visible.test.ts runs the Bookshelf focus-ring test here and
+// on fail-visible-tokens, which has no reset.
+import '../../../../../../tokens/src/preamble.css';
+import '../../../../../../tokens/src/fonts.css';
+import '../../../../../../tokens/dist/tokens-layered.css';
+import '../../../../../../tokens/src/compat.css';
+import '../../../../../src/styles/components.css';
+import '../../../../../../tokens/src/effects.css';
+import '../../../../../../tokens/src/reset.css';
+import '../../../../../src/styles/a11y.css';
+import '../../../../../src/styles/layout.css';
+import FailVisibleCards from '../components/FailVisibleCards.astro';
+---
+
+<FailVisibleCards title="Fail visible: website stack, unlayered reset" />

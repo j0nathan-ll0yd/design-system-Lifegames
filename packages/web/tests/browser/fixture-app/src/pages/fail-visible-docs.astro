@@ -1,0 +1,16 @@
+---
+// The docs showcase's stack (apps/docs/src/pages/showcase.astro), in its order:
+// it draws the Bookshelf focus ring from tokens/base, not from the web
+// package's a11y.css. tests/browser/fail-visible.test.ts runs the focus-ring
+// test here, so both copies of the ring hold one geometry.
+import '../../../../../../tokens/src/fonts.css';
+import '../../../../../../tokens/dist/tokens.css';
+import '../../../../../../tokens/src/compat.css';
+import '../../../../../src/styles/components.css';
+import '../../../../../../tokens/src/effects.css';
+import '../../../../../src/styles/layout.css';
+import '../../../../../../tokens/src/base.css';
+import FailVisibleCards from '../components/FailVisibleCards.astro';
+---
+
+<FailVisibleCards title="Fail visible: docs showcase stack, tokens/base ring" />

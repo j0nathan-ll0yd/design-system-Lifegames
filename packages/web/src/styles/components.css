@@ -1970,19 +1970,16 @@
       gap: var(--space-14);
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      /* The scroll box clips at its padding edge. A tile's keyboard focus ring
-         (a11y.css, offset 3px and 2px wide on an overlay 1px inside the tile's
-         border) reaches 4px past the tile, and the hover lift raises a tile
-         4px. The 4px padding holds both inside the clip; the matching
-         negative margin and scroll padding keep the tiles, and their snap
-         positions, where they were. */
-      padding: 4px 4px 6px;
-      margin: -4px -4px 0;
-      scroll-padding-inline: 4px;
+      /* The scroll box clips at its padding edge, so nothing here may reach
+         past a tile: a tile's focus ring lies inside the tile (a11y.css). A
+         list reset (tokens/reset) zeroes this padding and margin. */
+      padding-bottom: 6px;
       scrollbar-width: thin;
       scrollbar-color: rgba(245, 158, 11, 0.3) transparent;
       align-items: stretch;
       list-style: none;
+      padding-left: 0;
+      margin: 0;
     }
 
     .shelf-row::-webkit-scrollbar {
@@ -2035,8 +2032,11 @@
       border-radius: calc(var(--radius-md) - 1px);
     }
 
+    /* The lift skips a tile that shows its keyboard focus ring: the ring's
+       outer edge is the tile's edge (a11y.css), and the shelf row clips the
+       lifted tile's top 4px. */
     @media (hover: hover) {
-      .shelf-book:hover {
+      .shelf-book:hover:not(:has(.shelf-book-link:focus-visible)) {
         transform: translateY(-4px);
       }
     }
