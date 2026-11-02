@@ -46,7 +46,14 @@ function flattenTokens(obj, path = [], type = null) {
     }
     if (val && typeof val === 'object' && '$value' in val) {
       const tokenType = val.$type || currentType
-      tokens.push({path: [...path, key], $type: tokenType, $value: val.$value, $description: val.$description, $deprecated: val.$deprecated})
+      tokens.push({
+        path: [...path, key],
+        $type: tokenType,
+        $value: val.$value,
+        $description: val.$description,
+        $deprecated: val.$deprecated,
+        $extensions: val.$extensions
+      })
     } else if (val && typeof val === 'object' && !Array.isArray(val)) {
       tokens.push(...flattenTokens(val, [...path, key], currentType))
     }
@@ -160,6 +167,13 @@ const IOS_TEXT_STYLE = {
 }
 
 const SWIFT_FONT_WEIGHT = {300: 'Light', 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold'}
+
+// A token's $extensions.lifegames.iosTextStyle wins over the name-keyed table, so a new iOS
+// typography token does not need a table row to escape the '.body' fallback.
+function iosTextStyleOf(t) {
+  const name = t.path[t.path.length - 1]
+  return t.$extensions?.lifegames?.iosTextStyle || IOS_TEXT_STYLE[name]
+}
 
 // --- Helpers ---
 
@@ -617,7 +631,7 @@ function emitFontTokensSwift() {
     const numericFontSize = typeof val.fontSize === 'number' ? val.fontSize : null
     const size = lgExt.fontSizeMax || val.fontSizeMax || numericFontSize || 17
     const weight = SWIFT_FONT_WEIGHT[val.fontWeight] || 'Regular'
-    const textStyle = lgExt.iosTextStyle || IOS_TEXT_STYLE[name] || '.body'
+    const textStyle = iosTextStyleOf(t) || '.body'
     swiftFonts += `        public static func ${name}() -> Font {\n`
     swiftFonts += `            .custom("SpaceGrotesk-${weight}", size: ${size}, relativeTo: ${textStyle})\n`
     swiftFonts += `        }\n`
@@ -829,7 +843,7 @@ function emitDesignMd() {
       continue
     }
     const fluid = FLUID_TYPOGRAPHY[name] || ''
-    const iosStyle = IOS_TEXT_STYLE[name] || ''
+    const iosStyle = iosTextStyleOf(t) || ''
     const weight = SWIFT_FONT_WEIGHT[val.fontWeight] || 'Regular'
     md += `| \`${name}\` | \`${fluid}\` | \`${iosStyle}\` | ${weight} (${val.fontWeight || 400}) |\n`
   }
