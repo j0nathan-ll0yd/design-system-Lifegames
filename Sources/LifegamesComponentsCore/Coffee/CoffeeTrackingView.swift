@@ -133,8 +133,7 @@ public struct CoffeeTrackingView: View {
                         // "Sipping…" floats just below the mug while cup is lifted
                         if props.isSipping {
                             Text(CopyLoader.widgets.coffee.sipping)
-                                .font(Font.Tokens.caption2())
-                                .fontWeight(.medium)
+                                .font(Font.Tokens.caption2Emphasized())
                                 .kerning(1.5)
                                 .textCase(.uppercase)
                                 .foregroundStyle(LGColor.accentAmber.opacity(0.7))
@@ -227,8 +226,7 @@ public struct CoffeeTrackingView: View {
             // Label + value row
             HStack {
                 Text(CopyLoader.widgets.coffee.dailyLabel)
-                    .font(Font.Tokens.caption2())
-                    .fontWeight(.medium)
+                    .font(Font.Tokens.caption2Emphasized())
                     .textCase(.uppercase)
                     .kerning(1.5)
                     .foregroundStyle(LGColor.textMuted)
@@ -290,8 +288,7 @@ public struct CoffeeTrackingView: View {
                         .accessibilityHidden(true)
                 }
                 Text(action.title)
-                    .font(Font.Tokens.body())
-                    .fontWeight(.semibold)
+                    .font(Font.Tokens.bodyEmphasized())
             }
             .foregroundStyle(isDisabled ? LGColor.textMuted : LGColor.accentAmber)
             .frame(maxWidth: .infinity)
@@ -326,8 +323,7 @@ public struct CoffeeTrackingView: View {
                     .fontWeight(.semibold)
                     .accessibilityHidden(true)
                 Text(CopyLoader.widgets.coffee.actionReconnect)
-                    .font(Font.Tokens.caption())
-                    .fontWeight(.medium)
+                    .font(Font.Tokens.captionEmphasized())
             }
             .foregroundStyle(LGColor.accentAmber.opacity(0.8))
             .frame(maxWidth: .infinity, minHeight: 44)

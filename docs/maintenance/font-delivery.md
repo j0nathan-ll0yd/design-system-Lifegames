@@ -2,66 +2,68 @@
 
 ## Overview
 
-`SpaceGrotesk-Variable.ttf` is **not tracked in git**. The directory
-`Sources/LifegamesTokens/Resources/Fonts/` contains only a placeholder
-(`README.md`) to preserve the directory in version control.
+The Swift runtime ships five static Space Grotesk faces, one per weight in
+`SWIFT_FONT_WEIGHT` (`style-dictionary.config.mjs`):
 
-The font binary must be placed there manually before building any Swift target
-that calls `LifegamesFonts.registerFonts()`.
+| File                         | PostScript name         | Weight |
+| ---------------------------- | ----------------------- | ------ |
+| `SpaceGrotesk-Light.ttf`     | `SpaceGrotesk-Light`    | 300    |
+| `SpaceGrotesk-Regular.ttf`   | `SpaceGrotesk-Regular`  | 400    |
+| `SpaceGrotesk-Medium.ttf`    | `SpaceGrotesk-Medium`   | 500    |
+| `SpaceGrotesk-SemiBold.ttf`  | `SpaceGrotesk-SemiBold` | 600    |
+| `SpaceGrotesk-Bold.ttf`      | `SpaceGrotesk-Bold`     | 700    |
 
-## Where the font binary lives
+All five live in `Sources/LifegamesTokens/Resources/Fonts/` and are tracked in git. They are
+generated from `SpaceGrotesk-Variable.ttf` (Space Grotesk Version 2.000, `wght` 300–700) in the
+same directory. The variable file is the instancing source only. `Package.swift` excludes it
+from the `LifegamesTokens` bundle.
 
-The font is not bundled in this repository. It must be sourced from one of:
+The SIL Open Font License (OFL 1.1) applies. See `LICENSES/OFL.txt`. The license declares no
+Reserved Font Name, so the derived faces keep the Space Grotesk name.
 
-- The [Space Grotesk GitHub releases](https://github.com/floriankarsten/space-grotesk/releases) — download `SpaceGrotesk-Variable.ttf` from the latest release.
-- The Google Fonts CDN: `https://fonts.gstatic.com/s/spacegrotesk/` (variable font build).
-- An existing local copy in the iOS consumer repo (`ios-LifegamesPortal`).
+## Why static faces, not the variable font
 
-The SIL Open Font License (OFL 1.1) applies — see `LICENSES/OFL.txt`.
+Measured on the iOS 26.5 simulator (Xcode 26.6), with the variable font registered:
 
-## How consumers receive it
+- `UIFont(name:size:)` resolves only `SpaceGrotesk-Light`, the variable font's default
+  PostScript name. `SpaceGrotesk-Regular`, `-Medium` and `-Bold` return `nil`. The variable font's
+  named instances carry no PostScript name IDs, and iOS does not match them by name.
+- The variable font has no SemiBold named instance at all.
+- `Font.custom(...).weight(_:)` and `.fontWeight(_:)` on a name-resolved face log
+  `Unable to update Font Descriptor's weight to Weight(value: …)` and keep the original weight.
 
-SPM uses `.process("Resources")` in `Package.swift` to bundle everything under
-`Sources/LifegamesTokens/Resources/` into `Bundle.module`. `FontRegistration.swift`
-resolves the font at runtime via:
+So every `Font.Tokens` face fell back to the system font. macOS matches some of these names,
+which hid the defect from `swift test`. Static faces with real PostScript names resolve exactly
+on both platforms and keep `Font.custom(_:size:relativeTo:)` Dynamic Type scaling.
 
-```swift
-Bundle.module.url(forResource: "SpaceGrotesk-Variable", withExtension: "ttf", subdirectory: "Fonts")
+## Regenerating the faces
+
+fontTools is not a repo dependency. Use a throwaway virtual environment:
+
+```sh
+python3 -m venv /tmp/ft-venv && /tmp/ft-venv/bin/pip install fonttools
+/tmp/ft-venv/bin/python -I scripts/fonts/instance-space-grotesk.py
 ```
 
-For the font to be available at runtime, `SpaceGrotesk-Variable.ttf` must be
-present in `Sources/LifegamesTokens/Resources/Fonts/` **at build time**. SPM
-copies it into the app bundle during compilation.
+The script keeps the source `head.modified` timestamp, so a re-run writes identical bytes.
+Add a weight to `SWIFT_FONT_WEIGHT` and the script's `WEIGHTS` together, and add the face to
+`LifegamesFonts.faces` (`FontRegistration.swift` and its golden copy).
 
-**Consumer setup steps:**
+## How consumers receive the faces
 
-1. Download `SpaceGrotesk-Variable.ttf`.
-2. Copy it to `Sources/LifegamesTokens/Resources/Fonts/SpaceGrotesk-Variable.ttf`.
-3. Build normally — SPM picks it up via `.process("Resources")`.
-4. Call `LifegamesFonts.registerFonts()` at app launch (already done in `SwiftGalleryApp.swift` and required for any iOS/watchOS consumer).
-
-## What happens if the font is missing
-
-`FontRegistration.swift` uses a `guard` with `continue` on the URL lookup:
+SPM's `.process("Resources")` flattens `Resources/Fonts/` into the bundle root, so
+`FontRegistration.swift` looks each face up without a subdirectory:
 
 ```swift
-guard let url = Bundle.module.url(forResource: font, withExtension: "ttf", subdirectory: "Fonts") else { continue }
+Bundle.module.url(forResource: face, withExtension: "ttf")
 ```
 
-**Result: silent fallback.** No crash, no log output, no warning. The app runs
-normally but all views using `LGFont.*` token values fall back to the system
-default font (San Francisco on iOS/watchOS). Typography showcase in swift-gallery
-will display system fonts instead of Space Grotesk with no visible error.
+Consumers call `LifegamesFonts.registerFonts()` once at launch, in every process that renders
+DS text. The iOS app, the widget extension and `SwiftGalleryApp.swift` do this.
 
-## Why the font is not committed
+## Failure behavior
 
-The font binary was intentionally excluded from the initial commit (see commit
-`208f8ec`). The `Fonts/` directory was created with a `.gitkeep` (now replaced
-by this `README.md`) as a placeholder, establishing the SPM resource path
-without committing a binary blob. This is consistent with the OFL requirement
-that redistribution include the license notice — consumers sourcing the font
-directly satisfy this requirement themselves.
-
-A future improvement would be to add a pre-build script or CI check that
-verifies the font file is present and emits a warning if absent, rather than
-silently falling back.
+A missing face or a failed registration logs an error to the unified log (subsystem
+`com.lifegames.design-system`, category `fonts`). Tokens that name that face then fall back to
+the system font. `Tests/LifegamesTokensTests/FontResolutionTests.swift` fails if any token
+resolves to a face other than the one it names.
