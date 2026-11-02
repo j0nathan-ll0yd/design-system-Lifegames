@@ -5,6 +5,7 @@ import '@styles/components.css';
 import '@j0nathan-ll0yd/tokens/effects';
 import '@j0nathan-ll0yd/tokens/base';
 import manifest from '@manifest';
+import { withLocalCovers } from '../../lib/local-covers';
 
 const widgetModules = import.meta.glob('/../../packages/web/src/widgets/**/*.astro', {
   eager: true,
@@ -81,7 +82,8 @@ const categoryLabel: Record<string, string> = {
 
 const widgets = (manifest as { widgets: ManifestEntry[] }).widgets.map((w) => {
   const componentName = resolveComponentName(w.name);
-  const fixture = fixtureMap[w.fixturePath] || {};
+  const rawFixture = fixtureMap[w.fixturePath] || {};
+  const fixture = componentName === 'Bookshelf' ? withLocalCovers(rawFixture) : rawFixture;
   const isProduction = w.production === true || PRODUCTION_NAMES.has(w.name);
   const isOverlay = overlayWidgetNames.has(w.name);
   return { entry: w, componentName, fixture, isProduction, isOverlay };
