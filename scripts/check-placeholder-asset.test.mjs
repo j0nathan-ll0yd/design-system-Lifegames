@@ -12,7 +12,8 @@
 
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {existsSync, globSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync} from 'node:fs'
+import {execFileSync} from 'node:child_process'
+import {existsSync, globSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync} from 'node:fs'
 import {tmpdir} from 'node:os'
 import {fileURLToPath} from 'node:url'
 import path from 'node:path'
@@ -236,7 +237,8 @@ function moduleCode(file, text) {
   if (ext === '.astro') {
     const html = text.replace(/<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '))
     const keep = []
-    const front = html.match(/^(\s*---\r?\n)([\s\S]*?)\r?\n---/)
+    // Astro accepts trailing spaces and tabs on either fence.
+    const front = html.match(/^(\s*---[ \t]*\r?\n)([\s\S]*?)\r?\n---[ \t]*(?=\r?\n|$)/)
     if (front) {
       keep.push([front[1].length, front[1].length + front[2].length])
     }
@@ -385,16 +387,19 @@ function basenamePattern(glob) {
 }
 
 // Every file under `dir` whose name matches, outside build output and dependencies.
+// A symlink is never followed: its target can import web code from anywhere, so
+// it fails the scan rather than being skipped.
 function* walk(dir, name = /./) {
   for (const entry of readdirSync(dir, {withFileTypes: true}).sort((a, b) => a.name.localeCompare(b.name))) {
-    if (entry.isSymbolicLink()) {
+    const full = path.join(dir, entry.name)
+    if (SKIPPED_DIRS.has(entry.name)) {
       continue
     }
-    const full = path.join(dir, entry.name)
+    if (entry.isSymbolicLink()) {
+      throw new Error(`${full} is a symlink; the check does not follow symlinks, so it cannot tell whether its target imports web widget code`)
+    }
     if (entry.isDirectory()) {
-      if (!SKIPPED_DIRS.has(entry.name)) {
-        yield* walk(full, name)
-      }
+      yield* walk(full, name)
     } else if (name.test(entry.name)) {
       yield full
     }
@@ -424,7 +429,7 @@ function importsWidgetCode(specifier, fromFile, webPackage, aliases, webSrc) {
   if (aliases.some((a) => specifier === a || specifier.startsWith(a + '/'))) {
     return true
   }
-  if (specifier.startsWith('.')) {
+  if (specifier.startsWith('.') || path.isAbsolute(specifier)) {
     return isInside(path.resolve(path.dirname(fromFile), specifier), webSrc)
   }
   return false
@@ -473,6 +478,72 @@ function resolveModuleFile(target) {
   return candidates.find((file) => existsSync(file) && statSync(file).isFile()) ?? null
 }
 
+// The directory of the package.json nearest to `file`, or null.
+function manifestDir(file) {
+  for (let dir = path.dirname(file); dir !== path.dirname(dir); dir = path.dirname(dir)) {
+    if (existsSync(path.join(dir, 'package.json'))) {
+      return dir
+    }
+  }
+  return null
+}
+
+// What a `#` specifier maps to through the `imports` field of the package that
+// owns `file`, as Node resolves it: the exact key, else the `*` pattern key with
+// the longest prefix. A relative target becomes the module file it names; a bare
+// target stays a specifier. A `#` specifier no entry resolves to a module fails
+// the scan, because the module it names could import web code.
+function importsTargets(specifier, file, line) {
+  const owner = manifestDir(file)
+  const map = (owner && JSON.parse(readFileSync(path.join(owner, 'package.json'), 'utf8')).imports) || {}
+  let value = Object.hasOwn(map, specifier) ? map[specifier] : undefined
+  let star = null
+  if (value === undefined) {
+    const [key] = Object.keys(map).filter((k) => {
+      const i = k.indexOf('*')
+      return i !== -1 && specifier.length >= k.length - 1 && specifier.startsWith(k.slice(0, i)) && specifier.endsWith(k.slice(i + 1))
+    }).sort((a, b) => b.indexOf('*') - a.indexOf('*'))
+    if (key) {
+      const i = key.indexOf('*')
+      star = specifier.slice(i, specifier.length - (key.length - i - 1))
+      value = map[key]
+    }
+  }
+  const targets = []
+  const collect = (v) => {
+    if (typeof v === 'string') {
+      targets.push(star === null ? v : v.replaceAll('*', star))
+    } else if (v && typeof v === 'object') {
+      Object.values(v).forEach(collect)
+    }
+  }
+  collect(value)
+  const resolved = targets.flatMap((target) => {
+    if (!target.startsWith('.')) {
+      return [target]
+    }
+    const module = resolveModuleFile(path.resolve(owner, target))
+    return module ? [module] : []
+  })
+  if (resolved.length === 0) {
+    throw new Error(
+      `${file}:${line} imports '${specifier}', which no "imports" entry of ${owner ? path.join(owner, 'package.json') : 'any package.json'} ` +
+        'resolves to a module, so the check cannot read it'
+    )
+  }
+  return resolved
+}
+
+// The runtime module references of a file, each `#` specifier replaced by the
+// targets its package maps it to. `shown` keeps the specifier as written.
+function fileRefs(file) {
+  return moduleRefs(file, readFileSync(file, 'utf8')).flatMap((ref) =>
+    ref.kind === 'imports' && ref.specifier.startsWith('#')
+      ? importsTargets(ref.specifier, file, ref.line).map((specifier) => ({...ref, specifier, shown: ref.specifier}))
+      : [ref]
+  )
+}
+
 const isTestFile = (file) => /\.(test|spec)\./.test(file) || file.split(path.sep).includes('__tests__')
 
 // The runtime files a workspace package exposes: every `exports`, `main` and
@@ -518,8 +589,10 @@ function packageFiles(pkgDir) {
       continue
     }
     files.add(file)
-    for (const ref of moduleRefs(file, readFileSync(file, 'utf8'))) {
-      const next = ref.kind === 'imports' && ref.specifier.startsWith('.') ? resolveModuleFile(path.resolve(path.dirname(file), ref.specifier)) : null
+    for (const ref of fileRefs(file)) {
+      const next = ref.kind === 'imports' && (ref.specifier.startsWith('.') || path.isAbsolute(ref.specifier))
+        ? resolveModuleFile(path.resolve(path.dirname(file), ref.specifier))
+        : null
       if (next && isInside(next, pkgDir)) {
         queue.push(next)
       }
@@ -541,7 +614,7 @@ function packageCarriesWebCode(name, ctx, seen = new Set()) {
   let carries = false
   for (const file of packageFiles(ctx.packages.get(name))) {
     ctx.read.add(file)
-    for (const ref of moduleRefs(file, readFileSync(file, 'utf8'))) {
+    for (const ref of fileRefs(file)) {
       carries ||= refHitsWebCode(ref, file, null, [], ctx, seen)
     }
   }
@@ -599,9 +672,9 @@ export function scanTree(root) {
           continue
         }
         ctx.read.add(file)
-        for (const ref of moduleRefs(file, readFileSync(file, 'utf8'))) {
+        for (const ref of fileRefs(file)) {
           if (refHitsWebCode(ref, file, appDir, aliases, ctx, new Set())) {
-            evidence ??= `${path.relative(root, file)}:${ref.line} ${ref.kind} '${ref.specifier}'`
+            evidence ??= `${path.relative(root, file)}:${ref.line} ${ref.kind} '${ref.shown ?? ref.specifier}'`
           }
         }
       }
@@ -633,6 +706,21 @@ const widgetApps = scan.apps
 test(`every file the check reads parses clean (${scan.read.length} files)`, () => {
   assert.ifError(scanError)
   assert.ok(scan.read.length > 0, 'the scan read no files')
+})
+
+// The read set cannot shrink quietly: every tracked source file of an app, outside
+// the directories the walk skips, must be one the scan read. Git location variables
+// are dropped so a hook's GIT_DIR cannot point git at another repository.
+test('the scan reads every tracked app source file', () => {
+  assert.ifError(scanError)
+  const env = Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('GIT_')))
+  const tracked = execFileSync('git', ['ls-files', '-z', '--', 'apps'], {cwd: repoRoot, encoding: 'utf8', env}).split('\0').filter((file) =>
+    SOURCE_EXTENSIONS.has(path.extname(file)) && !file.split('/').some((segment) => SKIPPED_DIRS.has(segment)) &&
+    existsSync(path.join(repoRoot, file.split('/').slice(0, 2).join('/'), 'package.json'))
+  )
+  assert.ok(tracked.length > 0, 'git ls-files found no tracked app source files')
+  const read = new Set(scan.read)
+  assert.deepEqual(tracked.filter((file) => !read.has(file)), [], 'tracked app source files the scan did not read')
 })
 
 test('discovery finds at least one app that renders the web widgets', () => {
@@ -770,6 +858,18 @@ test('discovery classifies apps by what they import, not by name', () => {
     write('packages/unexported/src/unused.ts', "export * from '@scope/web'\n")
     write('apps/viaunexported/package.json', '{}')
     write('apps/viaunexported/src/p.ts', "import {x} from '@scope/unexported'\n")
+    // Frontmatter fences with trailing whitespace, which Astro accepts.
+    write('apps/fencespace/package.json', '{}')
+    write('apps/fencespace/src/p.astro', "--- \nimport A from '@scope/web'\n---\t\n<A />\n")
+    // A package `imports` entry: an exact key to a relative module inside a workspace
+    // package, and a `*` pattern key to a bare specifier inside an app.
+    write('packages/hashpkg/package.json', JSON.stringify({name: '@scope/hashpkg', exports: './index.ts', imports: {'#inner': './lib/inner.ts'}}))
+    write('packages/hashpkg/index.ts', "export * from '#inner'\n")
+    write('packages/hashpkg/lib/inner.ts', "export * from '@scope/web'\n")
+    write('apps/hashpkg/package.json', '{}')
+    write('apps/hashpkg/src/p.ts', "import {A} from '@scope/hashpkg'\n")
+    write('apps/hashapp/package.json', JSON.stringify({imports: {'#web/*': '@scope/web/*'}}))
+    write('apps/hashapp/src/p.ts', "import A from '#web/widgets/A.astro'\n")
     // Inert files only besides the code.
     write('apps/inert/package.json', '{}')
     write('apps/inert/src/a.json', '{}')
@@ -781,9 +881,12 @@ test('discovery classifies apps by what they import, not by name', () => {
       'apps/attrgt',
       'apps/cts',
       'apps/exportsroot',
+      'apps/fencespace',
       'apps/findalias',
       'apps/globrel',
       'apps/globroot',
+      'apps/hashapp',
+      'apps/hashpkg',
       'apps/mdxblank',
       'apps/mdxreal',
       'apps/minified',
@@ -799,6 +902,8 @@ test('discovery classifies apps by what they import, not by name', () => {
     assert.equal(found.find((a) => a.app === 'apps/selfclosing').evidence, "apps/selfclosing/src/p.astro:6 imports '@scope/web'")
     assert.equal(found.find((a) => a.app === 'apps/mdxreal').evidence, "apps/mdxreal/src/a.mdx:5 imports '@scope/web/widgets/reading/Shelf.astro'")
     assert.match(found.find((a) => a.app === 'apps/unkeyed').evidence, /astro\.config\.mjs:1 points/)
+    assert.equal(found.find((a) => a.app === 'apps/fencespace').evidence, "apps/fencespace/src/p.astro:2 imports '@scope/web'")
+    assert.equal(found.find((a) => a.app === 'apps/hashapp').evidence, "apps/hashapp/src/p.ts:1 imports '#web/widgets/A.astro'")
   } finally {
     rmSync(root, {recursive: true, force: true})
   }
@@ -840,6 +945,38 @@ test('a workspace package file that does not parse fails the scan', () => {
     'packages/shared/src/index.ts': 'export const = 1\n',
     'apps/x/src/p.ts': "import {A} from '@scope/shared'\n"
   }, /shared\/src\/index\.ts:1 does not parse/)
+})
+
+test('a symlink under an app fails the scan, file or directory', () => {
+  for (const [rel, target] of [['apps/x/src/linked.ts', 'shared/thing.ts'], ['apps/x/src/lib', 'shared']]) {
+    const root = mkdtempSync(path.join(tmpdir(), 'placeholder-symlink-'))
+    try {
+      for (
+        const [file, text] of Object.entries({
+          'packages/web/package.json': JSON.stringify({name: '@scope/web'}),
+          'apps/x/package.json': '{}',
+          'apps/x/src/p.ts': 'export const p = 1\n',
+          'shared/thing.ts': "import A from '@scope/web'\n"
+        })
+      ) {
+        mkdirSync(path.dirname(path.join(root, file)), {recursive: true})
+        writeFileSync(path.join(root, file), text)
+      }
+      symlinkSync(path.join(root, target), path.join(root, rel))
+      assert.throws(() => scanTree(root), new RegExp(`${rel.replaceAll('/', '\\/')} is a symlink`))
+    } finally {
+      rmSync(root, {recursive: true, force: true})
+    }
+  }
+})
+
+test('a # specifier no package.json imports entry resolves fails the scan', () => {
+  scanFails({'apps/x/src/p.ts': "import A from '#web'\n"}, /apps\/x\/src\/p\.ts:1 imports '#web', which no "imports" entry/)
+  scanFails({
+    'packages/shared/package.json': JSON.stringify({name: '@scope/shared', exports: './index.ts', imports: {'#inner': './dist/inner.js'}}),
+    'packages/shared/index.ts': "export * from '#inner'\n",
+    'apps/x/src/p.ts': "import {A} from '@scope/shared'\n"
+  }, /shared\/index\.ts:1 imports '#inner', which no "imports" entry/)
 })
 
 test('an app file type the check cannot read fails the scan', () => {

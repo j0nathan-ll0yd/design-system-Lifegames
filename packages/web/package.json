@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/web",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
@@ -41,7 +41,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:browser:fixture": "astro build --root tests/browser/fixture-app",
-    "test:browser": "pnpm test:browser:fixture && vitest run --config vitest.browser.config.ts && vitest run --config vitest.scripts-off.config.ts && vitest run --config vitest.text-page.config.ts && vitest run --config vitest.home-footer.config.ts",
+    "test:browser": "pnpm test:browser:fixture && vitest run --config vitest.browser.config.ts && vitest run --config vitest.scripts-off.config.ts && vitest run --config vitest.text-page.config.ts && vitest run --config vitest.home-footer.config.ts && vitest run --config vitest.fail-visible.config.ts",
     "test:server-render": "vitest run --config vitest.server-render.config.ts"
   },
   "dependencies": {

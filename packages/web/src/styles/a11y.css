@@ -49,8 +49,10 @@
 /* Per-element focus colors (each ring matches its widget accent). */
 /* A book tile: its title link draws no ring of its own. The link's overlay
    (components.css .shelf-book-link::after) covers the tile's padding box, 1px
-   inside the tile's border, so a 3px offset puts the ring where the tile's own
-   2px-offset ring was. */
+   inside the tile's border. A -1px offset puts the 2px ring's outer edge on the
+   tile's border edge, in the tile's own transparent border and padding. The
+   shelf row clips at its padding edge, and a list reset zeroes its padding, so
+   a ring that reached past the tile lost its edges there. */
 .shelf-book-link:focus-visible {
   outline: none;
 }
@@ -59,7 +61,7 @@
      to currentColor instead of voiding the whole outline. */
   outline: 2px solid;
   outline-color: var(--lg-color-accent-green);
-  outline-offset: 3px;
+  outline-offset: -1px;
 }
 .book-modal-close:focus-visible {
   outline-color: var(--lg-color-accent-blue);
