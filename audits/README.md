@@ -36,6 +36,13 @@ rather than `governance-gates`, because that is the job its validator lives in).
 allowlist entry whose path is not tracked. It skips the scoped-package release lines of a
 `.changeset/*.md` frontmatter, so changesets need no allowlist entry.
 
+**`d7`** — D7, cover inventory against the distribution. `d7-cover-inventory.mjs` sends HEAD to
+every key of every ASIN in `packages/fixtures/src/cover-inventory.ts` `COVER_KEYS` and reports a key
+that answers otherwise than the snapshot says (MISMATCH) or cannot be judged (INDETERMINATE, never
+PASS). Report-only, scheduled in `audit-ds.yml` on the `cfedge` egress lane, with its offline
+known-answer suite in `__tests__/`. Its catalog row belongs in atlas `audits/audits.yaml`;
+atlas A19 reports the job as `runner-unregistered` until that row exists.
+
 **`c147`** — published-package payload drift. `c147-package-drift.mjs`, run by the
 `package-version-drift` CI job, `package-drift-post-publish.yml`, `drift-self-test-nightly.yml`
 and `.husky/pre-push`.

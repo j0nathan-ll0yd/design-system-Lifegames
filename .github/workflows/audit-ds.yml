@@ -1,8 +1,8 @@
 name: Audit DS
 
 # lp-audit Phase 4 — DS hygiene audits: widget completeness matrix (D1),
-# baseline-age advisory (D2), and the blocking full-tree personal-data scan
-# (D6).
+# baseline-age advisory (D2), the blocking full-tree personal-data scan
+# (D6), and the report-only cover-inventory probe (D7).
 #
 # Report-only: D1 and D2 run in default (non---check) mode and cannot fail
 # this job by design — see each script's own report-only framing. It does not
@@ -117,6 +117,49 @@ jobs:
         shell: bash
         run: bash audits/checks/d6-scan-personal-data.sh --full-tree
 
+  # D7 sends HEAD to every COVER_KEYS key on the CloudFront distribution and reports
+  # any key that answers otherwise than the committed snapshot says. The fleet reaches
+  # CloudFront only from the source-scoped `cfedge` egress lane (ci-runners-private
+  # RUNNERS.md "CloudFront edges on their own lane"; NetworkForJob places any job that
+  # carries the label). So D7 runs alone on that lane, and the D1/D2 job, with its
+  # dependency install, keeps no CloudFront egress. Report-only: the probe exits 0 in
+  # every verdict, and a lane without egress reports INDETERMINATE, never PASS.
+  d7-cover-inventory:
+    name: D7 cover inventory vs CloudFront (report-only)
+    runs-on: [self-hosted, linux, arm64, node, cfedge]
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: D7 known-answer regression (offline, stubbed probe)
+        run: node --test audits/__tests__/d7-cover-inventory.test.mjs
+
+      - name: D7 probe COVER_KEYS against the distribution (report-only)
+        shell: bash
+        run: node audits/checks/d7-cover-inventory.mjs | tee audit-ds-d7-report.txt
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo "## D7 cover inventory — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo ""
+            echo '```'
+            cat audit-ds-d7-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always()
+        with:
+          name: audit-ds-d7-report
+          path: audit-ds-d7-report.txt
+          retention-days: 30
+
   # Separate hosted-runner job (first-cycle finding #14, 2026-07-17): the ping
   # curl timed out (exit 28) from the self-hosted fleet containers while
   # hc-ping.com is reachable from the host — and a ping that rides the audit
@@ -124,7 +167,7 @@ jobs:
   # must still report. Mirrors audit-backend.yml's structure.
   healthcheck-ping:
     name: Healthchecks.io dead-man's-switch ping
-    needs: [audit, d6-personal-data-full-tree]
+    needs: [audit, d6-personal-data-full-tree, d7-cover-inventory]
     # TRUSTED-SCHEDULE PREDICATE (atlas decisions 0091/0092). `if: always()` alone
     # let ANY manual workflow_dispatch refresh the dead-man tile, so a dead clock
     # looked alive as long as a human ran the lane by hand — the exact mask 0091
@@ -149,6 +192,7 @@ jobs:
           HC_PING_URL: ${{ secrets.HC_PING_AUDIT_DS }}
           AUDIT_RESULT: ${{ needs.audit.result }}
           D6_RESULT: ${{ needs.d6-personal-data-full-tree.result }}
+          D7_RESULT: ${{ needs.d7-cover-inventory.result }}
         run: |
           if [ -z "${HC_PING_URL:-}" ]; then
             echo "::warning::HC_PING_AUDIT_DS secret is not set — skipping Healthchecks.io ping. This check has not been provisioned in Healthchecks.io yet (plan Phase 0); the dead-man's-switch is not yet monitoring this workflow."
@@ -160,5 +204,5 @@ jobs:
           # the job summary, report artifact, and post-bake issues). Pinging /fail on
           # findings marks the tile DOWN — indistinguishable from a wedged/never-ran
           # job. Same convention as audit-web.yml and the hub launchd run-*.sh.
-          echo "audit job result=$AUDIT_RESULT; D6 result=$D6_RESULT — pinging run-completion."
+          echo "audit job result=$AUDIT_RESULT; D6 result=$D6_RESULT; D7 result=$D7_RESULT — pinging run-completion."
           curl -fsS -m 10 --retry 3 "$HC_PING_URL"
