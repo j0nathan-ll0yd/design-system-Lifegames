@@ -25,6 +25,7 @@ import var_mixed from '@fixtures/reading/bookshelf.mixed.json';
 import var_all_completed from '@fixtures/reading/bookshelf.all-completed.json';
 import var_mostly_empty from '@fixtures/reading/bookshelf.mostly-empty.json';
 import var_dense_shelf from '@fixtures/reading/bookshelf.dense-shelf.json';
+import { withLocalCovers } from '../../lib/local-covers';
 ---
 
 <html lang="en">
@@ -165,7 +166,7 @@ import var_dense_shelf from '@fixtures/reading/bookshelf.dense-shelf.json';
         <ResponsiveDemo
           widgetName="Bookshelf"
           category="reading"
-          fixture={fixture}
+          fixture={withLocalCovers(fixture)}
           island={BookshelfIsland}
         />
       </section>
@@ -177,10 +178,10 @@ import var_dense_shelf from '@fixtures/reading/bookshelf.dense-shelf.json';
           category="reading"
           island={BookshelfIsland}
           states={[
-            { state: 'skeleton', fixture: fixture_skeleton },
-            { state: 'empty', fixture: fixture_empty },
-            { state: 'populated-min', fixture: fixture_populated_min },
-            { state: 'populated-max', fixture: fixture_populated_max },
+            { state: 'skeleton', fixture: withLocalCovers(fixture_skeleton) },
+            { state: 'empty', fixture: withLocalCovers(fixture_empty) },
+            { state: 'populated-min', fixture: withLocalCovers(fixture_populated_min) },
+            { state: 'populated-max', fixture: withLocalCovers(fixture_populated_max) },
           ]}
         />
       </section>
@@ -194,27 +195,27 @@ import var_dense_shelf from '@fixtures/reading/bookshelf.dense-shelf.json';
           variations={[
             {
               label: 'all-in-progress',
-              fixture: var_all_in_progress,
+              fixture: withLocalCovers(var_all_in_progress),
               caption: 'All books actively in progress — the focused reader mid-sprint.',
             },
             {
               label: 'mixed',
-              fixture: var_mixed,
+              fixture: withLocalCovers(var_mixed),
               caption: 'A healthy mix: finished, reading, and queued up next.',
             },
             {
               label: 'all-completed',
-              fixture: var_all_completed,
+              fixture: withLocalCovers(var_all_completed),
               caption: 'Every book checked off — the satisfaction of a cleared queue.',
             },
             {
               label: 'mostly-empty',
-              fixture: var_mostly_empty,
+              fixture: withLocalCovers(var_mostly_empty),
               caption: 'Just started: a single book on an otherwise bare shelf.',
             },
             {
               label: 'dense-shelf',
-              fixture: var_dense_shelf,
+              fixture: withLocalCovers(var_dense_shelf),
               caption: 'Twelve books deep — stress-tests wrapping, scroll, and layout density.',
             },
           ]}

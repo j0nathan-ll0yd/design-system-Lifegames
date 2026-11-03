@@ -1,10 +1,34 @@
 import {defineConfig} from 'astro/config'
 import starlight from '@astrojs/starlight'
 import starlightLlmsTxt from 'starlight-llms-txt'
+import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+// `virtual:docs-local-covers` default-exports the site path of every cover file in
+// public/images/books: the list Bookshelf's `localCovers` prop takes, so a fixture
+// cover with a mirrored file loads same-origin. A cover the mirror lacks keeps the
+// widget's own fallback. Read from disk, never hand-listed.
+const LOCAL_COVERS_ID = 'virtual:docs-local-covers'
+const LOCAL_COVERS_DIR = path.resolve(__dirname, 'public/images/books')
+
+function docsLocalCovers() {
+  const resolvedId = `\0${LOCAL_COVERS_ID}`
+  return {
+    name: 'docs-local-covers',
+    resolveId: (id) => (id === LOCAL_COVERS_ID ? resolvedId : null),
+    load(id) {
+      if (id !== resolvedId) {
+        return null
+      }
+      this.addWatchFile(LOCAL_COVERS_DIR)
+      const covers = fs.readdirSync(LOCAL_COVERS_DIR).filter((file) => /\.(webp|avif)$/.test(file)).sort().map((file) => `/images/books/${file}`)
+      return `export default ${JSON.stringify(covers)}`
+    }
+  }
+}
 
 export default defineConfig({
   site: 'https://design.lifegames.org',
@@ -117,6 +141,7 @@ export default defineConfig({
     })
   ],
   vite: {
+    plugins: [docsLocalCovers()],
     resolve: {
       alias: {
         '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),
