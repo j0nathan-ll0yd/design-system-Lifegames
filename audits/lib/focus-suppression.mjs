@@ -1,6 +1,7 @@
 // Focus-mode suppression verdict for a credential-free audit that probes gated artifacts.
 //
-// Port of mantle-LifegamesPortal audits/lib/focus-suppression.mjs (`readFocusSuppression`), the
+// Port of mantle-LifegamesPortal audits/lib/focus-suppression.mjs (`readFocusSuppression`) as of
+// LP commit 90d8b58, the file's last change at LP origin/main 693ff8b: diff against that. It is the
 // signal LP's C14 reads before it HEADs any image key (c14-image-materialization.mts). The
 // CloudFront focus gate (LP src/edge/focus-gate.js) answers every /images/books/ and
 // /images/theatre/ key with a JSON 403 while a hiding focus mode is on, so an audit that probes
@@ -16,7 +17,13 @@
 export const MAX_SUPPRESSION_MS = 24 * 60 * 60 * 1000
 export const FOCUS_TIMEOUT_MS = 20_000
 
-const HIDING_MODES = new Set(['Work', 'Do Not Disturb'])
+/**
+ * The focus modes that hide the public surface. Mirrors HIDING_FOCUS_MODES in
+ * the portal-contract package (LP packages/portal-contract, `./constants`);
+ * audits/__tests__/d7-focus-modes.test.mjs pins
+ * the two equal. A literal here, because the D7 job installs no dependencies.
+ */
+export const HIDING_MODES = new Set(['Work', 'Do Not Disturb'])
 
 /**
  * Read the ungated focus signal at `<origin of targetUrl>/focus.json`.
