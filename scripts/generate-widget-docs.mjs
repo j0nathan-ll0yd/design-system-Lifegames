@@ -3,6 +3,7 @@
 import fs from 'fs'
 import path from 'path'
 import {fileURLToPath} from 'url'
+import {LOCAL_COVER_WIDGETS} from '../apps/docs/src/lib/local-cover-widgets.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -49,10 +50,6 @@ const VARIATION_WIDGETS = {
 }
 
 const STATE_SLOTS = ['skeleton', 'empty', 'populated-min', 'populated-max']
-
-// Widgets whose demos pass the docs cover mirror (apps/docs/src/lib/local-covers.ts)
-// with every fixture, so a fixture cover with a mirrored file loads same-origin.
-const LOCAL_COVER_WIDGETS = new Set(['Bookshelf'])
 
 /** The MDX expression a widget demo receives for a fixture variable. */
 function fixtureExpr(actualName, varName) {
