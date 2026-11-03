@@ -71,12 +71,37 @@ jobs:
           fi
           echo "Using preinstalled Playwright Chromium at $CHROMIUM_PATH"
 
+      # `serve` is an exact-pinned storybook devDependency, installed through the
+      # lockfile above. `pnpm dlx` fetched the latest release on every run, which
+      # bypassed the lockfile and minimumReleaseAge, and a registry retry inside
+      # the 30 s wait failed the job. NO_UPDATE_CHECK stops serve calling npm
+      # before it listens, so no step of the startup touches the network.
       - name: Serve Storybook static build
+        env:
+          NO_UPDATE_CHECK: '1'
         run: |
-          pnpm dlx serve -l 6006 apps/storybook/storybook-static &
-          echo $! > /tmp/serve.pid
-          # Wait for server to be ready
-          timeout 30 bash -c 'until curl -sf http://localhost:6006 > /dev/null; do sleep 1; done'
+          # A stale server on the port would answer the readiness probe below.
+          if curl -s http://localhost:6006 > /dev/null; then
+            echo "::error::Port 6006 already answers HTTP before the Storybook server starts"
+            exit 1
+          fi
+          pnpm --filter storybook exec serve --no-clipboard --no-port-switching -l 6006 storybook-static &
+          SERVE_PID=$!
+          echo "$SERVE_PID" > /tmp/serve.pid
+          for second in $(seq 1 60); do
+            if ! kill -0 "$SERVE_PID" 2>/dev/null; then
+              wait "$SERVE_PID" && status=0 || status=$?
+              echo "::error::Storybook server exited with status $status before it accepted connections"
+              exit 1
+            fi
+            if curl -sf http://localhost:6006 > /dev/null; then
+              echo "Storybook server ready after ${second} s"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::Storybook server accepted no connection on port 6006 within 60 s"
+          exit 1
 
       - name: Run visual regression (update mode)
         if: ${{ inputs.update_snapshots == true }}
