@@ -796,12 +796,14 @@ jobs:
           # 'error' now, the glob covers .css and .astro, and --max-warnings 0 closes the rest.
           # Measured blast radius of the raise across the whole tree: zero existing violations.
           pnpm -F @j0nathan-ll0yd/web lint
-          # Fixture-map validators (schemas and fixtures). validate.ts over the real map ran only in
-          # web-builds (`pnpm build`) and .husky/pre-push, so no required context failed when a real
-          # widget fixture stopped matching its schema. Their fail-closed known-answer suites
-          # (validate, fixture-wiring, coffee-tracking-schema) run in `pnpm test:scripts` below.
+          # Schemas fixture-map validator. validate.ts over the real map ran only in web-builds
+          # (`pnpm build`) and .husky/pre-push, so no required context failed when a real widget
+          # fixture stopped matching its schema. Its fail-closed known-answer suites (validate,
+          # fixture-wiring, coffee-tracking-schema) run in `pnpm test:scripts` below. The fixtures
+          # validator suite, packages/fixtures/tests/validate.test.ts, runs in `fixtures: test` of
+          # the required `packages` job, which runs the whole fixtures suite (owner decision
+          # 2026-11-02 retired its second run here).
           LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F @j0nathan-ll0yd/schemas validate
-          pnpm -F @j0nathan-ll0yd/fixtures exec vitest run tests/validate.test.ts
           # Every node:test and RuleTester suite in the repo, in ONE run: the known-answer and
           # can-fail proofs of the gates above (token parity, contrast, Swift purity, watch
           # exclusions, promotion, the catalog ratchet and its baseline freeze, openspec-covers,

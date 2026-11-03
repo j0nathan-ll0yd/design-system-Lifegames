@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import {execFileSync, spawnSync} from 'node:child_process'
-import {globSync, readdirSync, readFileSync} from 'node:fs'
+import {existsSync, globSync, readdirSync, readFileSync} from 'node:fs'
 import {dirname, resolve} from 'node:path'
 import {test} from 'node:test'
 import {fileURLToPath} from 'node:url'
@@ -305,18 +305,35 @@ test('ci.yml: the packages verdict reds when any one of its real gates skipped',
 
 const governanceGatesLines = () => ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates').run.split('\n').map((line) => line.trim())
 
-test('ci.yml: governance-gates runs both fixture-map validators', () => {
-  // These lines date from when packages was not a required context, so in packages alone they
-  // could not block a merge. packages is required since owner decision 2026-10-30.
-  const pkgName = (dir) => JSON.parse(readFileSync(resolve(repoRoot, dir, 'package.json'), 'utf8')).name
-  for (
-    const command of [
-      `LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F ${pkgName('packages/schemas')} validate`,
-      `pnpm -F ${pkgName('packages/fixtures')} exec vitest run tests/validate.test.ts`
-    ]
-  ) {
-    assert.ok(governanceGatesLines().includes(command), `governance-gates must run: ${command}`)
-  }
+const pkgName = (dir) => JSON.parse(readFileSync(resolve(repoRoot, dir, 'package.json'), 'utf8')).name
+
+test('ci.yml: governance-gates runs the schemas fixture-map validator', () => {
+  // This line dates from when packages was not a required context, so in packages alone it could
+  // not block a merge. packages is required since owner decision 2026-10-30.
+  const command = `LIFEGAMES_VALIDATE_CWD="$PWD" pnpm -F ${pkgName('packages/schemas')} validate`
+  assert.ok(governanceGatesLines().includes(command), `governance-gates must run: ${command}`)
+})
+
+// packages/fixtures/tests/validate.test.ts ran twice: once in `fixtures: test` and once on its own
+// governance-gates line. Owner decision 2026-11-02 retired the second run once `packages` became a
+// required, fail-closed context. The credit now rests on `fixtures: test` running the WHOLE
+// fixtures suite. A filter, an `--exclude`, a `-t` or a vitest config with its own include or
+// exclude could drop validate.test.ts and leave the step green, so each is pinned here.
+const FIXTURES_DIR = 'packages/fixtures'
+const FIXTURES_TEST_SCRIPT = 'vitest run'
+const FIXTURES_VALIDATE_SUITE = 'tests/validate.test.ts'
+
+test('ci.yml: fixtures: test runs the bare fixtures suite, so validate.test.ts cannot drop out', () => {
+  const step = ci.jobs.packages.steps.find((s) => s.name === 'fixtures: test')
+  assert.ok(step, 'packages must keep its fixtures: test step')
+  assert.equal(step.id, 'fixtures-test', 'fixtures: test must keep id fixtures-test, which the packages verdict reads')
+  assert.equal(step.run, `pnpm -F ${pkgName(FIXTURES_DIR)} test`, 'fixtures: test must run the package test script with no argument')
+  const script = JSON.parse(readFileSync(resolve(repoRoot, FIXTURES_DIR, 'package.json'), 'utf8')).scripts.test
+  assert.equal(script, FIXTURES_TEST_SCRIPT, `the fixtures test script must stay exactly \`${FIXTURES_TEST_SCRIPT}\`: no filter, --exclude or -t`)
+  // vitest reads a config from the package root; one could set test.include or test.exclude.
+  const configs = readdirSync(resolve(repoRoot, FIXTURES_DIR)).filter((name) => /^(vite|vitest)\.(config|workspace)\./.test(name))
+  assert.deepEqual(configs, [], `packages/fixtures must carry no vite or vitest config that could narrow the suite: ${configs.join(', ')}`)
+  assert.ok(existsSync(resolve(repoRoot, FIXTURES_DIR, FIXTURES_VALIDATE_SUITE)), `${FIXTURES_DIR}/${FIXTURES_VALIDATE_SUITE} must exist`)
 })
 
 // `pnpm test:scripts` is the one CI run of every node:test and RuleTester suite, and it runs in
