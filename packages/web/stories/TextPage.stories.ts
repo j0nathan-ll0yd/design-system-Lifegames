@@ -5,13 +5,19 @@ import {html} from 'lit'
 // SiteFooterNav.astro with lit, like every primitive story. The styles come from
 // packages/web/src/styles/primitives.css, imported once in .storybook/preview.ts. The main element omits id="main-content" so
 // the autodocs page, which mounts every story at once, holds no duplicate id.
+//
+// The fixed height keeps the whole page inside the 1280x720 visual-regression
+// viewport: 100dvh less the decorator's 16 px padding on each side. Without it the
+// page measured 828 px and the gate never saw its bottom 108 px. The page's own
+// `min-height: 100dvh` overflows because Storybook loads no box-sizing reset, so its
+// padding adds to that height; production loads packages/tokens/src/reset.css.
 const meta: Meta = {
   title: 'Primitives/TextPage',
   tags: ['autodocs'],
   parameters: {layout: 'fullscreen'},
   render: () =>
     html`
-    <main class="lg-text-page">
+    <main class="lg-text-page" style="box-sizing: border-box; min-height: 0; height: calc(100dvh - 32px);">
       <article class="lg-text-page-card" aria-labelledby="story-text-page-title">
         <header class="lg-text-page-header">
           <h1 id="story-text-page-title" class="lg-text-page-title">Page title</h1>
