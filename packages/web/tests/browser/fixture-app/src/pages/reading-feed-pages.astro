@@ -1,0 +1,41 @@
+---
+// A ReadingFeed list longer than one page, with the full consumer stack and
+// the real pager (reading-feed-init.ts), as the updater renders it on the
+// website. tests/browser/fail-visible.test.ts shows page 2 and reads its rows'
+// entry timing.
+import '../../../../../../tokens/dist/tokens.css';
+import '../../../../../../tokens/src/animations.css';
+import '../../../../../../tokens/src/effects.css';
+import '../../../../../src/styles/primitives.css';
+import '../../../../../src/styles/components.css';
+import '../../../../../src/styles/layout.css';
+import '../../../../../src/styles/a11y.css';
+import ReadingFeed from '../../../../../src/widgets/reading/ReadingFeed.astro';
+import { adaptArticles } from '../../../../../src/runtime/adapters';
+import pagination from '../../../../../../fixtures/src/generated/articles/pagination.json';
+
+const articles = adaptArticles(pagination as any).map((a) => ({
+  title: a.title,
+  source: a.source,
+  date: a.date,
+  datetime: a.datetime,
+  url: a.url,
+}));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ReadingFeed pages</title>
+  </head>
+  <body style="background:#06060f;color:#fff;margin:0;padding:16px">
+    <section style="width:380px">
+      <ReadingFeed reading={{ articles }} />
+    </section>
+    <script>
+      import { initReadingFeedPagination } from '../../../../../src/runtime/reading-feed-init';
+      initReadingFeedPagination('#cardReading');
+    </script>
+  </body>
+</html>
