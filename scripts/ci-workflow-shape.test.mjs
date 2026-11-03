@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import {execFileSync, spawnSync} from 'node:child_process'
 import {existsSync, globSync, readdirSync, readFileSync} from 'node:fs'
-import {dirname, resolve} from 'node:path'
+import {dirname, relative, resolve} from 'node:path'
 import {test} from 'node:test'
 import {fileURLToPath} from 'node:url'
 import {parse as parseYaml} from 'yaml'
@@ -330,9 +330,20 @@ test('ci.yml: fixtures: test runs the bare fixtures suite, so validate.test.ts c
   assert.equal(step.run, `pnpm -F ${pkgName(FIXTURES_DIR)} test`, 'fixtures: test must run the package test script with no argument')
   const script = JSON.parse(readFileSync(resolve(repoRoot, FIXTURES_DIR, 'package.json'), 'utf8')).scripts.test
   assert.equal(script, FIXTURES_TEST_SCRIPT, `the fixtures test script must stay exactly \`${FIXTURES_TEST_SCRIPT}\`: no filter, --exclude or -t`)
-  // vitest reads a config from the package root; one could set test.include or test.exclude.
-  const configs = readdirSync(resolve(repoRoot, FIXTURES_DIR)).filter((name) => /^(vite|vitest)\.(config|workspace)\./.test(name))
-  assert.deepEqual(configs, [], `packages/fixtures must carry no vite or vitest config that could narrow the suite: ${configs.join(', ')}`)
+  // A config could set test.include, test.exclude or test.projects. Vitest 4.1.8 does not stop at
+  // the package: createVitest resolves the config with any(configFiles, {cwd: root}), any iterates
+  // up(root) over every parent directory, and configFiles is vitest.config or vite.config times six
+  // extensions. So the whole chain from packages/fixtures up to the repo root must hold none.
+  const chain = []
+  for (let dir = resolve(repoRoot, FIXTURES_DIR); dir !== repoRoot; dir = dirname(dir)) {
+    chain.push(dir)
+  }
+  chain.push(repoRoot)
+  const configs = chain.flatMap((dir) =>
+    readdirSync(dir).filter((name) => /^(vite|vitest)\.(config|workspace)\./.test(name)).map((name) => relative(repoRoot, resolve(dir, name)))
+  )
+  assert.deepEqual(configs, [],
+    `no directory from packages/fixtures up to the repo root may carry a vite or vitest config that could narrow the suite: ${configs.join(', ')}`)
   assert.ok(existsSync(resolve(repoRoot, FIXTURES_DIR, FIXTURES_VALIDATE_SUITE)), `${FIXTURES_DIR}/${FIXTURES_VALIDATE_SUITE} must exist`)
 })
 
