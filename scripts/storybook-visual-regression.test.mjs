@@ -50,6 +50,10 @@ describe('Storybook pixel bound', () => {
     assert.equal(options.customSnapshotIdentifier, 'example--story')
   })
 
+  test('allows no counted pixel, because CI renders are byte-identical', () => {
+    assert.equal(MAX_DIFF_PIXELS, 0)
+  })
+
   test('sits below the smallest measured real change, so that change fails', () => {
     assert.ok(Number.isInteger(MAX_DIFF_PIXELS) && MAX_DIFF_PIXELS >= 0)
     assert.ok(MAX_DIFF_PIXELS < SMALLEST_MEASURED_REAL_CHANGE_PIXELS,

@@ -25,11 +25,16 @@ const SNAPSHOT_DIR = join(process.cwd(), '__snapshots__')
 // measured 0.0177%). Blank frames measure exactly 0.0000%.
 const MIN_CONTENT_RATIO = 0.0001
 
-// Structural check behind the pixel matcher: if one render has less than half the
-// content footprint of the other, a component probably appeared or disappeared.
-// The absolute floor prevents a handful of background-edge pixels from tripping
-// this. Under the pixel bound below it can fire only when a story's whole content
-// is under about 2 x MAX_DIFF_PIXELS pixels; it stays as a cheap second net.
+// Structural check behind the pixel matcher: it fails a render whose content
+// footprint (pixels outside BG_TOLERANCE of both backgrounds) is under half the
+// baseline's, or the reverse. The absolute floor stops a handful of edge pixels
+// tripping it. It runs only in check mode (the update wrapper empties the snapshot
+// directory, so no baseline exists) and only AFTER the 0 px matcher passed. So it
+// sees a change only through pixels pixelmatch does not count: pixels it classes
+// as anti-aliased, and colour shifts below its 0.01 threshold. It fires only when
+// those pixels move half a story's content across BG_TOLERANCE, which no measured
+// change has done. It is a last net for a change that consists of nothing but
+// such pixels, not a structural check.
 const MAX_CONTENT_RATIO_SWING = 0.5
 
 /* PIXEL BOUND
@@ -50,13 +55,18 @@ const MAX_CONTENT_RATIO_SWING = 0.5
      41156778029 and 41156936282 again rendered all stories byte-identical, and
      the smallest real change was one digit of the Bookshelf progress (68 to 69),
      31 px.
-   So the bound is a pixel count: 10 px, below the smallest real change in either
-   measurement (25 px, 31 px) with a 2.5x margin, and above the measured noise
-   (0 px) so a stray few-pixel flake does not red a story. Record baselines only
-   through the update-mode dispatch, which records on the same CI lane that checks
-   them. A runner image change (Chromium, system libraries) moves every story;
-   re-record then. */
-export const MAX_DIFF_PIXELS = 10
+   - With the motion freeze below, runs 41530295186, 41530609395 and 41530853508
+     (PR #348, 8bb0ff2) rendered all 122 stories byte-identical. Without it, one
+     pixel of one story flipped in one of three runs (41506615378, 41507888324,
+     41509972838), and pixelmatch counted it as 0 px.
+   So the bound is 0 px. Nothing measured needs headroom: CI renders are
+   byte-identical, and pixelmatch (jest-image-snapshot 6.5.2 defaults) already
+   leaves out pixels it classes as anti-aliased (`includeAA: false`) and colour
+   shifts below its 0.01 threshold. Any counted pixel is a real change; the
+   smallest measured one is 25 px. Record baselines only through the update-mode
+   dispatch, which records on the same CI lane that checks them. A runner image
+   change (Chromium, system libraries) moves every story; re-record then. */
+export const MAX_DIFF_PIXELS = 0
 export const SMALLEST_MEASURED_REAL_CHANGE_PIXELS = 25
 
 /** jest-image-snapshot options for every story. */
