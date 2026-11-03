@@ -1,6 +1,6 @@
 {
   "name": "@j0nathan-ll0yd/fixtures",
-  "version": "1.6.7",
+  "version": "1.6.8",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
