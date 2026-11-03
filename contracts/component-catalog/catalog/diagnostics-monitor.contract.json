@@ -74,7 +74,7 @@
   "states": ["default"],
   "a11y": {
     "voiceOverLabel": true,
-    "ref": "Sources/LifegamesWidgetsWatch/DiagnosticsMonitorView.swift:55"
+    "ref": "Sources/LifegamesWidgetsWatch/DiagnosticsMonitorView.swift:56"
   },
   "conformance": {
     "behavioralTest": null
