@@ -124,6 +124,12 @@ jobs:
   # carries the label). So D7 runs alone on that lane, and the D1/D2 job, with its
   # dependency install, keeps no CloudFront egress. Report-only: the probe exits 0 in
   # every verdict, and a lane without egress reports INDETERMINATE, never PASS.
+  #
+  # The dead-man ping below does NOT wait on this job: cfedge capacity must never hold
+  # the D1/D2/D6 ping past its grace. D7 stays visible on its own: a verdict other than
+  # PASS prints a workflow warning annotation and closes the job summary and artifact, and
+  # a crash, a red known-answer suite or a job no cfedge runner picks up shows as this
+  # job's own conclusion.
   d7-cover-inventory:
     name: D7 cover inventory vs CloudFront (report-only)
     runs-on: [self-hosted, linux, arm64, node, cfedge]
@@ -167,7 +173,7 @@ jobs:
   # must still report. Mirrors audit-backend.yml's structure.
   healthcheck-ping:
     name: Healthchecks.io dead-man's-switch ping
-    needs: [audit, d6-personal-data-full-tree, d7-cover-inventory]
+    needs: [audit, d6-personal-data-full-tree]
     # TRUSTED-SCHEDULE PREDICATE (atlas decisions 0091/0092). `if: always()` alone
     # let ANY manual workflow_dispatch refresh the dead-man tile, so a dead clock
     # looked alive as long as a human ran the lane by hand — the exact mask 0091
@@ -192,7 +198,6 @@ jobs:
           HC_PING_URL: ${{ secrets.HC_PING_AUDIT_DS }}
           AUDIT_RESULT: ${{ needs.audit.result }}
           D6_RESULT: ${{ needs.d6-personal-data-full-tree.result }}
-          D7_RESULT: ${{ needs.d7-cover-inventory.result }}
         run: |
           if [ -z "${HC_PING_URL:-}" ]; then
             echo "::warning::HC_PING_AUDIT_DS secret is not set — skipping Healthchecks.io ping. This check has not been provisioned in Healthchecks.io yet (plan Phase 0); the dead-man's-switch is not yet monitoring this workflow."
@@ -204,5 +209,5 @@ jobs:
           # the job summary, report artifact, and post-bake issues). Pinging /fail on
           # findings marks the tile DOWN — indistinguishable from a wedged/never-ran
           # job. Same convention as audit-web.yml and the hub launchd run-*.sh.
-          echo "audit job result=$AUDIT_RESULT; D6 result=$D6_RESULT; D7 result=$D7_RESULT — pinging run-completion."
+          echo "audit job result=$AUDIT_RESULT; D6 result=$D6_RESULT — pinging run-completion."
           curl -fsS -m 10 --retry 3 "$HC_PING_URL"
