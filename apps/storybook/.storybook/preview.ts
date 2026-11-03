@@ -5,6 +5,10 @@ import '@j0nathan-ll0yd/tokens/fonts'
 import '@j0nathan-ll0yd/tokens/compat'
 import '@j0nathan-ll0yd/web/styles/components.css'
 import '@j0nathan-ll0yd/tokens/animations'
+// The box-sizing and margin reset, after components.css and the effects as the
+// website layout loads it. Without it every story rendered content-box, which no
+// production page draws: padding grew boxes past their stated size.
+import '@j0nathan-ll0yd/tokens/reset'
 import '@j0nathan-ll0yd/tokens/shadcn'
 // Primitive component CSS. Stories hand-render the markup with lit rather than
 // mounting the .astro components, so without this the primitives render

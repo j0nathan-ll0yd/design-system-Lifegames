@@ -9,15 +9,15 @@ import {html} from 'lit'
 // The fixed height keeps the whole page inside the 1280x720 visual-regression
 // viewport: 100dvh less the decorator's 16 px padding on each side. Without it the
 // page measured 828 px and the gate never saw its bottom 108 px. The page's own
-// `min-height: 100dvh` overflows because Storybook loads no box-sizing reset, so its
-// padding adds to that height; production loads packages/tokens/src/reset.css.
+// `min-height: 100dvh` fills the viewport, so the decorator padding alone pushes it
+// 32 px past the frame.
 const meta: Meta = {
   title: 'Primitives/TextPage',
   tags: ['autodocs'],
   parameters: {layout: 'fullscreen'},
   render: () =>
     html`
-    <main class="lg-text-page" style="box-sizing: border-box; min-height: 0; height: calc(100dvh - 32px);">
+    <main class="lg-text-page" style="min-height: 0; height: calc(100dvh - 32px);">
       <article class="lg-text-page-card" aria-labelledby="story-text-page-title">
         <header class="lg-text-page-header">
           <h1 id="story-text-page-title" class="lg-text-page-title">Page title</h1>
