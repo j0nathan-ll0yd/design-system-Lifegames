@@ -12,16 +12,12 @@ import '@j0nathan-ll0yd/tokens/shadcn'
 import '@j0nathan-ll0yd/web/styles/primitives.css'
 import type {Preview} from '@storybook/web-components-vite'
 import {html} from 'lit'
+import {INITIAL_BACKGROUND, STORY_BACKGROUNDS} from './story-backgrounds.mjs'
 
 const preview: Preview = {
   parameters: {
-    backgrounds: {
-      default: 'dark',
-      values: [
-        {name: 'dark', value: '#06060f'},
-        {name: 'light', value: '#ffffff'}
-      ]
-    },
+    // Storybook 10 shape; see story-backgrounds.mjs for why `values` no longer works.
+    backgrounds: {options: STORY_BACKGROUNDS},
     a11y: {config: {rules: [{id: 'region', enabled: false}]}, test: 'error'}
   },
   decorators: [
@@ -35,8 +31,10 @@ const preview: Preview = {
     // The font family mirrors the production page body (`html, body` in
     // apps/portfolio/src/layouts/Dashboard.astro): without it, text with no
     // family of its own renders in the browser default serif.
-    (story) => html`<div data-widget-preview style="background-color: #06060f; padding: 16px; font-family: var(--lg-font-family-brand);">${story()}</div>`
+    (story) =>
+      html`<div data-widget-preview style="background-color: ${STORY_BACKGROUNDS.dark.value}; padding: 16px; font-family: var(--lg-font-family-brand);">${story()}</div>`
   ],
+  initialGlobals: {backgrounds: {value: INITIAL_BACKGROUND}},
   tags: ['autodocs']
 }
 

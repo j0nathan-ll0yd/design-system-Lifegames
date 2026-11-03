@@ -2,6 +2,7 @@ import {existsSync, readFileSync} from 'node:fs'
 import {join} from 'node:path'
 import {toMatchImageSnapshot} from 'jest-image-snapshot'
 import {PNG} from 'pngjs'
+import {STORY_BACKGROUNDS} from './story-backgrounds.mjs'
 
 /* CONTENT SENTINEL
    ----------------
@@ -16,8 +17,17 @@ import {PNG} from 'pngjs'
    dark decorator background, and require a minimum share. This runs in update
    mode too, so a blank baseline can never be minted in the first place. */
 
-const PAGE_BG = {r: 255, g: 255, b: 255}
-const DECORATOR_BG = {r: 0x06, g: 0x06, b: 0x0f}
+function hexToRgb(hex) {
+  const n = Number.parseInt(hex.slice(1), 16)
+  return {r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff}
+}
+
+// The two colours a blank frame can hold: the page (`light`, or `dark` for a story
+// with the dark backgrounds global) and the decorator surface (`dark`). Both come
+// from the options preview.ts gives the backgrounds addon, so a story page is never
+// painted a colour the sentinel would count as content.
+const PAGE_BG = hexToRgb(STORY_BACKGROUNDS.light.value)
+const DECORATOR_BG = hexToRgb(STORY_BACKGROUNDS.dark.value)
 const BG_TOLERANCE = 10
 const SNAPSHOT_DIR = join(process.cwd(), '__snapshots__')
 
@@ -180,6 +190,18 @@ export function contentRatio(buffer) {
   return content / (width * height)
 }
 
+export function assertContentPresent(storyId, ratio) {
+  if (SENTINEL_EXEMPT.has(storyId) || ratio >= MIN_CONTENT_RATIO) {
+    return
+  }
+  throw new Error(
+    `Content sentinel: "${storyId}" rendered ${(ratio * 100).toFixed(4)}% non-background pixels, ` +
+      `below the ${(MIN_CONTENT_RATIO * 100).toFixed(4)}% floor. The story is blank or invisible — ` +
+      `snapshotting it would guard nothing. Check that its styles actually applied ` +
+      `(see the cascade-layer note in packages/tokens/src/compat.css) before touching this threshold.`
+  )
+}
+
 export function contentRatioSwing(currentRatio, baselineRatio) {
   const largerRatio = Math.max(currentRatio, baselineRatio)
   if (largerRatio < MIN_CONTENT_RATIO) {
@@ -220,16 +242,7 @@ export default {
     const image = await page.screenshot({animations: 'disabled'})
     const currentRatio = contentRatio(image)
 
-    if (!SENTINEL_EXEMPT.has(context.id)) {
-      if (currentRatio < MIN_CONTENT_RATIO) {
-        throw new Error(
-          `Content sentinel: "${context.id}" rendered ${(currentRatio * 100).toFixed(4)}% non-background pixels, ` +
-            `below the ${(MIN_CONTENT_RATIO * 100).toFixed(4)}% floor. The story is blank or invisible — ` +
-            `snapshotting it would guard nothing. Check that its styles actually applied ` +
-            `(see the cascade-layer note in packages/tokens/src/compat.css) before touching this threshold.`
-        )
-      }
-    }
+    assertContentPresent(context.id, currentRatio)
 
     const baselinePath = join(SNAPSHOT_DIR, `${context.id}.png`)
     const baselineRatio = existsSync(baselinePath) ? contentRatio(readFileSync(baselinePath)) : null

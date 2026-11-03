@@ -5,8 +5,12 @@ import {tmpdir} from 'node:os'
 import {join} from 'node:path'
 import {describe, test} from 'node:test'
 
+import {createRequire} from 'node:module'
+
+import {STORY_BACKGROUNDS} from '../apps/storybook/.storybook/story-backgrounds.mjs'
 import {
   assertBrandFontsLoaded,
+  assertContentPresent,
   assertContentRatioStable,
   contentRatio,
   contentRatioSwing,
@@ -39,6 +43,53 @@ describe('Storybook content sentinel', () => {
   test('ignores background-edge noise when both frames are below the absolute floor', () => {
     assert.equal(contentRatioSwing(0.00009, 0), 0)
     assert.doesNotThrow(() => assertContentRatioStable('blank--story', 0.00009, 0))
+  })
+})
+
+const {PNG} = createRequire(new URL('../apps/storybook/package.json', import.meta.url))('pngjs')
+const PREVIEW_SOURCE = readFileSync(new URL('../apps/storybook/.storybook/preview.ts', import.meta.url), 'utf8')
+
+/** A 1280x720 PNG, the test-runner viewport, filled with one colour. */
+function solidFrame(hex) {
+  const n = Number.parseInt(hex.slice(1).padEnd(6, hex.slice(1)), 16)
+  const image = new PNG({width: 1280, height: 720})
+  for (let i = 0; i < image.data.length; i += 4) {
+    image.data[i] = (n >> 16) & 0xff
+    image.data[i + 1] = (n >> 8) & 0xff
+    image.data[i + 2] = n & 0xff
+    image.data[i + 3] = 255
+  }
+  return PNG.sync.write(image)
+}
+
+describe('Storybook page backgrounds', () => {
+  test('a blank story on the dark page fails the content sentinel', () => {
+    const ratio = contentRatio(solidFrame(STORY_BACKGROUNDS.dark.value))
+    assert.equal(ratio, 0)
+    assert.throws(() => assertContentPresent('production-reading-bookshelf--dark', ratio),
+      /Content sentinel: "production-reading-bookshelf--dark" rendered 0\.0000%/)
+  })
+
+  test('a blank story on the default light page fails the content sentinel', () => {
+    const ratio = contentRatio(solidFrame(STORY_BACKGROUNDS.light.value))
+    assert.equal(ratio, 0)
+    assert.throws(() => assertContentPresent('production-reading-bookshelf--default', ratio), /Content sentinel/)
+  })
+
+  test('the Storybook 10 fallback dark page (#333) reads as content, which is why preview.ts must pass options', () => {
+    const ratio = contentRatio(solidFrame('#333333'))
+    assert.equal(ratio, 1)
+    assert.doesNotThrow(() => assertContentPresent('production-reading-bookshelf--dark', ratio))
+  })
+
+  test('preview.ts hands the shared options to the Storybook 10 backgrounds API', () => {
+    assert.match(PREVIEW_SOURCE, /backgrounds: \{options: STORY_BACKGROUNDS\}/)
+    assert.match(PREVIEW_SOURCE, /initialGlobals: \{backgrounds: \{value: INITIAL_BACKGROUND\}\}/)
+    assert.doesNotMatch(PREVIEW_SOURCE, /\bvalues:\s*\[/, 'Storybook 10 ignores the legacy `values` array')
+  })
+
+  test('the exempt dismissed-modal stories may render blank', () => {
+    assert.doesNotThrow(() => assertContentPresent('primitives-modal--hidden', 0))
   })
 })
 
