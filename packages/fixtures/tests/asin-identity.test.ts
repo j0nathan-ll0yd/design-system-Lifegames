@@ -9,9 +9,9 @@
 // RULES, across every source below:
 //   (a) one ASIN maps to one (title, author);
 //   (b) one (title, author) maps to one ASIN;
-//   (c) an ASIN with a cover names the book that cover shows. A covered ASIN
-//       (COVERED_ASINS) takes its post-adapter entry (src/post-adapter/books.ts); an
-//       ASIN whose only cover is an app mirror (apps/*/public/images/books/, found by
+//   (c) an ASIN with a cover names the book that cover shows. An ASIN post-adapter
+//       gives a cover (POST_ADAPTER_COVERED) takes its post-adapter entry
+//       (src/post-adapter/books.ts); an ASIN whose only cover is an app mirror (apps/*/public/images/books/, found by
 //       glob) takes its MIRROR_ONLY_BOOKS entry. Every mirror cover must have a known book;
 //   (d) an ASIN's pages and year are the same everywhere they are stated, and for an
 //       ASIN with a known book they equal that book's.
@@ -39,7 +39,7 @@ import {existsSync, readdirSync, readFileSync, statSync} from 'node:fs'
 import {dirname, join, relative, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 import {describe, expect, it} from 'vitest'
-import {COVER_ORIGIN, coverAsin, COVERED_ASINS} from '../src/cover-inventory'
+import {COVER_ORIGIN, coverAsin} from '../src/cover-inventory'
 import {booksPostAdapter} from '../src/post-adapter/books'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -53,7 +53,7 @@ const MIRROR_ONLY_SOURCE = 'packages/fixtures/tests/asin-identity.test.ts MIRROR
 
 /**
  * The book each mirror-only cover shows: a cover under an app mirror
- * (apps/<app>/public/images/books/) whose ASIN is not in COVERED_ASINS, so post-adapter does
+ * (apps/<app>/public/images/books/) whose ASIN is not in POST_ADAPTER_COVERED, so post-adapter does
  * not describe it. Each entry was read off the mirrored cover image and verified by
  * ISBN-10 against a public record (PR #343). Pages and year are those of the edition
  * the ISBN-10 names.
@@ -116,7 +116,8 @@ const UNSCANNED: Record<string, string> = {
   'packages/web/tests/server-render/bookshelf-links.test.ts': 'test-local known-answer inputs, not a fixture',
   'packages/web/tests/server-render/client-gaps.test.ts': 'test-local cover-URL input (const ASIN), not a fixture',
   'packages/fixtures/tests/asin-shape.test.ts': 'can-fail probes of the shape gate',
-  'packages/fixtures/tests/asin-identity.test.ts': 'can-fail probes of this gate'
+  'packages/fixtures/tests/asin-identity.test.ts': 'can-fail probes of this gate',
+  'packages/fixtures/tests/cover-integrity.test.ts': 'known-answer probes of the Swift fixture cover gate'
 }
 
 export interface BookRecord {
@@ -339,11 +340,19 @@ function mirroredCovers(): {mirrors: Record<string, string[]>; unparsed: string[
   return {mirrors, unparsed}
 }
 
-/** The known book per ASIN: post-adapter for a covered ASIN, MIRROR_ONLY_BOOKS for a mirror-only one. */
+/**
+ * The ASINs post-adapter gives a cover. Its books carry all six cover fields or none
+ * (cover-integrity.test.ts), so mainImage stands for the set.
+ */
+const POST_ADAPTER_COVERED: readonly string[] = [
+  ...new Set(Object.values(booksPostAdapter).flatMap((variation) => variation.books.filter((book) => book.mainImage != null).map((book) => book.asin)))
+].sort()
+
+/** The known book per ASIN: post-adapter for a POST_ADAPTER_COVERED ASIN, MIRROR_ONLY_BOOKS for a mirror-only one. */
 function knownBooks(): Map<string, BookRecord> {
   const known = new Map<string, BookRecord>()
   for (const r of collectBooks(booksPostAdapter, POST_ADAPTER_SOURCE, 'booksPostAdapter')) {
-    if (COVERED_ASINS.includes(r.asin) && !known.has(r.asin)) {
+    if (POST_ADAPTER_COVERED.includes(r.asin) && !known.has(r.asin)) {
       known.set(r.asin, r)
     }
   }
@@ -405,7 +414,7 @@ describe('fixture ASINs name one book everywhere', () => {
     expect([...files].some((f) => f.startsWith('Sources/LifegamesWidgets/Resources/widgets/') && f.endsWith('.json')), 'Swift JSON').toBe(true)
     expect([...files].some((f) => f.startsWith('packages/fixtures/src/') && f.endsWith('.ts')), 'fixtures TS').toBe(true)
     expect([...files].some((f) => f.startsWith('packages/web/stories/') && f.endsWith('.ts')), 'story TS').toBe(true)
-    expect([...truth.keys()].sort()).toEqual([...COVERED_ASINS, ...Object.keys(MIRROR_ONLY_BOOKS)].sort())
+    expect([...truth.keys()].sort()).toEqual([...POST_ADAPTER_COVERED, ...Object.keys(MIRROR_ONLY_BOOKS)].sort())
   })
 
   it('every app mirror cover has a known book, and every MIRROR_ONLY_BOOKS entry names a mirror cover', () => {
@@ -417,7 +426,7 @@ describe('fixture ASINs name one book everywhere', () => {
       expect(asins.length, `${dir} holds covers`).toBeGreaterThan(0)
     }
     expect(unparsed, 'mirror files that name no ASIN').toEqual([])
-    expect(mirrorProblems(mirrors, COVERED_ASINS, Object.keys(MIRROR_ONLY_BOOKS))).toEqual([])
+    expect(mirrorProblems(mirrors, POST_ADAPTER_COVERED, Object.keys(MIRROR_ONLY_BOOKS))).toEqual([])
   })
 
   it('every author is a string', () => {
