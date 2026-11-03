@@ -266,4 +266,52 @@ describe.each(['fail-visible-tokens', 'fail-visible-website', 'fail-visible-docs
       expect(box.inside, `tile ${i}: ${JSON.stringify(box)}`).toBe(true)
     }
   })
+
+  /** The first tile's computed transform once its transitions finish. */
+  function settledTransform(page: Page): Promise<string> {
+    return page.locator('#cardBooks .shelf-book').first().evaluate(async (tile) => {
+      await Promise.all(tile.getAnimations().map((a) => a.finished))
+      return getComputedStyle(tile).transform
+    })
+  }
+
+  it('lifts a tile that the mouse presses: mouse focus is not :focus-visible', async () => {
+    const page = await open(`/${fixture}/`, 'no-preference')
+    const link = page.locator('#cardBooks .shelf-book-link').first()
+    await waitForEntry(page, '.shelf-book', 'shelfFadeIn', await page.locator('#cardBooks .shelf-book').count())
+    const cover = (await page.locator('#cardBooks .shelf-cover-wrapper').first().boundingBox())!
+    await page.mouse.move(cover.x + cover.width / 2, cover.y + cover.height / 2)
+    // Press and hold: no release, so no click opens the book.
+    await page.mouse.down()
+    expect(await link.evaluate((el) => el === document.activeElement), 'control: the press focuses the link').toBe(true)
+    expect(await link.evaluate((el) => el.matches(':focus-visible')), 'control: mouse focus is not focus-visible').toBe(false)
+    expect(await settledTransform(page), 'the pressed, hovered tile lifts').toBe('matrix(1, 0, 0, 1, 0, -4)')
+  })
+})
+
+// Only the web package's a11y.css suppresses the ring after pointer input;
+// tokens/base does not, so the docs stack is not in this set.
+describe.each(['fail-visible-tokens', 'fail-visible-website'])('Bookshelf hover lift under pointer modality (%s)', (fixture) => {
+  it('lifts a keyboard-focused tile once pointer input hides its ring', async () => {
+    const page = await open(`/${fixture}/`, 'no-preference')
+    const link = page.locator('#cardBooks .shelf-book-link').first()
+    await waitForEntry(page, '.shelf-book', 'shelfFadeIn', await page.locator('#cardBooks .shelf-book').count())
+    do {
+      await page.keyboard.press('Tab')
+    } while (!(await link.evaluate((el) => el === document.activeElement)))
+    // A pointerdown that does not move focus: input-modality.ts sets this
+    // attribute, and the fixture does not run that tracker.
+    await page.evaluate(() => {
+      document.documentElement.dataset.inputModality = 'pointer'
+    })
+    await link.hover()
+    expect(await link.evaluate((el) => el.matches(':focus-visible')), 'control: focus stays keyboard focus').toBe(true)
+    expect(await link.evaluate((el) => getComputedStyle(el, '::after').outlineStyle), 'pointer input hides the ring').toBe('none')
+    const transform = await link.evaluate(async (el) => {
+      const tile = el.closest('.shelf-book')!
+      await Promise.all(tile.getAnimations().map((a) => a.finished))
+      return getComputedStyle(tile).transform
+    })
+    expect(transform, 'with no ring to clip, the hovered tile lifts').toBe('matrix(1, 0, 0, 1, 0, -4)')
+  })
 })
