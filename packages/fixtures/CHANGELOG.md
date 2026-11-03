@@ -1,5 +1,11 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.6.7
+
+### Patch Changes
+
+- @j0nathan-ll0yd/web@4.6.1
+
 ## 1.6.6
 
 ### Patch Changes
