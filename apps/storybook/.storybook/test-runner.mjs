@@ -140,11 +140,14 @@ async function waitForBrandFonts(page, storyId) {
    samples the clock, so a capture can catch it between values. Before each story
    renders, this stylesheet sets every transition to none, so a property takes its
    end value at once.
-   Animations are NOT set to `animation: none`: `.shelf-book` and
-   `.article-list-item` (packages/web/src/styles/components.css) rest at
-   `opacity: 0` and reach 1 only through a `forwards` animation, so `none` would
-   draw them invisible. The screenshot's `animations: 'disabled'` jumps finite
-   animations to their end state and cancels infinite ones instead. */
+   Animations are NOT set to `animation: none`, which draws an element's resting
+   style. The screenshot's `animations: 'disabled'` instead jumps finite animations
+   to their end state and cancels infinite ones, so the capture is the settled frame
+   a visitor sees after load. The two differ for any animation whose end state is
+   not its resting style: before #346, `.shelf-book` and `.article-list-item` rested
+   at `opacity: 0` behind a `forwards` fade, and `none` would have drawn them
+   invisible. Today the only filled animations (`sleepMoon*`, `both`) end on their
+   resting style, so the two give the same frame. */
 const MOTION_FREEZE_ID = 'lg-visual-motion-freeze'
 const MOTION_FREEZE_CSS = '*, *::before, *::after { transition: none !important; }'
 
