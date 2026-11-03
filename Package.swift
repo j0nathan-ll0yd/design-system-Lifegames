@@ -71,6 +71,7 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesOnboardingTests", dependencies: [
             "LifegamesOnboarding",
+            .product(name: "ViewInspector", package: "ViewInspector"),
         ]),
         .testTarget(name: "LifegamesTemplatesTests", dependencies: [
             "LifegamesTemplates",
