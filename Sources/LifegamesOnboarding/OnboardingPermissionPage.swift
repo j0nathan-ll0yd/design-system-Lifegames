@@ -27,23 +27,25 @@ public struct OnboardingPermissionPage: View {
     }
 
     public var body: some View {
-        VStack(spacing: Spacing.s800) {
-            Spacer()
+        OnboardingPageLayout {
+            VStack(spacing: Spacing.s800) {
+                Spacer()
 
-            VStack(spacing: Spacing.s500) {
-                iconView
-                textContent
-                statusBadge
+                VStack(spacing: Spacing.s500) {
+                    iconView
+                    textContent
+                    statusBadge
+                }
+
+                Spacer()
+
+                VStack(spacing: Spacing.s500) {
+                    OnboardingProgressDots(total: totalPages, currentIndex: pageIndex)
+                    actionButtons
+                }
             }
-
-            Spacer()
-
-            VStack(spacing: Spacing.s500) {
-                OnboardingProgressDots(total: totalPages, currentIndex: pageIndex)
-                actionButtons
-            }
+            .padding(Spacing.s800)
         }
-        .padding(Spacing.s800)
         .neonCard(accent: props.accentColor)
     }
 
