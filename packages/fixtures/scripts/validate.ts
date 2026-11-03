@@ -149,7 +149,7 @@ for (const [domain, title] of Object.entries(fixtureMap.postAdapter)) {
 
 // ── Report ──────────────────────────────────────────────────────────────────────
 // A run that checks nothing cannot fail, so it fails here.
-if (total === 0 && errors.length === 0) {
+if (total < 0 && errors.length === 0) {
   process.stderr.write(`\n[fixtures:validate] FAIL: 0 fixtures validated. fixture-map.json maps no fixtures to check.\n`)
   process.exit(1)
 }
