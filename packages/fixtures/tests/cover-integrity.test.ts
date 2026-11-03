@@ -103,16 +103,36 @@ export interface SwiftBookshelfFile {
   data: unknown
 }
 
+/**
+ * A state-only envelope (`{"state": "suppressed"}`): the honest-state fixtures carry no
+ * books, so they hold no cover to check.
+ */
+function isStateOnly(data: unknown): boolean {
+  return data !== null && typeof data === 'object' && !Array.isArray(data) && Object.keys(data).join() === 'state' &&
+    typeof (data as {state: unknown}).state === 'string'
+}
+
 /** Every cover problem in the Swift bookshelf fixtures, one line each; empty when all hold. */
 export function swiftCoverProblems(files: readonly SwiftBookshelfFile[], mirror: ReadonlySet<string>): string[] {
   const out: string[] = []
   for (const {file, data} of files) {
     const books = (data as {books?: {books?: unknown}} | null)?.books?.books
     if (!Array.isArray(books)) {
+      if (!isStateOnly(data)) {
+        out.push(`${file}: neither a books.books list nor a state-only envelope, so its covers cannot be checked`)
+      }
       continue
     }
-    books.forEach((book: Record<string, unknown>, index) => {
+    books.forEach((entry: unknown, index) => {
+      if (entry === null || typeof entry !== 'object' || Array.isArray(entry)) {
+        out.push(`${file} books[${index}]: not a book object`)
+        return
+      }
+      const book = entry as Record<string, unknown>
       const asin = book.asin
+      if ('coverUrl' in book) {
+        out.push(`${file} books[${index}] (${String(asin)}) coverUrl: not a contract field; a cover goes in the mainImage* fields`)
+      }
       for (const key of Object.keys(book).filter((k) => k.startsWith('mainImage'))) {
         const where = `${file} books[${index}] (${String(asin)}) ${key}`
         const url = book[key]
@@ -171,6 +191,23 @@ describe('Swift bookshelf fixture covers name mirrored objects that exist', () =
 
   it("every cover URL is the book's own derivative, in the docs mirror, and on the distribution", () => {
     expect(swiftCoverProblems(files, mirror)).toEqual([])
+  })
+
+  it('rejects coverUrl outright, null or not (known answer)', () => {
+    const shelf = (fields: Record<string, unknown>) => [{file: 'f.json', data: {books: {books: [{asin: '0593128508', ...fields}]}}}]
+    const message = 'f.json books[0] (0593128508) coverUrl: not a contract field; a cover goes in the mainImage* fields'
+    expect(swiftCoverProblems(shelf({coverUrl: `${COVER_ORIGIN}0593128508-card.webp`}), new Set(['0593128508-card.webp']))).toEqual([message])
+    expect(swiftCoverProblems(shelf({coverUrl: null}), new Set())).toEqual([message])
+  })
+
+  it('fails a fixture shape it cannot read, and passes a state-only envelope (known answer)', () => {
+    const one = (data: unknown) => swiftCoverProblems([{file: 'f.json', data}], new Set())
+    expect(one({state: 'suppressed'})).toEqual([])
+    expect(one({books: {books: []}})).toEqual([])
+    expect(one({books: []})).toEqual(['f.json: neither a books.books list nor a state-only envelope, so its covers cannot be checked'])
+    expect(one({state: 'suppressed', books: {}})).toEqual(['f.json: neither a books.books list nor a state-only envelope, so its covers cannot be checked'])
+    expect(one(null)).toEqual(['f.json: neither a books.books list nor a state-only envelope, so its covers cannot be checked'])
+    expect(one({books: {books: ['0593128508']}})).toEqual(['f.json books[0]: not a book object'])
   })
 
   it('fails a cover with no mirror file and no object (known answer)', () => {
