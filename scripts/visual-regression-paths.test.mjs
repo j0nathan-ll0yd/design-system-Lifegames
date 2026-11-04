@@ -29,6 +29,10 @@ const PINNED_INPUTS = [
   'apps/storybook/__snapshots__/primitives-card--default.png',
   'apps/storybook/test-runner-jest.config.mjs',
   'apps/storybook/.storybook/test-runner.mjs',
+  // The story globs and staticDirs, and the update-mode wrapper. The import walk
+  // starts from preview.ts, so it never reaches these two.
+  'apps/storybook/.storybook/main.ts',
+  'apps/storybook/.storybook/update-visual-snapshots.mjs',
   '.github/workflows/visual-regression.yml',
   'apps/storybook/package.json',
   'package.json',
