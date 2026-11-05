@@ -6,14 +6,7 @@
       "type": "string"
     },
     "lastSync": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": ["string", "null"]
     },
     "quantities": {
       "type": "object",
@@ -57,34 +50,13 @@
       "type": "object",
       "properties": {
         "moveKcal": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["number", "null"]
         },
         "exerciseMin": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["number", "null"]
         },
         "standHr": {
-          "anyOf": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["number", "null"]
         },
         "daylightMin": {
           "type": "number"
@@ -116,14 +88,7 @@
           "type": "boolean"
         },
         "since": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": ["string", "null"]
         },
         "source": {
           "type": "string",

@@ -2,7 +2,7 @@
   "generatedAt": "2026-03-18T12:00:00.000Z",
   "books": [
     {
-      "asin": "KA7731KAP1",
+      "asin": "B0KA7731P1",
       "title": "Known Answer Title Kappa-7731",
       "author": "Known Answer Author Kappa-7731",
       "series": "Known Answer Series Kappa-7731",
@@ -32,7 +32,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "KA7731KAP2",
+      "asin": "B0KA7731P2",
       "title": "Known Answer Finished Kappa-7731",
       "author": "Known Answer Author Kappa-7731",
       "series": "Known Answer Series Kappa-7731",

@@ -29,7 +29,10 @@ let package = Package(
         .package(url: "https://github.com/nalexn/ViewInspector", .upToNextMinor(from: "0.10.1")),
     ],
     targets: [
-        .target(name: "LifegamesTokens", resources: [.process("Resources")]),
+        // The variable font is the instancing source (scripts/fonts/instance-space-grotesk.py),
+        // not a runtime face: iOS cannot resolve its named instances by PostScript name.
+        .target(name: "LifegamesTokens", exclude: ["Resources/Fonts/SpaceGrotesk-Variable.ttf"],
+                resources: [.process("Resources")]),
         .target(name: "LifegamesSchemas", path: "Sources/LifegamesSchemas"),
         .target(name: "LifegamesCopy", resources: [.process("Resources")]),
         .target(name: "LifegamesComponentsCore", dependencies: ["LifegamesTokens", "LifegamesCopy"]),
@@ -55,6 +58,8 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesWidgetsTests", dependencies: [
             "LifegamesWidgets",
+            // CoffeeTrackingProps: the coffee fixture catalog rows decode into it.
+            "LifegamesComponentsCore",
             "LifegamesWidgetsWatch",
             .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             .product(name: "ViewInspector", package: "ViewInspector"),
@@ -66,6 +71,7 @@ let package = Package(
         ]),
         .testTarget(name: "LifegamesOnboardingTests", dependencies: [
             "LifegamesOnboarding",
+            .product(name: "ViewInspector", package: "ViewInspector"),
         ]),
         .testTarget(name: "LifegamesTemplatesTests", dependencies: [
             "LifegamesTemplates",

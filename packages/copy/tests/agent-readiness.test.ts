@@ -25,6 +25,7 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     about: Record<string, string>
     contact: Record<string, string>
     privacy: Record<string, string>
+    organization: Record<string, string>
   }
   const llm = readJson(join(PKG, 'dist', 'llm.flat.json')) as {
     txt: Record<string, unknown>
@@ -34,6 +35,7 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     notFound: Record<string, unknown>
   }
   const person = identity.person as Record<string, string>
+  const organization = identity.organization
 
   /** SEP-2127 caps the server-card `description` at 100 characters. */
   const SEP_2127_DESCRIPTION_MAX = 100
@@ -66,11 +68,16 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(Object.keys(llm.agentDiscovery).filter((key) => /^(agentCard|aiCatalogA2a)/.test(key))).toEqual([])
   })
 
-  it('every identity leaf that names an email address names person.email', () => {
+  it('every identity leaf that names an email address names person.email, except the Organization alias', () => {
+    // organization.contactEmail is the one sanctioned second address: a purpose-made alias for the
+    // Organization contact point. No other leaf may name it, so the alias cannot leak into prose.
     const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g
     const mismatches: string[] = []
     for (const [group, leaves] of Object.entries(identity)) {
       for (const [key, value] of Object.entries(leaves)) {
+        if (group === 'organization' && key === 'contactEmail') {
+          continue
+        }
         for (const str of Array.isArray(value) ? value : [value]) {
           for (const match of String(str).matchAll(EMAIL_RE)) {
             if (match[0] !== person['email']) {
@@ -82,6 +89,33 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     }
     expect(person['email']).toMatch(EMAIL_RE)
     expect(mismatches).toEqual([])
+  })
+
+  it('the Organization contact email is a bare address distinct from person.email', () => {
+    // The personal address stays obfuscated on /contact (owner ruling 2026-10-12). Copying it into
+    // the Organization node would publish it in plain JSON-LD.
+    expect(organization['contactEmail']).toMatch(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+    expect(organization['contactEmail']).not.toBe(person['email'])
+  })
+
+  it('the Organization contact point uses the Person contactType', () => {
+    expect(organization['contactType']).toBe(person['contactType'])
+  })
+
+  it('the Organization PostalAddress parts are the bare schema.org forms', () => {
+    // postOfficeBoxNumber holds the number only; the "PO Box" words are not part of the value.
+    expect(organization['poBox']).toMatch(/^[0-9A-Za-z-]+$/)
+    expect(organization['locality']?.trim().length).toBeGreaterThan(0)
+    expect(organization['region']).toMatch(/^[A-Z]{2}$/)
+    expect(organization['postalCode']).toMatch(/^[0-9]{5}(-[0-9]{4})?$/)
+    expect(organization['country']).toMatch(/^[A-Z]{2}$/)
+  })
+
+  it('the Organization description is capitalised and ends with a period', () => {
+    // The value is the NAICS 541511 industry title, a noun phrase, so no verb is required.
+    const description = organization['description'] ?? ''
+    expect(description).toMatch(/^[A-Z].*[.]$/)
+    expect(description.slice(0, -1)).not.toMatch(/[.!?] /)
   })
 
   it('the PostalAddress parts recompose person.location', () => {
@@ -178,7 +212,8 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     const keys = Object.keys(llm.developers)
     const stems = new Set(keys.filter((key) => /(Heading|Body)$/.test(key)).map((key) => key.replace(/(Heading|Body)$/, '')))
     const halfPairs = [...stems].filter((stem) => !(keys.includes(`${stem}Heading`) && keys.includes(`${stem}Body`)))
-    expect(stems.size).toBe(8)
+    // Eight machine interfaces plus the /api/v1 errors, versioning and rateLimit sections.
+    expect(stems.size).toBe(11)
     expect(halfPairs).toEqual([])
   })
 
@@ -195,6 +230,91 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     const value = llm.developers['apiSuppressedResponse'] ?? ''
     expect(value).not.toMatch(/[{}]/)
     expect(value).toContain('suppressed: true')
+  })
+
+  it('the focus section names the /api/v1 problem answer beside the data-host 403', () => {
+    expect(llm.developers['focusBody']).toContain('/api/v1')
+    expect(llm.developers['focusBody']).toContain('focus-suppressed problem document')
+  })
+
+  it('the API section names the /api/v1 base and the OpenAPI document as {siteUrl} templates', () => {
+    expect(llm.developers['apiBaseNote']).toContain('{siteUrl}/api/v1')
+    expect(llm.developers['apiBaseNote']).toContain('{siteUrl}/openapi.json')
+    expect(llm.developers['apiBody']).toContain('/api/v1')
+    expect(llm.developers['apiBody']).toContain('{siteUrl}/openapi.json')
+    // Every URL is a template: no literal host in any developers value.
+    expect(Object.entries(llm.developers).filter(([, v]) => /https?:\/\/|cloudfront\.net|jonathanlloyd\.me/i.test(v)).map(([k]) => k)).toEqual([])
+  })
+
+  /** The /api/v1 problem types (plan is-agentic-api-v1): one Title and one Detail key per slug. */
+  const PROBLEM_STEMS = ['NotFound', 'MethodNotAllowed', 'RateLimited', 'FocusSuppressed', 'UpstreamUnavailable']
+
+  it('every problem type has exactly a Title and a Detail, and no other problem key exists', () => {
+    const problemKeys = Object.keys(llm.developers).filter((key) => key.startsWith('problem')).sort()
+    expect(problemKeys).toEqual(PROBLEM_STEMS.flatMap((stem) => [`problem${stem}Detail`, `problem${stem}Title`]).sort())
+  })
+
+  it('problem titles are short labels and problem details are static sentences', () => {
+    for (const stem of PROBLEM_STEMS) {
+      const title = llm.developers[`problem${stem}Title`] ?? ''
+      const detail = llm.developers[`problem${stem}Detail`] ?? ''
+      expect(title, stem).toMatch(/^[A-Z][^.]*[^.\s]$/)
+      expect(detail, stem).toMatch(/\.$/)
+      // RFC 9457 detail is static here: variable data travels in extension members and headers.
+      // The only placeholder allowed is the site base URL.
+      expect(detail.replaceAll('{siteUrl}', ''), stem).not.toMatch(/[{}]/)
+    }
+  })
+
+  it('each problem detail names the member or header that carries its variable data', () => {
+    expect(llm.developers['problemNotFoundDetail']).toContain('validPaths')
+    expect(llm.developers['problemMethodNotAllowedDetail']).toContain('Allow header')
+    // Method-neutral: /api/csp-report (POST only) answers the same problem as the GET/HEAD /api/v1 paths.
+    expect(llm.developers['problemMethodNotAllowedDetail']).not.toMatch(/\b(GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS)\b/)
+    expect(llm.developers['problemRateLimitedDetail']).toContain('Retry-After')
+    expect(llm.developers['problemFocusSuppressedDetail']).toContain('suppressed: true')
+    expect(llm.developers['problemFocusSuppressedDetail']).toContain('Retry-After')
+    expect(llm.developers['problemUpstreamUnavailableDetail']).toContain('Retry-After')
+  })
+
+  it('the errors section names RFC 9457, the media type, and the five members', () => {
+    const body = llm.developers['errorsBody'] ?? ''
+    expect(body).toContain('RFC 9457')
+    expect(body).toContain('application/problem+json')
+    for (const member of ['type', 'title', 'status', 'detail', 'instance']) {
+      expect(body).toMatch(new RegExp(`\\b${member}\\b`))
+    }
+  })
+
+  it('the versioning section states the path version, the 90-day window and the deprecation headers', () => {
+    const body = llm.developers['versioningBody'] ?? ''
+    for (const term of ['v1', '90 days', 'Deprecation', 'Sunset', 'rel="successor-version"', 'portal contract']) {
+      expect(body).toContain(term)
+    }
+  })
+
+  it('the rate-limit section states the budget and the header fields', () => {
+    const body = llm.developers['rateLimitBody'] ?? ''
+    for (const term of ['60 requests per minute', 'RateLimit-Policy', 'RateLimit header', 'Retry-After', '429']) {
+      expect(body).toContain(term)
+    }
+    // The facade fails open: RateLimit-Policy is unconditional, RateLimit only when the counter
+    // counted the request (website #395 review, finding M2). The value must not promise RateLimit
+    // on every response, and must say the request is still served without it.
+    expect(body).toContain('every response the counter counted')
+    expect(body).toContain('the request is still served and the RateLimit field is absent')
+    expect(body).not.toMatch(/RateLimit-Policy and RateLimit header fields/)
+  })
+
+  it('the OpenAPI Suppressed description is status-neutral and channel-neutral, in value and _meta', () => {
+    // The website OpenAPI generator attaches it to the /api/v1 facade's 503, while the data host
+    // still answers its own status: the text may name neither that status nor the host. Read from src/ for the _meta.
+    const rich = readJson(join(PKG, 'src', 'llm.en-US.json')) as {developers: Record<string, unknown>}
+    const text = JSON.stringify(rich.developers['apiSuppressedResponse'])
+    expect(text).not.toMatch(/\b403\b|cloudfront|jonathanlloyd\.me/i)
+    // The value names no status code at all; _meta.usage names the facade's 503 it documents.
+    expect(llm.developers['apiSuppressedResponse']).not.toMatch(/\b\d{3}\b/)
+    expect(llm.developers['apiSuppressedResponse']).toContain('Retry-After')
   })
 
   it('the developers usage terms restate the site Content-Usage header verbatim', () => {

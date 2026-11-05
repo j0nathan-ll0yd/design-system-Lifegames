@@ -5,6 +5,7 @@ import WidgetTimestamp from '../../components/WidgetTimestamp.astro';
 import { rendersData, stateRootAttrs } from '../../runtime/widget-state';
 import { devActivityLogState } from '../../runtime/widget-rules';
 import { safeHttpsUrl } from '../../runtime/html-utils';
+import { isIsoTimestamp } from '../../runtime/relative-time';
 import type { DevActivityLogProps } from './DevActivityLog.types';
 
 interface Event {
@@ -113,7 +114,11 @@ function getDetail(event: Event): string {
               <span class="gh-dal-title">{event.title}</span>
               {detail && <span class="gh-dal-detail" set:html={detail} />}
               {event.datetime ? (
-                <time class="gh-dal-date" datetime={event.datetime}>
+                <time
+                  class="gh-dal-date"
+                  datetime={event.datetime}
+                  data-relative={isIsoTimestamp(event.datetime) ? 'compact' : undefined}
+                >
                   {event.date}
                 </time>
               ) : (

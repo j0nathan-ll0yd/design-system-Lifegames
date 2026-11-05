@@ -2,7 +2,7 @@
   "generatedAt": "2026-03-18T12:00:00.000Z",
   "books": [
     {
-      "asin": "P001",
+      "asin": "B0DSPG0001",
       "title": "Just Started",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -32,7 +32,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "P002",
+      "asin": "B0DSPG0002",
       "title": "Quarter Done",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -62,7 +62,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "P003",
+      "asin": "B0DSPG0003",
       "title": "Halfway",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -92,7 +92,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "P004",
+      "asin": "B0DSPG0004",
       "title": "Three Quarters",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -122,7 +122,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "P005",
+      "asin": "B0DSPG0005",
       "title": "Almost Done",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",

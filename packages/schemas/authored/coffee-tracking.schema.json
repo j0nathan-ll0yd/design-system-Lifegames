@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lifegames.dev/schemas/coffee-tracking.schema.json",
+  "title": "CoffeeTracking",
+  "description": "Presentational props for the Acaia coffee-tracking screen: the wire shape of CoffeeTrackingProps (Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingProps.swift). Only the stored properties are encoded; the derived values (consumedGrams, fillPercent, caffeineMgThisCup, isLinkLostMidSession, isPresenceUnknown, isSipping, primaryAction) are computed and never appear on the wire. Fixture pool for coffee-tracking previews (S98).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "connection",
+    "isSessionActive",
+    "isCupOnScale",
+    "startWeightGrams",
+    "lastStableWeightGrams",
+    "currentWeightGrams",
+    "flowRateGramsPerSec",
+    "sessionElapsedSeconds",
+    "dailyCaffeineMg",
+    "dailyTargetMg",
+    "cupsToday",
+    "beverage"
+  ],
+  "properties": {
+    "connection": {
+      "title": "CoffeeScaleConnection",
+      "type": "string",
+      "description": "Scale link state. Raw values of CoffeeTrackingProps.ScaleConnection.",
+      "enum": ["unpaired", "searching", "connected", "error"]
+    },
+    "errorMessage": {
+      "description": "Non-nil only when connection is error.",
+      "anyOf": [{ "type": "string" }, { "type": "null" }]
+    },
+    "batteryPercent": {
+      "description": "Scale battery level. Null when unknown or the scale is unpaired.",
+      "anyOf": [{ "type": "integer" }, { "type": "null" }]
+    },
+    "isSessionActive": {
+      "type": "boolean",
+      "description": "True while a cup is actively tracked."
+    },
+    "isCupOnScale": {
+      "type": "boolean",
+      "description": "False while the cup is lifted. Meaningful only while connection is connected."
+    },
+    "startWeightGrams": {
+      "type": "number",
+      "description": "Baseline captured at New Cup (the full-cup weight)."
+    },
+    "lastStableWeightGrams": {
+      "type": "number",
+      "description": "Last settled reading. Drives the fill meter."
+    },
+    "currentWeightGrams": {
+      "type": "number",
+      "description": "Instantaneous reading. May be about 0 while the cup is lifted."
+    },
+    "flowRateGramsPerSec": {
+      "type": "number",
+      "description": "Weight change per second, derived client-side. 0 when idle."
+    },
+    "sessionElapsedSeconds": { "type": "integer" },
+    "dailyCaffeineMg": { "type": "integer" },
+    "dailyTargetMg": {
+      "type": "integer",
+      "description": "Daily caffeine target. The Swift initializer defaults it to 400 mg (FDA guideline); the wire carries it explicitly."
+    },
+    "cupsToday": { "type": "integer" },
+    "beverage": {
+      "title": "CoffeeBeverage",
+      "type": "string",
+      "description": "Beverage type. Raw values of CoffeeTrackingProps.Beverage.",
+      "enum": ["drip", "espresso", "coldBrew"]
+    }
+  }
+}

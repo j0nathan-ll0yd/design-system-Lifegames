@@ -7,7 +7,8 @@ import type { WidgetStateProps } from '../../runtime/widget-state';
 export interface Article {
   title: string;
   source: string;
-  // Relative label computed against the page's `now`.
+  // Text the server renders: absolute UTC (`2026-10-23 14:05 UTC`, atlas decision
+  // 0164 D5). The browser writes the relative label from `datetime`.
   date: string;
   // ISO timestamp behind `date`, rendered as <time datetime>.
   datetime?: string;

@@ -4,9 +4,9 @@ import {renderStateCard} from './state-notice'
 
 // DS-internal fixture: reading/bookshelf.json
 const defaultBooks = [
-  {asin: '0525573844', title: 'The Pragmatic Programmer', author: 'David Thomas, Andrew Hunt', status: 'in_progress', progress: 68, rating: null},
-  {asin: '0593128508', title: 'Designing Data-Intensive Applications', author: 'Martin Kleppmann', status: 'completed', progress: null, rating: 5},
-  {asin: '0593723848', title: 'A Philosophy of Software Design', author: 'John Ousterhout', status: 'next', progress: null, rating: null}
+  {asin: '0525573844', title: 'Foundryside', author: 'Robert Jackson Bennett', status: 'in_progress', progress: 68, rating: null},
+  {asin: '1449373321', title: 'Designing Data-Intensive Applications', author: 'Martin Kleppmann', status: 'completed', progress: null, rating: 5},
+  {asin: '0593723848', title: 'A Drop of Corruption', author: 'Robert Jackson Bennett', status: 'next', progress: null, rating: null}
 ]
 
 const statusLabels: Record<string, string> = {in_progress: 'Reading', completed: 'Completed', next: 'Up Next'}
@@ -38,7 +38,7 @@ function renderBookshelf(books: typeof defaultBooks) {
     books.map((b) =>
       html`
             <div
-              style="display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <div style="flex: 1; min-width: 0;">
                 <div

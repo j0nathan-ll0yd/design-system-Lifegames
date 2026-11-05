@@ -10,6 +10,7 @@
 import {a11y, widgets} from '@j0nathan-ll0yd/copy'
 import {esc, safeHttpsUrl} from './html-utils'
 import {imgFallbackAttrs, installImageFallbacks, PLACEHOLDER_IMAGE_SRC, sanitizeImageUrl} from './image-utils'
+import {isPlainPrimaryClick} from './click-intent'
 import {formatFinishedDate} from './updaters'
 
 interface BookData {
@@ -183,7 +184,68 @@ export function initBookModal(): void {
   }
   dwg._bookModalInit = true
 
-  let triggerElement: HTMLElement | null = null
+  // The book that opened the dialog: its link (the `data-book` link, which is
+  // the title link's href) and its tile's place on the shelf.
+  interface Trigger {
+    href: string | undefined
+    index: number
+  }
+  let triggerElement: Trigger | null = null
+
+  // Focus returns to the shelf, never to a tile: the tile takes no focus. An
+  // updater may rewrite the shelf while the dialog is open, so the order is:
+  // 1. the link to the same book, wherever it now sits (an in-place patch can
+  //    move another book into the trigger tile);
+  // 2. the link at the trigger tile's place, clamped to the last tile, if the
+  //    book left the shelf. An in-place patch keeps every tile in its place,
+  //    so this is the trigger tile's own link there, and the nearest place
+  //    after a rebuild;
+  // 3. a rendered element on the card that already takes focus, if no book
+  //    is left;
+  // 4. the card heading, made focusable from script only (tabindex -1, out of
+  //    the tab order), if the card holds nothing else. Server markup never
+  //    carries that tabindex: the fragment policy pins the markup.
+  function returnFocusTarget(trigger: Trigger): HTMLElement | null {
+    const card = document.getElementById('cardBooks')
+    if (!card) {
+      return null
+    }
+    const links = [...card.querySelectorAll<HTMLElement>('.shelf-book-link')]
+    const sameBook = trigger.href === undefined ? undefined : links.find((link) => link.getAttribute('href') === trigger.href)
+    if (sameBook) {
+      return sameBook
+    }
+    if (links.length > 0) {
+      return links[Math.min(trigger.index, links.length - 1)]!
+    }
+    const focusable = [...card.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')].find((el) =>
+      !el.classList.contains('shelf-book') && isRendered(el, card)
+    )
+    if (focusable) {
+      return focusable
+    }
+    const heading = card.querySelector<HTMLElement>('.widget-label')
+    if (heading && !heading.hasAttribute('tabindex')) {
+      heading.setAttribute('tabindex', '-1')
+      // Once focus moves on, the DOM returns to the server-rendered state.
+      heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {once: true})
+    }
+    return heading
+  }
+
+  // focus() does nothing on an element that is not rendered or sits in an
+  // inert subtree, and focus would fall to <body>; inside aria-hidden content
+  // it would land where assistive technology cannot follow. Skip all of them.
+  function isRendered(el: HTMLElement, within: HTMLElement): boolean {
+    for (let node: HTMLElement | null = el; node && node !== within.parentElement; node = node.parentElement) {
+      if (
+        node.hidden || node.hasAttribute('inert') || node.getAttribute('aria-hidden') === 'true' || window.getComputedStyle(node).display === 'none'
+      ) {
+        return false
+      }
+    }
+    return window.getComputedStyle(el).visibility !== 'hidden'
+  }
 
   function openModal(b: BookData): void {
     modal!.innerHTML = renderModalHtml(b)
@@ -241,7 +303,7 @@ export function initBookModal(): void {
       modal!.style.animation = ''
       dialog!.close()
       if (trigger) {
-        trigger.focus()
+        returnFocusTarget(trigger)?.focus()
       }
     }
 
@@ -293,28 +355,43 @@ export function initBookModal(): void {
     }
   })
 
+  // Each tile's title is a real link to the book on Amazon, stretched over the
+  // tile; the dialog is an enhancement. A plain primary click (Enter on the
+  // link fires one too) opens the dialog instead of the link. Every other click
+  // keeps the browser's default, so a meta-, ctrl- or middle-click still opens
+  // Amazon.
   const cardBooks = document.getElementById('cardBooks')
   if (cardBooks) {
-    cardBooks.addEventListener('click', (e: Event) => {
+    // Only the bound enhancement may say a link opens a dialog: without
+    // JavaScript the link navigates, so server markup never carries
+    // aria-haspopup. The observer marks a link an updater writes later (a
+    // rebuild replaces the tiles; an in-place patch keeps the marked link).
+    const markDialogLinks = (): void => {
+      cardBooks.querySelectorAll('.shelf-book-link:not([aria-haspopup])').forEach((link) => link.setAttribute('aria-haspopup', 'dialog'))
+    }
+    markDialogLinks()
+    new MutationObserver(markDialogLinks).observe(cardBooks, {childList: true, subtree: true})
+
+    cardBooks.addEventListener('click', (e: MouseEvent) => {
+      if (!isPlainPrimaryClick(e)) {
+        return
+      }
       const target = e.target as HTMLElement
       const book = target.closest<HTMLElement>('.shelf-book[data-book]')
-      if (book) {
-        triggerElement = book
-        const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
-        openModal(data)
+      if (!book) {
+        return
       }
-    })
-    cardBooks.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        const target = e.target as HTMLElement
-        const book = target.closest<HTMLElement>('.shelf-book[data-book]')
-        if (book) {
-          e.preventDefault()
-          triggerElement = book
-          const data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
-          openModal(data)
-        }
+      // A payload that does not parse leaves the link to the browser.
+      let data: BookData
+      try {
+        data = JSON.parse(book.getAttribute('data-book') || '{}') as BookData
+      } catch {
+        return
       }
+      e.preventDefault()
+      const tiles = [...cardBooks.querySelectorAll('.shelf-book')]
+      triggerElement = {href: typeof data.link === 'string' ? data.link : undefined, index: Math.max(0, tiles.indexOf(book))}
+      openModal(data)
     })
   }
 }

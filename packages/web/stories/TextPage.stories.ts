@@ -1,17 +1,23 @@
 import type {Meta, StoryObj} from '@storybook/web-components-vite'
 import {html} from 'lit'
 
-// Hand-renders the markup of TextPage.astro and TextPageSection.astro with lit, like
-// every primitive story. The styles come from packages/web/src/styles/primitives.css,
-// imported once in .storybook/preview.ts. The main element omits id="main-content" so
+// Hand-renders the markup of TextPage.astro, TextPageSection.astro and the footer's
+// SiteFooterNav.astro with lit, like every primitive story. The styles come from
+// packages/web/src/styles/primitives.css, imported once in .storybook/preview.ts. The main element omits id="main-content" so
 // the autodocs page, which mounts every story at once, holds no duplicate id.
+//
+// The fixed height keeps the whole page inside the 1280x720 visual-regression
+// viewport: 100dvh less the decorator's 16 px padding on each side. Without it the
+// page measured 828 px and the gate never saw its bottom 108 px. The page's own
+// `min-height: 100dvh` fills the viewport, so the decorator padding alone pushes it
+// 32 px past the frame.
 const meta: Meta = {
   title: 'Primitives/TextPage',
   tags: ['autodocs'],
   parameters: {layout: 'fullscreen'},
   render: () =>
     html`
-    <main class="lg-text-page">
+    <main class="lg-text-page" style="min-height: 0; height: calc(100dvh - 32px);">
       <article class="lg-text-page-card" aria-labelledby="story-text-page-title">
         <header class="lg-text-page-header">
           <h1 id="story-text-page-title" class="lg-text-page-title">Page title</h1>
@@ -38,9 +44,11 @@ const meta: Meta = {
         </div>
         <footer class="lg-text-page-footer">
           <a href="#" class="lg-text-page-back">Back</a>
-          <nav class="lg-text-page-nav">
-            <a href="#" class="lg-text-page-nav-link" aria-current="page">This page</a>
-            <a href="#" class="lg-text-page-nav-link">Other page</a>
+          <nav class="lg-site-footer-nav" aria-label="Site">
+            <ul class="lg-site-footer-nav-list">
+              <li class="lg-site-footer-nav-item"><a href="#" class="lg-site-footer-nav-link" aria-current="page">This page</a></li>
+              <li class="lg-site-footer-nav-item"><a href="#" class="lg-site-footer-nav-link">Other page</a></li>
+            </ul>
           </nav>
         </footer>
       </article>

@@ -27,7 +27,9 @@ public struct CoffeeTrackingProps: Hashable, Codable, Sendable {
     public var batteryPercent: Int?
     /// true while a cup is actively being tracked.
     public var isSessionActive: Bool
-    /// false while the cup is lifted — meter holds at last stable value (§4).
+    /// false while the cup is lifted — meter holds at last stable value (§4). Meaningful only
+    /// while `connection == .connected`. With no live link it carries no presence information,
+    /// whatever value the consumer sets (see `isPresenceUnknown`).
     public var isCupOnScale: Bool
     /// Baseline captured at "New Cup" (the full-cup weight).
     public var startWeightGrams: Double
@@ -64,15 +66,50 @@ public struct CoffeeTrackingProps: Hashable, Codable, Sendable {
 
     /// A tracked cup whose scale link has failed. The session outlives the link — meter,
     /// elapsed timer and persisted snapshot all survive — so this is NOT the never-paired
-    /// empty state, and `isCupOnScale` carries no presence information while it holds.
+    /// empty state. Like every non-connected case, `isCupOnScale` carries no presence
+    /// information while it holds (see `isPresenceUnknown`).
     public var isLinkLostMidSession: Bool {
         isSessionActive && connection == .error
     }
 
-    /// True while the cup is genuinely lifted mid-sip. Excludes the link-lost case, where
-    /// `isCupOnScale` is forced false by the consumer and means "unknown", not "lifted".
+    /// A tracked cup whose presence on the scale cannot be known, because the link is not
+    /// `.connected` (`.searching`, `.error` or `.unpaired`). Only a live link reports presence,
+    /// so `isCupOnScale` carries no presence information here, whatever value the consumer
+    /// sets. Superset of `isLinkLostMidSession`, which stays the `.error`-only case.
+    public var isPresenceUnknown: Bool {
+        isSessionActive && connection != .connected
+    }
+
+    /// True while the cup is genuinely lifted mid-sip. Only a live link can report a lift, so
+    /// this is false whenever presence is unknown.
     public var isSipping: Bool {
-        isSessionActive && !isCupOnScale && !isLinkLostMidSession
+        isSessionActive && !isCupOnScale && !isPresenceUnknown
+    }
+
+    // MARK: - Primary action
+
+    /// What the primary button means. The single source of truth for the view's label rule
+    /// AND the consumer's tap behavior, so the two cannot drift.
+    public enum PrimaryAction: String, Codable, Sendable {
+        case connect // unpaired, no cup tracked
+        case reconnect // link failed, no cup tracked
+        case searching // scanning, no cup tracked — the only disabled action
+        case newCup // connected, no cup tracked
+        case finishCup // a cup is tracked, in ANY connection state
+    }
+
+    /// Finishing a cup is local accounting and never needs the scale, so an active session
+    /// always offers `.finishCup`. Otherwise the action follows the connection state.
+    public var primaryAction: PrimaryAction {
+        if isSessionActive {
+            return .finishCup
+        }
+        switch connection {
+        case .unpaired: return .connect
+        case .error: return .reconnect
+        case .searching: return .searching
+        case .connected: return .newCup
+        }
     }
 
     // MARK: - Init

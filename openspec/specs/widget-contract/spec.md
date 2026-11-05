@@ -6,7 +6,7 @@ What a Lifegames design-system widget promises, on both platforms, and what alre
 promise.
 
 This capability is descriptive, not aspirational. Every requirement below restates a rule this repo
-**already enforces** in `governance-gates`, `test-swift`, `contract-ts` or `lint-web`. The prose was
+**already enforces** in `governance-gates`, `test-swift`, `contract-ts` or the `lint-web` step of the `web-builds` job. The prose was
 scattered across `GOVERNANCE.md` (P2–P7, F-014, F-015), `CONTRACT.md`, `widget-consumers.json`,
 `widget-purity-exceptions.json` and `contracts/component-catalog/README.md`; this file is the same
 contract in a machine-checkable grammar.
@@ -80,6 +80,35 @@ that declared it, naming the Props type, never silently skipped.
 - **WHEN** the catalog decodes every registered row
 - **THEN** the decode failure SHALL be recorded against that row, and the suite SHALL NOT report a
   pass for a row it could not decode
+
+### Requirement: Every widget fixture on disk maps to a schema, or the generator writes no map
+
+Every fixture JSON under `Sources/LifegamesWidgets/Resources/widgets/` SHALL map to a schema in
+`packages/schemas/fixture-map.json`, so that `validate.ts` checks it. When a fixture maps to no schema,
+`generate-widget-schemas.mjs` SHALL name each such file, say how to wire it, and exit 1 before it
+writes the map. The root `widget-manifest.json` and dot-directories are not fixtures. A dot-prefixed
+JSON file and a symlink SHALL be reported as unmapped, never skipped and never followed.
+
+#### Scenario: A fixture has no schema
+
+- **GIVEN** a fixture JSON whose base name resolves to no schema title
+- **WHEN** the generator wires the fixture tree
+- **THEN** it SHALL exit 1, name the file and how to wire it, and SHALL NOT write
+  `fixture-map.json`
+
+#### Scenario: A fixture lands on disk but not in the map
+
+- **GIVEN** a fixture JSON on disk that the committed `fixture-map.json` does not list
+- **WHEN** `governance-gates` runs the fixture-wiring suite
+- **THEN** the suite SHALL fail and show the missing path. `validate.ts` reads only the map and never
+  scans the tree, so this suite is the gate for an omission; a fixture with no schema title also
+  fails the generator, as in the scenario above
+
+#### Scenario: The fixture tree holds a symlink
+
+- **GIVEN** a symlink under the fixture tree, broken, pointing at a file, or pointing back up the tree
+- **WHEN** the generator wires the fixture tree
+- **THEN** the link SHALL be reported as unmapped by path, without a thrown error and without a loop
 
 ### Requirement: Every manifest widget has a fixture on disk and instantiates without crashing
 
@@ -156,7 +185,7 @@ or data-fetching library, and SHALL NOT call `fetch` outside a function body. Bo
 case-insensitive substring list, not identifiers, so a pure presentational helper import stays legal.
 
 This is a **blocking** rule. It is configured `error`, the lint script carries `--max-warnings 0`, and
-it runs in the required `governance-gates` status context as well as in `lint-web`.
+it runs in the required `governance-gates` status context as well as in the `lint-web` step of the `web-builds` job.
 
 Two things had to be true at once for it to gate, and neither was. The rule was configured `warn` and
 `pnpm lint` carried no `--max-warnings`, so a widget importing `axios` printed
@@ -693,6 +722,8 @@ first read, `renderWidgetUnavailable` SHALL leave a `loading` card exactly as th
 successful read SHALL still fill the card. Hydration's target-range bands SHALL render on the client
 with the server's markup. Bookshelf SHALL carry its mirrored cover paths on the card in every state
 (`data-local-covers`), and both halves SHALL serve a cover same-origin only for an exact listed path.
+A relative label is the browser's alone (atlas decision 0164 D5): the server markup SHALL reach the
+updater's card once the load pass `fillRelativeTimes` runs over it at the same time.
 
 This is a **blocking** rule. `packages/web/tests/server-render/client-parity.test.ts` renders each
 card on the server from the view models and through its updater from the `loading` markup, for the
@@ -746,6 +777,49 @@ context.
   token differs from the mirrored file
 - **THEN** the first SHALL load from the same origin, the second from its contract URL with the W6
   fallback
+
+### Requirement: A live web widget's server markup does not depend on the render clock
+
+The same export data SHALL compose to the same bytes at any render time (atlas decision 0164 D5,
+"stable bytes"). The composer renders thirteen fragments from `toDashboardViewModels(exports, now)`;
+`now` SHALL decide only the freshness verdict, never a label. An instant SHALL render as absolute,
+locale-neutral UTC text (`YYYY-MM-DD HH:MM UTC`, `runtime/relative-time.ts` `absoluteTimeText`) in
+`<time datetime data-relative>`, the text a visitor without JavaScript sees. The relative label
+(`5m ago`) SHALL be written only in the browser, by `fillRelativeTimes`
+(`runtime/relative-time-fill.ts`): the updaters call it on the markup they write. Calling it once on
+the server markup at load is a consumer obligation, stated in the `@j0nathan-ll0yd/web` changeset for
+decision 0164; no gate in this repo can see the consumer page. The focus overlays SHALL render the `--:--:--` clock
+placeholder; `updateFocusOverlay` writes the time.
+
+This is a **blocking** rule. `packages/web/tests/server-render/byte-stability.test.ts` renders the
+thirteen production fragments from the same exports at two clocks ten minutes apart, live, under
+each focus overlay and stale, and the stale scenario again eight days on, and SHALL find them
+byte-equal. Its can-fail half fills the same bytes
+at both clocks and SHALL find different relative labels. It runs inside
+`pnpm --filter @j0nathan-ll0yd/web test` in the required `contract-ts` status context.
+`packages/web/tests/browser/relative-time.test.ts` loads the built fixture page in Chromium with
+JavaScript off and on.
+
+#### Scenario: The same exports at two render clocks
+
+- **GIVEN** the known-answer exports, with timestamped GitHub events
+- **WHEN** the thirteen fragments render at two clocks ten minutes apart, with every export in the
+  same freshness state at both
+- **THEN** every fragment SHALL be byte-equal, under no focus, Work, Do Not Disturb and all-stale
+
+#### Scenario: A visitor without JavaScript
+
+- **GIVEN** a card that shows an instant (System Status, DevActivityLog, StarredRepoList, ReadingFeed)
+- **WHEN** the page loads with JavaScript off
+- **THEN** each `<time data-relative>` SHALL show absolute UTC text, and its `datetime` SHALL keep the
+  ISO instant
+
+#### Scenario: The browser load pass
+
+- **GIVEN** the same server markup
+- **WHEN** `fillRelativeTimes` runs at a time `now`
+- **THEN** each `<time data-relative>` text SHALL change to the relative label at `now`, and
+  `datetime` SHALL not change
 
 ### Requirement: A Swift widget state rule returns the web rule's state for the same input
 

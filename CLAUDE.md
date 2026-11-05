@@ -27,14 +27,19 @@
 - Astro components use scoped `<style>` blocks
 - Widget fixtures in `Sources/LifegamesWidgets/Resources/widgets/` (shared with iOS via Vite alias)
 
+## Script Test Suites (`pnpm test:scripts`)
+
+`pnpm test:scripts` runs every `node:test` and ESLint `RuleTester` suite: `audits/__tests__/`, `scripts/`, `packages/schemas/scripts/`, `contracts/component-catalog/` and `eslint-local-rules/__tests__/`. CI runs it ONCE, in the required `governance-gates` step, and in no other job. `scripts/ci-workflow-shape.test.mjs` enforces this: a tracked suite (`*.test.*` or `*.spec.*`) outside the globs, a narrowed glob that drops a formerly pinned suite, a glob that matches no tracked file, a shell operator in the script (`|| true`), a flag after `--test`, or a second `node --test` of a covered file anywhere in `ci.yml` fails it. The shape test is the one exception: `governance-gates` also runs it on its own line BEFORE `pnpm test:scripts`, so deleting that line or narrowing a glob cannot stop the guard with it. Name a new suite `*.test.{mjs,js}` under one of those directories; do not add a per-suite CI line.
+
 ## Fixture Rules
 
 - Personal data MUST be scrubbed before push (enforced by `audits/checks/d6-scan-personal-data.sh`)
+- Every `audits/lib/scan-allowlist.txt` entry must name a tracked file; D6 fails on a stale entry. Changesets need no entry: D6 skips the scoped-package release lines of their frontmatter. Name a package in a changeset body by its path (`packages/web`).
 - All scrubs recorded in `SCRUBBING.md`
 
 ## Schema Validation
 
-Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). Consumer-side invocation: `LIFEGAMES_VALIDATE_CWD=$PWD pnpm ... validate` (Phase D1+). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
+Schemas live in `packages/schemas/`. Production validator (`validate.ts`) reads `fixture-map.json` and validates fixtures against their schemas using Ajv in strict mode. All schemas must declare `$schema: "http://json-schema.org/draft-07/schema#"` (draft mismatch guard prevents silent failures). The validator fails closed: a mapped fixture that does not exist fails and names its path and bucket, and a run that validates 0 fixtures fails (`scripts/validate.test.mjs`). The generator fails closed too: `generate-widget-schemas.mjs` exits 1 before it writes the map when any fixture JSON under `Sources/LifegamesWidgets/Resources/widgets/` maps to no schema, and names each file (`scripts/fixture-wiring.mjs`, `scripts/fixture-wiring.test.mjs`). The manifest and dot-directories are not fixtures; a dot-prefixed JSON file and any symlink (never followed) are reported as unmapped. A data-only fixture pool (media, location previews, `coffee`) gets a hand-authored `authored/<name>.schema.json`, an `EXTRA_CATEGORY_WIRING` entry, a `SCHEMA_ENTRIES` row in `codegen.ts`, and Swift catalog rows in `Tests/LifegamesWidgetsTests/WidgetFixtureCatalog+<Category>.swift` that decode each fixture into its Swift type. The map holds one bucket, `ds`; the `consumer` bucket left with atlas decision 0160, and website PR #416 removes the last consumer call (its `prebuild`). `pnpm -F @j0nathan-ll0yd/schemas codegen` writes `swift/WidgetModels.swift` AND the shipped SPM copy `Sources/LifegamesSchemas/WidgetModels.swift`; never hand-edit either. `pnpm check:schemas-freshness` byte-compares the pair before it regenerates, then git-diffs both.
 
 ## Cross-Repo Consumption
 
@@ -44,7 +49,7 @@ Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Re
 
 ## Apps
 
-- `apps/portfolio` — Astro 6 static site (was Astro 5)
+- `apps/portfolio` — Astro 6 static site (was Astro 5). In-repo consumer build: it renders 15 `packages/web` widgets (13 through the `@widgets` alias, `BioTerminal` and `Hydration` through `@j0nathan-ll0yd/web/production`), `OGImage` and the web stylesheets from `@j0nathan-ll0yd/fixtures` data at build time. `pnpm build` builds it in the CI `web-builds` job, `.husky/pre-push` and `publish-ds-packages.yml`, so a widget change that breaks rendering fails before a release. It has no tests and no deploy. Keep it in step with widget changes.
 - `apps/docs` — Astro 6 Starlight documentation (was Astro 5)
 - `apps/storybook` — Storybook 10 component workshop (was Storybook 9)
 - `apps/swift-gallery` — iOS SwiftUI runtime showcase. Consumes DS via local-path SPM. Six sections: Colors, Typography, Cards, Components, Neon Effects, Widgets. Open with `open apps/swift-gallery/SwiftGallery.xcodeproj`. Dropped from LP's DesignGalleryFeature: BookshelfFeature and HomeFeature showcases (coupling was via PreviewMocks only, not direct symbol references).
@@ -64,7 +69,7 @@ All use Vite 8 (unified from prior Vite 6/7 split).
 - **Type safety:** every TS package extends `@j0nathan-ll0yd/config/tsconfig-base.json` (strict + `noUncheckedIndexedAccess` + `verbatimModuleSyntax`). `pnpm typecheck` (`turbo run typecheck`) type-checks schemas, fixtures, web, and storybook; enforced by a CI `typecheck` job and the pre-push gate. `packages/web` has its own `tsconfig.json` (its widget source previously had none); a `src/astro-shim.d.ts` types `*.astro` imports + `import.meta.env` for `tsc`.
 - **Swift:** explicitly exempt — no Swift formatter in scope. Generated Swift is deterministic from codegen. Follow-up: evaluate SwiftFormat.
 - **ESLint** stays per-package (web, copy, tokens, schemas); `eslint-config-prettier` is the last entry in every flat config to disable stylistic conflicts (dprint owns formatting; the prettier-config disables residual stylistic ESLint rules). Follow-up: adopt the shared `@j0nathan-ll0yd/config/eslint` base (out of scope for the dprint migration).
-- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the non-required `lint-web` job. `audits/__tests__/d3-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they are now in `test:scripts` and in `governance-gates`.
+- **Web widget-purity lint is BLOCKING.** `packages/web` lints `src/**/*.{ts,tsx,js,jsx,astro,css}` with `--max-warnings 0`; P1 `no-raw-hex-in-widgets`, P3 `no-app-module-imports` and W16 `widget-props-extends-schema` are all `error`. P3 matches `.astro` (frontmatter imports and module-scope `fetch`); `.css` reaches `no-raw-hex-in-widgets` through `eslint-local-rules/css-text-parser.js`, a raw-text parser that hands the rule an empty `Program` plus the source text — CSS has no ESTree grammar and the rule's scan does not need one. `pnpm -F @j0nathan-ll0yd/web lint` runs in the required `governance-gates` context, not only in the `lint-web` step of the non-required `web-builds` job. `audits/__tests__/d3-web-lint-severity.test.mjs` asserts the resolved SEVERITY and the lint glob, which a `RuleTester` case structurally cannot. The `eslint-local-rules/__tests__/*.test.js` suites ran in NO workflow and NO hook before; they now run in `pnpm test:scripts`, which `governance-gates` runs.
 
 ## Component-Contract Catalog (`contracts/component-catalog/`)
 
@@ -99,8 +104,8 @@ lane `origin/main` IS the pushed commit, so the merge base is HEAD and the freez
 passes `github.event.before` there.
 Gate: `pnpm check:component-catalog` (grammar conformance + sidecar digest, validity, completeness,
 conformance ratchet, baseline freeze, idempotence) — wired into BOTH the CI `governance-gates` step
-(required status context) and `.husky/pre-push`; unit tests run under `pnpm test:scripts`, and
-`ratchet.test.mjs` also runs directly in `governance-gates` as the freeze's can-fail proof. Bumping
+(required status context) and `.husky/pre-push`; its unit tests, including `ratchet.test.mjs` (the
+freeze's can-fail proof), run under `pnpm test:scripts`, which `governance-gates` runs. Bumping
 `CATALOG_SPEC_VERSION` means grammar + vectors + `.sha256` sidecar + regenerated catalog in ONE
 change. See `contracts/component-catalog/README.md`.
 
@@ -108,11 +113,11 @@ change. See `contracts/component-catalog/README.md`.
 
 Behavioral specification tree. Atlas decision 0102 ranked move 5 — DS had **0 capabilities and no
 `openspec/` directory at all** while five sibling repos carried 28 between them. **One capability
-today: `widget-contract`** (17 requirements / 64 scenarios), which restates the widget contract already
-enforced by `governance-gates`, `test-swift`, `contract-ts` and `lint-web` — P3/F-015 purity, the
-fixture→Props decode, W16 props-extend-schema, registry reconciliation, the component-contract catalog
+today: `widget-contract`** (19 requirements / 70 scenarios), which restates the widget contract already
+enforced by `governance-gates`, `test-swift`, `contract-ts` and the `lint-web` step of `web-builds` — P3/F-015 purity, the
+fixture→Props decode, fixture-map coverage (every widget fixture JSON maps to a schema, or the generator writes no map), W16 props-extend-schema, registry reconciliation, the component-contract catalog
 and its ratchet, SSR image fallback, adapter normalization, F-014 watch exclusions and the P4/P7
-promotion bar, and the honest server states of the live widgets (atlas 0160, `packages/web/tests/server-render/states.test.ts`). **Describe what is already enforced**; a requirement with no gate behind it is a wish
+promotion bar, the honest server states of the live widgets (atlas 0160, `packages/web/tests/server-render/states.test.ts`), and byte-stable server markup under a moving clock (atlas 0164 D5, `packages/web/tests/server-render/byte-stability.test.ts`). **Describe what is already enforced**; a requirement with no gate behind it is a wish
 with a heading. **The rule is NOT in this repo:** it resolves from the exact-pinned
 `@j0nathan-ll0yd/estate-contracts` version declared in package.json; `audits/checks/d3-openspec-covers.mjs` is a wrapper that verifies the
 shipped bytes against their `.sha256` sidecar, asserts the sidecar's two-field format, and pins
@@ -130,15 +135,15 @@ other finding type blocks unconditionally; a baseline id naming no live requirem
 id is reported PRUNABLE and must be pruned in the same PR; an unparseable baseline is a hard RED; an
 absent one grandfathers nothing (stricter, never a pass). Re-record with `pnpm covers:update-baseline`
 — never hand-edit an id. Gate: `pnpm check:covers` — wired into BOTH the CI `governance-gates` step
-(required status context) and `.husky/pre-push`; `audits/__tests__/d3-openspec-covers.test.mjs` also runs directly
-in `governance-gates` as the can-fail proof. See `openspec/README.md`.
+(required status context) and `.husky/pre-push`; `audits/__tests__/d3-openspec-covers.test.mjs`, the can-fail
+proof, runs in `governance-gates` under `pnpm test:scripts`. See `openspec/README.md`.
 
 ## lp-audit (Audit System — D domain)
 
-This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `audits/checks/d1-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `audits/checks/d2-baseline-age.mjs` (D2 — visual-baseline staleness), and `audits/checks/d6-scan-personal-data.sh` (D6 — fixture personal-data scan). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
+This repo hosts the **D-domain audit runners** for the Lifegames Portal `lp-audit` system: `audits/checks/d1-widget-matrix.mjs` (D1 — widget completeness matrix, reconciles `production-widgets.json` / `widget-manifest.json` / `widget-consumers.json` / `docs/widget-inventory.json` + the filesystem), `audits/checks/d2-baseline-age.mjs` (D2 — visual-baseline staleness), `audits/checks/d6-scan-personal-data.sh` (D6 — fixture personal-data scan), and `audits/checks/d7-cover-inventory.mjs` (D7 — `COVER_KEYS` against the CloudFront distribution, on the `cfedge` egress lane). They run on schedule via `.github/workflows/audit-ds.yml`. (D5 yalc-staleness was retired with the yalc machinery — atlas#1 / decision 0015 PR 6.) The audit catalog and finding reports live in the atlas hub's `audits/` tree (not this repo) — triage a finding by its catalog id at `atlas/audits/CATALOG.md#<id>`. Runners are report-only during the bake period: a red run is a real finding, not a broken gate.
 
 **Layout (atlas decision 0111 phase 2c).** Every audit runner sits under `audits/checks/`, id-prefixed
-(`d1-`, `d2-`, `d3-`, `d6-`, `c147-`); known-answer suites in `audits/__tests__/` carry their runner's
+(`d1-`, `d2-`, `d3-`, `d6-`, `d7-`, `c147-`); known-answer suites in `audits/__tests__/` carry their runner's
 id; repo-local check data and shared helpers in `audits/lib/`. The id→file mapping is SPELLED, never remembered. D3 is one
 catalog row over the whole `ci.yml#governance-gates` lane, so `d3-` prefixes all ten of that job's
 runners — the catalog registers the JOB, not a single script. `scripts/` keeps this repo's build and

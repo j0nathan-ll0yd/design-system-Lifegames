@@ -1682,80 +1682,6 @@
       text-align: center;
     }
 
-    .map-wrapper {
-      width: 100%;
-      height: 160px;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      position: relative;
-      border: 1px solid rgba(255, 0, 110, 0.12);
-    }
-
-    .map-wrapper .leaflet-container {
-      background: var(--bg);
-    }
-
-    .map-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: var(--lg-z-overlay);
-      pointer-events: none;
-      border-radius: var(--radius-md);
-      box-shadow: inset 0 0 40px rgba(6, 6, 15, 0.6);
-      border: 1px solid rgba(255, 0, 110, 0.08);
-    }
-
-    .map-wrapper .leaflet-control-attribution,
-    .map-wrapper .leaflet-control-zoom {
-      display: none;
-    }
-
-    .map-marker-pulse {
-      width: 16px;
-      height: 16px;
-      position: relative;
-    }
-
-    .map-marker-dot {
-      width: 10px;
-      height: 10px;
-      background: var(--neon-pink);
-      border-radius: 50%;
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      box-shadow:
-        0 0 8px var(--neon-pink),
-        0 0 16px rgba(255, 0, 110, 0.4);
-    }
-
-    .map-marker-ring {
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--neon-pink);
-      border-radius: 50%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      animation: mapRingPulse 2s ease-out infinite;
-    }
-
-    .map-meta-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      font-size: var(--font-size-xs);
-      font-family: 'Space Grotesk', monospace;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-    }
-
-    .map-meta-value {
-      color: var(--neon-pink);
-      font-weight: 500;
-    }
-
     /* ===== 11. GITHUB HEATMAP ===== */
     .contrib-grid {
       display: flex;
@@ -1878,6 +1804,10 @@
     /* ===== 13. READING FEED ===== */
     .article-list {
       list-style: none;
+      /* The list's own reset: a consumer without tokens/reset would otherwise
+         indent every row by the user agent's list padding. */
+      margin: 0;
+      padding: 0;
     }
 
     .article-list-item {
@@ -1889,11 +1819,23 @@
       transition:
         transform 0.2s ease,
         background 0.2s ease;
-      opacity: 0;
-      animation: fadeSlideRight 0.4s ease-out forwards;
+      /* Fail visible: no hidden base state. The fill mode applies the
+         keyframes' hidden from-state only while the animation delays or runs,
+         so a consumer that does not load tokens/animations still shows the
+         row, without the motion. */
+      animation: fadeSlideRight 0.4s ease-out backwards;
       cursor: default;
       white-space: nowrap;
       min-width: 0;
+    }
+
+    /* Reduced-motion gate (WCAG 2.3.3). It does not rely on the
+       tokens/animations duration override, which leaves the stagger delay,
+       and so the hidden from-state, in place. */
+    @media (prefers-reduced-motion: reduce) {
+      .article-list-item {
+        animation: none;
+      }
     }
 
     .article-list-item:last-child {
@@ -2028,6 +1970,9 @@
       gap: var(--space-14);
       overflow-x: auto;
       scroll-snap-type: x mandatory;
+      /* The scroll box clips at its padding edge, so nothing here may reach
+         past a tile: a tile's focus ring lies inside the tile (a11y.css). A
+         list reset (tokens/reset) zeroes this padding and margin. */
       padding-bottom: 6px;
       scrollbar-width: thin;
       scrollbar-color: rgba(245, 158, 11, 0.3) transparent;
@@ -2053,26 +1998,57 @@
       width: 105px;
       scroll-snap-align: start;
       cursor: pointer;
-      opacity: 0;
-      animation: shelfFadeIn 0.4s ease-out forwards;
+      /* Fail visible, as .article-list-item: shelfFadeIn lives in
+         tokens/effects. */
+      animation: shelfFadeIn 0.4s ease-out backwards;
       transition: transform 0.2s ease;
       border: 1px solid transparent;
       border-radius: var(--radius-md);
       padding: 6px 4px;
+      /* The containing block of the title link's overlay. */
+      position: relative;
     }
 
+    /* Reduced-motion gate (WCAG 2.3.3), as .article-list-item. */
+    @media (prefers-reduced-motion: reduce) {
+      .shelf-book {
+        animation: none;
+      }
+    }
+
+    /* The tile's real link is its title: the tile's own color, no underline.
+       Its overlay stretches the hit area over the whole tile, so a click
+       anywhere on the tile activates the link. The overlay stops text
+       selection inside the tile. Its radius is the tile's inner (padding-edge)
+       radius, so a focus ring on it follows the tile's corners (a11y.css). */
+    .shelf-book-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    .shelf-book-link::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: calc(var(--radius-md) - 1px);
+    }
+
+    /* The lift skips a tile that shows its keyboard focus ring: the ring's
+       outer edge is the tile's edge (a11y.css), and the shelf row clips the
+       lifted tile's top 4px. The ring shows on :focus-visible unless pointer
+       input suppressed it (a11y.css, input-modality.ts); mouse focus is not
+       :focus-visible, so a pressed tile still lifts. */
     @media (hover: hover) {
       .shelf-book:hover {
         transform: translateY(-4px);
       }
-      .shelf-book:hover .shelf-book-title a {
-        color: var(--neon-amber);
+      :root:not([data-input-modality='pointer'])
+        .shelf-book:hover:has(.shelf-book-link:focus-visible) {
+        transform: none;
       }
     }
 
     .shelf-book-active {
       padding: 8px 6px;
-      opacity: 1;
     }
 
     .shelf-book-active .shelf-cover-wrapper {
@@ -2128,12 +2104,6 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-    }
-
-    .shelf-book-title a {
-      color: var(--text);
-      text-decoration: none;
-      transition: color 0.2s ease;
     }
 
     .shelf-book-author {

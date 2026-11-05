@@ -2,9 +2,9 @@
 //
 // starredRepos is the ONLY domain whose post-adapter shape is mechanically derived
 // by running the REAL runtime adapter (`adaptStarredRepos` from @j0nathan-ll0yd/web) over
-// a raw GithubStarredReposExport. To keep the relative-time output ("2 weeks ago")
-// deterministic, the adapter is invoked with a STABLE injected `now` equal to the
-// raw fixture's `generatedAt` — the same trick the web's loadDashboardData used.
+// a raw GithubStarredReposExport. The adapter writes `starredAt` as absolute UTC
+// text ("2026-03-16 12:00 UTC", atlas decision 0164 D5) and reads no clock, so the
+// output is deterministic; the browser writes the relative label from `datetime`.
 //
 // This proves the pattern the other six domains avoid (their display shapes are
 // authored directly because the runtime adapters produce narrower/different
@@ -12,10 +12,17 @@
 import type {GithubStarredReposExport} from '@j0nathan-ll0yd/portal-contract/schemas'
 import {type AdaptedStarredRepo, adaptStarredRepos} from '@j0nathan-ll0yd/web/runtime/adapters'
 
-// Stable generation timestamp shared by the raw input and the adapter clock so
-// "N weeks/days ago" strings never drift between fixture-gen runs.
+// Stable generation timestamp: the raw export's `generatedAt` and the anchor of
+// every star time below, so fixture-gen runs never drift.
 const STABLE_NOW_ISO = '2026-03-18T12:00:00.000Z'
 const STABLE_NOW_MS = new Date(STABLE_NOW_ISO).getTime()
+
+/**
+ * The clock a static showcase fills the relative labels at (fillRelativeTimes
+ * in @j0nathan-ll0yd/web): the fixture's own generation time, so a page renders
+ * "2 days ago" rather than an age against the visitor's clock.
+ */
+export const STARRED_REPOS_FIXTURE_CLOCK = STABLE_NOW_ISO
 
 function daysBefore(days: number): string {
   return new Date(STABLE_NOW_MS - days * 24 * 60 * 60 * 1000).toISOString()
@@ -121,7 +128,7 @@ const baselineRaw: GithubStarredReposExport = {
 
 // Maximal raw input: all nullable fields non-null (description, licenseKey,
 // licenseName, licenseSpdxId), multiple languages, topics populated. Six repos
-// with diverse star ages for broader relative-time formatting coverage.
+// with diverse star ages (hours, days, weeks before STABLE_NOW).
 const fullRaw: GithubStarredReposExport = {
   generatedAt: STABLE_NOW_ISO,
   repos: [
@@ -261,14 +268,14 @@ const fullRaw: GithubStarredReposExport = {
 }
 
 // Run the REAL adapter with the stable clock → deterministic post-adapter shape.
-export const baseline: AdaptedStarredRepo[] = adaptStarredRepos(baselineRaw, STABLE_NOW_MS)
+export const baseline: AdaptedStarredRepo[] = adaptStarredRepos(baselineRaw)
 
 // Empty starred list — exercises the "no starred repos" rendering path.
-export const empty: AdaptedStarredRepo[] = adaptStarredRepos({generatedAt: STABLE_NOW_ISO, repos: []}, STABLE_NOW_MS)
+export const empty: AdaptedStarredRepo[] = adaptStarredRepos({generatedAt: STABLE_NOW_ISO, repos: []})
 
 // Maximally populated: all nullable fields non-null, multiple languages, topics,
 // diverse star ages. Derived via the real adapter for deterministic output.
-export const full: AdaptedStarredRepo[] = adaptStarredRepos(fullRaw, STABLE_NOW_MS)
+export const full: AdaptedStarredRepo[] = adaptStarredRepos(fullRaw)
 
 export const starredReposPostAdapter = {baseline, empty, full} satisfies Record<
   string,

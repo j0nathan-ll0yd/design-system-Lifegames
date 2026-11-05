@@ -3,7 +3,7 @@
 // vs UNREACHABLE (sha preserved, never nulled).
 //
 // Plain node:test so it runs without a TypeScript loader, next to the .mjs it covers.
-// Reachable from `pnpm test:scripts` (pre-push) and the schemas-freshness CI job.
+// Reachable from `pnpm test:scripts` (pre-push) and the schemas-freshness step of the CI `packages` job.
 
 import assert from 'node:assert/strict'
 import {test} from 'node:test'

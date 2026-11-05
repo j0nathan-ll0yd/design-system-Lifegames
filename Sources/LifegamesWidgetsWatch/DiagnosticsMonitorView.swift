@@ -6,6 +6,7 @@ public struct DiagnosticsMonitorView: View {
     public let props: DiagnosticsMonitorProps
     public var onClearTap: () -> Void
     public var onTransferTap: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     // SAFETY: Static formatters to avoid per-body allocation (S59).
     private nonisolated(unsafe) static let byteFormatter: ByteCountFormatter = {
@@ -66,29 +67,49 @@ public struct DiagnosticsMonitorView: View {
         .background(RoundedRectangle(cornerRadius: 20).fill(LGColor.surfaceRaised))
     }
 
-    private var actionRow: some View {
-        HStack {
-            Text(Self.byteFormatter.string(fromByteCount: Int64(props.fileSizeBytes)))
-                .font(Font.Tokens.caption())
-                .foregroundStyle(LGColor.textMuted)
-                .accessibilityLabel("Log size")
-                .accessibilityValue(Self.byteFormatter.string(fromByteCount: Int64(props.fileSizeBytes)))
-            Spacer()
-            Button(action: onClearTap) {
-                Image(systemName: "trash.fill")
+    /// At accessibility text sizes the two bordered buttons left the log size a letter-wide
+    /// column ("4 / K / B"). The size moves above the buttons there; every other size keeps one row.
+    @ViewBuilder private var actionRow: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: Spacing.s100) {
+                logSizeLabel
+                HStack {
+                    Spacer()
+                    actionButtons
+                }
             }
-            .buttonStyle(.bordered)
-            .tint(LGColor.healthRed)
-            .accessibilityLabel("Clear log")
-            .accessibilityHint("Permanently deletes all recorded events")
-
-            Button(action: onTransferTap) { transferIcon }
-                .buttonStyle(.bordered)
-                .tint(LGColor.accentBlue)
-                .disabled(props.transferStatus == .uploading)
-                .accessibilityLabel(transferAccessibilityLabel)
-                .accessibilityHint("Sends the log file to the iPhone")
+        } else {
+            HStack {
+                logSizeLabel
+                Spacer()
+                actionButtons
+            }
         }
+    }
+
+    private var logSizeLabel: some View {
+        Text(Self.byteFormatter.string(fromByteCount: Int64(props.fileSizeBytes)))
+            .font(Font.Tokens.caption())
+            .foregroundStyle(LGColor.textMuted)
+            .accessibilityLabel("Log size")
+            .accessibilityValue(Self.byteFormatter.string(fromByteCount: Int64(props.fileSizeBytes)))
+    }
+
+    @ViewBuilder private var actionButtons: some View {
+        Button(action: onClearTap) {
+            Image(systemName: "trash.fill")
+        }
+        .buttonStyle(.bordered)
+        .tint(LGColor.healthRed)
+        .accessibilityLabel("Clear log")
+        .accessibilityHint("Permanently deletes all recorded events")
+
+        Button(action: onTransferTap) { transferIcon }
+            .buttonStyle(.bordered)
+            .tint(LGColor.accentBlue)
+            .disabled(props.transferStatus == .uploading)
+            .accessibilityLabel(transferAccessibilityLabel)
+            .accessibilityHint("Sends the log file to the iPhone")
     }
 
     @ViewBuilder private var transferIcon: some View {
@@ -139,9 +160,12 @@ private struct CountRowView: View {
             Rectangle()
                 .fill(diagnosticsAccent(for: row.category))
                 .frame(width: 4, height: 16)
+            // A two- or three-letter category code. The flexible bar column took the width first,
+            // and at accessibility sizes the code broke mid-code ("SY / N"); the bar gives way instead.
             Text(label(for: row.category))
                 .font(Font.Tokens.code())
                 .foregroundStyle(LGColor.textPrimary)
+                .fixedSize()
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(LGColor.surfaceInset)
@@ -178,23 +202,55 @@ private struct LogRowView: View {
     let referenceDate: Date
     let formatter: RelativeDateTimeFormatter
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        HStack(alignment: .top, spacing: Spacing.s100) {
-            Circle()
-                .fill(diagnosticsAccent(for: entry.category))
-                .frame(width: 6, height: 6)
-                .padding(.top, Spacing.s50)
-            Text(formatter.localizedString(for: entry.timestamp, relativeTo: referenceDate))
-                .font(Font.Tokens.caption2())
-                .foregroundStyle(LGColor.textMuted)
-            Text(entry.message)
-                .font(Font.Tokens.caption2())
-                .foregroundStyle(LGColor.textPrimary)
-                .lineLimit(3)
+        row
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(entry.category.rawValue.uppercased()) \(entry.message)")
+            .accessibilityValue(formatter.localizedString(for: entry.timestamp, relativeTo: referenceDate))
+    }
+
+    /// At accessibility text sizes the timestamp column squeezed the message to a word per line
+    /// and the three-line cap cut it off ("WCSes / sion / activa…"). The row stacks the timestamp
+    /// above an uncapped message there; every other size keeps the compact one-row layout.
+    @ViewBuilder private var row: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: Spacing.s50) {
+                HStack(spacing: Spacing.s100) {
+                    dot
+                    timestamp
+                }
+                message
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        } else {
+            HStack(alignment: .top, spacing: Spacing.s100) {
+                dot
+                    .padding(.top, Spacing.s50)
+                timestamp
+                message
+                    .lineLimit(3)
+            }
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(entry.category.rawValue.uppercased()) \(entry.message)")
-        .accessibilityValue(formatter.localizedString(for: entry.timestamp, relativeTo: referenceDate))
+    }
+
+    private var dot: some View {
+        Circle()
+            .fill(diagnosticsAccent(for: entry.category))
+            .frame(width: 6, height: 6)
+    }
+
+    private var timestamp: some View {
+        Text(formatter.localizedString(for: entry.timestamp, relativeTo: referenceDate))
+            .font(Font.Tokens.caption2())
+            .foregroundStyle(LGColor.textMuted)
+    }
+
+    private var message: Text {
+        Text(entry.message)
+            .font(Font.Tokens.caption2())
+            .foregroundStyle(LGColor.textPrimary)
     }
 }
 

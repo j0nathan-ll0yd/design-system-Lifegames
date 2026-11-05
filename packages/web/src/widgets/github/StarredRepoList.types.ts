@@ -12,7 +12,8 @@ export interface StarredRepoListProps extends WidgetStateProps {
     stars: number;
     language: string;
     languageColor: string;
-    // Relative label computed against the page's `now`.
+    // Text the server renders: absolute UTC (`2026-10-23 14:05 UTC`, atlas decision
+    // 0164 D5). The browser writes the relative label from `datetime`.
     starredAt: string;
     // ISO timestamp behind `starredAt`, rendered as <time datetime>.
     datetime?: string;

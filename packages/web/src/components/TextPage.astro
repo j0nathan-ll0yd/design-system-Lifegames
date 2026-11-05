@@ -1,18 +1,14 @@
 ---
 // Text-page layout (atlas decision 0158): one glass card with the page heading, an
 // optional last-updated line and lede, the page's sections in the default slot, and a
-// footer of page links. The consumer passes copy-driven strings and owns the document
-// shell (head, skip link). This component owns every style; the rules live in
+// footer of page links. The footer's page links are SiteFooterNav, the component the
+// website's homepage will also mount. The consumer passes copy-driven strings and owns the
+// document shell (head, skip link). This component owns every style; the rules live in
 // primitives.css, which also turns viewport scrolling back on where a dashboard layout
 // locks it.
 import '../styles/primitives.css';
-
-interface TextPageLink {
-  href: string;
-  label: string;
-  /** True for the link to the page being rendered: it carries aria-current="page". */
-  current?: boolean;
-}
+import SiteFooterNav from './SiteFooterNav.astro';
+import type { SiteFooterNavLink } from './SiteFooterNav.types';
 
 interface Props {
   /** Page heading, rendered as the page's only h1. */
@@ -26,8 +22,8 @@ interface Props {
   lede?: string;
   /** Footer link back to the home page. */
   back?: { href: string; label: string };
-  /** Footer navigation between the text pages. */
-  links?: readonly TextPageLink[];
+  /** Footer navigation between the text pages, rendered by SiteFooterNav. */
+  links?: readonly SiteFooterNavLink[];
 }
 
 const { title, updated, lede, back, links = [] } = Astro.props;
@@ -59,19 +55,7 @@ const hasFooter = back !== undefined || links.length > 0;
               {back.label}
             </a>
           )}
-          {links.length > 0 && (
-            <nav class="lg-text-page-nav">
-              {links.map((link) => (
-                <a
-                  href={link.href}
-                  class="lg-text-page-nav-link"
-                  aria-current={link.current ? 'page' : undefined}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-          )}
+          <SiteFooterNav links={links} />
         </footer>
       )
     }

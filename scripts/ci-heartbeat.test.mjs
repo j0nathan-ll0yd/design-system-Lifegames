@@ -95,7 +95,11 @@ test('the deadline kill leaves no orphan behind', async () => {
   // execFile's callback does not fire until the ORPHAN exits — which made the first version of
   // this test probe after the orphan had already finished and pass against the broken script.
   // Detached, with stdio ignored, the probe runs on wall clock instead.
-  const marker = '7731' // a sleep duration nothing else on the host will be using
+  // A sleep duration no other run on the host uses. Paseo worktrees run this suite at the same
+  // time (each pre-push), and a fixed '7731' made one run see another run's sleep and fail. The
+  // run's pid, zero-padded to one width, makes the marker unique, and no marker a prefix of
+  // another (processAlive matches by substring).
+  const marker = `7731.${String(process.pid).padStart(7, '0')}`
   const child = spawn('bash', [SCRIPT, 'sleep', marker], {
     env: {...process.env, CI_HEARTBEAT_INTERVAL_SECONDS: '1', CI_HEARTBEAT_DEADLINE_SECONDS: '2'},
     stdio: 'ignore',

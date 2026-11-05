@@ -1,5 +1,33 @@
 # @j0nathan-ll0yd/tokens
 
+## 2.3.2
+
+### Patch Changes
+
+- e50a29d: Emit the `system-ui` font family bare in `packages/tokens` CSS. `--lg-font-family-system` read `'system-ui', sans-serif`; quoted, `system-ui` names a font family no system has, so text fell through to `sans-serif` instead of the platform UI font. It now reads `system-ui, sans-serif` in `tokens.css` and `tokens-layered.css`. The emitter keeps every CSS generic family keyword bare. No other token value changes.
+
+## 2.3.1
+
+### Patch Changes
+
+- 8bee355: The Bookshelf tile focus ring in `packages/tokens/src/base.css` now lies inside the tile. `.shelf-book-link:focus-visible::after` takes `outline-offset: -1px` (was `3px`). The overlay covers the tile's padding box, 1px inside its border, so the 2px ring's outer edge is the tile's border edge. The shelf row clips anything past a tile and has no top or side padding, so the old ring, which reached 4px past the tile, lost its top and left edges. Pages that load `tokens/base` without the web package's `a11y.css`, such as the docs showcase, draw this copy. It matches the web package's ring, and `scripts/shelf-ring-geometry.test.mjs` holds the copies to one geometry.
+
+## 2.3.0
+
+### Minor Changes
+
+- 99140ce: Add three iOS typography tokens: `iosTypography.caption2Emphasized` (11.5, weight 500), `iosTypography.captionEmphasized` (12.5, weight 500) and `iosTypography.bodyEmphasized` (13.1, weight 600). They emit new `--lg-iosTypography-*Emphasized-*` CSS custom properties and new entries in `tokens.js`, `tokens.json`, `tokens.d.ts`, `tokens.dtcg.json` and `DESIGN.md`. Every existing token value is unchanged.
+
+## 2.2.2
+
+### Patch Changes
+
+- 0bc9b08: Remove the dead map styles. The website map left on 2026-02-28 (website commit `f50e4520`), and no page renders map markup or loads Leaflet (atlas decision 0157). No rendered pixel changes.
+  - `packages/web`: drop `.map-wrapper`, `.map-wrapper .leaflet-container`, `.map-wrapper .leaflet-control-attribution`, `.map-wrapper .leaflet-control-zoom`, `.map-overlay`, `.map-marker-pulse`, `.map-marker-dot`, `.map-marker-ring`, `.map-meta-row` and `.map-meta-value` from `src/styles/components.css`, and the three responsive `.map-wrapper` height overrides from `src/styles/layout.css`. The two stylesheets lose 1810 bytes.
+  - `packages/tokens`: drop `@keyframes mapRingPulse` from `src/effects.css`. Only `.map-marker-ring` used it. The file loses 179 bytes.
+
+- f379c75: Move the green book focus ring in `base.css` from `.shelf-book:focus-visible` to `.shelf-book-link:focus-visible::after`, 3px outside the overlay, and give the link itself no ring. The Bookshelf tile no longer takes focus; its title link does, and the link's overlay covers the tile (web minor, atlas decision 0160 D5).
+
 ## 2.2.1
 
 ### Patch Changes

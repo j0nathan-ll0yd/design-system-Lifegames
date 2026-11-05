@@ -4,3 +4,8 @@ self-hosted-runner:
     - arm64
     - xcode-26
     - node
+    - node-highmem
+    - playwright
+    # Egress-lane marker, not a runner image: ci-runners-private places a job that carries it on
+    # the source-scoped CloudFront lane (audit-ds.yml d7-cover-inventory).
+    - cfedge

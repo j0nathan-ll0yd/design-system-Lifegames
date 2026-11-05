@@ -143,7 +143,7 @@
   /* Font families */
   --lg-font-family-brand: 'Space Grotesk', sans-serif;
   --lg-font-family-brandFallback: 'Space Grotesk Fallback', sans-serif;
-  --lg-font-family-system: 'system-ui', sans-serif;
+  --lg-font-family-system: system-ui, sans-serif;
   --lg-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* Font weights */
@@ -237,6 +237,18 @@
   --lg-iosTypography-hero-font-weight: 700;
   --lg-iosTypography-hero-line-height: 1.15;
   --lg-iosTypography-hero-font-family: 'Space Grotesk', sans-serif;
+  --lg-iosTypography-caption2Emphasized-font-size: 11.5;
+  --lg-iosTypography-caption2Emphasized-font-weight: 500;
+  --lg-iosTypography-caption2Emphasized-line-height: 1.3;
+  --lg-iosTypography-caption2Emphasized-font-family: 'Space Grotesk', sans-serif;
+  --lg-iosTypography-captionEmphasized-font-size: 12.5;
+  --lg-iosTypography-captionEmphasized-font-weight: 500;
+  --lg-iosTypography-captionEmphasized-line-height: 1.3;
+  --lg-iosTypography-captionEmphasized-font-family: 'Space Grotesk', sans-serif;
+  --lg-iosTypography-bodyEmphasized-font-size: 13.1;
+  --lg-iosTypography-bodyEmphasized-font-weight: 600;
+  --lg-iosTypography-bodyEmphasized-line-height: 1.5;
+  --lg-iosTypography-bodyEmphasized-font-family: 'Space Grotesk', sans-serif;
   --lg-typography-display-font-size: clamp(1.80rem, 1.50rem + 0.80vw, 2.20rem);
   --lg-typography-display-font-weight: 700;
   --lg-typography-display-line-height: 1.15;

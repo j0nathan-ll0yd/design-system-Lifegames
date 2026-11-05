@@ -11,41 +11,41 @@ export const empty: BooksExport = createBooksFixture({books: []})
 /** allReading: 3 books all in reading status */
 export const allReading: BooksExport = createBooksFixture({
   books: [
-    createBook({asin: 'B001', title: 'Reading Book One', status: 'reading', currentPage: 50, totalPages: 300, rating: null}),
-    createBook({asin: 'B002', title: 'Reading Book Two', status: 'reading', currentPage: 120, totalPages: 400, rating: null}),
-    createBook({asin: 'B003', title: 'Reading Book Three', status: 'reading', currentPage: 200, totalPages: 500, rating: null})
+    createBook({asin: 'B0DSRD0001', title: 'Reading Book One', status: 'reading', currentPage: 50, totalPages: 300, rating: null}),
+    createBook({asin: 'B0DSRD0002', title: 'Reading Book Two', status: 'reading', currentPage: 120, totalPages: 400, rating: null}),
+    createBook({asin: 'B0DSRD0003', title: 'Reading Book Three', status: 'reading', currentPage: 200, totalPages: 500, rating: null})
   ]
 })
 
 /** allCompleted: 5 books all completed with ratings 1–5 */
 export const allCompleted: BooksExport = createBooksFixture({
   books: [
-    createBook({asin: 'C001', title: 'Completed Book One', status: 'finished', rating: 1, currentPage: null}),
-    createBook({asin: 'C002', title: 'Completed Book Two', status: 'finished', rating: 2, currentPage: null}),
-    createBook({asin: 'C003', title: 'Completed Book Three', status: 'finished', rating: 3, currentPage: null}),
-    createBook({asin: 'C004', title: 'Completed Book Four', status: 'finished', rating: 4, currentPage: null}),
-    createBook({asin: 'C005', title: 'Completed Book Five', status: 'finished', rating: 5, currentPage: null})
+    createBook({asin: '1600000010', title: 'Completed Book One', status: 'finished', rating: 1, currentPage: null}),
+    createBook({asin: '1600000029', title: 'Completed Book Two', status: 'finished', rating: 2, currentPage: null}),
+    createBook({asin: '1600000037', title: 'Completed Book Three', status: 'finished', rating: 3, currentPage: null}),
+    createBook({asin: '1600000045', title: 'Completed Book Four', status: 'finished', rating: 4, currentPage: null}),
+    createBook({asin: '1600000053', title: 'Completed Book Five', status: 'finished', rating: 5, currentPage: null})
   ]
 })
 
 /** mixedStatus: completed, reading, upNext, and null status */
 export const mixedStatus: BooksExport = createBooksFixture({
   books: [
-    createBook({asin: 'M001', title: 'Mixed Completed', status: 'finished', rating: 4, currentPage: null}),
-    createBook({asin: 'M002', title: 'Mixed Reading', status: 'reading', currentPage: 80, totalPages: 320, rating: null}),
-    createBook({asin: 'M003', title: 'Mixed Up Next', status: 'upNext', currentPage: null, rating: null}),
-    createBook({asin: 'M004', title: 'Mixed No Status', status: null, currentPage: null, rating: null})
+    createBook({asin: 'B0DSMX0001', title: 'Mixed Completed', status: 'finished', rating: 4, currentPage: null}),
+    createBook({asin: 'B0DSMX0002', title: 'Mixed Reading', status: 'reading', currentPage: 80, totalPages: 320, rating: null}),
+    createBook({asin: 'B0DSMX0003', title: 'Mixed Up Next', status: 'upNext', currentPage: null, rating: null}),
+    createBook({asin: 'B0DSMX0004', title: 'Mixed No Status', status: null, currentPage: null, rating: null})
   ]
 })
 
 /** withProgress: books at various reading progress percentages */
 export const withProgress: BooksExport = createBooksFixture({
   books: [
-    createBook({asin: 'P001', title: 'Just Started', status: 'reading', currentPage: 10, totalPages: 400, rating: null}),
-    createBook({asin: 'P002', title: 'Quarter Done', status: 'reading', currentPage: 100, totalPages: 400, rating: null}),
-    createBook({asin: 'P003', title: 'Halfway', status: 'reading', currentPage: 200, totalPages: 400, rating: null}),
-    createBook({asin: 'P004', title: 'Three Quarters', status: 'reading', currentPage: 300, totalPages: 400, rating: null}),
-    createBook({asin: 'P005', title: 'Almost Done', status: 'reading', currentPage: 390, totalPages: 400, rating: null})
+    createBook({asin: 'B0DSPG0001', title: 'Just Started', status: 'reading', currentPage: 10, totalPages: 400, rating: null}),
+    createBook({asin: 'B0DSPG0002', title: 'Quarter Done', status: 'reading', currentPage: 100, totalPages: 400, rating: null}),
+    createBook({asin: 'B0DSPG0003', title: 'Halfway', status: 'reading', currentPage: 200, totalPages: 400, rating: null}),
+    createBook({asin: 'B0DSPG0004', title: 'Three Quarters', status: 'reading', currentPage: 300, totalPages: 400, rating: null}),
+    createBook({asin: 'B0DSPG0005', title: 'Almost Done', status: 'reading', currentPage: 390, totalPages: 400, rating: null})
   ]
 })
 
@@ -57,10 +57,10 @@ export const noCovers: BooksExport = createBooksFixture({
 /** seriesBooks: all books with series info populated */
 export const seriesBooks: BooksExport = createBooksFixture({
   books: [
-    createBook({asin: 'S001', title: 'Series Alpha 1', series: 'Alpha Chronicles', seriesNumber: 1, seriesTotal: 4, status: 'finished', rating: 5}),
-    createBook({asin: 'S002', title: 'Series Alpha 2', series: 'Alpha Chronicles', seriesNumber: 2, seriesTotal: 4, status: 'finished', rating: 4}),
+    createBook({asin: '1600000118', title: 'Series Alpha 1', series: 'Alpha Chronicles', seriesNumber: 1, seriesTotal: 4, status: 'finished', rating: 5}),
+    createBook({asin: '1600000126', title: 'Series Alpha 2', series: 'Alpha Chronicles', seriesNumber: 2, seriesTotal: 4, status: 'finished', rating: 4}),
     createBook({
-      asin: 'S003',
+      asin: '1600000134',
       title: 'Series Alpha 3',
       series: 'Alpha Chronicles',
       seriesNumber: 3,
@@ -70,8 +70,8 @@ export const seriesBooks: BooksExport = createBooksFixture({
       totalPages: 350,
       rating: null
     }),
-    createBook({asin: 'S004', title: 'Series Alpha 4', series: 'Alpha Chronicles', seriesNumber: 4, seriesTotal: 4, status: 'upNext', rating: null}),
-    createBook({asin: 'S005', title: 'Series Beta 1', series: 'Beta Saga', seriesNumber: 1, seriesTotal: 2, status: 'finished', rating: 3})
+    createBook({asin: '1600000142', title: 'Series Alpha 4', series: 'Alpha Chronicles', seriesNumber: 4, seriesTotal: 4, status: 'upNext', rating: null}),
+    createBook({asin: '1600000150', title: 'Series Beta 1', series: 'Beta Saga', seriesNumber: 1, seriesTotal: 2, status: 'finished', rating: 3})
   ]
 })
 
@@ -80,7 +80,7 @@ export const sixBooks: BooksExport = createBooksFixture({
   books: [
     ...createBooksFixture().books,
     createBook({
-      asin: 'X006',
+      asin: '1600000215',
       title: 'Sixth Book',
       author: 'Extra Author',
       series: null,
@@ -97,7 +97,7 @@ export const sixBooks: BooksExport = createBooksFixture({
 export const allFields: BooksExport = createBooksFixture({
   books: [
     createBook({
-      asin: 'F001',
+      asin: '0123456789',
       title: 'All Fields Book',
       author: 'Full Author',
       series: 'Complete Series',
@@ -325,7 +325,7 @@ export const full: BooksExport = createBooksFixture({
 export const ssrKnownAnswer: BooksExport = createBooksFixture({
   books: [
     createBook({
-      asin: 'KA7731KAP1',
+      asin: 'B0KA7731P1',
       title: 'Known Answer Title Kappa-7731',
       author: 'Known Answer Author Kappa-7731',
       series: 'Known Answer Series Kappa-7731',
@@ -346,7 +346,7 @@ export const ssrKnownAnswer: BooksExport = createBooksFixture({
       rating: null
     }),
     createBook({
-      asin: 'KA7731KAP2',
+      asin: 'B0KA7731P2',
       title: 'Known Answer Finished Kappa-7731',
       author: 'Known Answer Author Kappa-7731',
       series: 'Known Answer Series Kappa-7731',

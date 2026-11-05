@@ -605,7 +605,24 @@ export const llmSchema = z
         intro: z.string(),
         apiHeading: z.string(),
         apiBody: z.string(),
+        apiBaseNote: z.string(),
         apiSuppressedResponse: z.string(),
+        errorsHeading: z.string(),
+        errorsBody: z.string(),
+        problemNotFoundTitle: z.string(),
+        problemNotFoundDetail: z.string(),
+        problemMethodNotAllowedTitle: z.string(),
+        problemMethodNotAllowedDetail: z.string(),
+        problemRateLimitedTitle: z.string(),
+        problemRateLimitedDetail: z.string(),
+        problemFocusSuppressedTitle: z.string(),
+        problemFocusSuppressedDetail: z.string(),
+        problemUpstreamUnavailableTitle: z.string(),
+        problemUpstreamUnavailableDetail: z.string(),
+        versioningHeading: z.string(),
+        versioningBody: z.string(),
+        rateLimitHeading: z.string(),
+        rateLimitBody: z.string(),
         mcpHeading: z.string(),
         mcpBody: z.string(),
         webmcpHeading: z.string(),
@@ -623,7 +640,7 @@ export const llmSchema = z
       })
       .strict()
       .describe(
-        'Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.',
+        'Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, the /api/v1 base note, the RFC 9457 title and detail of each /api/v1 problem type, and one heading plus body per section — data API and OpenAPI, errors, versioning, rate limits, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.',
       ),
     notFound: z
       .object({

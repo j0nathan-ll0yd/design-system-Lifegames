@@ -35,7 +35,7 @@ function renderLeaderboard(places: typeof defaultPlaces) {
     places.map((p, i) =>
       html`
             <div
-              style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <span style="font-size: 1.2em; width: 20px; color: var(--lg-color-text-muted);"
                 >${i + 1}</span

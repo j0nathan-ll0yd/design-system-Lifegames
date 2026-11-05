@@ -41,6 +41,7 @@
     "actionSearching": "Searching for scale",
     "actionReconnect": "Reconnect to scale",
     "actionFinishCup": "Finish tracking this cup",
-    "actionNewCup": "Start tracking a new cup"
+    "actionNewCup": "Start tracking a new cup",
+    "connectionStatus": "Scale connection: {status}"
   }
 }

@@ -1,5 +1,125 @@
 # @j0nathan-ll0yd/web
 
+## 4.6.3
+
+### Patch Changes
+
+- Updated dependencies [e50a29d]
+  - @j0nathan-ll0yd/tokens@2.3.2
+
+## 4.6.2
+
+### Patch Changes
+
+- 8bee355: The ReadingFeed rows and the Bookshelf tiles now fail visible. `.article-list-item` and `.shelf-book` had a base `opacity: 0` that only their entry animation lifted. The keyframes live outside this package: `fadeSlideRight` in `tokens/animations`, `shelfFadeIn` in `tokens/effects`. A consumer that loaded `components.css` without the matching entrypoint showed rows that never appeared. The docs showcase Reading Feed card was empty for this reason.
+  - `packages/web/src/styles/components.css`: both rules drop the base `opacity: 0` and use `animation-fill-mode: backwards`. The keyframes' hidden from-state applies only while the stagger delay and the animation run. Without the keyframes there is no animation and the rows show at once.
+  - Both rules gain their own `prefers-reduced-motion: reduce` gate (`animation: none`). The `tokens/animations` override shortens the duration but keeps the stagger delay, which the backwards fill would hold hidden.
+  - `.article-list` resets its own `margin` and `padding`. A consumer without `tokens/reset` indented every row by the user agent list padding.
+  - The hover motion now works where the keyframes load. The old `forwards` fill held `transform: translateX(0)` after the entry animation, which blocked `.article-list-item:hover` (6px right) and `.shelf-book:hover` (4px up). With the `backwards` fill the hover rules apply once the animation ends. A lifted tile's top 4px is its transparent border and padding, so no cover or text is cut. A tile that shows its keyboard focus ring does not lift, so the ring stays inside the row. A tile focused by the mouse, or whose ring pointer input hid, still lifts.
+  - The ReadingFeed pager restarts the stagger at the top of each page. The row markup (`articleItemHtml`) staggers by position in the whole list, and showing a page clears `display: none`, which restarts each row's entry animation. A page-2 row waited 0.7 to 1.33 s (a page-3 row 1.4 s or more) before it appeared, each time its page showed. `showPage` in `packages/web/src/runtime/reading-feed-init.ts` now sets each shown row's delay from its index on the page. No export changes.
+  - A Bookshelf tile's keyboard focus ring now lies inside the tile. The ring reached 4px past the tile, and `.shelf-row`, which clips at its padding edge, had no top or side padding, so the ring lost its top and left edges. The ring now uses `outline-offset: -1px` on the title link's overlay. Its outer edge is the tile's border edge, in the tile's own transparent border and padding. `.shelf-row` needs no padding or negative margin for it, so a list reset cannot clip it. The website loads `tokens/reset` unlayered, which zeroes `ul` padding and margin. The tiles, their snap positions and the card size do not move. `packages/tokens/src/base.css` and the portfolio Dashboard carry their own copies of the ring; `scripts/shelf-ring-geometry.test.mjs` holds all three to one geometry.
+  - `.shelf-book-active` drops its `opacity: 1`. It only undid the removed hidden base.
+  - The keyframes stay in the tokens package, their single source. A consumer that wants the entry motion loads `tokens/animations` and `tokens/effects`, as before.
+
+  Consumers may drop their own visibility overrides once they adopt this patch, for example `.article-list-item { opacity: 1; }`. An override that sets `opacity: 1` stays compatible: the rows already show without it.
+
+- Updated dependencies [8bee355]
+  - @j0nathan-ll0yd/tokens@2.3.1
+
+## 4.6.1
+
+### Patch Changes
+
+- Updated dependencies [99140ce]
+  - @j0nathan-ll0yd/tokens@2.3.0
+
+## 4.6.0
+
+### Minor Changes
+
+- f379c75: Give every Bookshelf tile a real link to its book (atlas decision 0160 D5), in the accessible card pattern. Crawlers and visitors without JavaScript now reach the book from the server markup. The book dialog is an enhancement on top of the link.
+  - `Bookshelf.astro`: each tile's title text sits in one `<a class="shelf-book-link">` inside `.shelf-book-title`, with `href`, `target="_blank"` and `rel="sponsored noopener noreferrer"` and no other attribute. The `href` is `amazonBookUrl(asin)`: `https://www.amazon.com/dp/<ASIN>?tag=lifegames04-20&linkCode=ll2&language=en_US&ref_=as_li_ss_tl`, the same string `data-book.link` carries. The title text names the link. The cover, author, status, progress, rating and finished date stay outside it and read as the tile's own content. The `<li>` loses `tabindex="0"` and `aria-label`; `data-book` stays on it. The cover takes `alt=""`, because the title in the same tile names the book.
+  - `components.css`: `.shelf-book` is `position: relative`, and `.shelf-book-link::after` stretches the link's hit area over the whole tile, so a click anywhere on the tile activates the link. The overlay stops text selection inside the tile. The link keeps the tile's color and has no underline. The `.shelf-book-title a` rules, which matched no element before, are gone.
+  - `a11y.css`: the green keyboard focus ring moves from `.shelf-book:focus-visible` to the link's overlay, `.shelf-book-link:focus-visible::after`, at the tile's own ring line (2px wide, 3px outside the padding edge). The link draws no ring of its own. The ring color is its own declaration, so a missing token falls back to `currentColor` instead of removing the ring. Pointer input suppresses the ring as before.
+  - `initBookModal`: a plain primary click (button 0, no meta, ctrl, shift or alt key) opens the dialog and prevents the navigation. Enter on the link fires that click. Every other click keeps the browser default, so a modified or middle click opens Amazon. Space keeps link behavior and scrolls. The tile's keydown handler is gone. A `data-book` payload that does not parse leaves the click to the browser. On close, focus returns to the link for the same book, wherever a live update moved it. If that book left the shelf, focus keeps the reader's place: the link at the trigger tile's position, clamped to the last tile. If no book is left, focus goes to a rendered card element that already takes focus (not hidden, not `display: none` or `visibility: hidden`, not inside an `inert` or `aria-hidden="true"` ancestor), else to the card heading (`.widget-label`). The heading takes `tabindex="-1"` from script only and loses it on `blur`. Server markup never carries that `tabindex`. Focus never returns to the `<li>` or falls to `<body>`. Once bound, the enhancement sets `aria-haspopup="dialog"` on every `.shelf-book-link` in `#cardBooks`, and a `MutationObserver` marks any link an updater writes later. Server markup never carries `aria-haspopup`: without JavaScript the link navigates.
+  - `initBookshelf` (the showcase island) dispatches `book-clicked` on a plain primary click, and the event is now cancelable. Only a listener that calls `preventDefault()` on it cancels the link's navigation. With no listener claiming it, the link still navigates. Modified clicks dispatch nothing.
+  - `updateBookshelf` writes the title link on a rebuild and moves each link's `href` on an in-place patch. A tile without its title link takes the rebuild instead of the patch, so no tile is left without its link. The rebuilt cover takes `alt=""`.
+  - New exports: `BOOK_LINK_REL` from `runtime/widget-markup` and `isPlainPrimaryClick` from the new `runtime/click-intent`.
+  - `amazonBookUrl` encodes the ASIN (`encodeURIComponent`). A valid ASIN is unchanged. `a11y.bookshelf.bookItem` loses its web use (deprecated in `packages/copy`).
+
+  Consumer actions, before a consumer adopts this version:
+  - A consumer with a fragment allowlist must admit `a.shelf-book-link` inside `.shelf-book-title`, with exactly `href`, `target` and `rel`: an `https://www.amazon.com/dp/<ASIN>` href (with the query string above), `target="_blank"` and `rel="sponsored noopener noreferrer"`. It must also admit the class `shelf-book-link`. The link carries no `aria-label` and no `aria-haspopup` in server markup. Otherwise the website's composed page refuses the Bookshelf fragment and falls back to its data-free state. On the website: `src/lib/composed/fragment-policy.ts` (the `rel` rule admits only `noopener` and `noreferrer` today) and `src/lib/composed/fragment-classes.ts` (the Bookshelf class list).
+  - A consumer test that focuses the tile must focus its link. The `<li>` no longer takes focus, and focus returns to the link when the dialog closes. A test that names a book by the tile's `aria-label` or the cover's `alt` must read the title text instead. On the website: `tests/behavioral/book-modal.spec.ts` tests 6, 6b and 6c, and the focus comment in `src/layouts/Dashboard.astro`.
+
+### Patch Changes
+
+- 0bc9b08: Remove the dead map styles. The website map left on 2026-02-28 (website commit `f50e4520`), and no page renders map markup or loads Leaflet (atlas decision 0157). No rendered pixel changes.
+  - `packages/web`: drop `.map-wrapper`, `.map-wrapper .leaflet-container`, `.map-wrapper .leaflet-control-attribution`, `.map-wrapper .leaflet-control-zoom`, `.map-overlay`, `.map-marker-pulse`, `.map-marker-dot`, `.map-marker-ring`, `.map-meta-row` and `.map-meta-value` from `src/styles/components.css`, and the three responsive `.map-wrapper` height overrides from `src/styles/layout.css`. The two stylesheets lose 1810 bytes.
+  - `packages/tokens`: drop `@keyframes mapRingPulse` from `src/effects.css`. Only `.map-marker-ring` used it. The file loses 179 bytes.
+
+- Updated dependencies [f379c75]
+- Updated dependencies [33d55d4]
+- Updated dependencies [0bc9b08]
+- Updated dependencies [f379c75]
+  - @j0nathan-ll0yd/copy@4.4.0
+  - @j0nathan-ll0yd/tokens@2.2.2
+
+## 4.5.3
+
+### Patch Changes
+
+- 3806bf4: Consume portal-contract 2.8.0 (atlas decision 0169). The dependency range moves from `^2.5.0` to `^2.8.0`.
+
+  portal-contract 2.8.0 regenerates its raw export schemas under zod 4.6.7, the release that closes GHSA-mrhx-c7xc-m3w5. The only byte change is the nullable form: `"type": ["x", "null"]` replaces `anyOf` with a `{"type": "null"}` branch. The accepted values are unchanged. No package here imports zod or the portal-contract validators.
+  - schemas: `generated/dashboard-health.schema.json` carries the new nullable form (5 fields). `.contract-lock.json` pins the 2.8.0 raw-schema checksums.
+  - fixtures: `check-full-coverage` recognizes both nullable forms. Before, the 2.8.0 schemas made it count 0 required-nullable checks and fail on 4 domains. It now counts 339 again, the same as against 2.7.0.
+  - web: the dependency range only.
+
+## 4.5.2
+
+### Patch Changes
+
+- Updated dependencies [cfc7966]
+  - @j0nathan-ll0yd/copy@4.3.1
+
+## 4.5.1
+
+### Patch Changes
+
+- 480b091: `layout.css` places the homepage site footer: a new `.left-panel-footer` class for a footer that holds `SiteFooterNav` as the last child of `.left-panel` (atlas decision 0158, plan is-agentic-developers-link). Above 1100px the website's body does not scroll, so a footer after `.command-layout` sat below the viewport where no reader could reach it. The footer now closes the left column after System Status, and drops to the foot of the panel when the column has room. At 1100px and below, `.left-panel` is `display: contents`, and the footer takes `order: 100`, after System Status (`order: 99`), so it ends the page. Spacing uses `--lg-space-*` tokens. No existing selector changes. A new browser suite (`tests/browser/home-footer.test.ts`) checks the order and reaches the last link with a mouse wheel at 1400x900, 1400x3000, 900x1100 and 390x844. The website moves its scroll lock from 1100px to 1101px in the consumer PR: at exactly 1100px this file's tablet block already stacks the page, and the lock left it unable to scroll.
+- Updated dependencies [c399c72]
+  - @j0nathan-ll0yd/copy@4.3.0
+
+## 4.5.0
+
+### Minor Changes
+
+- e975d51: New `SiteFooterNav` component: one `<nav>` landmark around a list of page links, with `aria-current="page"` on the current link and no JavaScript (atlas decision 0158 follow-on, plan is-agentic-developers-link, option A). Props: `links` (`{href, label, current?}[]`, rendered in order) and an optional `label` for the landmark's accessible name. An absent or empty label falls back to the copy key `identity.navigation.siteNavLabel` ("Site"). An empty `links` renders nothing. `SiteFooterNav` and its `SiteFooterNavLink` type export from the package root and from `./components`.
+
+  `TextPage` now renders its footer links through `SiteFooterNav`. Its `back` link and its footer wrapper stay its own. The footer nav gains its accessible name and wraps its links in a `ul`. The render is unchanged: footer screenshots before and after match byte for byte at 1400x900 and 390x844.
+
+  The nav styles move from `.lg-text-page-nav` and `.lg-text-page-nav-link` to `.lg-site-footer-nav-list`, `.lg-site-footer-nav-item` and `.lg-site-footer-nav-link` in `primitives.css`. Only `TextPage` rendered the old classes. A grep of the website (`src/`, `tests/`), the LP backend (`src/`) and this repo finds no other reference, and the website's footer selectors (`footer nav a`) are descendant selectors that survive the added `ul > li`. The website homepage mounts `SiteFooterNav` in a later website PR.
+
+### Patch Changes
+
+- Updated dependencies [e975d51]
+  - @j0nathan-ll0yd/copy@4.2.0
+
+## 4.4.0
+
+### Minor Changes
+
+- 9f869b9: Relative-time labels render in the browser only (atlas decision 0164 D5, "stable bytes"). The same export data now composes to the same server bytes at any render time, so the runner can skip an unchanged Workers KV write.
+
+  Minor, not patch: the server writes a new text form and the package exports new functions. No export is removed and no signature breaks.
+  - The server writes each instant as absolute, locale-neutral UTC text, `YYYY-MM-DD HH:MM UTC` (`2026-03-18 12:00 UTC`), inside `<time datetime data-relative>`. A visitor without JavaScript sees this text. `datetime` keeps the ISO instant. This covers System Status ages, DevActivityLog dates, StarredRepoList dates and ReadingFeed dates. A date-only GitHub event keeps its ISO date and carries no `data-relative`, as before; a date-only `savedAt` or `starredAt` shows its date and still gets the relative label in the browser, as before. An unparseable value now shows as written instead of a `NaN` label.
+  - New `runtime/relative-time`: `absoluteTimeText`, `relativeTimeLabel`, `relativeAttr`, `isIsoTimestamp`, `isIsoDate`, `isRelativeStyle` and `formatAge` (moved from `runtime/view-models`, which still re-exports it). Pure and DOM-free.
+  - New `runtime/relative-time-fill`: `fillRelativeTimes(root = document, now = Date.now())`, the only writer of relative text. It writes the label each widget showed before (`5m ago`, `2 weeks ago`). `updateDevActivityLog`, `updateReadingFeed`, `updateStarredRepos` and `updateSystemStatus` call it on the markup they write.
+  - Consumer action: call `fillRelativeTimes(document)` once at load, before the cards become visible. Without it, a page whose first poll returns the server's generation keeps the absolute text: the updaters do not run for an export the page already shows.
+  - `adaptGithubEvents`, `adaptStarredRepos` and `adaptArticles` write the absolute text and no longer read the clock; their `now` argument is deprecated and ignored. `composeSystemLines` ignores its `now` argument the same way. Both stay for compatibility until the next major.
+  - `FocusOverlay` and `DndOverlay` always render the `--:--:--` clock placeholder; `updateFocusOverlay` writes the time. Their `now` prop is deprecated and ignored.
+  - `timeHtml` in `runtime/widget-markup` takes an optional fourth argument, the relative style.
+
 ## 4.3.0
 
 ### Minor Changes

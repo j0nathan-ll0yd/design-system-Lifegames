@@ -280,13 +280,19 @@ export const widgetsSchema = z
         badgeConnect: z.string(),
         badgeConnected: z.string(),
         badgeError: z.string(),
+        statusOffline: z.string(),
+        statusStreamPaused: z.string(),
+        statusReconnectFailed: z.string(),
+        statusReconnectFailedTracked: z.string(),
+        statusBluetoothUnavailable: z.string(),
+        statusBluetoothDenied: z.string(),
         beverageDrip: z.string(),
         beverageEspresso: z.string(),
         beverageColdBrew: z.string(),
       })
       .strict()
       .describe(
-        'Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine readout, daily bar, and beverage short names.',
+        'Coffee tracking screen (Acaia scale) — connection badge, status badge messages, primary action, caffeine readout, daily bar, and beverage short names.',
       ),
     widgetState: z
       .object({

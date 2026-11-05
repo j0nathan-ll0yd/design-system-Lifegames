@@ -2,7 +2,7 @@
   "generatedAt": "2026-03-18T12:00:00.000Z",
   "books": [
     {
-      "asin": "B001",
+      "asin": "B0DSRD0001",
       "title": "Reading Book One",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -32,7 +32,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "B002",
+      "asin": "B0DSRD0002",
       "title": "Reading Book Two",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",
@@ -62,7 +62,7 @@
       "updatedAt": "2026-03-18T12:00:00.000Z"
     },
     {
-      "asin": "B003",
+      "asin": "B0DSRD0003",
       "title": "Reading Book Three",
       "author": "Robert Jackson Bennett",
       "series": "Shadow of the Leviathan",

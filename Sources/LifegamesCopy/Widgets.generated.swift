@@ -24,8 +24,8 @@ public struct Widgets: Codable, Sendable {
     /// Bookshelf widget — title, empty-state heading/body, status labels
     /// (reading/upNext/finished/pending), finished-date line, timestamp.
     public let bookshelf: Bookshelf
-    /// Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine
-    /// readout, daily bar, and beverage short names.
+    /// Coffee tracking screen (Acaia scale) — connection badge, status badge messages, primary
+    /// action, caffeine readout, daily bar, and beverage short names.
     public let coffee: WidgetsCoffee
     /// Dev Log (GitHub activity) production widget — title, empty-state, live timestamp.
     public let devLog: DevLog
@@ -347,16 +347,18 @@ public extension Bookshelf {
     }
 }
 
-/// Coffee tracking screen (Acaia scale) — connection badge, primary action, caffeine
-/// readout, daily bar, and beverage short names.
+/// Coffee tracking screen (Acaia scale) — connection badge, status badge messages, primary
+/// action, caffeine readout, daily bar, and beverage short names.
 // MARK: - WidgetsCoffee
 public struct WidgetsCoffee: Codable, Sendable {
     public let actionConnect, actionFinishCup, actionNewCup, actionReconnect: String
     public let badgeConnect, badgeConnected, badgeError, beverageColdBrew: String
     public let beverageDrip, beverageEspresso, caffeineUnit, dailyLabel: String
-    public let searching, sipping, thisCup: String
+    public let searching, sipping, statusBluetoothDenied, statusBluetoothUnavailable: String
+    public let statusOffline, statusReconnectFailed, statusReconnectFailedTracked, statusStreamPaused: String
+    public let thisCup: String
 
-    public init(actionConnect: String, actionFinishCup: String, actionNewCup: String, actionReconnect: String, badgeConnect: String, badgeConnected: String, badgeError: String, beverageColdBrew: String, beverageDrip: String, beverageEspresso: String, caffeineUnit: String, dailyLabel: String, searching: String, sipping: String, thisCup: String) {
+    public init(actionConnect: String, actionFinishCup: String, actionNewCup: String, actionReconnect: String, badgeConnect: String, badgeConnected: String, badgeError: String, beverageColdBrew: String, beverageDrip: String, beverageEspresso: String, caffeineUnit: String, dailyLabel: String, searching: String, sipping: String, statusBluetoothDenied: String, statusBluetoothUnavailable: String, statusOffline: String, statusReconnectFailed: String, statusReconnectFailedTracked: String, statusStreamPaused: String, thisCup: String) {
         self.actionConnect = actionConnect
         self.actionFinishCup = actionFinishCup
         self.actionNewCup = actionNewCup
@@ -371,6 +373,12 @@ public struct WidgetsCoffee: Codable, Sendable {
         self.dailyLabel = dailyLabel
         self.searching = searching
         self.sipping = sipping
+        self.statusBluetoothDenied = statusBluetoothDenied
+        self.statusBluetoothUnavailable = statusBluetoothUnavailable
+        self.statusOffline = statusOffline
+        self.statusReconnectFailed = statusReconnectFailed
+        self.statusReconnectFailedTracked = statusReconnectFailedTracked
+        self.statusStreamPaused = statusStreamPaused
         self.thisCup = thisCup
     }
 }
@@ -408,6 +416,12 @@ public extension WidgetsCoffee {
         dailyLabel: String? = nil,
         searching: String? = nil,
         sipping: String? = nil,
+        statusBluetoothDenied: String? = nil,
+        statusBluetoothUnavailable: String? = nil,
+        statusOffline: String? = nil,
+        statusReconnectFailed: String? = nil,
+        statusReconnectFailedTracked: String? = nil,
+        statusStreamPaused: String? = nil,
         thisCup: String? = nil
     ) -> WidgetsCoffee {
         return WidgetsCoffee(
@@ -425,6 +439,12 @@ public extension WidgetsCoffee {
             dailyLabel: dailyLabel ?? self.dailyLabel,
             searching: searching ?? self.searching,
             sipping: sipping ?? self.sipping,
+            statusBluetoothDenied: statusBluetoothDenied ?? self.statusBluetoothDenied,
+            statusBluetoothUnavailable: statusBluetoothUnavailable ?? self.statusBluetoothUnavailable,
+            statusOffline: statusOffline ?? self.statusOffline,
+            statusReconnectFailed: statusReconnectFailed ?? self.statusReconnectFailed,
+            statusReconnectFailedTracked: statusReconnectFailedTracked ?? self.statusReconnectFailedTracked,
+            statusStreamPaused: statusStreamPaused ?? self.statusStreamPaused,
             thisCup: thisCup ?? self.thisCup
         )
     }

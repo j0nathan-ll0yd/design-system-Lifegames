@@ -32,7 +32,20 @@ story column reads the story roots from Storybook's own `apps/storybook/.storybo
 rather than `governance-gates`, because that is the job its validator lives in).
 
 **`d6`** — D6, fixture personal-data scan. `d6-scan-personal-data.sh`, reading
-`lib/scan-allowlist.txt`. Blocking in `audit-ds.yml` and in `.husky/pre-commit`.
+`lib/scan-allowlist.txt`. Blocking in `audit-ds.yml` and in `.husky/pre-commit`. It fails on an
+allowlist entry whose path is not tracked. It skips the scoped-package release lines of a
+`.changeset/*.md` frontmatter, so changesets need no allowlist entry.
+
+**`d7`** — D7, cover inventory against the distribution. `d7-cover-inventory.mjs` reads the
+ungated `focus.json` first (`lib/focus-suppression.mjs`, a port of LP's C14 signal), then sends HEAD
+to every key of every ASIN in `packages/fixtures/src/cover-inventory.ts` `COVER_KEYS` and to a
+negative-control key. It judges each answer on status and content type: an image 200 is present,
+S3's xml 403 is absent, and the focus gate's json 403 is a suppression. A key that answers otherwise
+than the snapshot says is a MISMATCH; a suppression, an unjudged key or a failed control is
+INDETERMINATE, never PASS. Report-only, scheduled in `audit-ds.yml` on the `cfedge` egress lane,
+with its offline known-answer suite in `__tests__/`. Atlas reads its catalog row through
+`check:surfaces` (PENDING until the runner is on DS main) and A18, which reconciles `ARTIFACTS`
+against the row's `surfaces:`.
 
 **`c147`** — published-package payload drift. `c147-package-drift.mjs`, run by the
 `package-version-drift` CI job, `package-drift-post-publish.yml`, `drift-self-test-nightly.yml`

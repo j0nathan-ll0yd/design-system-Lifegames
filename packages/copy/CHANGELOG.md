@@ -1,5 +1,55 @@
 # @j0nathan-ll0yd/copy
 
+## 4.4.0
+
+### Minor Changes
+
+- f379c75: Deprecate `a11y.bookshelf.bookItem` with no replacement (DEPRECATION.md, "Copy Keys"). Each Bookshelf tile's title is now a real link, named by its own text, so the web template and both updater paths dropped the tile label. No Swift, iOS, website or portal source reads the key. The rich schema marks it `deprecated: true`. The TS type gains an `@deprecated` JSDoc, the Zod schema a `.describe()`, and the Swift `A11YBookshelf.bookItem` property a doc comment. The accessor stays until the next major release, and the value does not change.
+- 33d55d4: Add the coffee status badge messages and the connection badge accessibility template, so the iOS coffee reducer reads its status text through `CopyLoader` instead of hardcoded strings (atlas plan coffee-reconnect-and-finish-2026-10-26, review finding I2).
+  - `widgets.coffee.statusOffline`, `statusStreamPaused`, `statusReconnectFailed`, `statusReconnectFailedTracked`, `statusBluetoothUnavailable` and `statusBluetoothDenied`: the `errorMessage` text the status badge shows for each link state. Raw CoreBluetooth error text is never shown again.
+  - `a11y.coffee.connectionStatus`: the `Scale connection: {status}` VoiceOver template for every badge mode. It replaces a hardcoded literal in the badge.
+  - The `_meta` provenance of the coffee primary-action keys names the new call sites. No existing value changes.
+
+## 4.3.1
+
+### Patch Changes
+
+- cfc7966: `llm.developers.rateLimitBody` states the `/api/v1` facade's fail-open behavior (website #395 review, finding M2). Before, the value promised the `RateLimit` field on every export response. Now:
+  - `RateLimit-Policy` is on every export response.
+  - `RateLimit` is on every response the counter counted.
+  - When the counter is unavailable, the request is still served and `RateLimit` is absent.
+
+  The limit (60 requests per minute per client) and `Retry-After` on a 429 are unchanged. The key name and `_meta.usage` are unchanged.
+
+## 4.3.0
+
+### Minor Changes
+
+- c399c72: New `identity.organization` group: the facts for a schema.org `Organization` node for Lifegames in the website JSON-LD (owner decision 2026-10-24). The keys are `name`, `description`, `contactType`, `contactEmail`, `poBox`, `locality`, `region`, `postalCode`, and `country`. The website maps them into the node `name`, `description`, `email`, `contactPoint`, and a `PostalAddress` with `postOfficeBoxNumber` and no `streetAddress`. There is no `url` key: the node url is the site URL constant, because the mail domain does not resolve.
+
+  `contactEmail` is a purpose-made, revocable alias. Both the Organization and the Person contact point carry it (owner ruling 2026-10-24). It is not the personal address, which stays obfuscated on `/contact` (owner ruling 2026-10-12). The agent-readiness tests hold the alias unequal to `person.email` and allow no other identity leaf to name it. `contactType` equals `person.contactType`, and a test holds the two equal. The PO Box is the business mailing address, and both the Organization and the Person `address` carry it. `person.email` no longer lists the Person contact point among its uses; its value is unchanged.
+
+  Additive, hence minor, as for the `identity.navigation` group in 4.1.0. Swift gains `public struct IdentityOrganization` and an `Identity.organization` property, so the memberwise `Identity.init` takes one more argument. No Swift code calls it; `CopyLoader` decodes the bundled JSON.
+
+## 4.2.0
+
+### Minor Changes
+
+- e975d51: Developers-page copy for the `/api/v1` facade (atlas decision 0158 follow-on, plan is-agentic-api-v1 step 1), and the landmark name for the new site footer nav.
+
+  Added (llm, 17 leaves; the namespace grows from 203 to 220), all under `developers`:
+  - `apiBaseNote`: the API base `{siteUrl}/api/v1`, and `{siteUrl}/openapi.json` as the list of its nine export paths.
+  - `errorsHeading`, `errorsBody`: every 4xx and 5xx under `/api/v1`, and the 404 for any other unknown `/api` path, is an RFC 9457 problem document (`application/problem+json`) with `type`, `title`, `status`, `detail` and `instance`; the `type` URI points at a fragment of the page.
+  - A Title and a Detail for each problem type: `problemNotFound*`, `problemMethodNotAllowed*`, `problemRateLimited*`, `problemFocusSuppressed*`, `problemUpstreamUnavailable*`. Each Detail is a static sentence. `problemMethodNotAllowedDetail` is method-neutral: the `/api/v1` paths (`Allow: GET, HEAD`) and the POST-only `/api/csp-report` route (`Allow: POST`) both answer it, and it points at the `Allow` header. Variable data, such as the valid paths and the retry interval, travels in RFC 9457 extension members and response headers.
+  - `versioningHeading`, `versioningBody`: path versioning, additive-only change within a version, a 90-day support window with `Deprecation`, `Sunset` and `Link rel="successor-version"`, and a portal-contract major that removes or retypes an export member as the trigger.
+  - `rateLimitHeading`, `rateLimitBody`: 60 requests per minute per client, `RateLimit-Policy` and `RateLimit` on every response from an export path, and `Retry-After` on a 429.
+
+  Changed: `developers.apiBody` names the `/api/v1` base and points at the new sections. `developers.focusBody` adds the `/api/v1` answer, a 503 focus-suppressed problem document, beside the CloudFront host's 403. `developers.lastModified` is `2026-10-24`. `developers.apiSuppressedResponse` is status-neutral and channel-neutral: it now adds the `Retry-After` retry hint, and its `_meta` names the facade's 503 and the OpenAPI Suppressed response instead of the CloudFront 403.
+
+  Added (identity, 1 leaf): `navigation.siteNavLabel` ("Site"), the accessible name of the web package's `SiteFooterNav` landmark.
+
+  Additive, hence minor. Swift gains the matching properties on `LlmDevelopers` and `IdentityNavigation`, so their memberwise initializers take more arguments. No Swift code calls them; `CopyLoader` decodes the bundled JSON.
+
 ## 4.1.0
 
 ### Minor Changes

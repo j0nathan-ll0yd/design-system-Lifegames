@@ -46,7 +46,14 @@ function flattenTokens(obj, path = [], type = null) {
     }
     if (val && typeof val === 'object' && '$value' in val) {
       const tokenType = val.$type || currentType
-      tokens.push({path: [...path, key], $type: tokenType, $value: val.$value, $description: val.$description, $deprecated: val.$deprecated})
+      tokens.push({
+        path: [...path, key],
+        $type: tokenType,
+        $value: val.$value,
+        $description: val.$description,
+        $deprecated: val.$deprecated,
+        $extensions: val.$extensions
+      })
     } else if (val && typeof val === 'object' && !Array.isArray(val)) {
       tokens.push(...flattenTokens(val, [...path, key], currentType))
     }
@@ -161,6 +168,31 @@ const IOS_TEXT_STYLE = {
 
 const SWIFT_FONT_WEIGHT = {300: 'Light', 400: 'Regular', 500: 'Medium', 600: 'SemiBold', 700: 'Bold'}
 
+// The <generic-family> keywords of CSS Fonts Level 4 (§4.1.1, generic font
+// families). Generic names are keywords and must not be quoted.
+const CSS_GENERIC_FAMILIES = new Set([
+  'serif',
+  'sans-serif',
+  'monospace',
+  'cursive',
+  'fantasy',
+  'system-ui',
+  'ui-serif',
+  'ui-sans-serif',
+  'ui-monospace',
+  'ui-rounded',
+  'math',
+  'emoji',
+  'fangsong'
+])
+
+// A token's $extensions.lifegames.iosTextStyle wins over the name-keyed table, so a new iOS
+// typography token does not need a table row to escape the '.body' fallback.
+function iosTextStyleOf(t) {
+  const name = t.path[t.path.length - 1]
+  return t.$extensions?.lifegames?.iosTextStyle || IOS_TEXT_STYLE[name]
+}
+
 // --- Helpers ---
 
 function hexToRgb(hex) {
@@ -269,7 +301,20 @@ function emitTokensCss() {
   // single family name is quoted and gets the sans-serif generic. This lets the
   // mono family carry its own `..., monospace` fallback instead of a wrong
   // sans-serif one, without changing any single-name family token.
-  const cssFontFamily = (value) => String(value).includes(',') ? String(value) : `'${value}', sans-serif`
+  // A CSS generic family (`system-ui`, `ui-monospace`, `sans-serif` ...) is a
+  // keyword, not a family name: quoted, it names a font called "system-ui" that no
+  // system has, and the text falls through to the next family. So a generic stays
+  // bare. `sans-serif` alone needs no fallback after it.
+  const cssFontFamily = (value) => {
+    const family = String(value)
+    if (family.includes(',')) {
+      return family
+    }
+    if (family === 'sans-serif') {
+      return family
+    }
+    return CSS_GENERIC_FAMILIES.has(family) ? `${family}, sans-serif` : `'${family}', sans-serif`
+  }
 
   css += '\n  /* Font families */\n'
   for (const t of tokens) {
@@ -617,7 +662,7 @@ function emitFontTokensSwift() {
     const numericFontSize = typeof val.fontSize === 'number' ? val.fontSize : null
     const size = lgExt.fontSizeMax || val.fontSizeMax || numericFontSize || 17
     const weight = SWIFT_FONT_WEIGHT[val.fontWeight] || 'Regular'
-    const textStyle = lgExt.iosTextStyle || IOS_TEXT_STYLE[name] || '.body'
+    const textStyle = iosTextStyleOf(t) || '.body'
     swiftFonts += `        public static func ${name}() -> Font {\n`
     swiftFonts += `            .custom("SpaceGrotesk-${weight}", size: ${size}, relativeTo: ${textStyle})\n`
     swiftFonts += `        }\n`
@@ -829,7 +874,7 @@ function emitDesignMd() {
       continue
     }
     const fluid = FLUID_TYPOGRAPHY[name] || ''
-    const iosStyle = IOS_TEXT_STYLE[name] || ''
+    const iosStyle = iosTextStyleOf(t) || ''
     const weight = SWIFT_FONT_WEIGHT[val.fontWeight] || 'Regular'
     md += `| \`${name}\` | \`${fluid}\` | \`${iosStyle}\` | ${weight} (${val.fontWeight || 400}) |\n`
   }

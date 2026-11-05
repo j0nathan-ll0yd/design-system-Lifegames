@@ -17,6 +17,9 @@
  * Strict-ish: schemas declare additionalProperties:false where authored, so unknown
  * fields fail. Exits non-zero on any failure; wired into `pnpm build` so a bad
  * fixture cannot be committed/published. Run after generate.ts.
+ *
+ * Fails closed: a mapped raw directory that is missing or holds no JSON, a mapped
+ * post-adapter domain with no files, and a run that validates 0 fixtures all fail.
  */
 import {existsSync, readdirSync, readFileSync} from 'node:fs'
 import {dirname, join, resolve} from 'node:path'
@@ -27,8 +30,11 @@ import addFormats from 'ajv-formats'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const PKG_ROOT = resolve(HERE, '..')
-const GENERATED_DIR = join(PKG_ROOT, 'src', 'generated')
-const POST_ADAPTER_DIR = join(PKG_ROOT, 'src', 'post-adapter')
+// `--root=<dir>` reads fixture-map.json and src/ from another tree (tests use it).
+const rootArg = process.argv.slice(2).find((a) => a.startsWith('--root='))
+const FIXTURES_ROOT = rootArg ? resolve(rootArg.slice('--root='.length)) : PKG_ROOT
+const GENERATED_DIR = join(FIXTURES_ROOT, 'src', 'generated')
+const POST_ADAPTER_DIR = join(FIXTURES_ROOT, 'src', 'post-adapter')
 
 const require = createRequire(import.meta.url)
 
@@ -51,7 +57,15 @@ function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, 'utf-8'))
 }
 
-const fixtureMap = readJson(join(PKG_ROOT, 'fixture-map.json')) as FixtureMap
+const fixtureMapPath = join(FIXTURES_ROOT, 'fixture-map.json')
+const fixtureMap = readJson(fixtureMapPath) as FixtureMap
+for (const key of ['raw', 'postAdapter'] as const) {
+  const section: unknown = fixtureMap[key]
+  if (!section || typeof section !== 'object' || Array.isArray(section)) {
+    process.stderr.write(`\n[fixtures:validate] FAIL: ${fixtureMapPath} has no "${key}" object.\n`)
+    process.exit(1)
+  }
+}
 
 const ajv = new Ajv({strict: false, allErrors: true, allowUnionTypes: true})
 // ajv-formats is CJS with a callable default under tsx's esModuleInterop.
@@ -88,7 +102,12 @@ for (const [dir, schemaFile] of Object.entries(fixtureMap.raw)) {
     errors.push({fixture: domainDir, schema: schemaFile, error: 'generated directory missing'})
     continue
   }
-  for (const f of readdirSync(domainDir).filter((n) => n.endsWith('.json'))) {
+  const files = readdirSync(domainDir).filter((n) => n.endsWith('.json'))
+  if (files.length === 0) {
+    errors.push({fixture: `${domainDir}/*.json`, schema: schemaFile, error: 'no raw fixtures found'})
+    continue
+  }
+  for (const f of files) {
     validateFile(join(domainDir, f), validate, schemaFile)
   }
 }
@@ -129,8 +148,14 @@ for (const [domain, title] of Object.entries(fixtureMap.postAdapter)) {
 }
 
 // ── Report ──────────────────────────────────────────────────────────────────────
+// A run that checks nothing cannot fail, so it fails here.
+if (total === 0 && errors.length === 0) {
+  process.stderr.write(`\n[fixtures:validate] FAIL: 0 fixtures validated. fixture-map.json maps no fixtures to check.\n`)
+  process.exit(1)
+}
+
 if (errors.length > 0) {
-  process.stderr.write(`\n[fixtures:validate] FAIL: ${errors.length} of ${total} fixture(s) failed.\n\n`)
+  process.stderr.write(`\n[fixtures:validate] FAIL: ${errors.length} error(s); ${total} fixture(s) checked.\n\n`)
   for (const e of errors) {
     process.stderr.write(`  x ${e.fixture} (${e.schema})\n`)
     if (e.ajvErrors) {

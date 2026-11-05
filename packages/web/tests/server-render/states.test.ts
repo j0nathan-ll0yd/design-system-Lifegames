@@ -95,16 +95,19 @@ function exportsFor(variation: string, state?: WidgetState): DashboardExports {
 // The string half of the fixtures package's rule
 // (packages/fixtures/tests/ssr-known-answer.test.ts): a string leaf is a token
 // unless its key is shared vocabulary, it is an ISO date or timestamp, or it
-// has 3 or fewer characters. Two additions for RENDERED output: a relative-time
-// label ("2d ago") is computed at render time and proves nothing, and a string
-// the design system itself authors (copy, status labels) is chrome, not data.
+// has 3 or fewer characters. Three additions for RENDERED output: a relative-time
+// label ("2d ago") is computed at render time and proves nothing; an absolute
+// UTC instant ("2026-03-09 12:00 UTC", atlas decision 0164 D5) is an ISO
+// timestamp in its rendered form, so it is excluded as ISO is; and a string the
+// design system itself authors (copy, status labels) is chrome, not data.
 // Numbers are asserted through exact slot projections instead (see SLOTS).
 const SHARED_VOCABULARY_KEYS = new Set(['type', 'unit', 'status', 'source', 'rating', 'licenseKey', 'licenseName', 'licenseSpdxId', 'language'])
 const ISO = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/
 const RELATIVE_TIME = /^\d+\s?\w+ ago$/
+const UTC_INSTANT = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$/
 function stringTokens(value: unknown, out: Set<string>, key = ''): Set<string> {
   if (typeof value === 'string') {
-    if (!SHARED_VOCABULARY_KEYS.has(key) && value.length >= 4 && !ISO.test(value) && !RELATIVE_TIME.test(value)) {
+    if (!SHARED_VOCABULARY_KEYS.has(key) && value.length >= 4 && !ISO.test(value) && !RELATIVE_TIME.test(value) && !UTC_INSTANT.test(value)) {
       out.add(value)
     }
   } else if (Array.isArray(value)) {
@@ -551,20 +554,33 @@ describe('card-specific contracts', () => {
     expect(r.root.querySelector('#theatreCount')?.textContent?.trim()).toBe(`${data.totalReviews} reviews`)
   })
 
-  it('relative times render as <time datetime> from the page clock', async () => {
+  // Atlas decision 0164 D5: the server writes no relative text. An instant is
+  // absolute UTC text in <time datetime data-relative>; the browser writes the
+  // relative label (fillRelativeTimes). A date-only value keeps its ISO form
+  // and carries no data-relative.
+  it('instants render as absolute UTC text in <time datetime data-relative>, never a relative label', async () => {
+    const UTC_TEXT = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$/
     const cases = [
-      {component: ReadingFeed, vm: 'readingFeed', id: 'cardReading', selector: 'time.article-list-date', label: /^\d+[mhdw] ago$/},
-      {component: StarredRepoList, vm: 'starredRepoList', id: 'cardStarredRepos', selector: 'time.gh-sl-date', label: /^(\d+h ago|\d+ (day|week)s? ago)$/},
-      // The events export carries date-only values; they keep their ISO form.
-      {component: DevActivityLog, vm: 'devActivityLog', id: 'cardDevLog', selector: 'time.gh-dal-date', label: /^(\d+[mhdw] ago|\d{4}-\d{2}-\d{2})$/}
+      {component: ReadingFeed, vm: 'readingFeed', id: 'cardReading', selector: 'time.article-list-date', style: 'compact'},
+      {component: StarredRepoList, vm: 'starredRepoList', id: 'cardStarredRepos', selector: 'time.gh-sl-date', style: 'long'},
+      {component: DevActivityLog, vm: 'devActivityLog', id: 'cardDevLog', selector: 'time.gh-dal-date', style: 'compact'}
     ] as const
     for (const c of cases) {
       const r = await render(c.component, vmFor(exportsFor(KNOWN_ANSWER), c.vm), c.id)
       const times = [...r.root.querySelectorAll(c.selector)]
       expect(times.length, c.id).toBeGreaterThan(0)
+      expect(r.html, c.id).not.toMatch(/\bago\b/)
       for (const t of times) {
-        expect(Number.isFinite(Date.parse(t.getAttribute('datetime') ?? '')), c.id).toBe(true)
-        expect(t.textContent?.trim(), c.id).toMatch(c.label)
+        const datetime = t.getAttribute('datetime') ?? ''
+        expect(Number.isFinite(Date.parse(datetime)), c.id).toBe(true)
+        if (datetime.includes('T')) {
+          expect(t.getAttribute('data-relative'), c.id).toBe(c.style)
+          expect(t.textContent?.trim(), c.id).toMatch(UTC_TEXT)
+        } else {
+          // The events export carries date-only values: no relative label to write.
+          expect(t.hasAttribute('data-relative'), c.id).toBe(false)
+          expect(t.textContent?.trim(), c.id).toBe(datetime)
+        }
       }
     }
   })

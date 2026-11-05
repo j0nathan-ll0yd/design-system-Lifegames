@@ -18,6 +18,7 @@ import {
 } from './adapters'
 import {type FreshnessDomain, freshnessState} from './freshness'
 import {esc} from './html-utils'
+import {absoluteTimeText, relativeAttr} from './relative-time'
 import {
   bookshelfState,
   devActivityLogState,
@@ -112,31 +113,25 @@ export const SYSTEM_SOURCES = [
 
 export type SystemSource = (typeof SYSTEM_SOURCES)[number]['source']
 
-/** Compact relative age ("5m ago", "3h ago", "2d ago") of `iso` at `now`. */
-export function formatAge(iso: string, now: number): string {
-  const minutesAgo = Math.max(0, Math.floor((now - new Date(iso).getTime()) / 60000))
-  const hoursAgo = Math.floor(minutesAgo / 60)
-  const daysAgo = Math.floor(hoursAgo / 24)
-  if (daysAgo > 0) {
-    return daysAgo + 'd ago'
-  }
-  if (hoursAgo > 0) {
-    return hoursAgo + 'h ago'
-  }
-  return minutesAgo + 'm ago'
-}
+// formatAge moved to ./relative-time (atlas decision 0164 D5); re-exported so
+// the `@j0nathan-ll0yd/web/runtime/view-models` import keeps working.
+export { formatAge } from './relative-time'
 
 /**
  * System Status rows from each export's `generatedAt`, shared by the
  * SystemStatus template and `updateSystemStatus`. A source with a timestamp is
- * ACTIVE with its age in <time datetime>; a source without one is OFFLINE.
+ * ACTIVE with its instant in <time datetime data-relative="age">: absolute UTC
+ * text here, the age once the browser runs fillRelativeTimes (atlas decision
+ * 0164 D5). A source without one is OFFLINE.
+ *
+ * @param _now Unused since decision 0164 D5: the rows no longer depend on the
+ *   clock. Kept so the signature stays compatible; drop it at the next major.
  */
 export function composeSystemLines(
   timestamps: Partial<Record<string, string | null>>,
-  now: number | string | Date,
+  _now: number | string | Date,
   opts: {suppressed?: boolean} = {}
 ): SystemLine[] {
-  const nowMs = toEpochMs(now)
   return SYSTEM_SOURCES.map(({source, key, color}) => {
     if (opts.suppressed) {
       // A hiding focus mode: every row stays (so a later update can fill it)
@@ -157,8 +152,10 @@ export function composeSystemLines(
         value: esc(widgets.systemStatus.valueActive.toUpperCase()) +
           ' <span class="sys-val">(<time datetime="' +
           esc(ts) +
-          '">' +
-          esc(formatAge(ts, nowMs)) +
+          '"' +
+          (relativeAttr(ts, 'age') ? ' data-relative="age"' : '') +
+          '>' +
+          esc(absoluteTimeText(ts)) +
           '</time>)</span>'
       }
     }
@@ -279,9 +276,9 @@ export function toDashboardViewModels(exports: DashboardExports, now: number | s
   const night = nightSummaryDomain(sleep, health)
   const adaptedSleep = sleep.data && rendersData(night.state) ? adaptSleep(sleep.data, sleepScoreSource(health.data, health.state)) : null
 
-  const adaptedEvents = events.data ? adaptGithubEvents(events.data, nowMs) : []
-  const adaptedStarred = starred.data ? adaptStarredRepos(starred.data, nowMs) : []
-  const adaptedArticles = articles.data ? adaptArticles(articles.data, nowMs) : []
+  const adaptedEvents = events.data ? adaptGithubEvents(events.data) : []
+  const adaptedStarred = starred.data ? adaptStarredRepos(starred.data) : []
+  const adaptedArticles = articles.data ? adaptArticles(articles.data) : []
   const adaptedBooks = books.data ? adaptBooks(books.data) : null
 
   const timestamps: Record<SystemSource, string | null> = {

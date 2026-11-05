@@ -76,6 +76,15 @@ describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
   const leaves: Leaf[] = []
   collectLeaves(JSON.parse(readFileSync(join(PKG, 'src', 'llm.en-US.json'), 'utf-8')), '', leaves)
 
+  /**
+   * Leaves whose span names a policy window, not a data window, keyed by path and pattern. Each
+   * entry is held to its match below, so an exemption cannot outlive the sentence it covers.
+   * - `developers.versioningBody` [N-day span]: "90 days" is how long an old /api/v1 path version
+   *   keeps answering after its successor ships (plan is-agentic-api-v1). It claims nothing about
+   *   the data.
+   */
+  const POLICY_WINDOWS: Record<string, {pattern: string; match: string}> = {'developers.versioningBody': {pattern: 'N-day span', match: '90 days'}}
+
   /** Every `path [pattern] → offending substring` across the namespace, so one run names them all. */
   function offenders(patterns: {name: string; re: RegExp}[]): string[] {
     const found: string[] = []
@@ -83,6 +92,10 @@ describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
       for (const value of leaf.values) {
         for (const {name, re} of patterns) {
           const match = re.exec(value)
+          const exempt = POLICY_WINDOWS[leaf.path]
+          if (match && exempt?.pattern === name && exempt.match === match[0] && !re.exec(value.replace(match[0], ''))) {
+            continue
+          }
           if (match) {
             found.push(`${leaf.path} [${name}]: ${JSON.stringify(match[0])}`)
           }
@@ -130,6 +143,15 @@ describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
 
   it('no leaf claims a multi-day window', () => {
     expect(offenders(WINDOW_CLAIM_PATTERNS)).toEqual([])
+  })
+
+  it('every policy-window exemption still names a live leaf that carries its exact match', () => {
+    const patterns = new Map([...WINDOW_CLAIM_PATTERNS, ...HABITUAL_CLAIM_PATTERNS].map(({name, re}) => [name, re]))
+    for (const [path, {pattern, match}] of Object.entries(POLICY_WINDOWS)) {
+      const leaf = leaves.find((l) => l.path === path)
+      expect(leaf, path).toBeDefined()
+      expect(patterns.get(pattern)?.exec(leaf!.values.join(' '))?.[0], path).toBe(match)
+    }
   })
 
   it('no leaf claims a habit from a single export', () => {

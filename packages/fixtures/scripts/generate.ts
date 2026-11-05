@@ -14,7 +14,7 @@
  *   2. POST-ADAPTER (display) → src/post-adapter/<domain>.<variation>.json
  *      Display shapes the web's loadDashboardData consumes for the SSR shell.
  *      starredRepos is the one domain mechanically derived by running the real
- *      adaptStarredRepos with a STABLE injected clock (see post-adapter/starredRepos.ts);
+ *      adaptStarredRepos, which reads no clock (see post-adapter/starredRepos.ts);
  *      every other post-adapter domain is authored directly.
  *
  * Determinism: object key order is fixed by the factory source, the factory clock is

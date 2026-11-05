@@ -1,5 +1,116 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.6.9
+
+### Patch Changes
+
+- 9f0bb12: Record the cover inventory key by key. `src/cover-inventory.ts` now lists every cover key the distribution serves per ASIN (`COVER_KEYS`), adds `coverExists(url)`, and derives `COVERED_ASINS` as the ASINs that serve all six derivatives. A probe on 2026-11-02 found 080413717X and 1984820680 serve all six keys, and 0593128508 serves its three webp keys only. No fixture data changes; the module is not exported from the package entry points.
+- @j0nathan-ll0yd/web@4.6.3
+
+## 1.6.8
+
+### Patch Changes
+
+- Updated dependencies [8bee355]
+  - @j0nathan-ll0yd/web@4.6.2
+
+## 1.6.7
+
+### Patch Changes
+
+- @j0nathan-ll0yd/web@4.6.1
+
+## 1.6.6
+
+### Patch Changes
+
+- 0500f3f: Every fixture book now carries a real-shaped ASIN: exactly 10 characters, either an ISBN-10 with a valid check digit or `B0` and 8 characters of `[A-Z0-9]`. The only writer requires 10 characters, and the website's composed-page filter admits a Bookshelf link only for `[A-Z0-9]{10}`. The old 4-character ASINs made that filter refuse every fixture Bookshelf render.
+  - `packages/fixtures/src/variations/books.ts`: new ASINs for `allReading`, `allCompleted`, `mixedStatus`, `withProgress`, `seriesBooks`, `sixBooks`, `allFields` and `ssrKnownAnswer`. The generated raw JSON under `packages/fixtures/src/generated/books/` is regenerated.
+    - `allReading`: `B001`–`B003` become `B0DSRD0001`–`B0DSRD0003`.
+    - `allCompleted`: `C001`–`C005` become `1600000010`, `1600000029`, `1600000037`, `1600000045`, `1600000053`.
+    - `mixedStatus`: `M001`–`M004` become `B0DSMX0001`–`B0DSMX0004`.
+    - `withProgress`: `P001`–`P005` become `B0DSPG0001`–`B0DSPG0005`.
+    - `seriesBooks`: `S001`–`S005` become `1600000118`, `1600000126`, `1600000134`, `1600000142`, `1600000150`.
+    - `sixBooks`: `X006` becomes `1600000215`.
+    - `allFields`: `F001` becomes `0123456789`, the book's own `isbn10`.
+    - `ssrKnownAnswer`: `KA7731KAP1` and `KA7731KAP2` become `B0KA7731P1` and `B0KA7731P2`. They still appear in no other fixture. The `isbn10` values are unchanged.
+  - `packages/fixtures/src/post-adapter/books.ts`: the baseline "A Philosophy of Software Design" ASIN `173210220X` had a wrong ISBN-10 check digit. It becomes `1732102201`, the ISBN-10 of its own `isbn` `9781732102200`. `books.baseline.json` is regenerated.
+  - `packages/fixtures/tests/asin-shape.test.ts` is a new gate. It checks every `asin` and every `bookMeta` key in the raw variations, the generated raw JSON, the post-adapter JSON and the Swift widget fixtures. It fails on a repeated ASIN in one book list, on a `bookMeta` key that names no book, and on a book with no `bookMeta` entry. Three pre-existing gaps in Swift widget fixtures are listed by file and ASIN.
+
+  Patch: no export, type, variation or field changes. A consumer snapshot that records a fixture ASIN, an Amazon link built from one, or a `data-book` attribute changes on upgrade.
+
+## 1.6.5
+
+### Patch Changes
+
+- Updated dependencies [f379c75]
+- Updated dependencies [f379c75]
+- Updated dependencies [33d55d4]
+- Updated dependencies [0bc9b08]
+- Updated dependencies [34e9361]
+- Updated dependencies [bc8aac8]
+  - @j0nathan-ll0yd/web@4.6.0
+  - @j0nathan-ll0yd/copy@4.4.0
+  - @j0nathan-ll0yd/schemas@3.0.0
+
+## 1.6.4
+
+### Patch Changes
+
+- 3806bf4: Consume portal-contract 2.8.0 (atlas decision 0169). The dependency range moves from `^2.5.0` to `^2.8.0`.
+
+  portal-contract 2.8.0 regenerates its raw export schemas under zod 4.6.7, the release that closes GHSA-mrhx-c7xc-m3w5. The only byte change is the nullable form: `"type": ["x", "null"]` replaces `anyOf` with a `{"type": "null"}` branch. The accepted values are unchanged. No package here imports zod or the portal-contract validators.
+  - schemas: `generated/dashboard-health.schema.json` carries the new nullable form (5 fields). `.contract-lock.json` pins the 2.8.0 raw-schema checksums.
+  - fixtures: `check-full-coverage` recognizes both nullable forms. Before, the 2.8.0 schemas made it count 0 required-nullable checks and fail on 4 domains. It now counts 339 again, the same as against 2.7.0.
+  - web: the dependency range only.
+
+- Updated dependencies [3806bf4]
+  - @j0nathan-ll0yd/schemas@2.4.2
+  - @j0nathan-ll0yd/web@4.5.3
+
+## 1.6.3
+
+### Patch Changes
+
+- Updated dependencies [cfc7966]
+  - @j0nathan-ll0yd/copy@4.3.1
+  - @j0nathan-ll0yd/web@4.5.2
+
+## 1.6.2
+
+### Patch Changes
+
+- Updated dependencies [c399c72]
+- Updated dependencies [480b091]
+  - @j0nathan-ll0yd/copy@4.3.0
+  - @j0nathan-ll0yd/web@4.5.1
+
+## 1.6.1
+
+### Patch Changes
+
+- Updated dependencies [e975d51]
+- Updated dependencies [e975d51]
+  - @j0nathan-ll0yd/copy@4.2.0
+  - @j0nathan-ll0yd/web@4.5.0
+
+## 1.6.0
+
+### Minor Changes
+
+- 9f869b9: The StarredRepoList post-adapter fixtures (`src/post-adapter/starredRepos.*.json`) carry `starredAt` as absolute UTC text (`2026-03-16 12:00 UTC`) in place of a relative label (`2 days ago`). They are generated by the real `adaptStarredRepos`, which now writes that form (atlas decision 0164 D5). The shape is unchanged; the displayed values change, so this is minor.
+
+  Consumer note: a test that treats every post-adapter baseline string of 12 or more characters as a leaked legacy value now sees these instants. `2026-03-09 12:00 UTC` is also the text the known-answer StarredRepoList renders without JavaScript. Exclude absolute instants from such a marker set, as ISO timestamps are.
+
+  New export: `STARRED_REPOS_FIXTURE_CLOCK` from `post-adapter/starredRepos`, the fixtures' generation time (`2026-03-18T12:00:00.000Z`). A static showcase passes it to `fillRelativeTimes` so the labels read "2 days ago" against the fixture clock, not the visitor's. The portfolio showcase does this.
+
+### Patch Changes
+
+- Updated dependencies [9f869b9]
+- Updated dependencies [9f869b9]
+  - @j0nathan-ll0yd/schemas@2.4.1
+  - @j0nathan-ll0yd/web@4.4.0
+
 ## 1.5.7
 
 ### Patch Changes

@@ -18,7 +18,7 @@ import {type DistServer, serveDist} from './serve-dist'
 const DESKTOP = {width: 1400, height: 900}
 // A narrow desktop Chromium context: no isMobile or touch emulation.
 const NARROW = {width: 390, height: 844}
-const LAST_FOOTER_LINK = 'footer.lg-text-page-footer nav a:last-child'
+const LAST_FOOTER_LINK = 'footer.lg-text-page-footer nav li:last-child > a'
 
 let server: DistServer
 let browser: Browser

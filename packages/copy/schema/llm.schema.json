@@ -696,7 +696,7 @@
     "developers": {
       "type": "object",
       "title": "LlmDevelopers",
-      "description": "Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, and one heading plus body per machine interface — data API and OpenAPI, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
+      "description": "Developer page copy (/developers on the website): title, meta description, intro, the OpenAPI description of the focus-suppression 403, the /api/v1 base note, the RFC 9457 title and detail of each /api/v1 problem type, and one heading plus body per section — data API and OpenAPI, errors, versioning, rate limits, MCP server, WebMCP tools, llms.txt and llms-full.txt, feeds, caching and freshness, focus suppression, and usage terms. Bodies are ICU MF1; the consumer substitutes {siteUrl}.",
       "additionalProperties": false,
       "required": [
         "title",
@@ -705,7 +705,24 @@
         "intro",
         "apiHeading",
         "apiBody",
+        "apiBaseNote",
         "apiSuppressedResponse",
+        "errorsHeading",
+        "errorsBody",
+        "problemNotFoundTitle",
+        "problemNotFoundDetail",
+        "problemMethodNotAllowedTitle",
+        "problemMethodNotAllowedDetail",
+        "problemRateLimitedTitle",
+        "problemRateLimitedDetail",
+        "problemFocusSuppressedTitle",
+        "problemFocusSuppressedDetail",
+        "problemUpstreamUnavailableTitle",
+        "problemUpstreamUnavailableDetail",
+        "versioningHeading",
+        "versioningBody",
+        "rateLimitHeading",
+        "rateLimitBody",
         "mcpHeading",
         "mcpBody",
         "webmcpHeading",
@@ -740,7 +757,58 @@
         "apiBody": {
           "$ref": "#/$defs/CopyString"
         },
+        "apiBaseNote": {
+          "$ref": "#/$defs/CopyString"
+        },
         "apiSuppressedResponse": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "errorsHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "errorsBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemNotFoundTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemNotFoundDetail": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemMethodNotAllowedTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemMethodNotAllowedDetail": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemRateLimitedTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemRateLimitedDetail": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemFocusSuppressedTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemFocusSuppressedDetail": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemUpstreamUnavailableTitle": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "problemUpstreamUnavailableDetail": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "versioningHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "versioningBody": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rateLimitHeading": {
+          "$ref": "#/$defs/CopyString"
+        },
+        "rateLimitBody": {
           "$ref": "#/$defs/CopyString"
         },
         "mcpHeading": {

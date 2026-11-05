@@ -38,6 +38,7 @@ import bookshelfFixture from '@fixtures/reading/bookshelf.json';
 import theatreFixture from '@fixtures/reading/theatre-reviews.json';
 import placeLeaderboardFixture from '@fixtures/location/place-leaderboard-v3.json';
 import explorationOdometerFixture from '@fixtures/location/exploration-odometer-v3.json';
+import { withLocalCovers } from '../lib/local-covers';
 ---
 
 <html lang="en">
@@ -207,7 +208,7 @@ import explorationOdometerFixture from '@fixtures/location/exploration-odometer-
               <div data-widget-preview>
                 <StarredRepoList {...starredRepoFixture} />
               </div>
-              <BookshelfIsland fixture={bookshelfFixture} />
+              <BookshelfIsland fixture={withLocalCovers(bookshelfFixture)} />
               <TheatreReviewsIsland fixture={theatreFixture} />
             </section>
           </div>

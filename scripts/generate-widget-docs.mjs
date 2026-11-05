@@ -3,6 +3,7 @@
 import fs from 'fs'
 import path from 'path'
 import {fileURLToPath} from 'url'
+import {LOCAL_COVER_WIDGETS} from '../apps/docs/src/lib/local-cover-widgets.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -49,6 +50,11 @@ const VARIATION_WIDGETS = {
 }
 
 const STATE_SLOTS = ['skeleton', 'empty', 'populated-min', 'populated-max']
+
+/** The MDX expression a widget demo receives for a fixture variable. */
+function fixtureExpr(actualName, varName) {
+  return LOCAL_COVER_WIDGETS.has(actualName) ? `withLocalCovers(${varName})` : varName
+}
 
 let productionRegistry = null
 try {
@@ -245,7 +251,7 @@ function buildStateMatrixSection(actualName, category, kebab) {
     const varName = `fixture_${state.replace(/-/g, '_')}`
     if (fixtureExists(category, kebab, state)) {
       stateImports.push(`import ${varName} from '@fixtures/${fixturePath}';`)
-      stateEntries.push(`{ state: "${state}", fixture: ${varName} }`)
+      stateEntries.push(`{ state: "${state}", fixture: ${fixtureExpr(actualName, varName)} }`)
     } else {
       stateEntries.push(`{ state: "${state}", fixture: null }`)
     }
@@ -282,7 +288,7 @@ function buildVariationsSection(actualName, category, kebab) {
     const varName = `var_${variation.replace(/-/g, '_')}`
     if (fixtureExists(category, kebab, variation)) {
       varImports.push(`import ${varName} from '@fixtures/${fixturePath}';`)
-      varEntries.push(`{ label: "${variation}", fixture: ${varName} }`)
+      varEntries.push(`{ label: "${variation}", fixture: ${fixtureExpr(actualName, varName)} }`)
     }
   }
 
@@ -362,11 +368,11 @@ function generateDynamicMdx(widget, actualName, fields, index, manifest) {
     liveDemo = `import ${actualName}Island from '@islands/${actualName}Island.astro';
 
 <div style="margin: var(--space-20) 0;">
-  <${actualName}Island fixture={fixture} />
+  <${actualName}Island fixture={${fixtureExpr(actualName, 'fixture')}} />
 </div>`
   } else {
     liveDemo = `<div data-widget-preview style="margin: var(--space-20) 0;">
-  <${actualName} {...fixture} />
+  <${actualName} {...${fixtureExpr(actualName, 'fixture')}} />
 </div>`
   }
 
@@ -514,7 +520,7 @@ generated-by: widget-docs-codegen
 
 import ${actualName} from '${importAlias}';
 import fixture from '@fixtures/${fixturePath}';
-
+${LOCAL_COVER_WIDGETS.has(actualName) ? "import { withLocalCovers } from '../../../../lib/local-covers';\n" : ''}
 ## Live Demo
 
 ${liveDemo}

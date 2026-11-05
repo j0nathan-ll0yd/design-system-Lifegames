@@ -66,7 +66,8 @@ const SCHEMA_ENTRIES: Array<{relPath: string; name: string}> = [
   {relPath: 'authored/media-profile.schema.json', name: 'MediaProfile'},
   {relPath: 'authored/visit-timeline.schema.json', name: 'VisitTimeline'},
   {relPath: 'authored/saved-places.schema.json', name: 'SavedPlaces'},
-  {relPath: 'authored/place-search-results.schema.json', name: 'PlaceSearchResults'}
+  {relPath: 'authored/place-search-results.schema.json', name: 'PlaceSearchResults'},
+  {relPath: 'authored/coffee-tracking.schema.json', name: 'CoffeeTracking'}
 ]
 
 /**
@@ -651,17 +652,11 @@ const existingMap = existsSync(join(PKG_ROOT, 'fixture-map.json'))
   >)
   : {}
 
+// The map holds one bucket: `ds`, the DS widget fixtures. The `consumer`
+// bucket mapped seven website `data/*.json` files the site stopped writing
+// (atlas decision 0160); validate.ts now fails on a missing mapped file.
 const fixtureMap = {
-  consumer: {
-    'data/profile.json': {schema: 'Profile', strategy: 'single'},
-    'data/system.json': {schema: 'System', strategy: 'single'},
-    'data/health.json': {schema: 'DashboardHealth', strategy: 'single'},
-    'data/github.json': {schema: 'DashboardGithub', strategy: 'single'},
-    'data/reading.json': {schema: 'DashboardReading', strategy: 'single'},
-    'data/books.json': {schema: 'DashboardBooks', strategy: 'single'},
-    'data/theatre-reviews-sample.json': {schema: 'TheatreReviewsExport', strategy: 'single'}
-  },
-  ds: existingMap.ds && typeof existingMap.ds === 'object' && Object.keys(existingMap.ds as object).length > 1
+  ds: existingMap.ds && typeof existingMap.ds === 'object' && Object.keys(existingMap.ds as object).length > 0
     ? existingMap.ds
     : {}
 }

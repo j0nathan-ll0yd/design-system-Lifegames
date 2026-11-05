@@ -1,5 +1,44 @@
 # @j0nathan-ll0yd/schemas
 
+## 3.0.0
+
+### Major Changes
+
+- bc8aac8: `scripts/validate.ts` now fails closed, and `fixture-map.json` drops its `consumer` bucket.
+  - A mapped fixture that does not exist is an error. The message names the path, the bucket and the directory it resolved against. Before, the script skipped a missing file and still printed `OK: 0 fixture(s) validated successfully.`
+  - A run that validates 0 fixtures fails. So does a bucket that maps no fixtures, a `--bucket=<name>` that names no bucket, more than one `--bucket=` flag, and a map entry with no `schema`.
+  - A real validation error still exits 1, as before.
+  - The `consumer` bucket is gone. It mapped seven website files (`data/books.json`, `data/github.json`, `data/health.json`, `data/profile.json`, `data/reading.json`, `data/system.json`, `data/theatre-reviews-sample.json`). The website stopped writing them (atlas decision 0160), so the website prebuild validated nothing.
+  - New flag: `--map=<path>` reads another map.
+
+  Migration: stop running `scripts/validate.ts` from a consumer build. The shipped map now holds only the `ds` bucket, whose paths exist in the design-system repo alone. A consumer that still runs the script gets exit 1 and one `Mapped fixture not found` line per `ds` path. Major because an invocation that exited 0 now exits 1.
+
+### Minor Changes
+
+- 34e9361: Add the `CoffeeTracking` schema and validate the nine coffee fixtures.
+  - New `authored/coffee-tracking.schema.json`. It is the wire shape of `CoffeeTrackingProps` (`Sources/LifegamesComponentsCore/Coffee/CoffeeTrackingProps.swift`): 14 stored properties, 12 required, `errorMessage` and `batteryPercent` optional and nullable, closed enums for `connection` and `beverage`, `additionalProperties: false`.
+  - `fixture-map.json` maps the nine `coffee/coffee-tracking.*.json` fixtures to it. The validator now checks 315 fixtures, up from 306.
+  - New export: the `CoffeeTracking` type from `dist/types/index.ts`. Its enums are reachable as `CoffeeTracking['connection']` and `CoffeeTracking['beverage']`. `swift/WidgetModels.swift` gains internal Codable types for the same shape.
+
+  Minor because every change is additive: no existing type, schema or map entry changes. The generator now also fails on any widget fixture that no schema maps. The generator is not in the published files, so that part ships nothing.
+
+## 2.4.2
+
+### Patch Changes
+
+- 3806bf4: Consume portal-contract 2.8.0 (atlas decision 0169). The dependency range moves from `^2.5.0` to `^2.8.0`.
+
+  portal-contract 2.8.0 regenerates its raw export schemas under zod 4.6.7, the release that closes GHSA-mrhx-c7xc-m3w5. The only byte change is the nullable form: `"type": ["x", "null"]` replaces `anyOf` with a `{"type": "null"}` branch. The accepted values are unchanged. No package here imports zod or the portal-contract validators.
+  - schemas: `generated/dashboard-health.schema.json` carries the new nullable form (5 fields). `.contract-lock.json` pins the 2.8.0 raw-schema checksums.
+  - fixtures: `check-full-coverage` recognizes both nullable forms. Before, the 2.8.0 schemas made it count 0 required-nullable checks and fail on 4 domains. It now counts 339 again, the same as against 2.7.0.
+  - web: the dependency range only.
+
+## 2.4.1
+
+### Patch Changes
+
+- 9f869b9: The generated `focus-overlay` and `dnd-overlay` widget schemas describe the `now` prop as unused (atlas decision 0164 D5): the overlays render the `--:--:--` clock placeholder and the browser writes the time. Description text only; the schema shape and validation are unchanged.
+
 ## 2.4.0
 
 ### Minor Changes

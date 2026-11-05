@@ -52,6 +52,19 @@ describe('Style Dictionary build is byte-identical to golden snapshots', () => {
     }
   })
 
+  it('emits CSS generic font families bare, never quoted', () => {
+    // Quoted, a generic keyword names a font family that does not exist, and the
+    // text falls through to the next family in the stack.
+    const generic = 'serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-serif|ui-sans-serif|ui-monospace|ui-rounded|math|emoji|fangsong'
+    const quoted = new RegExp(`['"](?:${generic})['"]`)
+    const distDir = join(repoRoot, 'packages', 'tokens', 'dist')
+    for (const file of readdirSync(distDir).filter((name) => name.endsWith('.css'))) {
+      expect(readFileSync(join(distDir, file), 'utf-8'), `dist/${file}`).not.toMatch(quoted)
+    }
+    const css = readFileSync(join(distDir, 'tokens.css'), 'utf-8')
+    expect(css).toContain('--lg-font-family-system: system-ui, sans-serif;')
+  })
+
   describe('dist/ outputs', () => {
     const goldenDistDir = join(goldenRoot, 'dist')
     const liveDistDir = join(repoRoot, 'packages', 'tokens', 'dist')

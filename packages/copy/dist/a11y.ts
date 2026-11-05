@@ -33,9 +33,13 @@ export interface A11YIdentity {
   socialNav: string;
 }
 /**
- * Bookshelf widget accessibility label — the per-book list-item aria-label template.
+ * Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is deprecated: the title link is named by its own text.
  */
 export interface A11YBookshelf {
+  /**
+   * @deprecated
+   * Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key.
+   */
   bookItem: string;
 }
 /**
@@ -83,7 +87,7 @@ export interface A11YPage404 {
   region: string;
 }
 /**
- * Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.
+ * Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, primary action button states, and the connection badge.
  */
 export interface A11YCoffee {
   mug: string;
@@ -94,4 +98,5 @@ export interface A11YCoffee {
   actionReconnect: string;
   actionFinishCup: string;
   actionNewCup: string;
+  connectionStatus: string;
 }

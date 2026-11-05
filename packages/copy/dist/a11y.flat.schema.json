@@ -38,10 +38,12 @@
     "bookshelf": {
       "type": "object",
       "title": "A11yBookshelf",
-      "description": "Bookshelf widget accessibility label — the per-book list-item aria-label template.",
+      "description": "Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is deprecated: the title link is named by its own text.",
       "properties": {
         "bookItem": {
-          "type": "string"
+          "type": "string",
+          "description": "Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key.",
+          "deprecated": true
         }
       },
       "required": ["bookItem"],
@@ -140,7 +142,7 @@
     "coffee": {
       "type": "object",
       "title": "A11yCoffee",
-      "description": "Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.",
+      "description": "Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, primary action button states, and the connection badge.",
       "properties": {
         "mug": {
           "type": "string"
@@ -165,6 +167,9 @@
         },
         "actionNewCup": {
           "type": "string"
+        },
+        "connectionStatus": {
+          "type": "string"
         }
       },
       "required": [
@@ -175,7 +180,8 @@
         "actionSearching",
         "actionReconnect",
         "actionFinishCup",
-        "actionNewCup"
+        "actionNewCup",
+        "connectionStatus"
       ],
       "additionalProperties": false
     }

@@ -25,6 +25,7 @@ import type { MediaProfile as _MediaProfile } from './MediaProfile';
 import type { VisitTimeline as _VisitTimeline } from './VisitTimeline';
 import type { SavedPlaces as _SavedPlaces } from './SavedPlaces';
 import type { PlaceSearchResults as _PlaceSearchResults } from './PlaceSearchResults';
+import type { CoffeeTracking as _CoffeeTracking } from './CoffeeTracking';
 
 export type ArticlesExport = SchemaDerived<_ArticlesExport>;
 export type BooksExport = SchemaDerived<_BooksExport>;
@@ -47,3 +48,4 @@ export type MediaProfile = SchemaDerived<_MediaProfile>;
 export type VisitTimeline = SchemaDerived<_VisitTimeline>;
 export type SavedPlaces = SchemaDerived<_SavedPlaces>;
 export type PlaceSearchResults = SchemaDerived<_PlaceSearchResults>;
+export type CoffeeTracking = SchemaDerived<_CoffeeTracking>;

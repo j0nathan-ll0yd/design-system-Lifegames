@@ -495,44 +495,31 @@ describe('adaptGithubEvents', () => {
     expect(result[0].url).toBe('')
   })
 
-  it('formats date as minutes ago for recent events', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
+  it('writes a timestamp as absolute UTC text (atlas decision 0164 D5)', () => {
     const events = [
-      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc'}
+      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:42Z', hash: 'abc'},
+      // An offset is normalized to UTC.
+      {type: 'commit', repo: 'org/repo', title: 'Y', date: '2026-01-15T02:15:00-08:00', hash: 'def'}
     ]
     const result = adaptGithubEvents(makeGithubEvents(events))
-    expect(result[0].date).toBe('15m ago')
+    expect(result.map((e) => e.date)).toEqual(['2026-01-15 10:15 UTC', '2026-01-15 10:15 UTC'])
+    expect(result.map((e) => e.datetime)).toEqual(['2026-01-15T10:15:42Z', '2026-01-15T02:15:00-08:00'])
   })
 
-  it('formats date as hours ago', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
-    const events = [
-      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T07:00:00Z', hash: 'abc'}
-    ]
-    const result = adaptGithubEvents(makeGithubEvents(events))
-    expect(result[0].date).toBe('3h ago')
+  it('keeps a date-only value as the export wrote it', () => {
+    const events = [{type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-12', hash: 'abc'}]
+    expect(adaptGithubEvents(makeGithubEvents(events))[0].date).toBe('2026-01-12')
   })
 
-  it('formats date as days ago', () => {
+  it('renders the same label at any clock (no relative text on the server)', () => {
+    const events = [{type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc'}]
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
-    const events = [
-      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-12T10:30:00Z', hash: 'abc'}
-    ]
-    const result = adaptGithubEvents(makeGithubEvents(events))
-    expect(result[0].date).toBe('3d ago')
-  })
-
-  it('formats date as weeks ago', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
-    const events = [
-      {type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc'}
-    ]
-    const result = adaptGithubEvents(makeGithubEvents(events))
-    expect(result[0].date).toBe('3w ago')
+    const first = adaptGithubEvents(makeGithubEvents(events))
+    vi.setSystemTime(new Date('2026-01-15T10:40:00Z'))
+    const second = adaptGithubEvents(makeGithubEvents(events), Date.parse('2027-01-01T00:00:00Z'))
+    expect(second).toEqual(first)
+    expect(first[0].date).toBe('2025-12-25 10:30 UTC')
   })
 
   it('preserves non-ISO date strings unchanged', () => {
@@ -548,25 +535,6 @@ describe('adaptGithubEvents', () => {
     const result = adaptGithubEvents(makeGithubEvents(events))
     expect(result[0].additions).toBe(10)
     expect(result[0].deletions).toBe(3)
-  })
-
-  it('uses an injected now timestamp for relative date formatting', () => {
-    // No fake timers: the injected `now` (3w after the event) is the only clock.
-    const now = new Date('2026-01-15T10:30:00Z').getTime()
-    const events = [
-      {type: 'commit', repo: 'org/repo', title: 'X', date: '2025-12-25T10:30:00Z', hash: 'abc'}
-    ]
-    const result = adaptGithubEvents(makeGithubEvents(events), now)
-    expect(result[0].date).toBe('3w ago')
-  })
-
-  it('falls back to Date.now() when now is omitted (backward compatible)', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
-    const events = [
-      {type: 'commit', repo: 'org/repo', title: 'X', date: '2026-01-15T10:15:00Z', hash: 'abc'}
-    ]
-    expect(adaptGithubEvents(makeGithubEvents(events))[0].date).toBe('15m ago')
   })
 })
 
@@ -907,14 +875,12 @@ describe('adaptArticles', () => {
     expect(result).toHaveLength(30)
   })
 
-  it('formats date as minutes ago for recent articles', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
+  it('writes savedAt as absolute UTC text (atlas decision 0164 D5)', () => {
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
         articleTitle: 'Test',
-        savedAt: '2026-01-15T10:00:00Z',
+        savedAt: '2026-01-15T10:00:59Z',
         notes: [],
         articleAuthor: null,
         articleContent: null,
@@ -932,40 +898,11 @@ describe('adaptArticles', () => {
       }
     ])
     const result = adaptArticles(articles)
-    expect(result[0].date).toBe('30m ago')
+    expect(result[0].date).toBe('2026-01-15 10:00 UTC')
+    expect(result[0].datetime).toBe('2026-01-15T10:00:59Z')
   })
 
-  it('formats date as hours ago', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
-    const articles = makeArticles([
-      {
-        articleUrl: 'https://a.com',
-        articleTitle: 'Test',
-        savedAt: '2026-01-15T07:30:00Z',
-        notes: [],
-        articleAuthor: null,
-        articleContent: null,
-        articleFirstImageUrl: null,
-        articlePublishedAt: null,
-        articleBoards: null,
-        articleCategories: null,
-        sourceTitle: null,
-        sourceUrl: null,
-        sourceFeedUrl: null,
-        articleEngagement: null,
-        articleEngagementRate: null,
-        articleFirstHighlight: null,
-        articleFirstComment: null
-      }
-    ])
-    const result = adaptArticles(articles)
-    expect(result[0].date).toBe('3h ago')
-  })
-
-  it('formats date as weeks ago', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
+  it('renders the same label at any clock (no relative text on the server)', () => {
     const articles = makeArticles([
       {
         articleUrl: 'https://a.com',
@@ -987,8 +924,13 @@ describe('adaptArticles', () => {
         articleFirstComment: null
       }
     ])
-    const result = adaptArticles(articles)
-    expect(result[0].date).toBe('3w ago')
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
+    const first = adaptArticles(articles)
+    vi.setSystemTime(new Date('2026-01-15T10:40:00Z'))
+    const second = adaptArticles(articles, Date.parse('2027-01-01T00:00:00Z'))
+    expect(second).toEqual(first)
+    expect(first[0].date).toBe('2025-12-25 10:30 UTC')
   })
 
   it('sets hasNotes true and joins noteText when notes present', () => {
@@ -1079,60 +1021,6 @@ describe('adaptArticles', () => {
     const result = adaptArticles(articles)
     expect(result[0].source).toBe('')
   })
-
-  it('uses an injected now timestamp for relative date formatting', () => {
-    // No fake timers: the injected `now` (3w after savedAt) is the only clock.
-    const now = new Date('2026-01-15T10:30:00Z').getTime()
-    const articles = makeArticles([
-      {
-        articleUrl: 'https://a.com',
-        articleTitle: 'Test',
-        savedAt: '2025-12-25T10:30:00Z',
-        notes: [],
-        articleAuthor: null,
-        articleContent: null,
-        articleFirstImageUrl: null,
-        articlePublishedAt: null,
-        articleBoards: null,
-        articleCategories: null,
-        sourceTitle: null,
-        sourceUrl: null,
-        sourceFeedUrl: null,
-        articleEngagement: null,
-        articleEngagementRate: null,
-        articleFirstHighlight: null,
-        articleFirstComment: null
-      }
-    ])
-    expect(adaptArticles(articles, now)[0].date).toBe('3w ago')
-  })
-
-  it('falls back to Date.now() when now is omitted (backward compatible)', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2026-01-15T10:30:00Z'))
-    const articles = makeArticles([
-      {
-        articleUrl: 'https://a.com',
-        articleTitle: 'Test',
-        savedAt: '2026-01-15T10:00:00Z',
-        notes: [],
-        articleAuthor: null,
-        articleContent: null,
-        articleFirstImageUrl: null,
-        articlePublishedAt: null,
-        articleBoards: null,
-        articleCategories: null,
-        sourceTitle: null,
-        sourceUrl: null,
-        sourceFeedUrl: null,
-        articleEngagement: null,
-        articleEngagementRate: null,
-        articleFirstHighlight: null,
-        articleFirstComment: null
-      }
-    ])
-    expect(adaptArticles(articles)[0].date).toBe('30m ago')
-  })
 })
 
 // ── adaptStarredRepos ─────────────────────────────────────────────
@@ -1188,39 +1076,17 @@ describe('adaptStarredRepos', () => {
     expect(result).toHaveLength(5)
   })
 
-  it('formats starredAt as weeks ago (plural)', () => {
-    // 14 days before NOW = 2 weeks ago
+  it('writes starredAt as absolute UTC text (atlas decision 0164 D5)', () => {
     const starredAt = new Date(NOW - 14 * 24 * 3600 * 1000).toISOString()
     const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
-    expect(result[0].starredAt).toBe('2 weeks ago')
+    expect(result[0].starredAt).toBe('2026-01-01 12:00 UTC')
+    expect(result[0].datetime).toBe(starredAt)
   })
 
-  it('formats starredAt as week ago (singular)', () => {
-    // 7 days before NOW = 1 week ago
-    const starredAt = new Date(NOW - 7 * 24 * 3600 * 1000).toISOString()
-    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
-    expect(result[0].starredAt).toBe('1 week ago')
-  })
-
-  it('formats starredAt as days ago (plural)', () => {
-    // 3 days before NOW
-    const starredAt = new Date(NOW - 3 * 24 * 3600 * 1000).toISOString()
-    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
-    expect(result[0].starredAt).toBe('3 days ago')
-  })
-
-  it('formats starredAt as day ago (singular)', () => {
-    // 1 day before NOW
-    const starredAt = new Date(NOW - 1 * 24 * 3600 * 1000).toISOString()
-    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
-    expect(result[0].starredAt).toBe('1 day ago')
-  })
-
-  it('formats starredAt as hours ago when less than one day', () => {
-    // 5 hours before NOW
-    const starredAt = new Date(NOW - 5 * 3600 * 1000).toISOString()
-    const result = adaptStarredRepos({generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt})]}, NOW)
-    expect(result[0].starredAt).toBe('5h ago')
+  it('renders the same label at any clock (no relative text on the server)', () => {
+    const data = {generatedAt: '2026-01-15T12:00:00Z', repos: [makeStarredRepo({starredAt: '2026-01-10T08:05:00Z'})]}
+    expect(adaptStarredRepos(data, NOW + 10 * 60 * 1000)).toEqual(adaptStarredRepos(data, NOW))
+    expect(adaptStarredRepos(data)).toEqual(adaptStarredRepos(data, NOW))
   })
 
   it('resolves primary language from languages array', () => {

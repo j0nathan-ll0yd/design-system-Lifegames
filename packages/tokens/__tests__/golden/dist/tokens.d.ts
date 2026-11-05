@@ -559,6 +559,24 @@ declare const tokens: {
       readonly fontWeight: 700;
       readonly lineHeight: 1.15;
     };
+    readonly caption2Emphasized: {
+      readonly fontFamily: "Space Grotesk";
+      readonly fontSize: 11.5;
+      readonly fontWeight: 500;
+      readonly lineHeight: 1.3;
+    };
+    readonly captionEmphasized: {
+      readonly fontFamily: "Space Grotesk";
+      readonly fontSize: 12.5;
+      readonly fontWeight: 500;
+      readonly lineHeight: 1.3;
+    };
+    readonly bodyEmphasized: {
+      readonly fontFamily: "Space Grotesk";
+      readonly fontSize: 13.1;
+      readonly fontWeight: 600;
+      readonly lineHeight: 1.5;
+    };
   };
   readonly z: {
     readonly behind: -1;

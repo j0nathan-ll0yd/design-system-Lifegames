@@ -59,10 +59,17 @@ describe('composeSystemLines', () => {
     expect(lines.some((l) => l.key === 'Location')).toBe(false)
   })
 
-  it('marks a source with a timestamp ACTIVE with its age in <time datetime>', () => {
+  it('marks a source with a timestamp ACTIVE with its instant as absolute UTC text in <time data-relative>', () => {
     const [health] = composeSystemLines({health: '2026-03-18T10:00:00.000Z'}, NOW)
     expect(health).toMatchObject({key: 'Health', dotClass: 'sys-dot-red', keyClass: 'sys-key sys-key-red', valClass: 'sys-val-green'})
-    expect(health?.value).toBe('ACTIVE <span class="sys-val">(<time datetime="2026-03-18T10:00:00.000Z">2h ago</time>)</span>')
+    expect(health?.value).toBe(
+      'ACTIVE <span class="sys-val">(<time datetime="2026-03-18T10:00:00.000Z" data-relative="age">2026-03-18 10:00 UTC</time>)</span>'
+    )
+  })
+
+  it('composes the same rows at any clock (atlas decision 0164 D5)', () => {
+    const timestamps = {health: '2026-03-18T10:00:00.000Z', books: '2026-03-17T08:30:00.000Z'}
+    expect(composeSystemLines(timestamps, NOW + 10 * 60 * 1000)).toEqual(composeSystemLines(timestamps, NOW))
   })
 
   it('marks a missing or invalid timestamp OFFLINE', () => {

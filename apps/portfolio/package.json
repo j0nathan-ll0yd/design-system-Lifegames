@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@j0nathan-ll0yd/fixtures": "workspace:*",
-    "@j0nathan-ll0yd/portal-contract": "^2.5.0",
+    "@j0nathan-ll0yd/portal-contract": "^2.8.0",
     "@j0nathan-ll0yd/tokens": "workspace:*",
     "@j0nathan-ll0yd/web": "workspace:*",
-    "astro": "^6.4.8"
+    "astro": "^6.4.4"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.3",

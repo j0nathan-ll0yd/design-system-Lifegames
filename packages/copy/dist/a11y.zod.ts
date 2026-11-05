@@ -19,10 +19,16 @@ export const a11ySchema = z
         'Identity card accessibility labels — the avatar image alt text and the social-links nav region label.',
       ),
     bookshelf: z
-      .object({ bookItem: z.string() })
+      .object({
+        bookItem: z
+          .string()
+          .describe(
+            'Deprecated: no replacement. Removed in the next major release. The Bookshelf title link is named by its text; no consumer reads this key.',
+          ),
+      })
       .strict()
       .describe(
-        'Bookshelf widget accessibility label — the per-book list-item aria-label template.',
+        'Bookshelf widget accessibility copy. Its one key, the former per-book tile label, is deprecated: the title link is named by its own text.',
       ),
     bookModal: z
       .object({ dialog: z.string() })
@@ -68,10 +74,11 @@ export const a11ySchema = z
         actionReconnect: z.string(),
         actionFinishCup: z.string(),
         actionNewCup: z.string(),
+        connectionStatus: z.string(),
       })
       .strict()
       .describe(
-        'Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, and primary action button states.',
+        'Coffee tracking screen accessibility labels — hero mug, caffeine readout, daily bar, primary action button states, and the connection badge.',
       ),
   })
   .strict()

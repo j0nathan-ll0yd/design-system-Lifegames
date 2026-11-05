@@ -1,0 +1,34 @@
+---
+// The website homepage's frame, reduced to what places its footer: .command-layout with the
+// fixed .left-panel (identity card, bio, System Status, then .left-panel-footer) and the
+// scrolling .right-panel. tests/browser/home-footer.test.ts measures where layout.css puts
+// the footer. The filler makes both panels taller than a 900px viewport.
+import DashboardShell from '../layouts/DashboardShell.astro';
+import SiteFooterNav from '../../../../../src/components/SiteFooterNav.astro';
+import { SECTIONS } from '../lib/text-page';
+
+const LINKS = [
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/developers', label: 'Developers' },
+  { href: '/privacy', label: 'Privacy' },
+];
+---
+
+<DashboardShell title="Home footer">
+  <div class="command-layout">
+    <aside class="left-panel" aria-label="Profile">
+      <div class="identity-card"><p>Fixture identity card.</p></div>
+      <div class="left-panel-bio">
+        {SECTIONS.slice(0, 4).map((s) => s.paragraphs.map((p) => <p>{p}</p>))}
+      </div>
+      <div class="left-panel-status" id="fixture-status"><p>Fixture system status.</p></div>
+      <footer class="left-panel-footer">
+        <SiteFooterNav links={LINKS} label="Site" />
+      </footer>
+    </aside>
+    <main id="main-content" class="right-panel">
+      {SECTIONS.map((s) => s.paragraphs.map((p) => <p>{p}</p>))}
+    </main>
+  </div>
+</DashboardShell>
