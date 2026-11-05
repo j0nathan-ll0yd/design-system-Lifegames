@@ -1,7 +1,7 @@
-/* The single definition of every design-system keyframe, plus the skeleton
+/* The single definition of every shared design-system keyframe, plus the skeleton
    utilities the web widgets emit. It holds no global rule, so a stylesheet can
-   import it without changing any other element. Every animation a web stylesheet
-   names resolves here or in that stylesheet.
+   import it without changing any other element. A keyframe only one file names may
+   stay in that file. Every animation a web stylesheet names resolves here or there.
    scripts/web-stylesheet-motion.test.mjs fails on a second definition of a name.
 
    tokens/animations and tokens/effects import this file, so their consumers keep

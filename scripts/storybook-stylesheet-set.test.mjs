@@ -26,9 +26,15 @@ const WEBSITE_STYLESHEETS = [
 /** Files the website layout does not load, each because a story needs it. preview.ts says why. */
 const STORYBOOK_ONLY = ['@j0nathan-ll0yd/tokens/shadcn', '@j0nathan-ll0yd/web/styles/primitives.css']
 
-/** The CSS entrypoints a source file imports, in order. */
+/**
+ * The stylesheets a source file imports, in order, in any syntactic form: a bare
+ * import, a default import, a dynamic import or a CSS @import, with either quote.
+ */
 function stylesheetImports(source) {
-  return [...source.matchAll(/^import '([^']+)';?$/gm)].map((m) => m[1])
+  const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+  return [...code.matchAll(/(?:\bfrom\s*|\bimport\s*\(?\s*)['"`]([^'"`]+)['"`]/g)].map((m) => m[1]).filter((specifier) =>
+    /^@j0nathan-ll0yd\/(?:tokens\/|web\/styles\/)|\.css$/.test(specifier)
+  )
 }
 
 function read(path) {
@@ -73,14 +79,21 @@ test('every listed entrypoint resolves to a file in its package', () => {
   }
 })
 
-test('can fail: a dropped, a reordered and an extra import each red', () => {
+test('can fail: a dropped, a reordered and an extra import in any form each red', () => {
   const expected = [...WEBSITE_STYLESHEETS, ...STORYBOOK_ONLY]
   const preview = read('apps/storybook/.storybook/preview.ts')
   const dropped = preview.replace(`import '@j0nathan-ll0yd/tokens/effects'\n`, '')
   const reordered = preview.replace(`import '@j0nathan-ll0yd/tokens/effects'\nimport '@j0nathan-ll0yd/tokens/reset'\n`,
     `import '@j0nathan-ll0yd/tokens/reset'\nimport '@j0nathan-ll0yd/tokens/effects'\n`)
-  const extra = `${preview}\nimport '@j0nathan-ll0yd/tokens/animations'\n`
-  for (const mutant of [dropped, reordered, extra]) {
+  const extras = [
+    `import '@j0nathan-ll0yd/tokens/animations'`,
+    `import "@j0nathan-ll0yd/tokens/animations"`,
+    `import styles from '@j0nathan-ll0yd/tokens/animations'`,
+    `import '@j0nathan-ll0yd/tokens/animations' // a note`,
+    `await import('@j0nathan-ll0yd/tokens/animations')`,
+    `  import './local.css'`
+  ].map((line) => `${preview}\n${line}\n`)
+  for (const mutant of [dropped, reordered, ...extras]) {
     assert.notEqual(mutant, preview, 'the mutation applies')
     assert.notDeepEqual(stylesheetImports(mutant), expected)
   }

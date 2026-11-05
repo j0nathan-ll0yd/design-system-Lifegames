@@ -23,7 +23,7 @@ Motion tokens define consistent timing and easing across the system. All animati
 
 ## Keyframe Animations
 
-Every keyframe has one definition, in `@j0nathan-ll0yd/tokens/motion`. The file also holds the `.skeleton-bar` and `.skeleton-circle` utilities, and it has no global rule. `@j0nathan-ll0yd/web/styles/components.css` and `primitives.css` import it, so a consumer of those stylesheets needs no second entrypoint. Import it directly for a surface outside the web package:
+Every shared keyframe has one definition, in `@j0nathan-ll0yd/tokens/motion`. The file also holds the `.skeleton-bar` and `.skeleton-circle` utilities, and it has no global rule. `@j0nathan-ll0yd/web/styles/components.css` and `primitives.css` import it, so a consumer of those stylesheets needs no second entrypoint. Import it directly for a surface outside the web package:
 
 ```css
 @import '@j0nathan-ll0yd/tokens/motion';
@@ -35,7 +35,7 @@ Curated animations: `glowPulse`, `dotPulse`, `statusPulse`, `shimmerSlide`, `fad
 
 ## Reduced Motion
 
-Every animation a web stylesheet names has its own `prefers-reduced-motion` gate, which removes it under `reduce`. `tokens/animations` and `tokens/effects` add a global rule that shortens every animation on the page. `tokens/motion` does not.
+Every animation a web stylesheet names has its own `prefers-reduced-motion` gate. Most gates remove the animation under `reduce`. Two forms differ: view transitions keep a 0.001 s run so `animationend` still fires, and three `NotFound.css` pseudo-elements take `display: none`. `tokens/animations` and `tokens/effects` add a global rule that shortens every animation on the page. `tokens/motion` does not.
 
 ```swift
 import LifegamesComponents

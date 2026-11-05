@@ -248,7 +248,7 @@ describe('motion on the website stylesheet set', () => {
 
 describe('ReadingFeed list without tokens/reset', () => {
   it('does not indent its rows by the user agent list padding', async () => {
-    // fail-visible-bare loads no tokens/reset, as the docs site and Storybook.
+    // fail-visible-bare loads no tokens/reset, as the docs site.
     const page = await open('/fail-visible-bare/', 'no-preference')
     const box = await page.locator('#cardReading .article-list').evaluate((el) => {
       const s = getComputedStyle(el)
