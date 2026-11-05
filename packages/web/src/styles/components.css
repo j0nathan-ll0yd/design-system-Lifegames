@@ -1,3 +1,7 @@
+/* Every animation this file names resolves here or in tokens/motion, so a consumer
+   needs no second entrypoint. scripts/web-stylesheet-motion.test.mjs holds it to that. */
+@import '@j0nathan-ll0yd/tokens/motion';
+
 @layer lifegames {
   @layer components {
     /* Ported from jonathanlloyd.me — DO NOT rewrite variable names.
@@ -1821,17 +1825,16 @@
         background 0.2s ease;
       /* Fail visible: no hidden base state. The fill mode applies the
          keyframes' hidden from-state only while the animation delays or runs,
-         so a consumer that does not load tokens/animations still shows the
-         row, without the motion. */
+         so a row whose animation never starts still shows. */
       animation: fadeSlideRight 0.4s ease-out backwards;
       cursor: default;
       white-space: nowrap;
       min-width: 0;
     }
 
-    /* Reduced-motion gate (WCAG 2.3.3). It does not rely on the
-       tokens/animations duration override, which leaves the stagger delay,
-       and so the hidden from-state, in place. */
+    /* Reduced-motion gate (WCAG 2.3.3). It does not rely on the global duration
+       override in tokens/animations and tokens/effects, which leaves the stagger
+       delay, and so the hidden from-state, in place. */
     @media (prefers-reduced-motion: reduce) {
       .article-list-item {
         animation: none;
@@ -1998,8 +2001,7 @@
       width: 105px;
       scroll-snap-align: start;
       cursor: pointer;
-      /* Fail visible, as .article-list-item: shelfFadeIn lives in
-         tokens/effects. */
+      /* Fail visible, as .article-list-item. */
       animation: shelfFadeIn 0.4s ease-out backwards;
       transition: transform 0.2s ease;
       border: 1px solid transparent;
@@ -2224,8 +2226,7 @@
       -webkit-backdrop-filter: blur(var(--blur-sm));
     }
 
-    /* Entry animations scoped to the open state (D2 — entry only, no exit).
-       bookOverlayIn/@keyframes lives in effects.css (untouched). */
+    /* Entry animations scoped to the open state (D2 — entry only, no exit). */
     dialog.book-dialog[open]::backdrop {
       animation: bookOverlayIn 0.2s ease-out;
     }
@@ -2716,6 +2717,28 @@
     @container (min-width: 500px) {
       .widget-body {
         padding: var(--space-14) var(--space-24) var(--space-20);
+      }
+    }
+
+    /* Reduced-motion gate (WCAG 2.3.3) for every animation above with no gate of
+       its own. It sits last so it wins over those rules in this layer. Each one
+       rests on its base style: none of them hides content behind a from-state. */
+    @media (prefers-reduced-motion: reduce) {
+      .live-dot,
+      .id-avatar::after,
+      .id-name,
+      .terminal-cursor,
+      .sys-dot,
+      .ecg-svg,
+      .sleep-moon-score-fill,
+      .sleep-moon-pill,
+      .hydra-steam-line,
+      .hydra-wave-path,
+      .hydra-v3-gloss,
+      .hydra-v3-bubble,
+      .shelf-book-active .shelf-cover-wrapper::after,
+      .poll-dot--ok {
+        animation: none;
       }
     }
   }

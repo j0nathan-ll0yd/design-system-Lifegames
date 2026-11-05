@@ -23,17 +23,19 @@ Motion tokens define consistent timing and easing across the system. All animati
 
 ## Keyframe Animations
 
-Import the animation library:
+Every keyframe has one definition, in `@j0nathan-ll0yd/tokens/motion`. The file also holds the `.skeleton-bar` and `.skeleton-circle` utilities, and it has no global rule. `@j0nathan-ll0yd/web/styles/components.css` and `primitives.css` import it, so a consumer of those stylesheets needs no second entrypoint. Import it directly for a surface outside the web package:
 
 ```css
-@import '@j0nathan-ll0yd/tokens/animations';
+@import '@j0nathan-ll0yd/tokens/motion';
 ```
 
-Available animations: `glowPulse`, `dotPulse`, `statusPulse`, `shimmerSlide`, `fadeIn`, `fadeSlideRight`, `overlayFadeIn`, `modalScaleIn`, `ringPulse`, `avatarGlowPulse`.
+`tokens/animations` and `tokens/effects` import the same file, so they provide every name too.
+
+Curated animations: `glowPulse`, `dotPulse`, `statusPulse`, `shimmerSlide`, `fadeIn`, `fadeSlideRight`, `overlayFadeIn`, `modalScaleIn`, `ringPulse`, `avatarGlowPulse`.
 
 ## Reduced Motion
 
-All animations include a `prefers-reduced-motion: reduce` media query that effectively disables animations for users who prefer reduced motion.
+Every animation a web stylesheet names has its own `prefers-reduced-motion` gate, which removes it under `reduce`. `tokens/animations` and `tokens/effects` add a global rule that shortens every animation on the page. `tokens/motion` does not.
 
 ```swift
 import LifegamesComponents

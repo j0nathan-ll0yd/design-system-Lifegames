@@ -1,7 +1,9 @@
 ---
 // The two widgets whose rows animate in: ReadingFeed (.article-list-item,
-// fadeSlideRight from tokens/animations) and Bookshelf (.shelf-book,
-// shelfFadeIn from tokens/effects). Live props, as the scripts-off suite.
+// fadeSlideRight) and Bookshelf (.shelf-book, shelfFadeIn). IdentityCard adds the
+// infinite motion of the name glow, and .sys-dot stands in for SystemStatus. Live props,
+// as the scripts-off suite.
+import IdentityCard from '../../../../../src/widgets/identity/IdentityCard.astro';
 import Bookshelf from '../../../../../src/widgets/reading/Bookshelf.astro';
 import ReadingFeed from '../../../../../src/widgets/reading/ReadingFeed.astro';
 import { propsFor } from '../lib/states';
@@ -16,6 +18,13 @@ const { title } = Astro.props as { title: string };
     <title>{title}</title>
   </head>
   <body style="background:#06060f;color:#fff;margin:0;padding:16px">
+    <section style="width:380px">
+      <IdentityCard
+        profile={{ name: 'Fixture Name', github: 'https://example.invalid/a' }}
+        compact={true}
+      />
+      <div class="sys-dot sys-dot-green"></div>
+    </section>
     <section style="width:380px">
       <ReadingFeed {...propsFor('readingFeed', 'live')} />
     </section>
