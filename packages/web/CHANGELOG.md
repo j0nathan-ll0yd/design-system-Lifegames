@@ -1,5 +1,12 @@
 # @j0nathan-ll0yd/web
 
+## 4.6.3
+
+### Patch Changes
+
+- Updated dependencies [e50a29d]
+  - @j0nathan-ll0yd/tokens@2.3.2
+
 ## 4.6.2
 
 ### Patch Changes
