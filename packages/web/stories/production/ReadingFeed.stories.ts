@@ -31,7 +31,7 @@ function renderFeed(articles: typeof defaultArticles) {
         ${
     articles.map((a) =>
       html`
-            <div style="padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);">
+            <div style="padding: 6px 0; border-bottom: 1px solid var(--lg-color-border-default);">
               <div style="font-size: 0.9em;">${a.title}</div>
               <div style="font-size: 0.75em; color: var(--lg-color-text-muted);">
                 ${a.source} · ${a.date}

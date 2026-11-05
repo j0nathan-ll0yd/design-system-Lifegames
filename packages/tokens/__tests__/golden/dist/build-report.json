@@ -3,11 +3,11 @@
   "files": [
     {
       "path": "tokens.css",
-      "bytes": 15505
+      "bytes": 15503
     },
     {
       "path": "tokens-layered.css",
-      "bytes": 15544
+      "bytes": 15542
     },
     {
       "path": "tokens.js",
@@ -38,6 +38,6 @@
       "bytes": 35945
     }
   ],
-  "totalBytes": 136244,
+  "totalBytes": 136240,
   "engine": "style-dictionary@5"
 }

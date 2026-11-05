@@ -143,7 +143,7 @@
   /* Font families */
   --lg-font-family-brand: 'Space Grotesk', sans-serif;
   --lg-font-family-brandFallback: 'Space Grotesk Fallback', sans-serif;
-  --lg-font-family-system: 'system-ui', sans-serif;
+  --lg-font-family-system: system-ui, sans-serif;
   --lg-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
   /* Font weights */

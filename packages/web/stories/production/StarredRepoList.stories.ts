@@ -59,7 +59,7 @@ function renderRepos(repos: typeof defaultRepos) {
     repos.map((r) =>
       html`
             <div
-              style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border);"
+              style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--lg-color-border-default);"
             >
               <div>
                 <a href="${r.url}" style="color: var(--lg-color-accent-blue); font-size: 0.9em;"

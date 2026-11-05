@@ -1,7 +1,16 @@
 import '@j0nathan-ll0yd/tokens/css'
+// Space Grotesk @font-face rules, as production consumers load them. The files
+// come from staticDirs in main.ts; test-runner.mjs waits for them to load.
+import '@j0nathan-ll0yd/tokens/fonts'
 import '@j0nathan-ll0yd/tokens/compat'
 import '@j0nathan-ll0yd/web/styles/components.css'
 import '@j0nathan-ll0yd/tokens/animations'
+// The tokens reset, the same entrypoint the website layout imports after
+// components.css and the effects. It sets box-sizing: border-box on every element,
+// margin: 0 and padding: 0 on body, headings, p, lists, dl, dd, blockquote, figure
+// and pre, and list-style: none on ul and ol. Without it every story rendered
+// content-box, which no production page draws: padding grew boxes past their size.
+import '@j0nathan-ll0yd/tokens/reset'
 import '@j0nathan-ll0yd/tokens/shadcn'
 // Primitive component CSS. Stories hand-render the markup with lit rather than
 // mounting the .astro components, so without this the primitives render
@@ -9,16 +18,12 @@ import '@j0nathan-ll0yd/tokens/shadcn'
 import '@j0nathan-ll0yd/web/styles/primitives.css'
 import type {Preview} from '@storybook/web-components-vite'
 import {html} from 'lit'
+import {INITIAL_BACKGROUND, STORY_BACKGROUNDS} from './story-backgrounds.mjs'
 
 const preview: Preview = {
   parameters: {
-    backgrounds: {
-      default: 'dark',
-      values: [
-        {name: 'dark', value: '#06060f'},
-        {name: 'light', value: '#ffffff'}
-      ]
-    },
+    // Storybook 10 shape; see story-backgrounds.mjs for why `values` no longer works.
+    backgrounds: {options: STORY_BACKGROUNDS},
     a11y: {config: {rules: [{id: 'region', enabled: false}]}, test: 'error'}
   },
   decorators: [
@@ -28,8 +33,14 @@ const preview: Preview = {
     // rule is the sanctioned static-render escape hatch, but it needs this
     // ancestor attribute to match. Without it every .tri-card story renders
     // fully transparent — that is how 52 baselines were minted blank (#123).
-    (story) => html`<div data-widget-preview style="background-color: #06060f; padding: 16px;">${story()}</div>`
+    //
+    // The font family mirrors the production page body (`html, body` in
+    // apps/portfolio/src/layouts/Dashboard.astro): without it, text with no
+    // family of its own renders in the browser default serif.
+    (story) =>
+      html`<div data-widget-preview style="background-color: ${STORY_BACKGROUNDS.dark.value}; padding: 16px; font-family: var(--lg-font-family-brand);">${story()}</div>`
   ],
+  initialGlobals: {backgrounds: {value: INITIAL_BACKGROUND}},
   tags: ['autodocs']
 }
 
