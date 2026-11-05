@@ -51,8 +51,8 @@
   },
   "devDependencies": {
     "@typescript-eslint/parser": "^8.61.0",
-    "@vitest/browser": "4.1.8",
-    "@vitest/browser-playwright": "4.1.8",
+    "@vitest/browser": "4.1.12",
+    "@vitest/browser-playwright": "4.1.12",
     "@vitest/coverage-v8": "^4.1.8",
     "astro": "^6.4.4",
     "astro-eslint-parser": "^1.4.0",
