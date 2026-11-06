@@ -14,10 +14,16 @@ const CLOUDFRONT_HOST_RE = CLOUDFRONT_HOST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
 
 export default defineConfig({
   site: 'https://jonathanlloyd.me',
+  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements. Readers saw
+  // `content404Glitch` for `content 404 Glitch`. `true` keeps the lossless astro 6 behavior.
+  compressHTML: true,
   output: 'static',
   trailingSlash: 'never',
   build: {inlineStylesheets: 'always'},
   vite: {
+    // Vite 8 defaults to the Lightning CSS minifier, which drops `height: 100vh` before `height: 100dvh`
+    // and other fallbacks that packages/web ships for older browsers. esbuild keeps them, as under astro 6.
+    build: {cssMinify: 'esbuild'},
     resolve: {
       alias: {
         '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),

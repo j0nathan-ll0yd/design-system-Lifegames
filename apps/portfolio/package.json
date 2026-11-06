@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@vite-pwa/astro": "^2.0.0"
+    "@vite-pwa/astro": "^2.0.0",
+    "esbuild": "^0.28.2"
   }
 }
