@@ -1,6 +1,7 @@
 /* The single definition of every shared design-system keyframe, plus the skeleton
-   utilities the web widgets emit. It holds no global rule, so a stylesheet can
-   import it without changing any other element. A keyframe only one file names may
+   utilities the web widgets emit. It holds no global rule: its only element rules
+   style .skeleton-bar, .skeleton-bar::after and .skeleton-circle, so importing it
+   changes nothing else on a page. A keyframe only one file names may
    stay in that file. Every animation a web stylesheet names resolves here or there.
    scripts/web-stylesheet-motion.test.mjs fails on a second definition of a name.
 

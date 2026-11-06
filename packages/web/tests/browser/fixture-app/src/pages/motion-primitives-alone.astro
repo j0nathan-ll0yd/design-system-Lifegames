@@ -1,0 +1,18 @@
+---
+// primitives.css ALONE: no tokens entrypoint and no second web stylesheet. A lost @import of
+// tokens/motion shows here and nowhere else.
+// tests/browser/fail-visible.test.ts asserts getAnimations() here.
+import '../../../../../src/styles/primitives.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>primitives.css alone</title>
+  </head>
+  <body>
+    <span class="lg-poll-dot--ok"></span>
+    <div class="lg-skeleton-bar"></div>
+  </body>
+</html>

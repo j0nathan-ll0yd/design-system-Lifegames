@@ -39,8 +39,16 @@ const SHORTHAND_KEYWORDS = new Set([
 ])
 const CSS_WIDE = new Set(['initial', 'inherit', 'unset', 'revert', 'revert-layer'])
 
-const REDUCE_QUERY = /^@media \(prefers-reduced-motion: ?reduce\)$/
-const NO_PREFERENCE_QUERY = /^@media \(prefers-reduced-motion: ?no-preference\)$/
+const REDUCE_QUERY = /^@media \(prefers-reduced-motion: ?reduce\)$/i
+const NO_PREFERENCE_QUERY = /^@media \(prefers-reduced-motion: ?no-preference\)$/i
+const KEYFRAMES_PRELUDE = /^@(?:-[a-z]+-)?keyframes\s+(\S+)/i
+const VENDOR = '(?:-(?:webkit|moz|o|ms)-)?'
+const DECLARATION = new RegExp(`^${VENDOR}(animation(?:-[a-z-]+)?|display)\\s*:\\s*([\\s\\S]+)$`, 'i')
+const IMPORTANT = /\s*!\s*important\s*$/i
+const TIME_OR_NUMBER = /^[-+]?(?:\d*\.)?\d+(?:m?s)?$/i
+const TIMING_FUNCTION = /^(?:cubic-bezier|steps|linear)\(/i
+/** A timing token. It holds a duration or an easing, so it cannot add an animation name. */
+const MOTION_TOKEN_VAR = /^var\(--lg-motion-(?:duration|easing)-[\w-]+\)$/
 
 /**
  * A selector whose gate is not an `animation: none` on the same selector.
@@ -80,77 +88,131 @@ function splitTopLevel(list) {
   return parts.map((part) => part.trim().replace(/\s+/g, ' ')).filter(Boolean)
 }
 
-/** The animation name of one comma part of an `animation` value, or null for `none`. */
-function nameOfShorthandPart(part) {
-  const words = part.replace(/[\w-]+\([^)]*\)/g, ' ').trim().split(/\s+/).filter((word) => word && !/^[\d.]+m?s?$/.test(word))
-  const names = words.filter((word) => !SHORTHAND_KEYWORDS.has(word))
+/** Splits on top-level whitespace, so a function and its arguments stay one word. */
+function topLevelWords(part) {
+  const words = []
+  let depth = 0
+  let word = ''
+  for (const c of part) {
+    if (/\s/.test(c) && depth === 0) {
+      words.push(word)
+      word = ''
+    } else {
+      depth += c === '(' ? 1 : c === ')' ? -1 : 0
+      word += c
+    }
+  }
+  words.push(word)
+  return words.filter(Boolean)
+}
+
+/**
+ * The animation name of one comma part of an `animation` value, or null for `none`.
+ * A value the scan cannot prove comes back as `problem`, because a var() can
+ * substitute a name, and even a comma and a second animation.
+ */
+function parseShorthandPart(part) {
+  const words = topLevelWords(part)
+  const unknownFunctions = words.filter((word) => word.includes('(') && !TIMING_FUNCTION.test(word) && !MOTION_TOKEN_VAR.test(word))
+  const names = words.filter((word) => !word.includes('(') && !TIME_OR_NUMBER.test(word) && !SHORTHAND_KEYWORDS.has(word.toLowerCase()))
+  if (unknownFunctions.length > 0) {
+    return {name: names[0] ?? null, problem: `animation value "${part}" holds ${unknownFunctions.join(', ')}, which may add an animation name`}
+  }
   if (names.length > 1) {
-    throw new Error(`cannot parse the animation shorthand "${part}": more than one candidate name (${names.join(', ')})`)
+    return {name: names[0], problem: `animation value "${part}" has more than one candidate name (${names.join(', ')})`}
   }
-  if (names.length === 0 && !words.includes('none') && /\bvar\(/.test(part)) {
-    throw new Error(`cannot parse the animation shorthand "${part}": a var() may hold the name`)
-  }
-  return names[0] ?? null
+  return {name: names[0] ?? null, problem: null}
 }
 
 /**
  * Parses a stylesheet with a brace scanner. CSS has no grammar in this repo's
  * zero-dep test lane, and this needs only the rule structure.
- * Returns its imports, the keyframe names it defines, the animations it names, and
- * the gates: selectors that a block of exactly `prefers-reduced-motion: reduce` sets
- * to `animation: none` or `display: none`, each with the position of its last gate.
+ * Returns its imports, the keyframe names it defines, the animations it names, every
+ * selector, the gates (selectors that a block of exactly `prefers-reduced-motion:
+ * reduce` sets to `animation: none` or `display: none`, each with its position and
+ * layer) and `unresolved`: declarations the scan cannot prove safe.
  * Throws on input it cannot scan to the end, because a silent stop would hide the rest.
  */
 export function parseStylesheet(source) {
   const text = source.replace(/\/\*[\s\S]*?\*\//g, (comment) => comment.replace(/[^\n]/g, ' '))
-  const sheet = {imports: [], keyframes: [], uses: [], gates: new Map(), durationGates: new Set()}
+  const sheet = {imports: [], keyframes: [], uses: [], selectors: [], gates: new Map(), durationGates: new Set(), unresolved: []}
   /** Open blocks, outermost first: each one's prelude. */
   const stack = []
   let quote = null
   let from = 0
   let position = 0
-  const inKeyframes = () => stack.some((prelude) => prelude.startsWith('@keyframes'))
+  const inKeyframes = () => stack.some((prelude) => KEYFRAMES_PRELUDE.test(prelude))
+  const isLayer = (prelude) => /^@layer\b/i.test(prelude)
   /** True only inside one exact reduce query, with no other condition around it. */
   const inReduceOnly = () => {
-    const conditions = stack.slice(0, -1).filter((prelude) => prelude.startsWith('@') && !prelude.startsWith('@layer'))
+    const conditions = stack.slice(0, -1).filter((prelude) => prelude.startsWith('@') && !isLayer(prelude))
     return conditions.length === 1 && REDUCE_QUERY.test(conditions[0])
   }
+  const layer = () => stack.filter(isLayer).join(' > ')
 
   const onStatement = (statement) => {
     const trimmed = statement.trim()
-    const importMatch = trimmed.match(/^@import\s+(?:url\()?['"]([^'"]+)['"]/)
+    const importMatch = trimmed.match(/^@import\s+(?:url\()?['"]([^'"]+)['"]/i)
     if (importMatch) {
       sheet.imports.push(importMatch[1])
       return
     }
-    const declaration = trimmed.match(/^(?:-webkit-)?(animation(?:-name|-duration)?|display)\s*:\s*([\s\S]+)$/)
+    const declaration = trimmed.match(DECLARATION)
     if (!declaration || inKeyframes() || stack.length === 0) {
       return
     }
     position++
-    const [, property] = declaration
+    const property = declaration[1].toLowerCase()
+    const raw = declaration[2]
+    const important = IMPORTANT.test(raw)
+    const value = raw.replace(IMPORTANT, '').trim()
+    const lower = value.toLowerCase()
     const selectors = splitTopLevel(stack[stack.length - 1])
-    const value = declaration[2].replace(/\s*!important\s*$/, '').trim()
+    const addGate = () => {
+      for (const one of selectors) {
+        sheet.gates.set(one, [...(sheet.gates.get(one) ?? []), {position, layer: layer()}])
+      }
+    }
+    if (property === 'display') {
+      if (lower === 'none' && inReduceOnly()) {
+        addGate()
+      }
+      return
+    }
+    // An important declaration beats a normal gate in any layer, and an important one
+    // in an earlier layer beats the global rule too. Inside a reduce block it only stops motion.
+    if (important && !(inReduceOnly() && (property === 'animation-duration' || lower === 'none'))) {
+      sheet.unresolved.push(`"${property}: ${value} !important" on "${selectors.join(', ')}" beats a prefers-reduced-motion gate`)
+    }
     if (property === 'animation-duration') {
-      if (inReduceOnly() && /!important\s*$/.test(declaration[2])) {
+      if (inReduceOnly() && important) {
         selectors.forEach((one) => sheet.durationGates.add(one))
       }
       return
     }
-    if (property === 'display' || value === 'none') {
-      if (value === 'none' && inReduceOnly()) {
-        selectors.forEach((one) => sheet.gates.set(one, position))
+    if (property !== 'animation' && property !== 'animation-name') {
+      return
+    }
+    if (lower === 'none') {
+      if (inReduceOnly()) {
+        addGate()
       }
       return
     }
-    if (CSS_WIDE.has(value)) {
+    if (CSS_WIDE.has(lower)) {
       return
     }
-    const parts = splitTopLevel(value)
-    const names = property === 'animation' ? parts.map(nameOfShorthandPart) : parts
+    const parsed = splitTopLevel(value).map((part) =>
+      property === 'animation'
+        ? parseShorthandPart(part)
+        : part.includes('(')
+        ? {name: null, problem: `animation-name "${part}" cannot be resolved statically`}
+        : {name: part.toLowerCase() === 'none' ? null : part, problem: null}
+    )
+    parsed.filter(({problem}) => problem).forEach(({problem}) => sheet.unresolved.push(`${problem} on "${selectors.join(', ')}"`))
     const openedOnlyForMotion = stack.some((prelude) => NO_PREFERENCE_QUERY.test(prelude))
-    for (const name of names.filter(Boolean)) {
-      sheet.uses.push({name, selectors, openedOnlyForMotion, position})
+    for (const {name} of parsed.filter(({name}) => name)) {
+      sheet.uses.push({name, selectors, openedOnlyForMotion, position, layer: layer()})
     }
   }
 
@@ -164,9 +226,11 @@ export function parseStylesheet(source) {
       quote = c
     } else if (c === '{') {
       const prelude = text.slice(from, i).trim().replace(/\s+/g, ' ')
-      const keyframes = prelude.match(/^@keyframes\s+(\S+)/)
+      const keyframes = prelude.match(KEYFRAMES_PRELUDE)
       if (keyframes) {
         sheet.keyframes.push(keyframes[1])
+      } else if (!prelude.startsWith('@') && !inKeyframes()) {
+        sheet.selectors.push(...splitTopLevel(prelude))
       }
       stack.push(prelude)
       from = i + 1
@@ -209,19 +273,19 @@ function resolveImport(importer, specifier) {
  */
 export function motionFindings(roots, read = cssOf) {
   const findings = []
-  for (const root of roots) {
-    const keyframes = new Set()
-    const visit = (path, chain) => {
-      if (chain.includes(path)) {
-        return
-      }
-      const sheet = parseStylesheet(read(path))
-      sheet.keyframes.forEach((name) => keyframes.add(name))
-      sheet.imports.forEach((specifier) => visit(resolveImport(path, specifier), [...chain, path]))
+  const parse = (path) => {
+    try {
+      return parseStylesheet(read(path))
+    } catch (error) {
+      findings.push(`${path}: ${error.message}`)
+      return parseStylesheet('')
     }
-    visit(root, [])
-    const sheet = parseStylesheet(read(root))
-    for (const {name, selectors, openedOnlyForMotion, position} of sheet.uses) {
+  }
+  for (const root of roots) {
+    const keyframes = selfContainedKeyframes(root, parse)
+    const sheet = parse(root)
+    sheet.unresolved.forEach((problem) => findings.push(`${root}: ${problem}`))
+    for (const {name, selectors, openedOnlyForMotion, position, layer} of sheet.uses) {
       if (!keyframes.has(name)) {
         findings.push(`${root}: names animation "${name}" (${selectors.join(', ')}) with no @keyframes in its self-contained set`)
       }
@@ -230,15 +294,20 @@ export function motionFindings(roots, read = cssOf) {
           continue
         }
         const wildcard = WILDCARD_GATES.get(selector)
+        const gates = sheet.gates.get(selector) ?? []
         if (wildcard) {
           if (!sheet.durationGates.has(wildcard)) {
             findings.push(`${root}: animation "${name}" on "${selector}" has no reduce rule on "${wildcard}"`)
           }
-        } else if (!sheet.gates.has(selector)) {
+        } else if (gates.length === 0) {
           findings.push(`${root}: animation "${name}" on "${selector}" has no prefers-reduced-motion gate`)
-        } else if (sheet.gates.get(selector) < position) {
-          // Same layer, same specificity: the later rule wins, so this gate does nothing.
-          findings.push(`${root}: animation "${name}" on "${selector}" comes after its prefers-reduced-motion gate`)
+        } else if (!gates.some((gate) => (gate.layer === layer ? gate.position > position : gate.layer === ''))) {
+          // The later rule wins inside one layer. Across layers, only an unlayered gate
+          // beats the rule for certain.
+          const sameLayer = gates.some((gate) => gate.layer === layer)
+          findings.push(
+            `${root}: animation "${name}" on "${selector}" ${sameLayer ? 'comes after' : 'is in another layer from'} its prefers-reduced-motion gate`
+          )
         }
       }
     }
@@ -246,14 +315,109 @@ export function motionFindings(roots, read = cssOf) {
   return findings
 }
 
-/** The animation names a TypeScript source sets inline. `.animate()` takes keyframes, not a name. */
-export function runtimeAnimationNames(source) {
-  const patterns = [
-    /\.style\.animation(?:Name)?\s*=\s*['"`]([A-Za-z][\w-]*)/g,
-    /setProperty\(\s*['"]animation(?:-name)?['"]\s*,\s*['"`]([A-Za-z][\w-]*)/g,
-    /style=\\?["'][^"']*\banimation(?:-name)?:\s*([A-Za-z][\w-]*)/g
-  ]
-  return patterns.flatMap((pattern) => [...source.matchAll(pattern)].map((m) => m[1])).filter((name) => name !== 'none')
+/** Every keyframe a stylesheet reaches: its own and those of its @import chain. */
+function selfContainedKeyframes(root, parse) {
+  const keyframes = new Set()
+  const visit = (path, chain) => {
+    if (chain.includes(path)) {
+      return
+    }
+    const sheet = parse(path)
+    sheet.keyframes.forEach((name) => keyframes.add(name))
+    sheet.imports.forEach((specifier) => visit(resolveImport(path, specifier), [...chain, path]))
+  }
+  visit(root, [])
+  return keyframes
+}
+
+/** Code without its comments, so prose that mentions an animation is not a finding. */
+function withoutComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/<!--[\s\S]*?-->/g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1')
+}
+
+/** The part of an .astro file outside its `<style>` blocks: frontmatter, scripts and markup. */
+function outsideStyleBlocks(source) {
+  return source.replace(/<style\b[^>]*>[\s\S]*?<\/style>/g, '')
+}
+
+/**
+ * The animation names a source file sets inline, in code or markup. `.animate()` takes
+ * keyframes, not a name. A form that cannot be resolved statically comes back in
+ * `unresolved`, by name: it fails closed and is never skipped.
+ */
+export function inlineAnimations(source) {
+  const code = withoutComments(source)
+  const names = new Set()
+  const unresolved = new Set()
+  const fromCss = (value, form) => {
+    const css = value.trim()
+    if (css === '') {
+      return
+    }
+    if (IMPORTANT.test(css)) {
+      unresolved.add(`${form} "${css}" uses !important, which beats a prefers-reduced-motion gate`)
+    }
+    for (const part of splitTopLevel(css.replace(IMPORTANT, ''))) {
+      const {name, problem} = parseShorthandPart(part)
+      if (problem) {
+        unresolved.add(`${form}: ${problem}`)
+      }
+      if (name) {
+        names.add(name)
+      }
+    }
+  }
+  /** The rest of a line must open with one whole string literal, or it fails closed. */
+  const fromExpression = (rest, form) => {
+    const literal = rest.match(/^\s*(['"`])((?:\\.|(?!\1)[^\\\n])*)\1\s*(?:[;),]|$)/)
+    if (!literal || literal[2].includes('${')) {
+      unresolved.add(`${form} "${rest.trim()}" cannot be resolved statically`)
+      return null
+    }
+    return literal[2]
+  }
+  const animationProperty = new RegExp(
+    `\\.style\\s*(?:\\.\\s*${VENDOR}animation(?:Name)?\\b|\\[\\s*['"\`]${VENDOR}animation(?:Name|-name)?['"\`]\\s*\\])\\s*\\+?=(?!=)([^\\n]*)`,
+    'gi'
+  )
+  for (const [, expression] of code.matchAll(animationProperty)) {
+    const value = fromExpression(expression, 'style.animation')
+    if (value !== null) {
+      fromCss(value, 'style.animation')
+    }
+  }
+  for (const [form] of code.matchAll(/\.style\s*\[(?!\s*['"`])[^\]]+\]\s*=(?!=)/g)) {
+    unresolved.add(`"${form}" sets a computed style property, which may be an animation`)
+  }
+  const setProperty = new RegExp(`setProperty\\(\\s*(['"\`])${VENDOR}animation(?:-name)?\\1\\s*,([^\\n]*)`, 'gi')
+  for (const [, , expression] of code.matchAll(setProperty)) {
+    const value = fromExpression(expression, 'setProperty(animation)')
+    if (value !== null) {
+      fromCss(value, 'setProperty(animation)')
+    }
+  }
+  for (const [form] of code.matchAll(/setProperty\((?!\s*['"`])[^,)]*/g)) {
+    unresolved.add(`"${form}" sets a computed property, which may be an animation`)
+  }
+  for (const [form] of code.matchAll(/Object\.assign\(\s*[^,)]*style\s*,(?!\s*\{)[^)]*/gi)) {
+    unresolved.add(`"${form}" may set an animation, and cannot be resolved statically`)
+  }
+  // Whole CSS text: its animation text is read below, so a literal needs no finding here.
+  for (const [, form, rest] of code.matchAll(/(\.cssText\s*\+?=|setAttribute\(\s*['"]style['"]\s*,)([^\n]*)/g)) {
+    fromExpression(rest, form.trim())
+  }
+  // Any animation declaration in a string, in markup or as an object key.
+  const declaration = new RegExp(`(?<![\\w-])${VENDOR}animation(?:-name|Name)?\\s*:\\s*(['"\`]?)([^;'"\`}\\n]*)`, 'gi')
+  for (const match of code.matchAll(declaration)) {
+    const value = match[2]
+    const rest = code.slice(match.index + match[0].length)
+    if (value.includes('${') || /^['"`]?\s*\+/.test(rest)) {
+      unresolved.add(`"${match[0].trim()}" is built at runtime and cannot be resolved statically`)
+    } else {
+      fromCss(value, 'inline animation')
+    }
+  }
+  return {names: [...names], unresolved: [...unresolved]}
 }
 
 /** Files under `dir` with `extension`, at any depth. */
@@ -265,6 +429,30 @@ const WEB_SRC = 'packages/web/src'
 const STYLESHEETS = filesIn(WEB_SRC, '.css')
 const SCOPED_BLOCKS = filesIn(WEB_SRC, '.astro').filter((path) => /<style\b/.test(readFileSync(join(ROOT, path), 'utf8')))
 const SHARED = [...STYLESHEETS, ...filesIn(join(TOKENS, 'src'), '.css'), ...SCOPED_BLOCKS]
+const CODE_FILES = ['.ts', '.tsx', '.js', '.mjs', '.astro'].flatMap((extension) => filesIn(WEB_SRC, extension))
+
+/** A selector that reaches every element, or the document as a whole. */
+export function globalSelectors(sheet) {
+  return sheet.selectors.filter((selector) => /(?:^|[\s>+~(,])(?:\*|html\b|body\b|:root\b)/i.test(selector))
+}
+
+/** Every inline finding of `files`. A .astro file may also name a keyframe of its own style block. */
+function inlineFindings(files, read = (path) => readFileSync(join(ROOT, path), 'utf8')) {
+  const reachable = selfContainedKeyframes(join(STYLES, 'components.css'), (path) => parseStylesheet(cssOf(path)))
+  const findings = []
+  for (const file of files) {
+    const source = read(file)
+    const own = file.endsWith('.astro')
+      ? parseStylesheet([...source.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n')).keyframes
+      : []
+    const {names, unresolved} = inlineAnimations(file.endsWith('.astro') ? outsideStyleBlocks(source) : source)
+    unresolved.forEach((problem) => findings.push(`${file}: ${problem}`))
+    for (const name of names.filter((one) => !reachable.has(one) && !own.includes(one))) {
+      findings.push(`${file}: names animation "${name}" inline with no @keyframes through components.css`)
+    }
+  }
+  return findings
+}
 
 test('discovery finds the stylesheets, so the checks below cannot pass over nothing', () => {
   for (const name of ['components.css', 'primitives.css', 'a11y.css', 'view-transitions.css', 'layout.css']) {
@@ -298,26 +486,18 @@ test('no keyframe has two definitions across the web stylesheets, scoped blocks 
   assert.deepEqual(duplicates, [])
 })
 
-test('tokens/motion carries no selector that reaches every element', () => {
+test('tokens/motion carries no selector that reaches every element or the document', () => {
   // The reason the web stylesheets import this file rather than tokens/animations or
   // tokens/effects: those files shorten every animation and transition on the page.
-  const source = cssOf(join(TOKENS, 'src/motion.css'))
-  assert.equal(/(^|[\s,}])\*[\s,{:]/.test(source.replace(/\/\*[\s\S]*?\*\//g, '')), false)
+  assert.deepEqual(globalSelectors(parseStylesheet(cssOf(join(TOKENS, 'src/motion.css')))), [])
 })
 
-test('the keyframe a runtime module names inline resolves through components.css', () => {
-  const keyframes = new Set()
-  const visit = (path) => {
-    const sheet = parseStylesheet(cssOf(path))
-    sheet.keyframes.forEach((name) => keyframes.add(name))
-    sheet.imports.forEach((specifier) => visit(resolveImport(path, specifier)))
-  }
-  visit(join(STYLES, 'components.css'))
-  const named = filesIn(WEB_SRC, '.ts').flatMap((file) => runtimeAnimationNames(readFileSync(join(ROOT, file), 'utf8')).map((name) => ({file, name})))
-  assert.ok(named.some(({name}) => name === 'bookModalOut'), 'the scan finds book-modal-init.ts')
-  for (const {file, name} of named) {
-    assert.ok(keyframes.has(name), `${file} names animation "${name}" with no @keyframes through components.css`)
-  }
+test('every animation named in code or markup under packages/web/src resolves', () => {
+  assert.ok(CODE_FILES.some((file) => file.endsWith('book-modal-init.ts')), 'discovery reaches the runtime modules')
+  assert.ok(CODE_FILES.some((file) => file.endsWith('IdentityCard.astro')), 'discovery reaches the components')
+  assert.ok(inlineAnimations(readFileSync(join(ROOT, WEB_SRC, 'runtime/book-modal-init.ts'), 'utf8')).names.includes('bookModalOut'),
+    'the scan finds book-modal-init.ts')
+  assert.deepEqual(inlineFindings(CODE_FILES), [])
 })
 
 test('can fail: deleting a keyframe reds, naming the animation and the file', () => {
@@ -386,28 +566,180 @@ test('can fail: a stylesheet beside its widget is in the scan', () => {
   assert.ok(motionFindings(STYLESHEETS, read).some((finding) => finding.includes('"glitch-bar"') && finding.includes(notFound)))
 })
 
-test('can fail: forms the scan cannot prove fail closed', () => {
-  assert.throws(() => parseStylesheet('.a { animation: var(--anim) 1s; }'), /a var\(\) may hold the name/)
+test('can fail: forms the scan cannot prove fail closed, by name', () => {
+  const unresolved = (css) => parseStylesheet(css).unresolved
+  assert.match(unresolved('.a { animation: var(--anim) 1s; }')[0], /var\(--anim\), which may add an animation name on "\.a"/)
+  assert.match(unresolved('.a { animation: spin 1s var(--more); }')[0], /var\(--more\), which may add an animation name/)
+  assert.match(unresolved('.a { animation: spin 1s, var(--more); }')[0], /var\(--more\), which may add an animation name/)
+  assert.match(unresolved('.a { animation-name: var(--anim); }')[0], /cannot be resolved statically/)
+  assert.match(unresolved('.a { animation: one two 1s; }')[0], /more than one candidate name \(one, two\)/)
   assert.throws(() => parseStylesheet('.a { color: red;'), /ended inside the block/)
   assert.throws(() => parseStylesheet(`.a { content: 'open; }`), /ended inside a string/)
-  assert.deepEqual(parseStylesheet('.a { -webkit-animation: spin 1s; }').uses.map((use) => use.name), ['spin'])
+  const unreadable = motionFindings(['m.css'], () => '.a { color: red;')
+  assert.ok(unreadable.some((finding) => finding.startsWith('m.css: the scan ended inside')), 'the finding names the file')
   // An escaped quote does not end the string, so the rule after it stays in the scan.
   assert.deepEqual(parseStylesheet(`.x { content: '\\''; } .a { animation: spin 1s; }`).uses.map((use) => use.name), ['spin'])
 })
 
-test('can fail: each inline form of a runtime animation name is seen', () => {
-  assert.deepEqual(runtimeAnimationNames("el.style.animation = 'one 1s'"), ['one'])
-  assert.deepEqual(runtimeAnimationNames('el.style.animation = `two ${d}s`'), ['two'])
-  assert.deepEqual(runtimeAnimationNames("el.style.animationName = 'three'"), ['three'])
-  assert.deepEqual(runtimeAnimationNames("el.style.setProperty('animation-name', 'four')"), ['four'])
-  assert.deepEqual(runtimeAnimationNames('html = `<i style="color: red; animation: five 1s"></i>`'), ['five'])
-  assert.deepEqual(runtimeAnimationNames("el.style.animation = ''"), [])
+test('can fail: vendor prefixes and uppercase are animations too', () => {
+  for (
+    const css of [
+      '.a { -webkit-animation: spin 1s; }',
+      '.a { -moz-animation: spin 1s; }',
+      '.a { -o-animation: spin 1s; }',
+      '.a { -ms-animation: spin 1s; }',
+      '.a { ANIMATION: spin 1s; }',
+      '.a { Animation-Name: spin; }'
+    ]
+  ) {
+    assert.deepEqual(parseStylesheet(css).uses.map((use) => use.name), ['spin'], css)
+  }
+  assert.deepEqual(parseStylesheet('@-webkit-keyframes one { to { top: 0; } } @KEYFRAMES two { to { top: 0; } }').keyframes, ['one', 'two'])
+  assert.equal(parseStylesheet('@MEDIA (PREFERS-REDUCED-MOTION: REDUCE) { .a { ANIMATION: NONE; } }').gates.has('.a'), true)
+})
+
+test('can fail: !important on an animation declaration reds', () => {
+  const gated = (rule) => `${rule} @keyframes spin { to { top: 0; } } @media (prefers-reduced-motion: reduce) { .a { animation: none; } }`
+  assert.deepEqual(motionFindings(['m.css'], () => gated('.a { animation: spin 1s !important; }')), [
+    'm.css: "animation: spin 1s !important" on ".a" beats a prefers-reduced-motion gate'
+  ])
+  assert.deepEqual(motionFindings(['m.css'], () => gated('.a { animation: spin 1s; } .b { animation-name: none ! important; }')), [
+    'm.css: "animation-name: none !important" on ".b" beats a prefers-reduced-motion gate'
+  ])
+  assert.deepEqual(motionFindings(['m.css'], () => gated('.a { animation: spin 1s; animation-duration: 2s !important; }')), [
+    'm.css: "animation-duration: 2s !important" on ".a" beats a prefers-reduced-motion gate'
+  ])
+  // Inside a reduce block it only stops motion, so it stays legal there.
+  assert.deepEqual(
+    parseStylesheet('@media (prefers-reduced-motion: reduce) { .a { animation: none !important; } .b { animation-duration: 0.001s !important; } }')
+      .unresolved,
+    []
+  )
+  assert.match(parseStylesheet('@media (prefers-reduced-motion: reduce) { .a { animation: spin 1s !important; } }').unresolved[0],
+    /beats a prefers-reduced-motion gate/)
+})
+
+test('can fail: a gate in another layer reds, and an unlayered gate passes', () => {
+  const keyframes = '@keyframes spin { to { top: 0; } }'
+  const inLayer = (layer, block) => `@layer ${layer} { ${block} }`
+  const rule = '.a { animation: spin 1s; }'
+  const gate = '@media (prefers-reduced-motion: reduce) { .a { animation: none; } }'
+  assert.deepEqual(motionFindings(['m.css'], () => `${keyframes} ${inLayer('low', gate)} ${inLayer('high', rule)}`), [
+    'm.css: animation "spin" on ".a" is in another layer from its prefers-reduced-motion gate'
+  ])
+  assert.deepEqual(motionFindings(['m.css'], () => `${keyframes} ${inLayer('a', rule)} ${gate}`), [])
+  assert.deepEqual(motionFindings(['m.css'], () => `${keyframes} ${inLayer('a', `${rule} ${gate}`)}`), [])
+})
+
+test('parser: a negative delay and nested functions are not names', () => {
+  const name = (value) => parseStylesheet(`.a { animation: ${value}; }`)
+  for (
+    const value of [
+      'spin 1s -0.5s',
+      'spin 1s -.5s linear',
+      'spin 1s cubic-bezier(0.1, var(--x), 0.3, 0.4)',
+      'spin steps(calc(2 + 1), end) 1s',
+      'spin var(--lg-motion-duration-normal) var(--lg-motion-easing-decelerate)'
+    ]
+  ) {
+    assert.deepEqual(name(value).uses.map((use) => use.name), ['spin'], value)
+    assert.deepEqual(name(value).unresolved, [], value)
+  }
+})
+
+test('can fail: a global selector in tokens/motion reds', () => {
+  for (
+    const css of [
+      '* { top: 0; }',
+      '*, *::before { top: 0; }',
+      '.a * { top: 0; }',
+      'html { top: 0; }',
+      'body { top: 0; }',
+      ':root { --a: 0; }',
+      ':where(:root) { --a: 0; }',
+      'html body { top: 0; }'
+    ]
+  ) {
+    assert.notDeepEqual(globalSelectors(parseStylesheet(css)), [], css)
+  }
+  for (const css of ['.body { top: 0; }', '.skeleton-bar::after { top: 0; }', '@keyframes a { from { top: 0; } }', '.a:not(.html) { top: 0; }']) {
+    assert.deepEqual(globalSelectors(parseStylesheet(css)), [], css)
+  }
+})
+
+test('can fail: each inline form of an animation name is seen', () => {
+  const named = {
+    "el.style.animation = 'one 1s'": 'one',
+    'el.style.animation = "one 1s"': 'one',
+    'el.style.animation = `one 1s`': 'one',
+    "el.style.animationName = 'one'": 'one',
+    "el.style.webkitAnimation = 'one'": null,
+    "el.style['animation'] = 'one 1s'": 'one',
+    "el.style['animation-name'] = 'one'": 'one',
+    'el.style["animationName"] = "one"': 'one',
+    "el.style.setProperty('animation', 'one 1s')": 'one',
+    "el.style.setProperty('animation-name', 'one')": 'one',
+    'el.style.cssText = "color: red; animation: one 1s"': 'one',
+    "el.setAttribute('style', 'animation: one 1s')": 'one',
+    "Object.assign(el.style, {animation: 'one 1s'})": 'one',
+    "Object.assign(el.style, {animationName: 'one'})": 'one',
+    'html = `<i style="color: red; animation: one 1s"></i>`': 'one',
+    '<span style="animation: one 1s infinite"></span>': 'one',
+    "<span style='-moz-animation: one 1s'></span>": 'one',
+    "<span style={{animation: 'one 1s'}} />": 'one'
+  }
+  for (const [source, name] of Object.entries(named).filter(([, name]) => name)) {
+    assert.deepEqual(inlineAnimations(source), {names: [name], unresolved: []}, source)
+  }
+  assert.deepEqual(inlineAnimations("el.style.animation = ''"), {names: [], unresolved: []})
+  assert.deepEqual(inlineAnimations("el.style.animation = 'none'"), {names: [], unresolved: []})
+  assert.deepEqual(inlineAnimations('el.style.animationDelay = "1s"; const css = `animation-delay: ${x}s`'), {names: [], unresolved: []})
+  assert.deepEqual(inlineAnimations('// el.style.animation = "one 1s"\n/* animation: two 1s */\n<!-- animation: three 1s -->'), {names: [], unresolved: []})
+})
+
+test('can fail: a dynamic inline form fails closed, by name', () => {
+  const dynamic = [
+    "el.style.animation = name + ' 1s'",
+    'el.style.animation = `${name} 1s`',
+    'el.style.animation = name',
+    "el.style.animation = open ? 'one' : 'two'",
+    "el.style['animation'] = name",
+    'el.style[property] = value',
+    "el.style.setProperty('animation', name)",
+    'el.style.setProperty(property, value)',
+    'Object.assign(el.style, styles)',
+    'el.style.cssText = css',
+    'el.style.cssText = `color: ${c}`',
+    "el.setAttribute('style', css)",
+    "html = '<i style=\"animation: ' + name + ' 1s\"></i>'",
+    'html = `<i style="animation: ${name} 1s"></i>`',
+    '<span style={`animation: ${name} 1s`} />',
+    "<span style={{animation: 'one 1s !important'}} />"
+  ]
+  for (const source of dynamic) {
+    assert.ok(inlineAnimations(source).unresolved.length > 0, source)
+  }
+})
+
+test('can fail: an inline name with no keyframes reds, naming the file', () => {
+  const files = {
+    'a.ts': "el.style.animation = 'ghost 1s'",
+    'b.astro': '<span style="animation: ghostMarkup 1s infinite"></span>',
+    'c.astro': "---\n---\n<script>el.style.setProperty('animation', 'ghostScript 1s')</script>",
+    'd.astro': '<i style="animation: own 1s"></i><style>@keyframes own { to { top: 0; } }</style>',
+    'e.ts': "el.style.animation = 'bookModalOut 1s'"
+  }
+  assert.deepEqual(inlineFindings(Object.keys(files), (file) => files[file]), [
+    'a.ts: names animation "ghost" inline with no @keyframes through components.css',
+    'b.astro: names animation "ghostMarkup" inline with no @keyframes through components.css',
+    'c.astro: names animation "ghostScript" inline with no @keyframes through components.css'
+  ])
 })
 
 test('parser: the shorthand, the longhand, function values and a no-preference block', () => {
   const sheet = parseStylesheet(`
     /* animation: commented 1s; */
-    .a { animation: one 0.2s cubic-bezier(0.1, 0.2, 0.3, 0.4) both, two var(--d) infinite; }
+    .a { animation: one 0.2s cubic-bezier(0.1, 0.2, 0.3, 0.4) both, two var(--lg-motion-duration-normal) infinite; }
     .b, .c:is(.d, .e) { animation-name: three; }
     @media (prefers-reduced-motion: no-preference) { .f { animation: four 1s; } }
     @media (prefers-reduced-motion: reduce) { .a, .b { animation: none; } .g { display: none; } }

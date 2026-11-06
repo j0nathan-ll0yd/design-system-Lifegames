@@ -203,7 +203,9 @@ describe('motion on the website stylesheet set', () => {
       const page = await open(`/${fixture}/`, 'no-preference')
       // A finite entry can end before a read after load, so the listener in open()
       // reads getAnimations() as each row starts. `fill` is that read.
-      await page.waitForFunction(() => (window as unknown as {__motion: Motion}).__motion.started.some((s) => s.name === 'fadeSlideRight'))
+      await page.waitForFunction(() => (window as unknown as {__motion: Motion}).__motion.started.some((s) => s.name === 'fadeSlideRight'), null, {
+        timeout: 10_000
+      })
       const fills = await page.evaluate(() =>
         (window as unknown as {__motion: Motion}).__motion.started.filter((s) => s.name === 'fadeSlideRight' && s.target.matches('.article-list-item')).map((
           s
@@ -243,6 +245,74 @@ describe('motion on the website stylesheet set', () => {
       }
     })
     expect(styled).toEqual({bar: 'rgba(255, 255, 255, 0.04)', circle: '50%', shimmer: 'shimmerSlide'})
+  })
+})
+
+// Each page loads ONE web stylesheet and nothing else. Every other fixture loads a
+// second file that also imports tokens/motion, so it would hide a lost @import.
+describe.each([
+  {
+    fixture: 'motion-components-alone',
+    sheet: 'components.css',
+    other: '.lg-card',
+    elements: [{selector: '.live-dot', keyframes: 'dotPulse'}, {selector: '.sys-dot', keyframes: 'dotPulse'}, {selector: '.id-name', keyframes: 'glowPulse'}]
+  },
+  {fixture: 'motion-primitives-alone', sheet: 'primitives.css', other: '.tri-card', elements: [{selector: '.lg-poll-dot--ok', keyframes: 'statusPulse'}]}
+])('$sheet loaded alone', ({fixture, other, elements}) => {
+  it('is the only web stylesheet on the page', async () => {
+    const page = await open(`/${fixture}/`, 'no-preference')
+    const found = await page.evaluate((fragment) => {
+      const selectors: string[] = []
+      const walk = (rules: CSSRuleList): void => {
+        for (const rule of Array.from(rules)) {
+          if (rule instanceof CSSStyleRule) {
+            selectors.push(rule.selectorText)
+          } else if ('cssRules' in rule) {
+            walk((rule as CSSGroupingRule).cssRules)
+          }
+        }
+      }
+      Array.from(document.styleSheets).forEach((sheet) => walk(sheet.cssRules))
+      return {rules: selectors.length, other: selectors.filter((selector) => selector.includes(fragment))}
+    }, other)
+    expect(found.rules, 'control: the stylesheet loaded').toBeGreaterThan(0)
+    expect(found.other).toEqual([])
+  })
+
+  it.each(elements)('$selector runs $keyframes with motion allowed', async ({selector, keyframes}) => {
+    const page = await open(`/${fixture}/`, 'no-preference')
+    const names = await page.locator(selector).evaluateAll((els) => els.map((el) => el.getAnimations().map((a) => (a as CSSAnimation).animationName)))
+    expect(names.length, 'the fixture renders the element').toBeGreaterThan(0)
+    expect(names).toEqual(names.map(() => [keyframes]))
+  })
+
+  it('runs no CSS animation under reduced motion', async () => {
+    const page = await open(`/${fixture}/`, 'reduce')
+    expect(await page.locator(elements[0]!.selector).count(), 'the fixture renders the element').toBeGreaterThan(0)
+    const seen = await page.evaluate(() => ({
+      running: document.getAnimations().filter((a) => a instanceof CSSAnimation).map((a) => (a as CSSAnimation).animationName),
+      started: (window as unknown as {__motion: Motion}).__motion.started.map((s) => s.name)
+    }))
+    expect(seen).toEqual({running: [], started: []})
+  })
+})
+
+describe('components.css loaded alone', () => {
+  it('runs the finite entry animation', async () => {
+    const page = await open('/motion-components-alone/', 'no-preference')
+    await page.waitForFunction(() => (window as unknown as {__motion: Motion}).__motion.started.some((s) => s.name === 'fadeSlideRight'), null, {
+      timeout: 10_000
+    })
+  })
+})
+
+describe('primitives.css loaded alone', () => {
+  it('runs the skeleton shimmer on its pseudo-element', async () => {
+    const page = await open('/motion-primitives-alone/', 'no-preference')
+    const names = await page.locator('.lg-skeleton-bar').first().evaluate((el) =>
+      el.getAnimations({subtree: true}).map((a) => (a as CSSAnimation).animationName)
+    )
+    expect(names).toEqual(['shimmerSlide'])
   })
 })
 

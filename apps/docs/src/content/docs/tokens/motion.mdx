@@ -35,7 +35,7 @@ Curated animations: `glowPulse`, `dotPulse`, `statusPulse`, `shimmerSlide`, `fad
 
 ## Reduced Motion
 
-Every animation a web stylesheet names has its own `prefers-reduced-motion` gate. Most gates remove the animation under `reduce`. Two forms differ: view transitions keep a 0.001 s run so `animationend` still fires, and three `NotFound.css` pseudo-elements take `display: none`. `tokens/animations` and `tokens/effects` add a global rule that shortens every animation on the page. `tokens/motion` does not.
+Every animation a web stylesheet names has its own `prefers-reduced-motion` gate. Most gates remove the animation under `reduce`. Three forms differ: view transitions keep a 0.001 s run so `animationend` still fires, three `NotFound.css` pseudo-elements take `display: none`, and `.lg-text-page-card` sets its animation only inside a `no-preference` block. `tokens/animations` and `tokens/effects` add a global rule that shortens every animation on the page. `tokens/motion` does not.
 
 ```swift
 import LifegamesComponents
