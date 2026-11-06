@@ -50,7 +50,7 @@ pnpm outdated --recursive
 
 - `vite` major — blocked until Storybook 10 + Astro 6.x ship Vite 8 support (see PR #23)
 - `@astrojs/starlight` major — pre-1.0; minors are safe, majors require manual migration
-- `ajv` / `ajv-formats` / `ajv-cli` majors — require coordinated migration of `validate.ts` and consumer schemas
+- `ajv` / `ajv-formats` majors — require coordinated migration of `validate.ts` and consumer schemas
 
 If `pnpm update --latest --recursive` would cross any of those, pin the package in `package.json` first or pass an explicit version.
 
@@ -178,7 +178,7 @@ For each major version bump:
 
 The repo declares three groups in `.github/dependabot.yml`:
 
-- `ajv` → `ajv`, `ajv-formats`, `ajv-cli`
+- `ajv` → `ajv`, `ajv-formats`
 - `storybook` → `@storybook/*`, `storybook`
 - `astro-docs` → `astro`, `@astrojs/*`
 
