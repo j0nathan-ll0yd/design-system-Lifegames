@@ -48,7 +48,6 @@ pnpm outdated --recursive
 
 **Respect the dependabot ignore rules.** These bumps must NOT be applied automatically:
 
-- `vite` major — blocked until Storybook 10 + Astro 6.x ship Vite 8 support (see PR #23)
 - `@astrojs/starlight` major — pre-1.0; minors are safe, majors require manual migration
 - `ajv` / `ajv-formats` majors — require coordinated migration of `validate.ts` and consumer schemas
 

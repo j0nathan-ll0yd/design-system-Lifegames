@@ -399,7 +399,7 @@ describe.each(LIVE_WIDGETS)('$name renders every state honestly', ({component, i
     expect(r.root.getAttribute('data-ssr-state')).toBe('stale')
     const asOf = r.root.querySelector('time.widget-timestamp-stale')
     expect(asOf?.getAttribute('datetime')).toBe(props.generatedAt)
-    expect(asOf?.textContent).toMatch(/^as of /)
+    expect(asOf?.textContent?.trim()).toMatch(/^as of /)
     expect(leakedLegacy(r)).toEqual([])
     // Every export is stale here, health included.
     expectKnownAnswer(r, id, {healthStale: true})

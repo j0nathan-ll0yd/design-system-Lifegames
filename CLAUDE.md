@@ -2,7 +2,7 @@
 
 **Purpose:** Cross-platform design system providing the single source of truth for tokens, components, and widgets consumed by iOS (SwiftUI) and web (Astro). Governed by `GOVERNANCE.md` (principles P1–P8).
 
-**Stack:** DTCG tokens → Style Dictionary v5 → `@j0nathan-ll0yd/tokens` (CSS/JS), `LifegamesTokens` (Swift). 29 web widgets + 30 Swift widgets (health, location, GitHub, identity, reading, other). Astro 6 + Storybook 10. Vite 8 unified.
+**Stack:** DTCG tokens → Style Dictionary v5 → `@j0nathan-ll0yd/tokens` (CSS/JS), `LifegamesTokens` (Swift). 29 web widgets + 30 Swift widgets (health, location, GitHub, identity, reading, other). Astro 7 + Storybook 10. Vite 8 unified.
 
 ## Token Rules
 
@@ -26,6 +26,7 @@
 - Fluid typography/spacing via `clamp()` in CSS output
 - Astro components use scoped `<style>` blocks
 - Widget fixtures in `Sources/LifegamesWidgets/Resources/widgets/` (shared with iOS via Vite alias)
+- Three astro 7 defaults stay off, because each changes rendered output. Every astro config (`apps/portfolio`, `apps/docs`, `packages/web/tests/browser/fixture-app`) sets `compressHTML: true` (the `jsx` default drops whitespace between multi-line elements) and `vite.build.cssMinify: 'esbuild'` (the Lightning CSS default drops the `100vh` fallback that `tests/browser/text-page.test.ts` proves). `apps/docs` also sets `markdown.processor: unified()` (the Satteri default renders `--` as an en dash). `packages/web/vitest.server-render.config.ts` sets `compressHTML: true`. Change one only with a before and after comparison of the built output.
 
 ## Script Test Suites (`pnpm test:scripts`)
 
@@ -49,8 +50,8 @@ Web consumer at `~/Repositories/j0nathan-ll0yd.github.io`; iOS consumer at `~/Re
 
 ## Apps
 
-- `apps/portfolio` — Astro 6 static site (was Astro 5). In-repo consumer build: it renders 15 `packages/web` widgets (13 through the `@widgets` alias, `BioTerminal` and `Hydration` through `@j0nathan-ll0yd/web/production`), `OGImage` and the web stylesheets from `@j0nathan-ll0yd/fixtures` data at build time. `pnpm build` builds it in the CI `web-builds` job, `.husky/pre-push` and `publish-ds-packages.yml`, so a widget change that breaks rendering fails before a release. It has no tests and no deploy. Keep it in step with widget changes.
-- `apps/docs` — Astro 6 Starlight documentation (was Astro 5)
+- `apps/portfolio` — Astro 7 static site. In-repo consumer build: it renders 15 `packages/web` widgets (13 through the `@widgets` alias, `BioTerminal` and `Hydration` through `@j0nathan-ll0yd/web/production`), `OGImage` and the web stylesheets from `@j0nathan-ll0yd/fixtures` data at build time. `pnpm build` builds it in the CI `web-builds` job, `.husky/pre-push` and `publish-ds-packages.yml`, so a widget change that breaks rendering fails before a release. It has no tests and no deploy. Keep it in step with widget changes.
+- `apps/docs` — Astro 7 Starlight documentation
 - `apps/storybook` — Storybook 10 component workshop (was Storybook 9)
 - `apps/swift-gallery` — iOS SwiftUI runtime showcase. Consumes DS via local-path SPM. Six sections: Colors, Typography, Cards, Components, Neon Effects, Widgets. Open with `open apps/swift-gallery/SwiftGallery.xcodeproj`. Dropped from LP's DesignGalleryFeature: BookshelfFeature and HomeFeature showcases (coupling was via PreviewMocks only, not direct symbol references).
 
