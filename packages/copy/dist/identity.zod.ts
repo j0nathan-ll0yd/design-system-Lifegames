@@ -20,6 +20,7 @@ export const identitySchema = z
         alumniOfUrl: z.string(),
         location: z.string(),
         email: z.string(),
+        securityEmail: z.string(),
         contactType: z.string(),
         addressLocality: z.string(),
         addressRegion: z.string(),
@@ -159,11 +160,26 @@ export const identitySchema = z
         githubLabel: z.string(),
         githubNote: z.string(),
         securityHeading: z.string(),
-        security: z.string(),
+        security: z
+          .string()
+          .describe(
+            'Deprecated: use `identity.contact.securityReport` instead. Removed in the next major release.',
+          ),
+        securityScope: z.string(),
+        securityReport: z.string(),
+        securityReportAlternate: z.string(),
+        securityEncryption: z.string(),
+        securityInclude: z.string(),
+        securitySafeHarbor: z.string(),
+        securityThirdParty: z.string(),
+        securityExclusions: z.string(),
+        securityBounty: z.string(),
+        securityResponse: z.string(),
+        securityDisclosure: z.string(),
       })
       .strict()
       .describe(
-        'Contact page copy (/contact) — title, meta description, intro, channel labels and notes, and the security-report note. Addresses and profile URLs come from person.email and person.sameAs.',
+        'Contact page copy (/contact): title, meta description, intro, channel labels and notes, and the vulnerability-disclosure policy (securityHeading plus the security* policy leaves; security is the deprecated one-sentence note). Addresses and profile URLs come from person.email, person.securityEmail, and person.sameAs.',
       ),
     organization: z
       .object({

@@ -80,7 +80,12 @@ const NAMESPACES: NamespaceFixture[] = [
   //   navigation gained siteNavLabel (the SiteFooterNav landmark name) — plan is-agentic-developers-link.
   //   organization 9 (name/description/contactType/contactEmail/poBox/locality/region/postalCode/country)
   //   — the schema.org Organization node for Lifegames (owner decision 2026-10-24).
-  {name: 'identity', expectedLeaves: 101},
+  //   person gained securityEmail (the first security.txt Contact) and contact gained the 9
+  //   vulnerability-disclosure policy leaves (securityScope/securityReport/securityReportAlternate/
+  //   securityEncryption/securityInclude/securitySafeHarbor/securityExclusions/securityBounty/
+  //   securityResponse); contact.security stays, deprecated — atlas decision 0175.
+  //   contact gained securityThirdParty and securityDisclosure (owner rulings 2026-10-30).
+  {name: 'identity', expectedLeaves: 113},
   // widgets: heartRate 20 + movement 18 + workouts 10 + hydration 4 + nightSummary 9
   //   + exploration 5 + topPlaces 2 + readingFeed 3 + bookshelf 9 + theatreReviews 2
   //   + bookModal 8 + devLog 3 + starredRepos 3 + bio 3 + identityCard 5

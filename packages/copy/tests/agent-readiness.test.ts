@@ -68,19 +68,56 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(Object.keys(llm.agentDiscovery).filter((key) => /^(agentCard|aiCatalogA2a)/.test(key))).toEqual([])
   })
 
-  it('every identity leaf that names an email address names person.email, except the Organization alias', () => {
-    // organization.contactEmail is the one sanctioned second address: a purpose-made alias for the
+  /** An email address anywhere in a string. */
+  const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g
+  /** A string that is one bare email address and nothing else. */
+  const BARE_EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+
+  /**
+   * The vulnerability-disclosure policy leaves of /contact (atlas decision 0175), in render order.
+   * The deprecated one-sentence contact.security note is not one of them: it names person.email only.
+   */
+  const SECURITY_POLICY_KEYS = [
+    'securityScope',
+    'securityReport',
+    'securityReportAlternate',
+    'securityEncryption',
+    'securityInclude',
+    'securitySafeHarbor',
+    'securityThirdParty',
+    'securityExclusions',
+    'securityBounty',
+    'securityResponse',
+    'securityDisclosure'
+  ]
+  /**
+   * The addresses each security leaf may name. The website encodes every string that names an
+   * address, so each address sits whole in one short leaf, and no other policy leaf names one.
+   */
+  const SECURITY_LEAF_ADDRESSES: Record<string, string[]> = {
+    'person.securityEmail': [person['securityEmail'] ?? ''],
+    'contact.securityReport': [person['securityEmail'] ?? ''],
+    'contact.securityReportAlternate': [person['email'] ?? '']
+  }
+  for (const key of SECURITY_POLICY_KEYS) {
+    SECURITY_LEAF_ADDRESSES[`contact.${key}`] ??= []
+  }
+
+  it('every identity leaf that names an email address names person.email, except the Organization alias and the security leaves', () => {
+    // organization.contactEmail is a sanctioned second address: a purpose-made alias for the
     // Organization contact point. No other leaf may name it, so the alias cannot leak into prose.
-    const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g
+    // person.securityEmail is the third, admitted only in itself and contact.securityReport. The
+    // other disclosure-policy leaves name person.email in securityReportAlternate and nowhere else.
     const mismatches: string[] = []
     for (const [group, leaves] of Object.entries(identity)) {
       for (const [key, value] of Object.entries(leaves)) {
         if (group === 'organization' && key === 'contactEmail') {
           continue
         }
+        const allowed = SECURITY_LEAF_ADDRESSES[`${group}.${key}`] ?? [person['email']]
         for (const str of Array.isArray(value) ? value : [value]) {
           for (const match of String(str).matchAll(EMAIL_RE)) {
-            if (match[0] !== person['email']) {
+            if (!allowed.includes(match[0])) {
               mismatches.push(`${group}.${key}: ${match[0]}`)
             }
           }
@@ -91,10 +128,57 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
     expect(mismatches).toEqual([])
   })
 
+  it('the security email is a bare address distinct from person.email and the Organization alias', () => {
+    // security.txt publishes it as the first Contact and person.email as the second (owner ruling
+    // 2026-10-29): two lines naming one address would publish a single contact twice.
+    expect(person['securityEmail']).toMatch(BARE_EMAIL_RE)
+    expect(person['securityEmail']).not.toBe(person['email'])
+    expect(person['securityEmail']).not.toBe(organization['contactEmail'])
+  })
+
+  it('the disclosure policy names both addresses, the 7-day first reply, and no bounty', () => {
+    const policy = SECURITY_POLICY_KEYS.map((key) => identity.contact[key] ?? '')
+    expect(policy.filter((value) => value.trim() === '')).toEqual([])
+    // Each address sits whole inside its own leaf: the website encodes every string that names one.
+    expect(identity.contact['securityReport']).toContain(person['securityEmail'])
+    expect(identity.contact['securityReportAlternate']).toContain(person['email'])
+    expect(identity.contact['securityResponse']).toMatch(/\bwithin 7 days\b/)
+    expect(identity.contact['securityBounty']).toMatch(/\bno bug bounty\b/)
+    // The scope and the key URL are {siteUrl} templates, as in the llm namespace: no literal host.
+    expect(identity.contact['securityScope']).toContain('{siteUrl}/api/v1')
+    expect(identity.contact['securityScope']).toContain('{siteUrl}/mcp')
+    expect(identity.contact['securityEncryption']).toContain('{siteUrl}/pgp-key.txt')
+    expect(policy.filter((value) => /https?:\/\/|jonathanlloyd\.me/i.test(value))).toEqual([])
+    // {siteUrl} is the only placeholder: the website fills it and renders the rest as text.
+    expect(policy.filter((value) => /[{}]/.test(value.replaceAll('{siteUrl}', '')))).toEqual([])
+  })
+
+  it('the disclosure policy pins each owner ruling of 2026-10-30', () => {
+    // The safe harbor stops at the providers the site cannot authorize research against.
+    // The authorization names what it covers first: the site itself runs on Cloudflare.
+    expect(identity.contact['securityThirdParty']).toContain("this site's own code and configuration")
+    expect(identity.contact['securityThirdParty']).toMatch(/\bthird-party providers\b/)
+    expect(identity.contact['securityThirdParty']).toContain('Cloudflare')
+    expect(identity.contact['securityThirdParty']).toContain('Proton')
+    // The site has no other users: the data rule limits what research may touch, not whose data it is.
+    expect(identity.contact['securityExclusions']).toContain('more data than you need')
+    expect(identity.contact['securityExclusions']).not.toMatch(/other people's data/)
+    // The window starts at the report.
+    expect(identity.contact['securityDisclosure']).toContain('90 days from your report')
+    // The OpenPGP key belongs to the security address only.
+    expect(identity.contact['securityEncryption']).toContain('to the security address')
+  })
+
+  it('the contact meta description names no address and no longer claims one shared address', () => {
+    const description = identity.contact['metaDescription'] ?? ''
+    expect(description).not.toMatch(EMAIL_RE)
+    expect(description).not.toMatch(/same email address/i)
+  })
+
   it('the Organization contact email is a bare address distinct from person.email', () => {
     // The personal address stays obfuscated on /contact (owner ruling 2026-10-12). Copying it into
     // the Organization node would publish it in plain JSON-LD.
-    expect(organization['contactEmail']).toMatch(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+    expect(organization['contactEmail']).toMatch(BARE_EMAIL_RE)
     expect(organization['contactEmail']).not.toBe(person['email'])
   })
 
@@ -203,7 +287,7 @@ describe('@j0nathan-ll0yd/copy agent-readiness copy (atlas decision 0158)', () =
       c['githubLabel'],
       c['githubNote'],
       c['securityHeading'],
-      c['security']
+      ...SECURITY_POLICY_KEYS.map((key) => c[key])
     ]
     expect(visible.join('').length).toBeGreaterThanOrEqual(PAGE_MIN_VISIBLE_CHARS)
   })
