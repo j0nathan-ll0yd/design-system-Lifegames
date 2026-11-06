@@ -132,7 +132,7 @@ The second axis. `audience` rides in `_meta` alongside `register`:
 | --------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | Empty state     | `No movement yet today 💪`                                | `No movement logged yet.`                                                             |
 | Error           | `We're sorry, your session expired. Please log in again.` | `Session expired. Log in to continue.`                                                |
-| Biometric       | `Your HRV looks great today!`                             | `HRV 62 ms — above 7-day baseline`                                                    |
+| Biometric       | `Your HRV looks great today!`                             | `HRV 62 ms — latest export`                                                           |
 | Recovery        | `Your body recovers while you rest`                       | `Rest day. Recovery in progress.`                                                     |
 | Machine surface | `Jack into the dazzling neon datastream…` (in `llms.txt`) | `Backend engineer. 24+ years. Live health, GitHub, reading, theatre data.`            |
 | Bio (human)     | `Passionate, results-driven engineering leader…`          | `100% pure, old fashioned, home-grown human, born free right here in the real world.` |
