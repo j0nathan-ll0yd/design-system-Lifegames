@@ -1,0 +1,58 @@
+---
+// The website homepage with every live card loading: its document shell, its
+// .command-layout frame and its card order (src/layouts/DashboardHome.astro), so each card
+// takes the width and the loading height it has on the real page.
+// tests/browser/skeleton-fit.test.ts measures every skeleton against its card body. The
+// identity panel is a stand-in: it holds no skeleton, and layout.css sets the column widths.
+// ExplorationOdometerV3 is not on the website; it is here because it renders its skeleton
+// at all times.
+import DashboardShell from '../layouts/DashboardShell.astro';
+import Bookshelf from '../../../../../src/widgets/reading/Bookshelf.astro';
+import DevActivityLog from '../../../../../src/widgets/github/DevActivityLog.astro';
+import ExplorationOdometerV3 from '../../../../../src/widgets/location/ExplorationOdometerV3.astro';
+import HeartRate from '../../../../../src/widgets/health/HeartRate.astro';
+import Hydration from '../../../../../src/widgets/health/Hydration.astro';
+import MovementRings from '../../../../../src/widgets/health/MovementRings.astro';
+import NightSummary from '../../../../../src/widgets/health/NightSummary.astro';
+import ReadingFeed from '../../../../../src/widgets/reading/ReadingFeed.astro';
+import StarredRepoList from '../../../../../src/widgets/github/StarredRepoList.astro';
+import TheatreReviews from '../../../../../src/widgets/reading/TheatreReviews.astro';
+import Workouts from '../../../../../src/widgets/health/Workouts.astro';
+
+const loading = { state: 'loading' } as const;
+---
+
+<DashboardShell title="Skeleton fit">
+  <div class="command-layout">
+    <aside class="left-panel" aria-label="Profile">
+      <div class="identity-card"><p>Fixture identity card.</p></div>
+    </aside>
+    <main id="main-content" class="right-panel">
+      <div class="triptych-grid" id="triptychGrid">
+        <section class="triptych-column triptych-column-body" aria-label="Body">
+          <h2 class="column-header column-header-pink">Body</h2>
+          <div class="body-bento">
+            <div class="body-bento-col">
+              <HeartRate {...loading} />
+              <Workouts {...loading} />
+            </div>
+            <div class="body-bento-col">
+              <MovementRings {...loading} />
+              <Hydration {...loading} />
+              <NightSummary {...loading} />
+            </div>
+          </div>
+        </section>
+        <section class="triptych-column triptych-column-mind" aria-label="Mind">
+          <h2 class="column-header column-header-green">Mind</h2>
+          <DevActivityLog {...loading} />
+          <ReadingFeed {...loading} />
+          <StarredRepoList {...loading} />
+          <Bookshelf {...loading} />
+          <TheatreReviews {...loading} />
+          <ExplorationOdometerV3 />
+        </section>
+      </div>
+    </main>
+  </div>
+</DashboardShell>

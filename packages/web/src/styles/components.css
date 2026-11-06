@@ -2559,6 +2559,19 @@
       background: var(--glass-bg);
       padding: var(--space-10) var(--space-18) var(--space-16);
     }
+    /* A card that renders no scaffold while loading has a body of only its padding: 18px
+       to 34px across the website's viewports. Its skeleton holds one row, centered, so it
+       fits that body. tests/browser/skeleton-fit.test.ts measures every card. */
+    .tri-card.is-loading .skeleton-state--compact {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-block: 0;
+    }
+    /* A row keeps its height: a second row must overflow, so the fit test sees it. */
+    .tri-card.is-loading .skeleton-state--compact > * {
+      flex-shrink: 0;
+    }
     .tri-card.is-loading .widget-body {
       position: relative;
     }
