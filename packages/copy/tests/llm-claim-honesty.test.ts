@@ -24,7 +24,8 @@ const PKG = join(HERE, '..')
  *
  * Deliberately NOT banned: the words "window", "average", and "aggregate" on their own. The honest
  * copy has to be able to DENY a window ("never an average over a window"), and a denial contains
- * the noun it denies. What is banned is naming a concrete multi-day span or asserting a habit.
+ * the noun it denies. What is banned is naming a concrete multi-day span, asserting a habit, or
+ * calling the health figures aggregates (atlas decisions 0120 D1 and 0128 P0b): each describes one day.
  */
 describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
   /** Named multi-day spans. The health export carries one dated value per metric. */
@@ -32,7 +33,8 @@ describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
     {name: 'N-day span', re: /\b(?:\d+|one|two|three|four|five|six|seven|fourteen|thirty)[- ]days?\b/i},
     {name: 'weekly', re: /\bweekly\b/i},
     {name: 'per week', re: /\bper week\b/i},
-    {name: 'multi-day', re: /\bmulti-day\b/i}
+    {name: 'multi-day', re: /\bmulti-day\b/i},
+    {name: 'health aggregate', re: /\b(?:health|biometric|body)\s+aggregates?\b/i}
   ]
 
   /** Habitual qualifiers. One export cannot establish what is usual. */
@@ -135,6 +137,14 @@ describe('@j0nathan-ll0yd/copy llm claim honesty', () => {
     const queries = leaves.filter((leaf) => /^agentDiscovery\..*Queries$/.test(leaf.path)).flatMap((leaf) => leaf.values)
     expect(queries.length).toBeGreaterThan(0)
     expect(queries.filter((q) => HEALTH_TERM_RE.test(q) && /\btrend/i.test(q))).toEqual([])
+  })
+
+  it('a table column named Trend states that no trend is measured', () => {
+    // Every trend cell renders the unavailable marker (mantle-LifegamesPortal src/lib/llm-content/view.ts),
+    // so a bare "Trend" header promises a figure no row carries.
+    const headers = leaves.filter((leaf) => /^full\..*Columns$/.test(leaf.path) && leaf.values.some((v) => /\bTrend\b/.test(v)))
+    expect(headers.map((leaf) => leaf.path).sort()).toEqual(['full.cardioColumns', 'full.sleepColumns'])
+    expect(headers.flatMap((leaf) => leaf.values).filter((v) => !v.includes('| Trend (not measured) |'))).toEqual([])
   })
 
   it('the namespace is non-empty, so a silent collection failure cannot read as a pass', () => {
