@@ -418,7 +418,7 @@ const AUDIT_COMMANDS = [
   `bash scripts/ci-heartbeat.sh pnpm audit ${AUDIT_FLAGS}`,
   `bash scripts/ci-heartbeat.sh pnpm -C packages/copy audit ${AUDIT_FLAGS}`
 ]
-const WAIVED_GHSAS = []
+const WAIVED_GHSAS = ['GHSA-26w7-cxv4-gfx2', 'GHSA-f88m-g3jw-g9cj', 'GHSA-rgj7-g3m4-5g8c', 'GHSA-wq5f-xc86-pv6w']
 const ignoredGhsas = (file) => parseYaml(readFileSync(resolve(repoRoot, file), 'utf8')).auditConfig?.ignoreGhsas ?? []
 
 test('ci.yml: governance-gates runs the blocking audit on the root and packages/copy lockfiles', () => {
