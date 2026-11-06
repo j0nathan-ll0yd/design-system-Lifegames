@@ -74,3 +74,21 @@ overrides:
   # 1.8.1. This override replaces that pin inside the same major. Drop once a serve
   # release declares >=1.8.2.
   serve>compression: ^1.8.2
+
+# The allowlist of the blocking audit (atlas decision 0163 item 3, owner ruling R2). `pnpm audit
+# --audit-level=high` runs in the required governance-gates step and in .husky/pre-push. Each entry
+# is an advisory with no fix the dependent's declared range admits. Never add one to pass a run:
+# bump first. `WAIVED_GHSAS` in scripts/ci-workflow-shape.test.mjs pins this list, and
+# packages/copy has its own lockfile with no entries. Never run `pnpm audit --ignore`: it rewrites
+# this file.
+auditConfig:
+  ignoreGhsas:
+    # astro 6.4.8, critical. Patched in astro 7.2.8; 6.4.8 is the last 6.x release. Scope: build
+    # only, in apps/docs, apps/portfolio and packages/web; neither app deploys. Remove with the astro
+    # 7 migration (0163 open decision 1, owner ruling R4).
+    - GHSA-26w7-cxv4-gfx2
+    # sharp 0.34.5, high, three records. Patched in 0.35.0, 0.35.4 and 0.35.5. astro 6.4.8 declares
+    # `^0.34.0`, and 0.34.5 is the last 0.34 release. Same scope. Remove with the astro 7 migration.
+    - GHSA-f88m-g3jw-g9cj
+    - GHSA-rgj7-g3m4-5g8c
+    - GHSA-wq5f-xc86-pv6w
