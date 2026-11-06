@@ -68,7 +68,6 @@ updates:
         patterns:
           - ajv
           - ajv-formats
-          - ajv-cli
       # Group all Storybook packages so they always bump together.
       # Partial upgrades break the addon API (framework adapter + addon
       # version mismatch). Replaces the former major-version ignore rules.
@@ -88,8 +87,6 @@ updates:
       - dependency-name: ajv
         update-types: [version-update:semver-major]
       - dependency-name: ajv-formats
-        update-types: [version-update:semver-major]
-      - dependency-name: ajv-cli
         update-types: [version-update:semver-major]
       # @astrojs/starlight is pre-1.0 -- minors can contain breaking
       # changes. Block only majors; minors are safe on the verified 0.39.x

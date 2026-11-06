@@ -31,12 +31,46 @@ allowBuilds:
   unrs-resolver: true
 
 overrides:
-  # Security: fast-uri 3.x below 3.1.8 carries eight advisories (GHSA-4c8g-83qw-93j6,
-  # GHSA-v2hh-gcrm-f6hx, GHSA-7p8r-x3mc-p8w7, GHSA-f65p-4m7j-42xc, GHSA-fph4-wmhf-6fwf,
-  # GHSA-jqff-g426-hqxp, GHSA-qw65-cvwx-89v3, GHSA-hrr3-gc8f-f4qj). Pulled by ajv
-  # 8.20.0 (schemas, copy, fixtures, ajv-cli, workbox-build), whose `^3.0.1` already
+  # Security: fast-uri 3.x below 3.1.9 carries thirteen advisories (GHSA-4c8g-83qw-93j6,
+  # GHSA-5jgf-p345-68v8, GHSA-v2hh-gcrm-f6hx, GHSA-7p8r-x3mc-p8w7, GHSA-f65p-4m7j-42xc,
+  # GHSA-fph4-wmhf-6fwf, GHSA-jqff-g426-hqxp, GHSA-qw65-cvwx-89v3, GHSA-hrr3-gc8f-f4qj, GHSA-w74x-v6f9-j3xg,
+  # GHSA-wjr9-j795-jxcr, GHSA-xhq7-xmqj-769h, GHSA-333x-w4r6-6crp). Pulled by ajv
+  # 8.20.0 (schemas, copy, fixtures, workbox-build), whose `^3.0.1` already
   # admits the fix, but `pnpm update --depth Infinity fast-uri` keeps the locked
   # 3.1.2. 3.1.6+ rejects an invalid URN, so it is also the build-time proof that
   # packages/schemas/scripts/schema-urn.mjs keys are valid. Drop once
-  # `pnpm why fast-uri` resolves >=3.1.8 without this entry.
-  fast-uri@<3.1.8: ^3.1.8
+  # `pnpm why fast-uri` resolves >=3.1.9 without this entry.
+  fast-uri@>=3.0.0 <3.1.9: ^3.1.9
+  # Security, advisory sweep (atlas decision 0163). Each parent range below already
+  # admits the fix, but the old version sits in a peer-resolved subtree (vitest,
+  # eslint, babel), so `pnpm update --depth Infinity <pkg>` leaves it locked.
+  # Each floor is the patched version of the highest vulnerable range on its major
+  # line, and each selector stays on that line: never force a copy across the major
+  # its dependent declares (a blanket selector put minimatch 3's `^1.1.7` copy on
+  # brace-expansion 5, and brace patterns threw `expand is not a function`).
+  # Drop an entry once `pnpm why <pkg>` resolves the fixed version without it.
+  # brace-expansion: GHSA-3jxr-9vmj-r5cp, GHSA-mh99-v99m-4gvg, GHSA-rgw5-rvv9-x895,
+  # GHSA-6j4f-fj2g-mc7p, GHSA-qhr7-859c-m2p7, GHSA-q2hr-2g5m-vwhr. 2.x is pulled by
+  # minimatch 5.1.9 (`^2.0.1`) and 9.0.9 (`^2.0.2`); 5.x by minimatch 10.2.5
+  # (`^5.0.5`) under eslint, typescript-eslint and workbox-build.
+  brace-expansion@>=2.0.0 <2.1.7: ^2.1.7
+  brace-expansion@>=5.0.0 <5.0.12: ^5.0.12
+  # browserslist: GHSA-c83g-rgw3-j3cx, GHSA-73wf-gq98-2v4g. Pulled by
+  # @babel/helper-compilation-targets (`^4.24.0`), core-js-compat and
+  # update-browserslist-db.
+  browserslist@>=4.0.0 <4.28.7: ^4.28.7
+  # source-map-js: GHSA-68fv-2mgg-jv7q. Pulled by css-tree 2.2.1 (`^1.0.1`) and 3.2.1
+  # (`^1.2.1`) under jsdom, svgo and unifont, magicast 0.5.3 (`^1.2.1`) and postcss
+  # 8.5.32 (`^1.2.2`).
+  source-map-js@>=1.0.0 <1.2.2: ^1.2.2
+  # serialize-javascript: GHSA-m5mm-p8h7-m29v. Pulled by @rollup/plugin-terser 1.0.0
+  # (`^7.0.3`) under workbox-build.
+  serialize-javascript@>=7.0.0 <7.1.3: ^7.1.3
+  # undici 7.x: twenty-nine advisories on 7.27.2, the highest (GHSA-2m5v-pch6-74hx,
+  # GHSA-4w7w-5xrc-9h26, GHSA-qrxm-fqhp-jwvm, GHSA-xjj6-f33q-929c) fixed in 7.30.1.
+  # Pulled by jsdom 29.1.1 (`^7.25.0`) under vitest.
+  undici@>=7.0.0 <7.30.1: ^7.30.1
+  # compression: GHSA-vc2v-76pw-4v95. serve 14.2.6, the latest release, pins exactly
+  # 1.8.1. This override replaces that pin inside the same major. Drop once a serve
+  # release declares >=1.8.2.
+  serve>compression: ^1.8.2
