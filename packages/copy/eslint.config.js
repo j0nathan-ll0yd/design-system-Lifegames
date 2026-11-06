@@ -1,6 +1,5 @@
 import tsParser from '@typescript-eslint/parser'
 import {createRequire} from 'module'
-import eslintConfigPrettier from 'eslint-config-prettier'
 
 const require = createRequire(import.meta.url)
 const lifegamesLocal = require('../../eslint-local-rules/index.js')
@@ -18,6 +17,5 @@ export default [
     languageOptions: {parser: tsParser, ecmaVersion: 'latest', sourceType: 'module'},
     plugins: {'lifegames-local': lifegamesLocal},
     rules: {'lifegames-local/copy-src-no-dependencies': 'error'}
-  },
-  eslintConfigPrettier
+  }
 ]

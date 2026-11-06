@@ -1,2 +1,12 @@
 allowBuilds:
   esbuild: true
+
+# Security, advisory sweep (atlas decision 0163). This standalone lockfile serves
+# the consumer install flow (#112) and does not see the root overrides. vitest 4.1.12
+# declares `^6.0.0 || ^7.0.0 || ^8.0.0`, which admits the fix, but vite resolves as a
+# vitest peer, so `pnpm update --depth Infinity vite` leaves it locked.
+# GitHub lists GHSA-587h-7wmj-h5pm as fixed once per minor line (8.1.6, 8.2.4, 8.3.3),
+# so a caret floor below 8.3.3 still admits 8.3.0 to 8.3.2. Drop this entry once
+# `pnpm why vite` resolves >=8.3.3 without it.
+overrides:
+  vite@>=8.0.0 <8.3.3: ^8.3.3
