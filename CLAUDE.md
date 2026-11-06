@@ -32,6 +32,10 @@
 
 `pnpm test:scripts` runs every `node:test` and ESLint `RuleTester` suite: `audits/__tests__/`, `scripts/`, `packages/schemas/scripts/`, `contracts/component-catalog/` and `eslint-local-rules/__tests__/`. CI runs it ONCE, in the required `governance-gates` step, and in no other job. `scripts/ci-workflow-shape.test.mjs` enforces this: a tracked suite (`*.test.*` or `*.spec.*`) outside the globs, a narrowed glob that drops a formerly pinned suite, a glob that matches no tracked file, a shell operator in the script (`|| true`), a flag after `--test`, or a second `node --test` of a covered file anywhere in `ci.yml` fails it. The shape test is the one exception: `governance-gates` also runs it on its own line BEFORE `pnpm test:scripts`, so deleting that line or narrowing a glob cannot stop the guard with it. Name a new suite `*.test.{mjs,js}` under one of those directories; do not add a per-suite CI line.
 
+## Advisory Gate (`pnpm audit --audit-level=high`)
+
+A high or critical advisory in the root or `packages/copy` lockfile fails the required `governance-gates` context and `.husky/pre-push` (atlas decision 0163 item 3). The allowlist is `auditConfig.ignoreGhsas` in `pnpm-workspace.yaml`. Each entry carries its scope and its removal condition, and `WAIVED_GHSAS` in `scripts/ci-workflow-shape.test.mjs` pins the list, so a new waiver changes two files on purpose. `packages/copy` has its own lockfile and its own empty allowlist. A registry error fails the gate. Never pass `--ignore` (it rewrites `pnpm-workspace.yaml`) or `--ignore-registry-errors`.
+
 ## Fixture Rules
 
 - Personal data MUST be scrubbed before push (enforced by `audits/checks/d6-scan-personal-data.sh`)

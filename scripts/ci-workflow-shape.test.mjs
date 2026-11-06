@@ -410,6 +410,38 @@ test('ci.yml: governance-gates runs the D6 full-tree personal-data scan', () => 
   assert.ok(governanceGatesLines().includes(command), `governance-gates must run: ${command}`)
 })
 
+// The advisory gate (atlas decision 0163 item 3). `pnpm audit` proves itself against the registry, so
+// this suite pins what no audit run can see: that the gate still runs on both lockfiles, that no flag
+// weakens it, and that the allowlist grew only through a change to this list.
+const AUDIT_FLAGS = '--audit-level=high --fetch-timeout=120000 --fetch-retries=4 --fetch-retry-maxtimeout=30000'
+const AUDIT_COMMANDS = [
+  `bash scripts/ci-heartbeat.sh pnpm audit ${AUDIT_FLAGS}`,
+  `bash scripts/ci-heartbeat.sh pnpm -C packages/copy audit ${AUDIT_FLAGS}`
+]
+const WAIVED_GHSAS = ['GHSA-26w7-cxv4-gfx2', 'GHSA-f88m-g3jw-g9cj', 'GHSA-rgj7-g3m4-5g8c', 'GHSA-wq5f-xc86-pv6w']
+const ignoredGhsas = (file) => parseYaml(readFileSync(resolve(repoRoot, file), 'utf8')).auditConfig?.ignoreGhsas ?? []
+
+test('ci.yml: governance-gates runs the blocking audit on the root and packages/copy lockfiles', () => {
+  const lines = governanceGatesLines()
+  for (const command of AUDIT_COMMANDS) {
+    assert.ok(lines.includes(command), `governance-gates must run: ${command}`)
+  }
+  const step = ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates')
+  assert.notEqual(step['continue-on-error'], true, 'the audit must be able to red the step')
+})
+
+test('ci.yml: no audit line weakens the gate', () => {
+  const audits = Object.values(ci.jobs).flatMap((job) => job.steps ?? []).flatMap((step) => (step.run ?? '').split('\n')).map((line) => line.trim()).filter((
+    line
+  ) => /^[^#]*\baudit\b/.test(line) && /\bpnpm\b/.test(line) && !line.includes('audit:'))
+  assert.deepEqual(audits, AUDIT_COMMANDS)
+})
+
+test('pnpm-workspace.yaml: the audit allowlist is exactly the named waivers', () => {
+  assert.deepEqual(ignoredGhsas('pnpm-workspace.yaml'), WAIVED_GHSAS)
+  assert.deepEqual(ignoredGhsas('packages/copy/pnpm-workspace.yaml'), [])
+})
+
 test('ci.yml: governance-gates runs `pnpm test:scripts`', () => {
   assert.ok(governanceGatesLines().includes(TEST_SCRIPTS), `governance-gates must run: ${TEST_SCRIPTS}`)
 })
