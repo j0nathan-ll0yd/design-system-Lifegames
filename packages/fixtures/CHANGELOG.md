@@ -1,5 +1,15 @@
 # @j0nathan-ll0yd/fixtures
 
+## 1.6.10
+
+### Patch Changes
+
+- Updated dependencies [1c93aa4]
+- Updated dependencies [1c93aa4]
+- Updated dependencies [5a9a6ae]
+  - @j0nathan-ll0yd/schemas@3.0.1
+  - @j0nathan-ll0yd/web@4.7.0
+
 ## 1.6.9
 
 ### Patch Changes
