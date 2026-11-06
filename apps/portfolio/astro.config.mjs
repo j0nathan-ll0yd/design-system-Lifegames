@@ -38,6 +38,10 @@ export default defineConfig({
     sitemap({filter: (page) => !page.includes('/showcase/'), lastmod: new Date()}),
     AstroPWAIntegration({
       registerType: 'autoUpdate',
+      // generateSW.globPatterns already precaches the manifest icons. @vite-pwa/astro 2 adds them a second
+      // time under `/assets/...` with another revision, and workbox then refuses to evaluate sw.js with
+      // add-to-cache-list-conflicting-entries.
+      includeManifestIcons: false,
       manifest: {
         name: 'Jonathan Lloyd — Human Datastream',
         short_name: 'Human Datastream',
