@@ -1,20 +1,27 @@
-import '@j0nathan-ll0yd/tokens/css'
-// Space Grotesk @font-face rules, as production consumers load them. The files
-// come from staticDirs in main.ts; test-runner.mjs waits for them to load.
+// The website's stylesheet set, in its order, so the visual gate measures the render
+// production ships: j0nathan-ll0yd.github.io src/layouts/Dashboard.astro:294-302 and
+// :428. scripts/storybook-stylesheet-set.test.mjs pins this list.
+// The fonts entrypoint needs the files from staticDirs in main.ts; test-runner.mjs
+// waits for them to load. The reset is unlayered, as on the website: it sets
+// box-sizing: border-box on every element and zeroes margins and list styles, so a
+// story draws the boxes production draws.
+import '@j0nathan-ll0yd/tokens/preamble'
 import '@j0nathan-ll0yd/tokens/fonts'
+import '@j0nathan-ll0yd/tokens/css.layered'
 import '@j0nathan-ll0yd/tokens/compat'
 import '@j0nathan-ll0yd/web/styles/components.css'
-import '@j0nathan-ll0yd/tokens/animations'
-// The tokens reset, the same entrypoint the website layout imports after
-// components.css and the effects. It sets box-sizing: border-box on every element,
-// margin: 0 and padding: 0 on body, headings, p, lists, dl, dd, blockquote, figure
-// and pre, and list-style: none on ul and ol. Without it every story rendered
-// content-box, which no production page draws: padding grew boxes past their size.
+import '@j0nathan-ll0yd/tokens/effects'
 import '@j0nathan-ll0yd/tokens/reset'
+import '@j0nathan-ll0yd/web/styles/a11y.css'
+import '@j0nathan-ll0yd/web/styles/view-transitions.css'
+import '@j0nathan-ll0yd/web/styles/layout.css'
+// Two files the website layout does not load, because stories need them:
+// - tokens/shadcn: the OKLCH variables that src/integration/shadcn.stories.ts verifies.
+//   No widget reads them.
+// - primitives.css: stories hand-render primitive markup with lit rather than mounting
+//   the .astro components, which import this file themselves on the website. See the
+//   header comment in packages/web/src/styles/primitives.css.
 import '@j0nathan-ll0yd/tokens/shadcn'
-// Primitive component CSS. Stories hand-render the markup with lit rather than
-// mounting the .astro components, so without this the primitives render
-// unstyled — see the header comment in packages/web/src/styles/primitives.css.
 import '@j0nathan-ll0yd/web/styles/primitives.css'
 import type {Preview} from '@storybook/web-components-vite'
 import {html} from 'lit'

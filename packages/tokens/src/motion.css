@@ -1,0 +1,380 @@
+/* The single definition of every shared design-system keyframe, plus the skeleton
+   utilities the web widgets emit. It holds no global rule: its only element rules
+   style .skeleton-bar, .skeleton-bar::after and .skeleton-circle, so importing it
+   changes nothing else on a page. A keyframe only one file names may
+   stay in that file. Every animation a web stylesheet names resolves here or there.
+   scripts/web-stylesheet-motion.test.mjs fails on a second definition of a name.
+
+   tokens/animations and tokens/effects import this file, so their consumers keep
+   every name. Import via: @j0nathan-ll0yd/tokens/motion */
+@layer lifegames {
+  @layer motion {
+    @keyframes glowPulse {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.85;
+      }
+    }
+
+    @keyframes dotPulse {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(0.8);
+      }
+    }
+
+    @keyframes statusPulse {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    @keyframes shimmerSlide {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeSlideRight {
+      from {
+        opacity: 0;
+        transform: translateX(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes overlayFadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes modalScaleIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes ringPulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(2.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes avatarGlowPulse {
+      0%,
+      100% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes ecgScroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes termBlink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes sleepMoonScoreFill {
+      from {
+        transform: scaleX(0);
+      }
+    }
+
+    @keyframes sleepMoonPillFade {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shelfFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-6px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes shelfScan {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(calc(var(--scan-h, 143px) - 3px));
+      }
+    }
+
+    @keyframes hydraSteam {
+      0%,
+      100% {
+        opacity: 0.2;
+        transform: translateY(0) scaleY(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: translateY(-4px) scaleY(1.3);
+      }
+    }
+
+    @keyframes hydraWave {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(-10px);
+      }
+    }
+
+    /* V1: Multi-Layer Parallax Waves */
+    @keyframes hydraV1WaveBack {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(-15px);
+      }
+    }
+
+    @keyframes hydraV1WaveMid {
+      0%,
+      100% {
+        transform: translateX(5px);
+      }
+      50% {
+        transform: translateX(-10px);
+      }
+    }
+
+    @keyframes hydraV1WaveFront {
+      0%,
+      100% {
+        transform: translateX(-5px);
+      }
+      50% {
+        transform: translateX(-20px);
+      }
+    }
+
+    /* V2: Organic Morphing Surface */
+    @keyframes hydraV2MorphA {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes hydraV2MorphB {
+      0%,
+      100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes hydraV2Drift {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(-12px);
+      }
+    }
+
+    @keyframes hydraV2DriftReverse {
+      0%,
+      100% {
+        transform: translateX(-12px);
+      }
+      50% {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes hydraV2Refract {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(350%);
+      }
+    }
+
+    /* V3: Bubble Particles + Glossy Liquid */
+    @keyframes hydraV3Rise {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0.3;
+      }
+      100% {
+        transform: translateY(-100px) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes hydraV3GlossShift {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(15px);
+      }
+    }
+
+    /* Showcase: liquid fill-in rise animation (from empty to inline clip-path value) */
+    @keyframes hydraFillIn {
+      from {
+        clip-path: inset(100% 0 0 0);
+      }
+    }
+
+    @keyframes bookOverlayIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes bookModalIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* Book modal dismiss (applied inline by book-modal-init.ts so it overrides
+       the [open] bookModalIn rule; no view transition — the VT snapshot of the
+       backdrop-filtered card glared on close). */
+    @keyframes bookModalOut {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.97) translateY(6px);
+      }
+    }
+
+    @keyframes hudScan {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(100vh);
+      }
+    }
+
+    /* ===== SKELETON UTILITIES ===== */
+    .skeleton-bar {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 25%,
+        rgba(255, 255, 255, 0.06) 50%,
+        transparent 75%
+      );
+      animation: shimmerSlide 2s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .skeleton-circle {
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Reduced-motion gate (WCAG 2.3.3). A consumer of this file may load no
+       tokens/animations or tokens/effects, so it cannot rely on their global rule. */
+    @media (prefers-reduced-motion: reduce) {
+      .skeleton-bar::after {
+        animation: none;
+      }
+    }
+  }
+}

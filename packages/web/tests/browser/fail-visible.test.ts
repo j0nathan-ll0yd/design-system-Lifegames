@@ -2,13 +2,14 @@
 // style assertions only, no screenshots.
 //
 // The regression under guard: .article-list-item (ReadingFeed) and .shelf-book
-// (Bookshelf) had a base `opacity: 0` that only their entry animation lifted.
-// Their keyframes live outside this package: fadeSlideRight in tokens/animations,
-// shelfFadeIn in tokens/effects. A consumer that loaded components.css without
-// them showed rows that never appeared.
+// (Bookshelf) had a base `opacity: 0` that only their entry animation lifted. A
+// consumer that loaded components.css without the keyframes showed rows that never
+// appeared. components.css now imports them, and a row still shows if its animation
+// never starts.
 //
 // fail-visible-bare loads the web stylesheets only; fail-visible-tokens adds both
-// token entrypoints. Each runs with the default motion preference and under
+// token entrypoints; fail-visible-website is the website's stylesheet set in its
+// order. Each runs with the default motion preference and under
 // `prefers-reduced-motion: reduce`.
 import {type Browser, chromium, type Page} from 'playwright'
 import {afterAll, afterEach, beforeAll, describe, expect, it} from 'vitest'
@@ -97,14 +98,16 @@ function rows(page: Page, selector: string): Promise<Row[]> {
 describe('row entry animations fail visible', () => {
   for (const {selector, keyframes, hover} of ROWS) {
     describe(selector, () => {
-      it('shows every row at once without the token keyframes', async () => {
+      it('shows every row at once when its animation never starts', async () => {
         const page = await open('/fail-visible-bare/', 'no-preference')
+        // A name with no keyframes: the animation never starts, so the base style shows.
+        await page.addStyleTag({content: `${selector} { animation-name: lg-no-such-keyframes !important; }`})
         const found = await rows(page, selector)
         expect(found.length, 'the fixture renders rows').toBeGreaterThan(1)
-        expect(found, 'no keyframes, so no animation and no hidden state').toEqual(found.map(() => ({opacity: '1', animations: []})))
+        expect(found, 'no animation and no hidden state').toEqual(found.map(() => ({opacity: '1', animations: []})))
       })
 
-      it('shows every row at once under reduced motion without the token keyframes', async () => {
+      it('shows every row at once under reduced motion with the web stylesheets only', async () => {
         const page = await open('/fail-visible-bare/', 'reduce')
         const found = await rows(page, selector)
         expect(found.length).toBeGreaterThan(1)
@@ -121,12 +124,12 @@ describe('row entry animations fail visible', () => {
         expect(found).toEqual(found.map(() => ({opacity: '1', animations: []})))
       })
 
-      it(`runs ${keyframes} staggered with the token keyframes and ends visible`, async () => {
-        const page = await open('/fail-visible-tokens/', 'no-preference')
+      it.each(['fail-visible-bare', 'fail-visible-tokens'])(`runs ${keyframes} staggered on %s and ends visible`, async (fixture) => {
+        const page = await open(`/${fixture}/`, 'no-preference')
         const found = await rows(page, selector)
         expect(found.length).toBeGreaterThan(1)
-        // The motion is kept: with the keyframes present, every row runs its
-        // entry animation to the end.
+        // The motion is kept: every row runs its entry animation to the end,
+        // with or without the token entrypoints.
         await waitForEntry(page, selector, keyframes, found.length)
         // Each row ran with the backwards fill and its own stagger delay, in
         // row order from 0.
@@ -162,9 +165,160 @@ describe('row entry animations fail visible', () => {
   }
 })
 
+// Only the stylesheets the website loads, in its order. Before components.css
+// imported tokens/motion, the website defined none of the tokens/animations keyframes,
+// so these elements never moved in production.
+describe('motion on the website stylesheet set', () => {
+  const INFINITE = [
+    {selector: '.live-dot', keyframes: 'dotPulse'},
+    {selector: '.sys-dot', keyframes: 'dotPulse'},
+    {selector: '.id-name', keyframes: 'glowPulse'}
+  ]
+
+  /** The names of every CSS animation that `selector` runs now, per element. */
+  function running(page: Page, selector: string): Promise<string[][]> {
+    return page.locator(selector).evaluateAll((els) => els.map((el) => el.getAnimations().map((a) => (a as CSSAnimation).animationName)))
+  }
+
+  describe.each(['fail-visible-website', 'fail-visible-bare'])('%s', (fixture) => {
+    it.each(INFINITE)('$selector runs $keyframes with motion allowed', async ({selector, keyframes}) => {
+      const page = await open(`/${fixture}/`, 'no-preference')
+      const names = await running(page, selector)
+      expect(names.length, 'the fixture renders the element').toBeGreaterThan(0)
+      expect(names).toEqual(names.map(() => [keyframes]))
+    })
+
+    it('.id-avatar::after names a keyframe that resolves', async () => {
+      // This proves the name resolves, not that a glow shows. IdentityCard puts the
+      // class on an <img>, and a loaded <img> paints no ::after: the animation runs in
+      // the Web Animations model and draws no pixel.
+      const page = await open(`/${fixture}/`, 'no-preference')
+      const names = await page.locator('.id-avatar').first().evaluate((el) =>
+        el.getAnimations({subtree: true}).map((a) => (a as CSSAnimation).animationName)
+      )
+      expect(names).toEqual(['avatarGlowPulse'])
+    })
+
+    it('.article-list-item runs fadeSlideRight with motion allowed', async () => {
+      const page = await open(`/${fixture}/`, 'no-preference')
+      // A finite entry can end before a read after load, so the listener in open()
+      // reads getAnimations() as each row starts. `fill` is that read.
+      await page.waitForFunction(() => (window as unknown as {__motion: Motion}).__motion.started.some((s) => s.name === 'fadeSlideRight'), null, {
+        timeout: 10_000
+      })
+      const fills = await page.evaluate(() =>
+        (window as unknown as {__motion: Motion}).__motion.started.filter((s) => s.name === 'fadeSlideRight' && s.target.matches('.article-list-item')).map((
+          s
+        ) => s.fill)
+      )
+      expect(fills.length).toBeGreaterThan(0)
+      expect(fills).toEqual(fills.map(() => 'backwards'))
+    })
+
+    it('runs no CSS animation anywhere under reduced motion', async () => {
+      const page = await open(`/${fixture}/`, 'reduce')
+      expect((await running(page, '.live-dot')).length, 'the fixture renders the element').toBeGreaterThan(0)
+      expect((await running(page, '.article-list-item')).length, 'the fixture renders the element').toBeGreaterThan(0)
+      // Two checks, because a global duration override can end an animation before a
+      // read: nothing runs now, and nothing started since the first paint.
+      const seen = await page.evaluate(() => ({
+        running: document.getAnimations().filter((a) => a instanceof CSSAnimation).map((a) => (a as CSSAnimation).animationName),
+        started: (window as unknown as {__motion: Motion}).__motion.started.map((s) => s.name)
+      }))
+      expect(seen).toEqual({running: [], started: []})
+    })
+  })
+
+  it('styles the loading skeleton on the web stylesheets alone', async () => {
+    // Widgets emit .skeleton-bar and .skeleton-circle in their loading state. Their
+    // styles used to live only in tokens/animations, which the website does not load.
+    const page = await open('/fail-visible-website/', 'no-preference')
+    const styled = await page.evaluate(() => {
+      const bar = document.body.appendChild(document.createElement('div'))
+      bar.className = 'skeleton-bar'
+      const circle = document.body.appendChild(document.createElement('div'))
+      circle.className = 'skeleton-circle'
+      return {
+        bar: getComputedStyle(bar).backgroundColor,
+        circle: getComputedStyle(circle).borderRadius,
+        shimmer: getComputedStyle(bar, '::after').animationName
+      }
+    })
+    expect(styled).toEqual({bar: 'rgba(255, 255, 255, 0.04)', circle: '50%', shimmer: 'shimmerSlide'})
+  })
+})
+
+// Each page loads ONE web stylesheet and nothing else. Every other fixture loads a
+// second file that also imports tokens/motion, so it would hide a lost @import.
+describe.each([
+  {
+    fixture: 'motion-components-alone',
+    sheet: 'components.css',
+    other: '.lg-card',
+    elements: [{selector: '.live-dot', keyframes: 'dotPulse'}, {selector: '.sys-dot', keyframes: 'dotPulse'}, {selector: '.id-name', keyframes: 'glowPulse'}]
+  },
+  {fixture: 'motion-primitives-alone', sheet: 'primitives.css', other: '.tri-card', elements: [{selector: '.lg-poll-dot--ok', keyframes: 'statusPulse'}]}
+])('$sheet loaded alone', ({fixture, other, elements}) => {
+  it('is the only web stylesheet on the page', async () => {
+    const page = await open(`/${fixture}/`, 'no-preference')
+    const found = await page.evaluate((fragment) => {
+      const selectors: string[] = []
+      const walk = (rules: CSSRuleList): void => {
+        for (const rule of Array.from(rules)) {
+          if (rule instanceof CSSStyleRule) {
+            selectors.push(rule.selectorText)
+          } else if ('cssRules' in rule) {
+            walk((rule as CSSGroupingRule).cssRules)
+          }
+        }
+      }
+      Array.from(document.styleSheets).forEach((sheet) => walk(sheet.cssRules))
+      return {rules: selectors.length, other: selectors.filter((selector) => selector.includes(fragment))}
+    }, other)
+    expect(found.rules, 'control: the stylesheet loaded').toBeGreaterThan(0)
+    expect(found.other).toEqual([])
+  })
+
+  it.each(elements)('$selector runs $keyframes with motion allowed', async ({selector, keyframes}) => {
+    const page = await open(`/${fixture}/`, 'no-preference')
+    const names = await page.locator(selector).evaluateAll((els) => els.map((el) => el.getAnimations().map((a) => (a as CSSAnimation).animationName)))
+    expect(names.length, 'the fixture renders the element').toBeGreaterThan(0)
+    expect(names).toEqual(names.map(() => [keyframes]))
+  })
+
+  it('runs no CSS animation under reduced motion', async () => {
+    const page = await open(`/${fixture}/`, 'reduce')
+    expect(await page.locator(elements[0]!.selector).count(), 'the fixture renders the element').toBeGreaterThan(0)
+    const seen = await page.evaluate(() => ({
+      running: document.getAnimations().filter((a) => a instanceof CSSAnimation).map((a) => (a as CSSAnimation).animationName),
+      started: (window as unknown as {__motion: Motion}).__motion.started.map((s) => s.name)
+    }))
+    expect(seen).toEqual({running: [], started: []})
+  })
+})
+
+describe('components.css loaded alone', () => {
+  it('runs the finite entry animation', async () => {
+    const page = await open('/motion-components-alone/', 'no-preference')
+    await page.waitForFunction(() => (window as unknown as {__motion: Motion}).__motion.started.some((s) => s.name === 'fadeSlideRight'), null, {
+      timeout: 10_000
+    })
+  })
+})
+
+describe('primitives.css loaded alone', () => {
+  it('runs the skeleton shimmer on its pseudo-element', async () => {
+    const page = await open('/motion-primitives-alone/', 'no-preference')
+    const names = await page.locator('.lg-skeleton-bar').first().evaluate((el) =>
+      el.getAnimations({subtree: true}).map((a) => (a as CSSAnimation).animationName)
+    )
+    expect(names).toEqual(['shimmerSlide'])
+  })
+})
+
 describe('ReadingFeed list without tokens/reset', () => {
   it('does not indent its rows by the user agent list padding', async () => {
-    // fail-visible-bare loads no tokens/reset, as the docs site and Storybook.
+    // fail-visible-bare loads no tokens/reset, as the docs site.
     const page = await open('/fail-visible-bare/', 'no-preference')
     const box = await page.locator('#cardReading .article-list').evaluate((el) => {
       const s = getComputedStyle(el)
