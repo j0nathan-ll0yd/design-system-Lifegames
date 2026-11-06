@@ -34,14 +34,14 @@
     "src"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json",
     "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro,css}\" --max-warnings 0",
     "audit:inline-scripts": "node scripts/audit-inline-scripts.mjs",
     "test": "vitest run && vitest run --config vitest.server-render.config.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:browser:fixture": "astro build --root tests/browser/fixture-app",
-    "test:browser": "pnpm test:browser:fixture && vitest run --config vitest.browser.config.ts && vitest run --config vitest.scripts-off.config.ts && vitest run --config vitest.text-page.config.ts && vitest run --config vitest.home-footer.config.ts && vitest run --config vitest.fail-visible.config.ts",
+    "test:browser": "pnpm test:browser:fixture && vitest run --config vitest.browser.config.ts && vitest run --config vitest.scripts-off.config.ts && vitest run --config vitest.text-page.config.ts && vitest run --config vitest.home-footer.config.ts && vitest run --config vitest.fail-visible.config.ts && vitest run --config vitest.skeleton-fit.config.ts",
     "test:server-render": "vitest run --config vitest.server-render.config.ts"
   },
   "dependencies": {
@@ -50,6 +50,7 @@
     "@j0nathan-ll0yd/tokens": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "24.13.1",
     "@typescript-eslint/parser": "^8.61.0",
     "@vitest/browser": "4.1.12",
     "@vitest/browser-playwright": "4.1.12",

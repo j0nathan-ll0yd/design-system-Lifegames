@@ -169,7 +169,7 @@
   }
 }
 
-.is-loading .skeleton-state {
+.lg-card.is-loading .skeleton-state {
   display: block;
   position: absolute;
   inset: 0;

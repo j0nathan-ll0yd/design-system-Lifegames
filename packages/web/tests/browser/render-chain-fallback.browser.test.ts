@@ -85,7 +85,8 @@ function review(imageStatus: 403 | 404, withAvif: boolean): TheatreReviewsExport
     imageUrlCard: withAvif ? `${failure}-card.webp` : null,
     imageUrlCardAvif: withAvif ? `${failure}-card.avif` : null,
     imageWidth: 95,
-    imageHeight: 143
+    imageHeight: 143,
+    imageVersion: null
   }
 }
 
@@ -150,7 +151,7 @@ describe('forced 403/404 fallback across the complete cover render chain', () =>
 
   it('recovers a bare 404 poster from theatre update', async () => {
     const root = mount('<div id="cardTheatreReviews"><span id="theatreCount"></span><div id="theatreRow"></div></div>')
-    updateTheatreReviews({generatedAt: '2026-01-01T00:00:00Z', source: 'fixture', totalReviews: 1, reviews: [review(404, false)]})
+    updateTheatreReviews({generatedAt: '2026-01-01T00:00:00Z', source: 'coasttocoastreviews.com', totalReviews: 1, reviews: [review(404, false)]})
     await assertPaintedPlaceholder(root.querySelector('img')!)
   })
 })

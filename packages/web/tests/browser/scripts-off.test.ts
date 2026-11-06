@@ -187,18 +187,9 @@ describe.each(WIDGETS)('$name with JavaScript disabled', (widget) => {
       }
 
       if (shown === 'loading') {
-        const skeleton = await paint(page.locator(`#${id} .skeleton-state`).first())
-        expect(skeleton.display, `skeleton: ${JSON.stringify(skeleton)}`).not.toBe('none')
-        expect(skeleton.width * skeleton.height, 'skeleton box').toBeGreaterThan(0)
-        // The skeleton must PAINT bars, not only reserve an overlay box: every
-        // bar has a box and a visible background (tokens animations.css).
-        const bars = page.locator(`#${id} .skeleton-state .skeleton-bar, #${id} .skeleton-state .skeleton-circle`)
-        expect(await bars.count(), 'skeleton bars present').toBeGreaterThan(0)
-        for (let i = 0; i < (await bars.count()); i++) {
-          const b = await paint(bars.nth(i))
-          expect(b.width * b.height, `bar[${i}] box`).toBeGreaterThan(0)
-          expect(b.backgroundAlpha, `bar[${i}] paints a background: ${JSON.stringify(b)}`).toBeGreaterThan(0)
-        }
+        // No data can arrive without scripts, so the card shows its note and no skeleton.
+        expect(await page.locator(`#${id} .skeleton-state`).count(), 'skeleton markup present').toBeGreaterThan(0)
+        expect(await painted(page, `#${id} .skeleton-state`), 'no painted skeleton').toEqual([])
         const note = page.locator(`#${id} .widget-noscript`)
         expect(await note.count(), 'noscript note present').toBeGreaterThan(0)
         const n = await paint(note.first())

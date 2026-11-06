@@ -37,14 +37,11 @@ const fmtDuration = formatWorkoutDuration;
     </div>
   </div>
   <div class="widget-body">
-    <div class="skeleton-state">
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div class="skeleton-bar" style="width: 60%; height: 18px;"></div>
-        <div style="display: flex; gap: 8px;">
-          <div class="skeleton-bar" style="flex: 1; height: 32px; border-radius: 6px;"></div>
-          <div class="skeleton-bar" style="flex: 1; height: 32px; border-radius: 6px;"></div>
-          <div class="skeleton-bar" style="flex: 1; height: 32px; border-radius: 6px;"></div>
-        </div>
+    <div class="skeleton-state skeleton-state--compact">
+      <div style="display: flex; gap: 8px;">
+        <div class="skeleton-bar" style="flex: 1; height: 12px;"></div>
+        <div class="skeleton-bar" style="flex: 1; height: 12px;"></div>
+        <div class="skeleton-bar" style="flex: 1; height: 12px;"></div>
       </div>
     </div>
     <WidgetStateNotice state={widgetState} />
