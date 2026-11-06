@@ -4,9 +4,12 @@
 // takes the width and the loading height it has on the real page.
 // tests/browser/skeleton-fit.test.ts measures every skeleton against its card body. The
 // identity panel is a stand-in: it holds no skeleton, and layout.css sets the column widths.
+// The footer is real: SiteFooterNav brings primitives.css, UNLAYERED, which beat the layered
+// compact rule in components.css on the website and nowhere on a page without it.
 // ExplorationOdometerV3 is not on the website; it is here because it renders its skeleton
 // at all times.
 import DashboardShell from '../layouts/DashboardShell.astro';
+import SiteFooterNav from '../../../../../src/components/SiteFooterNav.astro';
 import Bookshelf from '../../../../../src/widgets/reading/Bookshelf.astro';
 import DevActivityLog from '../../../../../src/widgets/github/DevActivityLog.astro';
 import ExplorationOdometerV3 from '../../../../../src/widgets/location/ExplorationOdometerV3.astro';
@@ -26,6 +29,9 @@ const loading = { state: 'loading' } as const;
   <div class="command-layout">
     <aside class="left-panel" aria-label="Profile">
       <div class="identity-card"><p>Fixture identity card.</p></div>
+      <footer class="left-panel-footer">
+        <SiteFooterNav links={[{ href: '/about', label: 'About' }]} label="Site" />
+      </footer>
     </aside>
     <main id="main-content" class="right-panel">
       <div class="triptych-grid" id="triptychGrid">

@@ -2583,6 +2583,12 @@
     .tri-card:not(.is-loading) .skeleton-state {
       display: none;
     }
+    /* Without scripts no data can arrive, so the card shows its <noscript> note alone. */
+    @media (scripting: none) {
+      .tri-card.is-loading .skeleton-state {
+        display: none;
+      }
+    }
     .tri-card .widget-body > *:not(.skeleton-state) {
       transition: opacity 0.3s ease;
     }

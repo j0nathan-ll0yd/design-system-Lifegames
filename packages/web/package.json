@@ -34,7 +34,7 @@
     "src"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json",
     "lint": "eslint \"src/**/*.{ts,tsx,js,jsx,astro,css}\" --max-warnings 0",
     "audit:inline-scripts": "node scripts/audit-inline-scripts.mjs",
     "test": "vitest run && vitest run --config vitest.server-render.config.ts",
@@ -50,6 +50,7 @@
     "@j0nathan-ll0yd/tokens": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "24.13.1",
     "@typescript-eslint/parser": "^8.61.0",
     "@vitest/browser": "4.1.12",
     "@vitest/browser-playwright": "4.1.12",

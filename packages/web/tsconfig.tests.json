@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["tests/browser/**/*.ts", "src/astro-shim.d.ts", "vitest*.config.ts"],
+  "//": "vitest.server-render.config.ts is excluded: Astro's getViteConfig types its argument with no vitest test key.",
+  "exclude": ["tests/browser/fixture-app/dist", "vitest.server-render.config.ts"]
+}

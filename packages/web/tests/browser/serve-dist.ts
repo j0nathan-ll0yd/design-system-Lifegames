@@ -1,12 +1,21 @@
 // Serves the built fixture app (tests/browser/fixture-app/dist) on an ephemeral
-// localhost port for the node-side Playwright suites (scripts-off, text-page).
+// localhost port for the node-side Playwright suites (scripts-off, text-page). It also answers
+// /fonts/ from the portfolio's tracked fonts: no fixture has a public directory, and
+// tokens/fonts names those paths.
 import {createServer, type Server} from 'node:http'
 import {readFile} from 'node:fs/promises'
-import {extname, join, normalize} from 'node:path'
+import {basename, extname, join, normalize} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 const DIST = fileURLToPath(new URL('./fixture-app/dist/', import.meta.url))
-const MIME: Record<string, string> = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml'}
+const FONTS = fileURLToPath(new URL('../../../../apps/portfolio/public/fonts/', import.meta.url))
+const MIME: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css',
+  '.js': 'text/javascript',
+  '.svg': 'image/svg+xml',
+  '.woff2': 'font/woff2'
+}
 
 export interface DistServer {
   baseUrl: string
@@ -20,12 +29,14 @@ export async function serveDist(): Promise<DistServer> {
       path = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname)
     } catch {
       res.statusCode = 400
-      return res.end()
+      res.end()
+      return
     }
-    const file = normalize(join(DIST, path.endsWith('/') ? `${path}index.html` : path))
-    if (!file.startsWith(DIST)) {
+    const file = path.startsWith('/fonts/') ? join(FONTS, basename(path)) : normalize(join(DIST, path.endsWith('/') ? `${path}index.html` : path))
+    if (!file.startsWith(DIST) && !file.startsWith(FONTS)) {
       res.statusCode = 403
-      return res.end()
+      res.end()
+      return
     }
     try {
       res.setHeader('Content-Type', MIME[extname(file)] ?? 'application/octet-stream')
