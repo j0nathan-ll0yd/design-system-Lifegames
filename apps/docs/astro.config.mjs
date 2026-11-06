@@ -33,8 +33,8 @@ function docsLocalCovers() {
 
 export default defineConfig({
   site: 'https://design.lifegames.org',
-  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements. Readers saw
-  // `content404Glitch` for `content 404 Glitch`. `true` keeps the lossless astro 6 behavior.
+  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements, so readers lose
+  // visible spaces. `true` keeps the lossless astro 6 behavior.
   compressHTML: true,
   redirects: {'/': '/getting-started/'},
   // Astro 7 defaults to the Satteri processor, which renders this content differently: `--bg` prints

@@ -523,6 +523,9 @@ jobs:
       - name: build-web
         if: ${{ !cancelled() }}
         run: pnpm build
+      - name: 'build-web: service worker precache'
+        if: ${{ !cancelled() }}
+        run: node scripts/check-sw-precache.mjs
       # The visual-regression guard suite (issue #145) runs in governance-gates, a required
       # context, under `pnpm test:scripts`.
       - name: storybook-build

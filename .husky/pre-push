@@ -144,5 +144,6 @@ step "tokens golden test"      pnpm -F @j0nathan-ll0yd/tokens test
 # portfolio and docs apps, so it covers both steps' failure surface. Slowest
 # step — kept last.
 step "apps build (build-web + docs-build CI mirror)" pnpm build
+step "service worker precache" node scripts/check-sw-precache.mjs
 
 echo "[pre-push] All checks passed."

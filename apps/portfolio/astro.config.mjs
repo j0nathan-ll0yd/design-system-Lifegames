@@ -14,8 +14,8 @@ const CLOUDFRONT_HOST_RE = CLOUDFRONT_HOST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
 
 export default defineConfig({
   site: 'https://jonathanlloyd.me',
-  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements. Readers saw
-  // `content404Glitch` for `content 404 Glitch`. `true` keeps the lossless astro 6 behavior.
+  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements, so readers lose
+  // visible spaces: `content404Glitch` for `content 404 Glitch`. `true` keeps the lossless astro 6 behavior.
   compressHTML: true,
   output: 'static',
   trailingSlash: 'never',
