@@ -1,7 +1,7 @@
 import {defineConfig} from 'astro/config'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-import AstroPWA from '@vite-pwa/astro'
+import {AstroPWAIntegration} from '@vite-pwa/astro'
 import sitemap from '@astrojs/sitemap'
 import {CLOUDFRONT_BASE} from '@j0nathan-ll0yd/portal-contract/constants'
 
@@ -14,10 +14,16 @@ const CLOUDFRONT_HOST_RE = CLOUDFRONT_HOST.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'
 
 export default defineConfig({
   site: 'https://jonathanlloyd.me',
+  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements, so readers lose
+  // visible spaces: `content404Glitch` for `content 404 Glitch`. `true` keeps the lossless astro 6 behavior.
+  compressHTML: true,
   output: 'static',
   trailingSlash: 'never',
   build: {inlineStylesheets: 'always'},
   vite: {
+    // Vite 8 defaults to the Lightning CSS minifier, which drops `height: 100vh` before `height: 100dvh`
+    // and other fallbacks that packages/web ships for older browsers. esbuild keeps them, as under astro 6.
+    build: {cssMinify: 'esbuild'},
     resolve: {
       alias: {
         '@manifest': path.resolve(__dirname, '../../Sources/LifegamesWidgets/Resources/widgets/widget-manifest.json'),
@@ -30,8 +36,12 @@ export default defineConfig({
   },
   integrations: [
     sitemap({filter: (page) => !page.includes('/showcase/'), lastmod: new Date()}),
-    AstroPWA({
+    AstroPWAIntegration({
       registerType: 'autoUpdate',
+      // generateSW.globPatterns already precaches the manifest icons. @vite-pwa/astro 2 adds them a second
+      // time under `/assets/...` with another revision, and workbox then refuses to evaluate sw.js with
+      // add-to-cache-list-conflicting-entries.
+      includeManifestIcons: false,
       manifest: {
         name: 'Jonathan Lloyd — Human Datastream',
         short_name: 'Human Datastream',
@@ -46,7 +56,7 @@ export default defineConfig({
           {src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable'}
         ]
       },
-      workbox: {
+      generateSW: {
         globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,webmanifest,woff2}'],
         globIgnores: ['images/books/**', 'images/theatre/**'],
         navigateFallbackDenylist: [/\.xml$/],

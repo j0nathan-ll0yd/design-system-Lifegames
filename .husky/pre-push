@@ -102,6 +102,13 @@ step "openspec-covers gate"    pnpm check:covers
 # parser rejects. Caught by this very hook on its first run.
 step "package payload drift"   node audits/checks/c147-package-drift.mjs --lane=pre-push
 
+# Advisory gate (atlas decision 0163 item 3). It also runs in the CI governance-gates step, which is
+# where it BINDS. This is the CI-parity tier: a new advisory should block locally too (B9). The root
+# allowlist is `auditConfig.ignoreGhsas` in pnpm-workspace.yaml. packages/copy has its own lockfile.
+# Network: a registry error fails the push, as it fails CI.
+step "advisories (root)"       pnpm audit --audit-level=high --fetch-timeout=120000 --fetch-retries=4 --fetch-retry-maxtimeout=30000
+step "advisories (copy)"       pnpm -C packages/copy audit --audit-level=high --fetch-timeout=120000 --fetch-retries=4 --fetch-retry-maxtimeout=30000
+
 # ── Tier 2: cheap CI-job mirrors (unit tests, contract, audits) ─────────────
 # The web unit suite (vitest) is distinct from `typecheck` above: it exercises
 # runtime behaviour of the updaters/adapters Props contract.
@@ -137,5 +144,6 @@ step "tokens golden test"      pnpm -F @j0nathan-ll0yd/tokens test
 # portfolio and docs apps, so it covers both steps' failure surface. Slowest
 # step — kept last.
 step "apps build (build-web + docs-build CI mirror)" pnpm build
+step "service worker precache" node scripts/check-sw-precache.mjs
 
 echo "[pre-push] All checks passed."

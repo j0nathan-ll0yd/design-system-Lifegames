@@ -1,4 +1,5 @@
 import {defineConfig} from 'astro/config'
+import {unified} from '@astrojs/markdown-remark'
 import starlight from '@astrojs/starlight'
 import starlightLlmsTxt from 'starlight-llms-txt'
 import fs from 'node:fs'
@@ -32,7 +33,14 @@ function docsLocalCovers() {
 
 export default defineConfig({
   site: 'https://design.lifegames.org',
+  // Astro 7 defaults to 'jsx', which drops the whitespace between multi-line elements, so readers lose
+  // visible spaces. `true` keeps the lossless astro 6 behavior.
+  compressHTML: true,
   redirects: {'/': '/getting-started/'},
+  // Astro 7 defaults to the Satteri processor, which renders this content differently: `--bg` prints
+  // an en dash where the remark pipeline prints an em dash. Keep remark so that the migration changes
+  // no published text. Moving to Satteri is its own decision, with its own review of the text diff.
+  markdown: {processor: unified()},
   integrations: [
     starlight({
       plugins: [
@@ -141,6 +149,9 @@ export default defineConfig({
     })
   ],
   vite: {
+    // Vite 8 defaults to the Lightning CSS minifier, which drops `height: 100vh` before `height: 100dvh`
+    // and other fallbacks that packages/web ships for older browsers. esbuild keeps them, as under astro 6.
+    build: {cssMinify: 'esbuild'},
     plugins: [docsLocalCovers()],
     resolve: {
       alias: {

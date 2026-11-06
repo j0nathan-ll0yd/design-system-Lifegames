@@ -89,8 +89,8 @@ updates:
       - dependency-name: ajv-formats
         update-types: [version-update:semver-major]
       # @astrojs/starlight is pre-1.0 -- minors can contain breaking
-      # changes. Block only majors; minors are safe on the verified 0.39.x
-      # release (docs site confirmed working 2026-05-31).
+      # changes. Block only majors; minors are safe on the verified 0.42.x
+      # release (docs site compared before and after, 2026-11-06).
       - dependency-name: '@astrojs/starlight'
         update-types: [version-update:semver-major]
       # typescript is PINNED EXACTLY (5.9.3) as a CONTRACT VERSION, not as a

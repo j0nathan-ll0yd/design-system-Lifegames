@@ -523,6 +523,9 @@ jobs:
       - name: build-web
         if: ${{ !cancelled() }}
         run: pnpm build
+      - name: 'build-web: service worker precache'
+        if: ${{ !cancelled() }}
+        run: node scripts/check-sw-precache.mjs
       # The visual-regression guard suite (issue #145) runs in governance-gates, a required
       # context, under `pnpm test:scripts`.
       - name: storybook-build
@@ -826,3 +829,13 @@ jobs:
           # (staged files) and the weekly audit-ds.yml, so a commit made without hooks (web UI,
           # a bot, a Release PR) reached main unscanned. Offline; ~30 s.
           bash audits/checks/d6-scan-personal-data.sh --full-tree
+          # Advisory gate (atlas decision 0163 item 3, owner ruling R2). A high or critical advisory
+          # in either lockfile fails this required context. The root allowlist is
+          # `auditConfig.ignoreGhsas` in pnpm-workspace.yaml, where each entry names its scope and its
+          # removal condition. packages/copy has its own lockfile and its own workspace file, which the
+          # root run cannot see, so it gets its own line. A registry error fails the step: never add
+          # --ignore-registry-errors. Never pass --ignore either: it rewrites pnpm-workspace.yaml.
+          # It runs last because a new advisory reds every branch at once, and the gates above should
+          # still report. Network, so it runs under the heartbeat (a retry stall is silent).
+          bash scripts/ci-heartbeat.sh pnpm audit --audit-level=high --fetch-timeout=120000 --fetch-retries=4 --fetch-retry-maxtimeout=30000
+          bash scripts/ci-heartbeat.sh pnpm -C packages/copy audit --audit-level=high --fetch-timeout=120000 --fetch-retries=4 --fetch-retry-maxtimeout=30000
