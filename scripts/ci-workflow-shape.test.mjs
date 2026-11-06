@@ -426,8 +426,27 @@ test('ci.yml: governance-gates runs the blocking audit on the root and packages/
   for (const command of AUDIT_COMMANDS) {
     assert.ok(lines.includes(command), `governance-gates must run: ${command}`)
   }
-  const step = ci.jobs['governance-gates'].steps.find((s) => s.name === 'governance-gates')
-  assert.notEqual(step['continue-on-error'], true, 'the audit must be able to red the step')
+})
+
+test('ci.yml: nothing in the governance-gates step or job can stop the audit from failing it', () => {
+  const job = ci.jobs['governance-gates']
+  const step = job.steps.find((s) => s.name === 'governance-gates')
+  assert.equal(step.if, undefined, 'a condition on the step could skip the audit')
+  assert.equal(step['continue-on-error'], undefined, 'the audit must be able to red the step')
+  assert.equal(job['continue-on-error'], undefined, 'the audit must be able to red the job')
+  const lines = step.run.split('\n').map((line) => line.trim()).filter((line) => line !== '' && !line.startsWith('#'))
+  for (const line of lines) {
+    assert.doesNotMatch(line, /\bset \+e\b|\bset \+o\b|^exit 0\b/, `the step must keep \`bash -e\`, got: ${line}`)
+  }
+  // The audit lines close the step: nothing after them can replace their exit code, and a line
+  // before them ending in an operator would turn the first one into a branch of that line.
+  assert.deepEqual(lines.slice(-AUDIT_COMMANDS.length), AUDIT_COMMANDS)
+  assert.doesNotMatch(lines.at(-AUDIT_COMMANDS.length - 1), /(\|\||&&|\\)$/)
+})
+
+test('every tracked pnpm lockfile is one the audit reads', () => {
+  const lockfiles = execFileSync('git', ['ls-files', '*pnpm-lock.yaml'], {cwd: repoRoot, encoding: 'utf8'}).trim().split('\n')
+  assert.deepEqual(lockfiles.sort(), ['packages/copy/pnpm-lock.yaml', 'pnpm-lock.yaml'])
 })
 
 test('ci.yml: no audit line weakens the gate', () => {
