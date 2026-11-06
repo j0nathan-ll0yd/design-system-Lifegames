@@ -1,7 +1,7 @@
 import {defineConfig} from 'astro/config'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-import AstroPWA from '@vite-pwa/astro'
+import {AstroPWAIntegration} from '@vite-pwa/astro'
 import sitemap from '@astrojs/sitemap'
 import {CLOUDFRONT_BASE} from '@j0nathan-ll0yd/portal-contract/constants'
 
@@ -30,7 +30,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({filter: (page) => !page.includes('/showcase/'), lastmod: new Date()}),
-    AstroPWA({
+    AstroPWAIntegration({
       registerType: 'autoUpdate',
       manifest: {
         name: 'Jonathan Lloyd — Human Datastream',
@@ -46,7 +46,7 @@ export default defineConfig({
           {src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable'}
         ]
       },
-      workbox: {
+      generateSW: {
         globPatterns: ['**/*.{css,js,html,svg,png,ico,txt,webmanifest,woff2}'],
         globIgnores: ['images/books/**', 'images/theatre/**'],
         navigateFallbackDenylist: [/\.xml$/],

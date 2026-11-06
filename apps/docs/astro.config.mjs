@@ -1,4 +1,5 @@
 import {defineConfig} from 'astro/config'
+import {unified} from '@astrojs/markdown-remark'
 import starlight from '@astrojs/starlight'
 import starlightLlmsTxt from 'starlight-llms-txt'
 import fs from 'node:fs'
@@ -33,6 +34,10 @@ function docsLocalCovers() {
 export default defineConfig({
   site: 'https://design.lifegames.org',
   redirects: {'/': '/getting-started/'},
+  // Astro 7 defaults to the Satteri processor, which renders this content differently: `--bg` prints
+  // an en dash where the remark pipeline prints an em dash. Keep remark so that the migration changes
+  // no published text. Moving to Satteri is its own decision, with its own review of the text diff.
+  markdown: {processor: unified()},
   integrations: [
     starlight({
       plugins: [
